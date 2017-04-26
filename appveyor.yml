@@ -1,0 +1,24 @@
+configuration:
+  - Debug
+  - Release
+
+environment:
+  TreatWarningsAsErrors: false
+
+branches:
+  only:
+    - master
+    - dev
+
+skip_tags: true
+
+notifications:
+  - provider: GitHubPullRequest
+    on_build_success: true
+    on_build_failure: true
+
+cache:
+  - packages -> **\packages.config
+
+before_build:
+  - nuget restore
