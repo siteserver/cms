@@ -1,0 +1,15 @@
+<table width="450" class="searchTable" border="0" align="center" cellpadding="0" cellspacing="0">  
+  <tr>
+    <td align="center">姓名：</td>
+    <td align="left"><input id="queryName" name="queryName" class="normalText" type="text" isValidate="true" displayName="姓名" isRequire="true" />
+      <span id="queryName_msg" style="color:red">*</span><script>event_observe('queryName', 'blur', checkAttributeValue);</script></td>
+  </tr>
+  <tr>
+    <td align="center">查询号：</td>
+    <td align="left"><input id="queryCode" name="queryCode" class="normalText" type="text" isValidate="true" displayName="查询号" isRequire="true" />
+      <span id="queryCode_msg" style="color:red">*</span><script>event_observe('queryCode', 'blur', checkAttributeValue);</script></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><div class="btngray" onclick="submit_query();"><strong>查询</strong></div></td>
+  </tr>
+</table>

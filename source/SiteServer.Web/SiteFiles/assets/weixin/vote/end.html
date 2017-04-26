@@ -1,0 +1,75 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>活动已结束</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" type="text/css" href="../components/lib/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="../components/lib/toastr.min.css">
+<link rel="stylesheet" type="text/css" href="../components/lib/style.css">
+
+<link rel="stylesheet" type="text/css" href="styles/style.css">
+</head>
+
+<body>
+
+  <div id="loading" class="loading"><img src="../components/images/loading.gif"></div>
+
+  <div id="main" style="display:none">
+
+    <script class="controller" type="text/html">
+         
+      <div class="textBG_red">
+        <img class="img-responsive" width="100%" src="<%=voteInfo.endImageUrl%>" />    
+      </div>
+
+       <div class="alert alert-success">
+            <strong><%=voteInfo.endTitle%></strong><br />
+            <%=voteInfo.endSummary%>
+        </div>
+
+        <div class="container">
+
+          <h3>投票结果</h3>
+          <hr />
+
+          <%
+          for(i = 0; i < itemList.length; i ++) {
+            var item = itemList[i];
+          %>
+          <strong><%=item.title%></strong>
+
+          <div class="progress <%=isItem(item.id) ? 'progress-striped active' : ''%>">
+            <div class="progress-bar progress-bar-danger" style="width: <%=getPercentage(item.voteNum);%>;"><%=getPercentage(item.voteNum);%></div>
+          </div>
+          <%}%>
+
+        </div>
+    
+        <%if (!isPoweredBy){%>
+          <div class="footer">
+            <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+          </div>
+        <%}else if(poweredBy){%>
+          <div class="footer">
+            <p><%==poweredBy%></p>
+          </div>
+        <%}%>
+
+    </script>
+
+  </div>
+
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/endController.js"></script>

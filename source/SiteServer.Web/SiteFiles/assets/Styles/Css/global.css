@@ -1,0 +1,160 @@
+.Help
+{
+  border-right: black 1px solid;
+  padding-right: 2px;
+  border-top: black 1px solid;
+  padding-left: 2px;
+  font-weight: normal;
+  font-size: 11px;
+  padding-bottom: 2px;
+  border-left: black 1px solid;
+  color: black;
+  padding-top: 2px;
+  border-bottom: black 1px solid;
+  font-family: Tahoma, Arial, Helvetica;
+  background-color: #ffff99;
+}
+
+
+/*
+ContentParts
+*/
+
+.CommonContentPartBorderOff
+{
+	padding: 1px;
+}
+
+.CommonContentPartBorderOn
+{
+	border-style: dashed;
+	border-width: 1px;
+	border-color: #999999;
+	background-color: #efefef;
+}
+
+.CommonInlineEditOn
+{
+	background-color: #efefef;
+}
+
+.CommonInlineEditOff
+{
+	padding: 0px;
+}
+
+/* Modal Styles */
+
+#popupMask 
+{
+	position: absolute;
+	z-index: 200;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	opacity: .4;
+	filter: alpha(opacity=40);
+	/* this hack is so it works in IE
+	 * I find setting the color in the css gives me more flexibility 
+	 * than the PNG solution.
+	 */
+	background-color:transparent !important;
+	background-color: #333333;
+	/* this hack is for opera support
+	 * you can uncomment the background-image if you don't care about opera.
+	 * this gives you the flexibility to use any bg color that you want, instead of the 
+
+png
+	 */
+	background-image: url("../pic/maskBG.png") !important;
+	background-image:none;
+	background-repeat: repeat;
+	display:none;
+}
+
+#popupContainer 
+{
+	position: absolute;
+	z-index: 201;
+	top: 0px;
+	left: 0px;
+	display:none;
+	padding: 0px;
+}
+
+#popupInner 
+{
+	border-style: solid;
+	border-width: 1px;
+	border-color: #888888;
+	border-right-width: 3px;
+	border-right-color: #888888;
+	border-bottom-width: 3px;
+	border-bottom-color: #888888;
+	background-color: #eeeeee;
+}
+
+#popupFrame 
+{
+	margin: 0px;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	z-index: 202;
+}
+
+#popupTitleBar 
+{
+	font-family:������, Tahoma, Arial, Helvetica;
+	height: 1.3em;
+	padding: 5px;
+	padding-bottom: 7px;
+	border-style: solid;
+	border-width: 0px;
+	border-color: #888888;
+	border-bottom-width: 1px;
+	position: relative;
+	z-index: 203;
+	
+	color:#000000; 
+	background-color: #E8F1F8;
+
+	font-weight: bold;
+	margin: 0px;
+}
+
+#popupTitle 
+{
+	float:left;
+}
+
+#popupControls 
+{
+	float: right;
+	cursor: pointer;
+	cursor: pointer;
+}
+
+/* View of user photo stream pages, 1 column or two */
+/* Could be consolidated with the DetailView below */
+
+.StreamView { width: 250px; }
+.StreamView h4 { margin-bottom: 0px; margin-top: 0px; font-size: 14px; width: 240px; }
+.StreamView .Photo { margin-top: 3px; margin-bottom: 5px; }
+.StreamView .Desc { font-size: 12px; width: 225px; margin-top: 5px; margin-bottom: 0px; }
+.StreamView .Privacy { font-size: 11px; margin-top: 10px; margin-bottom: 2px; width: 240px; color: #999999; }
+.StreamView .Privacy img { border: none; vertical-align: middle; }
+.StreamView .Do { font-size: 11px;  margin-top: 0px; margin-bottom: 0px; color: #999999; }
+.StreamView .Activity { font-size: 11px; color: #999999; margin-bottom: 5px; margin-top: 4px;  width: 240px; }
+
+img { border: none; /* 1px solid #ddd */ }
+
+/* Upload Progress */
+
+.ReadThis { font-size: 12px; width: 450px; padding:30px; background-color: #FBFFCC; }
+
+.IgnoreList li { font-size: 14px; }
+
+.AjaxSaveButton { font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 12px; color: #FFFFFF; background: #0063DC; }
+.AjaxCancelButton { font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 12px;  color: #666; background-color: #DDD; }

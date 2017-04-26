@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xs:schema id="root" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:app1="http://www.w3.org/XML/1998/namespace">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="Microsoft.Exchange.CtsResources.TextConvertersStrings_app1.xsd" />
+    <xs:element name="root" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xs:string" minOccurs="0" msdata:Ordinal="4" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xs:string" use="required" />
+              <xs:attribute name="type" type="xs:string" />
+              <xs:attribute name="mimetype" type="xs:string" />
+              <xs:attribute ref="app1:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xs:string" />
+              <xs:attribute name="name" type="xs:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+                <xs:element name="comment" type="xs:string" minOccurs="0" msdata:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xs:string" use="required" />
+              <xs:attribute name="type" type="xs:string" />
+              <xs:attribute name="mimetype" type="xs:string" />
+              <xs:attribute ref="app1:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xs:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <data name="AttributeNotStarted" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>You should write attribute name before writing attribute value</value>
+  </data>
+  <data name="InputEncodingRequired" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>InputEncoding property is required for this conversion.</value>
+  </data>
+  <data name="CreateFileFailed" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>An I/O error occurred while creating the file: {0}.</value>
+    <comment>.
+ Parameters: 0 - filePath (string) </comment>
+  </data>
+  <data name="AttributeCollectionNotInitialized" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Attribute collection is not properly initialized, you must retrieve one with Attributes property of HtmlTagContext before using.</value>
+  </data>
+  <data name="ConverterWriterInInconsistentStare" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Cannot continue using ConverterWriter after exception is thrown.</value>
+  </data>
+  <data name="CannotUseConverterReader" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>ConverterReader or TextWriter cannot be used as output with this converter because the converter produces byte output. Use Stream.</value>
+  </data>
+  <data name="CannotReadFromSource" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>The source stream does not support reading.</value>
+  </data>
+  <data name="AttributeIdIsUnknown" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Attribute id cannot be Unknown.</value>
+  </data>
+  <data name="TagTooLong" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Tag is too long, buffer reallocation has failed.</value>
+  </data>
+  <data name="EndTagCannotHaveAttributes" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>End tag cannot have any attributes</value>
+  </data>
+  <data name="CannotUseConverterWriter" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>ConverterWriter or TextReader cannot be used as input with this converter because the converter accepts byte input. Use Stream.</value>
+  </data>
+  <data name="WriteAfterFlush" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Write should not be called for ConverterStream after Flush.</value>
+  </data>
+  <data name="PriorityListIncludesNonDetectableCodePage" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Priority list cannot include code pages which are not detectable</value>
+  </data>
+  <data name="TagNotStarted" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>You should write a tag with WriteTag before writing tag attributes</value>
+  </data>
+  <data name="CannotSetNegativelength" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Length of the stream cannot be negative.</value>
+  </data>
+  <data name="TooManyIterationsToFlushConverter" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Too many iterations to flush the converter.</value>
+  </data>
+  <data name="IndexOutOfRange" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Index cannot be negative or greater than the length of the buffer.</value>
+  </data>
+  <data name="TagNameIsEmpty" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Tag name cannot be empty.</value>
+  </data>
+  <data name="MaxCharactersCannotBeNegative" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>maxCharacters cannot be negative.</value>
+  </data>
+  <data name="AttributeNotValidForThisContext" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>HtmlTagContextAttribute is not valid for the current context. Do not store context attribute across callbacks.</value>
+  </data>
+  <data name="InvalidConfigurationBoolean" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Invalid configuration, expected boolean property ({0}).</value>
+    <comment>.
+ Parameters: 0 - propertyId (int) </comment>
+  </data>
+  <data name="InputDocumentTooComplex" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Input document is too complex.</value>
+  </data>
+  <data name="TextWriterUnsupported" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>ConverterReader or TextWriter cannot be used as output with this converter. This converter produces byte output (use Stream).</value>
+  </data>
+  <data name="PropertyNotValidForCodepageConversionMode" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>This property cannot be used in simple codepage conversion mode</value>
+  </data>
+  <data name="CountTooLarge" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Count cannot be greater than the number of bytes in buffer from index till the end.</value>
+  </data>
+  <data name="InvalidConfigurationStream" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Invalid configuration, expected stream property ({0}).</value>
+    <comment>.
+ Parameters: 0 - propertyId (int) </comment>
+  </data>
+  <data name="TooManyIterationsToProduceOutput" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Too many iterations to produce any output.</value>
+  </data>
+  <data name="AttributeNotInitialized" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>HtmlTagContextAttribute is not properly initialized, you must retrieve one through HtmlTagContext.Attributes collection.</value>
+  </data>
+  <data name="CannotWriteOtherTagsInsideElement" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Cannot write other tags inside &lt;{0}&gt; element.</value>
+    <comment>.
+ Parameters: 0 - elementName (string) </comment>
+  </data>
+  <data name="AttributeIdInvalid" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Attribute id is invalid.</value>
+  </data>
+  <data name="InvalidConfigurationInteger" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Invalid configuration, expected integer property ({0}).</value>
+    <comment>.
+ Parameters: 0 - propertyId (int) </comment>
+  </data>
+  <data name="TooManyIterationsToProcessInput" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Too many iterations to process input chunk.</value>
+  </data>
+  <data name="BufferSizeValueRange" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>value cannot be smaller than 1K or bigger than 80K bytes.</value>
+  </data>
+  <data name="CannotWriteWhileCopyPending" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Cannot write HTML while input tag or attribute copy is pending.</value>
+  </data>
+  <data name="AttributeNotValidInThisState" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>HtmlTagContextAttribute is not valid in this state.</value>
+  </data>
+  <data name="ParametersCannotBeChangedAfterConverterObjectIsUsed" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Converter object parameters cannot be changed after object is being used</value>
+  </data>
+  <data name="CountOutOfRange" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Count cannot be negative or greater than the length of the buffer.</value>
+  </data>
+  <data name="WriteUnsupported" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>This stream does not support writing.</value>
+  </data>
+  <data name="AccessShouldBeReadOrWrite" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>access should be either Read or Write.</value>
+  </data>
+  <data name="ContextNotValidInThisState" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>HtmlTagContext is not valid in this state.</value>
+  </data>
+  <data name="CannotSeekBeforeBeginning" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Cannot seek before the beginning of the stream.</value>
+  </data>
+  <data name="OffsetOutOfRange" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Offset cannot be negative or greater than the length of the buffer.</value>
+  </data>
+  <data name="ReadUnsupported" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>This stream does not support reading.</value>
+  </data>
+  <data name="LengthExceeded" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>The sum of offset and count ({0}) is larger than the array length ({1}).</value>
+    <comment>.
+ Parameters: 0 - sum (int), 1 - length (int) </comment>
+  </data>
+  <data name="SeekUnsupported" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>This stream does not support seeking.</value>
+  </data>
+  <data name="InvalidCodePage" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Text code page ({0}) is invalid or not installed.</value>
+    <comment>.
+ Parameters: 0 - codePage (int) </comment>
+  </data>
+  <data name="CallbackTagAlreadyWritten" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Callback tag already has been written to output.</value>
+  </data>
+  <data name="ConverterStreamInInconsistentStare" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Cannot continue using ConverterStream after exception is thrown.</value>
+  </data>
+  <data name="AttributeNameIsEmpty" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Attribute name cannot be empty</value>
+  </data>
+  <data name="HtmlNestingTooDeep" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Html tag nesting too deep, cannot convert this document.</value>
+  </data>
+  <data name="CannotWriteToDestination" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>The destination stream does not support writing.</value>
+  </data>
+  <data name="ConverterReaderInInconsistentStare" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Cannot continue using ConverterReader after exception is thrown.</value>
+  </data>
+  <data name="TextReaderUnsupported" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>ConverterWriter or TextReader cannot be used as input with this converter. This converter accepts byte input (use Stream).</value>
+  </data>
+  <data name="PropertyNotValidForTextExtractionMode" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>This property cannot be used in text extraction mode</value>
+  </data>
+  <data name="TagIdIsUnknown" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Tag id cannot be Unknown.</value>
+  </data>
+  <data name="TagIdInvalid" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Tag id is invalid.</value>
+  </data>
+  <data name="CallbackTagAlreadyDeleted" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Callback tag already has been deleted.</value>
+  </data>
+  <resheader name="ResMimeType">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="Version">
+    <value>1.0.0.0</value>
+  </resheader>
+  <resheader name="Reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="Writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+</root>

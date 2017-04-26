@@ -1,0 +1,117 @@
+.TopBar {
+	BACKGROUND-POSITION: left bottom; PADDING-BOTTOM: 1px; BACKGROUND-REPEAT: repeat-x; TEXT-ALIGN: center
+}
+.TopBar .Header {
+	MARGIN-TOP: 0px; MARGIN-LEFT: auto; MARGIN-RIGHT: auto
+}
+.TopBar .Header .FlickrLogo {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 5px; PADDING-BOTTOM: 0px; PADDING-TOP: 5px
+}
+.TopBar .Header .FlickrLogo IMG {
+	FLOAT: left
+}
+.TopBar .Header .Status {
+	PADDING-RIGHT: 10px; PADDING-LEFT: 10px; FONT-SIZE: 11px; PADDING-BOTTOM: 2px; VERTICAL-ALIGN: top; COLOR: #999999; PADDING-TOP: 6px; TEXT-ALIGN: right
+}
+.TopBar .Header .Status .WhoIs {
+	COLOR: #666666
+}
+.TopBar .Header .Status IMG {
+	BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+.TopBar .Header .Status A {
+	TEXT-DECORATION: none
+}
+.TopBar .NavBar {
+	MARGIN-TOP: 0px; MARGIN-LEFT: auto;  MARGIN-RIGHT: auto
+}
+.TopBar .NavBar .Primary {
+	PADDING-LEFT: 1px; PADDING-BOTTOM: 0px; VERTICAL-ALIGN: bottom; PADDING-TOP: 5px
+}
+.TopBar .NavBar #search_header_form_td {
+	PADDING-RIGHT: 4px; PADDING-BOTTOM: 5px; VERTICAL-ALIGN: bottom; TEXT-ALIGN: right
+}
+.TopBar .NavBar #search_header_form_td FORM {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+}
+.TopBar .NavBar #search_header_form_td FORM INPUT {
+	MARGIN: 0px; VERTICAL-ALIGN: bottom; COLOR: #222222
+}
+.TopBar .NavBar #search_header_form_td FORM IMG {
+	MARGIN: 0px; VERTICAL-ALIGN: bottom
+}
+.TopBar .NavBar #search_header_form_td .Box {
+	FONT-SIZE: 11px; MARGIN: 0px; WIDTH: 175px
+}
+.TopBar .NavBar #search_header_button_td {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; VERTICAL-ALIGN: bottom; PADDING-TOP: 0px; TEXT-ALIGN: left
+}
+#candy_nav_button_bar {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 1px; MARGIN: 0px; PADDING-TOP: 0px
+}
+#candy_search_button_bar {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 1px; MARGIN: 0px; PADDING-TOP: 0px
+}
+#candy_search_button_bar {
+	DISPLAY: none
+}
+#candy_nav_button_bar IMG {
+	BORDER-RIGHT: 0px; BORDER-TOP: 0px; DISPLAY: inline; MARGIN: 0px; BORDER-LEFT: 0px; BORDER-BOTTOM: 0px
+}
+#candy_search_button_bar IMG {
+	BORDER-RIGHT: 0px; BORDER-TOP: 0px; DISPLAY: inline; MARGIN: 0px; BORDER-LEFT: 0px; BORDER-BOTTOM: 0px
+}
+#candy_nav_button_bar A:hover {
+	BACKGROUND: none transparent scroll repeat 0% 0%; outline: 0
+}
+#candy_nav_button_bar A:active {
+	BACKGROUND: none transparent scroll repeat 0% 0%; outline: 0
+}
+#candy_nav_button_bar A:focus {
+	BACKGROUND: none transparent scroll repeat 0% 0%; outline: 0
+}
+#candy_search_button_bar A:hover {
+	BACKGROUND: none transparent scroll repeat 0% 0%; outline: 0
+}
+#candy_search_button_bar A:active {
+	BACKGROUND: none transparent scroll repeat 0% 0%; outline: 0
+}
+#candy_search_button_bar A:focus {
+	BACKGROUND: none transparent scroll repeat 0% 0%; outline: 0
+}
+#candy_nav_button_bar .candy_menu {
+	BORDER-RIGHT: #666666 1px solid; BACKGROUND-POSITION: 0px 0px; BORDER-TOP: 0px; DISPLAY: none; Z-INDEX: 5000; BACKGROUND-IMAGE: url(../../pic/nav_menu_bg_border_thing.gif); BORDER-LEFT: #f0f0f0 1px solid; WIDTH: 120px; BORDER-BOTTOM: #666666 1px solid; BACKGROUND-REPEAT: no-repeat; POSITION: absolute; BACKGROUND-COLOR: white; TEXT-ALIGN: left
+}
+#candy_search_button_bar .candy_menu {
+	BORDER-RIGHT: #666666 1px solid; BACKGROUND-POSITION: 0px 0px; BORDER-TOP: 0px; DISPLAY: none; Z-INDEX: 5000; BACKGROUND-IMAGE: url(../../pic/nav_menu_bg_border_thing.gif); BORDER-LEFT: #f0f0f0 1px solid; WIDTH: 120px; BORDER-BOTTOM: #666666 1px solid; BACKGROUND-REPEAT: no-repeat; POSITION: absolute; BACKGROUND-COLOR: white; TEXT-ALIGN: left
+}
+#candy_nav_button_bar .candy_menu A {
+	PADDING-RIGHT: 0px; DISPLAY: block; PADDING-LEFT: 0px; FONT-SIZE: 11px; PADDING-BOTTOM: 0px; MARGIN: 6px; PADDING-TOP: 0px; TEXT-DECORATION: none! important
+}
+#candy_nav_button_bar .candy_menu A:link {
+	PADDING-RIGHT: 0px; DISPLAY: block; PADDING-LEFT: 0px; FONT-SIZE: 11px; PADDING-BOTTOM: 0px; MARGIN: 6px; PADDING-TOP: 0px; TEXT-DECORATION: none! important
+}
+#candy_nav_button_bar .candy_menu A:hover {
+	BACKGROUND: white; TEXT-DECORATION: underline! important
+}
+#candy_nav_button_bar .candy_menu A:active {
+	BACKGROUND: white; TEXT-DECORATION: underline! important
+}
+#candy_nav_button_bar .candy_menu A.menu_item_line_above {
+	BORDER-TOP: #e5e5e5 1px solid; MARGIN-TOP: 10px; PADDING-TOP: 8px
+}
+#candy_search_button_bar .candy_menu A {
+	PADDING-RIGHT: 0px; DISPLAY: block; PADDING-LEFT: 0px; FONT-SIZE: 11px; PADDING-BOTTOM: 0px; MARGIN: 6px; PADDING-TOP: 0px; TEXT-DECORATION: none! important
+}
+#candy_search_button_bar .candy_menu A:link {
+	PADDING-RIGHT: 0px; DISPLAY: block; PADDING-LEFT: 0px; FONT-SIZE: 11px; PADDING-BOTTOM: 0px; MARGIN: 6px; PADDING-TOP: 0px; TEXT-DECORATION: none! important
+}
+#candy_search_button_bar .candy_menu A:hover {
+	BACKGROUND: white; TEXT-DECORATION: underline! important
+}
+#candy_search_button_bar .candy_menu A:active {
+	BACKGROUND: white; TEXT-DECORATION: underline! important
+}
+#candy_search_button_bar .candy_menu A.menu_item_line_above {
+	BORDER-TOP: #e5e5e5 1px solid; MARGIN-TOP: 10px; PADDING-TOP: 8px
+}

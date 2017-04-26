@@ -1,0 +1,90 @@
+﻿
+
+.TabControl .tab-row .tab 
+{
+	height:				20px;
+	background-image:	url(../icons/tabstrip/tab_bg.gif);
+	
+	
+	position:		relative;
+	top:			0;
+	display:		inline;
+	float:			left;
+	overflow:		hidden;
+
+	cursor:			Default;
+        
+	border-width:	1px;
+	border-color:	#91A7B4; 
+	border-style:	solid; /*dashed*/
+    
+    border-top-width:0px; 
+
+	margin:			1px -1px 1px 2px;
+	padding:		2px 6 2px 6;
+
+	z-index:		1;
+	font:			12px Tahoma;
+	white-space:	nowrap;
+	text-align:		center;
+}
+
+.TabControl .tab-row .tab.selected
+{
+	height:				22px !important;
+	background-image:	url(../icons/tabstrip/tab.active.gif) !important;
+	
+
+	border-width:1px; 
+	border-bottom-width:	0;
+	border-color:#91A7B4; 
+	border-style:solid; /*dashed*/
+	
+	border-top-width:0px; 
+
+	z-index:		3;
+	padding:		4px 6 2px 6;
+	margin:			1px -3px -3px 0px;
+	 
+	top:			-2px;
+	font:			12px Tahoma;
+}
+
+.TabControl .tab-row .tab a
+{
+	font:				12px Tahoma;
+	color:				Black;
+	text-decoration:	none;
+	cursor:				default;
+}
+
+.TabControl .tab-row .tab.hover
+{
+	font:				12px Tahoma;
+	height:				20px;
+	background-image:	url(../icons/tabstrip/hover_tab_bg.gif);
+	
+}
+
+
+.TabControl .tab-page
+{
+	clear:			both;
+	border:			1px solid rgb( 145, 155, 156 );
+	background:		rgb( 252, 252, 254 );
+	z-index:		2;
+	position:		relative;
+	top:			-2px;
+	font:			12px Tahoma;
+	color:			Black;
+	width:			100%;		
+	padding:		10px 10px 10px 10px;
+
+}
+
+.TabControl .tab-pane
+{
+	position:		relative;
+	margin-right:	-2px;	
+}
+

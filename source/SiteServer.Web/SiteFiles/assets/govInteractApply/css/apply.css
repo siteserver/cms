@@ -1,0 +1,21 @@
+/* apply main */
+.applyTable {width:100%;height:100%;border-left:1px solid silver;border-top:1px solid silver;}
+.applyTable td { height: 30px; padding: 2px; margin: 2px; }
+.applyTable .attribute { text-align: right; padding-right: 8px; width: 90px; background: #F8F8F8; }
+.applyTable .attribute, .applyTable .field {border-bottom: 1px solid silver; border-right: 1px solid silver;}
+.applyTable input.input_text, .applyTable input.input_file{ margin-left: 8px; width: 200px; height:24px; line-height:20px; border: 1px solid #9AABBB; }
+.applyTable input.input_file {width:350px}
+.applyTable select { margin-left: 8px; height:24px; line-height:20px; border: 1px solid #9AABBB; }
+.applyTable textarea.textarea { margin-left: 8px; width: 90%; height: 50px; border: 1px solid #9AABBB; line-height:20px; height:110px; width:80% }
+.field table td input,.field table td label {display: inline;}
+.field table td {padding: 3px;}
+
+/* content main */
+.btngray { margin: 10px 0; background: #FFFFFF url(../images/btngray_r.jpg) no-repeat right top; padding: 0px; width: 100px; cursor: pointer; outline: none; }
+.btngray strong { display: block; font-size: 14px; text-align: center; height: 20px; padding: 10px; background: url(../images/btngray_l.jpg) no-repeat left top; }
+.btngray:hover { background: url(../images/btngray_ro.jpg) no-repeat right top; }
+.btngray:hover strong { background: url(../images/btngray_lo.jpg) no-repeat left top; }
+.applyContainer { clear: both; color: #525252; background-color: #FFF; font-family: Tahoma; font-size: 12px; line-height: 1.8em; margin: 0; padding: 0; }
+.successContainer { margin: 0 auto; font: 14px Arial, Helvetica, sans-serif; color: #090 !important; padding: 10px 10px 10px 45px; width: 90%; background: url(../../images/success.gif) no-repeat left center; text-align: left; line-height: 160%; font-weight: bold; }
+.failureContainer { margin: 0 auto; font: 14px Arial, Helvetica, sans-serif; color: #CC0000 !important; padding: 10px 10px 10px 45px; width: 90%; background: url(../../images/failure.gif) no-repeat left center; text-align: left; line-height: 160%; font-weight: bold; }
+.failureContainer span { font: 14px Arial, Helvetica, sans-serif; color: #CC0000 !important; font-weight: bold; }

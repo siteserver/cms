@@ -1,0 +1,8 @@
+spaces\:widget{width:100%;}
+spaces\:view, #tblLayoutBar, .dirty{display:none;}
+#tblLayoutBar{display:block;}
+.Web_UI_DragDrop{filter:progid:DXImageTransform.Microsoft.Alpha(opacity=20);opacity:0.2;}
+.partBuffer{width:18px;}
+spaces\:view.viewActive{display:block;}
+div.spaces\:view{display:none;}
+div.spaces\:view.viewActive{display:block;}

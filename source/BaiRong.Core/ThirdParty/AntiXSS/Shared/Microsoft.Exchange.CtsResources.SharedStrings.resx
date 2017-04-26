@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xs:schema id="root" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:app1="http://www.w3.org/XML/1998/namespace">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="Microsoft.Exchange.CtsResources.SharedStrings_app1.xsd" />
+    <xs:element name="root" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xs:string" minOccurs="0" msdata:Ordinal="4" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xs:string" use="required" />
+              <xs:attribute name="type" type="xs:string" />
+              <xs:attribute name="mimetype" type="xs:string" />
+              <xs:attribute ref="app1:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xs:string" />
+              <xs:attribute name="name" type="xs:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+                <xs:element name="comment" type="xs:string" minOccurs="0" msdata:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xs:string" use="required" />
+              <xs:attribute name="type" type="xs:string" />
+              <xs:attribute name="mimetype" type="xs:string" />
+              <xs:attribute ref="app1:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xs:string" minOccurs="0" msdata:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xs:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <data name="CountTooLarge" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Count cannot be greater than the number of bytes in the buffer from the index to the end.</value>
+  </data>
+  <data name="CannotSeekBeforeBeginning" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Cannot seek before the beginning of the stream.</value>
+  </data>
+  <data name="CannotSetNegativelength" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Length of the stream cannot be negative.</value>
+  </data>
+  <data name="CreateFileFailed" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>An I/O error occurred while creating the file: {0}.</value>
+    <comment>.
+ Parameters: 0 - filePath (string) </comment>
+  </data>
+  <data name="InvalidFactory" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Factory should produce streams supporting ICloneableStream</value>
+  </data>
+  <data name="OffsetOutOfRange" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Offset cannot be negative or greater than the length of the buffer.</value>
+  </data>
+  <data name="CountOutOfRange" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>Count cannot be negative or greater than the length of the buffer.</value>
+  </data>
+  <data name="StringArgumentMustBeAscii" d2p1:space="preserve" xmlns:d2p1="http://www.w3.org/XML/1998/namespace">
+    <value>String argument cannot contain non-ASCII characters.</value>
+  </data>
+  <resheader name="ResMimeType">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="Version">
+    <value>1.0.0.0</value>
+  </resheader>
+  <resheader name="Reader">
+    <value>System.Resources.ResXResourceReader</value>
+  </resheader>
+  <resheader name="Writer">
+    <value>System.Resources.ResXResourceWriter</value>
+  </resheader>
+</root>

@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>中奖确认</title>
+<link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+<link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+<link rel="stylesheet" href="../components/lib/toastr.min.css" />
+<link rel="stylesheet" href="../components/lib/style.css" />
+
+<link rel="stylesheet" type="text/css" href="styles/check.css" />
+</head>
+<body>
+
+<div id="loading" class="loading"><img src="../components/images/loading.gif"></div>
+
+<div id="main" style="display:none">
+    <script class="controller" type="text/html">
+        <div class="header">
+            <p class="title">中奖电子凭证</p>
+        </div>
+
+        <div class="alert alert-success" style="margin-bottom:0">
+          恭喜，您已获得<%=awardInfo.awardName%>：<%=awardInfo.title%>！
+        </div>
+
+        <div class="header_check">
+          <img src="<%=lotteryInfo.awardImageUrl%>" class="head_img">
+          <div id="qrCode" class="ewm_img"></div>
+          <img src="images/dj_box_bg.png" class="dj_box_bg">
+          <span class="ex_num">兑奖码：<%=winnerInfo.cashSN%></span>
+        </div>
+
+        <%if (lotteryInfo.awardCode){%>
+        <div class="ggk_content ggk_content_dj">
+          <ul>
+            <li class="gift_item">
+              <div class="hd">
+                <h2 class="title">活动方兑奖</h2>
+              </div>
+              <div class="bd clearfix">
+                <%if (winnerInfo.status == 'Cashed'){%>
+                  <p class="time">
+                  恭喜，您已兑奖成功！本兑奖码将自动作废。
+                  </p>
+                <%}else{%>
+                  <form data-toggle="validator" role="form" onsubmit="controller.submitAwardCode();return false;">
+                    <div class="form-group">
+                      <input type="text" id="awardCode" class="form-control" placeholder="活动方输入兑奖密码" data-error="请填写兑奖密码" value="" required>
+                      <div class="help-block with-errors"></div>
+                    </div>
+                    <div class="app-center"><button type="submit" class="btn btn-block btn-success btn-lg">活动方提交</button></div>
+                  </form>
+                <%}%>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <%}%>
+
+        <%if (lotteryInfo.isFormRealName || lotteryInfo.isFormMobile || lotteryInfo.isFormEmail || lotteryInfo.isFormAddress){%>
+        <div class="ggk_content ggk_content_dj">
+          <ul>
+            <li class="rule_item">
+              <div class="hd">
+                <h2 class="title">中奖人信息</h2>
+              </div>
+              <div class="bd clearfix">
+                <p class="time">
+                <%if (lotteryInfo.isFormRealName){%>
+                  <%=lotteryInfo.formRealNameTitle%>：
+                  <%=winnerInfo.realName%><br/>
+                <%}%>
+                <%if (lotteryInfo.isFormMobile){%>
+                  <%=lotteryInfo.formMobileTitle%>：
+                  <%=winnerInfo.mobile%><br/>
+                <%}%>
+                <%if (lotteryInfo.isFormEmail){%>
+                  <%=lotteryInfo.formEmailTitle%>：
+                  <%=winnerInfo.email%><br/>
+                <%}%>
+                <%if (lotteryInfo.isFormAddress){%>
+                  <%=lotteryInfo.formAddressTitle%>：
+                  <%=winnerInfo.address%><br/>
+                <%}%>
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <%}%>
+
+        <div class="ggk_content ggk_content_dj">
+          <ul>
+            <li class="rule_item">
+              <div class="hd">
+                <h2 class="title">电子凭证使用说明</h2>
+              </div>
+              <div class="bd clearfix">
+                <p class="time">
+                  <%==lotteryInfo.awardUsage%>
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <%if (!isPoweredBy){%>
+          <div class="footer">
+            <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+          </div>
+        <%}else if(poweredBy){%>
+          <div class="footer">
+            <p><%==poweredBy%></p>
+          </div>
+        <%}%>
+        
+    </script>
+</div>
+
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/bootstrap.validator.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/template.js"></script>
+<script type="text/javascript" src="scripts/lib/jquery.qrcode.min.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/checkController.js"></script>

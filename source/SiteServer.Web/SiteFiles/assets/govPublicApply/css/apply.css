@@ -1,0 +1,27 @@
+/* apply main */
+.applyTable td { border-bottom: 1px solid silver; border-right: 1px solid silver; }
+.tableBorder td { padding: 2px; margin: 2px; padding-left: 8px; border-bottom: 1px solid silver; border-right: 1px solid silver; }
+.tdBorder, .applyTable td { border-bottom: 1px solid silver; border-right: 1px solid silver; }
+.applyTable td { height: 30px; padding: 2px; margin: 2px; }
+.applyTable .attribute { text-align: right; padding-right: 8px; width: 90px; background: #F8F8F8; }
+.applyTable .normalText, .applyTable select { margin-left: 8px; width: 200px; height:24px; line-height:20px; border: 1px solid #9AABBB; }
+.applyTable textarea { margin-left: 8px; width: 90%; height: 50px; border: 1px solid #9AABBB; line-height:20px; }
+table { font-size: 14px; }
+.disableTable .normalText { }
+.requireStyle { margin-left: 4px; color: red; }
+.Rowattribute { width: 30px; text-align: center; color: red; font-weight: bold; font-size: 14px; }
+.table-noborder td {border: 0px; height: 26px;}
+
+/* content main */
+.btngray { margin: 10px 0; background: #FFFFFF url(../images/btngray_r.jpg) no-repeat right top; padding: 0px; width: 100px; cursor: pointer; outline: none; }
+.btngray strong { display: block; font-size: 14px; text-align: center; height: 20px; padding: 10px; background: url(../images/btngray_l.jpg) no-repeat left top; }
+.btngray:hover { background: url(../images/btngray_ro.jpg) no-repeat right top; }
+.btngray:hover strong { background: url(../images/btngray_lo.jpg) no-repeat left top; }
+.applyContainer { clear: both; color: #525252; background-color: #FFF; font-family: Tahoma; font-size: 12px; line-height: 1.8em; margin: 0; padding: 0; }
+.successContainer { margin: 0 auto; font: 14px Arial, Helvetica, sans-serif; color: #090 !important; padding: 10px 10px 10px 45px; width: 90%; background: url(../../images/success.gif) no-repeat left center; text-align: left; line-height: 160%; font-weight: bold; }
+.failureContainer { margin: 0 auto; font: 14px Arial, Helvetica, sans-serif; color: #CC0000 !important; padding: 10px 10px 10px 45px; width: 90%; background: url(../../images/failure.gif) no-repeat left center; text-align: left; line-height: 160%; font-weight: bold; }
+
+/* ---- Validate ---- */
+.clew span { color: #FF3300; padding-left: 10px; background: url(../images/problem.gif) no-repeat 0px 3px; }
+input.focusInput { border: 2px solid #FFCC00; }
+input.error { }

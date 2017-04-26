@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>翻牌</title>
+    <link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+    <link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../components/lib/toastr.min.css" />
+    <link rel="stylesheet" href="../components/lib/style.css" />
+
+    <link rel="stylesheet" type="text/css" href="styles/flap.css" />
+
+</head>
+<body>
+
+    <div id="loading" class="loading"><img src="../components/images/loading.gif"></div>
+
+    <div id="main" style="display:none">
+        <script class="controller" type="text/html">
+            <div class="flap_header">
+                <img src="<%=lotteryInfo.contentImageUrl%>" class="head_img">
+                <div class="flap_box">
+                    <ul class="clearfix">
+
+                        <%for(var i=0;i< 9;i++){%>
+                        <li>
+                            <a href="javascript:;">
+                                <div class="front">
+                                    <img src="imgFlap/flap_bg.png">
+                                </div>
+                                <div class="back">
+                                    <img src="imgFlap/wrong_flap_bg.png">
+                                    <span></span>
+                                </div>
+                            </a>
+                        </li>
+                        <%}%>
+                        <!---
+                        <%if(awardInfo&&winnerInfo){
+                        for(var i=0;i< 9;i++){%>
+                        <li>
+                            <a href="javascript:;">
+                                <div class="front">
+                                    <img src="imgFlap/flap_bg.png">
+                                </div>
+                                <div class="back">
+                                    <%if(i==rand){%> 
+                                    <img src="imgFlap/right_flap_bg.png">
+                                    <span><%=awardInfo.awardName%></span>
+                                    <%}else {%>
+                                    <img src="imgFlap/wrong_flap_bg.png">
+                                    <span></span>
+                                    <%}%>
+                                </div>
+                            </a>
+                        </li>
+                        <%}%>
+                        <%}else {%>
+                        <%for(var i=0;i< 9;i++){%>
+                        <li>
+                            <a href="javascript:;">
+                                <div class="front">
+                                    <img src="imgFlap/flap_bg.png">
+                                </div>
+                                <div class="back">
+                                    <img src="imgFlap/wrong_flap_bg.png">
+                                    <span></span>
+                                </div>
+                            </a>
+                        </li>
+                        <%}%>
+                        <%}%>---->
+                    </ul>
+                </div>
+            </div>
+            <div class="game_content">
+                <ul>
+                    <li class="green_box">
+                        <div class="hd">
+                            <h2 class="title">获项设置</h2>
+                        </div>
+                        <div class="bd clearfix">
+                            <p>
+                                <% for (var i = 0; i < awardInfoList.length; i++) {
+                                var awardInfo = awardInfoList[i];
+                                %>
+                                <%=awardInfo.awardName%>：<%=awardInfo.title%>
+                                <%if (lotteryInfo.isAwardTotalNum){%>
+                                （<%=awardInfo.totalNum%>名）
+                                <%}%>
+                                <br />
+                                <%}%>
+                            </p>
+                        </div>
+                    </li>
+                    <li class="green_box">
+                        <div class="hd">
+                            <h2 class="title">活动说明</h2>
+                        </div>
+                        <div class="bd">
+                            <p><%==lotteryInfo.contentUsage%></p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <%if (!isPoweredBy){%>
+              <div class="footer">
+                <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+              </div>
+            <%}else if(poweredBy){%>
+              <div class="footer">
+                <p><%==poweredBy%></p>
+              </div>
+            <%}%>
+
+        </script>
+
+    </div>
+
+</body>
+</html>
+
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/layer/layer.min.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/flapController.js"></script>
+
+

@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>微会员</title>
+    <link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+    <link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../components/lib/toastr.min.css" />
+    <link rel="stylesheet" href="../components/lib/style.css" />
+
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+     
+</head>
+<body>
+    <div id="loading" class="loading"><img src="../components/images/loading.gif"></div>
+
+    <div id="main" style="display:none">
+        <script class="controller" type="text/html">
+            <div class="login_box">
+                <div class="vip_card">
+                    <span class="txt" style='color: #<%=cardInfo.cardTitleColor%>'><%=cardInfo.cardTitle%></span>
+                    <span class="vip_num" style='color: #<%=cardInfo.cardNoColor%>'>NO : <%=cardSNInfo.sn%></span>
+                    <img src="<%=cardInfo.contentFrontImageUrl%>">
+                </div>
+                <div class="main">
+                    <div class="btn_box">
+                        <% if(isAnonymous){%>
+                        <a href="javascript:;" onclick="service.openLogin(); return false;" class="btn btn-danger">登录领取</a>
+                        <%}else{%>
+                        <a href="javascript:;" onclick="service.openLogin(); return false;" class="btn btn-danger">登录</a>
+                        <%}%>
+
+                        <a href="javascript:;" onclick="service.openRegister(); return false;" class="btn btn-success">注册</a>
+                    </div>
+                    <div class="contact_box">
+                        <!--<p class="phone"><i class="fa fa-phone"></i><%=cardInfo.shopTel%></p>-->
+                        <!--<p class="addr"><i class="fa fa-map-marker"></i><%=cardInfo.shopAddress%></p>-->
+                        <p class="phone"><i class="fa fa-phone"></i><a  style="color:white;" href="tel://<%=cardInfo.shopTel%>"><%=cardInfo.shopTel%></a></p>
+                        <p class="addr"><i class="fa fa-map-marker"></i><a  style="color:white;" href='http://map.baidu.com/mobile/webapp/place/list/qt=s&wd=<%=cardInfo.shopAddress%>/vt=map' target="_self"><%=cardInfo.shopAddress%></a></p>
+                    </div>
+                </div>
+                <%if (!isPoweredBy){%>
+                <div class="_footer">
+                    <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+                </div>
+                <%}else if(poweredBy){%>
+                <div class="_footer">
+                    <p><%==poweredBy%></p>
+                </div>
+                <%}%>
+            </div>
+        </script>
+    </div>
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/layer/layer.min.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/common.js"></script>
+<script src="scripts/indexController.js"></script>

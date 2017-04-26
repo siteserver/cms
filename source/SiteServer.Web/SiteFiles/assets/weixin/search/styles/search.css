@@ -1,0 +1,462 @@
+﻿@charset "utf-8";
+body, div, address, blockquote, iframe, ul, ol, dl, dt, dd, li, dl, h1, h2, h3, h4, pre, table, caption, th, td, form, legend, fieldset, input, button, select, textarea,p {margin:0; padding:0;}
+ol, ul ,li{list-style: none;}
+i{font-style: normal;}
+.clear{clear:both;height:0; line-height:0; font-size:0;display:block; overflow:hidden}
+.clearfix:after {clear: both;content: ".";display: block;height: 0;visibility: hidden;font-size:0}
+.clearfix {zoom:1}
+.fl{float:left; display: inline;}
+.fr{float:right; display: inline;}
+img {border: 0; vertical-align:top;width: 100%;}
+a:hover{
+	text-decoration: none;
+}
+body{
+	font-size: 12px;
+	font-family: "微软雅黑";
+	background: #eee;
+}
+
+.nav ul{
+	margin-top: 10px;
+	text-align: center;
+}
+.btn-toolbar .btn-group{
+	width: 100%;
+}
+.nav .btn-toolbar .btn{
+	border-radius: 0;
+	width: 31.6%;
+}
+.nav .btn-toolbar .active{
+	background: #5bb85d;
+	color: #fff;
+	border: 1px solid #5bb85d;
+}
+.sheader{
+	width: 100%;
+	position: relative;
+}
+.head_img_2{
+	display: none;
+}
+
+.slideDown .head_img{
+	display: none;
+}
+.slideDown .head_img_2{
+	display: block;
+}
+.sheader .logo {
+	position: absolute;
+	text-align: center;
+	left: 24%;
+	top: 10%;
+	width: 35%;
+}
+.sheader .logo img{
+	width: 100%;
+}
+.sheader_search_box{
+	position: fixed;
+	top: 3%;
+	left: 5%;
+	height:80px;
+ 	width: 88%;
+ 	box-shadow: 0 0 5px #666;
+}
+.sheader_search_box .search_box{
+	width: 100%;
+	height:100%;
+	position: relative;
+}
+.sheader .search_box{
+	position: absolute;
+	left: 5%;
+	top: 32%;
+	width: 95%;
+	height:86px;
+}
+.sheader .search_box form,.sheader_search_box form{
+	height: 100%;
+}
+.sheader_search_box form{
+	background:#fff;
+}
+.sheader .search_box .search_btn,.sheader_search_box .search_btn {
+	float: left;
+	width: 20%;
+	height: 100%;
+	margin-left: 1px;
+}
+.sheader .search_box .search_btn input,.sheader_search_box .search_btn input{
+	display: block;
+	width: 80%;
+	height: 100%;
+	border: 0 none;
+	background: url(../img/search_icom.png) repeat 0 0;
+	background-size: 100% 100%;
+}
+.sheader .search_box .text_input,.sheader_search_box  .text_input{
+	float: left;
+	background: #fff;
+	height: 100%;
+	width: 78%;
+}
+.sheader .search_box .text_input input,.sheader_search_box .text_input input  {
+	display: block;
+	border:  0 none;
+	padding: 0 6%;
+	font-size: 30px;
+	width: 100%;
+	height: 100%;
+}
+ .sheader_search_box .text_input input{
+ 	font-size: 22px;
+ }
+ .sheader_search_box .text_input{
+ 	width: 83%;
+ }
+ .sheader_search_box .search_btn input{
+ 	width: 100%;
+ }
+ .sheader_search_box .search_btn{
+ 	width: 89px;
+ 	border-left: 1px solid #d5d5d5;
+ 	margin-left: 0;
+ 	position: absolute;
+ 	right: 0;
+ 	top: 0;
+ }
+.nav {
+	position: absolute;
+	left: 5%;
+	top:55%;
+	width: 95%;
+}
+.nav li{
+	float: left;
+	margin-right: 10%;
+}
+.nav li:last-child{
+	margin-right: 0;
+}
+.nav li a{
+	color: #fff;
+	font-size: 22px;
+	text-align: center;
+}
+.nav li a i{
+	display: block;
+	font-size: 30px;
+	margin-bottom:15%;
+}
+.modal_box{
+	margin-top:3%;
+}
+.kind_container{
+	background:#eee;
+	padding: 0 5%;
+}
+.kind_container .hd strong{
+	font-size: 33px;
+	font-weight: normal;
+}
+.kind_container .hd .reflash{
+	font-size: 26px;
+	color: #aaa;
+	margin-top: 1%;
+}
+.kind_container .hd i{
+	padding-right: 8%;
+}
+.kind_container .modal_box{
+	background:#fff;
+	border: 1px solid #dfdfdf;
+}
+.kind_container .modal_box .hd{
+	padding: 2% 3%;
+}
+.kind_container .modal_box .bd{
+	padding: 0 3% 5%;
+
+}
+.kind_container .modal_box .bd li{
+	float: left;
+	width: 30%;
+	margin-right: 5%;
+}
+.kind_container .modal_box .bd li:last-child{
+	margin-right: 0;
+}
+.kind_container .modal_box .bd img{
+	border: 1px solid #e8e8e8;
+	padding:2%;
+	border-radius: 3px;
+	margin-bottom: 5%;
+}
+.kind_container .modal_box .bd .text{
+	font-size: 22px;
+	color: #666;
+}
+.reflash{
+	width: 80px;
+}
+.now_hot{
+	margin-bottom: 5%;
+}
+.now_hot .hd{
+	border-bottom: 1px solid #dedede;
+}
+.kind_container .now_hot .bd{
+	padding: 0;
+}
+.kind_container .now_hot .bd li{
+	float: none;
+	overflow: hidden;
+	width: 100%;
+	border-bottom: 1px solid #f0f0f0;
+	padding: 4% 8% 4% 3%;
+}
+.kind_container .now_hot .bd li:last-child{
+	border-bottom: 0 none;
+}
+.kind_container .now_hot .bd li a{
+	font-size: 24px;
+	color: #666;
+	position: relative;
+}
+.kind_container .now_hot .bd li i{
+	position: absolute;
+	right: -22px;
+	font-size: 20px;
+	color: #eb4e4e;
+	top: -5px;
+}
+
+.modal_box dl{
+	padding: 2%;
+}
+.modal_box dl dt{
+	font-size: 32px;
+	font-weight: normal;
+	margin-bottom: 1%;
+}
+.modal_box dl dd{
+	font-size: 24px;
+	margin-bottom: 1%;
+}
+.modal_box dl .red{
+	color: #cc0000;
+}
+.modal_box dl .blue{
+	color: #0000cc;
+}
+.modal_box dl a{
+	color: #333;
+}
+.modal_box dl .green{
+	color: #008000;
+}
+.modal_box:last-child{
+	margin-bottom: 3%;
+}
+.sheader_search_box{
+	display: none;
+}
+.sheader_search_box.slideDown{
+	display: block;
+	-webkit-animation-name: slideDown;
+	-moz-animation-name: slideDown;
+	-o-animation-name: slideDown;
+	animation-name: slideDown;
+}
+.sheader_search_box.headroom--top{
+	-webkit-animation-name: slideUp;
+	-moz-animation-name: slideUp;
+	-o-animation-name: slideUp;
+	animation-name: slideUp;
+}
+.sheader_search_box.slideUp{
+	-webkit-animation-name: slideUp;
+	-moz-animation-name: slideUp;
+	-o-animation-name: slideUp;
+	animation-name: slideUp;
+}
+.animated {
+	-webkit-animation:fadeIn 0.3s .2s ease both;
+}
+
+@-webkit-keyframes slideDown {
+    0% {
+        opacity:0
+    }
+
+    100% {
+        opacity:1
+    }
+}
+
+@-webkit-keyframes slideUp {
+    0% {
+        opacity:1
+    }
+
+    100% {
+       opacity:0
+    }
+}
+.animated.slideUp {
+    -webkit-animation-name: slideUp;
+    -moz-animation-name: slideUp;
+    -o-animation-name: slideUp;
+    animation-name: slideUp
+}
+@media only screen and (min-width: 1000px) { 
+	.nav li a{
+		font-size: 36px;
+	}
+}
+@media only screen and (max-width: 610px) { 
+	.kind_container .hd .reflash{
+		font-size: 22px;
+	}
+	.sheader .search_box{
+		height: 52px;
+	}
+}
+@media only screen and (max-width: 580px) { 
+	.nav li{
+		margin-right: 8%;
+	}
+	.kind_container .now_hot .bd li a{
+		font-size: 22px;
+	}
+	.kind_container .modal_box .bd .text{
+		font-size: 20px;
+	}
+}
+@media only screen and (max-width: 520px) { 
+	.nav li a{
+		font-size: 18px;
+	}
+	.kind_container .hd strong{
+		font-size: 26px;
+	}
+	.kind_container .modal_box .bd .text{
+		font-size: 18px;
+	}
+	.kind_container .now_hot .bd li a{
+		font-size: 18px;
+	}
+	.kind_container .now_hot .bd li i{
+		font-size: 14px;
+	}
+	.kind_container .hd .reflash{
+		font-size: 17px;
+	}
+}
+
+@media only screen and (max-width: 400px) { 
+	.nav li a{
+		font-size: 16px;
+	}
+	.nav li a i{
+		font-size: 20px;
+	}
+	.kind_container .hd strong{
+		font-size: 16px;
+	}
+	.kind_container .modal_box .bd .text{
+		font-size: 14px;
+	}
+	.kind_container .now_hot .bd li a{
+		font-size: 14px;
+	}
+	.kind_container .now_hot .bd li i{
+		font-size: 12px;
+	}
+	.kind_container .hd .reflash{
+		font-size: 14px;
+	}
+	.sheader .search_box .text_input input{
+		font-size: 22px;
+	}
+	.modal_box dl dt{
+		font-size: 18px;
+	}
+	.modal_box dl dd{
+		font-size: 14px;
+	}
+	.sheader_search_box{
+		height: 50px;
+	}
+	.sheader_search_box .search_btn{
+		width: 58px;
+	}
+	.sheader .search_box{
+		height: 42px;
+	}
+}
+@media only screen and (max-width: 340px) { 
+	.nav li{
+		margin-right: 10%;
+	}
+	.nav li a{
+		font-size: 12px;
+	}
+	.nav li a i{
+		font-size: 20px;
+	}
+	.kind_container .modal_box .bd .text{
+		font-size: 12px;
+	}
+	.sheader .search_box .text_input input{
+		font-size: 18px;
+	}
+	.kind_container .now_hot .bd li a{
+		font-size: 12px;
+	}
+	.kind_container .now_hot .bd li i{
+		font-size: 12px;
+	}
+}
+@media only screen and (max-width: 355px) { 
+	.nav li {
+		margin-right: 7%;
+	}
+}
+@media only screen and (max-width: 320px) { 
+	.nav li {
+		margin-right: 9%;
+	}
+}
+@media only screen and (max-width: 310px) { 
+	.nav li{
+		margin-right: 7%;
+	}
+	.nav li a{
+		font-size: 12px;
+	}
+	.kind_container .modal_box .bd .text{
+		font-size: 12px;
+	}
+	.sheader .search_box .text_input input{
+		font-size: 16px;
+	}
+	.kind_container .now_hot .bd li a{
+		font-size: 12px;
+	}
+	.kind_container .now_hot .bd li i{
+		font-size: 12px;
+	}
+	.kind_container .hd .reflash{
+		font-size: 12px;
+		width: 80px;
+	}
+}
+@media only screen and (max-width: 255px) { 
+	.nav li {
+		margin-right: 5%;
+	}
+}

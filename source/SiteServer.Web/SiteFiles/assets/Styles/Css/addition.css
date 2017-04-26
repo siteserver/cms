@@ -1,0 +1,43 @@
+.separator{ height:10px;}
+
+/*Modal Popup*/
+.modalBackground {
+	background-color:Gray;
+	filter:alpha(opacity=70);
+	opacity:0.7;
+}
+
+.modalPopup {
+	background-color:#ffffdd;
+	border-width:3px;
+	border-style:solid;
+	border-color:Gray;
+	padding:3px;
+	width:500px;
+}
+
+/*Hover Menu*/
+.popupMenu {
+	position:absolute;
+	visibility:hidden;
+	background-color:#ffffdd;
+	opacity:.9;
+	filter: alpha(opacity=90);
+	border:1px outset white;
+}
+
+.popupMenu2 {
+	position:absolute;
+	background-color:#ffffdd;
+	opacity:.9;
+	filter: alpha(opacity=90);
+	border:1px outset white;
+	 z-index:2000;
+}
+
+.popupHover {
+	background-image:url(../images/header-opened.png);
+	background-repeat:repeat-x;
+	background-position:left top;
+	background-color:#F5F7F8;
+}

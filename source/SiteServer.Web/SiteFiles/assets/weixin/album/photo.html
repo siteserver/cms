@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>微相册</title>
+
+<link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+<link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+<link rel="stylesheet" href="../components/lib/toastr.min.css" />
+<link rel="stylesheet" href="../components/lib/imagegallery/css/blueimp-gallery.min.css">
+<link rel="stylesheet" href="../components/lib/imagegallery/css/bootstrap-image-gallery.min.css">
+<link rel="stylesheet" href="../components/lib/style.css" />
+
+<link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+
+      <div class="header">
+          <a href="javascript:;" onclick="controller.returnToAlbum();return false;" class="back_btn">
+              <i class="fa fa-angle-left"></i>
+          </a>
+          <p class="title"></p>
+      </div>
+      <div class="container">
+          <div class="photo_inner clearfix" id="photoList" role="photoList">
+              <ul id="tiles">
+                  
+              </ul>
+          </div>
+      </div>
+
+<!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->
+<div id="blueimp-gallery" class="blueimp-gallery">
+    <!-- The container for the modal slides -->
+    <div class="slides"></div>
+    <!-- Controls for the borderless lightbox -->
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+    <!-- The modal dialog, which will be used to wrap the lightbox content -->
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body next"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left prev">
+                        <i class="fa fa-chevron-left"></i>
+                        上一幅
+                    </button>
+                    <button type="button" class="btn btn-primary next">
+                        下一幅
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/jquery.wookmark.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="../components/lib/imagegallery/js/jquery.blueimp-gallery.min.js"></script>
+<script src="../components/lib/imagegallery/js/bootstrap-image-gallery.min.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/photoController.js"></script>

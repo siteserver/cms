@@ -1,0 +1,20 @@
+.diggbox{width:195px;height:51px;float:left;margin-right:8px;overflow:hidden;cursor:pointer;}
+.diggbox .digg_act{font-size:14px; font-family:Arial, Helvetica, sans-serif;float:left;line-height:31px;text-indent:32px;height:29px;overflow:hidden;font-weight:700;}
+.diggbox .digg_num{float:left; font-size:14px; font-family:"ËÎÌו";line-height:29px;text-indent:5px;}
+.diggbox .digg_percent{width:180px;clear:both;padding-left:10px;overflow:hidden;}
+.diggbox .digg_percent .digg_percent_bar{width:100px;height:7px;background:#E8E8E8;border-right:1px solid #CCC;float:left;overflow:hidden;margin-top:3px;}
+.diggbox .digg_percent .digg_percent_num{font-size:10px; font-family:Arial, Helvetica, sans-serif;float:left;padding-left:10px;}
+.diggbox .digg_percent .digg_percent_bar span{display:block;height:5px;overflow:hidden;background:#000;}
+.newdigg .digg_good{background:url(newdigg-bg.png) left top no-repeat;}
+.newdigg .digg_bad{background:url(newdigg-bg.png) right top no-repeat;}
+.newdigg .digg_good .digg_act{color:#C30;}
+.newdigg .digg_good .digg_num{color:#C63;}
+.newdigg .digg_bad .digg_act{color:#36C;}
+.newdigg .digg_bad .digg_num{color:#39C;}
+.newdigg .digg_good .digg_percent .digg_percent_bar span{border:1px solid #E37F24;background:#FFC535;}
+.newdigg .digg_bad .digg_percent .digg_percent_bar span{border:1px solid #689ACC;background:#94C0E4;}
+.handle{height:59px;padding-top:12px;overflow:hidden;clear:both;}
+.handle .digg{width:59px;height:59px;float:left;background:url(digg-bg.gif) no-repeat;margin-right:12px;}
+.handle .digg .digg_num{width:56px;height:34px;font-size:20px;text-align:center;line-height:34px;overflow:hidden;color:#6B9169;}
+.handle .digg .digg_act{width:56px;height:22px;line-height:23px;overflow:hidden;}
+.handle .digg .digg_act a{margin-left:11px;color:#777;float:left;}

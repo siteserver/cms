@@ -1,0 +1,150 @@
+<textarea id="successTemplate" style="display:none" mce_style="display:none">
+  <table width="100%" border=0 cellspacing=0 cellpadding=0 style="border-left:1px solid silver;border-top:1px solid silver;">
+    <tr>
+      <td class="tdBorder Rowattribute">申<br>
+        请<br>
+        人<br>
+        信<br>
+        息</td>
+      <td><table width="100%" border=0 cellspacing=0 cellpadding=0 style="width:100%;height:100%;">
+          <tr>
+            <td><table class="queryTable" border=0 cellspacing=0 cellpadding=0 style="width:100%;height:100%;">
+                <tbody>
+                  <tr>
+                    <td class="attribute">申请人类型</td>
+                    <td>{$T.title}</td>
+                  </tr>
+                </tbody>
+              </table></td>
+          </tr>
+          <tr id="dataContainer1">
+            <td><table class="queryTable" border=0 cellspacing=0 cellpadding=0 style="width:100%;height:100%;">
+                <tbody>
+                  <tr>
+                    <td class="attribute">姓名</td>
+                    <td>{$T.civicname}</td>
+                    <td class="attribute">工作单位</td>
+                    <td>{$T.civicorganization}</td>
+                  </tr>
+                  <tr>
+                    <td class="attribute">证件名称</td>
+                    <td>{$T.civiccardtype}</td>
+                    <td class="attribute">证件号码</td>
+                    <td>{$T.civiccardno}</td>
+                  </tr>
+                  <tr>
+                    <td class="attribute">联系电话</td>
+                    <td>{$T.civicphone}</td>
+                    <td class="attribute">邮政编码</td>
+                    <td>{$T.civicpostcode}</td>
+                  </tr>
+                  <tr>
+                    <td class="attribute">联系地址</td>
+                    <td colspan="3">{$T.civicaddress}</td>
+                  </tr>
+                  <tr>
+                    <td class="attribute">电子邮件</td>
+                    <td>{$T.civicemail}</td>
+                    <td class="attribute">传真</td>
+                    <td>{$T.civicfax}</td>
+                  </tr>
+                </tbody>
+              </table></td>
+          </tr>
+          <tr id="dataContainer2" style="display:none">
+            <td><table class="queryTable" border=0 cellspacing=0 cellpadding=0 style="width:100%;height:100%;">
+                <tr>
+                  <td class="attribute">名称</td>
+                  <td>{$T.orgname}</td>
+                  <td class="attribute">组织机构代码</td>
+                  <td>{$T.orgunitcode}</td>
+                </tr>
+                <tr>
+                  <td class="attribute">法人代表</td>
+                  <td>{$T.orglegalperson}</span></td>
+                  <td class="attribute">联系人姓名</td>
+                  <td>{$T.orglinkname}</td>
+                </tr>
+                <tr>
+                  <td class="attribute">联系电话</td>
+                  <td>{$T.orgphone}</td>
+                  <td class="attribute">邮政编码</td>
+                  <td>{$T.orgpostcode}</td>
+                </tr>
+                <tr>
+                  <td class="attribute">联系地址</td>
+                  <td colspan="3">{$T.orgaddress}</td>
+                </tr>
+                <tr>
+                  <td class="attribute">电子邮件</td>
+                  <td>{$T.orgemail}</td>
+                  <td class="attribute">传真</td>
+                  <td>{$T.orgfax}</td>
+                </tr>
+              </table></td>
+          </tr>
+        </table></td>
+    </tr>
+  </table>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0 id="dataContainer3" style="border-left:1px solid silver;">
+    <tr>
+      <td class="tdBorder Rowattribute" rowspan="3">所<br>
+        需<br>
+        信<br>
+        息<br>
+        情<br>
+        况</td>
+      <td><table border=0 cellspacing=0 cellpadding=2 style="width:100%;" class="queryTable">
+          <tr>
+            <td class="attribute">标题</td>
+            <td class="tdBorder">{$T.title}</td>
+          </tr>
+          <tr>
+            <td class="attribute">所需信息的<br>
+              内容描述</td>
+            <td class="tdBorder">{$T.content}</td>
+          </tr>
+          <tr>
+            <td class="attribute">所需信息的<br>
+              用途</td>
+            <td class="tdBorder">{$T.purpose}</td>
+          </tr>
+      </table></td>
+    </tr>
+  </table>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0 id="dataContainer3" style="border-left:1px solid silver;">
+    <tr>
+      <td class="tdBorder Rowattribute" rowspan="3">信<br>
+        息<br>
+        处<br>
+        理<br>
+        情<br>
+        况</td>
+      <td><table border=0 cellspacing=0 cellpadding=2 style="width:100%;" class="queryTable">
+          <tr>
+            <td class="attribute">处理状态</td>
+            <td class="tdBorder">{$T.replystate}</td>
+          </tr>
+          <tr>
+            <td class="attribute">办理部门</td>
+            <td class="tdBorder">{$T.replydepartmentname}</td>
+          </tr>
+          <tr>
+            <td class="attribute">办理人员</td>
+            <td class="tdBorder">{$T.replyusername}</td>
+          </tr>
+          <tr>
+            <td class="attribute">办理日期</td>
+            <td class="tdBorder">{$T.replyadddate}</td>
+          </tr>
+          <tr>
+            <td class="attribute">回复内容</td>
+            <td height="150" class="tdBorder">{$T.replycontent}</td>
+          </tr>
+          <tr>
+            <td class="attribute">附件</td>
+            <td class="tdBorder">{$T.replyfileurl}</td>
+          </tr>
+      </table></td>
+    </tr>
+  </table></textarea>

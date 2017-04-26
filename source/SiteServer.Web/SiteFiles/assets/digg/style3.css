@@ -1,0 +1,24 @@
+a.diggLink, a.diggLink:hover, a.diggLink:visited
+{
+	color:#FFF;
+	border-width: 0px;
+	background: url(digg3.gif) no-repeat 0px 0px;
+	width: 90px;
+	height: 43px;
+	display:block;
+	font-size:16px;
+	font-weight:bold;
+	font-family: "Î¢ÈíÑÅºÚ", "ºÚÌå";
+	text-decoration:none;
+	padding-top:10px;
+	padding-bottom:0px;
+	margin:0px;
+}
+
+.diggNum {
+	font-family: "Î¢ÈíÑÅºÚ", "ºÚÌå";
+	font-size: 14px;
+	color:#C03;
+	font-weight:bold;
+	margin:0px;
+}

@@ -1,0 +1,13 @@
+*.suo
+*.user
+*.pdb
+*.zip
+*.log
+node_modules/
+/build/
+/.vs/
+/.vscode/
+/source/packages/
+/source/**/bin/
+/source/**/obj/
+

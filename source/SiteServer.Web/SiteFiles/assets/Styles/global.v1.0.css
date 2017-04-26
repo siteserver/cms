@@ -1,0 +1,34 @@
+.Help
+{
+  border-right: black 1px solid;
+  padding-right: 2px;
+  border-top: black 1px solid;
+  padding-left: 2px;
+  font-weight: normal;
+  font-size: 11px;
+  padding-bottom: 2px;
+  border-left: black 1px solid;
+  color: black;
+  padding-top: 2px;
+  border-bottom: black 1px solid;
+  font-family: Tahoma, Arial, Helvetica;
+  background-color: #ffff99;
+}
+
+.popupMenu {
+	position:absolute;
+	visibility:hidden;
+	background-color:#ffffdd;
+	opacity:.9;
+	filter: alpha(opacity=90);
+	border:1px outset white;
+}
+
+.popupMenu2 {
+	position:absolute;
+	background-color:#ffffdd;
+	opacity:.9;
+	filter: alpha(opacity=90);
+	border:1px outset white;
+	 z-index:2000;
+}

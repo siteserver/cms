@@ -1,0 +1,211 @@
+<table width="100%" border=0 cellspacing=0 cellpadding=0 style="border-left:1px solid silver;border-top:1px solid silver;">
+  <tr>
+    <td class="tdBorder Rowattribute">申<br>
+      请<br>
+      人<br>
+      信<br>
+      息</td>
+    <td><table width="100%" border=0 cellspacing=0 cellpadding=0 style="width:100%;height:100%;">
+        <tr>
+          <td><table class="applyTable" border=0 cellspacing=0 cellpadding=0 style="width:100%;height:100%;">
+              <tbody>
+                <tr>
+                  <td class="attribute">申请人类型</td>
+                  <td>
+                    <table border="0" cellspacing="4" cellpadding="4" class="table-noborder">
+                      <tr>
+                        <td>
+                          <label class="radio"><input type="radio" id="IsOrganization_1" name="IsOrganization" value="False" checked onClick="selectApplyerType(this.value);"> 公民&nbsp;</label>
+                        </td>
+                        <td>
+                          <label class="radio"><input type="radio" id="IsOrganization_2" name="IsOrganization" value="True" onClick="selectApplyerType(this.value);"> 法人/其他组织</label>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table></td>
+        </tr>
+        <tr id="dataContainer1">
+          <td><table class="applyTable" border=0 cellspacing=0 cellpadding=0 style="width:100%;height:100%;">
+              <tbody>
+                <tr>
+                  <td class="attribute">姓名</td>
+                  <td><input id="CivicName" name="CivicName" class="normalText" type="text" isValidate="true" displayName="姓名" isRequire="true" />
+                    <span id="CivicName_msg" class="requireStyle">*</span><script>event_observe('CivicName', 'blur', checkAttributeValue);</script></td>
+                  <td class="attribute">工作单位</td>
+                  <td><input class="normalText" type="text" name="CivicOrganization" /></td>
+                </tr>
+                <tr>
+                  <td class="attribute">证件名称</td>
+                  <td><select name="CivicCardType">
+                      <option value="身份证">身份证</option>
+                      <option value="学生证">学生证</option>
+                      <option value="军官证">军官证</option>
+                      <option value="工作证">工作证</option>
+                    </select></td>
+                  <td class="attribute">证件号码</td>
+                  <td><input id="CivicCardNo" name="CivicCardNo" class="normalText" type="text" isValidate="true" displayName="证件号码" isRequire="true" />
+                  <span id="CivicCardNo_msg" class="requireStyle">*</span><script>event_observe('CivicCardNo', 'blur', checkAttributeValue);</script>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="attribute">联系电话</td>
+                  <td><input id="CivicPhone" name="CivicPhone" class="normalText" type="text" isValidate="true" displayName="联系电话" isRequire="true" />
+                  <span id="CivicPhone_msg" class="requireStyle">*</span><script>event_observe('CivicPhone', 'blur', checkAttributeValue);</script>
+                  </td>
+                  <td class="attribute">邮政编码</td>
+                  <td><input id="CivicPostCode" name="CivicPostCode" class="normalText" type="text" isValidate="true" displayName="邮政编码" isRequire="true" />
+                    <span id="CivicPostCode_msg" class="requireStyle">*</span><script>event_observe('CivicPostCode', 'blur', checkAttributeValue);</script></td>
+                </tr>
+                <tr>
+                  <td class="attribute">联系地址</td>
+                  <td colspan="3"><input id="CivicAddress" name="CivicAddress" class="normalText" style="width:350px;" type="text" isValidate="true" displayName="联系地址" isRequire="true" />
+                    <span id="CivicAddress_msg" class="requireStyle">*</span><script>event_observe('CivicAddress', 'blur', checkAttributeValue);</script></td>
+                </tr>
+                <tr>
+                  <td class="attribute">电子邮件</td>
+                  <td><input id="CivicEmail" name="CivicEmail" class="normalText" type="text" isValidate="true" displayName="电子邮件" isRequire="true" />
+                    <span id="CivicEmail_msg" class="requireStyle">*</span><script>event_observe('CivicEmail', 'blur', checkAttributeValue);</script></td>
+                  <td class="attribute">传真</td>
+                  <td><input class="normalText" type="text" name="CivicFax" /></td>
+                </tr>
+              </tbody>
+            </table></td>
+        </tr>
+        <tr id="dataContainer2" style="display:none">
+          <td><table class="applyTable" border=0 cellspacing=0 cellpadding=0 style="width:100%;height:100%;">
+              <tr>
+                <td class="attribute">名称</td>
+                <td style="width:320px"><input id="OrgName" name="OrgName" class="normalText" type="text" isValidate="true" displayName="名称" isRequire="true" />
+                  <span id="OrgName_msg" class="requireStyle">*</span><script>event_observe('OrgName', 'blur', checkAttributeValue);</script></td>
+                <td class="attribute">组织机构代码</td>
+                <td><input class="normalText" type="text" name="OrgUnitCode" id="OrgUnitCode" /></td>
+              </tr>
+              <tr>
+                <td class="attribute">法人代表</td>
+                <td><input id="OrgLegalPerson" name="OrgLegalPerson" class="normalText" type="text" isValidate="true" displayName="法人代表" isRequire="true" />
+                    <span id="OrgLegalPerson_msg" class="requireStyle">*</span><script>event_observe('OrgLegalPerson', 'blur', checkAttributeValue);</script>
+                </td>
+                <td class="attribute">联系人姓名</td>
+                <td><input id="OrgLinkName" name="OrgLinkName" class="normalText" type="text" isValidate="true" displayName="联系人姓名" isRequire="true" />
+                    <span id="OrgLinkName_msg" class="requireStyle">*</span><script>event_observe('OrgLinkName', 'blur', checkAttributeValue);</script>
+                </td>
+              </tr>
+              <tr>
+                <td class="attribute">联系电话</td>
+                <td><input id="OrgPhone" name="OrgPhone" class="normalText" type="text" isValidate="true" displayName="联系电话" isRequire="true" />
+                    <span id="OrgPhone_msg" class="requireStyle">*</span><script>event_observe('OrgPhone', 'blur', checkAttributeValue);</script>
+                </td>
+                <td class="attribute">邮政编码</td>
+                <td><input id="OrgPostCode" name="OrgPostCode" class="normalText" type="text" isValidate="true" displayName="邮政编码" isRequire="true" />
+                    <span id="OrgPostCode_msg" class="requireStyle">*</span><script>event_observe('OrgPostCode', 'blur', checkAttributeValue);</script>
+                </td>
+              </tr>
+              <tr>
+                <td class="attribute">联系地址</td>
+                <td colspan="3"><input id="OrgAddress" name="OrgAddress" class="normalText" style="width:350px;" type="text" isValidate="true" displayName="联系地址" isRequire="true" />
+                    <span id="OrgAddress_msg" class="requireStyle">*</span><script>event_observe('OrgAddress', 'blur', checkAttributeValue);</script>
+                </td>
+              </tr>
+              <tr>
+                <td class="attribute">电子邮件</td>
+                <td><input id="OrgEmail" name="OrgEmail" class="normalText" type="text" isValidate="true" displayName="电子邮件" isRequire="true" />
+                    <span id="OrgEmail_msg" class="requireStyle">*</span><script>event_observe('OrgEmail', 'blur', checkAttributeValue);</script>
+                </td>
+                <td class="attribute">传真</td>
+                <td><input class="normalText" type="text" name="OrgFax" id="OrgFax" /></td>
+              </tr>
+            </table></td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<table width="100%" border=0 cellspacing=0 cellpadding=0 id="dataContainer3" style="border-left:1px solid silver;">
+  <tr>
+    <td class="tdBorder Rowattribute" rowspan="3">所<br>
+      需<br>
+      信<br>
+      息<br>
+      情<br>
+      况</td>
+    <td><table border=0 cellspacing=0 cellpadding=0 style="width:100%;height:100%;" class="applyTable">
+        <tr>
+          <td class="attribute">标题</td>
+          <td class="tdBorder"><input id="Title" name="Title" class="normalText" style="width:350px;" type="text" isValidate="true" displayName="标题" isRequire="true" />
+            <span id="Title_msg" class="requireStyle">*</span><script>event_observe('Title', 'blur', checkAttributeValue);</script>
+          </td>
+        </tr>
+        <tr>
+          <td style="height:130px;" class="attribute">所需信息的<br>
+            内容描述</td>
+          <td class="tdBorder"><textarea id="Content" name="Content" style="height:110px; width:80%" isValidate="true" displayName="内容描述" isRequire="true"></textarea>
+            <span id="Content_msg" class="requireStyle">*</span><script>event_observe('Content', 'blur', checkAttributeValue);</script>
+          </td>
+        </tr>
+        <tr>
+          <td style="height:60px;" class="attribute">所需信息的<br>
+            用途</td>
+          <td class="tdBorder"><textarea id="Purpose" name="Purpose" style="height:50px; width:80%" isValidate="true" displayName="用途" isRequire="true"></textarea>
+            <span id="Purpose_msg" class="requireStyle">*</span><script>event_observe('Purpose', 'blur', checkAttributeValue);</script>
+          </td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr>
+    <td><table border=0 cellspacing=0 cellpadding=0 class="tableBorder" style="width:100%;">
+        <tr style="height:30px;">
+          <td>是否申请减免费用</td>
+          <td>所需信息的指定提供方式（可选）</td>
+          <td>获取信息的方式（可选）</td>
+        </tr>
+        <tr style="font-size:12px;" onClick="clickInfoType();">
+          <td valign="top"><input type="radio" value="True" name="IsApplyFree"/>
+            申请 (请提供相关证明)<br>
+            <input type="radio" value="False" name="IsApplyFree" checked/>
+            不申请<br></td>
+          <td valign="top"><input type="checkbox" value="纸面" name="ProvideType" />
+            纸面<br>
+            <input type="checkbox" value="电子邮件" name="ProvideType" checked/>
+            电子邮件<br>
+            <input type="checkbox" value="光盘" name="ProvideType"/>
+            光盘<br>
+            <input type="checkbox" value="磁盘" name="ProvideType"/>
+            磁盘<br></td>
+          <td valign="top"><input type="checkbox" value="邮寄" name="ObtainType" />
+            邮寄<br>
+            <input type="checkbox" value="快递" name="ObtainType"/>
+            快递<br>
+            <input type="checkbox" value="电子邮件" name="ObtainType" checked/>
+            电子邮件<br>
+            <input type="checkbox" value="传真" name="ObtainType"/>
+            传真<br>
+            <input type="checkbox" value="自行领取" name="ObtainType"/>
+            自行领取<br></td>
+        </tr>
+      </table></td>
+  </tr>
+  <tr id="trDepartment" style="display:none">
+    <td><table border=0 cellspacing=0 cellpadding=0 class="tableBorder" style="width:100%;">
+        <tr style="height:30px;">
+          <td>选择所需信息的机关单位</td>
+        </tr>
+        <tr style="font-size:12px; text-align:left;" onClick="clickInfoType();">
+          <td style="padding:4px;">
+            <stl:sqlContents layout="Table" columns="5" class="table-noborder" style="font-size: 12px;" border="0" cellSpacing="0" cellPadding="0" width="100%">
+            	<stl:queryString>select DepartmentID, DepartmentName from bairong_Department WHERE DepartmentID IN ({Stl.SiteGovPublicDepartmentIDCollection}) OR ParentID IN ({Stl.SiteGovPublicDepartmentIDCollection}) ORDER BY Taxis</stl:queryString>
+              <input id="DepartmentID_{Sql.DepartmentID}" name="DepartmentID" value="{Sql.DepartmentID}" type="radio" />
+              <label for="DepartmentID_{Sql.DepartmentID}">{Sql.DepartmentName}</label>
+              <script type="text/javascript">$('#trDepartment').show();</script>
+            </stl:sqlContents>
+          </td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center"><div class="btngray" onclick="submit_apply();"><strong>提交</strong></div></td>
+  </tr>
+</table>

@@ -1,0 +1,118 @@
+<div v-if="!replyId" v-bind:style="{ display: comments ? '' : 'none' }" class="post_box post_box_top post_box_showall" style="display: none">
+    <p class="post_box_count">
+        已有<span class="f_red">{{ totalCount }}</span>条评论
+    </p>
+    <div class="post_box_cont clearfix">
+        <textarea v-model="content" placeholder="请输入评论内容"></textarea>
+    </div>
+    <div class="cmnt_user_cont clearfix">
+        <div v-if="!user || !user.displayName">
+            <div class="cmnt_name">
+                <input v-model="account" autocomplete="off" placeholder="手机号/用户名/邮箱" class="form_input_long" />
+            </div>
+            <div class="cmnt_password">
+                <input v-model="password" autocomplete="off" placeholder="请输入密码" type="password" class="form_input_long" />
+            </div>
+            <div class="cmnt_user_link">
+                <a v-bind:href="regUrl" target="_blank">注册</a> &nbsp;|&nbsp;
+                <a v-bind:href="findpwdUrl" target="_blank">忘记密码？</a>
+            </div>
+            <div class="cmnt_user_login_info" v-if="isAuthError">
+                <span class="notice">用户名/密码错误</span>
+            </div>
+        </div>
+        <div class="cmnt_user_login_info" v-if="isUnChecked">
+            <span class="notice">提交成功，评论内容将在管理员审核通过后显示</span>
+        </div>
+        <a v-on:click="cancel" v-if="replyId" href="javascript:;" class="post_btn post_btn_disbled">取消</a>
+        <a v-on:click="submit" v-bind:class="{ post_btn_disbled: !content }" href="javascript:;" class="post_btn">发布</a>
+        <div v-if="user && user.displayName" class="cmnt_user">
+            <span>
+                <a v-bind:href="homeUrl" target="_blank">{{ user.displayName }}</a>
+            </span> &nbsp;|&nbsp;
+            <a v-on:click="logout()" href="javascript:;" title="退出登录">退出</a>
+        </div>
+    </div>
+</div>
+
+<div v-bind:style="{ display: comments ? '' : 'none' }" class="b_cont2" style="display: none">
+    <div>
+        <div class="c_title">
+            <span class="cmenu">最新评论</span>
+        </div>
+        <div class="b_txt">
+
+            <div class="comment_item" v-for="comment in comments">
+                <div class="comment_item_cont clearfix">
+                    <div class="t_face">
+                        <img v-bind:src="comment.avatarUrl">
+                    </div>
+                    <div class="t_content">
+                        <div>
+                            <div class="t_info">
+                                <span class="t_username"> {{ comment.displayName }}</span>
+                            </div>
+
+                        </div>
+                        <div class="comment_content clearfix">
+                            <div class="t_txt">{{ comment.content }}</div>
+                            <div class="reply">
+                                <span class="datetime">{{ comment.addDate }}</span>
+                                <span><a v-on:click="good(comment)" href="javascript:;" class="comment_link">支持 <em v-if="comment.goodCount > 0">({{ comment.goodCount }})</em></a></span>
+                                <span><a v-on:click="reply(comment.id)" href="javascript:;" class="comment_link">回复</a></span>
+                                <span v-if="isDelete || (user && user.userName === comment.userName)"><a v-on:click="remove(comment)" href="javascript:;" class="comment_link">删除</a></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post_box post_box_top post_box_showall" v-if="replyId === comment.id">
+                    <div class="post_box_cont clearfix">
+                        <textarea v-model="content" placeholder="请输入评论内容"></textarea>
+                    </div>
+                    <div class="cmnt_user_cont clearfix">
+                        <div v-if="!user || !user.displayName">
+                            <div class="cmnt_name">
+                                <input v-model="account" autocomplete="off" placeholder="手机号/用户名/邮箱" class="form_input_long" />
+                            </div>
+                            <div class="cmnt_password">
+                                <input v-model="password" autocomplete="off" placeholder="请输入密码" type="password" class="form_input_long" />
+                            </div>
+                            <div class="cmnt_user_link">
+                                <a v-bind:href="regUrl" target="_blank">注册</a> &nbsp;|&nbsp;
+                                <a v-bind:href="findpwdUrl" target="_blank">忘记密码？</a>
+                            </div>
+                            <div class="cmnt_user_login_info" v-if="isAuthError">
+                                <span class="notice">用户名/密码错误</span>
+                            </div>
+                            <div class="cmnt_user_login_info" v-if="isUnChecked">
+                                <span class="notice">提交成功，评论内容将在管理员审核通过后显示</span>
+                            </div>
+                        </div>
+                        <a v-on:click="cancel" v-if="replyId" href="javascript:;" class="post_btn post_btn_disbled">取消</a>
+                        <a v-on:click="submit" v-bind:class="{ post_btn_disbled: !content }" href="javascript:;" class="post_btn">发布</a>
+                        <div v-if="user && user.displayName" class="cmnt_user">
+                            <span>
+                                <a v-bind:href="homeUrl" target="_blank">{{ user.displayName }}</a>
+                            </span> &nbsp;|&nbsp;
+                            <a v-on:click="logout()" href="javascript:;" title="退出登录">退出</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="comments && comments.length === 0" class="comment_item comment_tip" style="display: block;">
+                <span>暂无评论</span>
+            </div>
+
+            <div v-if="isLoading" class="comment_item comment_loading" style="display: block;">
+                <span>评论加载中，请稍候...</span>
+            </div>
+
+            <div v-if="requestOffset < totalCount" class="comment_item comment_more" style="display: block;">
+                <a v-on:click="list" href="javascript:;">点击加载更多评论</a>
+            </div>
+
+        </div>
+    </div>
+</div>

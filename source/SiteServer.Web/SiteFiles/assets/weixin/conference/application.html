@@ -1,0 +1,79 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+<link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+<link rel="stylesheet" href="../components/lib/toastr.min.css" />
+<link rel="stylesheet" href="../components/lib/style.css" />
+</head>
+
+<body class="app-body">
+
+  <div id="loading" class="loading" style="display:none"><img src="../components/images/loading.gif"></div>
+
+  <div id="main">
+
+  <div class="header">
+      <a href="javascript:;" onclick="controller.openConference();return false;" class="back_btn">
+          <i class="fa fa-angle-left"></i>
+      </a>
+      <p class="title">报 名</p>
+  </div>
+
+  <div class="app-pd-15">
+
+      <div class="alert alert-success" style="display:none">
+          <strong>操作成功!</strong> 您的报名已经提交，谢谢。
+      </div>
+
+      <form data-toggle="validator" role="form" onsubmit="controller.submitApplication();return false;">
+        <div class="form-group">
+          <label for="realName" class="control-label">姓名：</label>
+          <input type="text" id="realName" class="form-control" placeholder="请填写您的姓名" data-error="请填写您的姓名" value="" required>
+          <div class="help-block with-errors"></div>
+        </div>
+        <div class="form-group">
+          <label for="mobile" class="control-label">手机：</label>
+            <input type="tel" id="mobile" pattern="^1[3|4|5|7|8][0-9]\d{4,8}$" class="form-control" placeholder="请填写您的手机号码" data-error="请填写您的手机号码" value="" required>
+          <div class="help-block with-errors"></div>
+        </div>
+        <div class="form-group">
+          <label for="email" class="control-label">邮箱：</label>
+          <input type="email" class="form-control" data-error="请填写正确的邮箱地址" required id="email" placeholder="请填写您的电子邮箱" value="">
+          <div class="help-block with-errors"></div>
+        </div>
+        <div class="form-group">
+          <label for="company" class="control-label">公司：</label>
+          <input type="text" id="company" class="form-control" placeholder="请填写您的公司名称" value="">
+        </div>
+        <div class="form-group">
+          <label for="position" class="control-label">职位：</label>
+          <input type="text" id="position" class="form-control" placeholder="请填写您所担任的职位" value="">
+        </div>
+        <div class="form-group">
+          <label for="note" class="control-label">备注：</label>
+          <textarea id="note" class="form-control" placeholder="请填写备注"></textarea>
+        </div>
+        <div class="app-center"><button type="submit" class="btn btn-block btn-info btn-lg">确认报名</button></div>
+     </form>
+
+  </div>
+
+  </div>
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/bootstrap.validator.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/applicationController.js"></script>

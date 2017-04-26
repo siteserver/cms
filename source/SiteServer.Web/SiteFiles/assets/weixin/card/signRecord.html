@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>微会员</title>
+    <link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+    <link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../components/lib/toastr.min.css" />
+    <link rel="stylesheet" href="../components/lib/style.css" />
+
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+    <div id="loading" class="loading"><img src="../components/images/loading.gif"></div>
+
+    <div id="main" style="display:none">
+        <script class="controller" type="text/html">
+            <div class="sign_record_box">
+                <div class="_header">
+                    <a href="javascript:;" onclick="javascript: history.go(-1);" class="fa fa-angle-left"></a>
+                    <p>签到记录</p>
+                </div>
+                <div class="main">
+                    <table>
+                        <tr>
+                            <th>积分详情</th>
+                            <th>日期</th>
+                            <th>积分</th>
+                        </tr>
+                        <%  for(var i=0;i< userCreditsLogInfoList.length;i++) {
+                         var userCreditsLogInfo=userCreditsLogInfoList[i];%>
+                        <tr>
+                            <th>签到领取</th>
+                            <th><%=getDateTime(userCreditsLogInfo.addDate)%></th>
+                            <th><%=userCreditsLogInfo.num%></th>
+                        </tr>
+                       <%}%>
+                      </table>
+                </div>
+                <%if (!isPoweredBy){%>
+                <div class="_footer">
+                    <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+                </div>
+                <%}else if(poweredBy){%>
+                <div class="_footer">
+                    <p><%==poweredBy%></p>
+                </div>
+                <%}%>
+            </div>
+        </script>
+    </div>
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/layer/layer.min.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/common.js"></script>
+<script src="scripts/signRecordController.js"></script>

@@ -1,0 +1,27 @@
+body { scrollbar-face-color: #D7E0EB; scrollbar-highlight-color: #E9EDF3; scrollbar-shadow-color: #B4C7E4; scrollbar-3dlight-color: #F3F7F8; scrollbar-arrow-color: #2B61B4; scrollbar-track-color: #EFEFEF; scrollbar-darkshadow-color: #DEE3E7; }
+a:link { COLOR: #0a4173; }
+a:visited { COLOR: #0a4173; }
+a:hover { COLOR: #1274BA; }
+a:active { COLOR: #1274BA; }
+.reverse a:link, .reverse a:visited, .reverse a:active { color: #1274BA; }
+.reverse:hover { color: white; background: #1274BA; }
+.emphasize { color: #E83820; }
+.colordiv { line-height: 25px; background: #F5FBFF; text-align: left; }
+.toptitle, .toptitle_r { background-image: url(../pic/bg_top.gif); }
+.topline { background-color: #93b9dc }
+.lefttab { background-image: url(../pic/bg_left.gif); }
+.lefttab2 { background: url(../pic/bg_left2.gif) no-repeat left top; border: 1px #FFF solid; }
+.tabOn { background-image: url(../pic/tabon.gif); }
+.tabOff { background-image: url(../pic/taboff.gif); }
+.tabOn6 { background-image: url(../pic/tabon6.gif); }
+.tabOff6 { background-image: url(../pic/taboff6.gif); }
+.column { border: 1px #93b9dc solid; }
+.columntitle { background: #bfd3e6; border-bottom: 1px #93b9dc solid; color: #000000; }
+.columntitle span { color: #000000; }
+.columnsubtitle { background: #F5FBFF; border-top: 1px #d5e3ef solid; color: #0A4173; }
+.separator { background: #eff2f4; }
+.colorfocus { border: 1px #86a1ba double; background-color: #fff8e6; }
+.colorblur { border: 1px #86a1ba double; background-color: #ffffff; }
+.button { border: 1px #93b9dc solid; background: url(../pic/button_bg.gif) repeat; }
+.summary-title { background: #f0f6fc; border-top: 1px #d5e3ef solid; }
+.tdbg-dark { background: #d5e3ef; }

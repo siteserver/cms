@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>刮刮卡</title>
+<link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+<link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+<link rel="stylesheet" href="../components/lib/toastr.min.css" />
+<link rel="stylesheet" href="../components/lib/style.css" />
+
+<link rel="stylesheet" type="text/css" href="styles/scratch.css" />
+</head>
+<body>
+
+<div id="loading" class="loading"><img src="../components/images/loading.gif"></div>
+
+<div id="main" style="display:none">
+    <script class="controller" type="text/html">
+        <div class="ggk_header">
+          <img src="<%=lotteryInfo.contentImageUrl%>" class="head_img">
+          <div class="ggk_box">
+            <span class="tilte">刮刮卡：</span>
+            <div class="ggk"></div>
+          </div>
+        </div>
+        <div class="ggk_content">
+          <ul>
+            <li class="gift_item">
+              <div class="hd">
+                <h2 class="title">奖项设置</h2>
+              </div>
+              <div class="bd">
+                <p>
+                  <% for (var i = 0; i < awardInfoList.length; i++) {
+                    var awardInfo = awardInfoList[i];
+                  %>
+                    <%=awardInfo.awardName%>：<%=awardInfo.title%>
+                    <%if (lotteryInfo.isAwardTotalNum){%>
+                      （<%=awardInfo.totalNum%>名）
+                    <%}%>
+                    <br/> 
+                  <%}%>
+                </p>
+              </div>
+            </li>
+            <li class="rule_item">
+              <div class="hd">
+                <h2 class="title">活动规则</h2>
+              </div>
+              <div class="bd">
+                <p><%==lotteryInfo.contentUsage%></p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        
+        <%if (!isPoweredBy){%>
+          <div class="footer">
+            <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+          </div>
+        <%}else if(poweredBy){%>
+          <div class="footer">
+            <p><%==poweredBy%></p>
+          </div>
+        <%}%>
+        
+    </script>
+</div>
+
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/layer/layer.min.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script type="text/javascript" src="scripts/lib/wScratchPad.min.js"></script>
+<script src="scripts/service.js"></script>
+<script src="scripts/scratchController.js"></script>

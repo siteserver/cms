@@ -1,0 +1,19 @@
+<div class="top_bar" style="-webkit-transform:translate3d(0,0,0)">
+  <nav>
+    <ul id="top_menu" class="top_menu">
+
+        <!--menu-->
+        <li>
+            <a href="{{url}}" onclick="javascript:displayit({{index}})"><label>{{menuName}}</label></a>
+            <ul class="menu_font" style="display: none;">
+                <!--submenu-->
+                <li><a href="{{url}}"><label>{{menuName}}</label></a></li>
+                <!--submenu-->
+            </ul>
+        </li>
+        <!--menu-->
+
+    </ul>
+  </nav>
+</div>
+<div id="plug-wrap" onclick="closeall()" style="display: none;"></div>

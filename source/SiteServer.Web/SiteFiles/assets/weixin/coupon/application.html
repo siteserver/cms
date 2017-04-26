@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>提交领取信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+    <link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../components/lib/toastr.min.css" />
+    <link rel="stylesheet" href="../components/lib/style.css" />
+</head>
+
+<body class="app-body">
+
+    <div id="loading" class="loading"><img src="../components/images/loading.gif"></div>
+
+    <div id="main" style="display:none">
+        <script class="controller" type="text/html">
+            <div class="header">
+                <p class="title" id="alertTitle">提交领取信息</p>
+            </div>
+            <div class="app-pd-15">
+                <div class="alert alert-success" id="alertMessage">
+                    恭喜，您已获得优惠券领取资格！请填写以下信息，确认后即可获取领取凭证。
+                </div>
+
+                <form id="myForm" role="form">
+                    <%if (conponActInfo.isFormRealName){%>
+                    <div class="form-group">
+                        <label for="realName" class="control-label">
+                            <%=conponActInfo.formRealNameTitle%>：
+                        </label>
+                        <input type="text" id="realName" class="form-control" placeholder="请填写您的<%=conponActInfo.formRealNameTitle%>" data-error="请填写您的<%=conponActInfo.formRealNameTitle%>" required>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <%}%>
+                    <%if (conponActInfo.isFormMobile){%>
+                    <div class="form-group">
+                        <label for="mobile" class="control-label">
+                            <%=conponActInfo.formMobileTitle%>：
+                        </label>
+                        <input type="tel" pattern="^1[3|4|5|7|8][0-9]\d{4,8}$" id="mobile" class="form-control" placeholder="请填写您的<%=conponActInfo.formMobileTitle%>" data-error="请填写您的<%=conponActInfo.formMobileTitle%>" required>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <%}%>
+                    <%if (conponActInfo.isFormEmail){%>
+                    <div class="form-group">
+                        <label for="email" class="control-label">
+                            <%=conponActInfo.formEmailTitle%>：
+                        </label>
+                        <input type="email" class="form-control" data-error="请填写正确的<%=conponActInfo.formEmailTitle%>" id="email" placeholder="请填写您的<%=conponActInfo.formEmailTitle%>" required>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <%}%>
+                    <%if (conponActInfo.isFormAddress){%>
+                    <div class="form-group">
+                        <label for="address" class="control-label">
+                            <%=conponActInfo.formAddressTitle%>：
+                        </label>
+                        <input type="text" id="address" class="form-control" placeholder="请填写您的<%=conponActInfo.formAddressTitle%>" required>
+                    </div>
+                    <%}%>
+                    <div id="divBtn" class="app-center"><button type="button" onclick="controller.submitApplication(1);" class="btn btn-block btn-info btn-lg">确 认</button></div>
+                </form>
+
+            </div>
+            <%if (!isPoweredBy){%>
+            <div class="footer">
+                <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+            </div>
+            <%}else if(poweredBy){%>
+            <div class="footer">
+                <p><%==poweredBy%></p>
+            </div>
+            <%}%>
+        </script>
+    </div>
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/bootstrap.validator.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/applicationController.js"></script>

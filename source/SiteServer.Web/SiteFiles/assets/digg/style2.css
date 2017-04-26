@@ -1,0 +1,23 @@
+.newdigg .digg {
+	background: url(digg_bg.gif) no-repeat left top;
+	width: 62px;
+	margin-bottom: 10px;
+}
+.newdigg .digg td {
+	text-align: center;
+	padding-right: 4px;
+}
+.newdigg .digg .diggnum {
+	height: 38px;
+	font-size: 16px;
+	line-height: 30px;
+	font-weight: bold;
+}
+.newdigg .digg .diggit {
+	height: 30px;
+	line-height: 24px;
+}
+
+.newdigg .digg .diggit a {
+	font-size:12px; text-decoration:none
+}

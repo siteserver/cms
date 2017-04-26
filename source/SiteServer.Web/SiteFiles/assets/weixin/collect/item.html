@@ -1,0 +1,88 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+<link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+<link rel="stylesheet" href="../components/lib/toastr.min.css" />
+<link rel="stylesheet" href="../components/lib/style.css" />
+
+<link rel="stylesheet" type="text/css" href="styles/style.css">
+</head>
+<body>
+
+    <div id="loading"><img src="img/loading.gif"></div>
+
+    <div id="main" style="display:none">
+    <script class="controller" type="text/html">
+        <div class="header">
+            <a href="javascript:;" onclick="service.redirectToIndex();return false;" class="fa fa-angle-left"></a>
+            <p><%=collectInfo.title%></p>
+        </div>
+        <div class="main">
+            <div class="detail_box rd_bg">
+                <div class="user_tx">
+                    <img src="<%=itemInfo.largeUrl%>">
+                </div>
+                <div class="user_name clearfix">
+                    <span class="fl name"><%=itemInfo.title%></span>
+                    <span class="fr fn">
+                        <a href="javascript:;"><i class="fa fa-sort-amount-asc"></i><%=getRank(itemInfo.id)%></a>
+                        <a href="javascript:;">
+                            <%if (isVoted(itemInfo.id)){%>
+                              <i class="fa fa-heart"></i>
+                            <%}else{%>
+                              <i class="fa fa-heart-o"></i>
+                            <%}%>
+                            <%=itemInfo.voteNum%>
+                        </a>
+                    </span>
+                </div>
+                <div class="csxy_box">
+                    <dl>
+                        <dt>参赛宣言</dt>
+                        <dd>
+                            <%==itemInfo.description%>
+                        </dd>   
+                    </dl>
+                </div>
+            </div>
+            <div class="tp_btn">
+                <a href="javascript:;" onclick="controller.submitVote(<%=itemInfo.id%>);return false;" class="btn1">投TA一票</a>
+                <a href="javascript:;" class="btn2 j_tp_btn">为TA拉票</a>
+            </div>
+
+            <%if (!isPoweredBy){%>
+              <div class="footer">
+                <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+              </div>
+            <%}else if(poweredBy){%>
+              <div class="footer">
+                <p><%==poweredBy%></p>
+              </div>
+            <%}%>
+
+        </div>
+    </script>
+    </div>
+
+    <div class="share_img">
+        <img src="img/share_bg.png">
+    </div>
+    <div class="mark_fixed"></div>
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/controller.js"></script>

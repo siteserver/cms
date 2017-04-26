@@ -1,0 +1,23 @@
+{
+  "name": "login",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
+    "gulp-rev": "^7.1.2",
+    "gulp-rev-all": "^0.9.7",
+    "gulp-zip": "^4.0.0",
+    "rimraf": "^2.5.4"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-minifier": "^0.1.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

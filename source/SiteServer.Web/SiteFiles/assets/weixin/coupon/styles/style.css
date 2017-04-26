@@ -1,0 +1,134 @@
+@charset "utf-8";
+body, div, address, blockquote, iframe, ul, ol, dl, dt, dd, li, dl, h1, h2, h3, h4, pre, table, caption, th, td, form, legend, fieldset, input, button, select, textarea,p {margin:0; padding:0;}
+ol, ul ,li{list-style: none;}
+img {border: 0; vertical-align:top;width: 100%;}
+body{
+	background: #fff;	
+	font-size: 12px;
+	font-family: "微软雅黑";
+}
+.coupon_header{
+	width: 100%;
+	position: relative;
+}
+.coupon_header .ggk_box{
+	position: absolute;
+	top: 65%;
+	padding-left: 12%;
+	color: #fff;
+	width: 65%;
+	height: 38%;
+	width: 100%;
+}
+.coupon_header .ggk_box .tilte{
+	color: #fff;
+	font-size: 22px;
+}
+.coupon_header .ggk_box .ggk{
+	display: inline-block;
+	width: 65%;
+	height: 35%;
+	background: #999;
+	border-radius: 5px;
+	border-bottom: 3px solid #636363;
+	vertical-align: middle;
+}
+.ggk_content{
+	padding: 3% 3% 0;
+}
+.ggk_content li{
+	margin-bottom: 4%;
+}
+.ggk_content .hd{
+	border-radius: 3px 3px 0 0;
+	height: 60px;
+	line-height: 60px;
+	color: #fff;
+}
+.ggk_content .hd .title{
+	line-height: 60px;
+	padding-left: 4%;
+	font-size: 26px;
+	font-weight: bold;
+	font-family: "微软雅黑";
+}
+.ggk_content .bd{
+	color: #666;
+	padding:5% 4%;
+	font-size: 22px;
+	line-height: 36px;
+}
+.ggk_content .form_item .hd{
+	background: #d9534f;
+}
+.ggk_content .form_item .bd{
+	background: #f2dedf;
+}
+.ggk_content .form_item .bd p{
+	margin-bottom: 4%;
+}
+.ggk_content .form_item .bd .p2{
+	margin-bottom: 2%;
+}
+
+.ggk_content .form_item .t{
+	font-size: 24px;
+	color: #666;
+}
+.ggk_content .gift_item .hd{
+	background: #5cb85c;
+}
+.ggk_content .gift_item .bd{
+	background: #dff0d8;
+}
+.ggk_content .rule_item .hd{
+	background: #5bc0de;
+}
+
+.ggk_content .rule_item .bd{
+	background: #d9edf7;
+}
+.ggk_content .coupon_item .hd{
+	background: #f0ad4e;
+}
+.ggk_content .coupon_item .bd{
+	background: #fcf8e3;
+}
+.ggk_content .coupon_item p{
+	color: #e63131;
+	margin-bottom: 1%;
+}
+.ggk_content .coupon_item .c666{
+	color: #666;
+}
+.ggk_content .coupon_item .p1{
+	margin-bottom: 5%;
+}
+.ggk_content .coupon_item .p1 strong{
+	font-size: 26px;
+}
+
+@media all and (max-width: 340px){
+	.coupon_header .ggk_box .tilte{
+		font-size: 14px;
+	}
+
+	.ggk_content .hd{
+		height: 30px;
+		line-height: 30px;
+	}
+	.ggk_content .hd .title{
+		font-size: 14px;
+		line-height: 30px;
+	}
+	.ggk_content .bd{
+		font-size: 12px;
+		line-height: 20px;
+	}
+	.ggk_content .form_item .t{
+		font-size: 12px;
+	}
+	.ggk_content .coupon_item .p1 strong{
+		font-size: 14px;
+	}
+}

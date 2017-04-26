@@ -1,0 +1,715 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+<link rel="stylesheet" href="../components/lib/toastr.min.css" />
+<link rel="stylesheet" href="../components/lib/style.css" />
+
+<link rel="stylesheet" type="text/css" href="styles/emotion.css">
+<link rel="stylesheet" type="text/css" href="styles/style.css">
+</head>
+<body>
+    
+  <div id="loading" class="loading"><img src="../components/images/loading.gif"></div>
+
+  <div id="main" style="display:none">
+      <script class="controller" type="text/html">
+        <div class="messageTop joozo_container" style="background: url(<%=messageInfo.contentImageUrl%>) no-repeat;">
+          <h2><%==messageInfo.title%></h2>
+          <span class="point"></span>
+          <form id="top">
+            <div class="ssForm new_container">
+              <div class="row">
+                <div class="col-xs-6">
+                  <input type="text" class="form-control" id="displayName" placeholder="请输入称呼">
+                </div>
+                <div class="col-xs-6 colorBox">
+                  <a href="javascript:;" class="color Blue color_hight" color="blue"></a> 
+                  <a href="javascript:;"  class="color Orange" color="orange"></a> 
+                  <a href="javascript:;"  class="color Red" color="red"></a> 
+                  <a href="javascript:;"  class="color Green" color="green"></a>
+                </div>
+                <div class="col-xs-12 ssForm-text">
+                  <textarea class="form-control" id="content" rows="3" placeholder="请输入内容"></textarea>
+                </div>
+                <div class="col-xs-12 publishBox functionBar">
+                  
+                  <a href="javascript:;" class="ico-e iconEmotion block"></a>
+                  <button type="button" class="btn btn-danger Publish" onclick="controller.submitContent();return false;"> 发表 </button>
+                  <div class="tip">
+                  </div>
+                  <div class="emotions" style="display: none;">
+                      <%include('emotions')%>
+                  </div>
+                  <div class="clr">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+          <div class="messageData new_container">
+            <%==messageInfo.contentDescription%>
+          </div>
+          
+        </div>
+        
+        <%include('list')%>
+
+        <div id="moreLoading" class="loading" style="display:none"><img src="../components/images/loading.gif"></div>
+
+        <div class="row">
+          <div class="col-xs-12 marginBottom" id="more">
+            <button class="btn btn-block btn-info  btn-lg" type="button" onclick="controller.more();return false;">查看更多</button>
+          </div>
+          <div class="col-xs-12 marginBottom">
+            <a class="btn btn-block  btn-success btn-lg" href="#top">点击提交</a>
+          </div>
+        </div>
+
+        <%if (!isPoweredBy){%>
+          <div class="footer">
+            <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+          </div>
+        <%}else if(poweredBy){%>
+          <div class="footer">
+            <p><%==poweredBy%></p>
+          </div>
+        <%}%>
+
+      </script>
+
+      <script id="list" class="list" type="text/html">
+        <div class="container">
+          <%
+          for(i = 0; i < contentInfoList.length; i ++) {
+            var contentInfo = contentInfoList[i];
+          %>
+            <div class="row title-<%=contentInfo.color%>">
+              <div class="col-xs-12">                    
+                <h4 class="jo-<%=contentInfo.color%>"><%=contentInfo.displayName%></h4>
+                <div class="txtBox joozo_Pad7Px">
+                  <p><span>&quot;</span><%==contentInfo.content%><span>&quot;</span></p>
+                  <p>
+                      <%=getDateTime(contentInfo.addDate)%>
+                      <a href="javascript:;" class="z J_box" onclick="controller.openReply(<%=contentInfo.id%>);return false;"> 评论(<span><%=contentInfo.replyCount%></span>)</a>
+                      <a href="javascript:;" class="z" onclick="controller.submitLike(this, <%=contentInfo.id%>);return false;"> 赞(<span><%=contentInfo.likeCount%></span>) &nbsp;</a>
+                  </p>
+                </div>
+                <%
+                if (contentInfo.replyContentInfoList){
+                  for(j = 0; j < contentInfo.replyContentInfoList.length; j ++) {
+                  var replyContentInfo = contentInfo.replyContentInfoList[j];
+                %>
+                <div class="txtBox2 joozo_lh joozo_Pad7Px color_<%=contentInfo.color%>_bG">
+                  <p>
+                    <span class="color_<%=contentInfo.color%>_txt"><%=replyContentInfo.displayName.substr(0, 7)%></span>
+                    <span class="right-time"><%=getDateTime(replyContentInfo.addDate)%></span>
+                  </p>
+                  <p><%==replyContentInfo.content%></p>
+                </div>
+                <%}}%>
+              </div>
+            </div>
+          <%}%>
+        </div>
+      </script>
+
+      <script id="emotions" type="text/html">
+        <table cellspacing="0" cellpadding="0">
+          <tbody>
+            <tr>
+              <td>
+                <div class="eItem" style="background-position: 0px 0;" data-title="微笑"
+                data-gifurl="img/face/0.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -24px 0;" data-title="撇嘴"
+                data-gifurl="img/face/1.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -48px 0;" data-title="色"
+                data-gifurl="img/face/2.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -72px 0;" data-title="发呆"
+                data-gifurl="img/face/3.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -96px 0;" data-title="得意"
+                data-gifurl="img/face/4.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -120px 0;" data-title="流泪"
+                data-gifurl="img/face/5.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -144px 0;" data-title="害羞"
+                data-gifurl="img/face/6.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -168px 0;" data-title="闭嘴"
+                data-gifurl="img/face/7.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -192px 0;" data-title="睡"
+                data-gifurl="img/face/8.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -216px 0;" data-title="大哭"
+                data-gifurl="img/face/9.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -240px 0;" data-title="尴尬"
+                data-gifurl="img/face/10.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -264px 0;" data-title="发怒"
+                data-gifurl="img/face/11.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -288px 0;" data-title="调皮"
+                data-gifurl="img/face/12.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -312px 0;" data-title="呲牙"
+                data-gifurl="img/face/13.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -336px 0;" data-title="惊讶"
+                data-gifurl="img/face/14.gif">
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="eItem" style="background-position: -360px 0;" data-title="难过"
+                data-gifurl="img/face/15.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -384px 0;" data-title="酷"
+                data-gifurl="img/face/16.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -408px 0;" data-title="冷汗"
+                data-gifurl="img/face/17.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -432px 0;" data-title="抓狂"
+                data-gifurl="img/face/18.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -456px 0;" data-title="吐"
+                data-gifurl="img/face/19.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -480px 0;" data-title="偷笑"
+                data-gifurl="img/face/20.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -504px 0;" data-title="可爱"
+                data-gifurl="img/face/21.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -528px 0;" data-title="白眼"
+                data-gifurl="img/face/22.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -552px 0;" data-title="傲慢"
+                data-gifurl="img/face/23.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -576px 0;" data-title="饥饿"
+                data-gifurl="img/face/24.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -600px 0;" data-title="困"
+                data-gifurl="img/face/25.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -624px 0;" data-title="惊恐"
+                data-gifurl="img/face/26.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -648px 0;" data-title="流汗"
+                data-gifurl="img/face/27.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -672px 0;" data-title="憨笑"
+                data-gifurl="img/face/28.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -696px 0;" data-title="大兵"
+                data-gifurl="img/face/29.gif">
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="eItem" style="background-position: -720px 0;" data-title="奋斗"
+                data-gifurl="img/face/30.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -744px 0;" data-title="咒骂"
+                data-gifurl="img/face/31.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -768px 0;" data-title="疑问"
+                data-gifurl="img/face/32.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -792px 0;" data-title="嘘"
+                data-gifurl="img/face/33.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -816px 0;" data-title="晕"
+                data-gifurl="img/face/34.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -840px 0;" data-title="折磨"
+                data-gifurl="img/face/35.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -864px 0;" data-title="衰"
+                data-gifurl="img/face/36.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -888px 0;" data-title="骷髅"
+                data-gifurl="img/face/37.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -912px 0;" data-title="敲打"
+                data-gifurl="img/face/38.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -936px 0;" data-title="再见"
+                data-gifurl="img/face/39.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -960px 0;" data-title="擦汗"
+                data-gifurl="img/face/40.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -984px 0;" data-title="抠鼻"
+                data-gifurl="img/face/41.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1008px 0;" data-title="鼓掌"
+                data-gifurl="img/face/42.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1032px 0;" data-title="糗大了"
+                data-gifurl="img/face/43.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1056px 0;" data-title="坏笑"
+                data-gifurl="img/face/44.gif">
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="eItem" style="background-position: -1080px 0;" data-title="左哼哼"
+                data-gifurl="img/face/45.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1104px 0;" data-title="右哼哼"
+                data-gifurl="img/face/46.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1128px 0;" data-title="哈欠"
+                data-gifurl="img/face/47.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1152px 0;" data-title="鄙视"
+                data-gifurl="img/face/48.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1176px 0;" data-title="委屈"
+                data-gifurl="img/face/49.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1200px 0;" data-title="快哭了"
+                data-gifurl="img/face/50.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1224px 0;" data-title="阴险"
+                data-gifurl="img/face/51.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1248px 0;" data-title="亲亲"
+                data-gifurl="img/face/52.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1272px 0;" data-title="吓"
+                data-gifurl="img/face/53.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1296px 0;" data-title="可怜"
+                data-gifurl="img/face/54.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1320px 0;" data-title="菜刀"
+                data-gifurl="img/face/55.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1344px 0;" data-title="西瓜"
+                data-gifurl="img/face/56.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1368px 0;" data-title="啤酒"
+                data-gifurl="img/face/57.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1392px 0;" data-title="篮球"
+                data-gifurl="img/face/58.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1416px 0;" data-title="乒乓"
+                data-gifurl="img/face/59.gif">
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="eItem" style="background-position: -1440px 0;" data-title="咖啡"
+                data-gifurl="img/face/60.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1464px 0;" data-title="饭"
+                data-gifurl="img/face/61.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1488px 0;" data-title="猪头"
+                data-gifurl="img/face/62.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1512px 0;" data-title="玫瑰"
+                data-gifurl="img/face/63.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1536px 0;" data-title="凋谢"
+                data-gifurl="img/face/64.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1560px 0;" data-title="示爱"
+                data-gifurl="img/face/65.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1584px 0;" data-title="爱心"
+                data-gifurl="img/face/66.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1608px 0;" data-title="心碎"
+                data-gifurl="img/face/67.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1632px 0;" data-title="蛋糕"
+                data-gifurl="img/face/68.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1656px 0;" data-title="闪电"
+                data-gifurl="img/face/69.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1680px 0;" data-title="炸弹"
+                data-gifurl="img/face/70.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1704px 0;" data-title="刀"
+                data-gifurl="img/face/71.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1728px 0;" data-title="足球"
+                data-gifurl="img/face/72.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1752px 0;" data-title="瓢虫"
+                data-gifurl="img/face/73.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1776px 0;" data-title="便便"
+                data-gifurl="img/face/74.gif">
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="eItem" style="background-position: -1800px 0;" data-title="月亮"
+                data-gifurl="img/face/75.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1824px 0;" data-title="太阳"
+                data-gifurl="img/face/76.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1848px 0;" data-title="礼物"
+                data-gifurl="img/face/77.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1872px 0;" data-title="拥抱"
+                data-gifurl="img/face/78.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1896px 0;" data-title="强"
+                data-gifurl="img/face/79.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1920px 0;" data-title="弱"
+                data-gifurl="img/face/80.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1944px 0;" data-title="握手"
+                data-gifurl="img/face/81.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1968px 0;" data-title="胜利"
+                data-gifurl="img/face/82.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -1992px 0;" data-title="抱拳"
+                data-gifurl="img/face/83.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2016px 0;" data-title="勾引"
+                data-gifurl="img/face/84.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2040px 0;" data-title="拳头"
+                data-gifurl="img/face/85.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2064px 0;" data-title="差劲"
+                data-gifurl="img/face/86.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2088px 0;" data-title="爱你"
+                data-gifurl="img/face/87.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2112px 0;" data-title="NO"
+                data-gifurl="img/face/88.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2136px 0;" data-title="OK"
+                data-gifurl="img/face/89.gif">
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="eItem" style="background-position: -2160px 0;" data-title="爱情"
+                data-gifurl="img/face/90.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2184px 0;" data-title="飞吻"
+                data-gifurl="img/face/91.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2208px 0;" data-title="跳跳"
+                data-gifurl="img/face/92.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2232px 0;" data-title="发抖"
+                data-gifurl="img/face/93.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2256px 0;" data-title="怄火"
+                data-gifurl="img/face/94.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2280px 0;" data-title="转圈"
+                data-gifurl="img/face/95.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2304px 0;" data-title="磕头"
+                data-gifurl="img/face/96.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2328px 0;" data-title="回头"
+                data-gifurl="img/face/97.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2352px 0;" data-title="跳绳"
+                data-gifurl="img/face/98.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2376px 0;" data-title="挥手"
+                data-gifurl="img/face/99.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2400px 0;" data-title="激动"
+                data-gifurl="img/face/100.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2424px 0;" data-title="街舞"
+                data-gifurl="img/face/101.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2448px 0;" data-title="献吻"
+                data-gifurl="img/face/102.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2472px 0;" data-title="右太极"
+                data-gifurl="img/face/103.gif">
+                </div>
+              </td>
+              <td>
+                <div class="eItem" style="background-position: -2496px 0;" data-title="左太极"
+                data-gifurl="img/face/104.gif">
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="emotionsGif">
+          <img src="img/face/0.gif">
+        </div>
+      </script>
+
+  </div>
+    
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">评论</h4>
+      </div>
+      <div class="modal-body">
+        
+          <div class="form-group">
+            <label for="replyDisplayName" class="col-sm-2 control-label">称呼</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="replyDisplayName">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="replyContent" class="col-sm-2 control-label">评论</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" rows="3" id="replyContent"></textarea>
+            </div>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关 闭</button>
+        <button type="button" class="btn btn-primary" onclick="controller.submitReply();return false;">发 表</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/layer/layer.min.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/controller.js"></script>

@@ -1,0 +1,95 @@
+﻿@charset "utf-8";
+/* 全局样式 */
+body, ul, dl, dd, dt, ol, li, p, h1, h2, h3, h4, h5, h6, textarea, form, select, fieldset, table, td, div, input {margin:0;padding:0;-webkit-text-size-adjust: none}
+h1, h2, h3, h4, h5, h6{font-size:12px;font-weight:normal}
+body>div, form>div {margin:0 auto}
+div {text-align:left}
+a img {border:0}
+table{border-collapse:collapse; border-spacing:0}
+select,input,textarea{ font: 12px "Microsoft YaHei"; outline: none}
+body { color:#333; text-align:center; font: 12px "Microsoft YaHei"}
+ul, ol, li {list-style-type:none;vertical-align:0}
+a {outline-style:none;color:#333;text-decoration:none}
+a:hover { color: #CC0000; text-decoration: underline}
+a, area {blr:expression(this.onFocus=this.blur())}
+:focus {-moz-outline-style: none}
+.clear {clear:both;height:0; overflow:hidden; visibility:hidden}
+.hidden,.hide {display:none}
+.block,.show {display:block}
+.fl{float:left}
+.fr{float:right}
+.fline{float:left; display:inline}
+.clearfix:after{clear:both;content:".";height:0;display:block;visibility:hidden}
+.chgBtn{cursor:pointer}
+.f12{font-size:12px}
+.f12{font-size:13px}
+.f14{font-size:14px}
+.f12{font-size:15px}
+.f16{font-size:16px}
+.fwr{font-family:"微软雅黑"}
+.far{font-family:Arial}
+.fb{font-weight:bold}
+.auto{margin-left:auto; margin-right:auto}
+.cor_red{color:#C00}
+.cor_bs,.cor_bs:hover{color:#fff}
+.pr{position:relative}
+.pa{position:absolute}
+.mt10{margin-top:10px;}
+.mb10{margin-bottom:10px;}
+.yunBg { background: #C5C5C5 url(../pic/login/yunBg.jpg) no-repeat center top; }
+.yunMain { width: 1003px; }
+.yunTop { height: 88px; margin: 0px auto; width: 870px; }
+.yunLogo { display: inline; margin: 30px 0px 0px 4px; float: left; }
+.yunItmName { margin: 0px auto; height: 80px; width: 688px; padding-top: 26px; }
+.yunItmName img { margin: 13px 13px 0px 0px; float: left; }
+.yunItmS { font: 18px/58px "微软雅黑"; float: left; height: 58px; }
+.yunBox { margin: 0px auto; height: 400px; width: 870px; }
+.yun_u1 ul li { line-height: 34px; height: 34px; margin-bottom: 25px; }
+.yun_s1 { font: 14px/34px "微软雅黑"; text-align: right; float: left; width: 196px; padding-right: 14px; }
+.yun_int1 { line-height: 32px; padding: 0px 5px; height: 32px; width: 274px; border: 1px solid #BCBCBC; float: left; margin-right: 8px; }
+.yun_int2 { width: 87px; margin-right: 12px; float: left; }
+.yun_coder { float: left; margin-right: 10px; }
+.yun_pwd { color: #999; }
+.yun_cke { margin-right: 5px; position: relative; top: 2px; }
+.yun_submit { background: url(../pic/login/yunsubmit.jpg) no-repeat; height: 36px; width: 101px; border-width: 0px; border-style: none; cursor: pointer; float: left; margin-right: 10px; }
+.yun_org { font-weight: bold; color: #f78000; }
+.yun_u1 ul .yun_hzbox { padding-left: 140px; }
+.yun_hzbox img { margin-right: 5px; position: relative; top: 4px; }
+.yunFooter { line-height: 24px; text-align: center; padding: 22px 0px 30px; border-top: 1px solid #AAAAAA; }
+.yun_u1 ul .yun_alr1 { line-height: 48px; height: 48px; margin-bottom: 0px; padding-left: 210px; }
+.yun_submit2 { background: url(../pic/login/yunsubmit2.jpg) no-repeat; height: 36px; width: 101px; border-width: 0px; border-style: none; cursor: pointer; float: left; margin-right: 10px; }
+.yunItmName2 { width: 792px; }
+.yunbxL { float: left; width: 600px; }
+.yunbxR { width: 266px; float: right; }
+.yunbxL .yun_s1 { width: 114px; padding-right: 6px; }
+.yun_u1 ul .yun_agee { line-height: 20px; height: 20px; }
+.yun_submit3 { background: url(../pic/login/yunregBtn.jpg) no-repeat; }
+.yunbxr_top { line-height: 38px; height: 38px; }
+.yun_alrbox { line-height: 26px; color: #D10000; background: #FFF3F3; white-space: nowrap; padding: 0px 6px; float: left; height: 26px; margin-top: 3px; border: 1px solid #FFE4E4; }
+.yunbxr_dl dl dt { line-height: 40px; height: 40px; }
+.yunbxr_dl dl dd { line-height: 30px; height: 30px; }
+.yunbxr_dl dl dd img { position: relative; top: 3px; }
+.yunTopBg { line-height: 30px; background: #707070; height: 30px; }
+.yunTopCon { line-height: 30px; margin: 0px auto; height: 30px; width: 1210px; color: #FFF; text-align: right; }
+.yunHeadBg { background: #FBFBFB; height: 90px; }
+.yunHead { margin: 0px auto; height: 90px; width: 1210px; position: relative; }
+.yun_logo2 { float: left; margin-top: 25px; }
+.yun_headImg { position: absolute; left: 372px; top: 20px; }
+.yunHeadR { float: right; padding-top: 21px; width: 374px; }
+.yunserBox { background: url(../pic/login/yun_serintBg.jpg); height: 38px; padding-left: 9px; width: 365px; }
+.yun_serInt { line-height: 28px; float: left; height: 28px; border-width: 0px; border-style: none; width: 310px; margin-top: 5px; }
+.yun_serSubmit { margin: 2px 2px 0px 0px; float: right; height: 34px; width: 30px; border-width: 0px; border-style: none; cursor: pointer; background: url(../pic/login/yun_serBtn.jpg) no-repeat; }
+.yun_keyword { line-height: 22px; height: 22px; padding-left: 12px; }
+.yunFtLink { height: 62px; padding-top: 31px; border-top: 5px solid #E4E4E4; border-bottom: 1px solid #E4E4E4; }
+.yunFtitm { margin: 0px auto; width: 1210px; }
+.yunFtitm ul li { float: left; height: 28px; width: 270px; padding-left: 32px; font: 18px/28px "微软雅黑"; overflow: hidden; }
+.yunFtitm ul li img { float: left; margin-right: 20px; }
+.yunFotDl { height: 162px; width: 1210px; padding-top: 24px; }
+.yunFotDl dl { float: left; height: 162px; width: 155px; padding-left: 66px; border-right: 1px dotted #E6E6E6; }
+.yunFotDl dl dt { display: block; height: 25px; margin-bottom: 5px; font: 18px/25px "微软雅黑"; }
+.yunFotDl dl dd { line-height: 22px; background: url(../pic/login/yun_1.jpg) no-repeat left center; height: 22px; padding-left: 10px; }
+.yunFotDl .yun_ftvx { width: 300px; padding-left: 0px; }
+.yunFotDl .yun_ftvx dt { text-align: center; }
+.yunFotDl .yun_lastDl { border-right-width: 0px; border-right-style: none; }
+.yunFotCenter { text-align: center; padding: 20px 0px 25px; }
+.yunFtinfo { color: #9c9c9c; line-height: 24px; text-align: center; padding-bottom: 15px; }

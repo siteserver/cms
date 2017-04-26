@@ -1,0 +1,93 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+    <link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../components/lib/toastr.min.css" />
+    <link rel="stylesheet" href="../components/lib/style.css" />
+
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+</head>
+<body>
+
+    <div id="loading"><img src="img/loading.gif"></div>
+
+
+    <div id="main" style="display:none">
+        <script class="controller" type="text/html">
+            <div class="header">
+                <a href="javascript:;" onclick="service.redirectToIndex();return false;" class="fa fa-angle-left"></a>
+                <p><%=collectInfo.title%></p>
+            </div>
+            <div class="main">
+                <div class="upload_box rd_bg">
+                    <div class="rule_box">
+                        <dl>
+                            <dt>活动规则</dt>
+                            <dd>
+                                <%==collectInfo.contentDescription%>
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="img">
+                        <img id="preview_imageUrl" src="img/user.png">
+                        <input id="largeUrl" type="hidden" />
+                        <input id="smallUrl" type="hidden" />
+                    </div>
+                    <div class="upload_btn_wrap">
+                        <a id="upload" href="javascript:;" onclick="return false;" class="btn btn-block btn-info">上传照片</a>
+                    </div>
+                    <div class="info_box">
+                        <div class="input-group margin-bottom-sm">
+                            <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
+                            <input id="title" class="form-control" type="text" placeholder="标题">
+                        </div>
+                        <div class="input-group margin-bottom-sm">
+                            <span class="input-group-addon"><i class="fa fa-stack-exchange fa-fw"></i></span>                            
+                            <textarea id="description" placeholder="参赛宣言" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="input-group margin-bottom-sm">
+                            <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i></span>
+                            <input id="mobile" class="form-control" type="text" placeholder="手机号码（不公开）">
+                        </div>                        
+                    </div>
+                    <div class="btn_box">
+                        <button type="button" onclick="controller.submitUpload();" class="btn btn-block btn-success">提 交</button>
+                    </div>
+                </div>
+
+                <%if (!isPoweredBy){%>
+                <div class="footer">
+                    <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+                </div>
+                <%}else if(poweredBy){%>
+                <div class="footer">
+                    <p><%==poweredBy%></p>
+                </div>
+                <%}%>
+
+            </div>
+
+        </script>
+    </div>
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script language="javascript" src="/sitefiles/bairong/jquery/ajaxupload.js"></script>
+<script type="text/javascript" src="/sitefiles/bairong/scripts/swfUpload/swfupload.js"></script>
+<script type="text/javascript" src="/sitefiles/bairong/scripts/swfUpload/handlers.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/controller.js"></script>

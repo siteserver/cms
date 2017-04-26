@@ -1,0 +1,13 @@
+#adv_banner {position:relative; width:478px; height:286px; border:1px solid #666; overflow:hidden;}
+#adv_banner_list img {border:0px;}
+#adv_banner_bg {position:absolute; bottom:0;background-color:#000;height:30px;filter: Alpha
+(Opacity=30);opacity:0.3;z-index:1000;cursor:pointer; width:478px; }
+#adv_banner_info{position:absolute; bottom:0; left:5px;height:22px;color:#fff;z-index:1001;cursor:pointer}
+#adv_banner_text {position:absolute;width:120px;z-index:1002; right:3px; bottom:3px;}
+#adv_banner ul {position:absolute;list-style-type:none;filter: Alpha(Opacity=80);opacity:0.8; border:1px solid 
+#fff;z-index:1002;
+margin:0; padding:0; bottom:3px; right:5px;}
+#adv_banner ul li { padding:0px 8px;float:left;display:block;color:#FFF;border:#e5eaff 1px 
+solid;background:#6f4f67;cursor:pointer}
+#adv_banner ul li.on { background:#900}
+#adv_banner_list a{position:absolute;} 

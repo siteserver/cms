@@ -1,0 +1,92 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>微征集</title>
+<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+<link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+<link rel="stylesheet" href="../components/lib/toastr.min.css" />
+<link rel="stylesheet" href="../components/lib/style.css" />
+
+<link rel="stylesheet" type="text/css" href="styles/style.css">
+</head>
+<body>
+
+    <div id="loading"><img src="img/loading.gif"></div>
+
+    <div id="main" style="display:none">
+        <script class="controller" type="text/html">
+
+        <div class="header">
+            <p><%=collectInfo.title%></p>
+        </div>
+        <div class="banner">
+            <img src="<%=collectInfo.contentImageUrl%>">
+        </div>
+        <div class="main">
+            <div class="ds_rule rd_bg">
+                <dl>
+                    <dt>活动规则</dt>
+                    <dd>
+                        <%==collectInfo.contentDescription%>
+                    </dd>
+                </dl>
+            </div>
+            <div class="photo_box">
+                <ul class="clearfix">
+                    <%
+                    for(i = 0; i < itemList.length; i ++) {
+                      var item = itemList[i];
+                    %>
+                      <li>
+                          <a href="javascript:;" onclick="service.redirectToItem(<%=item.id%>);return false;">
+                              <img src="<%=item.smallUrl%>" class="img">
+                              <span class="name"><%=item.title%></span>
+                              <span class="zan_btn">
+                                <%if (isVoted(item.id)){%>
+                                  <i class="fa fa-heart"></i>
+                                <%}else{%>
+                                  <i class="fa fa-heart-o"></i>
+                                <%}%>
+                                <%=item.voteNum%>
+                              </span>
+                          </a>
+                      </li>
+                    <%}%>
+                </ul>
+
+                <%if (!isPoweredBy){%>
+                  <div class="footer">
+                    <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+                  </div>
+                <%}else if(poweredBy){%>
+                  <div class="footer">
+                    <p><%==poweredBy%></p>
+                  </div>
+                <%}%>
+
+            </div>
+
+        </div>
+        <div class="btn_fixed">
+            <a href="javascript:;" onclick="service.redirectToUpload();return false;" class="btn btn-primary">我要参赛</a>
+            <a href="javascript:;" onclick="service.redirectToVote();return false;" class="btn btn-danger">我要投票</a>
+        </div>
+
+        </script>
+    </div>
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/controller.js"></script>

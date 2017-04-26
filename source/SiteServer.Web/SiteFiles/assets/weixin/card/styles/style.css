@@ -1,0 +1,636 @@
+﻿@charset "utf-8";
+body, div, address, blockquote, iframe, ul, ol, dl, dt, dd, li, dl, h1, h2, h3, h4, pre, table, caption, th, td, form, legend, fieldset, input, button, select, textarea,p {margin:0; padding:0;}
+ol, ul ,li{list-style: none;}
+i{font-style: normal;}
+.clear{clear:both;height:0; line-height:0; font-size:0;display:block; overflow:hidden}
+.clearfix:after {clear: both;content: ".";display: block;height: 0;visibility: hidden;font-size:0}
+.clearfix {zoom:1}
+.fl{float:left; display: inline;}
+.fr{float:right; display: inline;}
+img {border: 0; vertical-align:top;width: 100%;}
+a:hover{
+	text-decoration: none;
+}
+body{
+	font-size: 12px;
+	font-family: "微软雅黑";
+	background: #eee;
+}
+
+
+.bind_card_box, .reg_box{
+	background: url(../img/bangding_bg.jpg) no-repeat 0 0;
+	background-size: 100% 100%;
+	height: 100%;
+}
+.consume_box, .login_box{
+	background: url(../img/consume_bg.jpg) no-repeat 0 0;
+	background-size: 100% 100%;
+	height: 100%;
+}
+.gold_ex_box, .sign_record_box, .write_box, .sign_rule_box, .sign_page_box{
+	background: url(../img/gold_ex_bg.jpg) no-repeat 0 0;
+	background-size: 100% 100%;
+	height: 100%;
+}
+.my_card_box, .bill_box{
+	background: url(../img/my_card_bg.jpg) no-repeat 0 0;
+	background-size: 100% 100%;
+	height: 100%;
+}
+.bg_white7{
+	background: rgba(255,255,255,0.7);
+	text-align: center;
+	padding: 10px 0;
+	color: #1e567a;
+	font-size: 14px;
+}
+
+
+._header{
+	width: 100%;
+	position: relative;
+	height: 42px;
+	background: rgba(0,0,0,0.5);
+	line-height: 42px;
+	text-align: center;
+}
+._header .fa{
+	font-size: 26px;
+	color: #fff;
+	position: absolute;
+	top: 8px;
+	left: 14px;
+}
+._header p{
+	color: #fff;
+	margin-left: -10px;
+	font-size: 14px;
+}
+ ._footer{
+	height: 40px;
+	line-height: 40px;
+	background: rgba(0,0,0,0.5);
+	text-align: center;
+	color: #bbb;
+}
+._footer a{
+	color: #fff;
+} 
+
+.form-control{
+	background: rgba(0,0,0,0.3);
+	border: 0 none;
+	color: #fff;
+}
+.submit_box {
+	padding-top: 10px;
+}
+.btn-success{
+	width: 100%;
+	background: #1abc9c;
+}
+
+
+
+.vip_card{
+	margin: 10px 3%;
+	position: relative;
+}
+.vip_card .txt{
+	position: absolute;
+	bottom: 7px;
+	left: 20px;
+	color: #fffc00;
+}
+.vip_card .vip_num{
+	position: absolute;
+	bottom: 7px;
+	right: 20px;
+	color: #fffc00;
+}
+
+.bg3{
+	background: rgba(0,0,0,0.3);
+	padding: 10px 3%;
+	color: #fff;
+}
+.bg4{
+	background: rgba(0,0,0,0.4);
+	padding: 10px 3%;
+	color: #fff;
+	padding-bottom: 30px;
+}
+
+
+
+.login_box .vip_card{
+	margin-top: 0;
+	padding-top:20px;
+}
+.login_box .btn_box {
+	margin: 0 3%;
+	padding-bottom: 20px;
+}
+.login_box .btn_box a{
+	width: 100%;
+	margin-top: 10px;
+	color: #fff!important;
+}
+.login_box .contact_box {
+	margin-bottom: 60px;
+}
+.login_box .contact_box p{
+	height: 42px;
+	line-height: 42px;
+	background: rgba(0,0,0,0.4);
+	color: #fff;
+	margin-bottom: 1px;
+	padding: 0 3%;
+}
+.login_box .contact_box p i{
+	font-size: 14px;
+	margin-right: 4px;
+}
+
+.gold_ex_box .main{
+	padding-top: 10px;
+}
+.gold_ex_box .hd{
+	font-weight: bold;
+}
+.gold_ex_box .hd span{
+	margin-right: 5%;
+}
+.gold_ex_box .bd{
+	padding-top: 20px;
+}
+.gold_ex_box .bd .text_span:first-child{
+	margin: 0 5% 0 0;
+}
+.gold_ex_box .bd .d_icon{
+	margin-right: 5%;
+	font-size: 24px;
+	color: #fff600;
+	font-weight: bold;
+}
+.gold_ex_box .bd .text_span{
+	width: 38%;
+}
+.gold_ex_box .bd .yuan{
+	font-style: normal;
+	margin: 8px 0 0 5px;
+}
+.gold_ex_box .intro_text{
+	padding-bottom: 15px;
+	font-size: 14px;
+}
+
+
+.my_card_box .vip_card{
+	margin-top: 0;
+	padding-top:20px;
+}
+.my_card_box .main{
+	margin-bottom: 10px;
+}
+.my_card_box .main li{
+	background: rgba(0,0,0,0.45);
+}
+.my_card_box .main li a{
+	display: block;
+	padding:10px 7%;
+	color: #fff;
+	font-size: 14px;
+}
+.my_card_box .main li a i{
+	font-size: 16px;
+	margin-right: 5px;
+}
+.my_card_box .main li:nth-child(1){
+	background: rgba(26,188,156,0.3);
+}
+.my_card_box .main li:nth-child(2){
+	background: rgba(22,160,133,0.3);
+}
+.my_card_box .main li:nth-child(4){
+	background: rgba(0,0,0,0.35);
+}
+.my_card_box .main li:nth-child(6){
+	background: rgba(0,0,0,0.35);
+}
+.my_card_box .main li:nth-child(8){
+	background: rgba(0,0,0,0.35);
+}
+.my_card_box .main li a span{
+	display: inline-block; 
+	width: 40px;
+	text-align: center;
+}
+.my_card_box .vip_card_f p{
+	position: absolute;
+	font-size: 16px;
+	width: 100%;
+}
+.my_card_box .vip_card_f p i{
+	font-size: 18px;
+	color: #005375;
+	margin-right: 5px;
+}
+.my_card_box .vip_card_f .addr{
+	top:28%;
+	padding-left: 15%;
+	color: #005375;
+}
+.my_card_box .vip_card_f .phone{
+	top:45%;
+	padding-left: 15%;
+	color: #005375;
+}
+.my_card_box .vip_card_f .name{
+	top:65%;
+	text-align: center;
+	color: #fff;
+	padding: 10px 0;
+	font-size: 14px;
+	background: rgba(0,0,0,0.3);
+}
+
+
+.sign_record_box .main{
+	margin-bottom: 10px;
+}
+.sign_record_box .main table{
+	width: 100%;
+}
+.sign_record_box .main th{
+	font-size: 14px;
+	color: #fff;
+	padding: 10px 0;
+	text-align: center;
+	width: 33%;
+}
+.sign_record_box .main td{
+	color: #fff;
+	text-align: center;
+	padding: 10px 0;
+	font-size: 14px;
+}
+.sign_record_box .main tr:nth-child(1n){
+	background: rgba(0,0,0,0.3);
+}
+.sign_record_box .main tr:nth-child(2n){
+	background: rgba(0,0,0,0.2);
+}
+.sign_record_box .main tr:nth-child(1){
+	background: #1abc9c;
+}
+.reg_box .submit_box {
+	margin-bottom: 50px;
+	color: #fff!important;
+}
+.reg_box .submit_box .reg_btn{
+	background: #e74c3c;
+	margin-bottom: 10px;
+	border: 0 none;
+}
+.reg_box .submit_box .login_btn{
+	background: #bdc3c7;
+	border: 0 none;
+	color: #fff!important;
+}
+.reg_box .bd label{
+	font-size: 14px;
+	font-weight: normal;
+}
+.reg_box .bd .form-group{
+	margin-bottom: 10px;
+}
+
+.reg_box .form-group .form-control{
+	background: rgba(255,255,255,0.3);
+}
+.reg_box .forget_box{
+	padding: 10px 10% 0;
+}
+.reg_box .forget_box .forget_link{
+	font-size: 14px;
+	color: #fff;
+}
+
+
+.log_box .main .bd{
+	padding-top: 20px;
+	padding-bottom: 65px;
+}
+.log_box .main .forget_box label{
+	background: url(../img/checked.png) no-repeat 0 4px;
+	background-size: 14px auto;
+	padding-left:21px;
+}
+.log_box .main .forget_box .on{
+	background: url(../img/checked_bg.png) no-repeat 0 4px;
+	background-size: 14px auto;
+}
+
+
+.write_box select{
+	width: 30%;
+	margin-right: 3%;
+	background: rgba(255,255,255,0.3);
+	color: #000;
+}
+.write_box .main label{
+	font-size: 14px;
+	font-weight: normal;
+}
+.write_box .main input{
+	background: rgba(255,255,255,0.3);
+	color: #000;
+
+}
+
+
+.sign_rule_box .rule_img{
+	margin-top: 30px;
+	text-align: center;
+}
+.sign_rule_box .rule_img img{
+	width: 100%;
+}
+.sign_rule_box .rule_text .rule_hd{
+	height: 40px;
+	width: 100%;
+	background: url(../img/arr_t.png) no-repeat center 0;
+	background-size: auto 40px;
+}
+.sign_rule_box .rule_text .rule_bd{
+	background: rgba(0,0,0,0.2);
+	border-radius: 10px;
+	margin: 0 5%;
+	padding: 15px 15px 60px;
+	color: #fff;
+}
+.sign_rule_box .rule_text .rule_bd li{
+	font-size: 14px;
+	margin-bottom: 5px;
+}
+.sign_rule_box .rule_text{
+	margin-bottom: 50px;
+}
+
+
+.bill_box .bill_nav{
+	padding: 15px 3%;
+	color: #fff;
+}
+.bill_box .bill_nav a{
+	width: 32%;
+	border: 0 none;
+	margin: 0 0 0 0.1%;
+	color: #fff!important;
+	background: #bdc3c7;
+}
+.bill_box .bill_nav .on{
+	background: #1abc9c;
+}
+
+.bill_box .bill_content .hd{
+	background: rgba(236,240,241,0.7);
+	padding: 10px 5% 10px 4%;
+	font-size: 14px;
+	color: #003f67;
+}
+.bill_box .bill_content li{
+	overflow: hidden;
+	color: #fff;
+	border-top: 1px solid #266781;
+	border-bottom: 1px solid #01415c;
+	padding: 10px 4%;
+	font-size: 14px;
+}
+.bill_box .item_box .b{
+	background: rgba(0,0,0,0.4);
+}
+.bill_box .item_box .h{
+	background: rgba(0,0,0,0.6); 
+	color: #fff;
+	padding: 10px 4%;
+	font-size: 14px;
+	border-top: 1px solid #266781;
+}
+.bill_box .item_box li i{
+	margin-right: 12px;
+	color: #c4d4db;
+	font-size: 36px;
+}
+.bill_box .item_box li .time{
+	font-size: 12px;
+	display: block;
+	color: #578ea3;
+}
+.bill_box .item_box li .w{
+	color: #fff;
+}
+.bill_box .item_box li .y{
+	color: #fff600;
+}
+.sign_page_box .hd .sign_item {
+	padding: 20px 4%;
+	color: #fff;
+	font-size: 14px;
+	position: relative;
+}
+.sign_page_box .hd .sign_item .d span{
+	display: block;
+	text-align: center;
+}
+.sign_page_box .hd .sign_item .d1{
+	
+	position: absolute;
+	top: 45px;
+	left: 8%;
+}
+.sign_page_box .hd .sign_item .d2{
+	width: 100px;
+	margin: 0 auto;
+	background: url(../img/circle_bg.png) no-repeat 0 0;
+	height: 100px;
+	background-size: auto 100%;
+	position: relative;
+}
+.sign_page_box .hd .sign_item .d3{
+	position: absolute;
+	top: 45px;
+	right: 8%;
+}
+.sign_page_box .hd .sign_item .d2 .sign_btn{
+	height: 60px;
+	width: 100%;
+	background: url(../img/sign_btn.png) no-repeat 0 0;
+	background-size: auto 60px;
+	display: block;
+	position: absolute;
+	top: 22px;
+	left: 17px;
+	-webkit-animation:module_change 0.5s ease-in;
+    -webkit-animation-fill-mode:forwards;
+}
+@-webkit-keyframes module_change{
+    0%{
+    	-webkit-transform: scale(0);
+		top: 20px;
+		left: -6px;
+    }
+    100%{
+    	-webkit-transform: scale(1);
+		top: 22px;
+		left: 17px;
+    }
+}
+.sign_page_box .hd .sign_link a{
+	width: 50%;
+	float: left;
+	padding: 10px 0;
+	background: #f1c40f;
+	color: #fff;
+	font-size: 14px;
+	text-align: center;
+}
+.sign_page_box .hd .sign_link a:first-child{
+	background: #1abc9c;
+}
+.sign_page_box .bd{
+	background: rgba(0,0,0,0.3);
+	color: #fff;
+	font-size: 14px;
+}
+.sign_page_box .bd th, .sign_page_box .bd td{
+	text-align: center;
+	padding: 8px;
+}
+.sign_page_box .bd .next_td{
+	color: #000;
+}
+.sign_page_box .bd th{
+	background: rgba(0,0,0,0.3);
+}
+.sign_page_box .calendar-header {
+	text-align: center;
+	padding: 20px 0;
+}
+.sign_page_box .bd{
+	position: relative;
+	padding-bottom: 30px;
+	overflow: hidden;
+}
+.sign_page_box .bd i{
+	position: absolute;
+	top: 18px;
+	font-size: 24px;
+	font-weight: bold;
+}
+.sign_page_box .fa-angle-left{
+	left: 20px;
+}
+.sign_page_box .fa-angle-right{
+	right: 20px;
+}
+.sign_page_box .bd .selected{
+	background: url(../img/date_on.png) no-repeat center center;
+	background-size: auto 100%;
+}
+.sign_page_box .swipe-wrap > div {
+	float: left;
+	width: 100%;
+	position: relative;
+}
+.bill_content{
+	display: none;
+}
+.btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success.active, .open .dropdown-toggle.btn-success{
+	background: #1abc9c;
+	border:1px solid #1abc9c ;
+}
+.btn:active, .btn.active{
+	box-shadow: 0 0 0;
+	-webkit-box-shadow: 0 0 0;
+}
+
+.my_card_box .vip_card{
+	position: relative;
+	margin-bottom: 53%;
+}
+.my_card_box  .vip_card .front {
+	z-index: 2;
+	-webkit-transform-style: preserve-3d;
+	-webkit-backface-visibility: hidden;
+	-webkit-transition: -webkit-transform .3s linear;
+	-moz-transform-style: preserve-3d;
+	-moz-backface-visibility: hidden;
+	-moz-transition: -moz-transform .3s linear;
+	-o-transform-style: preserve-3d;
+	-o-backface-visibility: hidden;
+	-o-transition: -moz-transform .3s linear;
+}
+.my_card_box  .vip_card div {
+	left: 0;
+	position: absolute;
+	top: 10px;
+	width: 100%;
+}
+.my_card_box  .vip_card .back {
+	z-index: 1;
+	-webkit-transform: rotateY(-180deg);
+	-webkit-transform-style: preserve-3d;
+	-webkit-backface-visibility: hidden;
+	-webkit-transition: -webkit-transform .3s linear;
+	-moz-transform: rotateY(-180deg);
+	-moz-transform-style: preserve-3d;
+	-moz-backface-visibility: hidden;
+	-moz-transition: -moz-transform .3s linear;
+	-o-transform: rotateY(-180deg);
+	-o-transform-style: preserve-3d;
+	-o-backface-visibility: hidden;
+	-o-transition: -o-transform .3s linear;
+	-ms-transform: rotateY(-180deg);
+	-ms-transform-style: preserve-3d;
+	-ms-backface-visibility: hidden;
+	-ms-transition: -ms-transform .3s linear;
+}
+.my_card_box  .vip_card .front_on {
+	-webkit-transform: rotateY(180deg);
+	-moz-transform: rotateY(180deg);
+	-o-transform: rotateY(180deg);
+	-ms-transform: rotateY(180deg);
+}
+.my_card_box  .vip_card .back_on {
+	z-index: 3;
+	zoom: 1;
+	-webkit-transform: rotateY(0deg);
+	-moz-transform: rotateY(0deg);
+	-o-transform: rotateY(0deg);
+	-ms-transform: rotateY(0deg);
+}
+ 
+
+@media only screen and (max-width: 2000px) { 
+	.vip_card .txt,.vip_card .vip_num{
+		font-size: 16px;
+		
+	}
+}
+
+@media only screen and (max-width: 640px) { 
+	.vip_card .txt,.vip_card .vip_num{
+		font-size: 16px;
+	}
+}
+
+@media only screen and (max-width: 400px) { 
+	.vip_card .txt,.vip_card .vip_num{
+		font-size: 12px;
+		
+	}
+}
+

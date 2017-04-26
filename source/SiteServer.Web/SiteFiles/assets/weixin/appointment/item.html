@@ -1,0 +1,294 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>微预约</title>
+<link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+<link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+<link rel="stylesheet" href="../components/lib/toastr.min.css" />
+<link rel="stylesheet" href="../components/lib/imagegallery/css/blueimp-gallery.min.css">
+<link rel="stylesheet" href="../components/lib/imagegallery/css/bootstrap-image-gallery.min.css">
+<link rel="stylesheet" href="../components/lib/style.css" />
+
+<link rel="stylesheet" type="text/css" href="styles/style.css" />
+
+<link rel="stylesheet" href="scripts/lib/video-js/video-js.css" />
+<script src="scripts/lib/video-js/video.js"></script>
+<script>
+    videojs.options.flash.swf = "video-js.swf";
+</script>
+
+</head>
+<body>
+
+<div id="loading" class="loading"><img src="../components/images/loading.gif"></div>
+<div id="main" style="display:none">
+    <script id="controller" class="controller" type="text/html">
+        <div class="header">
+            <%if (!appointmentInfo.contentIsSingle){%>
+            <a href="javascript:;" onclick="service.openIndex();return false;" class="back_btn">
+                <i class="fa fa-angle-left"></i>
+            </a>
+            <%}%>
+            <p class="title"><%=appointmentItemInfo.title%></p>
+        </div>
+        <div class="ap_header">
+            <img src="<%=appointmentItemInfo.topImageUrl%>" class="head_img">
+        </div>
+        <div class="container intro_container">
+            <div class="row">
+                <div class="modal_box">
+                     
+                     <%if(appointmentContentInfo){%>
+                     <div class="bd">
+                         <%if(appointmentContentInfo.status=='Agree'){%>
+                           <div class="alert alert-success">
+                              <strong>恭喜，预约成功！</strong>
+                              <br />
+                              <%=appointmentContentInfo.message%>
+                            </div>
+                         <%}
+                         else if(appointmentContentInfo.status=='Handling'){%>
+                          <div class="alert alert-info">
+                            <strong>您的预约申请正在处理中，请耐心等待！</strong>                            
+                          </div>
+                         <%}
+                         else if(appointmentContentInfo.status=='Refuse'){%>
+                          <div class="alert alert-danger">
+                            <strong>对不起，预约失败！</strong>
+                            <br />
+                            <%=appointmentContentInfo.message%>
+                          </div>
+                         <%}
+                         else if(appointmentContentInfo.status=='Arrive'){%>
+                          <div class="alert alert-success">
+                            <strong>您已赴约，谢谢！</strong>
+                          </div>
+                         <%}
+                         else if(appointmentContentInfo.status=='DisArrive'){%>
+                         <div class="alert alert-danger">
+                           <strong>您未赴约，可以继续提交申请！</strong>
+                          </div>
+                         <%}%>
+                      </div>
+                     <%}%>
+
+                    <%if(appointmentItemInfo.isDescription){%>
+                    <div class="modal_inner_box">
+                        <div class="hd clearfix">
+                            <h2 class="fl t">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-flag fa-stack-1x fa-inverse"></i>
+                                </span>
+                                <%=appointmentItemInfo.descriptionTitle%>
+                            </h2>
+                        </div>
+                        <div class="bd">
+                            <p>
+                                <%=appointmentItemInfo.description%>
+                            </p>
+                        </div>
+                    </div>
+                    <%}%>
+                    <%if(appointmentItemInfo.isImageUrl){%>
+                    <div class="modal_inner_box">
+                        <div class="hd clearfix">
+                            <h2 class="fl t">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-flag fa-stack-1x fa-inverse"></i>
+                                </span>
+                                <%=appointmentItemInfo.imageUrlTitle%>
+                            </h2>
+                        </div>
+                        <div class="bd">
+                            <img src="<%=appointmentItemInfo.imageUrl%>">
+                        </div>
+                    </div>
+                    <%}%>
+                    <%if(appointmentItemInfo.isVideoUrl){%>
+                    <div class="modal_inner_box">
+                        <div class="hd clearfix">
+                            <h2 class="fl t">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-flag fa-stack-1x fa-inverse"></i>
+                                </span>
+                                <%=appointmentItemInfo.videoUrlTitle%>
+                            </h2>
+                        </div>
+                        <div class="bd">
+                            <video id="example_video_1" class="video-js vjs-default-skin" controls preload="none" width="100%" height="187" data-setup="{}">
+                                  <%var videoUrl=appointmentItemInfo.videoUrl;
+                                    var extension=videoUrl.substring(videoUrl.lastIndexOf('.')+1);
+                                    if(extension=='mp4'){%>
+                                     <source src="<%=appointmentItemInfo.videoUrl%>" type='video/mp4' />
+                                   <%}
+                                   else if(extension=='webm'){%>
+                                     <source src="<%=appointmentItemInfo.videoUrl%>" type='video/webm' />   
+                                  <%}
+                                  else if(extension=='ogv'){%>
+                                    <source src="<%=appointmentItemInfo.videoUrl%>" type='video/ogg' />
+                                <%}%>
+                             </video>
+                         </div>
+                    </div>
+                    <%}%>
+                    <%if(appointmentItemInfo.isImageUrlCollection){%>
+                    <div class="modal_inner_box actibe_photo">
+                        <div class="hd clearfix">
+                            <h2 class="fl t">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-flag fa-stack-1x fa-inverse"></i>
+                                </span>
+                                <%=appointmentItemInfo.imageUrlCollectionTitle%>
+                            </h2>
+                        </div>
+                        <div class="bd" id="photoList">
+                            <ul class="clearfix">
+                                <%
+                                var imageUrlCollection = appointmentItemInfo.imageUrlCollection;
+                                var largeImageUrlCollection = appointmentItemInfo.largeImageUrlCollection;
+                                var imageUrls=imageUrlCollection.split(',');
+                                var largeImageUrls=largeImageUrlCollection.split(',');
+                                for(var i=0;i< imageUrls.length;i++ ){
+                                %>
+                                <li>
+                                    <a href="<%=largeImageUrls[i]%>" data-gallery>
+                                        <img src="<%=imageUrls[i]%>" class="img-thumbnail">
+                                    </a>
+                                </li>
+                                <%}%>
+                            </ul>
+                        </div>
+                    </div>
+                    <%}%>
+                    <%if(appointmentItemInfo.isMap){%>
+                    <div class="modal_inner_box active_addr">
+                        <div class="hd clearfix">
+                            <h2 class="fl t">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-flag fa-stack-1x fa-inverse"></i>
+                                </span>
+                                <%=appointmentItemInfo.mapTitle%>
+                            </h2>
+                        </div>
+                        <div class="bd">
+                            <p>
+                                <a href='http://map.baidu.com/mobile/webapp/place/list/qt=s&wd=<%=appointmentItemInfo.mapAddress%>/vt=map' target="_self"><%=appointmentItemInfo.mapAddress%></a>
+                            </p>
+                            <a href='http://map.baidu.com/mobile/webapp/place/list/qt=s&wd=<%=appointmentItemInfo.mapAddress%>/vt=map' target="_self" class="btn btn-info">查看地图</a>
+                        </div>
+                    </div>
+                    <%}%>
+                    <%if(appointmentItemInfo.isTel){%>
+                    <div class="modal_inner_box active_addr">
+                        <div class="hd clearfix">
+                            <h2 class="fl t">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-flag fa-stack-1x fa-inverse"></i>
+                                </span>
+                                <%=appointmentItemInfo.telTitle%>
+                            </h2>
+                        </div>
+                        <div class="bd">
+                            <p>
+                                <a href="tel://<%=appointmentItemInfo.tel%>"><%=appointmentItemInfo.tel%></a>
+                            </p>
+                            <p>
+                              <a href="tel://<%=appointmentItemInfo.tel%>" class="btn btn-info">一键拨号</a>
+                            </p>
+                        </div>
+                    </div>
+                    <%}%>
+
+                    <%if(!appointmentContentInfo || (appointmentContentInfo.status != 'Agree' && appointmentContentInfo.status != 'Handling')){%>
+                    <div class="modal_inner_box">
+                        <div class="bd">
+                            <br />
+                            <%if (appointmentInfo.contentIsSingle){%>
+                                <a href='javascript:;' onclick="service.openApplication(true); return false;" target="_self" class="btn btn-block btn-success btn-lg">我要预约</a>
+                            <%}else{%>
+                                <a href='javascript:;' onclick="service.openApplication(false); return false;" target="_self" class="btn btn-block btn-success btn-lg">我要预约</a>
+                            <%}%>
+                        </div>
+                    </div>
+                    <%}%>
+
+                 </div>
+            </div>
+        </div>
+
+        <%if (!isPoweredBy){%>
+          <div class="footer">
+            <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+          </div>
+        <%}else if(poweredBy){%>
+          <div class="footer">
+            <p><%==poweredBy%></p>
+          </div>
+        <%}%>
+        
+   </script>
+</div>
+
+<!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->
+<div id="blueimp-gallery" class="blueimp-gallery">
+    <!-- The container for the modal slides -->
+    <div class="slides"></div>
+    <!-- Controls for the borderless lightbox -->
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+    <!-- The modal dialog, which will be used to wrap the lightbox content -->
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body next"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left prev">
+                        <i class="fa fa-chevron-left"></i>
+                        上一幅
+                    </button>
+                    <button type="button" class="btn btn-primary next">
+                        下一幅
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/layer/layer.min.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="../components/lib/imagegallery/js/jquery.blueimp-gallery.min.js"></script>
+<script src="../components/lib/imagegallery/js/bootstrap-image-gallery.min.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/itemController.js"></script>
+
+

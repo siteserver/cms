@@ -1,0 +1,17 @@
+@charset "utf-8";
+/* CSS Document */
+body{ color:#666; font-family:Microsoft Yahei;}
+.jo-body { background:#f1f1f1; }
+.jo-pd-15 {padding:10px 15px;}
+.jo-pd-tb10 {padding:10px 0;}
+.jo-center { text-align:center;}
+.jo-body .fa { color:green;}
+
+/*Joozo Style*/
+.jo-bg-blue { background:#017fba;}
+.jo-bg-darkgreen { background:#1B926C;}
+.jo-bg-green { background:#47a447;}
+
+/*Joozo Style*/
+.jo-title { height:45px; line-height:45px; text-align:center; font-size:18px; color:#fff;}
+

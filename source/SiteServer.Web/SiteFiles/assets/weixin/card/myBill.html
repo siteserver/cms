@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>微会员</title>
+    <link rel="stylesheet" href="../components/lib/bootstrap.min.css" />
+    <link rel="stylesheet" href="../components/lib/fontawesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../components/lib/toastr.min.css" />
+    <link rel="stylesheet" href="../components/lib/style.css" />
+
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+    <div id="loading" class="loading"><img src="../components/images/loading.gif"></div>
+
+    <div id="main" style="display:none">
+        <script class="controller" type="text/html">
+            <div class="bill_box">
+                <div class="_header">
+                    <a href="javascript:;" onclick="javascript: history.go(-1);" class="fa fa-angle-left"></a>
+                    <p>我的账单</p>
+                </div>
+                <div class="main">
+                    <div class="bill_nav">
+                        <a href="javascript:;" class="btn btn-success on">全部</a>
+                        <a href="javascript:;" class="btn btn-success">收入</a>
+                        <a href="javascript:;" class="btn btn-success">支出</a>
+                    </div>
+                    <div class="bill_content" style="display:block">
+                        <div class="hd clearfix">
+                            <% if(cardCashYearCountInfoList.length>0){%>
+                            <span class="fl">收入：<%=getAmount(cardCashYearCountInfoList[0].totalRecharge)%></span>
+                            <span class="fr">支出：-<%=getAmount(cardCashYearCountInfoList[0].totalConsume)%></span>
+                            <%}else{%>
+                            <span class="fl">收入：0.00</span>
+                            <span class="fr">支出：-0.00</span>
+                            <%}%>
+                           
+                        </div>
+                         <div class="bd">
+                            <% if(cardCashYearCountInfoList.length>0){
+                            var cardCashYearCountInfo=cardCashYearCountInfoList[0];
+                            var cardCashMonthCountInfoList=cardCashYearCountInfo.cardCashMonthCountInfoList;
+                            for(var i=0;i< cardCashMonthCountInfoList.length;i++){
+                            var cardCashMonthCountInfo =cardCashMonthCountInfoList[i];
+                            %>
+                            <div class="item_box">
+                                <% if(i >0){%>
+                                <div class="h">
+                                    <%=cardCashMonthCountInfo.month%> 月
+                                </div>
+                                <%}%>
+                                <div class="b">
+                                    <ul>
+                                        <%
+                                        var cardCashLogInfoList=cardCashMonthCountInfo.cardCashLogInfoList;
+                                        for(var j=0;j< cardCashLogInfoList.length;j++){
+                                        var cardCashInfo=cardCashLogInfoList[j];
+                                        if(cardCashInfo.cashType=='Consume'){%>
+                                        <li>
+                                            <span class="fl"><i class="fa fa-leaf"></i></span>
+                                            <span class="fl">
+                                                <span class="cz_price">余额消费<%=getAmount(cardCashInfo.amount)%>元</span>
+                                                <span class="time"><%=getDateTime(cardCashInfo.addDate)%></span>
+                                            </span>
+                                            <span class="fr price y">-<%=getAmount(cardCashInfo.amount)%></span>
+                                        </li>
+                                        <%}else if(cardCashInfo.cashType=='Recharge'){%>
+                                        <li>
+                                            <span class="fl"><i class="fa fa-leaf"></i></span>
+                                            <span class="fl">
+                                                <span class="cz_price">充值<%=getAmount(cardCashInfo.amount)%>元</span>
+                                                <span class="time"><%=getDateTime(cardCashInfo.addDate)%></span>
+                                            </span>
+                                            <span class="fr price w">+<%=getAmount(cardCashInfo.amount)%></span>
+                                        </li>
+                                        <%}}%>
+                                    </ul>
+                                </div>
+                            </div>
+                            <%}%>
+                            <%}%>
+                        </div> 
+                    </div>
+                </div>
+                 <div class="bill_content">
+                    <div class="hd clearfix">
+                        <% if(cardCashYearCountInfoList.length>0){%>
+                        <span class="fl">收入：<%=getAmount(cardCashYearCountInfoList[0].totalRecharge)%></span>
+                        <%}else{%>
+                        <span class="fl">收入：0.00</span>
+                        <%}%>
+                       
+                    </div>
+                    <div class="bd">
+                        <% if(cardCashYearCountInfoList.length>0){ 
+                        var cardCashYearCountInfo=cardCashYearCountInfoList[0];
+                        var cardCashMonthCountInfoList=cardCashYearCountInfo.cardCashMonthCountInfoList;
+                        for(var i=0;i< cardCashMonthCountInfoList.length;i++){
+                        var cardCashMonthCountInfo =cardCashMonthCountInfoList[i];
+                        %>
+                        <div class="item_box">
+                            <% if(i >0){%>
+                            <div class="h">
+                                <%=cardCashMonthCountInfo.month%> 月
+                            </div>
+                            <%}%>
+                            <div class="b">
+                                <ul>
+                                    <% 
+                                    var cardCashLogInfoList=cardCashMonthCountInfo.cardCashLogInfoList;
+                                    for(var j=0;j< cardCashLogInfoList.length;j++){
+                                    var cardCashInfo=cardCashLogInfoList[j];
+                                    if(cardCashInfo.cashType=='Recharge'){%>
+                                    <li>
+                                        <span class="fl"><i class="fa fa-leaf"></i></span>
+                                        <span class="fl">
+                                            <span class="cz_price">充值<%=getAmount(cardCashInfo.amount)%>元</span>
+                                            <span class="time"><%=getDateTime(cardCashInfo.addDate)%></span>
+                                        </span>
+                                        <span class="fr price w">+<%=getAmount(cardCashInfo.amount)%></span>
+                                    </li>
+                                    <%}}%>
+                                 </ul>
+                            </div>
+                        </div>
+                        <%}}%>
+                    </div>
+                </div>
+                <div class="bill_content">
+                    <div class="hd clearfix">
+                        <% if(cardCashYearCountInfoList.length>0){%>
+                        <span class="fl">支出：-<%=getAmount(cardCashYearCountInfoList[0].totalConsume)%></span>
+                        <%}else{%>
+                        <span class="fl">支出：-0.00</span>
+                        <%}%>
+                       
+                    </div>
+                    <div class="bd">
+                        <% if(cardCashYearCountInfoList.length>0){
+                        var cardCashYearCountInfo=cardCashYearCountInfoList[0];
+                        var cardCashMonthCountInfoList=cardCashYearCountInfo.cardCashMonthCountInfoList;
+                        for(var i=0;i< cardCashMonthCountInfoList.length;i++){
+                        var cardCashMonthCountInfo =cardCashMonthCountInfoList[i];
+                        %>
+                        <div class="item_box">
+                            <% if(i >0){%>
+                            <div class="h">
+                                <%=cardCashMonthCountInfo.month%> 月
+                            </div>
+                            <%}%>
+                            <div class="b">
+                                <ul>
+                                    <%
+                                    var cardCashLogInfoList=cardCashMonthCountInfo.cardCashLogInfoList;
+                                    for(var j=0;j< cardCashLogInfoList.length;j++){
+                                    var cardCashInfo=cardCashLogInfoList[j];
+                                    if(cardCashInfo.cashType=='Consume'){%>
+                                    <li>
+                                        <span class="fl"><i class="fa fa-leaf"></i></span>
+                                        <span class="fl">
+                                            <span class="cz_price">余额消费<%=getAmount(cardCashInfo.amount)%>元</span>
+                                            <span class="time"><%=getDateTime(cardCashInfo.addDate)%></span>
+                                        </span>
+                                        <span class="fr price y">-<%=getAmount(cardCashInfo.amount)%></span>
+                                    </li>
+                                    <%}}%>
+                                </ul>
+                            </div>
+                        </div>
+                        <%}}%>
+                    </div>
+                </div> 
+                <%if (!isPoweredBy){%>
+                <div class="_footer">
+                    <p>技术支持：阁下 <a href="http://www.gexia.com" target="_blank">GEXIA.COM</a></p>
+                </div>
+                <%}else if(poweredBy){%>
+                <div class="_footer">
+                    <p><%==poweredBy%></p>
+                </div>
+                <%}%>
+            </div>
+        </script>
+    </div>
+</body>
+</html>
+
+
+
+<script src="../components/lib/jquery-1.11.0.min.js"></script>
+<script src="../components/lib/bootstrap.min.js"></script>
+<script src="../components/lib/json2.js"></script>
+<script src="../components/lib/layer/layer.min.js"></script>
+<script src="../components/lib/template.js"></script>
+<script src="../components/lib/toastr.min.js"></script>
+<script src="../components/lib/notifyService.js"></script>
+<script src="../components/lib/utilService.js"></script>
+
+<script src="scripts/service.js"></script>
+<script src="scripts/common.js"></script>
+<script src="scripts/myBillController.js"></script>

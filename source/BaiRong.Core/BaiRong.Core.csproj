@@ -1,0 +1,1021 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3D8CB06B-1791-4685-AB56-965B9F41666E}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>BaiRong.Core</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>BaiRong.Core</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Auth\Base64Utils.cs" />
+    <Compile Include="Auth\JWT\DefaultJsonSerializer.cs" />
+    <Compile Include="Auth\JWT\IJsonSerializer.cs" />
+    <Compile Include="Auth\JWT\JWT.cs" />
+    <Compile Include="Auth\JWT\JWTAdministrator.cs" />
+    <Compile Include="Auth\AdministratorToken.cs" />
+    <Compile Include="Auth\UserToken.cs" />
+    <Compile Include="Data\MySql.cs" />
+    <Compile Include="HomeUtils.cs" />
+    <Compile Include="AuxiliaryTable\InputParserUtils.cs" />
+    <Compile Include="AuxiliaryTable\TableManager.cs" />
+    <Compile Include="AuxiliaryTable\TableUtils.cs" />
+    <Compile Include="AuxiliaryTable\TableStyleManager.cs" />
+    <Compile Include="Collection\Pair.cs" />
+    <Compile Include="SiteFilesAssets.cs" />
+    <Compile Include="SiteServerAssets.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.AdditionalElements\DublinCore\DcElement.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.AdditionalElements\ScopedElement.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.AdditionalElements\ScopedElementCollection.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core.Collections\AtomContentCollection.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core.Collections\AtomEntryCollection.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core.Collections\AtomLinkCollection.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core.Collections\AtomPersonConstructCollection.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\AtomContent.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\AtomContentConstruct.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\AtomDateConstruct.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\AtomElement.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\AtomEntry.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\AtomFeed.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\AtomGenerator.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\AtomLink.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\AtomPersonConstruct.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\Enums.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Core\Exceptions.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Utils\DefaultValues.cs" />
+    <Compile Include="ThirdParty\Atom\Atom.Utils\Utils.cs" />
+    <Compile Include="ThirdParty\Atom\AtomReader.cs" />
+    <Compile Include="ThirdParty\Atom\AtomWriter.cs" />
+    <Compile Include="ThirdParty\Compression\BZip2\BZip2.cs" />
+    <Compile Include="ThirdParty\Compression\BZip2\BZip2Constants.cs" />
+    <Compile Include="ThirdParty\Compression\BZip2\BZip2Exception.cs" />
+    <Compile Include="ThirdParty\Compression\BZip2\BZip2InputStream.cs" />
+    <Compile Include="ThirdParty\Compression\BZip2\BZip2OutputStream.cs" />
+    <Compile Include="ThirdParty\Compression\Checksums\Adler32.cs" />
+    <Compile Include="ThirdParty\Compression\Checksums\CRC32.cs" />
+    <Compile Include="ThirdParty\Compression\Checksums\IChecksum.cs" />
+    <Compile Include="ThirdParty\Compression\Checksums\StrangeCRC.cs" />
+    <Compile Include="ThirdParty\Compression\Core\FileSystemScanner.cs" />
+    <Compile Include="ThirdParty\Compression\Core\INameTransform.cs" />
+    <Compile Include="ThirdParty\Compression\Core\NameFilter.cs" />
+    <Compile Include="ThirdParty\Compression\Core\PathFilter.cs" />
+    <Compile Include="ThirdParty\Compression\Encryption\PkzipClassic.cs" />
+    <Compile Include="ThirdParty\Compression\GZip\GZIPConstants.cs" />
+    <Compile Include="ThirdParty\Compression\GZip\GZipException.cs" />
+    <Compile Include="ThirdParty\Compression\GZip\GzipInputStream.cs" />
+    <Compile Include="ThirdParty\Compression\GZip\GzipOutputStream.cs" />
+    <Compile Include="ThirdParty\Compression\SharpZipBaseException.cs" />
+    <Compile Include="ThirdParty\Compression\Tar\InvalidHeaderException.cs" />
+    <Compile Include="ThirdParty\Compression\Tar\TarArchive.cs" />
+    <Compile Include="ThirdParty\Compression\Tar\TarBuffer.cs" />
+    <Compile Include="ThirdParty\Compression\Tar\TarEntry.cs" />
+    <Compile Include="ThirdParty\Compression\Tar\TarException.cs" />
+    <Compile Include="ThirdParty\Compression\Tar\TarHeader.cs" />
+    <Compile Include="ThirdParty\Compression\Tar\TarInputStream.cs" />
+    <Compile Include="ThirdParty\Compression\Tar\TarOutputStream.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\Deflater.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\DeflaterConstants.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\DeflaterEngine.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\DeflaterHuffman.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\DeflaterPending.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\Inflater.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\InflaterDynHeader.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\InflaterHuffmanTree.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\PendingBuffer.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\Streams\DeflaterOutputStream.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\Streams\InflaterInputStream.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\Streams\OutputWindow.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\Compression\Streams\StreamManipulator.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\FastZip.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\ZipConstants.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\ZipEntry.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\ZipException.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\ZipFile.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\ZipInputStream.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\ZipNameTransform.cs" />
+    <Compile Include="ThirdParty\Compression\Zip\ZipOutputStream.cs" />
+    <Compile Include="AreaManager.cs" />
+    <Compile Include="CacheManager.cs" />
+    <Compile Include="AppManager.cs" />
+    <Compile Include="ProductFileUtils.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SmsManager.cs" />
+    <Compile Include="DepartmentManager.cs" />
+    <Compile Include="IO\CSVUtils.cs" />
+    <Compile Include="Model\Attributes\ChannelAttribute.cs" />
+    <Compile Include="Model\Attributes\GovPublicContentAttribute.cs" />
+    <Compile Include="Model\Attributes\GovInteractContentAttribute.cs" />
+    <Compile Include="Model\Attributes\VoteContentAttribute.cs" />
+    <Compile Include="Model\BaseInfo.cs" />
+    <Compile Include="Model\ErrorLogInfo.cs" />
+    <Compile Include="ConfigManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Model\Enumerations\EDataFormat.cs" />
+    <Compile Include="Model\Enumerations\ESmsTemplateType.cs" />
+    <Compile Include="Model\Enumerations\EStaticXType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Model\Enumerations\ESubscribePushType.cs" />
+    <Compile Include="Model\Enumerations\EUserActionType.cs" />
+    <Compile Include="Model\Enumerations\ELevelPeriodType.cs" />
+    <Compile Include="Model\Enumerations\EPublishmentSystemType.cs" />
+    <Compile Include="Model\Enumerations\EUploadType.cs" />
+    <Compile Include="Model\Enumerations\EUserLockType.cs" />
+    <Compile Include="Model\Enumerations\ESmsProviderType.cs" />
+    <Compile Include="Model\Enumerations\EThirdLoginType.cs" />
+    <Compile Include="Model\CaseExtendedAttributes.cs" />
+    <Compile Include="Model\ThirdLoginAuthInfo.cs" />
+    <Compile Include="Model\ThirdLoginInfo.cs" />
+    <Compile Include="Model\UserInfoExtend.cs" />
+    <Compile Include="Model\UserLogInfo.cs" />
+    <Compile Include="Data\SqlServer.cs" />
+    <Compile Include="Provider\AdministratorDao.cs" />
+    <Compile Include="Provider\AreaDao.cs" />
+    <Compile Include="Provider\AuxiliaryTableDataDao.cs" />
+    <Compile Include="Provider\ThirdLoginDao.cs" />
+    <Compile Include="Provider\ConfigDao.cs" />
+    <Compile Include="Provider\ContentCheckDao.cs" />
+    <Compile Include="Provider\ContentDao.cs" />
+    <Compile Include="Provider\ContentModelDao.cs" />
+    <Compile Include="Provider\CountDao.cs" />
+    <Compile Include="Provider\DatabaseDao.cs" />
+    <Compile Include="Provider\DbCacheDao.cs" />
+    <Compile Include="Provider\DepartmentDao.cs" />
+    <Compile Include="Provider\DiggDao.cs" />
+    <Compile Include="Provider\ErrorLogDao.cs" />
+    <Compile Include="Provider\LogDao.cs" />
+    <Compile Include="Provider\PermissionsInRolesDao.cs" />
+    <Compile Include="Provider\RoleDao.cs" />
+    <Compile Include="Provider\TableCollectionDao.cs" />
+    <Compile Include="Provider\TableMatchDao.cs" />
+    <Compile Include="Provider\TableMetadataDao.cs" />
+    <Compile Include="Provider\TableStructureDao.cs" />
+    <Compile Include="Provider\TableStyleDao.cs" />
+    <Compile Include="Provider\TagDao.cs" />
+    <Compile Include="Provider\UserBindingDao.cs" />
+    <Compile Include="Provider\UserDao.cs" />
+    <Compile Include="Provider\UserGroupDao.cs" />
+    <Compile Include="Provider\UserLogDao.cs" />
+    <Compile Include="PermissionConfigManager.cs" />
+    <Compile Include="PermissionConfig.cs" />
+    <Compile Include="Cryptography\DESEncryptor.cs" />
+    <Compile Include="Cryptography\EncryptUtils.cs" />
+    <Compile Include="Data\ADOHelper.cs" />
+    <Compile Include="BaiRongDataProvider.cs" />
+    <Compile Include="Data\DataProviderBase.cs" />
+    <Compile Include="Data\SqlHelper.cs" />
+    <Compile Include="Data\SqlUtils.cs" />
+    <Compile Include="Diagnostics\ComputerUtils.cs" />
+    <Compile Include="Images\BitmapFilter.cs" />
+    <Compile Include="Images\ConvMatrix.cs" />
+    <Compile Include="Images\FloatPoint.cs" />
+    <Compile Include="Images\ImageUtils.cs" />
+    <Compile Include="DirectoryUtils.cs" />
+    <Compile Include="IO\EncodedStringWriter.cs" />
+    <Compile Include="IO\FileManagement\FileManager.cs" />
+    <Compile Include="IO\FileManagement\FileSystemInfoExtend.cs" />
+    <Compile Include="IO\FileManagement\FileSystemInfosExtend.cs" />
+    <Compile Include="IO\FileManagement\FTPFileSystemInfo.cs" />
+    <Compile Include="IO\FileManagement\SimpleFileInfoBase.cs" />
+    <Compile Include="FileUtils.cs" />
+    <Compile Include="IO\FileWatcherClass.cs" />
+    <Compile Include="PathUtils.cs" />
+    <Compile Include="IO\Serialization\Serializer.cs" />
+    <Compile Include="IO\Serialization\SerializerData.cs" />
+    <Compile Include="IO\ZipUtils.cs" />
+    <Compile Include="Model\Attributes\JobContentAttribute.cs" />
+    <Compile Include="Model\Attributes\ContentAttribute.cs" />
+    <Compile Include="Model\Attributes\ResumeContentAttribute.cs" />
+    <Compile Include="Model\ConfigInfo.cs" />
+    <Compile Include="Model\SystemConfigInfo.cs" />
+    <Compile Include="Model\LogInfo.cs" />
+    <Compile Include="Model\ContentCheckInfo.cs" />
+    <Compile Include="Model\ContentInfo.cs" />
+    <Compile Include="Model\Enumerations\EContentModelType.cs" />
+    <Compile Include="Model\Enumerations\EDiggType.cs" />
+    <Compile Include="Model\Enumerations\EMonth.cs" />
+    <Compile Include="Model\Enumerations\EScopeType.cs" />
+    <Compile Include="Model\Enumerations\ETableStyle.cs" />
+    <Compile Include="Model\Enumerations\ETaxisType.cs" />
+    <Compile Include="Model\Enumerations\ETextEditorType.cs" />
+    <Compile Include="Model\Enumerations\ESSOAppType.cs" />
+    <Compile Include="Model\Enumerations\ETheme.cs" />
+    <Compile Include="Model\DepartmentInfo.cs" />
+    <Compile Include="Model\TagInfo.cs" />
+    <Compile Include="Model\AuxiliaryTableInfo.cs" />
+    <Compile Include="Model\ContentModelInfo.cs" />
+    <Compile Include="Model\TableColumnInfo.cs" />
+    <Compile Include="Model\Enumerations\ECountType.cs" />
+    <Compile Include="Model\Enumerations\EPhotoListType.cs" />
+    <Compile Include="Model\InputValidateInfo.cs" />
+    <Compile Include="Model\Enumerations\EGender.cs" />
+    <Compile Include="Model\AreaInfo.cs" />
+    <Compile Include="Net\SmtpMail\ISmtpMail.cs" />
+    <Compile Include="Net\WebClientUtils.cs" />
+    <Compile Include="Model\Attributes\BackgroundContentAttribute.cs" />
+    <Compile Include="Model\Attributes\InputContentAttribute.cs" />
+    <Compile Include="Controls\HelpControl.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\TemplatedWebControl.cs" />
+    <Compile Include="Controls\TextEditorBase.cs" />
+    <Compile Include="Text\HtmlClearUtils.cs" />
+    <Compile Include="Text\WordSpliter.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Aliyun\AliyunResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Aliyun\DefaultAliyunClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Aliyun\IAliyunClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Aliyun\IAliyunRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Aliyun\IAliyunUploadRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Aliyun\Parser\AliyunJsonParser.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Aliyun\Parser\AliyunJsonReader.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Aliyun\Parser\AliyunXmlParser.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Aliyun\Parser\IAliyunParser.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Aliyun\Util\AliyunWebUtils.cs" />
+    <Compile Include="ThirdParty\AliDaYu\AutoRetryClusterTopClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\AutoRetryTopClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\BaseTopRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\BatchTopClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\ClusterTopClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Cluster\ClusterManager.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Cluster\DnsConfig.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Constants.cs" />
+    <Compile Include="ThirdParty\AliDaYu\DefaultTopClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\DefaultTopLogger.cs" />
+    <Compile Include="ThirdParty\AliDaYu\DingTalk\BaseDingTalkRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\DingTalk\DefaultDingTalkClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\DingTalk\DingTalkResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\DingTalk\IDingTalkClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\DingTalk\IDingTalkRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Domain\Area.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Domain\BizResult.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Domain\KfcSearchResult.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Domain\Subtask.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Domain\Task.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\FastJson\dynamic.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\FastJson\Formatter.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\FastJson\Getters.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\FastJson\JSON.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\FastJson\JsonParser.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\FastJson\JsonSerializer.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\FastJson\Reflection.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\FastJson\SafeDictionary.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\Remoting\HTTP\HttpHeader.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\Remoting\HTTP\HttpProtocolHandle.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\Remoting\MessageHeader.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\Remoting\ProtocolStreamHandle.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\Remoting\TCP\TcpProtocolFlags.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\Remoting\TCP\TcpProtocolHandle.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\Remoting\TCP\TcpTransportHeader.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\ChannelClosedEventArg.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\ChannelContext.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\ChannelException.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\ClientChannelSharedSelector.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\IChannelSender.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\IClientChannel.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\IClientChannelSelector.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\IServerChannelSender.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\ServerChannel.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\TCP\TcpServerChannel.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\TCP\TcpServerChannelSender.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\WebSocket\WebSocketClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\WebSocket\WebSocketClientChannel.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Channel\WebSocket\WebSocketClientHelper.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\AckMessageArgs.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\Endpoint.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\EndpointContext.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\EndpointHandler.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\EndpointProxy.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\Identity.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\Message.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\MessageIO.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\MessageType.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\SendCallback.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Endpoints\SimpleIdentity.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\LinkException.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\ResetableTimer.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Text.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\TopLink\Util\GZIPHelper.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\ByteOrder.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\CloseEventArgs.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\ErrorEventArgs.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Ext.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Frame\CloseStatusCode.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Frame\Fin.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Frame\Mask.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Frame\Opcode.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Frame\PayloadData.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Frame\Rsv.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Frame\WsFrame.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Handshake.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\MessageEventArgs.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\AuthenticationSchemes.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\AuthenticationSchemeSelector.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\ChunkedInputStream.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\ChunkStream.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\Cookie.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\CookieCollection.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\CookieException.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\EndPointListener.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\EndPointManager.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpConnection.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpListener.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpListenerContext.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpListenerException.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpListenerPrefixCollection.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpListenerRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpListenerResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpListenerWebSocketContext.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpStatusCode.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpStreamAsyncResult.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpUtility.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\HttpVersion.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\ListenerAsyncResult.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\ListenerPrefix.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\RequestStream.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\ResponseStream.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\Security\SslStream.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\Sockets\TcpListenerWebSocketContext.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\WebHeaderCollection.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Net\WebSocketContext.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\RequestHandshake.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\ResponseHandshake.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Server\HttpServer.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Server\IServiceHost.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Server\ResponseEventArgs.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Server\ServiceManager.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Server\SessionManager.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Server\WebSocketServer.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Server\WebSocketServerBase.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Server\WebSocketService.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\Server\WebSocketServiceHost.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\SynchronizedCollection.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\WebSocket.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\WsReceivedTooBigMessageException.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\WsState.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Generated\WebSocket\WsStream.cs" />
+    <Compile Include="ThirdParty\AliDaYu\ITopClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\ITopLogger.cs" />
+    <Compile Include="ThirdParty\AliDaYu\ITopRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\ITopUploadRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Parser\ITopParser.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Parser\ITopReader.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Parser\QimenXmlParser.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Parser\TopAttribute.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Parser\TopJsonParser.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Parser\TopJsonReader.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Parser\TopSimplifyJsonParser.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Parser\TopSimplifyJsonReader.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Parser\TopXmlParser.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Qimen\DefaultQimenClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Qimen\IQimenClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Qimen\QimenRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Qimen\QimenResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Report\ApiReporter.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Report\TopSdkFeedbackUploadRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Report\TopSdkFeedbackUploadResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcFlowChargeProvinceRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcFlowChargeRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcFlowGradeRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcFlowQueryRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcIotQrycardRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcIotRechargeCardRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcSmsNumQueryRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcSmsNumSendRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcTtsNumSinglecallRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcVoiceNumDoublecallRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AlibabaAliqinFcVoiceNumSinglecallRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AppipGetRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\AreasGetRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\HttpdnsGetRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\KfcKeywordSearchRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\TimeGetRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\TopatsResultGetRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\TopatsTaskDeleteRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\TopAuthTokenCreateRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\TopAuthTokenRefreshRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\TopIpoutGetRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\TopSdkFeedbackUploadRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\TopSecretGetRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Request\TopSecretRegisterRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcFlowChargeProvinceResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcFlowChargeResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcFlowGradeResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcFlowQueryResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcIotQrycardResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcIotRechargeCardResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcSmsNumQueryResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcSmsNumSendResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcTtsNumSinglecallResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcVoiceNumDoublecallResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AlibabaAliqinFcVoiceNumSinglecallResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AppipGetResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\AreasGetResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\HttpdnsGetResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\KfcKeywordSearchResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\TimeGetResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\TopatsResultGetResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\TopatsTaskDeleteResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\TopAuthTokenCreateResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\TopAuthTokenRefreshResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\TopIpoutGetResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\TopSdkFeedbackUploadResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\TopSecretGetResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Response\TopSecretRegisterResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\ErrorUtil.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\SecretContext.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\SecretData.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\SecretException.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\SecurityBiz.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\SecurityClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\SecurityConstants.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\SecurityCore.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\SecurityCounter.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\TopSecretGetRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Security\TopSecretGetResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Tmc\Message.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Tmc\MessageArgs.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Tmc\MessageFields.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Tmc\MessageKind.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Tmc\TmcClient.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Tmc\TmcIdentity.cs" />
+    <Compile Include="ThirdParty\AliDaYu\TopBatchRequest.cs" />
+    <Compile Include="ThirdParty\AliDaYu\TopBatchResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\TopDictionary.cs" />
+    <Compile Include="ThirdParty\AliDaYu\TopException.cs" />
+    <Compile Include="ThirdParty\AliDaYu\TopObject.cs" />
+    <Compile Include="ThirdParty\AliDaYu\TopResponse.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Util\AtsUtils.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Util\CountDownLatch.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Util\FileItem.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Util\RequestValidator.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Util\SecurityUtil.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Util\SpiUtils.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Util\StringUtil.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Util\TopUtils.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Util\WebUtils.cs" />
+    <Compile Include="ThirdParty\AliDaYu\Util\XmlWriter.cs" />
+    <Compile Include="Permissions\AdministratorWithPermissions.cs" />
+    <Compile Include="Permissions\AdminManager.cs" />
+    <Compile Include="Permissions\PermissionManager.cs" />
+    <Compile Include="DirectoryTreeItem.cs" />
+    <Compile Include="UserGroupManager.cs" />
+    <Compile Include="Permissions\RoleManager.cs" />
+    <Compile Include="UEditorUploaderForUser.cs" />
+    <Compile Include="Model\AdministratorInfo.cs" />
+    <Compile Include="Model\Enumerations\EPredefinedRole.cs" />
+    <Compile Include="Model\Enumerations\ESecurityType.cs" />
+    <Compile Include="Model\Enumerations\EUserBindingType.cs" />
+    <Compile Include="Model\Enumerations\EUserPasswordRestriction.cs" />
+    <Compile Include="Model\Enumerations\EUserVerifyType.cs" />
+    <Compile Include="Model\UserGroupInfo.cs" />
+    <Compile Include="Model\UserGroupInfoExtend.cs" />
+    <Compile Include="Model\UserInfo.cs" />
+    <Compile Include="Model\PermissionsInRolesInfo.cs" />
+    <Compile Include="Model\UserBindingInfo.cs" />
+    <Compile Include="Model\UserConfigInfo.cs" />
+    <Compile Include="Base64Decoder.cs" />
+    <Compile Include="Base64Encoder.cs" />
+    <Compile Include="ThirdParty\AntiXSS\AntiXSS.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Globalization\CodepageDetect.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Globalization\CodepageDetectData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Globalization\CodepageMap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Globalization\CodepageMapData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Globalization\CultureDB.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Globalization\GlobalizationExceptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Globalization\Microsoft.Exchange.CtsResources.GlobalizationStrings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Globalization\OutboundCodepageDetector.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\GlobalSuppressions.cs" />
+    <Compile Include="ThirdParty\AntiXSS\Shared\AutoPositionStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\ByteString.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\Configuration.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\DataException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\ICloneableStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\InternalDebug.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\Microsoft.Exchange.CtsResources.SharedStrings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\NativeMethods.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\ScratchPad.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\SuppressCloseStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\TempFileStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\Shared\VirtualStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ByteCache.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\CommonTypes.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterBufferInput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterDecodingInput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterEncodingOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterInput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterUnicodeInput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ConverterUnicodeOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\HashCode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\HtmlInjection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\Injection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ParseSupport.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\ScratchBuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\StringBuildSink.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\TextCache.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\TextWriterSink.cs" />
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\Token.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\TokenBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\COMMON\UrlCompareSink.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\ConverterCommon.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\ConverterReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\ConverterStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\ConverterWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\CSS\CssData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\CSS\CssParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\CSS\CssToken.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\CSS\CssTokenBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatProperty.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatStore.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatStoreData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\FORMAT\FormatTypes.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HtmlToHtml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlCallback.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlConverterData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlFilterData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlFormatConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlFormatOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlNameData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlNames.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlNormalizingParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlSupport.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlTextExtractionConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlToHtmlConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlToken.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlTokenBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlToTextConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\HTML\HtmlWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\Microsoft.Exchange.CtsResources.TextConvertersStrings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEST\TestHtmlTrace.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEST\TestTextOutputTrace.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TextConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TextConvertersDefaults.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextCodepageConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextFormatConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextToken.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextTokenBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\AntiXSS\TextConverters\TEXT\TextToTextConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ThirdParty\LitJson\IJsonWrapper.cs" />
+    <Compile Include="ThirdParty\LitJson\JsonData.cs" />
+    <Compile Include="ThirdParty\LitJson\JsonException.cs" />
+    <Compile Include="ThirdParty\LitJson\JsonMapper.cs" />
+    <Compile Include="ThirdParty\LitJson\JsonReader.cs" />
+    <Compile Include="ThirdParty\LitJson\JsonWriter.cs" />
+    <Compile Include="ThirdParty\LitJson\Lexer.cs" />
+    <Compile Include="ThirdParty\LitJson\ParserToken.cs" />
+    <Compile Include="WebConfigUtils.cs" />
+    <Compile Include="FileConfigManager.cs" />
+    <Compile Include="ContentModelUtils.cs" />
+    <Compile Include="ConvertHelper.cs" />
+    <Compile Include="DateUtils.cs" />
+    <Compile Include="Model\Copyable.cs" />
+    <Compile Include="Model\Enumerations\EAuxiliaryTableType.cs" />
+    <Compile Include="Model\Enumerations\EBoolean.cs" />
+    <Compile Include="Model\Enumerations\ECharset.cs" />
+    <Compile Include="Model\Enumerations\EDataType.cs" />
+    <Compile Include="Model\Enumerations\EDateFormatType.cs" />
+    <Compile Include="Model\Enumerations\EFileSystemType.cs" />
+    <Compile Include="Model\Enumerations\EImageSizeType.cs" />
+    <Compile Include="Model\Enumerations\EImageType.cs" />
+    <Compile Include="Model\Enumerations\EInputType.cs" />
+    <Compile Include="Model\Enumerations\EInputValidateType.cs" />
+    <Compile Include="Model\Enumerations\EPasswordFormat.cs" />
+    <Compile Include="Model\Enumerations\ERestrictionType.cs" />
+    <Compile Include="Model\Enumerations\ETimeFormatType.cs" />
+    <Compile Include="Model\Enumerations\ETriState.cs" />
+    <Compile Include="Model\Enumerations\EVoteItemType.cs" />
+    <Compile Include="Model\Enumerations\EVoteRestrictType.cs" />
+    <Compile Include="Model\Enumerations\EVoteType.cs" />
+    <Compile Include="Model\ExtendedAttributes.cs" />
+    <Compile Include="Model\TableMatchInfo.cs" />
+    <Compile Include="Model\TableMetadataInfo.cs" />
+    <Compile Include="Model\TableStyleInfo.cs" />
+    <Compile Include="Model\TableStyleItemInfo.cs" />
+    <Compile Include="Tabs\Tab.cs" />
+    <Compile Include="Tabs\TabCollection.cs" />
+    <Compile Include="Model\LowerNameValueCollection.cs" />
+    <Compile Include="Data\SqlBase.cs" />
+    <Compile Include="RestrictionManager.cs" />
+    <Compile Include="Tabs\TabManager.cs" />
+    <Compile Include="TagUtils.cs" />
+    <Compile Include="ThirdParty\Sgml\SgmlParser.cs" />
+    <Compile Include="ThirdParty\Sgml\SgmlReader.cs" />
+    <Compile Include="Text\XmlUtils.cs" />
+    <Compile Include="Text\CompareUtils.cs" />
+    <Compile Include="Text\LogUtils.cs" />
+    <Compile Include="Collection\PairList.cs" />
+    <Compile Include="CacheUtils.cs" />
+    <Compile Include="ControlUtils.cs" />
+    <Compile Include="CookieUtils.cs" />
+    <Compile Include="CountManager.cs" />
+    <Compile Include="DbCacheManager.cs" />
+    <Compile Include="Net\SmtpMail\MailUtils.cs" />
+    <Compile Include="IPList.cs" />
+    <Compile Include="MessageUtils.cs" />
+    <Compile Include="PageUtils.cs" />
+    <Compile Include="RegexUtils.cs" />
+    <Compile Include="StringUtils.cs" />
+    <Compile Include="TranslateUtils.cs" />
+    <Compile Include="ThirdParty\MvpXml\XmlNamespaces.cs" />
+    <Compile Include="ThirdParty\MvpXml\XPathNavigatorReader.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Collections\ExceptionCollection.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Collections\RssCategoryCollection.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Collections\RssChannelCollection.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Collections\RssFeedCollection.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Collections\RssItemCollection.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Collections\RssModuleCollection.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Collections\RssModuleItemCollection.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Collections\RssModuleItemCollectionCollection.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssChannel\RssChannel.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssChannel\RssCloud.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssChannel\RssImage.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssChannel\RssTextInput.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssFeed.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssItem\RssEnclosure.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssItem\RssGuid.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssItem\RssItem.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssItem\RssSource.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssModule.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssModuleItem.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssModules\RssBlogChannel.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssModules\RssCreativeCommon.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssModules\RssPhotoAlbum.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssReader.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssTestAppliction\AssemblyInfo.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssTestAppliction\RssTestApp.cs" />
+    <Compile Include="ThirdParty\RSS.NET\RssWriter.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Shared\DBBool.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Shared\RssCategory.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Shared\RssCompact.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Shared\RssDefault.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Shared\RssElement.cs" />
+    <Compile Include="ThirdParty\RSS.NET\Shared\RssEnumerators.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ThirdParty\AntiXSS\Globalization\Microsoft.Exchange.CtsResources.GlobalizationStrings.resx">
+      <DependentUpon>Microsoft.Exchange.CtsResources.GlobalizationStrings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ThirdParty\AntiXSS\Shared\Microsoft.Exchange.CtsResources.SharedStrings.resx">
+      <DependentUpon>Microsoft.Exchange.CtsResources.SharedStrings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ThirdParty\AntiXSS\TextConverters\Microsoft.Exchange.CtsResources.TextConvertersStrings.resx">
+      <DependentUpon>Microsoft.Exchange.CtsResources.TextConvertersStrings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ThirdParty\Sgml\Html.dtd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ref\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="system.runtime.serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.RegularExpressions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="ThirdParty\RSS.NET\RssTestAppliction\.cvsignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ThirdParty\Atom\mediatypes.txt" />
+    <Content Include="ThirdParty\RSS.NET\RssTestAppliction\App.ico" />
+    <Content Include="ThirdParty\RSS.NET\RssTestAppliction\RssTestAppliction.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

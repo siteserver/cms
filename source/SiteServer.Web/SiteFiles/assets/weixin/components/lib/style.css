@@ -1,0 +1,100 @@
+#loading {
+position: absolute;
+top: 50%;
+left: 50%;
+padding: 15px;
+background: #666;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+border-radius: 5px;
+opacity: 0.9;
+color: #FFF;
+text-align: center;
+z-index: 19;
+margin: -30px 0 0 -30px;
+}
+body{
+  font-family: "Microsoft YaHei";
+}
+
+.footer{
+  height: 34px;
+  line-height: 34px;
+  font-size: 12px;
+  background: #e3e2dd;
+  text-align: center;
+  color: #999;
+}
+.footer a{
+  color: #666666; text-decoration: none;
+}
+
+.header{
+  position: relative;
+  background: #5cb85c;
+  color: #fff;
+  height: 70px;
+  line-height: 70px;
+}
+.header .back_btn{
+  position: absolute;
+  top: 10px;
+  left: 4%;
+  color: #fff;
+  width: 30%;
+  font-size: 24px;
+  height: 30px;
+  line-height: 30px;
+}
+.header .back_btn i{
+  margin-right: 6%;
+  font-size: 44px;
+  font-weight: bold;
+  vertical-align: -7px;
+  color: #ffffff;
+}
+.header p{
+  font-size: 28px;
+  text-align: center;
+}
+.header a{
+  text-decoration: none;
+}
+
+.header-end{
+  width: 100%;
+  position: relative;
+}
+.header-end img{
+  border: 0;
+  vertical-align: top;
+  width: 100%;
+}
+
+@media all and (max-width: 340px){
+  .header{
+    height: 50px;
+    line-height:50px;
+  }
+  .header p{
+    font-size: 20px;
+  }
+  .header .back_btn{
+    top: 10px;
+  }
+  .header .back_btn i{
+    font-size: 26px;
+    vertical-align: -3px;
+  }
+  .header .back_btn{
+    font-size: 16px;
+  }
+}
+
+.app-body { background:#f1f1f1; color:#666; font-family:Microsoft Yahei; }
+.app-pd-15 {padding:10px 15px;}
+.app-pd-tb10 {padding:10px 0;}
+.app-center { text-align:center;}
+.app-body .fa { color:green;}
+.app-bg-blue { background:#017fba;}
+.app-bg-green { background:#47a447;}

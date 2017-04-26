@@ -1,0 +1,11 @@
+
+/*适配PC端*/
+body{padding: 0;font-family: '宋体'; background: #fff;}
+.page-bizinfo,#activity-detail .page-content{width: 700px; margin: 0 auto;padding: 20px 20px 0;border-left: 1px solid #ccc;border-bottom: 1px solid #ccc;border-right: 1px solid #ccc;}
+.page-bizinfo{border-bottom: none;}
+#activity-detail .page-content{padding-top: 0;}
+.page-bizinfo .header a.activity-meta{vertical-align: middle;}
+.activity-info{margin-top: 6px;}
+#activity-detail .page-content .media img{margin: -2px 0px 18px 0; width: 100%;}
+#activity-detail .page-bizinfo .header #activity-name{ padding-bottom: 10px; border-bottom: 1px dotted #ccc;}
+#activity-detail .page-content .text p{ line-height: 2em;}

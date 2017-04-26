@@ -1,0 +1,23 @@
+/** 
+ 
+ @Name: layer拓展样式
+ @Date: 2012.12.13
+ @Author: 贤心
+ @blog: sentsin.com
+ 
+**/
+
+/* prompt模式 */
+.xubox_layer .xubox_form{width:240px; line-height:30px; padding: 0 5px; border: 1px solid #ccc; background: url(default/textbg.png) #fff repeat-x; color:#333;}
+.xubox_layer .xubox_formArea{width:300px; height:100px; line-height:20px;}
+
+/* tab模式 */
+.xubox_layer .xubox_tab{position:relative; border:1px solid #ccc;}
+.xubox_layer .xubox_tabmove{position:absolute; width:600px; height:30px; top:0; left:0;}
+.xubox_layer .xubox_tabtit{ display:block; height:30px; border-bottom:1px solid #ccc; background-color:#eee;}
+.xubox_layer .xubox_tabtit span{position:relative; float:left; width:120px; height:30px; line-height:30px; text-align:center; cursor:pointer;}
+.xubox_layer .xubox_tabtit span.xubox_tabnow{left:-1px; _top:1px; height:31px; border-left:1px solid #ccc; border-right:1px solid #ccc; background-color:#fff; z-index:10;}
+.xubox_layer .xubox_tab_main{line-height:24px; clear:both;}
+.xubox_layer .xubox_tab_main .xubox_tabli{display:none;}
+.xubox_layer .xubox_tab_main .xubox_tabli.xubox_tab_layer{display:block;}
+.xubox_layer .xubox_tabclose{position:absolute; right:10px; top:5px; cursor:pointer;}

@@ -1,0 +1,178 @@
+@charset "utf-8";
+body, div, address, blockquote, iframe, ul, ol, dl, dt, dd, li, dl, h1, h2, h3, h4, pre, table, caption, th, td, form, legend, fieldset, input, button, select, textarea,p {margin:0; padding:0;}
+ol, ul ,li{list-style: none;}
+i{font-style: normal;}
+.clear{clear:both;height:0; line-height:0; font-size:0;display:block; overflow:hidden}
+.clearfix:after {clear: both;content: ".";display: block;height: 0;visibility: hidden;font-size:0}
+.clearfix {zoom:1}
+.fl{float:left; display: inline;}
+.fr{float:right; display: inline;}
+img {border: 0; vertical-align:top;width: 100%;}
+a:hover{
+	text-decoration: none;
+}
+body{
+	font-size: 12px;
+	font-family: "微软雅黑";
+	background: #fff;
+}
+/**common**/
+.header_store{
+	background: #5bc0de;
+	position: relative;
+}
+.header_store .arr_l i{
+	color: #fff;
+	font-size: 40px;
+	font-weight: bold;
+}
+.header_store .arr_l{
+	position: absolute;
+	left: 30px;
+	top: 14px;
+}
+.header_store .title{
+	text-align: center;
+	line-height: 67px;
+	color: #fff;
+	font-size: 26px;
+}
+
+
+/*index*/
+.main{
+	padding: 5% 2% 10%;
+}
+.page .item a{
+	display: block;
+}
+.page_1 .item{
+	border-left: 3px solid #5bc0de;
+	padding: 3% 3%;
+	background: #f5fafe;
+	margin-bottom: 1px;
+}
+.page_1 .item .img{
+	width: 16%;
+	border-radius: 50%;
+}
+.page_1 .item .text{
+	width: 68%;
+	margin: 0 0 0 4%;
+	color: #666;
+}
+.page_1 .item dt{
+	font-size: 24px;
+	font-weight: normal;
+}
+.page_1 .item dd{
+	font-size: 20px;
+}
+.page_1 .item .fa{
+	font-size: 44px;
+	color: #999;
+	font-weight: bold;
+	margin-top: 4%;
+}
+.page_1 .item:nth-child(2n){
+	border-left: 3px solid #fff;
+	border-right: 3px solid #5bc0de;
+}
+
+
+.page_3 .item{
+	border-left: 3px solid #5bc0de;
+	padding: 3% 3%;
+	background: #ecf6fb;
+}
+.page_3 .item .text{
+	font-size: 24px;
+	color: #666;
+	line-height: 24px;
+}
+.page_3 .item:nth-child(2n){
+	background: #fff;
+}
+.page_3 .item .fa{
+	font-size: 42px;
+	color: #999;
+	font-weight: bold;
+}
+
+
+.page_2 .hd{
+	text-align: center;
+	font-size: 30px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 2% 0;
+	margin-bottom: 3%;
+}
+.page_2 .bd .img{
+	margin-bottom: 3%;
+}
+.page_2 .bd i{
+	font-size: 30px;
+	color: #5bc0de;
+	margin-right: 10px;
+	vertical-align: middle;
+}
+.page_2 .bd p{
+	font-size: 20px;
+	padding-left: 2%;
+	margin-bottom: 2%;
+}
+.page_2 .bd .addr i{
+	margin-right: 16px;
+}
+.page_2 .bd p span{
+	width:90%;
+}
+.page_2 .map{
+	padding-top: 2%;
+}
+
+@media only screen and (max-width: 400px) { 
+	.header_store{
+		height: 47px;
+	}
+	.header_store .arr_l{
+		top: 11px;
+	}
+	.header_store .arr_l i{
+		font-size: 28px;
+	}
+	.header_store .title{
+		line-height: 47px;
+		font-size: 18px;
+	}
+	.page_1 .item dt{
+		font-size: 16px;
+		font-weight: normal;
+	}
+	.page_1 .item dd{
+		font-size: 12px;
+	}
+	.page_1 .item .fa{
+		font-size: 24px;
+	}
+	.page_3 .item .text{
+		font-size: 12px;
+	}
+	.page_3 .item .fa{
+		font-size: 24px;
+	}
+	.page_2 .hd{
+		font-size: 16px;
+	}
+	.page_2 .bd i{
+		font-size: 16px;
+		margin-right: 8px;
+	}
+	.page_2 .bd p{
+		font-size: 12px;
+	}
+	.page_2 .bd .addr i{
+		margin-right: 14px;
+	}
+}
