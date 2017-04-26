@@ -11,11 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.BackgroundPages"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServe.API", "SiteServer.Web\SiteServe.API.csproj", "{10782686-B998-4E54-B2AF-86233C12355D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{40B8642A-EF81-4EEF-A673-82BBFF838216}"
-	ProjectSection(SolutionItems) = preProject
-		TODO.txt = TODO.txt
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "siteserver", "siteserver\siteserver.csproj", "{FFB06C04-69CD-4B0D-872B-3FDF9EEC38C3}"
 EndProject
 Global
