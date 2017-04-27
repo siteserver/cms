@@ -1,3 +1,5 @@
+version: 5.0.{build}
+
 configuration:
   - Release
 
@@ -45,11 +47,11 @@ artifacts:
     name: siteserver_upgrade
 
 deploy:
-  release: myproduct-v$(appveyor_build_version)
-  description: 'Release description'
+  release: siteserver-v$(appveyor_build_version)
+  description: 'SiteServer CMS'
   provider: GitHub
   auth_token:
-    secure: 79587290efb23cc3f91989b5f2ea1212ecc42d73
+    secure: 8ea75c11d89640d5a7e547bf2688a667c564a4f1
   artifact: /.*\.zip/            # upload all NuGet packages to release assets
   draft: false
   prerelease: false
