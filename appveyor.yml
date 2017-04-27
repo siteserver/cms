@@ -3,7 +3,16 @@ configuration:
   - Release
 
 environment:
+  nodejs_version: "6"
   TreatWarningsAsErrors: false
+
+# Install scripts. (runs after repo cloning)
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version
+  # install modules
+  - npm install g3 -g
+  - npm install
 
 branches:
   only:
@@ -22,3 +31,15 @@ cache:
 
 before_build:
   - nuget restore source
+
+after_build:
+  - g3 build home
+  - gulp build
+  - gulp zip
+
+artifacts:
+  - path: siteserver_install.zip
+    name: siteserver_install
+
+  - path: siteserver_upgrade.zip
+    name: siteserver_upgrade
