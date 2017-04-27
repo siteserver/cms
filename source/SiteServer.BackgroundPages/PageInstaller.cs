@@ -221,7 +221,7 @@ Disallow: /home/");
                 else
                 {
                     var connectionStringWithoutDatabaseName = GetConnectionString(false);
-                    var isMySql = DdlSqlDatabaseType.SelectedValue == "MySql";
+                    var isMySql = StringUtils.EqualsIgnoreCase(DdlSqlDatabaseType.SelectedValue, "MySql");
                     isConnectValid = BaiRongDataProvider.DatabaseDao.ConnectToServer(isMySql, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
                 }
                 
@@ -347,9 +347,8 @@ Disallow: /home/");
 
             try
             {
-                var isMySql = DdlSqlDatabaseType.SelectedValue == "MySql";
                 var errorBuilder = new StringBuilder();
-                BaiRongDataProvider.DatabaseDao.Install(isMySql, errorBuilder);
+                BaiRongDataProvider.DatabaseDao.Install(errorBuilder);
 
                 BaiRongDataProvider.ConfigDao.InitializeConfig();
                 BaiRongDataProvider.ConfigDao.InitializeUserRole(TbAdminName.Text, TbAdminPassword.Text);
@@ -375,13 +374,8 @@ Disallow: /home/");
                 var isMySql = StringUtils.EqualsIgnoreCase(DdlSqlDatabaseType.SelectedValue, "MySql");
                 var connectionString = GetConnectionString(true);
 
-                var configFilePath = PathUtils.MapPath("~/web.config");
-                if (FileUtils.IsFileExists(configFilePath))
-                {
-                    var webConfigUtils = new WebConfigUtils();
-                    webConfigUtils.UpdateWebConfig(configFilePath, isProtectData, isMySql, connectionString);
-                }
-                
+                WebConfigUtils.UpdateWebConfig(isProtectData, isMySql, connectionString);
+
                 returnValue = true;
             }
             catch (Exception e)

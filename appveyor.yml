@@ -53,8 +53,9 @@ deploy:
   provider: GitHub
   auth_token:
     secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
-  artifact: /.*\.zip/            # upload all NuGet packages to release assets
+  artifact: /.*\.zip/            # upload all to release assets
   draft: false
   prerelease: false
   on:
+    branch: master
     appveyor_repo_tag: false        # deploy on tag push only

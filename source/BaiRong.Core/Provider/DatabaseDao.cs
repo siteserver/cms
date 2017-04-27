@@ -512,9 +512,9 @@ SELECT * FROM (
             }
         }
 
-        public void Install(bool isMySql, StringBuilder errorBuilder)
+        public void Install(StringBuilder errorBuilder)
         {
-            var sqlPath = PathUtils.GetInstallSqlFilePath(isMySql);
+            var sqlPath = PathUtils.GetInstallSqlFilePath(WebConfigUtils.IsMySql);
             BaiRongDataProvider.DatabaseDao.ExecuteSqlInFile(sqlPath, errorBuilder);
             BaiRongDataProvider.TableCollectionDao.CreateAllAuxiliaryTableIfNotExists();
         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Web;
 using System.Xml;
+using BaiRong.Core.Data;
+using BaiRong.Core.Data.Helper;
 
 namespace BaiRong.Core
 {
@@ -14,6 +16,25 @@ namespace BaiRong.Core
         public static string ApplicationPath { get; }
         public static bool IsMySql { get; private set; }
         public static string ConnectionString { get; private set; }
+
+        private static AdoHelper _helper;
+        public static AdoHelper Helper
+        {
+            get
+            {
+                if (_helper != null) return _helper;
+
+                if (IsMySql)
+                {
+                    _helper = new Data.MySql();
+                }
+                else
+                {
+                    _helper = new SqlServer();
+                }
+                return _helper;
+            }
+        }
 
         static WebConfigUtils()
         {
@@ -102,10 +123,11 @@ namespace BaiRong.Core
             ConnectionString = connectionString;
         }
 
-        public void UpdateWebConfig(string configFilePath, bool isProtectData, bool isMySql, string connectionString)
+        public static void UpdateWebConfig(bool isProtectData, bool isMySql, string connectionString)
         {
-            var doc = new XmlDocument();
+            var configFilePath = PathUtils.MapPath("~/web.config");
 
+            var doc = new XmlDocument();
             doc.Load(configFilePath);
             var dirty = false;
             var appSettings = doc.SelectSingleNode("configuration/appSettings");
@@ -171,6 +193,7 @@ namespace BaiRong.Core
 
             IsMySql = isMySql;
             ConnectionString = connectionString;
+            _helper = null;
         }
     }
 }
