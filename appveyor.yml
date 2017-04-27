@@ -15,6 +15,7 @@ install:
   - npm install g3 -g
   - npm install gulp -g
   - npm install
+  - cd home && npm install && cd ..
 
 branches:
   only:
@@ -51,7 +52,7 @@ deploy:
   description: 'SiteServer CMS'
   provider: GitHub
   auth_token:
-    secure: 8ea75c11d89640d5a7e547bf2688a667c564a4f1
+    secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
   artifact: /.*\.zip/            # upload all NuGet packages to release assets
   draft: false
   prerelease: false
