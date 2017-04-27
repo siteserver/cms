@@ -1,5 +1,4 @@
 configuration:
-  - Debug
   - Release
 
 environment:
@@ -12,6 +11,7 @@ install:
   - ps: Install-Product node $env:nodejs_version
   # install modules
   - npm install g3 -g
+  - npm install gulp -g
   - npm install
 
 branches:
