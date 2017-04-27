@@ -33,7 +33,7 @@ cache:
   - packages -> **\packages.config
 
 before_build:
-  - nuget restore source
+  - nuget restore source/siteserver.sln
 
 after_build:
   - g3 build home
