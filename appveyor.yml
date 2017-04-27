@@ -43,3 +43,15 @@ artifacts:
 
   - path: siteserver_upgrade.zip
     name: siteserver_upgrade
+
+deploy:
+  release: myproduct-v$(appveyor_build_version)
+  description: 'Release description'
+  provider: GitHub
+  auth_token:
+    secure: 79587290efb23cc3f91989b5f2ea1212ecc42d73
+  artifact: /.*\.zip/            # upload all NuGet packages to release assets
+  draft: false
+  prerelease: false
+  on:
+    appveyor_repo_tag: false        # deploy on tag push only
