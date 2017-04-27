@@ -15,7 +15,6 @@ install:
   - npm install g3 -g
   - npm install gulp -g
   - npm install
-  - cd home && npm install && cd ..
 
 branches:
   only:
@@ -36,6 +35,7 @@ before_build:
   - nuget restore source/siteserver.sln
 
 after_build:
+  - cd home && npm install && cd ..
   - g3 build home
   - gulp build
   - gulp zip
