@@ -1,61 +1,119 @@
-version: 5.0.{build}
+# configuration for "master" branch
+-
+  branches:
+    only:
+      - master
 
-configuration:
-  - Release
+  version: 5.0.{build}
 
-environment:
-  nodejs_version: "6"
-  TreatWarningsAsErrors: false
+  configuration:
+    - Release
 
-# Install scripts. (runs after repo cloning)
-install:
-  # Get the latest stable version of Node.js or io.js
-  - ps: Install-Product node $env:nodejs_version
-  # install modules
-  - npm install g3 -g
-  - npm install gulp -g
-  - npm install
+  environment:
+    nodejs_version: "6"
+    TreatWarningsAsErrors: false
 
-branches:
-  only:
-    - master
-    - dev
+  install:
+    - ps: Install-Product node $env:nodejs_version
+    - npm install g3 -g
+    - npm install gulp -g
+    - npm install
 
-skip_tags: true
+  skip_tags: true
 
-notifications:
-  - provider: GitHubPullRequest
-    on_build_success: true
-    on_build_failure: true
+  notifications:
+    - provider: GitHubPullRequest
+      on_build_success: true
+      on_build_failure: true
 
-cache:
-  - packages -> **\packages.config
+  cache:
+    - packages -> **\packages.config
 
-before_build:
-  - nuget restore source/siteserver.sln
+  before_build:
+    - nuget restore source/siteserver.sln
 
-after_build:
-  - cd home && npm install && cd ..
-  - g3 build home
-  - gulp build
-  - gulp zip
+  after_build:
+    - cd home && npm install && cd ..
+    - g3 build home
+    - gulp build
+    - gulp zip
 
-artifacts:
-  - path: siteserver_install.zip
-    name: siteserver_install
+  artifacts:
+    - path: siteserver_install.zip
+      name: siteserver_install
 
-  - path: siteserver_upgrade.zip
-    name: siteserver_upgrade
+    - path: siteserver_upgrade.zip
+      name: siteserver_upgrade
 
-deploy:
-  release: siteserver-v$(appveyor_build_version)
-  description: 'SiteServer CMS'
-  provider: GitHub
-  auth_token:
-    secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
-  artifact: /.*\.zip/            # upload all to release assets
-  draft: false
-  prerelease: false
-  on:
-    branch: master
-    appveyor_repo_tag: false        # deploy on tag push only
+  deploy:
+    release: siteserver-v$(appveyor_build_version)
+    description: 'SiteServer CMS'
+    provider: GitHub
+    auth_token:
+      secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
+    artifact: /.*\.zip/
+    draft: false
+    prerelease: false
+    on:
+      branch: master
+      appveyor_repo_tag: false
+
+# configuration for "dev" branch
+-
+  branches:
+    only:
+      - dev
+
+  version: 5.0.{build}
+
+  configuration:
+    - Release
+
+  environment:
+    nodejs_version: "6"
+    TreatWarningsAsErrors: false
+
+  install:
+    - ps: Install-Product node $env:nodejs_version
+    - npm install g3 -g
+    - npm install gulp -g
+    - npm install
+
+  skip_tags: true
+
+  notifications:
+    - provider: GitHubPullRequest
+      on_build_success: true
+      on_build_failure: true
+
+  cache:
+    - packages -> **\packages.config
+
+  before_build:
+    - nuget restore source/siteserver.sln
+
+  after_build:
+    - cd home && npm install && cd ..
+    - g3 build home
+    - gulp build
+    - gulp zip
+
+  artifacts:
+    - path: siteserver_install.zip
+      name: siteserver_install
+
+    - path: siteserver_upgrade.zip
+      name: siteserver_upgrade
+
+  deploy:
+    release: siteserver-dev-v$(appveyor_build_version)
+    description: 'SiteServer CMS'
+    provider: GitHub
+    auth_token:
+      secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
+    artifact: /.*\.zip/
+    draft: false
+    prerelease: false
+    on:
+      branch: dev
+      appveyor_repo_tag: false

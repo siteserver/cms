@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
@@ -8,50 +8,45 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-    public class StlEntities
+    [Stl(Usage = "通用实体", Description = "通过 {stl.} 实体在模板中显示对应数据")]
+    public class StlStlEntities
 	{
-		private StlEntities()
+		private StlStlEntities()
 		{
 		}
 
-        public const string EntityName = "Stl";                  //通用实体
+        public const string EntityName = "stl";
 
-        public static string PoweredBy = "PoweredBy";         //PoweredBy 链接
-        public static string SiteName = "SiteName";           //站点名称
-        public static string SiteId = "SiteID";               //站点ID
-        public static string SiteDir = "SiteDir";             //站点文件夹
-        public static string SiteUrl = "SiteUrl";             //站点根目录地址
-		public static string RootUrl = "RootUrl";             //系统根目录地址
-        public static string ApiUrl = "ApiUrl";               //API地址
-        public static string CurrentUrl = "CurrentUrl";       //当前页地址
-        public static string ChannelUrl = "ChannelUrl";       //栏目页地址
-        public static string HomeUrl = "HomeUrl";             //用户中心地址
-        public static string LoginUrl = "LoginUrl";             //登录地址
-        public static string LogoutUrl = "LogoutUrl";           //登出地址
-        public static string RegisterUrl = "RegisterUrl";       //注册地址
+        public static string PoweredBy = "PoweredBy";
+        public static string SiteName = "SiteName";
+        public static string SiteId = "SiteId";
+        public static string SiteDir = "SiteDir";
+        public static string SiteUrl = "SiteUrl";
+		public static string RootUrl = "RootUrl";
+        public static string ApiUrl = "ApiUrl";
+        public static string CurrentUrl = "CurrentUrl";
+        public static string ChannelUrl = "ChannelUrl";
+        public static string HomeUrl = "HomeUrl";
+        public static string LoginUrl = "LoginUrl";
+        public static string LogoutUrl = "LogoutUrl";
+        public static string RegisterUrl = "RegisterUrl";
 
-        public static ListDictionary AttributeList
-        {
-            get
-            {
-                var attributes = new ListDictionary
-                {
-                    {PoweredBy, "PoweredBy 链接"},
-                    {SiteName, "站点名称"},
-                    {SiteId, "站点ID"},
-                    {SiteDir, "站点文件夹"},
-                    {SiteUrl, "站点根目录地址"},
-                    {RootUrl, "系统根目录地址"},
-                    {CurrentUrl, "当前页地址"},
-                    {ChannelUrl, "栏目页地址"},
-                    {HomeUrl, "用户中心地址"},
-                    {LoginUrl, "登录地址"},
-                    {LogoutUrl, "登出地址"},
-                    {RegisterUrl, "注册地址"}
-                };
-                return attributes;
-            }
-        }
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {PoweredBy, "PoweredBy 链接"},
+	        {SiteName, "站点名称"},
+	        {SiteId, "站点ID"},
+	        {SiteDir, "站点文件夹"},
+	        {SiteUrl, "站点根目录地址"},
+	        {RootUrl, "系统根目录地址"},
+            {ApiUrl, "Api地址"},
+            {CurrentUrl, "当前页地址"},
+	        {ChannelUrl, "栏目页地址"},
+	        {HomeUrl, "用户中心地址"},
+	        {LoginUrl, "登录地址"},
+	        {LogoutUrl, "登出地址"},
+	        {RegisterUrl, "注册地址"}
+	    };
 
         internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -100,11 +95,11 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(CurrentUrl, attributeName))//当前页地址
                 {
-                    parsedContent = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo);
+                    parsedContent = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(ChannelUrl, attributeName))//栏目页地址
                 {
-                    parsedContent = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelID));
+                    parsedContent = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
                 }
                 else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
                 {
@@ -112,17 +107,17 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(attributeName, LoginUrl))
                 {
-                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo);
+                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
                     parsedContent = HomeUtils.GetLoginUrl(pageInfo.HomeUrl, returnUrl);
                 }
                 else if (StringUtils.EqualsIgnoreCase(attributeName, LogoutUrl))
                 {
-                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo);
+                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
                     parsedContent = HomeUtils.GetLogoutUrl(pageInfo.HomeUrl, returnUrl);
                 }
                 else if (StringUtils.EqualsIgnoreCase(attributeName, RegisterUrl))
                 {
-                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo);
+                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
                     parsedContent = HomeUtils.GetRegisterUrl(pageInfo.HomeUrl, returnUrl);
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "TableFor"))//

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml;
 using BaiRong.Core;
@@ -9,21 +10,22 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlAudio
+    [Stl(Usage = "播放音频", Description = "通过 stl:audio 标签在模板中显示并播放音频文件")]
+    public class StlAudio
 	{
         private StlAudio() { }
-		public const string ElementName = "stl:audio";      //音频播放
+		public const string ElementName = "stl:audio";
 
-        public const string AttributeType = "type";                         //指定存储媒体的字段
-        public const string AttributePlayUrl = "playurl";      				//音频地址
-        public const string AttributeIsAutoPlay = "isautoplay";             //是否自动播放
-        public const string AttributeIsPreLoad = "ispreload";               //是否预载入
-        public const string AttributeIsLoop = "isloop";                     //是否循环播放
-        public const string AttributeIsDynamic = "isdynamic";               //是否动态显示
+        public const string AttributeType = "type";
+        public const string AttributePlayUrl = "playUrl";
+        public const string AttributeIsAutoPlay = "isAutoPlay";
+        public const string AttributeIsPreLoad = "isPreload";
+        public const string AttributeIsLoop = "isLoop";
+        public const string AttributeIsDynamic = "isDynamic";
 
-		public static ListDictionary AttributeList => new ListDictionary
-		{
-		    {AttributeType, "指定音频的字段"},
+		public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        {
+		    {AttributeType, "指定存储音频的内容字段，默认为VideoUrl"},
 		    {AttributePlayUrl, "音频地址"},
 		    {AttributeIsAutoPlay, "是否自动播放"},
 		    {AttributeIsPreLoad, "是否预载入"},
@@ -50,29 +52,28 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
 
-                        if (attributeName.Equals(AttributeType))
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
                         {
                             type = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributePlayUrl))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributePlayUrl))
                         {
                             playUrl = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeIsAutoPlay))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsAutoPlay))
                         {
                             isAutoPlay = TranslateUtils.ToBool(attr.Value, false);
                         }
-                        else if (attributeName.Equals(AttributeIsPreLoad))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsPreLoad))
                         {
                             isPreLoad = TranslateUtils.ToBool(attr.Value, true);
                         }
-                        else if (attributeName.Equals(AttributeIsLoop))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsLoop))
                         {
                             isLoop = TranslateUtils.ToBool(attr.Value, false);
                         }
-                        else if (attributeName.Equals(AttributeIsDynamic))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
                         {
                             isDynamic = TranslateUtils.ToBool(attr.Value);
                         }
@@ -95,7 +96,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, bool isAutoPlay, bool isPreLoad, bool isLoop)
         {
-            var contentId = contextInfo.ContentID;
+            var contentId = contextInfo.ContentId;
 
             if (string.IsNullOrEmpty(playUrl))
             {

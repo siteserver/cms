@@ -140,7 +140,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var ipAddress = PageUtils.GetIpAddress();
 
-                    var contentInfo = new InputContentInfo(0, _inputInfo.InputID, 0, true, string.Empty, ipAddress, DateTime.Now, string.Empty);
+                    var contentInfo = new InputContentInfo(0, _inputInfo.InputId, 0, true, string.Empty, ipAddress, DateTime.Now, string.Empty);
 
                     InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, contentInfo.Attributes);
 

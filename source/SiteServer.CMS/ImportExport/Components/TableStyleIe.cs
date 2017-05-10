@@ -40,7 +40,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		            //仅导出当前系统内的表样式
 		            if (tableStyleInfo.RelatedIdentity != 0)
 		            {
-		                if (!ChannelUtility.IsAncestorOrSelf(publishmentSystemId, publishmentSystemId, tableStyleInfo.RelatedIdentity))
+		                if (!NodeManager.IsAncestorOrSelf(publishmentSystemId, publishmentSystemId, tableStyleInfo.RelatedIdentity))
 		                {
 		                    continue;
 		                }

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using System.Xml;
 using BaiRong.Core;
@@ -9,35 +9,43 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "评论列表", Description = "通过 stl:comments 标签在模板中显示评论列表")]
     public class StlComments
     {
-        public const string ElementName = "stl:comments";                       //评论列表
+        public const string ElementName = "stl:comments";
 
-        public const string AttributeTotalNum = "totalnum";					    //显示内容数目
-        public const string AttributeStartNum = "startnum";					    //从第几条信息开始显示
-        public const string AttributeOrder = "order";						    //排序
-        public const string AttributeWhere = "where";                           //获取内容列表的条件判断
+        public const string AttributeTotalNum = "totalNum";
+        public const string AttributeStartNum = "startNum";
+        public const string AttributeOrder = "order";
+        public const string AttributeWhere = "where";
+        public const string AttributeIsDynamic = "isDynamic";
+        public const string AttributeCellPadding = "cellPadding";
+        public const string AttributeCellSpacing = "cellSpacing";
+        public const string AttributeClass = "class";
         public const string AttributeColumns = "columns";
         public const string AttributeDirection = "direction";
         public const string AttributeHeight = "height";
         public const string AttributeWidth = "width";
         public const string AttributeAlign = "align";
-        public const string AttributeItemHeight = "itemheight";
-        public const string AttributeItemWidth = "itemwidth";
-        public const string AttributeItemAlign = "itemalign";
-        public const string AttributeItemVerticalAlign = "itemverticalalign";
-        public const string AttributeItemClass = "itemclass";
+        public const string AttributeItemHeight = "itemHeight";
+        public const string AttributeItemWidth = "itemWidth";
+        public const string AttributeItemAlign = "itemAlign";
+        public const string AttributeItemVerticalAlign = "itemVerticalAlign";
+        public const string AttributeItemClass = "itemClass";
         public const string AttributeLayout = "layout";
-        public const string AttributeIsDynamic = "isdynamic";                   //是否动态显示
 
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            {"cellpadding", "填充"},
-            {"cellspacing", "间距"},
-            {"class", "Css类"},
+            {AttributeTotalNum, "显示内容数目"},
+            {AttributeStartNum, "从第几条信息开始显示"},
+            {AttributeOrder, "排序"},
+            {AttributeWhere, "获取评论列表的条件判断"},
+            {AttributeIsDynamic, "是否动态显示"},
+            {AttributeCellPadding, "填充"},
+            {AttributeCellSpacing, "间距"},
+            {AttributeClass, "Css类"},
             {AttributeColumns, "列数"},
             {AttributeDirection, "方向"},
-            {AttributeLayout, "指定列表布局方式"},
             {AttributeHeight, "整体高度"},
             {AttributeWidth, "整体宽度"},
             {AttributeAlign, "整体对齐"},
@@ -46,11 +54,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeItemAlign, "项水平对齐"},
             {AttributeItemVerticalAlign, "项垂直对齐"},
             {AttributeItemClass, "项Css类"},
-            {AttributeTotalNum, "显示内容数目"},
-            {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeOrder, "排序"},
-            {AttributeWhere, "获取内容列表的条件判断"},
-            {AttributeIsDynamic, "是否动态显示"}
+            {AttributeLayout, "指定列表布局方式"}
         };
 
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
@@ -58,9 +62,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             string parsedContent;
             try
             {
-                var displayInfo = ContentsDisplayInfo.GetContentsDisplayInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Comment);
+                var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Comment);
 
-                parsedContent = displayInfo.IsDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, displayInfo);
+                parsedContent = listInfo.IsDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, listInfo);
             }
             catch (Exception ex)
             {
@@ -70,34 +74,34 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ContentsDisplayInfo displayInfo)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var parsedContent = string.Empty;
 
-            if (displayInfo.Layout == ELayout.None)
+            if (listInfo.Layout == ELayout.None)
             {
                 var rptContents = new Repeater();
 
-                if (!string.IsNullOrEmpty(displayInfo.HeaderTemplate))
+                if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
                 {
-                    rptContents.HeaderTemplate = new SeparatorTemplate(displayInfo.HeaderTemplate);
+                    rptContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.FooterTemplate))
+                if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
                 {
-                    rptContents.FooterTemplate = new SeparatorTemplate(displayInfo.FooterTemplate);
+                    rptContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.SeparatorTemplate))
+                if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
                 {
-                    rptContents.SeparatorTemplate = new SeparatorTemplate(displayInfo.SeparatorTemplate);
+                    rptContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.AlternatingItemTemplate))
+                if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
-                    rptContents.AlternatingItemTemplate = new RepeaterTemplate(displayInfo.AlternatingItemTemplate, null, null, displayInfo.SeparatorRepeatTemplate, displayInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
+                    rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, null, null, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
                 }
 
-                rptContents.ItemTemplate = new RepeaterTemplate(displayInfo.ItemTemplate, null, null, displayInfo.SeparatorRepeatTemplate, displayInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
+                rptContents.ItemTemplate = new RepeaterTemplate(listInfo.ItemTemplate, null, null, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
 
-                rptContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ItemContainer, displayInfo.StartNum, displayInfo.TotalNum, displayInfo.IsRecommend, displayInfo.OrderByString, displayInfo.Where);
+                rptContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ItemContainer, listInfo.StartNum, listInfo.TotalNum, listInfo.IsRecommend, listInfo.OrderByString, listInfo.Where);
 
                 rptContents.DataBind();
 
@@ -110,27 +114,27 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var pdlContents = new ParsedDataList();
 
-                TemplateUtility.PutContentsDisplayInfoToMyDataList(pdlContents, displayInfo);
+                TemplateUtility.PutListInfoToMyDataList(pdlContents, listInfo);
 
-                pdlContents.ItemTemplate = new DataListTemplate(displayInfo.ItemTemplate, null, null, displayInfo.SeparatorRepeatTemplate, displayInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
-                if (!string.IsNullOrEmpty(displayInfo.HeaderTemplate))
+                pdlContents.ItemTemplate = new DataListTemplate(listInfo.ItemTemplate, null, null, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
+                if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
                 {
-                    pdlContents.HeaderTemplate = new SeparatorTemplate(displayInfo.HeaderTemplate);
+                    pdlContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.FooterTemplate))
+                if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
                 {
-                    pdlContents.FooterTemplate = new SeparatorTemplate(displayInfo.FooterTemplate);
+                    pdlContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.SeparatorTemplate))
+                if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
                 {
-                    pdlContents.SeparatorTemplate = new SeparatorTemplate(displayInfo.SeparatorTemplate);
+                    pdlContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.AlternatingItemTemplate))
+                if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
-                    pdlContents.AlternatingItemTemplate = new DataListTemplate(displayInfo.AlternatingItemTemplate, null, null, displayInfo.SeparatorRepeatTemplate, displayInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
+                    pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, null, null, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
                 }
 
-                pdlContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ItemContainer, displayInfo.StartNum, displayInfo.TotalNum, displayInfo.IsRecommend, displayInfo.OrderByString, displayInfo.Where);
+                pdlContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ItemContainer, listInfo.StartNum, listInfo.TotalNum, listInfo.IsRecommend, listInfo.OrderByString, listInfo.Where);
                 pdlContents.DataBind();
 
                 if (pdlContents.Items.Count > 0)

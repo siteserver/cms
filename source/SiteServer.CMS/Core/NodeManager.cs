@@ -553,6 +553,24 @@ namespace SiteServer.CMS.Core
             }
             return nodeInfo.Additional.ContentAttributesOfDisplay;
         }
+
+        public static bool IsAncestorOrSelf(int publishmentSystemId, int parentId, int childId)
+        {
+            if (parentId == childId)
+            {
+                return true;
+            }
+            var nodeInfo = GetNodeInfo(publishmentSystemId, childId);
+            if (nodeInfo == null)
+            {
+                return false;
+            }
+            if (CompareUtils.Contains(nodeInfo.ParentsPath, parentId.ToString()))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 
 }

@@ -26,11 +26,11 @@ namespace SiteServer.API.Controllers.Stl
             }
             if (inputInfo != null)
             {
-                var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, publishmentSystemId, inputInfo.InputID);
+                var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, publishmentSystemId, inputInfo.InputId);
 
                 var ipAddress = PageUtils.GetIpAddress();
 
-                var contentInfo = new InputContentInfo(0, inputInfo.InputID, 0, inputInfo.IsChecked, body.UserName, ipAddress, DateTime.Now, string.Empty);
+                var contentInfo = new InputContentInfo(0, inputInfo.InputId, 0, inputInfo.IsChecked, body.UserName, ipAddress, DateTime.Now, string.Empty);
 
                 try
                 {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 
 namespace BaiRong.Core.Model.Enumerations
@@ -102,5 +103,12 @@ namespace BaiRong.Core.Model.Enumerations
                 listControl.Items.Add(GetListItem(EDiggType.Bad, false));
             }
         }
-	}
+
+        public static SortedList<string, string> TypeList => new SortedList<string, string>
+        {
+            {GetValue(EDiggType.All), GetText(EDiggType.All)},
+            {GetValue(EDiggType.Good), GetText(EDiggType.Good)},
+            {GetValue(EDiggType.Bad), GetText(EDiggType.Bad)}
+        };
+    }
 }

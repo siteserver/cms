@@ -202,6 +202,16 @@ namespace BaiRong.Core.Data
             return WebConfigUtils.IsMySql ? $"INSTR({columnName}, '{inStr}') = 0" : $"CHARINDEX('{inStr}', {columnName}) = 0";
         }
 
+        public static string GetNotNullAndEmpty(string columnName)
+        {
+            return WebConfigUtils.IsMySql ? $"LENGTH(IFNULL({columnName},'')) > 0" : $"DATALENGTH({columnName}) > 0";
+        }
+
+        public static string GetNullOrEmpty(string columnName)
+        {
+            return WebConfigUtils.IsMySql ? $"LENGTH(IFNULL({columnName},'')) = 0" : $"DATALENGTH({columnName}) = 0";
+        }
+
         public static string GetTopSqlString(string tableName, string columns, string whereAndOrder, int topN)
         {
             if (topN > 0)

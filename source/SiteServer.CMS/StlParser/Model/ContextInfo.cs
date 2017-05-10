@@ -6,52 +6,40 @@ namespace SiteServer.CMS.StlParser.Model
 {
     public class ContextInfo
     {
-        private EContextType contextType = EContextType.Undefined;
-        private PublishmentSystemInfo publishmentSystemInfo;
-        private int channelID;
-        private int contentID;
-        private ContentInfo contentInfo;
-
-        private bool isInnerElement;
-        private bool isCurlyBrace;
-        private int titleWordNum;
-        private int totalNum;           //用于缓存列表内容总数
-        private int pageItemIndex;
-        private DbItemContainer itemContainer;
-        private string containerClientID;
+        private ContentInfo _contentInfo;
 
         public ContextInfo(PageInfo pageInfo)
         {
-            publishmentSystemInfo = pageInfo.PublishmentSystemInfo;
-            channelID = pageInfo.PageNodeId;
-            contentID = pageInfo.PageContentId;
+            PublishmentSystemInfo = pageInfo.PublishmentSystemInfo;
+            ChannelId = pageInfo.PageNodeId;
+            ContentId = pageInfo.PageContentId;
         }
 
-        public ContextInfo(EContextType contextType, PublishmentSystemInfo publishmentSystemInfo, int channelID, int contentID, ContentInfo contentInfo)
+        public ContextInfo(EContextType contextType, PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, ContentInfo contentInfo)
         {
-            this.contextType = contextType;
-            this.publishmentSystemInfo = publishmentSystemInfo;
-            this.channelID = channelID;
-            this.contentID = contentID;
-            this.contentInfo = contentInfo;
+            ContextType = contextType;
+            PublishmentSystemInfo = publishmentSystemInfo;
+            ChannelId = channelId;
+            ContentId = contentId;
+            _contentInfo = contentInfo;
         }
 
         //用于clone
         private ContextInfo(ContextInfo contextInfo)
         {
-            contextType = contextInfo.contextType;
-            publishmentSystemInfo = contextInfo.publishmentSystemInfo;
-            channelID = contextInfo.channelID;
-            contentID = contextInfo.contentID;
-            contentInfo = contextInfo.contentInfo;
+            ContextType = contextInfo.ContextType;
+            PublishmentSystemInfo = contextInfo.PublishmentSystemInfo;
+            ChannelId = contextInfo.ChannelId;
+            ContentId = contextInfo.ContentId;
+            _contentInfo = contextInfo._contentInfo;
 
-            isInnerElement = contextInfo.isInnerElement;
-            isCurlyBrace = contextInfo.isCurlyBrace;
-            titleWordNum = contextInfo.titleWordNum;
-            pageItemIndex = contextInfo.pageItemIndex;
-            totalNum = contextInfo.totalNum;
-            itemContainer = contextInfo.itemContainer;
-            containerClientID = contextInfo.containerClientID;
+            IsInnerElement = contextInfo.IsInnerElement;
+            IsCurlyBrace = contextInfo.IsCurlyBrace;
+            TitleWordNum = contextInfo.TitleWordNum;
+            PageItemIndex = contextInfo.PageItemIndex;
+            TotalNum = contextInfo.TotalNum;
+            ItemContainer = contextInfo.ItemContainer;
+            ContainerClientId = contextInfo.ContainerClientId;
         }
 
         public ContextInfo Clone()
@@ -60,89 +48,41 @@ namespace SiteServer.CMS.StlParser.Model
             return contextInfo;
         }
 
-        public EContextType ContextType
-        {
-            get { return contextType; }
-            set { contextType = value; }
-        }
+        public EContextType ContextType { get; set; } = EContextType.Undefined;
 
-        public PublishmentSystemInfo PublishmentSystemInfo
-        {
-            get { return publishmentSystemInfo; }
-            set { publishmentSystemInfo = value; }
-        }
+        public PublishmentSystemInfo PublishmentSystemInfo { get; set; }
 
-        public int ChannelID
-        {
-            get { return channelID; }
-            set { channelID = value; }
-        }
+        public int ChannelId { get; set; }
 
-        public int ContentID
-        {
-            get { return contentID; }
-            set { contentID = value; }
-        }
+        public int ContentId { get; set; }
 
         public ContentInfo ContentInfo
         {
             get
             {
-                if (contentInfo == null)
-                {
-                    if (contentID > 0)
-                    {
-                        var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelID);
-                        var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-                        var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                        contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentID);
-                    }
-                }
-                return contentInfo;
+                if (_contentInfo != null) return _contentInfo;
+                if (ContentId <= 0) return _contentInfo;
+                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemInfo.PublishmentSystemId, ChannelId);
+                var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
+                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+                _contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, ContentId);
+                return _contentInfo;
             }
-            set { contentInfo = value; }
+            set { _contentInfo = value; }
         }
 
-        public bool IsInnerElement
-        {
-            get { return isInnerElement; }
-            set { isInnerElement = value; }
-        }
+        public bool IsInnerElement { get; set; }
 
-        public bool IsCurlyBrace
-        {
-            get { return isCurlyBrace; }
-            set { isCurlyBrace = value; }
-        }
+        public bool IsCurlyBrace { get; set; }
 
-        public int TitleWordNum
-        {
-            get { return titleWordNum; }
-            set { titleWordNum = value; }
-        }
+        public int TitleWordNum { get; set; }
 
-        public int TotalNum
-        {
-            get { return totalNum; }
-            set { totalNum = value; }
-        }
+        public int TotalNum { get; set; }
 
-        public int PageItemIndex
-        {
-            get { return pageItemIndex; }
-            set { pageItemIndex = value; }
-        }
+        public int PageItemIndex { get; set; }
 
-        public DbItemContainer ItemContainer
-        {
-            get { return itemContainer; }
-            set { itemContainer = value; }
-        }
+        public DbItemContainer ItemContainer { get; set; }
 
-        public string ContainerClientID
-        {
-            get { return containerClientID; }
-            set { containerClientID = value; }
-        }
+        public string ContainerClientId { get; set; }
     }
 }

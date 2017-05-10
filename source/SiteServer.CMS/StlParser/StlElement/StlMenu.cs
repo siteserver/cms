@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
@@ -10,62 +9,57 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
+using System.Collections.Generic;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "下拉菜单", Description = "通过 stl:menu 标签在模板中显示栏目下拉菜单")]
     public class StlMenu
     {
         private StlMenu() { }
-        public const string ElementName = "stl:menu";//获取链接
+        public const string ElementName = "stl:menu";
 
-        public const string Attribute_StyleName = "stylename";				    //样式名称
-        public const string Attribute_ChannelIndex = "channelindex";			//栏目索引
-        public const string Attribute_ChannelName = "channelname";				//栏目名称
-        public const string Attribute_GroupChannel = "groupchannel";		    //指定显示的栏目组
-        public const string Attribute_GroupChannelNot = "groupchannelnot";	    //指定不显示的栏目组
-        public const string Attribute_IsShowChildren = "isshowchildren";		//是否显示二级菜单
-        public const string Attribute_MenuWidth = "menuwidth";					//菜单宽度
-        public const string Attribute_MenuHeight = "menuheight";				//菜单高度
-        public const string Attribute_XPosition = "xposition";					//菜单水平位置
-        public const string Attribute_YPosition = "yposition";					//菜单垂直位置
-        public const string Attribute_ChildMenuDisplay = "childmenudisplay";	//二级菜单显示方式
-        public const string Attribute_ChildMenuWidth = "childmenuwidth";		//二级菜单宽度
-        public const string Attribute_ChildMenuHeight = "childmenuheight";		//二级菜单高度
-        public const string Attribute_Target = "target";						//打开窗口目标
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+        public const string AttributeStyleName = "styleName";
+        public const string AttributeChannelIndex = "channelIndex";
+        public const string AttributeChannelName = "channelName";
+        public const string AttributeGroupChannel = "groupChannel";
+        public const string AttributeGroupChannelNot = "groupChannelNot";
+        public const string AttributeIsShowChildren = "isShowChildren";
+        public const string AttributeMenuWidth = "menuWidth";
+        public const string AttributeMenuHeight = "menuHeight";
+        public const string AttributeXPosition = "xPosition";
+        public const string AttributeYPosition = "yPosition";
+        public const string AttributeChildMenuDisplay = "childMenuDisplay";
+        public const string AttributeChildMenuWidth = "childMenuWidth";
+        public const string AttributeChildMenuHeight = "childMenuHeight";
+        public const string AttributeTarget = "target";
+        public const string AttributeIsDynamic = "isDynamic";
 
-        public static ListDictionary AttributeList
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            get
-            {
-                var attributes = new ListDictionary();
-                attributes.Add(Attribute_StyleName, "样式名称");
-                attributes.Add(Attribute_ChannelIndex, "栏目索引");
-                attributes.Add(Attribute_ChannelName, "栏目名称");
-                attributes.Add(Attribute_GroupChannel, "指定显示的栏目组");
-                attributes.Add(Attribute_GroupChannelNot, "指定不显示的栏目组");
-                attributes.Add(Attribute_IsShowChildren, "是否显示二级菜单");
-                attributes.Add(Attribute_MenuWidth, "菜单宽度");
-                attributes.Add(Attribute_MenuHeight, "菜单高度");
-                attributes.Add(Attribute_XPosition, "菜单水平位置");
-                attributes.Add(Attribute_YPosition, "菜单垂直位置");
-                attributes.Add(Attribute_ChildMenuDisplay, "二级菜单显示方式");
-                attributes.Add(Attribute_ChildMenuWidth, "二级菜单宽度");
-                attributes.Add(Attribute_ChildMenuHeight, "二级菜单高度");
-                attributes.Add(Attribute_Target, "打开窗口目标");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-                return attributes;
-            }
-        }
+            {AttributeStyleName, "样式名称"},
+            {AttributeChannelIndex, "栏目索引"},
+            {AttributeChannelName, "栏目名称"},
+            {AttributeGroupChannel, "指定显示的栏目组"},
+            {AttributeGroupChannelNot, "指定不显示的栏目组"},
+            {AttributeIsShowChildren, "是否显示二级菜单"},
+            {AttributeMenuWidth, "菜单宽度"},
+            {AttributeMenuHeight, "菜单高度"},
+            {AttributeXPosition, "菜单水平位置"},
+            {AttributeYPosition, "菜单垂直位置"},
+            {AttributeChildMenuDisplay, "二级菜单显示方式"},
+            {AttributeChildMenuWidth, "二级菜单宽度"},
+            {AttributeChildMenuHeight, "二级菜单高度"},
+            {AttributeTarget, "打开窗口目标"},
+            {AttributeIsDynamic, "是否动态显示"}
+        };
 
 
-        //对“栏目链接”（stl:menu）元素进行解析
         internal static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var parsedContent = string.Empty;
+            string parsedContent;
             try
             {
-                var ie = node.Attributes.GetEnumerator();
                 var channelIndex = string.Empty;
                 var channelName = string.Empty;
                 var groupChannel = string.Empty;
@@ -82,80 +76,77 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var target = string.Empty;
                 var isDynamic = false;
 
-                while (ie.MoveNext())
+                var ie = node.Attributes?.GetEnumerator();
+                if (ie != null)
                 {
-                    var attr = (XmlAttribute)ie.Current;
-                    var attributeName = attr.Name.ToLower();
-                    if (attributeName.Equals(Attribute_StyleName))
+                    while (ie.MoveNext())
                     {
-                        styleName = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_ChannelIndex))
-                    {
-                        channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_ChannelName))
-                    {
-                        channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_GroupChannel))
-                    {
-                        groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_GroupChannelNot))
-                    {
-                        groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_IsShowChildren))
-                    {
-                        isShowChildren = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_MenuWidth))
-                    {
-                        menuWidth = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_MenuHeight))
-                    {
-                        menuHeight = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_XPosition))
-                    {
-                        xPosition = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_YPosition))
-                    {
-                        yPosition = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_ChildMenuDisplay))
-                    {
-                        childMenuDisplay = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_ChildMenuWidth))
-                    {
-                        childMenuWidth = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_ChildMenuHeight))
-                    {
-                        childMenuHeight = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_Target))
-                    {
-                        target = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
+                        var attr = (XmlAttribute)ie.Current;
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeStyleName))
+                        {
+                            styleName = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
+                        {
+                            channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
+                        {
+                            channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupChannel))
+                        {
+                            groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupChannelNot))
+                        {
+                            groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsShowChildren))
+                        {
+                            isShowChildren = TranslateUtils.ToBool(attr.Value);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeMenuWidth))
+                        {
+                            menuWidth = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeMenuHeight))
+                        {
+                            menuHeight = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeXPosition))
+                        {
+                            xPosition = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeYPosition))
+                        {
+                            yPosition = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChildMenuDisplay))
+                        {
+                            childMenuDisplay = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChildMenuWidth))
+                        {
+                            childMenuWidth = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChildMenuHeight))
+                        {
+                            childMenuHeight = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTarget))
+                        {
+                            target = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
+                        {
+                            isDynamic = TranslateUtils.ToBool(attr.Value);
+                        }
                     }
                 }
 
-                if (isDynamic)
-                {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
-                }
-                else
-                {
-                    parsedContent = ParseImpl(node, pageInfo, contextInfo, channelIndex, channelName, groupChannel, groupChannelNot, isShowChildren, styleName, menuWidth, menuHeight, xPosition, yPosition, childMenuDisplay, childMenuWidth, childMenuHeight, target);
-                }
+                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, channelIndex, channelName, groupChannel, groupChannelNot, isShowChildren, styleName, menuWidth, menuHeight, xPosition, yPosition, childMenuDisplay, childMenuWidth, childMenuHeight, target);
             }
             catch (Exception ex)
             {
@@ -167,10 +158,10 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, string groupChannel, string groupChannelNot, bool isShowChildren, string styleName, string menuWidth, string menuHeight, string xPosition, string yPosition, string childMenuDisplay, string childMenuWidth, string childMenuHeight, string target)
         {
-            var parsedContent = string.Empty;
+            string parsedContent;
 
-            var channelID = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelID, channelIndex, channelName);
-            var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelID);
+            var channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
+            var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
             var innerHtml = nodeInfo.NodeName.Trim();
             if (!string.IsNullOrEmpty(node.InnerXml))
@@ -185,9 +176,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             var childNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo, EScopeType.Children, groupChannel, groupChannelNot);
             if (childNodeIdList != null && childNodeIdList.Count > 0)
             {
-                foreach (int childNodeID in childNodeIdList)
+                foreach (int childNodeId in childNodeIdList)
                 {
-                    var theNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, childNodeID);
+                    var theNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, childNodeId);
                     nodeInfoArrayList.Add(theNodeInfo);
                 }
             }
@@ -198,28 +189,13 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else
             {
-                MenuDisplayInfo menuDisplayInfo = null;
-                var menuDisplayID = DataProvider.MenuDisplayDao.GetMenuDisplayIdByName(pageInfo.PublishmentSystemId, styleName);
-                if (menuDisplayID == 0)
-                {
-                    menuDisplayInfo = DataProvider.MenuDisplayDao.GetDefaultMenuDisplayInfo(pageInfo.PublishmentSystemId);
-                }
-                else
-                {
-                    menuDisplayInfo = DataProvider.MenuDisplayDao.GetMenuDisplayInfo(menuDisplayID);
-                }
+                var menuDisplayId = DataProvider.MenuDisplayDao.GetMenuDisplayIdByName(pageInfo.PublishmentSystemId, styleName);
+                var menuDisplayInfo = menuDisplayId == 0 ? DataProvider.MenuDisplayDao.GetDefaultMenuDisplayInfo(pageInfo.PublishmentSystemId) : DataProvider.MenuDisplayDao.GetMenuDisplayInfo(menuDisplayId);
                 var level2MenuDisplayInfo = menuDisplayInfo;
                 if (isShowChildren && !string.IsNullOrEmpty(childMenuDisplay))
                 {
-                    var childMenuDisplayID = DataProvider.MenuDisplayDao.GetMenuDisplayIdByName(pageInfo.PublishmentSystemId, childMenuDisplay);
-                    if (childMenuDisplayID == 0)
-                    {
-                        level2MenuDisplayInfo = DataProvider.MenuDisplayDao.GetDefaultMenuDisplayInfo(pageInfo.PublishmentSystemId);
-                    }
-                    else
-                    {
-                        level2MenuDisplayInfo = DataProvider.MenuDisplayDao.GetMenuDisplayInfo(childMenuDisplayID);
-                    }
+                    var childMenuDisplayId = DataProvider.MenuDisplayDao.GetMenuDisplayIdByName(pageInfo.PublishmentSystemId, childMenuDisplay);
+                    level2MenuDisplayInfo = childMenuDisplayId == 0 ? DataProvider.MenuDisplayDao.GetDefaultMenuDisplayInfo(pageInfo.PublishmentSystemId) : DataProvider.MenuDisplayDao.GetMenuDisplayInfo(childMenuDisplayId);
                 }
 
                 if (string.IsNullOrEmpty(menuWidth)) menuWidth = menuDisplayInfo.MenuWidth.ToString();
@@ -230,12 +206,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (string.IsNullOrEmpty(childMenuHeight)) childMenuHeight = level2MenuDisplayInfo.MenuItemHeight.ToString();
 
                 var createMenuString = string.Empty;
-                var writeMenuString = string.Empty;
 
-                var menuID = pageInfo.UniqueId;
+                var menuId = pageInfo.UniqueId;
 
                 parsedContent =
-                    $@"<span name=""mm_link_{menuID}"" id=""mm_link_{menuID}"" onmouseover=""MM_showMenu(window.mm_menu_{menuID},{xPosition},{yPosition},null,'mm_link_{menuID}');"" onmouseout=""MM_startTimeout();"">{innerHtml}</span>";
+                    $@"<span name=""mm_link_{menuId}"" id=""mm_link_{menuId}"" onmouseover=""MM_showMenu(window.mm_menu_{menuId},{xPosition},{yPosition},null,'mm_link_{menuId}');"" onmouseout=""MM_startTimeout();"">{innerHtml}</span>";
 
                 var menuBuilder = new StringBuilder();
                 var level2MenuBuilder = new StringBuilder();
@@ -244,7 +219,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 foreach (NodeInfo theNodeInfo in nodeInfoArrayList)
                 {
                     var isLevel2Exist = false;
-                    var level2MenuID = 0;
+                    var level2MenuId = 0;
 
                     if (isShowChildren)
                     {
@@ -253,9 +228,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var level2NodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(theNodeInfo, EScopeType.Children, groupChannel, groupChannelNot);
                         if (level2NodeIdList != null && level2NodeIdList.Count > 0)
                         {
-                            foreach (int level2NodeID in level2NodeIdList)
+                            foreach (int level2NodeId in level2NodeIdList)
                             {
-                                var level2NodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, level2NodeID);
+                                var level2NodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, level2NodeId);
                                 level2NodeInfoArrayList.Add(level2NodeInfo);
                             }
 
@@ -263,7 +238,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 isLevel2Exist = true;
                                 var level2ChildMenuBuilder = new StringBuilder();
-                                level2MenuID = pageInfo.UniqueId;
+                                level2MenuId = pageInfo.UniqueId;
 
                                 foreach (NodeInfo level2NodeInfo in level2NodeInfoArrayList)
                                 {
@@ -271,7 +246,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     if (PageUtils.UnclickedUrl.Equals(level2NodeUrl))
                                     {
                                         level2ChildMenuBuilder.Append(
-                                            $@"  mm_menu_{level2MenuID}.addMenuItem(""{level2NodeInfo.NodeName.Trim()}"", ""location='{level2NodeUrl}'"");");
+                                            $@"  mm_menu_{level2MenuId}.addMenuItem(""{level2NodeInfo.NodeName.Trim()}"", ""location='{level2NodeUrl}'"");");
                                     }
                                     else
                                     {
@@ -280,26 +255,26 @@ namespace SiteServer.CMS.StlParser.StlElement
                                             if (target.ToLower().Equals("_blank"))
                                             {
                                                 level2ChildMenuBuilder.Append(
-                                                    $@"  mm_menu_{level2MenuID}.addMenuItem(""{level2NodeInfo.NodeName
+                                                    $@"  mm_menu_{level2MenuId}.addMenuItem(""{level2NodeInfo.NodeName
                                                         .Trim()}"", ""window.open('{level2NodeUrl}', '_blank');"");");
                                             }
                                             else
                                             {
                                                 level2ChildMenuBuilder.Append(
-                                                    $@"  mm_menu_{level2MenuID}.addMenuItem(""{level2NodeInfo.NodeName
+                                                    $@"  mm_menu_{level2MenuId}.addMenuItem(""{level2NodeInfo.NodeName
                                                         .Trim()}"", ""location='{level2NodeUrl}', '{target}'"");");
                                             }
                                         }
                                         else
                                         {
                                             level2ChildMenuBuilder.Append(
-                                                $@"  mm_menu_{level2MenuID}.addMenuItem(""{level2NodeInfo.NodeName.Trim()}"", ""location='{level2NodeUrl}'"");");
+                                                $@"  mm_menu_{level2MenuId}.addMenuItem(""{level2NodeInfo.NodeName.Trim()}"", ""location='{level2NodeUrl}'"");");
                                         }
                                     }
                                 }
 
                                 string level2CreateMenuString = $@"
-  window.mm_menu_{level2MenuID} = new Menu('{theNodeInfo.NodeName.Trim()}',{childMenuWidth},{childMenuHeight},'{level2MenuDisplayInfo
+  window.mm_menu_{level2MenuId} = new Menu('{theNodeInfo.NodeName.Trim()}',{childMenuWidth},{childMenuHeight},'{level2MenuDisplayInfo
                                     .FontFamily}',{level2MenuDisplayInfo.FontSize},'{level2MenuDisplayInfo.FontColor}','{level2MenuDisplayInfo
                                     .FontColorHilite}','{level2MenuDisplayInfo.MenuItemBgColor}','{level2MenuDisplayInfo
                                     .MenuHiliteBgColor}','{level2MenuDisplayInfo.MenuItemHAlign}','{level2MenuDisplayInfo
@@ -308,23 +283,23 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     .MenuBgOpaque},{level2MenuDisplayInfo.Vertical},{level2MenuDisplayInfo
                                     .MenuItemIndent},true,true);
   {level2ChildMenuBuilder}
-  mm_menu_{level2MenuID}.fontWeight='{level2MenuDisplayInfo.FontWeight}';
-  mm_menu_{level2MenuID}.fontStyle='{level2MenuDisplayInfo.FontStyle}';
-  mm_menu_{level2MenuID}.hideOnMouseOut={level2MenuDisplayInfo.HideOnMouseOut};
-  mm_menu_{level2MenuID}.bgColor='{level2MenuDisplayInfo.BgColor}';
-  mm_menu_{level2MenuID}.menuBorder={level2MenuDisplayInfo.MenuBorder};
-  mm_menu_{level2MenuID}.menuLiteBgColor='{level2MenuDisplayInfo.MenuLiteBgColor}';
-  mm_menu_{level2MenuID}.menuBorderBgColor='{level2MenuDisplayInfo.MenuBorderBgColor}';
+  mm_menu_{level2MenuId}.fontWeight='{level2MenuDisplayInfo.FontWeight}';
+  mm_menu_{level2MenuId}.fontStyle='{level2MenuDisplayInfo.FontStyle}';
+  mm_menu_{level2MenuId}.hideOnMouseOut={level2MenuDisplayInfo.HideOnMouseOut};
+  mm_menu_{level2MenuId}.bgColor='{level2MenuDisplayInfo.BgColor}';
+  mm_menu_{level2MenuId}.menuBorder={level2MenuDisplayInfo.MenuBorder};
+  mm_menu_{level2MenuId}.menuLiteBgColor='{level2MenuDisplayInfo.MenuLiteBgColor}';
+  mm_menu_{level2MenuId}.menuBorderBgColor='{level2MenuDisplayInfo.MenuBorderBgColor}';
 ";
                                 level2MenuBuilder.Append(level2CreateMenuString);
                             }
                         }
                     }
 
-                    var menuName = string.Empty;
+                    string menuName;
                     if (isLevel2Exist)
                     {
-                        menuName = "mm_menu_" + level2MenuID;
+                        menuName = "mm_menu_" + level2MenuId;
                     }
                     else
                     {
@@ -334,26 +309,20 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var nodeUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo);
                     if (PageUtils.UnclickedUrl.Equals(nodeUrl))
                     {
-                        menuBuilder.Append($@"  mm_menu_{menuID}.addMenuItem({menuName}, ""location='{nodeUrl}'"");");
+                        menuBuilder.Append($@"  mm_menu_{menuId}.addMenuItem({menuName}, ""location='{nodeUrl}'"");");
                     }
                     else
                     {
                         if (!string.IsNullOrEmpty(target))
                         {
-                            if (target.ToLower().Equals("_blank"))
-                            {
-                                menuBuilder.Append(
-                                    $@"  mm_menu_{menuID}.addMenuItem({menuName}, ""window.open('{nodeUrl}', '_blank');"");");
-                            }
-                            else
-                            {
-                                menuBuilder.Append(
-                                    $@"  mm_menu_{menuID}.addMenuItem({menuName}, ""location='{nodeUrl}', '{target}'"");");
-                            }
+                            menuBuilder.Append(
+                                target.ToLower().Equals("_blank")
+                                    ? $@"  mm_menu_{menuId}.addMenuItem({menuName}, ""window.open('{nodeUrl}', '_blank');"");"
+                                    : $@"  mm_menu_{menuId}.addMenuItem({menuName}, ""location='{nodeUrl}', '{target}'"");");
                         }
                         else
                         {
-                            menuBuilder.Append($@"  mm_menu_{menuID}.addMenuItem({menuName}, ""location='{nodeUrl}'"");");
+                            menuBuilder.Append($@"  mm_menu_{menuId}.addMenuItem({menuName}, ""location='{nodeUrl}'"");");
                         }
                     }
 
@@ -365,23 +334,23 @@ namespace SiteServer.CMS.StlParser.StlElement
                     childMenuIcon = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, menuDisplayInfo.ChildMenuIcon);
                 }
                 createMenuString += $@"
-  if (window.mm_menu_{menuID}) return;
+  if (window.mm_menu_{menuId}) return;
   {level2MenuBuilder}
-  window.mm_menu_{menuID} = new Menu('root',{menuWidth},{menuHeight},'{menuDisplayInfo.FontFamily}',{menuDisplayInfo
+  window.mm_menu_{menuId} = new Menu('root',{menuWidth},{menuHeight},'{menuDisplayInfo.FontFamily}',{menuDisplayInfo
                     .FontSize},'{menuDisplayInfo.FontColor}','{menuDisplayInfo.FontColorHilite}','{menuDisplayInfo
                     .MenuItemBgColor}','{menuDisplayInfo.MenuHiliteBgColor}','{menuDisplayInfo.MenuItemHAlign}','{menuDisplayInfo
                     .MenuItemVAlign}',{menuDisplayInfo.MenuItemPadding},{menuDisplayInfo.MenuItemSpacing},{menuDisplayInfo
                     .HideTimeout},-5,7,true,{menuDisplayInfo.MenuBgOpaque},{menuDisplayInfo.Vertical},{menuDisplayInfo
                     .MenuItemIndent},true,true);
   {menuBuilder}
-  mm_menu_{menuID}.fontWeight='{menuDisplayInfo.FontWeight}';
-  mm_menu_{menuID}.fontStyle='{menuDisplayInfo.FontStyle}';
-  mm_menu_{menuID}.hideOnMouseOut={menuDisplayInfo.HideOnMouseOut};
-  mm_menu_{menuID}.bgColor='{menuDisplayInfo.BgColor}';
-  mm_menu_{menuID}.menuBorder={menuDisplayInfo.MenuBorder};
-  mm_menu_{menuID}.menuLiteBgColor='{menuDisplayInfo.MenuLiteBgColor}';
-  mm_menu_{menuID}.menuBorderBgColor='{menuDisplayInfo.MenuBorderBgColor}';
-  mm_menu_{menuID}.childMenuIcon = ""{childMenuIcon}"";
+  mm_menu_{menuId}.fontWeight='{menuDisplayInfo.FontWeight}';
+  mm_menu_{menuId}.fontStyle='{menuDisplayInfo.FontStyle}';
+  mm_menu_{menuId}.hideOnMouseOut={menuDisplayInfo.HideOnMouseOut};
+  mm_menu_{menuId}.bgColor='{menuDisplayInfo.BgColor}';
+  mm_menu_{menuId}.menuBorder={menuDisplayInfo.MenuBorder};
+  mm_menu_{menuId}.menuLiteBgColor='{menuDisplayInfo.MenuLiteBgColor}';
+  mm_menu_{menuId}.menuBorderBgColor='{menuDisplayInfo.MenuBorderBgColor}';
+  mm_menu_{menuId}.childMenuIcon = ""{childMenuIcon}"";
 
 //NEXT
 ";
@@ -404,17 +373,17 @@ function siteserverLoadMenus() {{";
                 { 
                     existScript = pageInfo.GetPageScripts(PageInfo.JsAcMenuScripts, true);
                 }
-                if (string.IsNullOrEmpty(existScript) || existScript.IndexOf("//HEAD") < 0)
+                if (string.IsNullOrEmpty(existScript) || existScript.IndexOf("//HEAD", StringComparison.Ordinal) < 0)
                 { 
                     scriptBuilder.Append(functionHead);
                 }
                 scriptBuilder.Append(createMenuString);
                 //scriptBuilder.Append(writeMenuString);
-                if (string.IsNullOrEmpty(existScript) || existScript.IndexOf("//FOOT") < 0)
+                if (string.IsNullOrEmpty(existScript) || existScript.IndexOf("//FOOT", StringComparison.Ordinal) < 0)
                 { 
                     scriptBuilder.Append(functionFoot);
                 }
-                if (!string.IsNullOrEmpty(existScript) && existScript.IndexOf("//NEXT") >= 0)
+                if (!string.IsNullOrEmpty(existScript) && existScript.IndexOf("//NEXT", StringComparison.Ordinal) >= 0)
                 {
                     existScript = existScript.Replace("//NEXT", scriptBuilder.ToString());
                     pageInfo.SetPageScripts(PageInfo.JsAcMenuScripts, existScript, true);

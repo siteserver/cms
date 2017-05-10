@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -7,43 +7,37 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-	public class StlPhotoEntities
+    [Stl(Usage = "图片实体", Description = "通过 {photo.} 实体在模板中显示相册图片")]
+    public class StlPhotoEntities
 	{
         private StlPhotoEntities()
 		{
 		}
 
-        public const string EntityName = "Photo";                  //图片实体
+        public const string EntityName = "photo";
 
-        public static string PhotoID = "PhotoID";
+        public static string PhotoId = "PhotoID";
         public static string SmallUrl = "SmallUrl";
         public static string MiddleUrl = "MiddleUrl";
         public static string LargeUrl = "LargeUrl";
         public static string Description = "Description";
         public static string ItemIndex = "ItemIndex";
 
-        public static ListDictionary AttributeList
-        {
-            get
-            {
-                var attributes = new ListDictionary
-                {
-                    {PhotoID, "图片ID"},
-                    {SmallUrl, "小图地址"},
-                    {MiddleUrl, "中图地址"},
-                    {LargeUrl, "大图地址"},
-                    {Description, "图片说明"},
-                    {ItemIndex, "图片排序"}
-                };
-                return attributes;
-            }
-        }
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {PhotoId, "图片ID"},
+	        {SmallUrl, "小图地址"},
+	        {MiddleUrl, "中图地址"},
+	        {LargeUrl, "大图地址"},
+	        {Description, "图片说明"},
+	        {ItemIndex, "图片排序"}
+	    };
 
         internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
         {
             var parsedContent = string.Empty;
 
-            if (contextInfo.ItemContainer == null || contextInfo.ItemContainer.PhotoItem == null) return string.Empty;
+            if (contextInfo.ItemContainer?.PhotoItem == null) return string.Empty;
 
             try
             {
@@ -53,7 +47,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                 var photoInfo = new PhotoInfo(contextInfo.ItemContainer.PhotoItem.DataItem);
 
-                if (StringUtils.EqualsIgnoreCase(type, PhotoID))
+                if (StringUtils.EqualsIgnoreCase(type, PhotoId))
                 {
                     parsedContent = photoInfo.ID.ToString();
                 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
@@ -1216,7 +1215,7 @@ group by tmp.userName";
             return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
         }
 
-        public IEnumerable GetStlDataSourceChecked(string tableName, List<int> nodeIdList, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, NameValueCollection otherAttributes)
+        public IEnumerable GetStlDataSourceChecked(string tableName, List<int> nodeIdList, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
         {
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
@@ -1240,14 +1239,14 @@ group by tmp.userName";
                 sqlWhereString += $" AND ID IN ({sqlString})";
             }
 
-            if (otherAttributes != null && otherAttributes.Count > 0)
+            if (others != null && others.Count > 0)
             {
-                var columnNameList = BaiRongDataProvider.TableStructureDao.GetColumnNameList(tableName, true);
-                foreach (string attributeName in otherAttributes)
+                var lowerColumnNameList = BaiRongDataProvider.TableStructureDao.GetColumnNameList(tableName, true);
+                foreach (var attributeName in others.Keys)
                 {
-                    if (columnNameList.Contains(attributeName))
+                    if (lowerColumnNameList.Contains(attributeName.ToLower()))
                     {
-                        var value = otherAttributes[attributeName];
+                        var value = others.Get(attributeName);
                         if (!string.IsNullOrEmpty(value))
                         {
                             value = value.Trim();

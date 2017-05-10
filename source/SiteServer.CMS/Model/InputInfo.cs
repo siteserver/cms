@@ -4,98 +4,47 @@ namespace SiteServer.CMS.Model
 {
 	public class InputInfo
 	{
-        private int inputID;
-        private string inputName;
-		private int publishmentSystemID;
-        private DateTime addDate;
-        private bool isChecked;
-        private bool isReply;
-        private int taxis;
-        private string settingsXML;
-
-        public InputInfo()
+	    public InputInfo()
 		{
-            inputID = 0;
-            inputName = string.Empty;
-			publishmentSystemID = 0;
-            addDate = DateTime.Now;
-            isChecked = true;
-            isReply = false;
-            taxis = 0;
-            settingsXML = string.Empty;
+            InputId = 0;
+            InputName = string.Empty;
+			PublishmentSystemId = 0;
+            AddDate = DateTime.Now;
+            IsChecked = true;
+            IsReply = false;
+            Taxis = 0;
+            SettingsXml = string.Empty;
 		}
 
-        public InputInfo(int inputID, string inputName, int publishmentSystemID, DateTime addDate, bool isChecked, bool isReply, int taxis, string settingsXML) 
+        public InputInfo(int inputId, string inputName, int publishmentSystemId, DateTime addDate, bool isChecked, bool isReply, int taxis, string settingsXml) 
 		{
-            this.inputID = inputID;
-            this.inputName = inputName;
-			this.publishmentSystemID = publishmentSystemID;
-            this.addDate = addDate;
-            this.isChecked = isChecked;
-            this.isReply = isReply;
-            this.taxis = taxis;
-            this.settingsXML = settingsXML;
+            InputId = inputId;
+            InputName = inputName;
+			PublishmentSystemId = publishmentSystemId;
+            AddDate = addDate;
+            IsChecked = isChecked;
+            IsReply = isReply;
+            Taxis = taxis;
+            SettingsXml = settingsXml;
         }
 
-        public int InputID
-        {
-            get { return inputID; }
-            set { inputID = value; }
-        }
+        public int InputId { get; set; }
 
-        public string InputName
-		{
-            get { return inputName; }
-            set { inputName = value; }
-		}
+	    public string InputName { get; set; }
 
-		public int PublishmentSystemID
-		{
-			get{ return publishmentSystemID; }
-			set{ publishmentSystemID = value; }
-		}
+	    public int PublishmentSystemId { get; set; }
 
-        public DateTime AddDate
-        {
-            get { return addDate; }
-            set { addDate = value; }
-        }
+	    public DateTime AddDate { get; set; }
 
-        public bool IsChecked
-        {
-            get { return isChecked; }
-            set { isChecked = value; }
-        }
+	    public bool IsChecked { get; set; }
 
-        public bool IsReply
-        {
-            get { return isReply; }
-            set { isReply = value; }
-        }
+	    public bool IsReply { get; set; }
 
-        public int Taxis
-        {
-            get { return taxis; }
-            set { taxis = value; }
-        }
+	    public int Taxis { get; set; }
 
-        public string SettingsXML
-        {
-            get { return settingsXML; }
-            set { settingsXML = value; }
-        }
+	    public string SettingsXml { get; set; }
 
-        InputInfoExtend additional;
-        public InputInfoExtend Additional
-        {
-            get
-            {
-                if (additional == null)
-                {
-                    additional = new InputInfoExtend(settingsXML);
-                }
-                return additional;
-            }
-        }
+	    private InputInfoExtend _additional;
+        public InputInfoExtend Additional => _additional ?? (_additional = new InputInfoExtend(SettingsXml));
 	}
 }

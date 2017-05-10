@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Xml;
@@ -8,99 +9,94 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "页签切换", Description = "通过 stl:tabs 标签在模板中显示页签切换")]
     public class StlTabs
     {
         private StlTabs() { }
-        public const string ElementName = "stl:tabs";           //页签切换
+        public const string ElementName = "stl:tabs";
 
-        public const string Attribute_TabName = "tabname";			            //页签名称
-        public const string Attribute_IsHeader = "isheader";			        //是否为页签头部
-        public const string Attribute_Action = "action";			            //页签切换方式
-        public const string Attribute_ClassActive = "classactive";				//当前显示页签头部的CSS类
-        public const string Attribute_ClassNormal = "classnormal";              //当前隐藏页签头部的CSS类
-        public const string Attribute_Current = "current";                      //当前页签
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+        public const string AttributeTabName = "tabName";
+        public const string AttributeIsHeader = "isHeader";
+        public const string AttributeAction = "action";
+        public const string AttributeClassActive = "classActive";
+        public const string AttributeClassNormal = "classNormal";
+        public const string AttributeCurrent = "current";
+        public const string AttributeIsDynamic = "isDynamic";
 
-        public const string Action_Click = "Click";			                    //点击
-        public const string Action_MouseOver = "MouseOver";			            //鼠标移动
-
-        public static ListDictionary AttributeList
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            get
-            {
-                var attributes = new ListDictionary();
+            {AttributeTabName, "页签名称"},
+            {AttributeIsHeader, "是否为页签头部"},
+            {AttributeAction, StringUtils.SortedListToAttributeValueString("页签切换方式", ActionList)},
+            {AttributeClassActive, "当前显示页签头部的CSS类"},
+            {AttributeClassNormal, "当前隐藏页签头部的CSS类"},
+            {AttributeCurrent, "当前页签"},
+            {AttributeIsDynamic, "是否动态显示"}
+        };
 
-                attributes.Add(Attribute_TabName, "页签名称");
-                attributes.Add(Attribute_IsHeader, "是否为页签头部");
-                attributes.Add(Attribute_Action, "页签切换方式");
-                attributes.Add(Attribute_ClassActive, "当前显示页签头部的CSS类");
-                attributes.Add(Attribute_ClassNormal, "当前隐藏页签头部的CSS类");
-                attributes.Add(Attribute_Current, "当前页签");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
+        public const string ActionClick = "Click";
+        public const string ActionMouseOver = "MouseOver";
 
-                return attributes;
-            }
-        }
+        public static SortedList<string, string> ActionList => new SortedList<string, string>
+        {
+            {ActionClick, "点击"},
+            {ActionMouseOver, "鼠标移动"}
+        };
 
         internal static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var parsedContent = string.Empty;
+            string parsedContent;
             try
             {
-                var ie = node.Attributes.GetEnumerator();
-
                 var tabName = string.Empty;
                 var isHeader = true;
-                var action = Action_MouseOver;
+                var action = ActionMouseOver;
                 var classActive = "active";
                 var classNormal = string.Empty;
                 var current = 0;
                 var isDynamic = false;
 
-                while (ie.MoveNext())
+                var ie = node.Attributes?.GetEnumerator();
+                if (ie != null)
                 {
-                    var attr = (XmlAttribute)ie.Current;
-                    var attributeName = attr.Name.ToLower();
-                    if (attributeName.Equals(Attribute_TabName))
+                    while (ie.MoveNext())
                     {
-                        tabName = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsHeader))
-                    {
-                        isHeader = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Action))
-                    {
-                        action = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_ClassActive))
-                    {
-                        classActive = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_ClassNormal))
-                    {
-                        classNormal = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_Current))
-                    {
-                        current = TranslateUtils.ToInt(attr.Value, 1);
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
+                        var attr = (XmlAttribute) ie.Current;
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTabName))
+                        {
+                            tabName = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsHeader))
+                        {
+                            isHeader = TranslateUtils.ToBool(attr.Value);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeAction))
+                        {
+                            action = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeClassActive))
+                        {
+                            classActive = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeClassNormal))
+                        {
+                            classNormal = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeCurrent))
+                        {
+                            current = TranslateUtils.ToInt(attr.Value, 1);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
+                        {
+                            isDynamic = TranslateUtils.ToBool(attr.Value);
+                        }
                     }
                 }
 
                 pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
 
-                if (isDynamic)
-                {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
-                }
-                else
-                {
-                    parsedContent = ParseImpl(node, pageInfo, contextInfo, tabName, isHeader, action, classActive, classNormal, current);
-                }
+                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, tabName, isHeader, action, classActive, classNormal, current);
             }
             catch (Exception ex)
             {
@@ -113,15 +109,15 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string tabName, bool isHeader, string action, string classActive, string classNormal, int current)
         {
             var builder = new StringBuilder();
-            var uniqueID = pageInfo.UniqueId;
+            var uniqueId = pageInfo.UniqueId;
 
-            if (node.ChildNodes != null && node.ChildNodes.Count > 0)
+            if (node.ChildNodes.Count > 0)
             {
                 if (isHeader)
                 {
                     builder.Append($@"
 <SCRIPT language=javascript>
-function stl_tab_{uniqueID}(tabName, no){{
+function stl_tab_{uniqueId}(tabName, no){{
 	for ( i = 1; i <= {node.ChildNodes.Count}; i++){{
 		var el = jQuery('#{tabName}_tabContent_' + i);
 		var li = $('#{tabName}_tabHeader_' + i);
@@ -149,14 +145,17 @@ function stl_tab_{uniqueID}(tabName, no){{
                 {
                     if (xmlNode.NodeType != XmlNodeType.Element) continue;
                     var attributes = new NameValueCollection();
-                    var xmlIE = xmlNode.Attributes.GetEnumerator();
-                    while (xmlIE.MoveNext())
+                    if (xmlNode.Attributes != null)
                     {
-                        var attr = (XmlAttribute)xmlIE.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (!attributeName.Equals("id") && !attributeName.Equals("onmouseover") && !attributeName.Equals("onclick"))
+                        var xmlIe = xmlNode.Attributes.GetEnumerator();
+                        while (xmlIe.MoveNext())
                         {
-                            attributes[attributeName] = attr.Value;
+                            var attr = (XmlAttribute)xmlIe.Current;
+                            var attributeName = attr.Name.ToLower();
+                            if (!StringUtils.EqualsIgnoreCase(attr.Name, "id") && !StringUtils.EqualsIgnoreCase(attr.Name, "onmouseover") && !StringUtils.EqualsIgnoreCase(attr.Name, "onclick"))
+                            {
+                                attributes[attributeName] = attr.Value;
+                            }
                         }
                     }
 
@@ -164,13 +163,13 @@ function stl_tab_{uniqueID}(tabName, no){{
                     if (isHeader)
                     {
                         attributes["id"] = $"{tabName}_tabHeader_{count}";
-                        if (StringUtils.EqualsIgnoreCase(action, Action_MouseOver))
+                        if (StringUtils.EqualsIgnoreCase(action, ActionMouseOver))
                         {
-                            attributes["onmouseover"] = $"stl_tab_{uniqueID}('{tabName}', {count});return false;";
+                            attributes["onmouseover"] = $"stl_tab_{uniqueId}('{tabName}', {count});return false;";
                         }
                         else
                         {
-                            attributes["onclick"] = $"stl_tab_{uniqueID}('{tabName}', {count});return false;";
+                            attributes["onclick"] = $"stl_tab_{uniqueId}('{tabName}', {count});return false;";
                         }
                         if (current != 0)
                         {

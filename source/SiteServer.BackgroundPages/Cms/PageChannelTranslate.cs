@@ -252,7 +252,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var nodeID = int.Parse(nodeIDStr);
                         if (translateType != ETranslateType.Content)//需要转移栏目
                         {
-                            if (!ChannelUtility.IsAncestorOrSelf(PublishmentSystemId, nodeID, targetNodeID))
+                            if (!NodeManager.IsAncestorOrSelf(PublishmentSystemId, nodeID, targetNodeID))
                             {
                                 nodeIDArrayList.Add(nodeID);
                             }

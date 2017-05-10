@@ -1,26 +1,20 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Text;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
+    [Stl(Usage = "STL标签实体", Description = "通过 {stl:} 实体在模板中实现STL标签")]
     public class StlElementEntities
     {
         private StlElementEntities()
         {
         }
 
-        public const string EntityName = "stl:";                  //通用实体
+        public const string EntityName = "stl:";
 
-        public static ListDictionary AttributeList
-        {
-            get
-            {
-                var attributes = new ListDictionary();
-                return attributes;
-            }
-        }
+        public static SortedList<string, string> AttributeList => null;
 
         internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
         {

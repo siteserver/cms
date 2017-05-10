@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Web.UI.HtmlControls;
 using System.Xml;
 using BaiRong.Core;
@@ -12,56 +12,48 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlImage
+    [Stl(Usage = "显示图片", Description = "通过 stl:image 标签在模板中显示栏目或内容的图片")]
+    public class StlImage
 	{
 		private StlImage(){}
-		public const string ElementName = "stl:image";//显示图片
+		public const string ElementName = "stl:image";
 
-		public const string Attribute_ChannelIndex = "channelindex";			//栏目索引
-		public const string Attribute_ChannelName = "channelname";				//栏目名称
-        public const string Attribute_NO = "no";                            //显示字段的顺序
-		public const string Attribute_Parent = "parent";						//显示父栏目
-		public const string Attribute_UpLevel = "uplevel";						//上级栏目的级别
-        public const string Attribute_TopLevel = "toplevel";					//从首页向下的栏目级别
-        public const string Attribute_Type = "type";							//指定存储图片的字段
-        public const string Attribute_IsOriginal = "isoriginal";            //如果是引用内容，是否获取所引用内容的值
-		public const string Attribute_Src = "src";								//显示的图片地址
-        public const string Attribute_AltSrc = "altsrc";						//当指定的图片不存在时显示的图片地址
-        public const string Attribute_Width = "width";							//宽度
-        public const string Attribute_Height = "height";						//高度
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+		public const string AttributeChannelIndex = "channelIndex";
+		public const string AttributeChannelName = "channelName";
+        public const string AttributeNo = "no";
+		public const string AttributeParent = "parent";
+		public const string AttributeUpLevel = "upLevel";
+        public const string AttributeTopLevel = "topLevel";
+        public const string AttributeType = "type";
+        public const string AttributeIsOriginal = "isOriginal";
+		public const string AttributeSrc = "src";
+        public const string AttributeAltSrc = "altSrc";
+        public const string AttributeWidth = "width";
+        public const string AttributeHeight = "height";
+        public const string AttributeIsDynamic = "isDynamic";
 
-		public static ListDictionary AttributeList
-		{
-			get
-			{
-				var attributes = new ListDictionary();
-				attributes.Add(Attribute_ChannelIndex, "栏目索引");
-				attributes.Add(Attribute_ChannelName, "栏目名称");
-                attributes.Add(Attribute_NO, "显示字段的顺序");
-				attributes.Add(Attribute_Parent, "显示父栏目");
-				attributes.Add(Attribute_UpLevel, "上级栏目的级别");
-                attributes.Add(Attribute_TopLevel, "从首页向下的栏目级别");
-                attributes.Add(Attribute_Type, "指定存储图片的字段");
-                attributes.Add(Attribute_IsOriginal, "如果是引用内容，是否获取所引用内容的值");
-                attributes.Add(Attribute_Src, "显示的图片地址");
-                attributes.Add(Attribute_AltSrc, "当指定的图片不存在时显示的图片地址");
-                attributes.Add(Attribute_Width, "宽度");
-                attributes.Add(Attribute_Height, "高度");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        {
+	        {AttributeChannelIndex, "栏目索引"},
+	        {AttributeChannelName, "栏目名称"},
+	        {AttributeNo, "显示字段的顺序"},
+	        {AttributeParent, "显示父栏目"},
+	        {AttributeUpLevel, "上级栏目的级别"},
+	        {AttributeTopLevel, "从首页向下的栏目级别"},
+	        {AttributeType, "指定存储图片的字段"},
+	        {AttributeIsOriginal, "如果是引用内容，是否获取所引用内容的值"},
+	        {AttributeSrc, "显示的图片地址"},
+	        {AttributeAltSrc, "当指定的图片不存在时显示的图片地址"},
+	        {AttributeWidth, "宽度"},
+	        {AttributeHeight, "高度"},
+	        {AttributeIsDynamic, "是否动态显示"}
+	    };
 
-
-		//对“栏目链接”（stl:image）元素进行解析
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			var parsedContent = string.Empty;
+			string parsedContent;
 			try
 			{
-				var stlImage = new HtmlImage();
-				var ie = node.Attributes.GetEnumerator();
 				var isGetPicUrlFromAttribute = false;
 				var channelIndex = string.Empty;
 				var channelName = string.Empty;
@@ -73,90 +65,87 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var src = string.Empty;
 				var altSrc = string.Empty;
                 var isDynamic = false;
+                var stlImage = new HtmlImage();
 
-				while (ie.MoveNext())
-				{
-					var attr = (XmlAttribute)ie.Current;
-					var attributeName = attr.Name.ToLower();
-					if (attributeName.Equals(Attribute_ChannelIndex))
-					{
-                        channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-						if (!string.IsNullOrEmpty(channelIndex))
-						{
-							isGetPicUrlFromAttribute = true;
-						}
-					}
-					else if (attributeName.Equals(Attribute_ChannelName))
-					{
-                        channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-						if (!string.IsNullOrEmpty(channelName))
-						{
-							isGetPicUrlFromAttribute = true;
-						}
-                    }
-                    else if (attributeName.Equals(Attribute_NO))
+                var ie = node.Attributes?.GetEnumerator();
+			    if (ie != null)
+			    {
+                    while (ie.MoveNext())
                     {
-                        no = TranslateUtils.ToInt(attr.Value);
-                    }
-					else if (attributeName.Equals(Attribute_Parent))
-					{
-						if (TranslateUtils.ToBool(attr.Value))
-						{
-							upLevel = 1;
-							isGetPicUrlFromAttribute = true;
-						}
-					}
-					else if (attributeName.Equals(Attribute_UpLevel))
-					{
-						upLevel = TranslateUtils.ToInt(attr.Value);
-						if (upLevel > 0)
-						{
-							isGetPicUrlFromAttribute = true;
-						}
-                    }
-                    else if (attributeName.Equals(Attribute_TopLevel))
-                    {
-                        topLevel = TranslateUtils.ToInt(attr.Value);
-                        if (topLevel >= 0)
+                        var attr = (XmlAttribute)ie.Current;
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
                         {
-                            isGetPicUrlFromAttribute = true;
+                            channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                            if (!string.IsNullOrEmpty(channelIndex))
+                            {
+                                isGetPicUrlFromAttribute = true;
+                            }
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
+                        {
+                            channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                            if (!string.IsNullOrEmpty(channelName))
+                            {
+                                isGetPicUrlFromAttribute = true;
+                            }
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeNo))
+                        {
+                            no = TranslateUtils.ToInt(attr.Value);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeParent))
+                        {
+                            if (TranslateUtils.ToBool(attr.Value))
+                            {
+                                upLevel = 1;
+                                isGetPicUrlFromAttribute = true;
+                            }
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeUpLevel))
+                        {
+                            upLevel = TranslateUtils.ToInt(attr.Value);
+                            if (upLevel > 0)
+                            {
+                                isGetPicUrlFromAttribute = true;
+                            }
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTopLevel))
+                        {
+                            topLevel = TranslateUtils.ToInt(attr.Value);
+                            if (topLevel >= 0)
+                            {
+                                isGetPicUrlFromAttribute = true;
+                            }
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
+                        {
+                            type = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsOriginal))
+                        {
+                            isOriginal = TranslateUtils.ToBool(attr.Value, true);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSrc))
+                        {
+                            src = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeAltSrc))
+                        {
+                            altSrc = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
+                        {
+                            isDynamic = TranslateUtils.ToBool(attr.Value);
+                        }
+                        else
+                        {
+                            stlImage.Attributes[attr.Name]  = attr.Value;
                         }
                     }
-                    else if (attributeName.Equals(Attribute_Type))
-                    {
-                        type = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsOriginal))
-                    {
-                        isOriginal = TranslateUtils.ToBool(attr.Value, true);
-                    }
-					else if (attributeName.Equals(Attribute_Src))
-					{
-                        src = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_AltSrc))
-                    {
-                        altSrc = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
-                    }
-					else
-					{
-						stlImage.Attributes.Remove(attributeName);
-						stlImage.Attributes.Add(attributeName, attr.Value);
-					}
-				}
+                }
 
-                if (isDynamic)
-                {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
-                }
-                else
-                {
-                    parsedContent = ParseImpl(stlElement, node, pageInfo, contextInfo, stlImage, isGetPicUrlFromAttribute, channelIndex, channelName, no, upLevel, topLevel, type, isOriginal, src, altSrc);
-                }
+                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(stlElement, node, pageInfo, contextInfo, stlImage, isGetPicUrlFromAttribute, channelIndex, channelName, no, upLevel, topLevel, type, isOriginal, src, altSrc);
 			}
             catch (Exception ex)
             {
@@ -170,11 +159,11 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            var contentID = 0;
+            var contentId = 0;
             //判断是否图片地址由标签属性获得
             if (!isGetPicUrlFromAttribute)
             {
-                contentID = contextInfo.ContentID;
+                contentId = contextInfo.ContentId;
             }
             var contextType = contextInfo.ContextType;
 
@@ -187,14 +176,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contextType == EContextType.Undefined)
                 {
-                    if (contentID != 0)
-                    {
-                        contextType = EContextType.Content;
-                    }
-                    else
-                    {
-                        contextType = EContextType.Channel;
-                    }
+                    contextType = contentId != 0 ? EContextType.Content : EContextType.Channel;
                 }
 
                 if (contextType == EContextType.Content)//获取内容图片
@@ -205,15 +187,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0)
                         {
-                            var targetNodeID = contentInfo.SourceId;
-                            var targetPublishmentSystemID = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeID);
-                            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemID);
-                            var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemID, targetNodeID);
+                            var targetNodeId = contentInfo.SourceId;
+                            var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
+                            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
+                            var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
 
                             var tableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeInfo);
                             var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
                             var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                            if (targetContentInfo != null || targetContentInfo.NodeId > 0)
+                            if (targetContentInfo != null && targetContentInfo.NodeId > 0)
                             {
                                 contentInfo = targetContentInfo;
                             }
@@ -222,7 +204,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo == null)
                     {
-                        contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentID);
+                        contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId);
                     }
 
                     if (contentInfo != null)
@@ -238,7 +220,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (!string.IsNullOrEmpty(extendValues))
                             {
                                 var index = 2;
-                                foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                                foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                                 {
                                     if (index == no)
                                     {
@@ -253,11 +235,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (contextType == EContextType.Channel)//获取栏目图片
                 {
-                    var channelID = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelID, upLevel, topLevel);
+                    var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-                    channelID = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelID, channelIndex, channelName);
+                    channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
 
-                    var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelID);
+                    var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
                     picUrl = channel.ImageUrl;
                 }

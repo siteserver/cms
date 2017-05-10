@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
@@ -11,40 +11,54 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlAnalysis
+    [Stl(Usage = "显示浏览量", Description = "通过 stl:analysis 标签在模板中显示页面的浏览量及点击次数、点击率")]
+    public class StlAnalysis
 	{
         private StlAnalysis() { }
-        public const string ElementName = "stl:analysis";//显示浏览量
+        public const string ElementName = "stl:analysis";
 
-        public const string AttributeChannelIndex = "channelindex";			    //栏目索引
-        public const string AttributeChannelName = "channelname";				//栏目名称
-		public const string AttributeType = "type";		                        //显示类型
-        public const string AttributeScope = "scope";		                    //统计范围
-        public const string AttributeIsAverage = "isaverage";		            //是否显示日均量
-        public const string AttributeStyle = "style";		                    //显示样式
-        public const string AttributeAddNum = "addnum";		                    //添加数目
-        public const string AttributeSince = "since";				            //时间段
-        public const string AttributeIsDynamic = "isdynamic";                   //是否动态显示
+        public const string AttributeChannelIndex = "channelIndex";
+        public const string AttributeChannelName = "channelName";
+		public const string AttributeType = "type";
+        public const string AttributeScope = "scope";
+        public const string AttributeIsAverage = "isAverage";
+        public const string AttributeStyle = "style";
+        public const string AttributeAddNum = "addNum";
+        public const string AttributeSince = "since";
+        public const string AttributeIsDynamic = "isDynamic";
 
-        public static readonly string TypePageView = "PageView";               //显示访问量（PV）
-        public static readonly string TypeUniqueVisitor = "UniqueVisitor";     //显示独立访客量（UV）
-        public static readonly string TypeCurrentVisitor = "CurrentVisitor";   //显示当前人数
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        {
+            {AttributeChannelIndex, "栏目索引"},
+            {AttributeChannelName, "栏目名称"},
+            {AttributeType, StringUtils.SortedListToAttributeValueString("统计类型", TypeList)},
+            {AttributeScope, StringUtils.SortedListToAttributeValueString("统计范围", ScopeList)},
+            {AttributeIsAverage, "是否显示日均量"},
+            {AttributeStyle, "显示样式"},
+            {AttributeAddNum, "添加数目"},
+            {AttributeSince, "时间段"},
+            {AttributeIsDynamic, "是否动态显示"}
+        };
 
-        public static readonly string ScopeSite = "Site";                      //统计全站
-        public static readonly string ScopePage = "Page";                      //统计页面
+        public static readonly string TypePageView = "PageView";
+        public static readonly string TypeUniqueVisitor = "UniqueVisitor";
+        public static readonly string TypeCurrentVisitor = "CurrentVisitor";
 
-	    public static ListDictionary AttributeList => new ListDictionary
-	    {
-	        {AttributeChannelIndex, "栏目索引"},
-	        {AttributeChannelName, "栏目名称"},
-	        {AttributeType, "统计类型"},
-	        {AttributeScope, "统计范围"},
-	        {AttributeIsAverage, "是否显示日均量"},
-	        {AttributeStyle, "显示样式"},
-	        {AttributeAddNum, "添加数目"},
-	        {AttributeSince, "时间段"},
-	        {AttributeIsDynamic, "是否动态显示"}
-	    };
+        public static SortedList<string, string> TypeList => new SortedList<string, string>
+        {
+            {TypePageView, "显示访问量（PV）"},
+            {TypeUniqueVisitor, "显示独立访客量（UV）"},
+            {TypeCurrentVisitor, "显示当前人数"}
+        };
+
+        public static readonly string ScopeSite = "Site";
+        public static readonly string ScopePage = "Page";
+
+        public static SortedList<string, string> ScopeList => new SortedList<string, string>
+        {
+            {ScopeSite, "统计全站"},
+            {ScopePage, "统计页面"}
+        };
 
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -70,8 +84,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributeChannelIndex))
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
                         {
                             channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                             if (!string.IsNullOrEmpty(channelIndex))
@@ -79,7 +92,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 isGetUrlFromAttribute = true;
                             }
                         }
-                        else if (attributeName.Equals(AttributeChannelName))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
                         {
                             channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                             if (!string.IsNullOrEmpty(channelName))
@@ -87,31 +100,31 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 isGetUrlFromAttribute = true;
                             }
                         }
-                        else if (attributeName.Equals(AttributeType))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
                         {
                             type = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeScope))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeScope))
                         {
                             scope = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeIsAverage))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsAverage))
                         {
                             isAverage = TranslateUtils.ToBool(attr.Value, false);
                         }
-                        else if (attributeName.Equals(AttributeStyle))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeStyle))
                         {
                             style = ETrackerStyleUtils.GetValue(ETrackerStyleUtils.GetEnumType(attr.Value));
                         }
-                        else if (attributeName.Equals(AttributeAddNum))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeAddNum))
                         {
                             addNum = TranslateUtils.ToInt(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeSince))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSince))
                         {
                             since = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeIsDynamic))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
                         {
                             isDynamic = TranslateUtils.ToBool(attr.Value);
                         }
@@ -130,17 +143,17 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, bool isGetUrlFromAttribute, string channelIndex, string channelName , string type, string scope, bool isAverage, string style, int addNum, string since)
         {
-            var channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelID, channelIndex, channelName);
+            var channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
 
             var contentId = 0;
             //判断是否链接地址由标签属性获得
             if (isGetUrlFromAttribute == false)
             {
-                contentId = contextInfo.ContentID;
+                contentId = contextInfo.ContentId;
             }
 
             var templateType = pageInfo.TemplateInfo.TemplateType;
-            if (contextInfo.ChannelID != 0)
+            if (contextInfo.ChannelId != 0)
             {
                 templateType = ETemplateType.ChannelTemplate;
                 if (contentId != 0)
@@ -181,14 +194,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(scope, ScopePage))
                 {
-                    if (eTemplateType != ETemplateType.FileTemplate)
-                    {
-                        accessNum = DataProvider.TrackingDao.GetTotalAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate);
-                    }
-                    else
-                    {
-                        accessNum = DataProvider.TrackingDao.GetTotalAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
-                    }
+                    accessNum = eTemplateType != ETemplateType.FileTemplate ? DataProvider.TrackingDao.GetTotalAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate) : DataProvider.TrackingDao.GetTotalAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
                 }
                 else
                 {
@@ -212,14 +218,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(scope, ScopePage))
                 {
-                    if (eTemplateType != ETemplateType.FileTemplate)
-                    {
-                        accessNum = DataProvider.TrackingDao.GetTotalUniqueAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate);
-                    }
-                    else
-                    {
-                        accessNum = DataProvider.TrackingDao.GetTotalUniqueAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
-                    }
+                    accessNum = eTemplateType != ETemplateType.FileTemplate ? DataProvider.TrackingDao.GetTotalUniqueAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate) : DataProvider.TrackingDao.GetTotalUniqueAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
                 }
                 else
                 {

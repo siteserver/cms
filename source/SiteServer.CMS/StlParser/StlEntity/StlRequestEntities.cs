@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -6,13 +7,16 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-	public class StlRequestEntities
+    [Stl(Usage = "请求实体", Description = "通过 {request.} 实体在模板中显示地址栏请求参数")]
+    public class StlRequestEntities
 	{
         private StlRequestEntities()
 		{
 		}
 
-        public const string EntityName = "Request";              //请求实体
+	    public const string EntityName = "request";
+
+        public static SortedList<string, string> AttributeList => null;
 
         internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
         {

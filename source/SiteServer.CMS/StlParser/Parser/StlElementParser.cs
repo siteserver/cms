@@ -5,7 +5,6 @@ using System.Xml;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.CMS.StlParser.StlElement.WCM;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.Parser
@@ -106,8 +105,8 @@ namespace SiteServer.CMS.StlParser.Parser
             {StlPrinter.ElementName, StlPrinter.Parse},
             {StlResume.ElementName, StlResume.Parse},
             {StlRss.ElementName, StlRss.Parse},
-            {StlSearchOutput.ElementName, StlSearchOutput.Parse},
-            {StlSearchOutput.ElementName2, StlSearchOutput.Parse},
+            {StlSearch.ElementName, StlSearch.Parse},
+            {StlSearch.ElementName2, StlSearch.Parse},
             {StlSelect.ElementName, StlSelect.Parse},
             {StlSite.ElementName, StlSite.Parse},
             {StlSites.ElementName, StlSites.Parse},

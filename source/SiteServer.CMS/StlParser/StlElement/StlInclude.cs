@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
@@ -10,65 +10,56 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlInclude
+    [Stl(Usage = "包含文件", Description = "通过 stl:include 标签在模板中包含另一个文件，作为模板的一部分")]
+    public class StlInclude
 	{
 		private StlInclude(){}
-		public const string ElementName = "stl:include";//包含文件
+		public const string ElementName = "stl:include";
 
-		public const string Attribute_File = "file";	//文件路径
-        public const string Attribute_IsContext = "iscontext";            //是否STL标签上下文相关
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+		public const string AttributeFile = "file";
+        public const string AttributeIsContext = "isContext";
+        public const string AttributeIsDynamic = "isDynamic";
 
-		public static ListDictionary AttributeList
-		{
-			get
-			{
-				var attributes = new ListDictionary();
-				attributes.Add(Attribute_File, "文件路径");
-                attributes.Add(Attribute_IsContext, "是否STL解析与当前页面相关");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        {
+	        {AttributeFile, "文件路径"},
+	        {AttributeIsContext, "是否STL解析与当前页面上下文相关"},
+	        {AttributeIsDynamic, "是否动态显示"}
+	    };
 
-		//对“包含文件”（stl:include）元素进行解析
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
 		{
-            var parsedContent = string.Empty;
+            string parsedContent;
 			try
 			{
-				var ie = node.Attributes.GetEnumerator();
-				var file = string.Empty;
+                var file = string.Empty;
                 var isContext = !pageInfo.PublishmentSystemInfo.Additional.IsCreateIncludeToSsi;
                 var isDynamic = false;
 
-				while (ie.MoveNext())
-				{
-					var attr = (XmlAttribute)ie.Current;
-					var attributeName = attr.Name.ToLower();
-					if (attributeName.Equals(Attribute_File))
-					{
-                        file = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        file = PageUtility.AddVirtualToUrl(file);
-                    }
-                    else if (attributeName.Equals(Attribute_IsContext))
+                var ie = node.Attributes?.GetEnumerator();
+			    if (ie != null)
+			    {
+                    while (ie.MoveNext())
                     {
-                        isContext = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
-                    }
-				}
+                        var attr = (XmlAttribute)ie.Current;
 
-                if (isDynamic)
-                {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeFile))
+                        {
+                            file = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                            file = PageUtility.AddVirtualToUrl(file);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsContext))
+                        {
+                            isContext = TranslateUtils.ToBool(attr.Value);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
+                        {
+                            isDynamic = TranslateUtils.ToBool(attr.Value);
+                        }
+                    }
                 }
-                else
-                {
-                    parsedContent = ParseImpl(pageInfo, contextInfo, file, isContext);
-                }
+
+                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, file, isContext);
 			}
             catch (Exception ex)
             {
@@ -86,8 +77,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (!isContext)
                 {
-                    var FSO = new FileSystemObject(pageInfo.PublishmentSystemId);
-                    var parsedFile = FSO.CreateIncludeFile(file, false);
+                    var fso = new FileSystemObject(pageInfo.PublishmentSystemId);
+                    var parsedFile = fso.CreateIncludeFile(file, false);
 
                     if (pageInfo.PublishmentSystemInfo.Additional.IsCreateIncludeToSsi)
                     {

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
@@ -10,35 +10,29 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    public class StlSearchOutput
+    [Stl(Usage = "搜索结果", Description = "通过 stl:search 标签在模板中显示搜索结果")]
+    public class StlSearch
     {
-        private StlSearchOutput() { }
+        private StlSearch() { }
         public const string ElementName = "stl:search";
-        public const string ElementName2 = "stl:searchoutput";
+        public const string ElementName2 = "stl:searchOutput";
 
-        public const string AttributePageNum = "pagenum";			                //每页显示的内容数目
-        public const string AttributeWidth = "width";				                //宽度
-        public const string AttributeIsHighlight = "ishighlight";			        //是否关键字高亮
-        public const string AttributeIsRedirectSingle = "isredirectsingle";        //搜索结果仅一条时是否跳转
-        public const string AttributeIsDefaultDisplay = "isdefaultdisplay";        //是否默认显示
-        public const string AttributeDateAttribute = "dateattribute";              //日期搜索字段
+        public const string AttributePageNum = "pageNum";
+        public const string AttributeWidth = "width";
+        public const string AttributeIsHighlight = "isHighlight";
+        public const string AttributeIsRedirectSingle = "isRedirectSingle";
+        public const string AttributeIsDefaultDisplay = "isDefaultDisplay";
+        public const string AttributeDateAttribute = "dateAttribute";
 
-        public static ListDictionary AttributeList
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            get
-            {
-                var attributes = new ListDictionary
-                {
-                    {AttributePageNum, "每页显示的内容数目"},
-                    {AttributeWidth, "宽度"},
-                    {AttributeIsHighlight, "是否关键字高亮"},
-                    {AttributeIsRedirectSingle, "搜索结果仅一条时是否跳转"},
-                    {AttributeIsDefaultDisplay, "是否默认显示"},
-                    {AttributeDateAttribute, "日期搜索字段"}
-                };
-                return attributes;
-            }
-        }
+            {AttributePageNum, "每页显示的内容数目"},
+            {AttributeWidth, "宽度"},
+            {AttributeIsHighlight, "是否关键字高亮"},
+            {AttributeIsRedirectSingle, "搜索结果仅一条时是否跳转"},
+            {AttributeIsDefaultDisplay, "是否默认显示"},
+            {AttributeDateAttribute, "日期搜索字段"}
+        };
 
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -58,28 +52,28 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributePageNum))
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributePageNum))
                         {
                             pageNum = TranslateUtils.ToInt(attr.Value, 0);
                         }
-                        else if (attributeName.Equals(AttributeWidth))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWidth))
                         {
                             width = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeIsHighlight))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsHighlight))
                         {
                             isHighlight = TranslateUtils.ToBool(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeIsRedirectSingle))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsRedirectSingle))
                         {
                             isRedirectSingle = TranslateUtils.ToBool(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeIsDefaultDisplay))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDefaultDisplay))
                         {
                             isDefaultDisplay = TranslateUtils.ToBool(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeDateAttribute))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeDateAttribute))
                         {
                             dateAttribute = attr.Value;
                         }

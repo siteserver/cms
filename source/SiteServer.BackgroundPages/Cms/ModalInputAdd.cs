@@ -134,7 +134,7 @@ namespace SiteServer.BackgroundPages.Cms
                         inputInfo = new InputInfo
                         {
                             InputName = InputName.Text,
-                            PublishmentSystemID = PublishmentSystemId,
+                            PublishmentSystemId = PublishmentSystemId,
                             IsChecked = TranslateUtils.ToBool(IsChecked.SelectedValue),
                             IsReply = TranslateUtils.ToBool(IsReply.SelectedValue)
                         };

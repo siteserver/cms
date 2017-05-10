@@ -24,7 +24,7 @@ namespace SiteServer.CMS.StlTemplates
         public InputTemplate(PublishmentSystemInfo publishmentSystemInfo, InputInfo inputInfo)
         {
             _publishmentSystemInfo = publishmentSystemInfo;
-            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, publishmentSystemInfo.PublishmentSystemId, inputInfo.InputID);
+            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, publishmentSystemInfo.PublishmentSystemId, inputInfo.InputId);
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, relatedIdentities);
             _inputInfo = inputInfo;
         }
@@ -121,33 +121,33 @@ function stlInputCallback_{HolderInputId}(jsonString){{
             var parsedContent = new StringBuilder();
 
             parsedContent.Append($@"
-<div id=""inputSuccess_{_inputInfo.InputID}"" class=""is_success"" style=""display:none""></div>
-<div id=""inputFailure_{_inputInfo.InputID}"" class=""is_failure"" style=""display:none""></div>
-<div id=""inputContainer_{_inputInfo.InputID}"">");
+<div id=""inputSuccess_{_inputInfo.InputId}"" class=""is_success"" style=""display:none""></div>
+<div id=""inputFailure_{_inputInfo.InputId}"" class=""is_failure"" style=""display:none""></div>
+<div id=""inputContainer_{_inputInfo.InputId}"">");
 
             //添加遮罩层
             parsedContent.Append($@"
-<div id=""inputModal_{_inputInfo.InputID}"" times=""2"" id=""xubox_shade2"" class=""xubox_shade"" style=""z-index:19891016; background-color: #FFF; opacity: 0.5; filter:alpha(opacity=10);top: 0;left: 0;width: 100%;height: 100%;position: fixed;display:none;""></div>
-<div id=""inputModalMsg_{_inputInfo.InputID}"" times=""2"" showtime=""0"" style=""z-index: 19891016; left: 50%; top: 206px; width: 500px; height: 360px; margin-left: -250px;position: fixed;text-align: center;display:none;"" id=""xubox_layer2"" class=""xubox_layer"" type=""iframe""><img src = ""{SiteFilesAssets.GetUrl(_publishmentSystemInfo.Additional.ApiUrl, SiteFilesAssets.FileWaiting)}"" style="""">
+<div id=""inputModal_{_inputInfo.InputId}"" times=""2"" id=""xubox_shade2"" class=""xubox_shade"" style=""z-index:19891016; background-color: #FFF; opacity: 0.5; filter:alpha(opacity=10);top: 0;left: 0;width: 100%;height: 100%;position: fixed;display:none;""></div>
+<div id=""inputModalMsg_{_inputInfo.InputId}"" times=""2"" showtime=""0"" style=""z-index: 19891016; left: 50%; top: 206px; width: 500px; height: 360px; margin-left: -250px;position: fixed;text-align: center;display:none;"" id=""xubox_layer2"" class=""xubox_layer"" type=""iframe""><img src = ""{SiteFilesAssets.GetUrl(_publishmentSystemInfo.Additional.ApiUrl, SiteFilesAssets.FileWaiting)}"" style="""">
 <br>
 <span style=""font-size:10px;font-family:Microsoft Yahei"">正在提交...</span>
 </div>
 <script>
 		function openModal()
         {{
-			document.getElementById(""inputModal_{_inputInfo.InputID}"").style.display = '';
-            document.getElementById(""inputModalMsg_{_inputInfo.InputID}"").style.display = '';
+			document.getElementById(""inputModal_{_inputInfo.InputId}"").style.display = '';
+            document.getElementById(""inputModalMsg_{_inputInfo.InputId}"").style.display = '';
         }}
         function closeModal()
         {{
-			document.getElementById(""inputModal_{_inputInfo.InputID}"").style.display = 'none';
-            document.getElementById(""inputModalMsg_{_inputInfo.InputID}"").style.display = 'none';
+			document.getElementById(""inputModal_{_inputInfo.InputId}"").style.display = 'none';
+            document.getElementById(""inputModalMsg_{_inputInfo.InputId}"").style.display = 'none';
         }}
 </script>");
 
-            var actionUrl = ActionsInputAdd.GetUrl(_publishmentSystemInfo.Additional.ApiUrl, _publishmentSystemInfo.PublishmentSystemId, _inputInfo.InputID);
+            var actionUrl = ActionsInputAdd.GetUrl(_publishmentSystemInfo.Additional.ApiUrl, _publishmentSystemInfo.PublishmentSystemId, _inputInfo.InputId);
             parsedContent.Append($@"
-<form id=""frmInput_{_inputInfo.InputID}"" name=""frmInput_{_inputInfo.InputID}"" style=""margin:0;padding:0"" method=""post"" enctype=""multipart/form-data"" action=""{actionUrl}"" target=""loadInput_{_inputInfo.InputID}"">
+<form id=""frmInput_{_inputInfo.InputId}"" name=""frmInput_{_inputInfo.InputId}"" style=""margin:0;padding:0"" method=""post"" enctype=""multipart/form-data"" action=""{actionUrl}"" target=""loadInput_{_inputInfo.InputId}"">
 ");
 
             if (!string.IsNullOrEmpty(successTemplateString))
@@ -164,7 +164,7 @@ function stlInputCallback_{HolderInputId}(jsonString){{
             parsedContent.AppendFormat(@"
 </form>
 <iframe id=""loadInput_{0}"" name=""loadInput_{0}"" width=""0"" height=""0"" frameborder=""0""></iframe>
-</div>", _inputInfo.InputID);
+</div>", _inputInfo.InputId);
 
             var pageScripts = new NameValueCollection();
             GetAttributesHtml(pageScripts, _publishmentSystemInfo, _styleInfoList);
@@ -178,7 +178,7 @@ function stlInputCallback_{HolderInputId}(jsonString){{
             {
                 parsedContent.AppendFormat(@"
 <script>document.body.onkeydown=function(e)
-{{e=e?e:window.event;var tagname=e.srcElement?e.srcElement.tagName:e.target.tagName;if(tagname=='INPUT'||tagname=='TEXTAREA'){{if(e!=null&&e.ctrlKey&&e.keyCode==13){{document.getElementById('submit_{0}').click();}}}}}}</script>", _inputInfo.InputID);
+{{e=e?e:window.event;var tagname=e.srcElement?e.srcElement.tagName:e.target.tagName;if(tagname=='INPUT'||tagname=='TEXTAREA'){{if(e!=null&&e.ctrlKey&&e.keyCode==13){{document.getElementById('submit_{0}').click();}}}}}}</script>", _inputInfo.InputId);
             }
 
             string clickString =
@@ -224,13 +224,13 @@ function stlInputCallback_{HolderInputId}(jsonString){{
                 }
             }
 
-            parsedContent.Replace(HolderInputId, _inputInfo.InputID.ToString());
+            parsedContent.Replace(HolderInputId, _inputInfo.InputId.ToString());
 
             if (isLoadValues)
             {
                 parsedContent.AppendFormat(@"
 <script type=""text/javascript"">stlInputLoadValues('frmInput_{0}');</script>
-", _inputInfo.InputID);
+", _inputInfo.InputId);
             }
 
             return parsedContent.ToString();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Xml;
@@ -10,46 +11,39 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlFile
+    [Stl(Usage = "文件下载链接", Description = "通过 stl:file 标签在模板中显示文件下载链接")]
+    public class StlFile
 	{
-		private StlFile(){}
-        public const string ElementName = "stl:file";       //文件下载链接
+	    private StlFile() { }
 
-        public const string Attribute_NO = "no";                            //显示字段的顺序
-		public const string Attribute_Src = "src";		                        //需要下载的文件地址
-        public const string Attribute_IsFilesize = "isfilesize";                //显示文件大小
-        public const string Attribute_IsCount = "iscount";                      //是否记录文件下载次数
-        public const string Attribute_Type = "type";							//指定存储附件的字段
+	    public const string ElementName = "stl:file";
 
-        public const string Attribute_LeftText = "lefttext";                //显示在信息前的文字
-        public const string Attribute_RightText = "righttext";              //显示在信息后的文字
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+        public const string AttributeNo = "no";
+		public const string AttributeSrc = "src";
+        public const string AttributeIsFilesize = "isFileSize";
+        public const string AttributeIsCount = "isCount";
+        public const string AttributeType = "type";
+        public const string AttributeLeftText = "leftText";
+        public const string AttributeRightText = "rightText";
+        public const string AttributeIsDynamic = "isDynamic";
 
-		public static ListDictionary AttributeList
-		{
-			get
-			{
-				var attributes = new ListDictionary();
-                attributes.Add(Attribute_NO, "显示字段的顺序");
-                attributes.Add(Attribute_Src, "需要下载的文件地址");
-                attributes.Add(Attribute_IsFilesize, "显示文件大小");
-                attributes.Add(Attribute_IsCount, "是否记录文件下载次数");
-                attributes.Add(Attribute_Type, "指定存储附件的字段");
-
-                attributes.Add(Attribute_LeftText, "显示在信息前的文字");
-                attributes.Add(Attribute_RightText, "显示在信息后的文字");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        {
+	        {AttributeNo, "显示字段的顺序"},
+	        {AttributeSrc, "需要下载的文件地址"},
+	        {AttributeIsFilesize, "显示文件大小"},
+	        {AttributeIsCount, "是否记录文件下载次数"},
+	        {AttributeType, "指定存储附件的字段"},
+	        {AttributeLeftText, "显示在信息前的文字"},
+	        {AttributeRightText, "显示在信息后的文字"},
+	        {AttributeIsDynamic, "是否动态显示"}
+	    };
 
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var parsedContent = string.Empty;
+            string parsedContent;
             try
             {
-                var ie = node.Attributes.GetEnumerator();
-
                 var no = 0;
                 var src = string.Empty;
                 var isFilesize = false;
@@ -61,57 +55,53 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 var attributes = new StringDictionary();
 
-                while (ie.MoveNext())
+                var ie = node.Attributes?.GetEnumerator();
+                if (ie != null)
                 {
-                    var attr = (XmlAttribute)ie.Current;
-                    var attributeName = attr.Name.ToLower();
-                    if (attributeName.Equals(Attribute_NO))
+                    while (ie.MoveNext())
                     {
-                        no = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Src))
-                    {
-                        src = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsFilesize))
-                    {
-                        isFilesize = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_IsCount))
-                    {
-                        isCount = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Type))
-                    {
-                        type = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_LeftText))
-                    {
-                        leftText = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_RightText))
-                    {
-                        rightText = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else
-                    {
-                        attributes.Remove(attributeName);
-                        attributes.Add(attributeName, attr.Value);
+                        var attr = (XmlAttribute)ie.Current;
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeNo))
+                        {
+                            no = TranslateUtils.ToInt(attr.Value);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSrc))
+                        {
+                            src = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsFilesize))
+                        {
+                            isFilesize = TranslateUtils.ToBool(attr.Value);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsCount))
+                        {
+                            isCount = TranslateUtils.ToBool(attr.Value);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
+                        {
+                            type = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLeftText))
+                        {
+                            leftText = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeRightText))
+                        {
+                            rightText = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
+                        {
+                            isDynamic = TranslateUtils.ToBool(attr.Value);
+                        }
+                        else
+                        {
+                            attributes[attr.Name] = attr.Value;
+                        }
                     }
                 }
 
-                if (isDynamic)
-                {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
-                }
-                else
-                {
-                    parsedContent = ParseImpl(node, pageInfo, contextInfo, type, no, src, isFilesize, isCount, leftText, rightText, attributes);
-                }
+                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, type, no, src, isFilesize, isCount, leftText, rightText, attributes);
             }
             catch (Exception ex)
             {
@@ -123,8 +113,6 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string type, int no, string src, bool isFilesize, bool isCount, string leftText, string rightText, StringDictionary attributes)
         {
-            var parsedContent = string.Empty;
-
             if (!string.IsNullOrEmpty(node.InnerXml))
             {
                 var innerBuilder = new StringBuilder(node.InnerXml);
@@ -140,25 +128,20 @@ namespace SiteServer.CMS.StlParser.StlElement
             else
             {
                 if (contextInfo.ContextType == EContextType.Undefined)
+                {
                     contextInfo.ContextType = EContextType.Content;
+                }
                 if (contextInfo.ContextType == EContextType.Content)
                 {
-                    if (contextInfo.ContentID != 0)
+                    if (contextInfo.ContentId != 0)
                     {
                         var contentInfo = contextInfo.ContentInfo;
 
-                        if (contentInfo != null && !string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(type)))
+                        if (!string.IsNullOrEmpty(contentInfo?.GetExtendedAttribute(type)))
                         {
                             if (no <= 1)
                             {
-                                if (StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
-                                {
-                                    fileUrl = contentInfo.GetExtendedAttribute(BackgroundContentAttribute.FileUrl);
-                                }
-                                else
-                                {
-                                    fileUrl = contentInfo.GetExtendedAttribute(type);
-                                }
+                                fileUrl = contentInfo.GetExtendedAttribute(StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl) ? BackgroundContentAttribute.FileUrl : type);
                             }
                             else
                             {
@@ -167,7 +150,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 if (!string.IsNullOrEmpty(extendValues))
                                 {
                                     var index = 2;
-                                    foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
+                                    foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                                     {
                                         if (index == no)
                                         {
@@ -188,7 +171,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, attributes, node.InnerXml, false);
+            var parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, attributes, node.InnerXml, false);
 
             if (isFilesize)
             {

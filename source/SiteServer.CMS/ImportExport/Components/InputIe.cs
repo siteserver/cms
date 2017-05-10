@@ -22,14 +22,14 @@ namespace SiteServer.CMS.ImportExport.Components
         public void ExportInput(int inputId)
 		{
             var inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
-            var filePath = _directoryPath + PathUtils.SeparatorChar + inputInfo.InputID + ".xml";
+            var filePath = _directoryPath + PathUtils.SeparatorChar + inputInfo.InputId + ".xml";
 
             var feed = ExportInputInfo(inputInfo);
 
-            var styleDirectoryPath = PathUtils.Combine(_directoryPath, inputInfo.InputID.ToString());
-            TableStyleIe.SingleExportTableStyles(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, _publishmentSystemId, inputInfo.InputID, styleDirectoryPath);
+            var styleDirectoryPath = PathUtils.Combine(_directoryPath, inputInfo.InputId.ToString());
+            TableStyleIe.SingleExportTableStyles(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, _publishmentSystemId, inputInfo.InputId, styleDirectoryPath);
 
-            var contentIdList = DataProvider.InputContentDao.GetContentIdListWithChecked(inputInfo.InputID);
+            var contentIdList = DataProvider.InputContentDao.GetContentIdListWithChecked(inputInfo.InputId);
             foreach (var contentId in contentIdList)
 			{
                 var contentInfo = DataProvider.InputContentDao.GetContentInfo(contentId);
@@ -43,14 +43,14 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, "InputID", inputInfo.InputID.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, "InputID", inputInfo.InputId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "InputName", inputInfo.InputName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "PublishmentSystemID", inputInfo.PublishmentSystemID.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, "PublishmentSystemID", inputInfo.PublishmentSystemId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "AddDate", DateUtils.GetDateAndTimeString(inputInfo.AddDate));
             AtomUtility.AddDcElement(feed.AdditionalElements, "IsChecked", inputInfo.IsChecked.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "IsReply", inputInfo.IsReply.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "Taxis", inputInfo.Taxis.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, "SettingsXML", AtomUtility.Encrypt(inputInfo.SettingsXML));
+            AtomUtility.AddDcElement(feed.AdditionalElements, "SettingsXML", AtomUtility.Encrypt(inputInfo.SettingsXml));
 
 			return feed;
 		}
@@ -79,13 +79,13 @@ namespace SiteServer.CMS.ImportExport.Components
 			    var inputInfo = new InputInfo
 			    {
 			        InputName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputName"),
-			        PublishmentSystemID = _publishmentSystemId,
+			        PublishmentSystemId = _publishmentSystemId,
 			        AddDate = DateTime.Now,
 			        IsChecked =
 			            TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsChecked")),
 			        IsReply = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsReply")),
 			        Taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, "Taxis")),
-			        SettingsXML =
+			        SettingsXml =
 			            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(feed.AdditionalElements, "SettingsXML"))
 			    };
 
@@ -94,7 +94,7 @@ namespace SiteServer.CMS.ImportExport.Components
 				{
 					if (overwrite)
 					{
-                        DataProvider.InputDao.Delete(srcInputInfo.InputID);
+                        DataProvider.InputDao.Delete(srcInputInfo.InputId);
 					}
 					else
 					{

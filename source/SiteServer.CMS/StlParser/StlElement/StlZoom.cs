@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Xml;
@@ -9,71 +9,61 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlZoom
+    [Stl(Usage = "文字缩放", Description = "通过 stl:zoom 标签在模板中实现文字缩放功能")]
+    public class StlZoom
 	{
         private StlZoom() { }
-        public const string ElementName = "stl:zoom";    //文字缩放
+        public const string ElementName = "stl:zoom";
 
-        public const string Attribute_ZoomID = "zoomid";		        //页面HTML中缩放对象的ID属性
-        public const string Attribute_FontSize = "fontsize";		    //缩放字体大小
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+        public const string AttributeZoomId = "zoomId";
+        public const string AttributeFontSize = "fontSize";
+        public const string AttributeIsDynamic = "isDynamic";
 
-		public static ListDictionary AttributeList
-		{
-			get
-			{
-				var attributes = new ListDictionary();
-                attributes.Add(Attribute_ZoomID, "页面HTML中缩放对象的ID属性");
-                attributes.Add(Attribute_FontSize, "缩放字体大小");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
-
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {AttributeZoomId, "页面HTML中缩放对象的ID属性"},
+	        {AttributeFontSize, "缩放字体大小"},
+	        {AttributeIsDynamic, "是否动态显示"}
+	    };
 
         //对“文字缩放”（stl:zoom）元素进行解析
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			var parsedContent = string.Empty;
+			string parsedContent;
 			try
 			{
-                var stlAnchor = new HtmlAnchor();
-				var ie = node.Attributes.GetEnumerator();
-
-                var zoomID = string.Empty;
+                var zoomId = string.Empty;
                 var fontSize = 16;
                 var isDynamic = false;
+                var stlAnchor = new HtmlAnchor();
 
-				while (ie.MoveNext())
-				{
-					var attr = (XmlAttribute)ie.Current;
-					var attributeName = attr.Name.ToLower();
-					if (attributeName.Equals(Attribute_ZoomID))
-					{
-                        zoomID = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_FontSize))
+                var ie = node.Attributes?.GetEnumerator();
+			    if (ie != null)
+			    {
+                    while (ie.MoveNext())
                     {
-                        fontSize = TranslateUtils.ToInt(attr.Value, 16);
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else
-                    {
-                        ControlUtils.AddAttributeIfNotExists(stlAnchor, attributeName, attr.Value);
-                    }
-				}
+                        var attr = (XmlAttribute)ie.Current;
 
-                if (isDynamic)
-                {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
-                }
-                else
-                {
-                    parsedContent = ParseImpl(node, pageInfo, contextInfo, stlAnchor, zoomID, fontSize);
-                }
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeZoomId))
+                        {
+                            zoomId = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeFontSize))
+                        {
+                            fontSize = TranslateUtils.ToInt(attr.Value, 16);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
+                        {
+                            isDynamic = TranslateUtils.ToBool(attr.Value);
+                        }
+                        else
+                        {
+                            ControlUtils.AddAttributeIfNotExists(stlAnchor, attr.Name, attr.Value);
+                        }
+                    }
+                }		    
+
+                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, stlAnchor, zoomId, fontSize);
 			}
             catch (Exception ex)
             {
@@ -83,13 +73,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 			return parsedContent;
 		}
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string zoomID, int fontSize)
+        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string zoomId, int fontSize)
         {
-            var parsedContent = string.Empty;
-
-            if (string.IsNullOrEmpty(zoomID))
+            if (string.IsNullOrEmpty(zoomId))
             {
-                zoomID = "content";
+                zoomId = "content";
             }
 
             pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAeStlZoom, @"
@@ -120,7 +108,7 @@ function stlDoZoom(zoomId, size){
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                 stlAnchor.InnerHtml = innerBuilder.ToString();
             }
-            stlAnchor.Attributes["href"] = $"javascript:stlDoZoom('{zoomID}', {fontSize});";
+            stlAnchor.Attributes["href"] = $"javascript:stlDoZoom('{zoomId}', {fontSize});";
 
             return ControlUtils.GetControlRenderHtml(stlAnchor);
         }

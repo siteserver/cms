@@ -12,7 +12,6 @@ using BaiRong.Core.Text.Sgml;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.CMS.StlParser.StlElement.Inner;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
@@ -322,28 +321,22 @@ namespace SiteServer.CMS.StlParser.Utility
         public static bool IsStlElement(string label)
         {
             if (label == null) return false;
-            if (label.ToLower().StartsWith("<stl:") && label.IndexOf(">", StringComparison.Ordinal) != -1)
-            {
-                return true;
-            }
-            return false;
+            return label.ToLower().StartsWith("<stl:") && label.IndexOf(">", StringComparison.Ordinal) != -1;
         }
 
 
         public static bool IsSpecifiedStlElement(string stlElement, string elementName)
         {
             if (stlElement == null) return false;
-            if ((stlElement.ToLower().StartsWith($"<{elementName} ") || stlElement.ToLower().StartsWith(
-                     $"<{elementName}>")) && (stlElement.ToLower().EndsWith($"</{elementName}>") || stlElement.ToLower().EndsWith("/>")))
-            {
-                return true;
-            }
-            return false;
+            return (StringUtils.StartsWithIgnoreCase(stlElement, $"<{elementName} ") ||
+                    StringUtils.StartsWithIgnoreCase(stlElement, $"<{elementName}>")) &&
+                   (StringUtils.EndsWithIgnoreCase(stlElement, $"</{elementName}>") ||
+                    StringUtils.EndsWithIgnoreCase(stlElement, "/>"));
         }
 
         public static Regex GetStlEntityRegex(string entityName)
         {
-            return new Regex($@"{{{entityName}.[^{{}}]*}}", (RegexOptions.Singleline | RegexOptions.IgnoreCase) | RegexOptions.Compiled);
+            return new Regex($@"{{{entityName}.[^{{}}]*}}", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
         }
 
         /// <summary>
@@ -438,13 +431,11 @@ namespace SiteServer.CMS.StlParser.Utility
             return RegexUtils.IsMatch($@"<stl:channel[^>]+type=""{type}""[^>]*>", labelString);
         }
 
-        //TODO:测试
         public static string GetInnerXml(string stlElement, bool isInnerElement)
         {
             return GetInnerXml(stlElement, isInnerElement, null);
         }
 
-        //TODO:测试
         public static string GetInnerXml(string stlElement, bool isInnerElement, LowerNameValueCollection attributes)
         {
             var retval = string.Empty;

@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public string GetEditUrl()
         {
-            return ModalInputAdd.GetOpenWindowStringToEdit(PublishmentSystemId, _inputInfo.InputID, true);
+            return ModalInputAdd.GetOpenWindowStringToEdit(PublishmentSystemId, _inputInfo.InputId, true);
         }
 
         public void Page_Load(object sender, EventArgs e)

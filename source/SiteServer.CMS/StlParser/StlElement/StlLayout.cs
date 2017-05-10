@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
@@ -9,60 +8,59 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "页面布局", Description = "通过 stl:layout 标签在模板中创建页面布局")]
     public class StlLayout
     {
         private StlLayout() { }
-        public const string ElementName = "stl:layout";                     //布局
+        public const string ElementName = "stl:layout";
 
-        public const string Attribute_Cols = "cols";                        //各列宽度
-        public const string Attribute_Margin_Top = "margintop";             //上边距
-        public const string Attribute_Margin_Bottom = "marginbottom";       //下边距
-        public const string Attribute_Context = "context";                  //所处上下文
+        public const string AttributeCols = "cols";
+        public const string AttributeMarginTop = "marginTop";
+        public const string AttributeMarginBottom = "marginBottom";
+        public const string AttributeContext = "context";
 
-        public static ListDictionary AttributeList
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            get
-            {
-                var attributes = new ListDictionary();
-                attributes.Add(Attribute_Cols, "各列宽度");
-                attributes.Add(Attribute_Margin_Top, "上边距");
-                attributes.Add(Attribute_Margin_Bottom, "下边距");
-                attributes.Add(Attribute_Context, "所处上下文");
-                return attributes;
-            }
-        }
+            {AttributeCols, "各列宽度"},
+            {AttributeMarginTop, "上边距"},
+            {AttributeMarginBottom, "下边距"},
+            {AttributeContext, "所处上下文"}
+        };
 
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
         {
             var parsedContent = string.Empty;
-            var cols = string.Empty;
-            var marginTop = 5;
-            var marginBottom = 5;
             var contextInfo = contextInfoRef.Clone();
 
             try
             {
-                var ie = node.Attributes.GetEnumerator();
+                var cols = string.Empty;
+                var marginTop = 5;
+                var marginBottom = 5;
 
-                while (ie.MoveNext())
+                var ie = node.Attributes?.GetEnumerator();
+                if (ie != null)
                 {
-                    var attr = (XmlAttribute)ie.Current;
-                    var attributeName = attr.Name.ToLower();
-                    if (attributeName.Equals(Attribute_Cols))
+                    while (ie.MoveNext())
                     {
-                        cols = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_Margin_Top))
-                    {
-                        marginTop = TranslateUtils.ToInt(attr.Value, 5);
-                    }
-                    else if (attributeName.Equals(Attribute_Margin_Bottom))
-                    {
-                        marginBottom = TranslateUtils.ToInt(attr.Value, 5);
-                    }
-                    else if (attributeName.Equals(Attribute_Context))
-                    {
-                        contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
+                        var attr = (XmlAttribute)ie.Current;
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeCols))
+                        {
+                            cols = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeMarginTop))
+                        {
+                            marginTop = TranslateUtils.ToInt(attr.Value, 5);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeMarginBottom))
+                        {
+                            marginBottom = TranslateUtils.ToInt(attr.Value, 5);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeContext))
+                        {
+                            contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
+                        }
                     }
                 }
 

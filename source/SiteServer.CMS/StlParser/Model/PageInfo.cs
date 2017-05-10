@@ -129,8 +129,8 @@ namespace SiteServer.CMS.StlParser.Model
             PageContentId = pageContentId;
 
             contextInfo.PublishmentSystemInfo = publishmentSystemInfo;
-            contextInfo.ChannelID = pageNodeId;
-            contextInfo.ContentID = pageContentId;
+            contextInfo.ChannelId = pageNodeId;
+            contextInfo.ContentId = pageContentId;
         }
 
         private string GetJsCode(string pageJsName)

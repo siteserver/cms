@@ -114,7 +114,7 @@ namespace SiteServer.BackgroundPages
                     ICollection nodeIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
                     foreach (int nodeId in nodeIdCollection)
                     {
-                        if (ChannelUtility.IsAncestorOrSelf(_publishmentSystemInfo.PublishmentSystemId, _publishmentSystemInfo.PublishmentSystemId, nodeId))
+                        if (NodeManager.IsAncestorOrSelf(_publishmentSystemInfo.PublishmentSystemId, _publishmentSystemInfo.PublishmentSystemId, nodeId))
                         {
                             showPublishmentSystem = true;
                             var list = ProductPermissionsManager.Current.ChannelPermissionDict[nodeId];
@@ -404,7 +404,7 @@ namespace SiteServer.BackgroundPages
             }
             foreach (int nodeId in nodeIdCollection)
             {
-                if (ChannelUtility.IsAncestorOrSelf(publishmentSystemId, publishmentSystemId, nodeId))
+                if (NodeManager.IsAncestorOrSelf(publishmentSystemId, publishmentSystemId, nodeId))
                 {
                     return true;
                 }
