@@ -66,8 +66,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             SqlString = StlDataUtility.GetPageContentsSqlString(_pageInfo.PublishmentSystemInfo, channelId, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
         }
 
-        //API SearchOutput调用
-        public StlPageContents(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo, int pageNum, string whereString)
+        //API StlActionsSearchController调用
+        public StlPageContents(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo, int pageNum, string tableName, string whereString)
         {
             _pageInfo = pageInfo;
             _contextInfo = contextInfo;
@@ -89,11 +89,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 ListInfo.PageNum = pageNum;
             }
 
-            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, _contextInfo.ChannelId, ListInfo.UpLevel, ListInfo.TopLevel);
-
-            channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, ListInfo.ChannelIndex, ListInfo.ChannelName);
-
-            SqlString = StlDataUtility.GetPageContentsSqlString(_pageInfo.PublishmentSystemInfo, channelId, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
+            SqlString = StlDataUtility.GetPageContentsSqlStringBySearch(tableName, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
         }
 
         public int GetPageCount(out int totalNum)

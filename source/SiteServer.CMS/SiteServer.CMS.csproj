@@ -374,7 +374,6 @@
     <Compile Include="StlParser\StlElement\StlInput.cs" />
     <Compile Include="StlParser\StlElement\StlInputContent.cs" />
     <Compile Include="StlParser\StlElement\StlInputContents.cs" />
-    <Compile Include="StlParser\StlElement\StlLayout.cs" />
     <Compile Include="StlParser\StlElement\StlLocation.cs" />
     <Compile Include="StlParser\StlElement\StlMarquee.cs" />
     <Compile Include="StlParser\StlElement\StlMenu.cs" />

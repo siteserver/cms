@@ -143,10 +143,6 @@ namespace SiteServer.CMS.StlParser.Model
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlItemTemplate), stlAttribute)
                     },
                     {
-                        StlLayout.ElementName, 
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlLayout), stlAttribute)
-                    },
-                    {
                         StlLoading.ElementName, 
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlLoading), stlAttribute)
                     },
@@ -326,7 +322,6 @@ namespace SiteServer.CMS.StlParser.Model
                 {StlInputContent.ElementName, StlInputContent.AttributeList},
                 {StlInputContents.ElementName, StlInputContents.AttributeList},
                 {StlItemTemplate.ElementName, StlItemTemplate.AttributeList},
-                {StlLayout.ElementName, StlLayout.AttributeList},
                 {StlLoading.ElementName, StlLoading.AttributeList},
                 {StlLocation.ElementName, StlLocation.AttributeList},
                 {StlMarquee.ElementName, StlMarquee.AttributeList},

@@ -322,7 +322,7 @@ namespace SiteServer.CMS.Provider
             return publishmentSystemId;
         }
 
-        public IEnumerable GetStlDataSource(string siteName, string directory, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
+        public IEnumerable GetStlDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
         {
             IEnumerable ie = null;
 
@@ -333,9 +333,9 @@ namespace SiteServer.CMS.Provider
             {
                 publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoBySiteName(siteName);
             }
-            else if (!string.IsNullOrEmpty(directory))
+            else if (!string.IsNullOrEmpty(siteDir))
             {
-                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoByDirectory(directory);
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoByDirectory(siteDir);
             }
 
             if (publishmentSystemInfo != null)

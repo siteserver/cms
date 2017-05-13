@@ -15,7 +15,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string ElementName = "stl:sites";
 
         public const string AttributeSiteName = "siteName";
-        public const string AttributeDirectory = "directory";
+        public const string AttributeSiteDir = "siteDir";
         public const string AttributeTotalNum = "totalNum";
         public const string AttributeStartNum = "startNum";
         public const string AttributeWhere = "where";
@@ -41,7 +41,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeSiteName, "站点名称"},
-            {AttributeDirectory, "站点文件夹"},
+            {AttributeSiteDir, "站点文件夹"},
             {AttributeCellPadding, "填充"},
             {AttributeCellSpacing, "间距"},
             {AttributeClass, "Css类"},
@@ -89,7 +89,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             contextInfo.TitleWordNum = 0;
 
             var siteName = listInfo.Others.Get(AttributeSiteName);
-            var directory = listInfo.Others.Get(AttributeDirectory);
+            var siteDir = listInfo.Others.Get(AttributeSiteDir);
             var since = listInfo.Others.Get(AttributeSince);
 
             if (listInfo.Layout == ELayout.None)
@@ -119,7 +119,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Site, contextInfo);
                 }
 
-                rptContents.DataSource = StlDataUtility.GetSitesDataSource(siteName, directory, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since);
+                rptContents.DataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since);
                 rptContents.DataBind();
 
                 if (rptContents.Items.Count > 0)
@@ -151,7 +151,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Site, contextInfo);
                 }
 
-                pdlContents.DataSource = StlDataUtility.GetSitesDataSource(siteName, directory, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since);
+                pdlContents.DataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since);
                 pdlContents.DataBind();
 
                 if (pdlContents.Items.Count > 0)

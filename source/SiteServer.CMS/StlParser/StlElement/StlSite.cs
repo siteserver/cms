@@ -18,13 +18,13 @@ namespace SiteServer.CMS.StlParser.StlElement
 		public const string ElementName = "stl:site";
 
         public const string AttributeSiteName = "siteName";
-        public const string AttributeDirectory = "directory";
+        public const string AttributeSiteDir = "siteDir";
         public const string AttributeIsDynamic = "isDynamic";
 
 	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
 	    {
 	        {AttributeSiteName, "站点名称"},
-	        {AttributeDirectory, "站点文件夹"},
+	        {AttributeSiteDir, "站点文件夹"},
 	        {AttributeIsDynamic, "是否动态显示"}
 	    };
 
@@ -39,7 +39,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var contextInfo = contextInfoRef.Clone();
                     var siteName = string.Empty;
-                    var directory = string.Empty;
+                    var siteDir = string.Empty;
                     var isDynamic = false;
 
                     var ie = node.Attributes?.GetEnumerator();
@@ -53,9 +53,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 siteName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                             }
-                            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeDirectory))
+                            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSiteDir))
                             {
-                                directory = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                                siteDir = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                             }
                             else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
                             {
@@ -64,7 +64,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                     }
 
-                    parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, siteName, directory);
+                    parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, siteName, siteDir);
                 }
 			}
             catch (Exception ex)
@@ -75,7 +75,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			return parsedContent;
 		}
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string siteName, string directory)
+        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string siteName, string siteDir)
         {
             PublishmentSystemInfo publishmentSystemInfo = null;
 
@@ -83,9 +83,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoBySiteName(siteName);
             }
-            else if (!string.IsNullOrEmpty(directory))
+            else if (!string.IsNullOrEmpty(siteDir))
             {
-                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoByDirectory(directory);
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoByDirectory(siteDir);
             }
             else
             {

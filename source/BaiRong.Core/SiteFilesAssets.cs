@@ -65,6 +65,15 @@ namespace BaiRong.Core
             public static string GetStyleUrl(string apiUrl) => GetUrl(apiUrl, "resume/css/resume.css");
         }
 
+        public class Search
+        {
+            public static string LoadingTemplatePath => GetPath("search/loading.html");
+
+            public static string YesTemplatePath => GetPath("search/yes.html");
+
+            public static string NoTemplatePath => GetPath("search/no.html");
+        }
+
         public class Star
         {
             public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "star/script.js");

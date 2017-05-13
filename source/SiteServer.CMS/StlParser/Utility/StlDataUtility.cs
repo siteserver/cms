@@ -331,6 +331,14 @@ namespace SiteServer.CMS.StlParser.Utility
             return sqlString;
         }
 
+        public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
+        {
+            var sqlWhereString = DataProvider.BackgroundContentDao.GetStlWhereStringBySearch(tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
+            var sqlString = DataProvider.ContentDao.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup);
+
+            return sqlString;
+        }
+
         public static IEnumerable GetContentsDataSource(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, LowerNameValueCollection others)
         {
             IEnumerable ie = null;
@@ -480,9 +488,9 @@ namespace SiteServer.CMS.StlParser.Utility
             return BaiRongDataProvider.DatabaseDao.GetDataSet(connectionString, sqlString);
         }
 
-        public static IEnumerable GetSitesDataSource(string siteName, string directory, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
+        public static IEnumerable GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
         {
-            return DataProvider.PublishmentSystemDao.GetStlDataSource(siteName, directory, startNum, totalNum, whereString, scopeType, orderByString, since);
+            return DataProvider.PublishmentSystemDao.GetStlDataSource(siteName, siteDir, startNum, totalNum, whereString, scopeType, orderByString, since);
         }
 
         public static IEnumerable GetPhotosDataSource(PublishmentSystemInfo publishmentSystemInfo, int contentId, int startNum, int totalNum)
