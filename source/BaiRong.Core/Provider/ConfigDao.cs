@@ -10,6 +10,8 @@ namespace BaiRong.Core.Provider
 {
     public class ConfigDao : DataProviderBase
 	{
+        public string TableName => "bairong_Config";
+
         private const string SqlInsertConfig = "INSERT INTO bairong_Config (IsInitialized, DatabaseVersion, RestrictionBlackList, RestrictionWhiteList, UpdateDate, UserConfig, SystemConfig) VALUES (@IsInitialized, @DatabaseVersion, @RestrictionBlackList, @RestrictionWhiteList, @UpdateDate, @UserConfig, @SystemConfig)";
 
         private const string SqlSelectConfig = "SELECT IsInitialized, DatabaseVersion, RestrictionBlackList, RestrictionWhiteList, UpdateDate, UserConfig, SystemConfig FROM bairong_Config";

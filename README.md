@@ -5,6 +5,8 @@ SiteServer CMS 是.NET平台CMS系统的创始者，能够以最低的成本、�
 
 ![SiteServer CMS](http://www.siteserver.cn/assets/github-banner.png)
 
+<a href="http://developer.siteserver.cn/" target="_blank">开发者中心</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://stl.siteserver.cn/"  target="_blank">STL 语言</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://docs.siteserver.cn/"  target="_blank">文 档</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://blog.siteserver.cn/"  target="_blank">博 客</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://bbs.siteserver.cn/"  target="_blank">论 坛</a>
+
 ## Feedback
 
 提交反馈意见请使用Github [Issues](https://github.com/siteserver/cms/issues) 功能。

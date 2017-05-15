@@ -31,6 +31,16 @@ namespace SiteServer.CMS.StlParser.Utility
             contextInfo.ContentId = contentInfo.Id;
             contextInfo.ContentInfo = contentInfo;
 
+            var prePublishmentSystemInfo = pageInfo.PublishmentSystemInfo;
+            var prePageNodeId = pageInfo.PageNodeId;
+            var prePageContentId = pageInfo.PageContentId;
+            if (contentInfo.PublishmentSystemId != pageInfo.PublishmentSystemId)
+            {
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(contentInfo.PublishmentSystemId);
+                contextInfo.PublishmentSystemInfo = publishmentSystemInfo;
+                pageInfo.ChangeSite(publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, 0, contextInfo);
+            }
+
             var theTemplateString = string.Empty;
 
             if (selectedItems != null && selectedItems.Count > 0)
@@ -50,10 +60,7 @@ namespace SiteServer.CMS.StlParser.Utility
                     {
                         break;
                     }
-                    else
-                    {
-                        theTemplateString = string.Empty;
-                    }
+                    theTemplateString = string.Empty;
                 }
             }
 
@@ -66,6 +73,11 @@ namespace SiteServer.CMS.StlParser.Utility
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
 
             DbItemContainer.PopContentItem(pageInfo);
+
+            if (contentInfo.PublishmentSystemId != pageInfo.PublishmentSystemId)
+            {
+                pageInfo.ChangeSite(prePublishmentSystemInfo, prePageNodeId, prePageContentId, contextInfoRef);
+            }
 
             return innerBuilder.ToString();
         }
