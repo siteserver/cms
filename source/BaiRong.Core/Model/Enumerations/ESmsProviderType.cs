@@ -6,7 +6,7 @@ namespace BaiRong.Core.Model.Enumerations
     public enum ESmsProviderType
     {
         AliDaYu,
-        YunPian,
+        YunPian
     }
 
     public class ESmsProviderTypeUtils
@@ -17,14 +17,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "AliDaYu";
             }
-            else if (type == ESmsProviderType.YunPian)
+            if (type == ESmsProviderType.YunPian)
             {
                 return "YunPian";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(ESmsProviderType type)
@@ -33,14 +30,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "阿里大于";
             }
-            else if (type == ESmsProviderType.YunPian)
+            if (type == ESmsProviderType.YunPian)
             {
                 return "云片";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetUrl(ESmsProviderType type)
@@ -49,14 +43,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "http://www.alidayu.com/";
             }
-            else if (type == ESmsProviderType.YunPian)
+            if (type == ESmsProviderType.YunPian)
             {
                 return "http://www.yunpian.com/";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static ESmsProviderType GetEnumType(string typeStr)
