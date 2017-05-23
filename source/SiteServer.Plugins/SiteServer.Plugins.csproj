@@ -119,15 +119,22 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BaiRong.Core\BaiRong.Core.csproj">
-      <Project>{3d8cb06b-1791-4685-ab56-965b9f41666e}</Project>
-      <Name>BaiRong.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PageBase.cs">
+    <Compile Include="API\Options.cs" />
+    <Compile Include="PluginPageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="API\Paths.cs" />
+    <Compile Include="PluginBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BaiRong.Core\BaiRong.Core.csproj">
+      <Project>{3D8CB06B-1791-4685-AB56-965B9F41666E}</Project>
+      <Name>BaiRong.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
+      <Project>{61a793e1-3e99-4bdc-bc20-7298ca3e0000}</Project>
+      <Name>SiteServer.CMS</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

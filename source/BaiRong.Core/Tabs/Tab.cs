@@ -10,6 +10,7 @@ namespace BaiRong.Core.Tabs
 	public class Tab
 	{
         private string _id;
+        private string _parentId;
         private string _text;
         private string _href;
         private string _name;
@@ -33,6 +34,16 @@ namespace BaiRong.Core.Tabs
         {
             get { return _id; }
             set { _id = value; }
+        }
+
+        /// <summary>
+        /// Property Text (string)
+        /// </summary>
+        [XmlAttribute("parentId")]
+        public string ParentId
+        {
+            get { return _parentId; }
+            set { _parentId = value; }
         }
 
         /// <summary>

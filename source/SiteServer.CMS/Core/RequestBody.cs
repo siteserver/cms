@@ -6,7 +6,6 @@ using BaiRong.Core;
 using BaiRong.Core.Auth;
 using BaiRong.Core.Auth.JWT;
 using BaiRong.Core.Model;
-using BaiRong.Core.Text;
 using Newtonsoft.Json.Linq;
 
 namespace SiteServer.CMS.Core

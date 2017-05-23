@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages

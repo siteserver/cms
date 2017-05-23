@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace siteserver
 
                 Thread.Sleep(5000);
             }
+            // ReSharper disable once FunctionNeverReturns
         }
     }
 
@@ -38,6 +40,7 @@ namespace siteserver
 
                 Thread.Sleep(60000);
             }
+            // ReSharper disable once FunctionNeverReturns
         }
     }
 
@@ -102,6 +105,11 @@ namespace siteserver
                     Thread.Sleep(5000);
                 }
             }
+            else if (invokedVerb == "encode")
+            {
+                var subOptions = (EncodeSubOptions)invokedVerbInstance;
+                Console.WriteLine("Encoded String: {0}", TranslateUtils.EncryptStringBySecretKey(subOptions.String));
+            }
             else if (invokedVerb == "run")
             {
                 // Some biolerplate to react to close window event, CTRL-C, kill, etc
@@ -130,6 +138,30 @@ namespace siteserver
                 {
                     Console.WriteLine(te.ToString());
                 }
+
+                var watcher = new FileSystemWatcher
+                {
+                    Path = Environment.CurrentDirectory,
+                    IncludeSubdirectories = true,
+                    Filter = "*.*"
+                };
+                watcher.Changed += (sender, e) =>
+                {
+                    if (PathUtils.IsSystemPath(e.FullPath)) return;
+
+                    try
+                    {
+                        watcher.EnableRaisingEvents = false;
+
+                        ServiceUtils.OnFileChanged(sender, e);
+                    }
+
+                    finally
+                    {
+                        watcher.EnableRaisingEvents = true;
+                    }
+                };
+                watcher.EnableRaisingEvents = true;
 
                 Thread.Sleep(10);
                 while (true) { }

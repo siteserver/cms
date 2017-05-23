@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages
@@ -153,7 +152,7 @@ namespace SiteServer.BackgroundPages
             }
 
             string errorMessage;
-            if (!BaiRongDataProvider.AdministratorDao.ChangePassword(userName, EPasswordFormat.Encrypted, password, out errorMessage))
+            if (!BaiRongDataProvider.AdministratorDao.ChangePassword(userName, password, out errorMessage))
             {
                 LtlMessage.Text = GetMessageHtml($"重设密码错误：{errorMessage}", true);
                 return;

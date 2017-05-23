@@ -298,12 +298,5 @@ namespace SiteServer.CMS.Core
                 }
             }
         }
-
-        public static string GetBlogSystemPath(PublishmentSystemInfo publishmentSystemInfo, string blogSystemDir)
-        {
-            var publishmentSystemPath = PathUtility.GetPublishmentSystemPath(publishmentSystemInfo);
-
-            return PathUtils.Combine(publishmentSystemPath, blogSystemDir);
-        }
     }
 }

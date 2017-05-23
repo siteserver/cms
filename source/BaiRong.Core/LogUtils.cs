@@ -2,7 +2,7 @@
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 
-namespace BaiRong.Core.Text
+namespace BaiRong.Core
 {
     public class LogUtils
     {

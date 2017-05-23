@@ -92,7 +92,7 @@ namespace BaiRong.Core
 			return exists;
 		}
 
-		public static bool DeleteFileIfExists(string filePath)
+        public static bool DeleteFileIfExists(string filePath)
 		{
             var retval = true;
             try

@@ -1,6 +1,5 @@
 ﻿using System;
 using BaiRong.Core;
-using BaiRong.Core.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;

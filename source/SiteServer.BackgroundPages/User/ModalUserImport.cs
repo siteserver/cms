@@ -2,7 +2,6 @@
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Text;
 
 namespace SiteServer.BackgroundPages.User
 {

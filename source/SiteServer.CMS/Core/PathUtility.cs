@@ -263,6 +263,34 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
+        public static PublishmentSystemInfo GetPublishmentSystemInfo(string path)
+        {
+            var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
+            var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\');
+            var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
+            if (directoryDir == string.Empty) return null;
+
+            var pairList = PublishmentSystemManager.GetPublishmentSystemInfoKeyValuePairList();
+            PublishmentSystemInfo headquarter = null;
+            foreach (var pair in pairList)
+            {
+                var publishmentSystemInfo = pair.Value;
+                if (publishmentSystemInfo.IsHeadquarters)
+                {
+                    headquarter = publishmentSystemInfo;
+                }
+                else
+                {
+                    if (StringUtils.Contains(directoryDir, publishmentSystemInfo.PublishmentSystemDir.ToLower()))
+                    {
+                        return publishmentSystemInfo;
+                    }
+                }
+            }
+
+            return headquarter;
+        }
+
         public static string GetSiteDir(string path)
         {
             var siteDir = string.Empty;
@@ -487,7 +515,7 @@ namespace SiteServer.CMS.Core
         public static bool IsWebSiteFile(string fileName)
         {
             if (StringUtils.EqualsIgnoreCase(fileName, "T_系统首页模板.htm")
-               || StringUtils.EqualsIgnoreCase(fileName, "index.htm"))
+               || StringUtils.EqualsIgnoreCase(fileName, "index.html"))
             {
                 return true;
             }

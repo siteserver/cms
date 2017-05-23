@@ -339,8 +339,8 @@
     </Compile>
     <Compile Include="Controls\TemplatedWebControl.cs" />
     <Compile Include="Controls\TextEditorBase.cs" />
-    <Compile Include="Text\HtmlClearUtils.cs" />
-    <Compile Include="Text\WordSpliter.cs" />
+    <Compile Include="HtmlClearUtils.cs" />
+    <Compile Include="WordSpliter.cs" />
     <Compile Include="ThirdParty\AliDaYu\Aliyun\AliyunResponse.cs" />
     <Compile Include="ThirdParty\AliDaYu\Aliyun\DefaultAliyunClient.cs" />
     <Compile Include="ThirdParty\AliDaYu\Aliyun\IAliyunClient.cs" />
@@ -897,9 +897,9 @@
     <Compile Include="TagUtils.cs" />
     <Compile Include="ThirdParty\Sgml\SgmlParser.cs" />
     <Compile Include="ThirdParty\Sgml\SgmlReader.cs" />
-    <Compile Include="Text\XmlUtils.cs" />
-    <Compile Include="Text\CompareUtils.cs" />
-    <Compile Include="Text\LogUtils.cs" />
+    <Compile Include="XmlUtils.cs" />
+    <Compile Include="CompareUtils.cs" />
+    <Compile Include="LogUtils.cs" />
     <Compile Include="Collection\PairList.cs" />
     <Compile Include="CacheUtils.cs" />
     <Compile Include="ControlUtils.cs" />

@@ -207,6 +207,10 @@
     <Compile Include="Controllers\Writing\ActionsGetTableStyles.cs" />
     <Compile Include="Controllers\Writing\ActionsGetContents.cs" />
     <Compile Include="Controllers\Writing\ActionsGetContent.cs" />
+    <Compile Include="Plugins\PluginBase.cs" />
+    <Compile Include="Plugins\PluginInfo.cs" />
+    <Compile Include="Plugins\PluginUtils.cs" />
+    <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Core\ContentUtility.cs" />
     <Compile Include="StlParser\Model\StlAttribute.cs" />
     <Compile Include="StlParser\StlElement\StlTemplate.cs" />

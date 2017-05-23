@@ -4,7 +4,6 @@ using Word.Plugin;
 using System.Collections.Specialized;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 
 namespace SiteServer.CMS.Core.Office
 {

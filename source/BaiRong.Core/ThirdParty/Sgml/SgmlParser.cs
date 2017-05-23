@@ -6,7 +6,7 @@ using System.Net;
 using System.Xml;
 using System.Globalization;
 
-namespace BaiRong.Core.Text.Sgml
+namespace BaiRong.Core.ThirdParty.Sgml
 {
     public enum LiteralType
     {

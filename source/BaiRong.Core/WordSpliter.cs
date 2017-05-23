@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Text.RegularExpressions;
 
-namespace BaiRong.Core.Text
+namespace BaiRong.Core
 {
     /// <summary>
     /// 分词类
