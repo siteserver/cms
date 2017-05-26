@@ -66,9 +66,13 @@ namespace BaiRong.Core.Tabs
             var i = 0;
             foreach (var tab in tc.Tabs)
             {
-                if (!PageUtils.IsProtocolUrl(tab.Href))
+                if (!string.IsNullOrEmpty(tab.Href) && !PageUtils.IsProtocolUrl(tab.Href))
                 {
                     tab.Href = $"../sitefiles/plugins/{directoryName}/" + tab.Href;
+                }
+                if (!string.IsNullOrEmpty(tab.IconUrl) && !PageUtils.IsProtocolUrl(tab.IconUrl))
+                {
+                    tab.IconUrl = $"../sitefiles/plugins/{directoryName}/" + tab.IconUrl;
                 }
                 if (string.IsNullOrEmpty(tab.Id))
                 {

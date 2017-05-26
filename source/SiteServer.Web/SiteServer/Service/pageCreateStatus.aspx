@@ -14,7 +14,7 @@
     <link href="../assets/css/menu.css" rel="stylesheet" type="text/css" />
     <link href="../assets/css/responsive.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="../assets/jquery/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="../assets/signalR/jquery.signalR-2.2.1.min.js"></script>
+    <script type="text/javascript" src="../assets/signalR/jquery.signalR-2.2.2.min.js"></script>
     <script src="/signalr/hubs"></script>
     <script language="javascript" src="../inc/script.js"></script>
 </head>

@@ -77,7 +77,8 @@
                                   if (response) {
                                     response = JSON.parse(response)
                                     if (response.success === 'true') {
-                                        location.reload()
+                                        $('#img_upload_txt').text('');
+                                        $('#logoUrl').attr('src', response.logoUrl + '?v=' + Math.random());
                                     } else {
                                         $('#img_upload_txt').text(response.message);
                                     }

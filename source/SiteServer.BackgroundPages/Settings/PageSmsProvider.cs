@@ -24,11 +24,12 @@ namespace SiteServer.BackgroundPages.Settings
 
                 if (providerType == ESmsProviderType.AliDaYu)
                 {
-                    ConfigManager.SystemConfigInfo.IsSmsAliDaYu = !ConfigManager.SystemConfigInfo.IsSmsAliDaYu;
+                    ConfigManager.SystemConfigInfo.IsSmsAliDaYu = Body.GetQueryBool("isEnabled");
                 }
                 else if (providerType == ESmsProviderType.YunPian)
                 {
-                    ConfigManager.SystemConfigInfo.IsSmsYunPian = !ConfigManager.SystemConfigInfo.IsSmsYunPian;
+                    ConfigManager.SystemConfigInfo.IsSmsYunPian = Body.GetQueryBool("isEnabled");
+                    var ss = ConfigManager.SystemConfigInfo.IsSmsYunPian;
                 }
 
                 BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);

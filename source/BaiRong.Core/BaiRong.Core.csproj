@@ -242,17 +242,13 @@
     <Compile Include="Model\Enumerations\EUploadType.cs" />
     <Compile Include="Model\Enumerations\EUserLockType.cs" />
     <Compile Include="Model\Enumerations\ESmsProviderType.cs" />
-    <Compile Include="Model\Enumerations\EThirdLoginType.cs" />
     <Compile Include="Model\CaseExtendedAttributes.cs" />
-    <Compile Include="Model\ThirdLoginAuthInfo.cs" />
-    <Compile Include="Model\ThirdLoginInfo.cs" />
     <Compile Include="Model\UserInfoExtend.cs" />
     <Compile Include="Model\UserLogInfo.cs" />
     <Compile Include="Data\SqlServer.cs" />
     <Compile Include="Provider\AdministratorDao.cs" />
     <Compile Include="Provider\AreaDao.cs" />
     <Compile Include="Provider\AuxiliaryTableDataDao.cs" />
-    <Compile Include="Provider\ThirdLoginDao.cs" />
     <Compile Include="Provider\ConfigDao.cs" />
     <Compile Include="Provider\ContentCheckDao.cs" />
     <Compile Include="Provider\ContentDao.cs" />
@@ -272,7 +268,6 @@
     <Compile Include="Provider\TableStructureDao.cs" />
     <Compile Include="Provider\TableStyleDao.cs" />
     <Compile Include="Provider\TagDao.cs" />
-    <Compile Include="Provider\UserBindingDao.cs" />
     <Compile Include="Provider\UserDao.cs" />
     <Compile Include="Provider\UserGroupDao.cs" />
     <Compile Include="Provider\UserLogDao.cs" />
@@ -591,7 +586,6 @@
     <Compile Include="Model\UserGroupInfoExtend.cs" />
     <Compile Include="Model\UserInfo.cs" />
     <Compile Include="Model\PermissionsInRolesInfo.cs" />
-    <Compile Include="Model\UserBindingInfo.cs" />
     <Compile Include="Model\UserConfigInfo.cs" />
     <Compile Include="Base64Decoder.cs" />
     <Compile Include="Base64Encoder.cs" />

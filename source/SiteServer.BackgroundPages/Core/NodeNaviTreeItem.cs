@@ -63,7 +63,10 @@ namespace SiteServer.BackgroundPages.Core
             item._isNodeTree = false;
             if (!string.IsNullOrEmpty(iconUrl))
             {
-                item._iconFolderUrl = PageUtils.ParseNavigationUrl(iconUrl);
+                if (!iconUrl.StartsWith("../"))
+                {
+                    item._iconFolderUrl = PageUtils.ParseNavigationUrl(iconUrl);
+                }
             }
             else
             {

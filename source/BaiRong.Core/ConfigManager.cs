@@ -5,30 +5,20 @@ namespace BaiRong.Core
 {
     public class ConfigManager
     {
-        private ConfigManager() { }
+        private const string CacheKey = "BaiRong.Core.ConfigManager";
 
-        private static ConfigInfo _configInfo;
-        private static readonly object LockObject = new object();
-        private static bool _async = true;//缓存与数据库不同步
+        private ConfigManager() { }
 
         public static ConfigInfo Instance
         {
             get
             {
-                if (_configInfo == null)
-                {
-                    _configInfo = BaiRongDataProvider.ConfigDao.GetConfigInfo();
-                    return _configInfo;
-                }
-                lock (LockObject)
-                {
-                    if (_async)
-                    {
-                        _configInfo = BaiRongDataProvider.ConfigDao.GetConfigInfo();
-                        _async = false;
-                    }
-                }
-                return _configInfo;
+                var configInfo = CacheUtils.Get(CacheKey) as ConfigInfo;
+                if (configInfo != null) return configInfo;
+
+                configInfo = BaiRongDataProvider.ConfigDao.GetConfigInfo();
+                CacheUtils.Max(CacheKey, configInfo);
+                return configInfo;
             }
         }
 
@@ -38,7 +28,13 @@ namespace BaiRong.Core
 
         public static bool IsChanged
         {
-            set { _async = value; }
+            set
+            {
+                if (value)
+                {
+                    CacheUtils.Remove(CacheKey);
+                }
+            }
         }
 
         public static string Cipherkey

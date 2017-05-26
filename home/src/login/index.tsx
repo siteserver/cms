@@ -142,7 +142,7 @@ class IndexPage extends React.Component<P, S> {
                                   this.submit()
                                 } }>{this.state.controls.submitting ? '登录中...' : '登录'}</a>
                               </p>
-                              <p className="quc-field quc-field-third-part" style={{display: 'none'}}>
+                              <p className="quc-field quc-field-third-part">
                                 <span>第三方帐号登录：</span>
                                 <span className="quc-third-part">
                                   <a href="#" className="quc-third-part-icon quc-third-part-icon-weixin" title="微信登录" />

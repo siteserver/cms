@@ -23,7 +23,6 @@ namespace BaiRong.Core
                     var tabs = TabCollection.GetTabs(menuPath);
                     foreach (var parent in tabs.Tabs)
                     {
-                        parent.IsPlatform = true;
                         tabArrayList.Add(parent);
                     }
                 }
