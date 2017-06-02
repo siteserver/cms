@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages
 {
     public class BasePage : Page
     {
-        public Literal ltlBreadCrumb;
+        public Literal ltlBreadCrumb; // 面包屑
         public Message messageCtrl;
 
         private MessageUtils.Message.EMessageType _messageType;
@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
-            _messageType = messageType;
+            _messageType = messageType; 
             _message = ex != null ? $"{message}<!-- {ex} -->" : message;
         }
 
