@@ -21,7 +21,7 @@ namespace BaiRong.Core
                 //message = StringUtils.HtmlDecode(message);
                 message = message.Replace("''", "\"");
             }
-            return message;
+            return message; 
         }
 
         public static string GetMessageHtml(Message.EMessageType messageType, string message, Control control)
