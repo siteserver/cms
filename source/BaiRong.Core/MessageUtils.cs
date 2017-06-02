@@ -28,23 +28,17 @@ namespace BaiRong.Core
         {
             var messageHtml = string.Empty;
             message = DecodeMessage(message);
-            if (messageType == Message.EMessageType.Success)
+            if (!string.IsNullOrEmpty(message))
             {
-                if (!string.IsNullOrEmpty(message))
+                if (messageType == Message.EMessageType.Success)
                 {
                     messageHtml = $@"<DIV class=""msg_succeed"">{message}</DIV>";
                 }
-            }
-            else if (messageType == Message.EMessageType.Error)
-            {
-                if (!string.IsNullOrEmpty(message))
+                else if (messageType == Message.EMessageType.Error)
                 {
                     messageHtml = $@"<DIV class=""msg_failed"">{message}</DIV>";
                 }
-            }
-            else if (messageType == Message.EMessageType.Info)
-            {
-                if (!string.IsNullOrEmpty(message))
+                else if (messageType == Message.EMessageType.Info)
                 {
                     messageHtml = $@"<DIV class=""msg_info"">{message}</DIV>";
                 }
