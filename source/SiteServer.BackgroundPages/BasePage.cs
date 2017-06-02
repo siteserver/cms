@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages
 {
     public class BasePage : Page
     {
-        public Literal ltlBreadCrumb; // 面包屑()
+        public Literal ltlBreadCrumb; // 面包屑(头部导航 + 左边一级二级菜单 + 其他)
         public Message messageCtrl;
 
         private MessageUtils.Message.EMessageType _messageType;
