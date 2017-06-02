@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages
 
             Body = new RequestBody();
 
-            if (!IsAccessable && !Body.IsAdministratorLoggin) // 如果页面不能直接访问且又没有登录则直接跳登录页
+            if (!IsAccessable && !Body.IsAdministratorLoggin) // 
             {
                 IsForbidden = true;
                 PageUtils.RedirectToLoginPage();
