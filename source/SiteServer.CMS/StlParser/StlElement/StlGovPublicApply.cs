@@ -33,9 +33,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var styleName = string.Empty;
 
                 string inputTemplateString;
+                string loadingTemplateString;
                 string successTemplateString;
                 string failureTemplateString;
-                StlParserUtility.GetInnerTemplateStringOfInput(node, out inputTemplateString, out successTemplateString, out failureTemplateString, pageInfo, contextInfo);
+                StlInnerUtility.GetTemplateLoadingYesNo(node, pageInfo, out inputTemplateString, out loadingTemplateString, out successTemplateString, out failureTemplateString);
 
                 var ie = node.Attributes?.GetEnumerator();
                 if (ie != null)

@@ -9,15 +9,15 @@ namespace BaiRong.Core.Model.Attributes
 		}
 
 		//hidden
-		public static string Id = "ID";
-        public static string InputId = "InputID";
+		public static string Id = "Id";
+        public static string InputId = "InputId";
 		public static string Taxis = "Taxis";
 		public static string IsChecked = "IsChecked";
         public static string UserName = "UserName";
         public static string IpAddress = "IPAddress";
         public static string AddDate = "AddDate";
         public static string Reply = "Reply";
-        public static string SettingsXml = "SettingsXML";
+        public static string SettingsXml = "SettingsXml";
 
         public static List<string> AllAttributes
         {

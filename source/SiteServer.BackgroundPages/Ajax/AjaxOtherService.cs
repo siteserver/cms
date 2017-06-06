@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
@@ -22,6 +22,7 @@ namespace SiteServer.BackgroundPages.Ajax
         private const string TypeGetCountArray = "GetCountArray";
         private const string TypeSiteTemplateDownload = "SiteTemplateDownload";
         private const string TypeSiteTemplateZip = "SiteTemplateZip";
+        private const string TypeSiteTemplateUnZip = "SiteTemplateUnZip";
         private const string TypeGetLoadingChannels = "GetLoadingChannels";
 
         public static string GetCountArrayUrl()
@@ -58,11 +59,28 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
+        public static string GetSiteTemplateUnZipUrl()
+        {
+            return PageUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
+            {
+                {"type", TypeSiteTemplateUnZip }
+            });
+        }
+
         public static string GetSiteTemplateZipParameters(string directoryName, string userKeyPrefix)
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
                 {"directoryName", directoryName},
+                {"userKeyPrefix", userKeyPrefix}
+            });
+        }
+
+        public static string GetSiteTemplateUnZipParameters(string fileName, string userKeyPrefix)
+        {
+            return TranslateUtils.NameValueCollectionToString(new NameValueCollection
+            {
+                {"fileName", fileName},
                 {"userKeyPrefix", userKeyPrefix}
             });
         }
@@ -109,6 +127,12 @@ namespace SiteServer.BackgroundPages.Ajax
                 var userKeyPrefix = Request["userKeyPrefix"];
                 var directoryName = Request["directoryName"];
                 retval = SiteTemplateZip(directoryName, userKeyPrefix);
+            }
+            else if (type == TypeSiteTemplateUnZip)
+            {
+                var userKeyPrefix = Request["userKeyPrefix"];
+                var fileName = Request["fileName"];
+                retval = SiteTemplateUnZip(fileName, userKeyPrefix);
             }
             else if (type == TypeGetLoadingChannels)
             {
@@ -259,9 +283,46 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
+        public NameValueCollection SiteTemplateUnZip(string fileName, string userKeyPrefix)
+        {
+            var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
+            var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
+            var cacheMessageKey = userKeyPrefix + CacheMessage;
+
+            CacheUtils.Max(cacheTotalCountKey, "1");//存储需要的页面总数
+            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+
+            //返回“运行结果”和“错误信息”的字符串数组
+            NameValueCollection retval;
+
+            try
+            {
+                var directoryPath = PathUtility.GetSiteTemplatesPath(PathUtils.GetFileNameWithoutExtension(fileName));
+                var zipFilePath = PathUtility.GetSiteTemplatesPath(fileName);
+
+                ZipUtils.UnpackFiles(zipFilePath, directoryPath);
+
+                CacheUtils.Max(cacheCurrentCountKey, "1");//存储当前的页面总数
+
+                retval = AjaxManager.GetProgressTaskNameValueCollection("站点模板解压成功", string.Empty);
+            }
+            catch (Exception ex)
+            {
+                retval = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
+                    $@"<br />站点模板解压失败！<br />{ex.Message}");
+            }
+
+            CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
+            CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
+            CacheUtils.Remove(cacheMessageKey);//取消存储消息
+
+            return retval;
+        }
+
         public string GetLoadingChannels(int publishmentSystemId, int parentId, string loadingType, string additional, RequestBody body)
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
 
             var eLoadingType = ELoadingTypeUtils.GetEnumType(loadingType);
 
@@ -271,7 +332,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
 
-            foreach (int nodeId in nodeIdList)
+            foreach (var nodeId in nodeIdList)
             {
                 var enabled = AdminUtility.IsOwningNodeId(body.AdministratorName, nodeId);
                 if (!enabled)
@@ -283,13 +344,13 @@ namespace SiteServer.BackgroundPages.Ajax
                 }
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
 
-                arraylist.Add(ChannelLoading.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, body.AdministratorName));
+                list.Add(ChannelLoading.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, body.AdministratorName));
             }
 
             //arraylist.Reverse();
 
             var builder = new StringBuilder();
-            foreach (string html in arraylist)
+            foreach (var html in list)
             {
                 builder.Append(html);
             }

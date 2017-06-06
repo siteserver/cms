@@ -54,22 +54,6 @@
                                 runat="server" /></td>
                     </tr>
                     <tr>
-                        <td>是否启用自动保存草稿功能：</td>
-                        <td>
-                            <asp:DropDownList ID="DdlIsAutoSaveContent" runat="server"></asp:DropDownList></td>
-                    </tr>
-                    <tr>
-                        <td>自动保存草稿间隔时间：</td>
-                        <td>
-                            <asp:TextBox class="input-small" ID="TbAutoSaveContentInterval" runat="server" />
-                            <asp:RequiredFieldValidator
-                                ControlToValidate="TbAutoSaveContentInterval"
-                                ErrorMessage=" *" ForeColor="red"
-                                Display="Dynamic"
-                                runat="server" />
-                            秒</td>
-                    </tr>
-                    <tr>
                         <td>是否启用标题换行功能：</td>
                         <td>
                             <asp:RadioButtonList ID="RblIsContentTitleBreakLine" RepeatDirection="Horizontal" class="noborder" runat="server"></asp:RadioButtonList><span>在标题中输入两连续的英文空格，内容页中标题将自动换行，列表页将忽略此空格</span></td>

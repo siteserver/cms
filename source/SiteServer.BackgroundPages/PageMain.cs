@@ -248,13 +248,13 @@ namespace SiteServer.BackgroundPages
                     if (_publishmentSystemInfo.Additional.IsMultiDeployment)
                     {
                         builder.Append(
-                            $@"<li><a href=""{_publishmentSystemInfo.Additional.OuterUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点外网地址</a></li>");
+                            $@"<li><a href=""{_publishmentSystemInfo.Additional.OuterSiteUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点外网地址</a></li>");
                         builder.Append(
-                            $@"<li><a href=""{_publishmentSystemInfo.Additional.InnerUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点内网地址</a></li>");
+                            $@"<li><a href=""{_publishmentSystemInfo.Additional.InnerSiteUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点内网地址</a></li>");
                     }
                     else
                     {
-                        var publishmentSystemUrl = PageUtility.GetPublishmentSystemUrl(_publishmentSystemInfo, string.Empty);
+                        var publishmentSystemUrl = PageUtility.GetPublishmentSystemUrl(_publishmentSystemInfo, string.Empty, true);
 
                         builder.Append(
                             $@"<li><a href=""{publishmentSystemUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点</a></li>");

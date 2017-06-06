@@ -278,9 +278,9 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public ArrayList GetTemplateIdArrayListByType(int publishmentSystemId, ETemplateType type)
+        public List<int> GetTemplateIdListByType(int publishmentSystemId, ETemplateType type)
         {
-            var arraylist = new ArrayList();
+            var list = new List<int>();
 
             var parms = new IDataParameter[]
 			{
@@ -293,16 +293,16 @@ namespace SiteServer.CMS.Provider
                 while (rdr.Read())
                 {
                     var templateId = GetInt(rdr, 0);
-                    arraylist.Add(templateId);
+                    list.Add(templateId);
                 }
                 rdr.Close();
             }
-            return arraylist;
+            return list;
         }
 
-        public ArrayList GetTemplateInfoArrayListByType(int publishmentSystemId, ETemplateType type)
+        public List<TemplateInfo> GetTemplateInfoListByType(int publishmentSystemId, ETemplateType type)
         {
-            var arraylist = new ArrayList();
+            var list = new List<TemplateInfo>();
 
             var parms = new IDataParameter[]
 			{
@@ -316,16 +316,16 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                    arraylist.Add(info);
+                    list.Add(info);
                 }
                 rdr.Close();
             }
-            return arraylist;
+            return list;
         }
 
-        public ArrayList GetTemplateInfoArrayListOfFile(int publishmentSystemId)
+        public List<TemplateInfo> GetTemplateInfoListOfFile(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<TemplateInfo>();
 
             string sqlString =
                 $"SELECT TemplateID, PublishmentSystemID, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE PublishmentSystemID = {publishmentSystemId} AND TemplateType = '{ETemplateTypeUtils.GetValue(ETemplateType.FileTemplate)}' ORDER BY RelatedFileName";
@@ -336,16 +336,16 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                    arraylist.Add(info);
+                    list.Add(info);
                 }
                 rdr.Close();
             }
-            return arraylist;
+            return list;
         }
 
-        public ArrayList GetTemplateInfoArrayListByPublishmentSystemId(int publishmentSystemId)
+        public List<TemplateInfo> GetTemplateInfoListByPublishmentSystemId(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<TemplateInfo>();
 
             var parms = new IDataParameter[]
 			{
@@ -358,16 +358,16 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), ETemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                    arraylist.Add(info);
+                    list.Add(info);
                 }
                 rdr.Close();
             }
-            return arraylist;
+            return list;
         }
 
-        public ArrayList GetTemplateNameArrayList(int publishmentSystemId, ETemplateType templateType)
+        public List<string> GetTemplateNameList(int publishmentSystemId, ETemplateType templateType)
         {
-            var list = new ArrayList();
+            var list = new List<string>();
 
             var parms = new IDataParameter[]
 			{
@@ -387,9 +387,9 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public ArrayList GetLowerRelatedFileNameArrayList(int publishmentSystemId, ETemplateType templateType)
+        public List<string> GetLowerRelatedFileNameList(int publishmentSystemId, ETemplateType templateType)
         {
-            var list = new ArrayList();
+            var list = new List<string>();
 
             var parms = new IDataParameter[]
 			{
@@ -475,7 +475,7 @@ namespace SiteServer.CMS.Provider
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public List<int> GetNodeIdArrayList(TemplateInfo templateInfo)
+        public List<int> GetNodeIdList(TemplateInfo templateInfo)
         {
             var list = new List<int>();
             var sqlString = string.Empty;

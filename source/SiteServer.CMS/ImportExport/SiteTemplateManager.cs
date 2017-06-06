@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using BaiRong.Core;
+using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -29,6 +30,12 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
 
             var filePath = PathUtils.Combine(_rootPath, siteTemplateDir + ".zip");
+            FileUtils.DeleteFileIfExists(filePath);
+        }
+
+        public void DeleteZipSiteTemplate(string fileName)
+        {
+            var filePath = PathUtils.Combine(_rootPath, fileName);
             FileUtils.DeleteFileIfExists(filePath);
         }
 
@@ -73,6 +80,19 @@ namespace SiteServer.CMS.ImportExport
                 }
             }
             return sortedlist;
+        }
+
+        public List<string> GetZipSiteTemplateList()
+        {
+            var list = new List<string>();
+            foreach (var fileName in DirectoryUtils.GetFileNames(_rootPath))
+            {
+                if (EFileSystemTypeUtils.IsZip(PathUtils.GetExtension(fileName)))
+                {
+                    list.Add(fileName);
+                }
+            }
+            return list;
         }
 
         public void ImportSiteTemplateToEmptyPublishmentSystem(int publishmentSystemId, string siteTemplateDir, bool isUseTables, bool isImportContents, bool isImportTableStyles, string administratorName)

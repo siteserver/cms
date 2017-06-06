@@ -17,6 +17,8 @@ namespace SiteServer.CMS.Core.Create
 
         void RemovePendingAndAddFailureLog(CreateTaskInfo taskInfo, Exception ex);
 
+        void ClearAllTask();
+
         void ClearAllTask(int publishmentSystemId);
 
         CreateTaskSummary GetTaskSummary(int publishmentSystemId);
@@ -139,6 +141,14 @@ namespace SiteServer.CMS.Core.Create
             taskLogs.Add(taskLog);
         }
 
+        public void ClearAllTask()
+        {
+            foreach (var publishmentSystemId in PendingTaskDict.Keys)
+            {
+                PendingTaskDict[publishmentSystemId] = new List<CreateTaskInfo>();
+            }
+        }
+
         public void ClearAllTask(int publishmentSystemId)
         {
             PendingTaskDict[publishmentSystemId] = new List<CreateTaskInfo>();
@@ -233,6 +243,11 @@ namespace SiteServer.CMS.Core.Create
             DataProvider.CreateTaskDao.Delete(taskInfo.ID);
             var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemID, CreateTaskManager.GetTaskName(taskInfo), string.Empty, false, ex.Message, DateTime.Now);
             DataProvider.CreateTaskLogDao.Insert(taskLog);
+        }
+
+        public void ClearAllTask()
+        {
+            DataProvider.CreateTaskDao.DeleteAll();
         }
 
         public void ClearAllTask(int publishmentSystemId)

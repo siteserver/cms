@@ -26,40 +26,6 @@ $(document).keypress(function(e){
   }
 });
 
-var isSaving = false;
-function autoSave() {
-  if(!$('#Title').val()) return;
-  if (isSaving) return;
-
-  isSaving = true;
-  var options = {
-      beforeSubmit: function() {
-          return true;
-      },
-      url: location.href + '&isAjaxSubmit=True',
-      type: 'POST',
-      success: function(data) {
-        isSaving = false;
-        var obj = eval("(" + data + ")");
-        if (obj.success == 'true'){
-          $('#savedContentID').val(obj.savedContentID);
-          var now = new Date();
-          var hours = now.getHours() >= 10 ? now.getHours() : '0' + now.getHours();
-          var minutes = now.getMinutes() >= 10 ? now.getMinutes() : '0' + now.getMinutes();
-          var seconds = now.getSeconds() >= 10 ? now.getSeconds() : '0' + now.getSeconds();
-          showTips('自动保存草稿成功（' + hours + ':' + minutes + ':' + seconds + '）', 'success');
-        }
-      }
-  };
-
-  if (UE){
-      $.each(UE.instants,function(index,editor){
-          editor.sync();
-      });
-  }
-  $('#myForm').ajaxSubmit(options);
-}
-
 var isPreviewSaving = false;
 function previewSave() {
     if (!$('#Title').val()) return;

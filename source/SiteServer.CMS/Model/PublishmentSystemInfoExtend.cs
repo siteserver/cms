@@ -13,8 +13,11 @@ namespace SiteServer.CMS.Model
         public const string DefaultApiUrl = "/api";
         public const string DefaultHomeUrl = "/home";
 
-        public PublishmentSystemInfoExtend(string settingsXml)
+        private readonly string _publishmentSystemUrl;
+
+        public PublishmentSystemInfoExtend(string publishmentSystemUrl, string settingsXml)
         {
+            _publishmentSystemUrl = publishmentSystemUrl;
             var nameValueCollection = TranslateUtils.ToNameValueCollection(settingsXml);
             SetExtendedAttribute(nameValueCollection);
         }
@@ -81,18 +84,6 @@ namespace SiteServer.CMS.Model
         {
             get { return GetBool("IsTranslate", true); }
             set { SetExtendedAttribute("IsTranslate", value.ToString()); }
-        }
-
-        public bool IsAutoSaveContent
-        {
-            get { return GetBool("IsAutoSaveContent", true); }
-            set { SetExtendedAttribute("IsAutoSaveContent", value.ToString()); }
-        }
-
-        public int AutoSaveContentInterval
-        {
-            get { return GetInt("AutoSaveContentInterval", 180); }
-            set { SetExtendedAttribute("AutoSaveContentInterval", value.ToString()); }
         }
 
         public bool IsSaveImageInTextEditor
@@ -231,21 +222,45 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("IsMultiDeployment", value.ToString()); }
         }
 
-        public string OuterUrl
+        public string OuterSiteUrl
         {
-            get { return GetString("OuterUrl", string.Empty); }
-            set { SetExtendedAttribute("OuterUrl", value); }
+            get { return GetString("OuterSiteUrl", string.Empty); }
+            set { SetExtendedAttribute("OuterSiteUrl", value); }
         }
 
-        public string InnerUrl
+        public string InnerSiteUrl
         {
-            get { return GetString("InnerUrl", string.Empty); }
-            set { SetExtendedAttribute("InnerUrl", value); }
+            get { return GetString("InnerSiteUrl", string.Empty); }
+            set { SetExtendedAttribute("InnerSiteUrl", value); }
+        }
+
+        public string OuterApiUrl
+        {
+            get { return GetString("OuterApiUrl", string.Empty); }
+            set { SetExtendedAttribute("OuterApiUrl", value); }
+        }
+
+        public string InnerApiUrl
+        {
+            get { return GetString("InnerApiUrl", DefaultApiUrl); }
+            set { SetExtendedAttribute("InnerApiUrl", value); }
+        }
+
+        public string SiteUrl
+        {
+            get
+            {
+                return IsMultiDeployment ? OuterSiteUrl : GetString("SiteUrl", _publishmentSystemUrl);
+            }
+            set { SetExtendedAttribute("SiteUrl", value); }
         }
 
         public string ApiUrl
         {
-            get { return GetString("ApiUrl", DefaultApiUrl); }
+            get
+            {
+                return IsMultiDeployment ? OuterApiUrl : GetString("ApiUrl", DefaultApiUrl);
+            }
             set { SetExtendedAttribute("ApiUrl", value); }
         }
 

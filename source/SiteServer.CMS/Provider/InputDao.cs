@@ -166,6 +166,8 @@ namespace SiteServer.CMS.Provider
 
         public InputInfo GetInputInfo(int inputId)
         {
+            if (inputId == 0) return null;
+            
             InputInfo inputInfo = null;
 
             var parms = new IDataParameter[]

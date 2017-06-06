@@ -14,7 +14,7 @@
     <link href="images/siteserver_icon.png" rel="icon" type="image/png" >
 
     <script src="assets/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
-    <script src="assets/signalR/jquery.signalR-2.2.2.min.js" type="text/javascript"></script>
+    <script src="assets/signalR/jquery.signalR-2.2.1.min.js" type="text/javascript"></script>
     <script src="assets/layer/layer.min.js" type="text/javascript"></script>
     <script src="/signalr/hubs" type="text/javascript"></script>
     <script src="inc/script.js" type="text/javascript"></script>

@@ -7,16 +7,16 @@ namespace SiteServer.BackgroundPages
 {
     public class PageLogin : BasePage
 	{
-        protected Literal LtlMessage;
-		protected TextBox TbAccount;
-		protected TextBox TbPassword;
-        protected PlaceHolder PhValidateCode;
-        protected TextBox TbValidateCode;
-        protected Literal LtlValidateCodeImage;
-        protected CheckBox CbRememberMe;
+        public Literal LtlMessage;
+        public TextBox TbAccount;
+        public TextBox TbPassword;
+        public PlaceHolder PhValidateCode;
+        public TextBox TbValidateCode;
+        public Literal LtlValidateCodeImage;
+        public CheckBox CbRememberMe;
+	    public PlaceHolder PhFindPassword;
 
         private VcManager _vcManager;
-
         protected override bool IsAccessable => true;
 
 	    public void Page_Load(object sender, EventArgs e)
@@ -26,32 +26,33 @@ namespace SiteServer.BackgroundPages
             try
             {
                 _vcManager = VcManager.GetInstance();
-                if (!Page.IsPostBack)
-                {
-                    if (Body.IsQueryExists("error"))
-                    {
-                        LtlMessage.Text = GetMessageHtml(Body.GetQueryString("error"));
-                    }
-                    if (RestrictionManager.IsVisitAllowed(ConfigManager.SystemConfigInfo.RestrictionType, ConfigManager.Instance.RestrictionBlackList, ConfigManager.Instance.RestrictionWhiteList))
-                    {
-                        PageUtils.DetermineRedirectToInstaller();
+                if (Page.IsPostBack) return;
 
-                        if (FileConfigManager.Instance.IsValidateCode)
-                        {
-                            LtlValidateCodeImage.Text =
-                                $@"<a href=""javascript:;"" onclick=""$('#imgVerify').attr('src', $('#imgVerify').attr('src') + '&' + new Date().getTime())""><img id=""imgVerify"" name=""imgVerify"" src=""{PageValidateCode.GetRedirectUrl(_vcManager.GetCookieName())}"" align=""absmiddle"" /></a>";
-                        }
-                        else
-                        {
-                            PhValidateCode.Visible = false;
-                        }
+                PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsFindPassword;
+
+                if (Body.IsQueryExists("error"))
+                {
+                    LtlMessage.Text = GetMessageHtml(Body.GetQueryString("error"));
+                }
+                if (RestrictionManager.IsVisitAllowed(ConfigManager.SystemConfigInfo.RestrictionType, ConfigManager.Instance.RestrictionBlackList, ConfigManager.Instance.RestrictionWhiteList))
+                {
+                    PageUtils.DetermineRedirectToInstaller();
+
+                    if (FileConfigManager.Instance.IsValidateCode)
+                    {
+                        LtlValidateCodeImage.Text =
+                            $@"<a href=""javascript:;"" onclick=""$('#imgVerify').attr('src', $('#imgVerify').attr('src') + '&' + new Date().getTime())""><img id=""imgVerify"" name=""imgVerify"" src=""{PageValidateCode.GetRedirectUrl(_vcManager.GetCookieName())}"" align=""absmiddle"" /></a>";
                     }
                     else
                     {
-                        Page.Response.Write("<h1>此页面禁止访问.</h1>");
-                        Page.Response.Write($"<p>IP地址：{PageUtils.GetIpAddress()}<br />需要访问此页面请与网站管理员联系开通相关权限.</p>");
-                        Page.Response.End();
+                        PhValidateCode.Visible = false;
                     }
+                }
+                else
+                {
+                    Page.Response.Write("<h1>此页面禁止访问.</h1>");
+                    Page.Response.Write($"<p>IP地址：{PageUtils.GetIpAddress()}<br />需要访问此页面请与网站管理员联系开通相关权限.</p>");
+                    Page.Response.End();
                 }
             }
             catch

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.AuxiliaryTable;
+using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.CMS.StlTemplates;
+using SiteServer.CMS.StlParser.StlElement;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -47,11 +50,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                 LtlInputName.Text = _inputInfo.InputName;
 
-			    var inputTemplate = new InputTemplate(PublishmentSystemInfo, _inputInfo);
-
-                string stlElement = $@"<stl:input inputName=""{_inputInfo.InputName}"">{inputTemplate.GetContent()}</stl:input>";
-
-                LtlInputCode.Text = StringUtils.HtmlEncode(stlElement);
+			    var stlElement = StlInput.GetDefaultStlInputStlElement(PublishmentSystemInfo, _inputInfo);
+                LtlInputCode.Text = StringUtils.ReplaceNewlineToBr(StringUtils.HtmlEncode(stlElement));
 
                 LtlForm.Text = StlParserManager.ParsePreviewContent(PublishmentSystemInfo, stlElement);
 

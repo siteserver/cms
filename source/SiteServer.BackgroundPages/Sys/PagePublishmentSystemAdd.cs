@@ -517,7 +517,7 @@ namespace SiteServer.BackgroundPages.Sys
 
                         PublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
                         PublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
-                        var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.SettingsXml);
+                        var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.PublishmentSystemUrl, publishmentSystemInfo.SettingsXml);
                         if (!string.IsNullOrEmpty(extend.Charset))
                         {
                             Charset.SelectedValue = extend.Charset;

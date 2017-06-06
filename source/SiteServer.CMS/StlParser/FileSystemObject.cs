@@ -75,8 +75,8 @@ namespace SiteServer.CMS.StlParser
                 CreateChannel(nodeId);
                 CreateContents(nodeId);
             }
-            var templateIdArrayList = DataProvider.TemplateDao.GetTemplateIdArrayListByType(PublishmentSystemId, ETemplateType.FileTemplate);
-            foreach (int templateId in templateIdArrayList)
+            var templateIdList = DataProvider.TemplateDao.GetTemplateIdListByType(PublishmentSystemId, ETemplateType.FileTemplate);
+            foreach (var templateId in templateIdList)
             {
                 CreateFile(templateId);
             }

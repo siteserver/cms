@@ -190,6 +190,6 @@ namespace SiteServer.CMS.Model
             }
         }
 
-        public PublishmentSystemInfoExtend Additional => _additional ?? (_additional = new PublishmentSystemInfoExtend(_settingsXml));
+        public PublishmentSystemInfoExtend Additional => _additional ?? (_additional = new PublishmentSystemInfoExtend(PublishmentSystemUrl, _settingsXml));
 	}
 }

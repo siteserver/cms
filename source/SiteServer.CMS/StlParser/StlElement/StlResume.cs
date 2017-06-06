@@ -6,6 +6,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.CMS.StlTemplates;
+using System.Text;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -29,9 +30,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var styleName = string.Empty;
 
-                string successTemplateString;
-                string failureTemplateString;
-                StlParserUtility.GetInnerTemplateString(node, out successTemplateString, out failureTemplateString, pageInfo, contextInfo);
+                string yes;
+                string no;
+                StlInnerUtility.GetYesNo(node, pageInfo, out yes, out no);
 
                 var ie = node.Attributes?.GetEnumerator();
                 if (ie != null)
@@ -47,7 +48,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                parsedContent = ParseImpl(pageInfo, contextInfo, styleName, successTemplateString, failureTemplateString);
+                parsedContent = ParseImpl(pageInfo, contextInfo, styleName, yes, no);
             }
             catch (Exception ex)
             {
@@ -57,7 +58,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        public static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string styleName, string successTemplateString, string failureTemplateString)
+        public static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string styleName, string yes, string no)
         {
             pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
             pageInfo.AddPageScriptsIfNotExists(PageInfo.JQuery.BAjaxUpload);
@@ -65,8 +66,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             pageInfo.AddPageScriptsIfNotExists(PageInfo.JQuery.BValidate);
             pageInfo.AddPageScriptsIfNotExists(PageInfo.JsInnerCalendar);
 
+            yes = StlParserManager.ParseInnerContent(yes, pageInfo, contextInfo);
+            no = StlParserManager.ParseInnerContent(no, pageInfo, contextInfo);
+
             var resumeTemplate = new ResumeTemplate(pageInfo.PublishmentSystemInfo);
-            var parsedContent = resumeTemplate.GetTemplate(successTemplateString, failureTemplateString);
+            var parsedContent = resumeTemplate.GetTemplate(yes, no);
 
             return parsedContent;
         }

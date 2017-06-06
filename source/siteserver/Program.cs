@@ -1,49 +1,9 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
-using BaiRong.Core;
 using CommandLine;
-using SiteServer.CMS.Core;
+using siteserver.commands;
 
 namespace siteserver
 {
-    public class CreateThread
-    {
-        public void Run()
-        {
-            while (true)
-            {
-                ServiceManager.SetServiceOnline(true);
-                if (ExecutionManager.ExecutePendingCreate())
-                {
-                    Console.WriteLine("Create Pages: " + DateUtils.GetDateAndTimeString(DateTime.Now));
-                }
-
-                Thread.Sleep(5000);
-            }
-            // ReSharper disable once FunctionNeverReturns
-        }
-    }
-
-    public class TaskThread
-    {
-        public void Run()
-        {
-            while (true)
-            {
-                if (ExecutionManager.ExecuteTask())
-                {
-                    Console.WriteLine("Execute Tasks: " + DateUtils.GetDateAndTimeString(DateTime.Now));
-                }
-
-                Thread.Sleep(60000);
-            }
-            // ReSharper disable once FunctionNeverReturns
-        }
-    }
-
     public class Program
     {
         public static void Main(string[] args)
@@ -65,7 +25,7 @@ namespace siteserver
             object invokedVerbInstance = null;
             if (args.Length == 0)
             {
-                invokedVerb = "run";
+                invokedVerb = Run.CommandName;
             }
             else
             {
@@ -82,119 +42,28 @@ namespace siteserver
                 }
             }
 
-            if (invokedVerb == "build")
+            if (invokedVerb == Build.CommandName)
             {
                 var commitSubOptions = (BuildSubOptions)invokedVerbInstance;
                 var isAll = commitSubOptions != null && commitSubOptions.All;
-                Console.WriteLine(isAll);
-                Console.WriteLine("build site...");
+                Build.Start(isAll);
             }
-            else if (invokedVerb == "test")
+            else if (invokedVerb == Test.CommandName)
             {
-                var i = 0;
-                while (true)
+                Test.Start();
+            }
+            else if (invokedVerb == Encode.CommandName)
+            {
+                var subOptions = invokedVerbInstance as EncodeSubOptions;
+                if (subOptions != null)
                 {
-                    Console.WriteLine("Application thread ID: {0}, I:{1}",
-                        Thread.CurrentThread.ManagedThreadId, i++);
-                    var t = Task.Run(() => {
-                        Console.WriteLine("Task thread ID: {0}",
-                           Thread.CurrentThread.ManagedThreadId);
-                    });
-                    t.Wait();
-
-                    Thread.Sleep(5000);
+                    Encode.Start(subOptions.String);
                 }
             }
-            else if (invokedVerb == "encode")
+            else if (invokedVerb == Run.CommandName)
             {
-                var subOptions = (EncodeSubOptions)invokedVerbInstance;
-                Console.WriteLine("Encoded String: {0}", TranslateUtils.EncryptStringBySecretKey(subOptions.String));
+                Run.Start();
             }
-            else if (invokedVerb == "run")
-            {
-                // Some biolerplate to react to close window event, CTRL-C, kill, etc
-                _handler += Handler;
-                SetConsoleCtrlHandler(_handler, true);
-
-                Console.WriteLine("SiteServer Service is running...");
-
-                var thr1 = new CreateThread();
-                var thr2 = new TaskThread();
-
-                var tid1 = new Thread(thr1.Run);
-                var tid2 = new Thread(thr2.Run);
-
-                tid1.IsBackground = true;
-                tid1.Priority = ThreadPriority.Highest;
-                tid2.IsBackground = true;
-                tid2.Priority = ThreadPriority.Lowest;
-
-                try
-                {
-                    tid1.Start();
-                    tid2.Start();
-                }
-                catch (ThreadStateException te)
-                {
-                    Console.WriteLine(te.ToString());
-                }
-
-                var watcher = new FileSystemWatcher
-                {
-                    Path = Environment.CurrentDirectory,
-                    IncludeSubdirectories = true,
-                    Filter = "*.*"
-                };
-                watcher.Changed += (sender, e) =>
-                {
-                    if (PathUtils.IsSystemPath(e.FullPath)) return;
-
-                    try
-                    {
-                        watcher.EnableRaisingEvents = false;
-
-                        ServiceUtils.OnFileChanged(sender, e);
-                    }
-
-                    finally
-                    {
-                        watcher.EnableRaisingEvents = true;
-                    }
-                };
-                watcher.EnableRaisingEvents = true;
-
-                Thread.Sleep(10);
-                while (true) { }
-
-                //_commandRun = new CommandRun();
-                //_commandRun.StartService();
-            }
-        }
-
-        [DllImport("Kernel32")]
-        private static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
-
-        private delegate bool EventHandler(CtrlType sig);
-        private static EventHandler _handler;
-
-        private enum CtrlType { }
-
-        private static bool Handler(CtrlType sig)
-        {
-            //do your cleanup here
-            ServiceManager.SetServiceOnline(false);
-
-            Console.WriteLine("SiteServer Service is shutting down...");
-
-            //allow main to run off
-            //_exitSystem = true;
-
-            //_commandRun?.EndService();
-
-            //shutdown right away so there are no lingering threads
-            Environment.Exit(-1);
-
-            return true;
         }
     }
 }
