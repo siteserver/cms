@@ -12,16 +12,16 @@ namespace SiteServer.BackgroundPages
 {
     public class BasePage : Page
     {
-        public Literal ltlBreadCrumb;
+        public Literal ltlBreadCrumb; // 面包屑(头部导航 + 左边一级二级菜单 + 其他)
         public Message messageCtrl;
 
         private MessageUtils.Message.EMessageType _messageType;
         private string _message = string.Empty;
         private string _scripts = string.Empty;
 
-        protected virtual bool IsAccessable => false;
+        protected virtual bool IsAccessable => false; // 页面默认情况下是不能直接访问
 
-        protected virtual bool IsSinglePage => false;
+        protected virtual bool IsSinglePage => false; // 是否为单页（即是否需要放在框架页内运行,false表示需要）
 
         protected bool IsForbidden { get; private set; }
 
@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
-            _messageType = messageType;
+            _messageType = messageType; 
             _message = ex != null ? $"{message}<!-- {ex} -->" : message;
         }
 
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages
 
             Body = new RequestBody();
 
-            if (!IsAccessable && !Body.IsAdministratorLoggin)
+            if (!IsAccessable && !Body.IsAdministratorLoggin) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {
                 IsForbidden = true;
                 PageUtils.RedirectToLoginPage();
@@ -53,21 +53,21 @@ namespace SiteServer.BackgroundPages
         {
             if (!string.IsNullOrEmpty(_message))
             {
-                if (messageCtrl != null)
+                if (messageCtrl != null) // 页面有消息显示的控件则立即显示消息
                 {
                     messageCtrl.IsShowImmidiatary = true;
                     messageCtrl.MessageType = _messageType;
                     messageCtrl.Content = _message;
                 }
-                else
-                {
+                else // 没有的话则把消息存在cookies中到有控件的页面再显示
+                { 
                     MessageUtils.SaveMessage(_messageType, _message);
                 }
             }
 
             base.Render(writer);
 
-            if (!IsAccessable && !IsSinglePage)
+            if (!IsAccessable && !IsSinglePage) // 页面不能直接访问且不是单页，需要加一段框架检测代码，检测页面是否运行在框架内
             {
                 writer.Write($@"<script type=""text/javascript"">
 if (window.top.location.href.toLowerCase().indexOf(""main.aspx"") == -1){{
