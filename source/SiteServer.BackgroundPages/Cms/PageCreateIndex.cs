@@ -15,8 +15,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                CreateManager.CreateIndex(PublishmentSystemId);
-                PageCreateStatus.Redirect(PublishmentSystemId);
+                CreateManager.CreateIndex(PublishmentSystemId); // 创建任务
+                PageCreateStatus.Redirect(PublishmentSystemId); // 转到查询任务进度页面
             }
         }
     }

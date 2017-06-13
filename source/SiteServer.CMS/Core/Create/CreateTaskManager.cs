@@ -66,6 +66,11 @@ namespace SiteServer.CMS.Core.Create
         private static readonly Dictionary<int, List<CreateTaskInfo>> PendingTaskDict = new Dictionary<int, List<CreateTaskInfo>>();
         private static readonly Dictionary<int, List<CreateTaskLogInfo>> TaskLogDict = new Dictionary<int, List<CreateTaskLogInfo>>();
 
+        /// <summary>
+        /// 获取某个站点的所有任务
+        /// </summary>
+        /// <param name="publishmentSystemId"></param>
+        /// <returns></returns>
         private List<CreateTaskInfo> GetPendingTasks(int publishmentSystemId)
         {
             if (!PendingTaskDict.ContainsKey(publishmentSystemId))
@@ -84,9 +89,13 @@ namespace SiteServer.CMS.Core.Create
             return TaskLogDict[publishmentSystemId];
         }
 
+        /// <summary>
+        /// 添加一个任务
+        /// </summary>
+        /// <param name="task"></param>
         public void AddPendingTask(CreateTaskInfo task)
         {
-            var pendingTasks = GetPendingTasks(task.PublishmentSystemID);
+            var pendingTasks = GetPendingTasks(task.PublishmentSystemID); // 查找某站点所有任务
             foreach (var taskInfo in pendingTasks)
             {
                 if (task.Equals(taskInfo))

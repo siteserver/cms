@@ -6,10 +6,14 @@ namespace SiteServer.CMS.Core.Create
 {
     public class CreateManager
     {
+        /// <summary>
+        /// 创建生成首页任务
+        /// </summary>
+        /// <param name="publishmentSystemId"></param>
         public static void CreateIndex(int publishmentSystemId)
         {
             var taskInfo = new CreateTaskInfo(0, ECreateType.Index, publishmentSystemId, 0, 0, 0);
-            CreateTaskManager.Instance.AddPendingTask(taskInfo);
+            CreateTaskManager.Instance.AddPendingTask(taskInfo); // 添加任务到队列
         }
 
         public static void CreateChannel(int publishmentSystemId, int channelId)
