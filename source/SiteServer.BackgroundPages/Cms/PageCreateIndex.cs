@@ -11,7 +11,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("PublishmentSystemID"); // 检测参数PublishmentSystemID是否合法(不能为空)
 
             if (!IsPostBack)
             {
