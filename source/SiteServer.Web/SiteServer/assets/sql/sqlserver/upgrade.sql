@@ -112,3 +112,7 @@ GO
 
 CREATE INDEX IX_siteserver_Comment_ContentID ON siteserver_Comment(ContentID)
 GO
+
+ALTER TABLE siteserver_PublishmentSystem ADD
+    PublishmentSystemType               varchar(50)              NULL
+GO

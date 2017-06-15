@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using BaiRong.Core;
+using SiteServer.CMS.Model;
 using Microsoft.AspNet.SignalR;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -42,7 +45,7 @@ namespace SiteServer.API
                     Clients.Client(Context.ConnectionId).next(true);
                 }
             }
-        }
+        } 
 
         public void GetTasks(int publishmentSystemId)
         {
