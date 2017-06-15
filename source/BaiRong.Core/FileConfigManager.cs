@@ -11,8 +11,6 @@ namespace BaiRong.Core
 
         public bool IsValidateCode { get; } = true;
 
-        public bool IsFindPassword { get; } = true;
-
         public string SecretKey { get; } = "vEnfkn16t8aeaZKG3a4Gl9UUlzf4vgqU9xwh8ZV5";
 
         public static FileConfigManager Instance
@@ -60,12 +58,6 @@ namespace BaiRong.Core
             if (!string.IsNullOrEmpty(xmlAttribute?.Value))
             {
                 IsValidateCode = TranslateUtils.ToBool(xmlAttribute.Value);
-            }
-
-            xmlAttribute = attributeCollection["isFindPassword"];
-            if (!string.IsNullOrEmpty(xmlAttribute?.Value))
-            {
-                IsFindPassword = TranslateUtils.ToBool(xmlAttribute.Value);
             }
 
             xmlAttribute = attributeCollection["secretKey"];

@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="在此设置各栏目生成页面的规则，同时可以设置当栏目下内容改变后需要的生成栏目" runat="server"></bairong:alerts>
 
   <table class="table table-bordered table-hover">

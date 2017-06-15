@@ -31,8 +31,8 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var attributes = new NameValueCollection
             {
-                {"publishmentSystemID", albumInfo.PublishmentSystemID.ToString()},
-                {"albumID", albumInfo.ID.ToString()},
+                {"publishmentSystemID", albumInfo.PublishmentSystemId.ToString()},
+                {"albumID", albumInfo.Id.ToString()},
                 {"wxOpenID", wxOpenId}
             };
             return PageUtils.AddQueryString(GetAlbumUrl(publishmentSystemInfo), attributes);
@@ -42,9 +42,9 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var albumInfoList = DataProviderWX.AlbumDAO.GetAlbumInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var albumInfoList = DataProviderWx.AlbumDao.GetAlbumInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
             foreach (var albumInfo in albumInfoList)
             {

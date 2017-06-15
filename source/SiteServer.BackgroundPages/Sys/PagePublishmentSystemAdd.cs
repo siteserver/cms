@@ -40,7 +40,6 @@ namespace SiteServer.BackgroundPages.Sys
         public DropDownList ParentPublishmentSystemID;
         public TextBox PublishmentSystemDir;
 
-        public PlaceHolder phNodeRelated;
         public DropDownList Charset;
         public Control RowIsImportContents;
         public CheckBox IsImportContents;
@@ -65,7 +64,7 @@ namespace SiteServer.BackgroundPages.Sys
         public Button Previous;
         public Button Next;
 
-        private EPublishmentSystemType _publishmentSystemType = EPublishmentSystemType.CMS;
+        private EPublishmentSystemType _publishmentSystemType = EPublishmentSystemType.Cms;
         private SortedList _sortedlist = new SortedList();
         private AdministratorWithPermissions _permissions;
 
@@ -116,7 +115,7 @@ namespace SiteServer.BackgroundPages.Sys
 
                 ltlPublishmentSystemType.Text = EPublishmentSystemTypeUtils.GetHtml(_publishmentSystemType);
 
-                phWCMTables.Visible = _publishmentSystemType == EPublishmentSystemType.WCM;
+                phWCMTables.Visible = _publishmentSystemType == EPublishmentSystemType.Wcm;
 
                 ParentPublishmentSystemID.Items.Add(new ListItem("<无上级站点>", "0"));
                 var publishmentSystemIdArrayList = PublishmentSystemManager.GetPublishmentSystemIdList();
@@ -148,8 +147,6 @@ namespace SiteServer.BackgroundPages.Sys
                     AddSite(ParentPublishmentSystemID, publishmentSystemInfo, parentWithChildren, 0);
                 }
                 ControlUtils.SelectListItems(ParentPublishmentSystemID, "0");
-
-                phNodeRelated.Visible = EPublishmentSystemTypeUtils.IsNodeRelated(_publishmentSystemType);
 
                 ECharsetUtils.AddListItems(Charset);
                 ControlUtils.SelectListItems(Charset, ECharsetUtils.GetValue(ECharset.utf_8));
@@ -517,7 +514,7 @@ namespace SiteServer.BackgroundPages.Sys
 
                         PublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
                         PublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
-                        var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.SettingsXml);
+                        var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.PublishmentSystemUrl, publishmentSystemInfo.SettingsXml);
                         if (!string.IsNullOrEmpty(extend.Charset))
                         {
                             Charset.SelectedValue = extend.Charset;

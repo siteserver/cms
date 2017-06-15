@@ -126,52 +126,40 @@ namespace BaiRong.Core.Model
             set { SetExtendedAttribute("LoginLockingHours", value.ToString()); }
         }
 
-        public bool IsSmsAliDaYu
+        public bool IsFindPassword
         {
-            get { return GetBool("IsSmsAliDaYu", false); }
-            set { SetExtendedAttribute("IsSmsAliDaYu", value.ToString()); }
+            get { return GetBool("IsFindPassword", false); }
+            set { SetExtendedAttribute("IsFindPassword", value.ToString()); }
         }
 
-        public string SmsAliDaYuAppKey
+        public string FindPasswordSmsTplId
         {
-            get { return GetString("SmsAliDaYuAppKey", string.Empty); }
-            set { SetExtendedAttribute("SmsAliDaYuAppKey", value); }
+            get { return GetString("FindPasswordSmsTplId", string.Empty); }
+            set { SetExtendedAttribute("FindPasswordSmsTplId", value); }
         }
 
-        public string SmsAliDaYuAppSecret
+        public ESmsProviderType SmsProviderType
         {
-            get { return GetString("SmsAliDaYuAppSecret", string.Empty); }
-            set { SetExtendedAttribute("SmsAliDaYuAppSecret", value); }
+            get { return ESmsProviderTypeUtils.GetEnumType(GetString("SmsProviderType", ESmsProviderTypeUtils.GetValue(ESmsProviderType.None))); }
+            set { SetExtendedAttribute("SmsProviderType", ESmsProviderTypeUtils.GetValue(value)); }
         }
 
-        public string SmsAliDaYuSignName
+        public string SmsAppKey
         {
-            get { return GetString("SmsAliDaYuSignName", string.Empty); }
-            set { SetExtendedAttribute("SmsAliDaYuSignName", value); }
+            get { return GetString("SmsAppKey", string.Empty); }
+            set { SetExtendedAttribute("SmsAppKey", value); }
         }
 
-        public string SmsAliDaYuCodeTplId
+        public string SmsAppSecret
         {
-            get { return GetString("SmsAliDaYuCodeTplId", string.Empty); }
-            set { SetExtendedAttribute("SmsAliDaYuCodeTplId", value); }
+            get { return GetString("SmsAppSecret", string.Empty); }
+            set { SetExtendedAttribute("SmsAppSecret", value); }
         }
 
-        public bool IsSmsYunPian
+        public string SmsSignName
         {
-            get { return GetBool("IsSmsYunPian", false); }
-            set { SetExtendedAttribute("IsSmsYunPian", value.ToString()); }
-        }
-
-        public string SmsYunPianApiKey
-        {
-            get { return GetString("SmsYunPianApiKey", string.Empty); }
-            set { SetExtendedAttribute("SmsYunPianApiKey", value); }
-        }
-
-        public string SmsYunPianCodeTplId
-        {
-            get { return GetString("SmsYunPianCodeTplId", string.Empty); }
-            set { SetExtendedAttribute("SmsYunPianCodeTplId", value); }
+            get { return GetString("SmsSignName", string.Empty); }
+            set { SetExtendedAttribute("SmsSignName", value); }
         }
     }
 }

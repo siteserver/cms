@@ -6,9 +6,9 @@ namespace BaiRong.Core.Model.Enumerations
 	
 	public enum EVoteItemType
 	{
-		Text,				//������ͶƱ
-		Image,				//ͼƬ��ͶƱ
-		TextAndImage		//ͼ�Ļ����ͶƱ
+		Text,				//文字型投票
+		Image,				//图片型投票
+		TextAndImage		//图文混合型投票
 	}
 
 	public class EVoteItemTypeUtils
@@ -37,15 +37,15 @@ namespace BaiRong.Core.Model.Enumerations
 		{
 			if (type == EVoteItemType.Text)
 			{
-				return "������ͶƱ";
+				return "文字型投票";
 			}
 			else if (type == EVoteItemType.Image)
 			{
-				return "ͼƬ��ͶƱ";
+				return "图片型投票";
 			}
 			else if (type == EVoteItemType.TextAndImage)
 			{
-				return "ͼ�Ļ����ͶƱ";
+				return "图文混合型投票";
 			}
 			else
 			{

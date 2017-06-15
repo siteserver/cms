@@ -5,11 +5,11 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 {
     public enum EAppointmentStatus
 	{
-        Agree,     //Í¬Òâ
-        Handling,  //´¦ÀíÖĞ
-        Refuse,    //¾Ü¾ø
-        Arrive,    //ÒÑ¸°Ô¼
-        DisArrive  //Î´¸°Ô¼
+        Agree,     //åŒæ„
+        Handling,  //å¤„ç†ä¸­
+        Refuse,    //æ‹’ç»
+        Arrive,    //å·²èµ´çº¦
+        DisArrive  //æœªèµ´çº¦
 	}
 
     public class EAppointmentStatusUtils
@@ -46,23 +46,23 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == EAppointmentStatus.Agree)
             {
-                return "Í¬Òâ";
+                return "åŒæ„";
             }
             else if (type == EAppointmentStatus.Handling)
             {
-                return "´¦ÀíÖĞ";
+                return "å¤„ç†ä¸­";
             }
             else if (type == EAppointmentStatus.Refuse)
             {
-                return "¾Ü¾ø";
+                return "æ‹’ç»";
             }
             else if (type == EAppointmentStatus.Arrive)
             {
-                return "ÒÑ¸°Ô¼";
+                return "å·²èµ´çº¦";
             }
             else if (type == EAppointmentStatus.DisArrive)
             {
-                return "Î´¸°Ô¼";
+                return "æœªèµ´çº¦";
             }
            else
 			{

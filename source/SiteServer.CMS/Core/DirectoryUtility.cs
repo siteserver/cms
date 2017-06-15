@@ -228,9 +228,9 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void DeleteFiles(PublishmentSystemInfo publishmentSystemInfo, ArrayList templateIdArrayList)
+        public static void DeleteFiles(PublishmentSystemInfo publishmentSystemInfo, List<int> templateIdList)
         {
-            foreach (int templateId in templateIdArrayList)
+            foreach (var templateId in templateIdList)
             {
                 var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemInfo.PublishmentSystemId, templateId);
                 if (templateInfo == null || templateInfo.TemplateType != ETemplateType.FileTemplate)

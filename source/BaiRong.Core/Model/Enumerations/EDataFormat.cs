@@ -36,7 +36,7 @@ namespace BaiRong.Core.Model.Enumerations
 		{
 			if (type == EDataFormat.String)
 			{
-				return "Ä¬ÈÏ";
+				return "é»˜è®¤";
 			}
 			else if (type == EDataFormat.Json)
 			{

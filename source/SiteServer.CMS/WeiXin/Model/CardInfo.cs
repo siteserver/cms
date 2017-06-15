@@ -11,71 +11,63 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string KeywordID = "KeywordID";
-        public const string UserCount = "UserCount";
-        public const string PVCount = "PVCount";
-        public const string IsDisabled = "IsDisabled";
-        public const string Title = "Title";
-        public const string ImageUrl = "ImageUrl";
-        public const string Summary = "Summary"; 
-        public const string CardTitle = "CardTitle";
-        public const string CardTitleColor = "CardTitleColor";
-        public const string CardNoColor = "CardNoColor";
-        public const string ContentFrontImageUrl = "ContentFrontImageUrl";
-        public const string ContentBackImageUrl = "ContentBackImageUrl";
-        public const string ShopName = "ShopName";
-        public const string ShopAddress = "ShopAddress";
-        public const string ShopTel = "ShopTel";
-        public const string ShopPosition = "ShopPosition";
-        public const string ShopPassword = "ShopPassword";
-        public const string ShopOperatorList = "ShopOperatorList";
+        public const string Id = nameof(CardInfo.Id);
+        public const string PublishmentSystemId = nameof(CardInfo.PublishmentSystemId);
+        public const string KeywordId = nameof(CardInfo.KeywordId);
+        public const string UserCount = nameof(CardInfo.UserCount);
+        public const string PvCount = nameof(CardInfo.PvCount);
+        public const string IsDisabled = nameof(CardInfo.IsDisabled);
+        public const string Title = nameof(CardInfo.Title);
+        public const string ImageUrl = nameof(CardInfo.ImageUrl);
+        public const string Summary = nameof(CardInfo.Summary);
+        public const string CardTitle = nameof(CardInfo.CardTitle);
+        public const string CardTitleColor = nameof(CardInfo.CardTitleColor);
+        public const string CardNoColor = nameof(CardInfo.CardNoColor);
+        public const string ContentFrontImageUrl = nameof(CardInfo.ContentFrontImageUrl);
+        public const string ContentBackImageUrl = nameof(CardInfo.ContentBackImageUrl);
+        public const string ShopName = nameof(CardInfo.ShopName);
+        public const string ShopAddress = nameof(CardInfo.ShopAddress);
+        public const string ShopTel = nameof(CardInfo.ShopTel);
+        public const string ShopPosition = nameof(CardInfo.ShopPosition);
+        public const string ShopPassword = nameof(CardInfo.ShopPassword);
+        public const string ShopOperatorList = nameof(CardInfo.ShopOperatorList);
           
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(KeywordID);
-                    allAttributes.Add(UserCount);
-                    allAttributes.Add(PVCount);
-                    allAttributes.Add(IsDisabled);
-                    allAttributes.Add(Title);
-                    allAttributes.Add(ImageUrl);
-                    allAttributes.Add(Summary);
-                    allAttributes.Add(CardTitle);
-                    allAttributes.Add(CardTitleColor);
-                    allAttributes.Add(CardNoColor);
-                    allAttributes.Add(ContentFrontImageUrl);
-                    allAttributes.Add(ContentBackImageUrl);
-                    allAttributes.Add(ShopName);
-                    allAttributes.Add(ShopAddress);
-                    allAttributes.Add(ShopTel);
-                    allAttributes.Add(ShopPosition);
-                    allAttributes.Add(ShopPassword);
-                    allAttributes.Add(ShopOperatorList);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            KeywordId,
+            UserCount,
+            PvCount,
+            IsDisabled,
+            Title,
+            ImageUrl,
+            Summary,
+            CardTitle,
+            CardTitleColor,
+            CardNoColor,
+            ContentFrontImageUrl,
+            ContentBackImageUrl,
+            ShopName,
+            ShopAddress,
+            ShopTel,
+            ShopPosition,
+            ShopPassword,
+            ShopOperatorList
+        });
     }
+
     public class CardInfo : BaseInfo
     {
         public CardInfo() { }
         public CardInfo(object dataItem) : base(dataItem) { }
         public CardInfo(NameValueCollection form) : base(form) { }
         public CardInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int KeywordID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int KeywordId { get; set; }
         public int UserCount { get;set;}
-        public int PVCount { get; set; }
+        public int PvCount { get; set; }
         public bool IsDisabled { get; set; }
         public string Title { get; set; }
         public string ImageUrl { get; set; }
@@ -91,12 +83,7 @@ namespace SiteServer.CMS.WeiXin.Model
         public string ShopPosition { get; set; }
         public string ShopPassword { get; set; }
         public string ShopOperatorList { get; set; }
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return CardAttribute.AllAttributes;
-            }
-        }
+
+        protected override List<string> AllAttributes => CardAttribute.AllAttributes;
     }
 }

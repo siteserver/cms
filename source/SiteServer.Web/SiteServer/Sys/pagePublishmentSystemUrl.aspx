@@ -10,10 +10,10 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />
 
-  <asp:dataGrid id="dgContents" showHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
+  <asp:dataGrid id="DgContents" showHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
     <Columns>
       <asp:TemplateColumn HeaderText="站点名称">
         <ItemTemplate>
@@ -35,19 +35,14 @@
           <asp:Literal ID="ltlIsMultiDeployment" runat="server"></asp:Literal>
         </ItemTemplate>
       </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="外网访问地址">
+      <asp:TemplateColumn HeaderText="站点访问地址">
         <ItemTemplate>
-          <asp:Literal ID="ltlOuterUrl" runat="server"></asp:Literal>
-        </ItemTemplate>
-      </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="内网访问地址">
-        <ItemTemplate>
-          <asp:Literal ID="ltlInnerUrl" runat="server"></asp:Literal>
+          <asp:Literal ID="ltlSiteUrl" runat="server"></asp:Literal>
         </ItemTemplate>
       </asp:TemplateColumn>
       <asp:TemplateColumn HeaderText="API访问方式">
         <ItemTemplate>
-          <asp:Literal ID="ltlAPIUrl" runat="server"></asp:Literal>
+          <asp:Literal ID="ltlApiUrl" runat="server"></asp:Literal>
         </ItemTemplate>
       </asp:TemplateColumn>
       <asp:TemplateColumn HeaderText="用户中心访问方式">

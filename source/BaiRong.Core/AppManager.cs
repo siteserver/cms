@@ -8,7 +8,7 @@ namespace BaiRong.Core
     {
         private AppManager() { }
 
-        public const string Version = "5.0";
+        public const string Version = "5.1";
 
         public static string GetFullVersion()
         {
@@ -608,6 +608,7 @@ namespace BaiRong.Core
                 public const string IdAccounts = "Accounts";
 
                 public const string IdFunction = "Function";
+                public const string IdConfiguration = "Configuration";
 
                 public class Function
                 {
@@ -799,29 +800,17 @@ namespace BaiRong.Core
 
         public static List<string> GetAppIdList()
         {
-            return new List<string> { Cms.AppId, Wcm.AppId };
-        }
-
-        public static string GetAppName(string appId, bool isFullName)
-        {
-            var retval = string.Empty;
-            if (StringUtils.EqualsIgnoreCase(appId, Cms.AppId))
-            {
-                retval = "SiteServer CMS";
-                if (isFullName) retval += " 内容管理系统";
-            }
-            else if (StringUtils.EqualsIgnoreCase(appId, Wcm.AppId))
-            {
-                retval = "SiteServer WCM";
-                if (isFullName) retval += " 内容协作平台";
-            }
-
-            return retval;
+            return new List<string> { Cms.AppId, Wcm.AppId, WeiXin.AppId };
         }
 
         public static bool IsWcm()
         {
             return FileUtils.IsFileExists(PathUtils.GetMenusPath(Wcm.AppId, "Management.config"));
+        }
+
+        public static bool IsWeiXin()
+        {
+            return FileUtils.IsFileExists(PathUtils.GetMenusPath(WeiXin.AppId, "Management.config"));
         }
 
         public static void Upgrade(string version, out string errorMessage)

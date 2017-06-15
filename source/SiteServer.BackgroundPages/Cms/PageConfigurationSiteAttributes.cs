@@ -7,6 +7,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using BaiRong.Core.AuxiliaryTable;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -63,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
                 
 				try
 				{
-                    InputTypeParser.AddValuesToAttributes(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, PublishmentSystemInfo.Additional.Attributes);
+                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, PublishmentSystemInfo.Additional.Attributes);
 
                     DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
 

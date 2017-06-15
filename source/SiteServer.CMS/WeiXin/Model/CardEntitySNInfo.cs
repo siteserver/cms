@@ -6,61 +6,52 @@ using BaiRong.Core.Model;
 
 namespace SiteServer.CMS.WeiXin.Model
 {
-    public class CardEntitySNAttribute
+    public class CardEntitySnAttribute
     {
-        protected CardEntitySNAttribute()
+        protected CardEntitySnAttribute()
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string CardID = "CardID";
-        public const string SN = "SN";
-        public const string UserName = "UserName";
-        public const string Mobile = "Mobile";
-        public const string Amount = "Amount";
-        public const string Credits = "Credits";
-        public const string Email = "Email";
-        public const string Address = "Address";
-        public const string IsBinding = "IsBinding";
-        public const string AddDate = "AddDate";
+        public const string Id = nameof(CardEntitySnInfo.Id);
+        public const string PublishmentSystemId = nameof(CardEntitySnInfo.PublishmentSystemId);
+        public const string CardId = nameof(CardEntitySnInfo.CardId);
+        public const string Sn = nameof(CardEntitySnInfo.Sn);
+        public const string UserName = nameof(CardEntitySnInfo.UserName);
+        public const string Mobile = nameof(CardEntitySnInfo.Mobile);
+        public const string Amount = nameof(CardEntitySnInfo.Amount);
+        public const string Credits = nameof(CardEntitySnInfo.Credits);
+        public const string Email = nameof(CardEntitySnInfo.Email);
+        public const string Address = nameof(CardEntitySnInfo.Address);
+        public const string IsBinding = nameof(CardEntitySnInfo.IsBinding);
+        public const string AddDate = nameof(CardEntitySnInfo.AddDate);
          
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(CardID);
-                    allAttributes.Add(SN);
-                    allAttributes.Add(UserName);
-                    allAttributes.Add(Mobile);
-                    allAttributes.Add(Amount);
-                    allAttributes.Add(Credits);
-                    allAttributes.Add(Email);
-                    allAttributes.Add(Address);
-                    allAttributes.Add(IsBinding);
-                    allAttributes.Add(AddDate);
-                     
-                 }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            CardId,
+            Sn,
+            UserName,
+            Mobile,
+            Amount,
+            Credits,
+            Email,
+            Address,
+            IsBinding,
+            AddDate
+        });
     }
-    public class CardEntitySNInfo : BaseInfo
+
+    public class CardEntitySnInfo : BaseInfo
     {
-        public CardEntitySNInfo() { }
-        public CardEntitySNInfo(object dataItem) : base(dataItem) { }
-        public CardEntitySNInfo(NameValueCollection form) : base(form) { }
-        public CardEntitySNInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int CardID { get; set; }
-        public string SN { get; set; }
+        public CardEntitySnInfo() { }
+        public CardEntitySnInfo(object dataItem) : base(dataItem) { }
+        public CardEntitySnInfo(NameValueCollection form) : base(form) { }
+        public CardEntitySnInfo(IDataReader rdr) : base(rdr) { }
+        public int PublishmentSystemId { get; set; }
+        public int CardId { get; set; }
+        public string Sn { get; set; }
         public string UserName { get; set; }
         public string Mobile { get; set; }
         public decimal Amount { get; set; }
@@ -70,12 +61,6 @@ namespace SiteServer.CMS.WeiXin.Model
         public bool IsBinding { get; set; }
         public DateTime AddDate { get; set; }
          
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return CardEntitySNAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => CardEntitySnAttribute.AllAttributes;
     }
 }

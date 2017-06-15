@@ -13,27 +13,27 @@ namespace SiteServer.BackgroundPages.WeiXin
 {
     public class PageAppointmentContent : BasePageCms
     {
-        public Repeater rptContents;
-        public SqlPager spContents;
+        public Repeater RptContents;
+        public SqlPager SpContents;
 
-        public Button btnHandle;
-        public Button btnDelete;
-        public Button btnExport;
-        public Button btnReturn;
+        public Button BtnHandle;
+        public Button BtnDelete;
+        public Button BtnExport;
+        public Button BtnReturn;
 
-        public int appointmentID;
+        public int AppointmentId;
 
-        public string SettingsXML;
-        public string appointmentTitle;
-        public Literal ltlExtendTitle;
-        public int tdCount = 0;
+        public string SettingsXml;
+        public string AppointmentTitle;
+        public Literal LtlExtendTitle;
+        public int TdCount = 0;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int appointmentID)
+        public static string GetRedirectUrl(int publishmentSystemId, int appointmentId)
         {
             return PageUtils.GetWeiXinUrl(nameof(PageAppointmentContent), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"appointmentID", appointmentID.ToString()}
+                {"PublishmentSystemId", publishmentSystemId.ToString()},
+                {"appointmentID", appointmentId.ToString()}
             });
         }
 
@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.WeiXin
         {
             if (IsForbidden) return;
 
-            appointmentID = TranslateUtils.ToInt(Request["appointmentID"]);
+            AppointmentId = TranslateUtils.ToInt(Request["appointmentID"]);
 
             if (!string.IsNullOrEmpty(Request.QueryString["Delete"]))
             {
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 {
                     try
                     {
-                        DataProviderWX.AppointmentContentDAO.Delete(PublishmentSystemId, list);
+                        DataProviderWx.AppointmentContentDao.Delete(PublishmentSystemId, list);
                         SuccessMessage("预约删除成功！");
                     }
                     catch (Exception ex)
@@ -60,31 +60,31 @@ namespace SiteServer.BackgroundPages.WeiXin
                 }
             }
 
-            spContents.ControlToPaginate = rptContents;
-            spContents.ItemsPerPage = 30;
-            spContents.SelectCommand = DataProviderWX.AppointmentContentDAO.GetSelectString(PublishmentSystemId, appointmentID);
-            spContents.SortField = AppointmentContentAttribute.ID;
-            spContents.SortMode = SortMode.DESC;
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            SpContents.ControlToPaginate = RptContents;
+            SpContents.ItemsPerPage = 30;
+            SpContents.SelectCommand = DataProviderWx.AppointmentContentDao.GetSelectString(PublishmentSystemId, AppointmentId);
+            SpContents.SortField = AppointmentContentAttribute.Id;
+            SpContents.SortMode = SortMode.DESC;
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             {
                 BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAppointment, "查看预约", AppManager.WeiXin.Permission.WebSite.Appointment);
-                spContents.DataBind();
+                SpContents.DataBind();
 
-                btnHandle.Attributes.Add("onclick", ModalAppointmentHandle.GetOpenWindowStringToMultiple(PublishmentSystemId));
+                BtnHandle.Attributes.Add("onclick", ModalAppointmentHandle.GetOpenWindowStringToMultiple(PublishmentSystemId));
 
-                var urlDelete = PageUtils.AddQueryString(GetRedirectUrl(PublishmentSystemId, appointmentID), "Delete", "True");
-                btnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlDelete, "IDCollection", "IDCollection", "请选择需要删除的微预约", "此操作将删除所选微预约，确认吗？"));
+                var urlDelete = PageUtils.AddQueryString(GetRedirectUrl(PublishmentSystemId, AppointmentId), "Delete", "True");
+                BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlDelete, "IDCollection", "IDCollection", "请选择需要删除的微预约", "此操作将删除所选微预约，确认吗？"));
 
-                btnExport.Attributes.Add("onclick", ModalExportAppointmentContent.GetOpenWindowStringByAppointmentContent(PublishmentSystemId, appointmentID, appointmentTitle));
+                BtnExport.Attributes.Add("onclick", ModalExportAppointmentContent.GetOpenWindowStringByAppointmentContent(PublishmentSystemId, AppointmentId, AppointmentTitle));
 
                 var returnUrl = PageAppointment.GetRedirectUrl(PublishmentSystemId);
-                btnReturn.Attributes.Add("onclick", $"location.href='{returnUrl}';return false");
+                BtnReturn.Attributes.Add("onclick", $"location.href='{returnUrl}';return false");
             }
         }
 
-        private Dictionary<int, AppointmentItemInfo> itemInfoDictionary = new Dictionary<int, AppointmentItemInfo>();
+        private Dictionary<int, AppointmentItemInfo> _itemInfoDictionary = new Dictionary<int, AppointmentItemInfo>();
 
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
@@ -107,14 +107,14 @@ namespace SiteServer.BackgroundPages.WeiXin
 
 
                 AppointmentItemInfo itemInfo = null;
-                if (itemInfoDictionary.ContainsKey(contentInfo.AppointmentItemID))
+                if (_itemInfoDictionary.ContainsKey(contentInfo.AppointmentItemId))
                 {
-                    itemInfo = itemInfoDictionary[contentInfo.AppointmentItemID];
+                    itemInfo = _itemInfoDictionary[contentInfo.AppointmentItemId];
                 }
                 else
                 {
-                    itemInfo = DataProviderWX.AppointmentItemDAO.GetItemInfo(contentInfo.AppointmentItemID);
-                    itemInfoDictionary.Add(contentInfo.AppointmentItemID, itemInfo);
+                    itemInfo = DataProviderWx.AppointmentItemDao.GetItemInfo(contentInfo.AppointmentItemId);
+                    _itemInfoDictionary.Add(contentInfo.AppointmentItemId, itemInfo);
                 }
 
                 ltlItemIndex.Text = (e.Item.ItemIndex + 1).ToString();
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 if (itemInfo != null)
                 {
                     ltlAppointementTitle.Text = itemInfo.Title;
-                    appointmentTitle = itemInfo.Title;
+                    AppointmentTitle = itemInfo.Title;
                 }
                 ltlMobile.Text = contentInfo.Mobile;
                 ltlEmail.Text = contentInfo.Email;
@@ -132,11 +132,11 @@ namespace SiteServer.BackgroundPages.WeiXin
 
                 ltlEditUrl.Text =
                     $@"<a href=""javascrip:;"" onclick=""{ModalAppointmentHandle.GetOpenWindowStringToSingle(
-                        PublishmentSystemId, contentInfo.ID)}"">预约处理</a>";
+                        PublishmentSystemId, contentInfo.Id)}"">预约处理</a>";
 
                 ltlSelectUrl.Text =
                     $@"<a href=""javascrip:;"" onclick=""{ModalAppointmentContentDetail.GetOpenWindowStringToSingle(
-                        PublishmentSystemId, contentInfo.ID)}"">预约详情</a>";
+                        PublishmentSystemId, contentInfo.Id)}"">预约详情</a>";
 
               
             }

@@ -46,6 +46,13 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString, parms);
         }
 
+        public void DeleteAll()
+        {
+            const string sqlString = "DELETE FROM siteserver_CreateTask";
+
+            ExecuteNonQuery(sqlString);
+        }
+
         public void DeleteByPublishmentSystemId(int publishmentSystemId)
         {
             const string sqlString = "DELETE FROM siteserver_CreateTask WHERE PublishmentSystemID = @PublishmentSystemID";

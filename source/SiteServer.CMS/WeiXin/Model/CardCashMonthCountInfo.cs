@@ -11,31 +11,17 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string Year = "Year";
-        public const string Month = "Month";
-        public const string TotalConsume = "TotalConsume";
-        public const string TotalRecharge = "TotalRecharge";
-        public const string TotalExchange = "TotalExchange";
+        public const string Year = nameof(CardCashMonthCountInfo.Year);
+        public const string Month = nameof(CardCashMonthCountInfo.Month);
+        public const string TotalConsume = nameof(CardCashMonthCountInfo.TotalConsume);
+        public const string TotalRecharge = nameof(CardCashMonthCountInfo.TotalRecharge);
+        public const string TotalExchange = nameof(CardCashMonthCountInfo.TotalExchange);
        
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
-        {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(Year);
-                    allAttributes.Add(Month);
-                    allAttributes.Add(TotalConsume);
-                    allAttributes.Add(TotalRecharge);
-                    allAttributes.Add(TotalExchange);
-                 }
-
-                return allAttributes;
-            }
-        }
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ??
+                                                    (_allAttributes = new List<string> {Year, Month, TotalConsume, TotalRecharge, TotalExchange});
     }
+
     public class CardCashMonthCountInfo : BaseInfo
     {
         public CardCashMonthCountInfo() { }
@@ -50,12 +36,6 @@ namespace SiteServer.CMS.WeiXin.Model
 
         public List<CardCashLogInfo> CardCashLogInfoList { get; set; }
         
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return CardCashMonthCountAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => CardCashMonthCountAttribute.AllAttributes;
     }
 }

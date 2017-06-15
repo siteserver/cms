@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
-        <asp:Literal ID="ltlBreadCrumb" runat="server" />
+        <asp:Literal ID="LtlBreadCrumb" runat="server" />
         <bairong:Alerts Text="如果修改了自动分页选项，需要将所有内容页重新生成" runat="server"></bairong:Alerts>
 
         <div class="popover popover-static">
@@ -52,22 +52,6 @@
                                 ErrorMessage=" *" ForeColor="red"
                                 Display="Dynamic"
                                 runat="server" /></td>
-                    </tr>
-                    <tr>
-                        <td>是否启用自动保存草稿功能：</td>
-                        <td>
-                            <asp:DropDownList ID="DdlIsAutoSaveContent" runat="server"></asp:DropDownList></td>
-                    </tr>
-                    <tr>
-                        <td>自动保存草稿间隔时间：</td>
-                        <td>
-                            <asp:TextBox class="input-small" ID="TbAutoSaveContentInterval" runat="server" />
-                            <asp:RequiredFieldValidator
-                                ControlToValidate="TbAutoSaveContentInterval"
-                                ErrorMessage=" *" ForeColor="red"
-                                Display="Dynamic"
-                                runat="server" />
-                            秒</td>
                     </tr>
                     <tr>
                         <td>是否启用标题换行功能：</td>

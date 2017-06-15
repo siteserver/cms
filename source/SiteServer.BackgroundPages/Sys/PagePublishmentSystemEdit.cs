@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Sys
 					AuxiliaryTableForContent.Items.Add(li);
 				}
 
-                if (PublishmentSystemInfo.PublishmentSystemType == EPublishmentSystemType.WCM)
+                if (PublishmentSystemInfo.PublishmentSystemType == EPublishmentSystemType.Wcm)
                 {
                     phWCMTables.Visible = true;
 

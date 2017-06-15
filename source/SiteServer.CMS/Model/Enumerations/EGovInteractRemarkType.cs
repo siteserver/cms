@@ -5,11 +5,11 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EGovInteractRemarkType
 	{
-        Accept,             //受理
-        SwitchTo,           //转办
-        Translate,          //转移
-        Comment,            //批示
-        Redo                //要求返工
+        Accept,             //鍙楃悊
+        SwitchTo,           //杞姙
+        Translate,          //杞Щ
+        Comment,            //鎵圭ず
+        Redo                //瑕佹眰杩斿伐
 	}
 
     public class EGovInteractRemarkTypeUtils
@@ -46,23 +46,23 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == EGovInteractRemarkType.Accept)
 			{
-                return "受理";
+                return "鍙楃悊";
 			}
             else if (type == EGovInteractRemarkType.SwitchTo)
             {
-                return "转办";
+                return "杞姙";
             }
             else if (type == EGovInteractRemarkType.Translate)
             {
-                return "转移";
+                return "杞Щ";
             }
             else if (type == EGovInteractRemarkType.Comment)
             {
-                return "批示";
+                return "鎵圭ず";
             }
             else if (type == EGovInteractRemarkType.Redo)
             {
-                return "要求返工";
+                return "瑕佹眰杩斿伐";
             }
 			else
 			{

@@ -11,66 +11,52 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string SearchID = "SearchID";
-        public const string Title = "Title";
-        public const string Url = "Url";
-        public const string ImageCssClass = "ImageCssClass";
-        public const string NavigationType = "NavigationType";
-        public const string KeywordType = "KeywordType";
-        public const string FunctionID = "FunctionID";
-        public const string ChannelID = "ChannelID";
-        public const string ContentID = "ContentID";
+        public const string Id = nameof(SearchNavigationInfo.Id);
+        public const string PublishmentSystemId = nameof(SearchNavigationInfo.PublishmentSystemId);
+        public const string SearchId = nameof(SearchNavigationInfo.SearchId);
+        public const string Title = nameof(SearchNavigationInfo.Title);
+        public const string Url = nameof(SearchNavigationInfo.Url);
+        public const string ImageCssClass = nameof(SearchNavigationInfo.ImageCssClass);
+        public const string NavigationType = nameof(SearchNavigationInfo.NavigationType);
+        public const string KeywordType = nameof(SearchNavigationInfo.KeywordType);
+        public const string FunctionId = nameof(SearchNavigationInfo.FunctionId);
+        public const string ChannelId = nameof(SearchNavigationInfo.ChannelId);
+        public const string ContentId = nameof(SearchNavigationInfo.ContentId);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(SearchID);
-                    allAttributes.Add(Title);
-                    allAttributes.Add(Url);
-                    allAttributes.Add(ImageCssClass);
-                    allAttributes.Add(NavigationType);
-                    allAttributes.Add(KeywordType);
-                    allAttributes.Add(FunctionID);
-                    allAttributes.Add(ChannelID);
-                    allAttributes.Add(ContentID);
-
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            SearchId,
+            Title,
+            Url,
+            ImageCssClass,
+            NavigationType,
+            KeywordType,
+            FunctionId,
+            ChannelId,
+            ContentId
+        });
     }
+
     public class SearchNavigationInfo : BaseInfo
     {
         public SearchNavigationInfo() { }
         public SearchNavigationInfo(object dataItem) : base(dataItem) { }
         public SearchNavigationInfo(NameValueCollection form) : base(form) { }
         public SearchNavigationInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int SearchID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int SearchId { get; set; }
         public string Title { get; set; }
         public string Url { get; set; }
         public string ImageCssClass { get; set; }
         public string NavigationType { get; set; }
         public string KeywordType { get; set; }
-        public int FunctionID { get; set; }
-        public int ChannelID { get; set; }
-        public int ContentID { get; set; }
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return SearchNavigationAttribute.AllAttributes;
-            }
-        }
+        public int FunctionId { get; set; }
+        public int ChannelId { get; set; }
+        public int ContentId { get; set; }
+
+        protected override List<string> AllAttributes => SearchNavigationAttribute.AllAttributes;
     }
 }

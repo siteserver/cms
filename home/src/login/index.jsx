@@ -53,6 +53,10 @@ class IndexPage extends React.Component {
         if (this.props.config.isRegisterAllowed) {
             regEl = <Link className="signUpAccount quc-link" to="/reg">注册帐号</Link>;
         }
+        let findPasswordEl = null;
+        if (this.props.config.isFindPassword) {
+            findPasswordEl = <Link className="forgetPass quc-link" to="/findpwd">找回密码？</Link>;
+        }
         return (<div>
         <div id="doc">
           <div className="login-page">
@@ -110,7 +114,7 @@ class IndexPage extends React.Component {
                                 </span>
                               </p>
                               <p className="quc-field quc-field-keep-alive quc-clearfix">
-                                <Link className="forgetPass quc-link" to="/findpwd">找回密码？</Link>
+                                {findPasswordEl}
                                 {regEl}
                               </p>
                               <p className={cx({ "quc-field quc-field-submit": true, "disabled": this.state.controls.submitting })}>
@@ -118,7 +122,7 @@ class IndexPage extends React.Component {
             this.submit();
         }}>{this.state.controls.submitting ? '登录中...' : '登录'}</a>
                               </p>
-                              <p className="quc-field quc-field-third-part" style={{ display: 'none' }}>
+                              <p className="quc-field quc-field-third-part">
                                 <span>第三方帐号登录：</span>
                                 <span className="quc-third-part">
                                   <a href="#" className="quc-third-part-icon quc-third-part-icon-weixin" title="微信登录"/>

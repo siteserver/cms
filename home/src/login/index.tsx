@@ -75,6 +75,10 @@ class IndexPage extends React.Component<P, S> {
     if (this.props.config.isRegisterAllowed) {
       regEl = <Link className="signUpAccount quc-link" to="/reg">注册帐号</Link>
     }
+    let findPasswordEl = null
+    if (this.props.config.isFindPassword) {
+      findPasswordEl = <Link className="forgetPass quc-link" to="/findpwd">找回密码？</Link>
+    }
 
     return (
       <div>
@@ -134,7 +138,7 @@ class IndexPage extends React.Component<P, S> {
                                 </span>
                               </p>
                               <p className="quc-field quc-field-keep-alive quc-clearfix">
-                                <Link className="forgetPass quc-link" to="/findpwd">找回密码？</Link>
+                                {findPasswordEl}
                                 {regEl}
                               </p>
                               <p className={cx({ "quc-field quc-field-submit": true, "disabled": this.state.controls.submitting })}>

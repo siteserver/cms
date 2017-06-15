@@ -41,7 +41,7 @@ namespace BaiRong.Core.Model
 
         public string BeianNo
         {
-            get { return GetString("BeianNo", "京ICP备10013847号"); }
+            get { return GetString("BeianNo", string.Empty); }
             set { SetExtendedAttribute("BeianNo", value); }
         }
 
@@ -91,16 +91,16 @@ namespace BaiRong.Core.Model
             set { SetExtendedAttribute("RegisterVerifyType", EUserVerifyTypeUtils.GetValue(value)); }
         }
 
+        public string RegisterSmsTplId
+        {
+            get { return GetString("RegisterSmsTplId", string.Empty); }
+            set { SetExtendedAttribute("RegisterSmsTplId", value); }
+        }
+
         public int RegisterMinMinutesOfIpAddress
         {
-            get
-            {
-                return GetInt("RegisterMinMinutesOfIpAddress", 0);
-            }
-            set
-            {
-                SetExtendedAttribute("RegisterMinMinutesOfIpAddress", value.ToString());
-            }
+            get { return GetInt("RegisterMinMinutesOfIpAddress", 0); }
+            set { SetExtendedAttribute("RegisterMinMinutesOfIpAddress", value.ToString()); }
         }
 
         /****************文件上传设置********************/
@@ -201,6 +201,18 @@ namespace BaiRong.Core.Model
         {
             get { return GetInt("LoginLockingHours", 3); }
             set { SetExtendedAttribute("LoginLockingHours", value.ToString()); }
+        }
+
+        public bool IsFindPassword
+        {
+            get { return GetBool("IsFindPassword", false); }
+            set { SetExtendedAttribute("IsFindPassword", value.ToString()); }
+        }
+
+        public string FindPasswordSmsTplId
+        {
+            get { return GetString("FindPasswordSmsTplId", string.Empty); }
+            set { SetExtendedAttribute("FindPasswordSmsTplId", value); }
         }
     }
 }

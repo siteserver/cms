@@ -209,8 +209,8 @@ namespace SiteServer.BackgroundPages.Cms
                     var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
 					if (templateInfo.TemplateName != TemplateName.Text)
 					{
-                        var templateNameArrayList = DataProvider.TemplateDao.GetTemplateNameArrayList(PublishmentSystemId, templateInfo.TemplateType);
-						if (templateNameArrayList.IndexOf(TemplateName.Text) != -1)
+                        var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(PublishmentSystemId, templateInfo.TemplateType);
+						if (templateNameList.IndexOf(TemplateName.Text) != -1)
 						{
                             FailMessage("模板修改失败，模板名称已存在！");
 							return;
@@ -220,8 +220,8 @@ namespace SiteServer.BackgroundPages.Cms
                     var isChanged = false;
                     if (PathUtils.RemoveExtension(templateInfo.RelatedFileName) != PathUtils.RemoveExtension(RelatedFileName.Text))//文件名改变
                     {
-                        var fileNameArrayList = DataProvider.TemplateDao.GetLowerRelatedFileNameArrayList(PublishmentSystemId, templateInfo.TemplateType);
-                        foreach (string fileName in fileNameArrayList)
+                        var fileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(PublishmentSystemId, templateInfo.TemplateType);
+                        foreach (var fileName in fileNameList)
                         {
                             var fileNameWithoutExtension = PathUtils.RemoveExtension(fileName);
                             if (fileNameWithoutExtension == RelatedFileName.Text.ToLower())
@@ -271,14 +271,14 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				else
 				{
-                    var templateNameArrayList = DataProvider.TemplateDao.GetTemplateNameArrayList(PublishmentSystemId, ETemplateTypeUtils.GetEnumType(TemplateType.Value));
-					if (templateNameArrayList.IndexOf(TemplateName.Text) != -1)
+                    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(PublishmentSystemId, ETemplateTypeUtils.GetEnumType(TemplateType.Value));
+					if (templateNameList.IndexOf(TemplateName.Text) != -1)
 					{
                         FailMessage("模板添加失败，模板名称已存在！");
 						return;
 					}
-                    var fileNameArrayList = DataProvider.TemplateDao.GetLowerRelatedFileNameArrayList(PublishmentSystemId, ETemplateTypeUtils.GetEnumType(TemplateType.Value));
-					if (fileNameArrayList.IndexOf(RelatedFileName.Text.ToLower()) != -1)
+                    var fileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(PublishmentSystemId, ETemplateTypeUtils.GetEnumType(TemplateType.Value));
+					if (fileNameList.IndexOf(RelatedFileName.Text.ToLower()) != -1)
 					{
                         FailMessage("模板添加失败，模板文件已存在！");
 						return;

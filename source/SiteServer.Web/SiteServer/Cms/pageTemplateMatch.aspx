@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
 
   <bairong:alerts text="选择左侧栏目（可多选）与右侧模版（单选），点击“匹配”按钮进行模版匹配。<br />左侧栏目列表中第一个括号代表对应栏目所匹配的栏目模版，第二个括号代表栏目下内容页面所匹配的显示模版。" runat="server"></bairong:alerts>
 

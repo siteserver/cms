@@ -31,11 +31,11 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == EMatchType.Exact)
             {
-                return "��ȷƥ��";
+                return "精确匹配";
             }
             else if (type == EMatchType.Contains)
             {
-                return "�����ؼ���";
+                return "包含关键词";
             }
 			else
 			{
@@ -45,7 +45,7 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 
 		public static EMatchType GetEnumType(string typeStr)
 		{
-            var retval = EMatchType.Exact;
+            EMatchType retval = EMatchType.Exact;
 
             if (Equals(EMatchType.Exact, typeStr))
             {
@@ -76,7 +76,7 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 
         public static ListItem GetListItem(EMatchType type, bool selected)
         {
-            var item = new ListItem(GetText(type), GetValue(type));
+            ListItem item = new ListItem(GetText(type), GetValue(type));
             if (selected)
             {
                 item.Selected = true;

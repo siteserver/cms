@@ -23,7 +23,7 @@ namespace siteserver
                 var createFile = createTypeArrayList.Contains(ECreateTypeUtils.GetValue(ECreateType.File));
                 if (taskInfo.PublishmentSystemID != 0)
                 {
-                    List<int> nodeIdList = null;
+                    List<int> nodeIdList;
                     if (taskCreateInfo.IsCreateAll)
                     {
                         nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(taskInfo.PublishmentSystemID);
@@ -37,19 +37,19 @@ namespace siteserver
                 }
                 else
                 {
-                    List<int> publishmentSystemIDArrayList = null;
+                    List<int> publishmentSystemIdArrayList;
                     if (taskCreateInfo.IsCreateAll)
                     {
-                        publishmentSystemIDArrayList = PublishmentSystemManager.GetPublishmentSystemIdList();
+                        publishmentSystemIdArrayList = PublishmentSystemManager.GetPublishmentSystemIdList();
                     }
                     else
                     {
-                        publishmentSystemIDArrayList = TranslateUtils.StringCollectionToIntList(taskCreateInfo.ChannelIDCollection);
+                        publishmentSystemIdArrayList = TranslateUtils.StringCollectionToIntList(taskCreateInfo.ChannelIDCollection);
                     }
-                    foreach (int publishmentSystemID in publishmentSystemIDArrayList)
+                    foreach (var publishmentSystemId in publishmentSystemIdArrayList)
                     {
-                        var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemID);
-                        Create(createChannel, createContent, createFile, taskInfo, publishmentSystemID, nodeIdList);
+                        var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemId);
+                        Create(createChannel, createContent, createFile, taskInfo, publishmentSystemId, nodeIdList);
                     }
                 }
             }
@@ -57,12 +57,12 @@ namespace siteserver
             return true;
         }
 
-        private static void Create(bool createChannel, bool createContent, bool createFile, TaskInfo taskInfo, int publishmentSystemID, List<int> nodeIdList)
+        private static void Create(bool createChannel, bool createContent, bool createFile, TaskInfo taskInfo, int publishmentSystemId, List<int> nodeIdList)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemID);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             if (publishmentSystemInfo != null)
             {
-                var fso = new FileSystemObject(publishmentSystemID);
+                var fso = new FileSystemObject(publishmentSystemId);
                 var errorChannelNodeIdSortedList = new SortedList();
                 var errorContentNodeIdSortedList = new SortedList();
                 var errorFileTemplateIdSortedList = new SortedList();
@@ -84,13 +84,16 @@ namespace siteserver
                         }
                         if (errorChannelNodeIdSortedList.Count > 0)
                         {
-                            foreach (int nodeID in errorChannelNodeIdSortedList.Keys)
+                            foreach (int nodeId in errorChannelNodeIdSortedList.Keys)
                             {
                                 try
                                 {
-                                    fso.CreateChannel(nodeID);
+                                    fso.CreateChannel(nodeId);
                                 }
-                                catch { }
+                                catch
+                                {
+                                    // ignored
+                                }
                             }
                         }
                     }
@@ -109,57 +112,63 @@ namespace siteserver
                         }
                         if (errorContentNodeIdSortedList.Count > 0)
                         {
-                            foreach (int nodeID in errorContentNodeIdSortedList.Keys)
+                            foreach (int nodeId in errorContentNodeIdSortedList.Keys)
                             {
                                 try
                                 {
-                                    fso.CreateContents(nodeID);
+                                    fso.CreateContents(nodeId);
                                 }
-                                catch { }
+                                catch
+                                {
+                                    // ignored
+                                }
                             }
                         }
                     }
                 }
                 if (createFile)
                 {
-                    var templateIDArrayList = DataProvider.TemplateDao.GetTemplateIdArrayListByType(publishmentSystemID, ETemplateType.FileTemplate);
-                    foreach (int templateID in templateIDArrayList)
+                    var templateIdList = DataProvider.TemplateDao.GetTemplateIdListByType(publishmentSystemId, ETemplateType.FileTemplate);
+                    foreach (var templateId in templateIdList)
                     {
                         try
                         {
-                            fso.CreateFile(templateID);
+                            fso.CreateFile(templateId);
                         }
                         catch (Exception ex)
                         {
-                            errorFileTemplateIdSortedList.Add(templateID, ex.Message);
+                            errorFileTemplateIdSortedList.Add(templateId, ex.Message);
                         }
                     }
                     if (errorFileTemplateIdSortedList.Count > 0)
                     {
-                        foreach (int templateID in errorFileTemplateIdSortedList.Keys)
+                        foreach (int templateId in errorFileTemplateIdSortedList.Keys)
                         {
                             try
                             {
-                                fso.CreateFile(templateID);
+                                fso.CreateFile(templateId);
                             }
-                            catch { }
+                            catch
+                            {
+                                // ignored
+                            }
                         }
                     }
                 }
                 if (errorChannelNodeIdSortedList.Count > 0 || errorContentNodeIdSortedList.Count > 0 || errorFileTemplateIdSortedList.Count > 0)
                 {
                     var errorMessage = new StringBuilder();
-                    foreach (int nodeID in errorChannelNodeIdSortedList.Keys)
+                    foreach (int nodeId in errorChannelNodeIdSortedList.Keys)
                     {
-                        errorMessage.AppendFormat("Create channel {0} error:{1}", nodeID, errorChannelNodeIdSortedList[nodeID]).Append(StringUtils.Constants.ReturnAndNewline);
+                        errorMessage.AppendFormat("Create channel {0} error:{1}", nodeId, errorChannelNodeIdSortedList[nodeId]).Append(StringUtils.Constants.ReturnAndNewline);
                     }
-                    foreach (int nodeID in errorContentNodeIdSortedList.Keys)
+                    foreach (int nodeId in errorContentNodeIdSortedList.Keys)
                     {
-                        errorMessage.AppendFormat("Create content {0} error:{1}", nodeID, errorContentNodeIdSortedList[nodeID]).Append(StringUtils.Constants.ReturnAndNewline);
+                        errorMessage.AppendFormat("Create content {0} error:{1}", nodeId, errorContentNodeIdSortedList[nodeId]).Append(StringUtils.Constants.ReturnAndNewline);
                     }
-                    foreach (int templateID in errorFileTemplateIdSortedList.Keys)
+                    foreach (int templateId in errorFileTemplateIdSortedList.Keys)
                     {
-                        errorMessage.AppendFormat("Create file {0} error:{1}", templateID, errorFileTemplateIdSortedList[templateID]).Append(StringUtils.Constants.ReturnAndNewline);
+                        errorMessage.AppendFormat("Create file {0} error:{1}", templateId, errorFileTemplateIdSortedList[templateId]).Append(StringUtils.Constants.ReturnAndNewline);
                     }
                 }
 

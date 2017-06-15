@@ -6,17 +6,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class ConfigExtendDAO : DataProviderBase
+    public class ConfigExtendDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_ConfigExtend";
+        private const string TableName = "wx_ConfigExtend";
 
         public int Insert(ConfigExtendInfo configExtendInfo)
         {
-            var configExtendID = 0;
+            var configExtendId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(configExtendInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(configExtendInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -25,9 +25,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        configExtendID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        configExtendId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -39,51 +37,51 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return configExtendID;
+            return configExtendId;
         }
 
         public void Update(ConfigExtendInfo configExtendInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(configExtendInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(configExtendInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
         }
 
-        public void UpdateFuctionID(int publishmentSystemID, int functionID)
+        public void UpdateFuctionId(int publishmentSystemId, int functionId)
         {
-            if (functionID > 0)
+            if (functionId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {ConfigExtendAttribute.FunctionID} = {functionID} WHERE {ConfigExtendAttribute.FunctionID} = 0 AND {ConfigExtendAttribute.PublishmentSystemID} = {publishmentSystemID}";
+                    $"UPDATE {TableName} SET {ConfigExtendAttribute.FunctionId} = {functionId} WHERE {ConfigExtendAttribute.FunctionId} = 0 AND {ConfigExtendAttribute.PublishmentSystemId} = {publishmentSystemId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void DeleteAllNotInIDList(int publishmentSystemID, int functionID, List<int> idList)
+        public void DeleteAllNotInIdList(int publishmentSystemId, int functionId, List<int> idList)
         {
-            if (functionID > 0)
+            if (functionId > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE {ConfigExtendAttribute.PublishmentSystemID} = {publishmentSystemID} AND {ConfigExtendAttribute.FunctionID} = {functionID}";
+                    $"DELETE FROM {TableName} WHERE {ConfigExtendAttribute.PublishmentSystemId} = {publishmentSystemId} AND {ConfigExtendAttribute.FunctionId} = {functionId}";
                 if (idList != null && idList.Count > 0)
                 {
                     sqlString =
-                        $"DELETE FROM {TABLE_NAME} WHERE {ConfigExtendAttribute.PublishmentSystemID} = {publishmentSystemID} AND {ConfigExtendAttribute.FunctionID} = {functionID} AND ID NOT IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+                        $"DELETE FROM {TableName} WHERE {ConfigExtendAttribute.PublishmentSystemId} = {publishmentSystemId} AND {ConfigExtendAttribute.FunctionId} = {functionId} AND ID NOT IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
                 }
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public List<ConfigExtendInfo> GetConfigExtendInfoList(int publishmentSystemID, int functionID,string keywordType)
+        public List<ConfigExtendInfo> GetConfigExtendInfoList(int publishmentSystemId, int functionId,string keywordType)
         {
             var list = new List<ConfigExtendInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {ConfigExtendAttribute.PublishmentSystemID} = {publishmentSystemID} AND {ConfigExtendAttribute.FunctionID} = {functionID} AND {ConfigExtendAttribute.KeywordType}='{keywordType}' ";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere =
+                $"WHERE {ConfigExtendAttribute.PublishmentSystemId} = {publishmentSystemId} AND {ConfigExtendAttribute.FunctionId} = {functionId} AND {ConfigExtendAttribute.KeywordType}='{keywordType}' ";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

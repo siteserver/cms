@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />
 
   <script language="javascript">
@@ -157,7 +157,6 @@
               </td>
             </tr>
           </asp:PlaceHolder>
-          <asp:PlaceHolder ID="phNodeRelated" runat="server">
           <tr>
             <td>网页编码：</td>
             <td>
@@ -268,7 +267,6 @@
               <span>指此内容在添加后需要经多少次审核才能正式发布</span>
             </td>
           </tr>
-          </asp:PlaceHolder>
         </table>
 
       </asp:PlaceHolder>

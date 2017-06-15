@@ -9,33 +9,33 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class KeywordGroupDAO : DataProviderBase
+    public class KeywordGroupDao : DataProviderBase
 	{
-        private const string SQL_UPDATE = "UPDATE wx_KeywordGroup SET PublishmentSystemID = @PublishmentSystemID, GroupName = @GroupName, Taxis = @Taxis WHERE GroupID = @GroupID";
+        private const string SqlUpdate = "UPDATE wx_KeywordGroup SET PublishmentSystemID = @PublishmentSystemID, GroupName = @GroupName, Taxis = @Taxis WHERE GroupID = @GroupID";
 
-        private const string SQL_DELETE = "DELETE FROM wx_KeywordGroup WHERE GroupID = @GroupID";
+        private const string SqlDelete = "DELETE FROM wx_KeywordGroup WHERE GroupID = @GroupID";
 
-        private const string SQL_SELECT = "SELECT GroupID, PublishmentSystemID, GroupName, Taxis FROM wx_KeywordGroup WHERE GroupID = @GroupID";
+        private const string SqlSelect = "SELECT GroupID, PublishmentSystemID, GroupName, Taxis FROM wx_KeywordGroup WHERE GroupID = @GroupID";
 
-        private const string SQL_SELECT_ALL = "SELECT GroupID, PublishmentSystemID, GroupName, Taxis FROM wx_KeywordGroup ORDER BY Taxis";
+        private const string SqlSelectAll = "SELECT GroupID, PublishmentSystemID, GroupName, Taxis FROM wx_KeywordGroup ORDER BY Taxis";
 
-        private const string PARM_GROUP_ID = "@GroupID";
-        private const string PARM_PUBLISHMENT_SYSTEM_ID = "@PublishmentSystemID";
-        private const string PARM_GROUP_NAME = "@GroupName";
-        private const string PARM_TAXIS = "@Taxis";
+        private const string ParmGroupId = "@GroupID";
+        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
+        private const string ParmGroupName = "@GroupName";
+        private const string ParmTaxis = "@Taxis";
 
 		public int Insert(KeywordGroupInfo groupInfo) 
 		{
-            var groupID = 0;
+            var groupId = 0;
 
             var sqlString = "INSERT INTO wx_KeywordGroup (PublishmentSystemID, GroupName, Taxis) VALUES (@PublishmentSystemID, @GroupName, @Taxis)";
 
             var taxis = GetMaxTaxis() + 1;
 			var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, groupInfo.PublishmentSystemID),
-                GetParameter(PARM_GROUP_NAME, EDataType.NVarChar, 255, groupInfo.GroupName),
-                GetParameter(PARM_TAXIS, EDataType.Integer, taxis)
+                GetParameter(ParmPublishmentSystemId, EDataType.Integer, groupInfo.PublishmentSystemId),
+                GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupInfo.GroupName),
+                GetParameter(ParmTaxis, EDataType.Integer, taxis)
 			};
 
             using (var conn = GetConnection())
@@ -45,8 +45,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, sqlString, parms);
-                        groupID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, "wx_KeywordGroup");
+                        groupId = ExecuteNonQueryAndReturnId(trans, sqlString, parms);
                         trans.Commit();
                     }
                     catch
@@ -57,42 +56,42 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return groupID;
+            return groupId;
 		}
 
         public void Update(KeywordGroupInfo groupInfo) 
 		{
 			var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, groupInfo.PublishmentSystemID),
-                GetParameter(PARM_GROUP_NAME, EDataType.NVarChar, 255, groupInfo.GroupName),
-                GetParameter(PARM_TAXIS, EDataType.Integer, groupInfo.Taxis),
-                GetParameter(PARM_GROUP_ID, EDataType.Integer, groupInfo.GroupID)
+                GetParameter(ParmPublishmentSystemId, EDataType.Integer, groupInfo.PublishmentSystemId),
+                GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupInfo.GroupName),
+                GetParameter(ParmTaxis, EDataType.Integer, groupInfo.Taxis),
+                GetParameter(ParmGroupId, EDataType.Integer, groupInfo.GroupId)
 			};
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(SqlUpdate, parms);
 		}
 
-		public void Delete(int groupID)
+		public void Delete(int groupId)
 		{
             var parms = new IDataParameter[]
 			{
-				GetParameter(PARM_GROUP_ID, EDataType.Integer, groupID)
+				GetParameter(ParmGroupId, EDataType.Integer, groupId)
 			};
 
-            ExecuteNonQuery(SQL_DELETE, parms);
+            ExecuteNonQuery(SqlDelete, parms);
 		}
 
-        public KeywordGroupInfo GetKeywordGroupInfo(int groupID)
+        public KeywordGroupInfo GetKeywordGroupInfo(int groupId)
 		{
             KeywordGroupInfo groupInfo = null;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(PARM_GROUP_ID, EDataType.Integer, groupID)
+				GetParameter(ParmGroupId, EDataType.Integer, groupId)
 			};
 
-            using (var rdr = ExecuteReader(SQL_SELECT, parms))
+            using (var rdr = ExecuteReader(SqlSelect, parms))
             {
                 if (rdr.Read())
                 {
@@ -106,13 +105,13 @@ namespace SiteServer.CMS.WeiXin.Provider
 
 		public IEnumerable GetDataSource()
 		{
-            var enumerable = (IEnumerable)ExecuteReader(SQL_SELECT_ALL);
+            var enumerable = (IEnumerable)ExecuteReader(SqlSelectAll);
 			return enumerable;
 		}
 
-        public int GetCount(int parentID)
+        public int GetCount(int parentId)
         {
-            var sqlString = "SELECT COUNT(*) FROM wx_KeywordGroup WHERE ParentID = " + parentID;
+            var sqlString = "SELECT COUNT(*) FROM wx_KeywordGroup WHERE ParentID = " + parentId;
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
@@ -120,7 +119,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         {
             var list = new List<KeywordGroupInfo>();
 
-            using (var rdr = ExecuteReader(SQL_SELECT_ALL))
+            using (var rdr = ExecuteReader(SqlSelectAll))
             {
                 while (rdr.Read())
                 {
@@ -133,57 +132,57 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public bool UpdateTaxisToUp(int parentID, int groupID)
+        public bool UpdateTaxisToUp(int parentId, int groupId)
         {
             string sqlString =
-                $"SELECT TOP 1 GroupID, Taxis FROM wx_KeywordGroup WHERE (Taxis > (SELECT Taxis FROM wx_KeywordGroup WHERE GroupID = {groupID} AND ParentID = {parentID})) AND ParentID = {parentID} ORDER BY Taxis";
-            var higherID = 0;
+                $"SELECT TOP 1 GroupID, Taxis FROM wx_KeywordGroup WHERE (Taxis > (SELECT Taxis FROM wx_KeywordGroup WHERE GroupID = {groupId} AND ParentID = {parentId})) AND ParentID = {parentId} ORDER BY Taxis";
+            var higherId = 0;
             var higherTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    higherID = rdr.GetInt32(0);
+                    higherId = rdr.GetInt32(0);
                     higherTaxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }
 
-            var selectedTaxis = GetTaxis(groupID);
+            var selectedTaxis = GetTaxis(groupId);
 
-            if (higherID > 0)
+            if (higherId > 0)
             {
-                SetTaxis(groupID, higherTaxis);
-                SetTaxis(higherID, selectedTaxis);
+                SetTaxis(groupId, higherTaxis);
+                SetTaxis(higherId, selectedTaxis);
                 return true;
             }
             return false;
         }
 
-        public bool UpdateTaxisToDown(int parentID, int groupID)
+        public bool UpdateTaxisToDown(int parentId, int groupId)
         {
             string sqlString =
-                $"SELECT TOP 1 GroupID, Taxis FROM wx_KeywordGroup WHERE (Taxis < (SELECT Taxis FROM wx_KeywordGroup WHERE GroupID = {groupID} AND ParentID = {parentID})) AND ParentID = {parentID} ORDER BY Taxis DESC";
-            var lowerID = 0;
+                $"SELECT TOP 1 GroupID, Taxis FROM wx_KeywordGroup WHERE (Taxis < (SELECT Taxis FROM wx_KeywordGroup WHERE GroupID = {groupId} AND ParentID = {parentId})) AND ParentID = {parentId} ORDER BY Taxis DESC";
+            var lowerId = 0;
             var lowerTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    lowerID = rdr.GetInt32(0);
+                    lowerId = rdr.GetInt32(0);
                     lowerTaxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }
 
-            var selectedTaxis = GetTaxis(groupID);
+            var selectedTaxis = GetTaxis(groupId);
 
-            if (lowerID > 0)
+            if (lowerId > 0)
             {
-                SetTaxis(groupID, lowerTaxis);
-                SetTaxis(lowerID, selectedTaxis);
+                SetTaxis(groupId, lowerTaxis);
+                SetTaxis(lowerId, selectedTaxis);
                 return true;
             }
             return false;
@@ -195,9 +194,9 @@ namespace SiteServer.CMS.WeiXin.Provider
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private int GetTaxis(int groupID)
+        private int GetTaxis(int groupId)
         {
-            string sqlString = $"SELECT Taxis FROM wx_KeywordGroup WHERE GroupID = {groupID}";
+            string sqlString = $"SELECT Taxis FROM wx_KeywordGroup WHERE GroupID = {groupId}";
             var taxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
@@ -212,9 +211,9 @@ namespace SiteServer.CMS.WeiXin.Provider
             return taxis;
         }
 
-        private void SetTaxis(int groupID, int taxis)
+        private void SetTaxis(int groupId, int taxis)
         {
-            string sqlString = $"UPDATE wx_KeywordGroup SET Taxis = {taxis} WHERE GroupID = {groupID}";
+            string sqlString = $"UPDATE wx_KeywordGroup SET Taxis = {taxis} WHERE GroupID = {groupId}";
             ExecuteNonQuery(sqlString);
         }
 	}

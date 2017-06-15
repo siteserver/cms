@@ -59,8 +59,8 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var attributes = new NameValueCollection
             {
-                {"publishmentSystemID", collectInfo.PublishmentSystemID.ToString()},
-                {"collectID", collectInfo.ID.ToString()},
+                {"publishmentSystemID", collectInfo.PublishmentSystemId.ToString()},
+                {"collectID", collectInfo.Id.ToString()},
                 {"wxOpenID", wxOpenId}
             };
             return PageUtils.AddQueryString(GetCollectUrl(publishmentSystemInfo), attributes);
@@ -70,9 +70,9 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var collectInfoList = DataProviderWX.CollectDAO.GetCollectInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var collectInfoList = DataProviderWx.CollectDao.GetCollectInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
             foreach (var collectInfo in collectInfoList)
             {
@@ -124,11 +124,11 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         public static void Vote(int publishmentSystemID, int collectID, int itemID, string ipAddress, string cookieSN, string wxOpenID, string userName)
         {
-            DataProviderWX.CollectDAO.AddUserCount(collectID);
-            DataProviderWX.CollectItemDAO.AddVoteNum(collectID, itemID);
+            DataProviderWx.CollectDao.AddUserCount(collectID);
+            DataProviderWx.CollectItemDao.AddVoteNum(collectID, itemID);
 
-            var logInfo = new CollectLogInfo { ID = 0, PublishmentSystemID = publishmentSystemID, CollectID = collectID, ItemID = itemID, IPAddress = ipAddress, CookieSN = cookieSN, WXOpenID = wxOpenID, UserName = userName, AddDate = DateTime.Now };
-            DataProviderWX.CollectLogDAO.Insert(logInfo);
+            var logInfo = new CollectLogInfo { Id = 0, PublishmentSystemId = publishmentSystemID, CollectId = collectID, ItemId = itemID, IpAddress = ipAddress, CookieSn = cookieSN, WxOpenId = wxOpenID, UserName = userName, AddDate = DateTime.Now };
+            DataProviderWx.CollectLogDao.Insert(logInfo);
         }
 	}
 }

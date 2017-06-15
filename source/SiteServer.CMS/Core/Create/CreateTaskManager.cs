@@ -17,6 +17,8 @@ namespace SiteServer.CMS.Core.Create
 
         void RemovePendingAndAddFailureLog(CreateTaskInfo taskInfo, Exception ex);
 
+        void ClearAllTask();
+
         void ClearAllTask(int publishmentSystemId);
 
         CreateTaskSummary GetTaskSummary(int publishmentSystemId);
@@ -66,6 +68,11 @@ namespace SiteServer.CMS.Core.Create
         private static readonly Dictionary<int, List<CreateTaskInfo>> PendingTaskDict = new Dictionary<int, List<CreateTaskInfo>>();
         private static readonly Dictionary<int, List<CreateTaskLogInfo>> TaskLogDict = new Dictionary<int, List<CreateTaskLogInfo>>();
 
+        /// <summary>
+        /// 获取某个站点的所有任务
+        /// </summary>
+        /// <param name="publishmentSystemId"></param>
+        /// <returns></returns>
         private List<CreateTaskInfo> GetPendingTasks(int publishmentSystemId)
         {
             if (!PendingTaskDict.ContainsKey(publishmentSystemId))
@@ -84,9 +91,13 @@ namespace SiteServer.CMS.Core.Create
             return TaskLogDict[publishmentSystemId];
         }
 
+        /// <summary>
+        /// 添加一个任务
+        /// </summary>
+        /// <param name="task"></param>
         public void AddPendingTask(CreateTaskInfo task)
         {
-            var pendingTasks = GetPendingTasks(task.PublishmentSystemID);
+            var pendingTasks = GetPendingTasks(task.PublishmentSystemID); // 查找某站点所有任务
             foreach (var taskInfo in pendingTasks)
             {
                 if (task.Equals(taskInfo))
@@ -137,6 +148,14 @@ namespace SiteServer.CMS.Core.Create
                 taskLogs.RemoveAt(20);
             }
             taskLogs.Add(taskLog);
+        }
+
+        public void ClearAllTask()
+        {
+            foreach (var publishmentSystemId in PendingTaskDict.Keys)
+            {
+                PendingTaskDict[publishmentSystemId] = new List<CreateTaskInfo>();
+            }
         }
 
         public void ClearAllTask(int publishmentSystemId)
@@ -233,6 +252,11 @@ namespace SiteServer.CMS.Core.Create
             DataProvider.CreateTaskDao.Delete(taskInfo.ID);
             var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemID, CreateTaskManager.GetTaskName(taskInfo), string.Empty, false, ex.Message, DateTime.Now);
             DataProvider.CreateTaskLogDao.Insert(taskLog);
+        }
+
+        public void ClearAllTask()
+        {
+            DataProvider.CreateTaskDao.DeleteAll();
         }
 
         public void ClearAllTask(int publishmentSystemId)

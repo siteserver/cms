@@ -1,4 +1,4 @@
-using System.Web.UI;
+﻿using System.Web.UI;
 using BaiRong.Core;
 
 namespace SiteServer.BackgroundPages.Controls
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Controls
             {
                 writer.Write(MessageUtils.GetAlertHtml(this, Text));
             }
-            writer.Write(@"<div id=""alert"" class=""alert"" style=""display:none""><button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button><strong>��ʾ!</strong>&nbsp;&nbsp; <span id=""alertMessage""></span></div>");
+            writer.Write(@"<div id=""alert"" class=""alert"" style=""display:none""><button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button><strong>提示!</strong>&nbsp;&nbsp; <span id=""alertMessage""></span></div>");
 		}
 	}
 }

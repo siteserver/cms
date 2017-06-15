@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="所选内容将转移到指定站点下的栏目中，可以同时选择多个栏目，内容将同时转移到对应栏目下。<br>
   转移有四种方式：<br>
   “复制”将创建内容的副本，并拷贝到指定栏目下，副本和原始内容之间不存在关系；<br>

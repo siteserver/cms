@@ -14,8 +14,6 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlIsSaveImageInTextEditor;
         public DropDownList DdlIsAutoPageInTextEditor;
         public TextBox TbAutoPageWordNum;
-        public DropDownList DdlIsAutoSaveContent;
-        public TextBox TbAutoSaveContentInterval;
         public RadioButtonList RblIsContentTitleBreakLine;
         public RadioButtonList RblIsCheckContentUseLevel;
         public PlaceHolder PhCheckContentLevel; 
@@ -49,11 +47,6 @@ namespace SiteServer.BackgroundPages.Cms
             ControlUtils.SelectListItemsIgnoreCase(DdlIsAutoPageInTextEditor, PublishmentSystemInfo.Additional.IsAutoPageInTextEditor.ToString());
 
             TbAutoPageWordNum.Text = PublishmentSystemInfo.Additional.AutoPageWordNum.ToString();
-
-            EBooleanUtils.AddListItems(DdlIsAutoSaveContent, "开启自动保存功能", "关闭自动保存功能");
-            ControlUtils.SelectListItemsIgnoreCase(DdlIsAutoSaveContent, PublishmentSystemInfo.Additional.IsAutoSaveContent.ToString());
-
-            TbAutoSaveContentInterval.Text = PublishmentSystemInfo.Additional.AutoSaveContentInterval.ToString();
 
             EBooleanUtils.AddListItems(RblIsContentTitleBreakLine, "启用标题换行", "不启用");
             ControlUtils.SelectListItemsIgnoreCase(RblIsContentTitleBreakLine, PublishmentSystemInfo.Additional.IsContentTitleBreakLine.ToString());
@@ -111,10 +104,6 @@ namespace SiteServer.BackgroundPages.Cms
                 PublishmentSystemInfo.Additional.IsAutoPageInTextEditor = TranslateUtils.ToBool(DdlIsAutoPageInTextEditor.SelectedValue, false);
 
                 PublishmentSystemInfo.Additional.AutoPageWordNum = TranslateUtils.ToInt(TbAutoPageWordNum.Text, PublishmentSystemInfo.Additional.AutoPageWordNum);
-
-                PublishmentSystemInfo.Additional.IsAutoSaveContent = TranslateUtils.ToBool(DdlIsAutoSaveContent.SelectedValue, false);
-
-                PublishmentSystemInfo.Additional.AutoSaveContentInterval = TranslateUtils.ToInt(TbAutoSaveContentInterval.Text, PublishmentSystemInfo.Additional.AutoSaveContentInterval);
 
                 PublishmentSystemInfo.Additional.IsContentTitleBreakLine = TranslateUtils.ToBool(RblIsContentTitleBreakLine.SelectedValue, true);
 

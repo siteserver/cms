@@ -67,13 +67,13 @@ namespace SiteServer.CMS.WeiXin.Utils
                 var subMenuTemplate = menuTemplate.Substring(startSubIndex, endSubIndex - startSubIndex);
 
                 var menuBuilder = new StringBuilder();
-                var menuInfoList = DataProviderWX.WebMenuDAO.GetMenuInfoList(publishmentSystemInfo.PublishmentSystemId, 0);
+                var menuInfoList = DataProviderWx.WebMenuDao.GetMenuInfoList(publishmentSystemInfo.PublishmentSystemId, 0);
 
                 var index = 0;
                 foreach (var menuInfo in menuInfoList)
                 {
                     var subMenuBuilder = new StringBuilder();
-                    var subMenuInfoList = DataProviderWX.WebMenuDAO.GetMenuInfoList(publishmentSystemInfo.PublishmentSystemId, menuInfo.ID);
+                    var subMenuInfoList = DataProviderWx.WebMenuDao.GetMenuInfoList(publishmentSystemInfo.PublishmentSystemId, menuInfo.Id);
 
                     if (subMenuInfoList != null && subMenuInfoList.Count > 0)
                     {
@@ -82,14 +82,14 @@ namespace SiteServer.CMS.WeiXin.Utils
 
                         foreach (var subMenuInfo in subMenuInfoList)
                         {
-                            var subMenu = subMenuTemplate.Replace("{{url}}", GetNavigationUrl(publishmentSystemInfo, ENavigationTypeUtils.GetEnumType(subMenuInfo.NavigationType), EKeywordTypeUtils.GetEnumType(subMenuInfo.KeywordType), subMenuInfo.FunctionID, subMenuInfo.ChannelID, subMenuInfo.ContentID, subMenuInfo.Url));
+                            var subMenu = subMenuTemplate.Replace("{{url}}", GetNavigationUrl(publishmentSystemInfo, ENavigationTypeUtils.GetEnumType(subMenuInfo.NavigationType), EKeywordTypeUtils.GetEnumType(subMenuInfo.KeywordType), subMenuInfo.FunctionId, subMenuInfo.ChannelId, subMenuInfo.ContentId, subMenuInfo.Url));
                             subMenu = subMenu.Replace("{{menuName}}", subMenuInfo.MenuName);
                             subMenuBuilder.Append(subMenu);
                         }
                     }
                     var menu = menuTemplate.Substring(0, startSubIndex) + subMenuBuilder.ToString() + menuTemplate.Substring(endSubIndex);
 
-                    menu = menu.Replace("{{url}}", GetNavigationUrl(publishmentSystemInfo, ENavigationTypeUtils.GetEnumType(menuInfo.NavigationType), EKeywordTypeUtils.GetEnumType(menuInfo.KeywordType), menuInfo.FunctionID, menuInfo.ChannelID, menuInfo.ContentID, menuInfo.Url));
+                    menu = menu.Replace("{{url}}", GetNavigationUrl(publishmentSystemInfo, ENavigationTypeUtils.GetEnumType(menuInfo.NavigationType), EKeywordTypeUtils.GetEnumType(menuInfo.KeywordType), menuInfo.FunctionId, menuInfo.ChannelId, menuInfo.ContentId, menuInfo.Url));
                     menu = menu.Replace("{{index}}", index.ToString());
                     menu = menu.Replace("{{menuName}}", menuInfo.MenuName);
                     menuBuilder.Append(menu);

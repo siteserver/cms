@@ -215,9 +215,6 @@
     <Compile Include="AreaManager.cs" />
     <Compile Include="CacheManager.cs" />
     <Compile Include="AppManager.cs" />
-    <Compile Include="ProductFileUtils.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="SmsManager.cs" />
     <Compile Include="DepartmentManager.cs" />
     <Compile Include="IO\CSVUtils.cs" />

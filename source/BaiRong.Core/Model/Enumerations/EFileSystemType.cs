@@ -978,9 +978,9 @@ namespace BaiRong.Core.Model.Enumerations
             return retval;
         }
 
-        public static bool IsCompressionFile(string typeStr)
+        public static bool IsZip(string typeStr)
         {
-            return Equals(EFileSystemType.Rar, typeStr) || Equals(EFileSystemType.Zip, typeStr);
+            return Equals(EFileSystemType.Zip, typeStr);
         }
 
         public static bool IsFlash(string fileExtName)
