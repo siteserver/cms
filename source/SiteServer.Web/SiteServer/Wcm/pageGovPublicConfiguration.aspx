@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="如果未设置主题分类根栏目，系统将默认生成，主题分类根栏目只能选择首页或者一级栏目。" runat="server" />
 
   <div class="popover popover-static">

@@ -4,7 +4,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using System.Collections.Specialized;
-using SiteServer.BackgroundPages.Ajax;
 using SiteServer.CMS.WeiXin.Data;
 using SiteServer.CMS.WeiXin.Manager;
 using SiteServer.CMS.WeiXin.Model;
@@ -14,26 +13,26 @@ namespace SiteServer.BackgroundPages.WeiXin
 {
     public class PageAlbumAdd : BasePageCms
     {
-        public Literal ltlPageTitle;
-        public TextBox tbKeywords;
-        public TextBox tbTitle;
-        public TextBox tbSummary;
-        public CheckBox cbIsEnabled;
-        public Literal ltlImageUrl;
+        public Literal LtlPageTitle;
+        public TextBox TbKeywords;
+        public TextBox TbTitle;
+        public TextBox TbSummary;
+        public CheckBox CbIsEnabled;
+        public Literal LtlImageUrl;
 
-        public HtmlInputHidden imageUrl;
+        public HtmlInputHidden ImageUrl;
 
-        public Button btnSubmit;
-        public Button btnReturn;
+        public Button BtnSubmit;
+        public Button BtnReturn;
 
-        private int albumID;
+        private int _albumId;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int albumID)
+        public static string GetRedirectUrl(int publishmentSystemId, int albumId)
         {
             return PageUtils.GetWeiXinUrl(nameof(PageAlbumAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"albumID", albumID.ToString()}
+                {"PublishmentSystemId", publishmentSystemId.ToString()},
+                {"albumID", albumId.ToString()}
             });
         }
 
@@ -41,44 +40,44 @@ namespace SiteServer.BackgroundPages.WeiXin
         {
             return string.Empty;
             //AjaxUploadService
-            //return BackgroundAjaxUpload.GetImageUrlUploadUrl(PublishmentSystemID);
+            //return BackgroundAjaxUpload.GetImageUrlUploadUrl(PublishmentSystemId);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
-            albumID = Body.GetQueryInt("albumID");
+            PageUtils.CheckRequestParameter("PublishmentSystemId");
+            _albumId = Body.GetQueryInt("albumID");
 
             if (!IsPostBack)
             {
-                var pageTitle = albumID > 0 ? "编辑微相册" : "添加微相册";
+                var pageTitle = _albumId > 0 ? "编辑微相册" : "添加微相册";
                 BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAlbum, pageTitle, AppManager.WeiXin.Permission.WebSite.Album);
-                ltlPageTitle.Text = pageTitle;
+                LtlPageTitle.Text = pageTitle;
 
-                ltlImageUrl.Text =
+                LtlImageUrl.Text =
                     $@"<img id=""preview_imageUrl"" src=""{AlbumManager.GetImageUrl(PublishmentSystemInfo, string.Empty)}"" width=""370"" align=""middle"" />";
 
-                if (albumID > 0)
+                if (_albumId > 0)
                 {
-                    var albumInfo = DataProviderWX.AlbumDAO.GetAlbumInfo(albumID);
+                    var albumInfo = DataProviderWx.AlbumDao.GetAlbumInfo(_albumId);
 
-                    tbKeywords.Text = DataProviderWX.KeywordDAO.GetKeywords(albumInfo.KeywordID);
-                    cbIsEnabled.Checked = !albumInfo.IsDisabled;
-                    tbTitle.Text = albumInfo.Title;
+                    TbKeywords.Text = DataProviderWx.KeywordDao.GetKeywords(albumInfo.KeywordId);
+                    CbIsEnabled.Checked = !albumInfo.IsDisabled;
+                    TbTitle.Text = albumInfo.Title;
                     if (!string.IsNullOrEmpty(albumInfo.ImageUrl))
                     {
-                        ltlImageUrl.Text =
+                        LtlImageUrl.Text =
                             $@"<img id=""preview_imageUrl"" src=""{PageUtility.ParseNavigationUrl(
                                 PublishmentSystemInfo, albumInfo.ImageUrl)}"" width=""370"" align=""middle"" />";
                     }
-                    tbSummary.Text = albumInfo.Summary;
+                    TbSummary.Text = albumInfo.Summary;
 
-                    imageUrl.Value = albumInfo.ImageUrl;
+                    ImageUrl.Value = albumInfo.ImageUrl;
                 }
 
-                btnReturn.Attributes.Add("onclick",
+                BtnReturn.Attributes.Add("onclick",
                     $@"location.href=""{PageAlbum.GetRedirectUrl(PublishmentSystemId)}"";return false");
             }
         }
@@ -89,16 +88,16 @@ namespace SiteServer.BackgroundPages.WeiXin
             {
                 var isConflict = false;
                 var conflictKeywords = string.Empty;
-                if (!string.IsNullOrEmpty(tbKeywords.Text))
+                if (!string.IsNullOrEmpty(TbKeywords.Text))
                 {
-                    if (albumID > 0)
+                    if (_albumId > 0)
                     {
-                        var albumInfo = DataProviderWX.AlbumDAO.GetAlbumInfo(albumID);
-                        isConflict = KeywordManager.IsKeywordUpdateConflict(PublishmentSystemId, albumInfo.KeywordID,PageUtils.FilterXss(tbKeywords.Text), out conflictKeywords);
+                        var albumInfo = DataProviderWx.AlbumDao.GetAlbumInfo(_albumId);
+                        isConflict = KeywordManager.IsKeywordUpdateConflict(PublishmentSystemId, albumInfo.KeywordId,PageUtils.FilterXss(TbKeywords.Text), out conflictKeywords);
                     }
                     else
                     {
-                        isConflict = KeywordManager.IsKeywordInsertConflict(PublishmentSystemId, PageUtils.FilterXss(tbKeywords.Text), out conflictKeywords);
+                        isConflict = KeywordManager.IsKeywordInsertConflict(PublishmentSystemId, PageUtils.FilterXss(TbKeywords.Text), out conflictKeywords);
                     }
                 }
 
@@ -109,37 +108,37 @@ namespace SiteServer.BackgroundPages.WeiXin
                 else
                 {
                     var albumInfo = new AlbumInfo();
-                    if (albumID > 0)
+                    if (_albumId > 0)
                     {
-                        albumInfo = DataProviderWX.AlbumDAO.GetAlbumInfo(albumID);
+                        albumInfo = DataProviderWx.AlbumDao.GetAlbumInfo(_albumId);
                     }
-                    albumInfo.PublishmentSystemID = PublishmentSystemId;
+                    albumInfo.PublishmentSystemId = PublishmentSystemId;
 
-                    albumInfo.KeywordID = DataProviderWX.KeywordDAO.GetKeywordID(PublishmentSystemId, albumID > 0, tbKeywords.Text, EKeywordType.Album, albumInfo.KeywordID);
-                    albumInfo.IsDisabled = !cbIsEnabled.Checked;
+                    albumInfo.KeywordId = DataProviderWx.KeywordDao.GetKeywordId(PublishmentSystemId, _albumId > 0, TbKeywords.Text, EKeywordType.Album, albumInfo.KeywordId);
+                    albumInfo.IsDisabled = !CbIsEnabled.Checked;
 
-                    albumInfo.Title = PageUtils.FilterXss(tbTitle.Text);
-                    albumInfo.ImageUrl = imageUrl.Value; ;
-                    albumInfo.Summary = tbSummary.Text;
+                    albumInfo.Title = PageUtils.FilterXss(TbTitle.Text);
+                    albumInfo.ImageUrl = ImageUrl.Value; ;
+                    albumInfo.Summary = TbSummary.Text;
 
                     try
                     {
-                        if (albumID > 0)
+                        if (_albumId > 0)
                         {
-                            DataProviderWX.AlbumDAO.Update(albumInfo);
+                            DataProviderWx.AlbumDao.Update(albumInfo);
 
-                            Body.AddLog(PublishmentSystemId, "修改微相册", $"微相册:{tbTitle.Text}");
+                            Body.AddSiteLog(PublishmentSystemId, "修改微相册", $"微相册:{TbTitle.Text}");
                             SuccessMessage("修改微相册成功！");
                         }
                         else
                         {
-                            albumID = DataProviderWX.AlbumDAO.Insert(albumInfo);
+                            _albumId = DataProviderWx.AlbumDao.Insert(albumInfo);
 
-                            Body.AddLog(PublishmentSystemId, "添加微相册", $"微相册:{tbTitle.Text}");
+                            Body.AddSiteLog(PublishmentSystemId, "添加微相册", $"微相册:{TbTitle.Text}");
                             SuccessMessage("添加微相册成功！");
                         }
 
-                        var redirectUrl = PageAlbumContent.GetRedirectUrl(PublishmentSystemId, albumID);
+                        var redirectUrl = PageAlbumContent.GetRedirectUrl(PublishmentSystemId, _albumId);
                         AddWaitAndRedirectScript(redirectUrl);
                     }
                     catch (Exception ex)

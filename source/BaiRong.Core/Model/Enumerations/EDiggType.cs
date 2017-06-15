@@ -37,15 +37,15 @@ namespace BaiRong.Core.Model.Enumerations
         {
             if (type == EDiggType.Good)
             {
-                return "½öÏÔÊ¾ÔŞÍ¬";
+                return "ä»…æ˜¾ç¤ºèµåŒ";
             }
             else if (type == EDiggType.Bad)
             {
-                return "½öÏÔÊ¾²»ÔŞÍ¬";
+                return "ä»…æ˜¾ç¤ºä¸èµåŒ";
             }
             else if (type == EDiggType.All)
             {
-                return "ÏÔÊ¾È«²¿";
+                return "æ˜¾ç¤ºå…¨éƒ¨";
             }
             else
             {

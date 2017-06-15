@@ -6,86 +6,72 @@ using BaiRong.Core.Model;
 
 namespace SiteServer.CMS.WeiXin.Model
 {
-    public class CouponSNAttribute
+    public class CouponSnAttribute
     {
-        protected CouponSNAttribute()
+        protected CouponSnAttribute()
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string CouponID = "CouponID";
-        public const string SN = "SN";
-        public const string Status = "Status";
-        public const string HoldDate = "HoldDate";
-        public const string HoldRealName = "HoldRealName";
-        public const string HoldMobile = "HoldMobile";
-        public const string HoldEmail = "HoldEmail";
-        public const string HoldAddress = "HoldAddress";
-        public const string CookieSN = "CookieSN";
-        public const string WXOpenID = "WXOpenID";
-        public const string CashDate = "CashDate";
-        public const string CashUserName = "CashUserName";
+        public const string Id = nameof(CouponSnInfo.Id);
+        public const string PublishmentSystemId = nameof(CouponSnInfo.PublishmentSystemId);
+        public const string CouponId = nameof(CouponSnInfo.CouponId);
+        public const string Sn = nameof(CouponSnInfo.Sn);
+        public const string Status = nameof(CouponSnInfo.Status);
+        public const string HoldDate = nameof(CouponSnInfo.HoldDate);
+        public const string HoldRealName = nameof(CouponSnInfo.HoldRealName);
+        public const string HoldMobile = nameof(CouponSnInfo.HoldMobile);
+        public const string HoldEmail = nameof(CouponSnInfo.HoldEmail);
+        public const string HoldAddress = nameof(CouponSnInfo.HoldAddress);
+        public const string CookieSn = nameof(CouponSnInfo.CookieSn);
+        public const string WxOpenId = nameof(CouponSnInfo.WxOpenId);
+        public const string CashDate = nameof(CouponSnInfo.CashDate);
+        public const string CashUserName = nameof(CouponSnInfo.CashUserName);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(CouponID);
-                    allAttributes.Add(SN);
-                    allAttributes.Add(Status);
-                    allAttributes.Add(HoldDate);
-                    allAttributes.Add(HoldRealName);
-                    allAttributes.Add(HoldMobile);
-                    allAttributes.Add(HoldEmail);
-                    allAttributes.Add(HoldAddress);
-                    allAttributes.Add(CookieSN);
-                    allAttributes.Add(WXOpenID);
-                    allAttributes.Add(CashDate);
-                    allAttributes.Add(CashUserName);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            CouponId,
+            Sn,
+            Status,
+            HoldDate,
+            HoldRealName,
+            HoldMobile,
+            HoldEmail,
+            HoldAddress,
+            CookieSn,
+            WxOpenId,
+            CashDate,
+            CashUserName
+        });
     }
-    public class CouponSNInfo : BaseInfo
+
+    public class CouponSnInfo : BaseInfo
     {
-        public CouponSNInfo()
+        public CouponSnInfo()
         {
             HoldDate = DateTime.Now;
             CashDate = DateTime.Now;
         }
 
-        public CouponSNInfo(object dataItem) : base(dataItem) { }
-        public CouponSNInfo(NameValueCollection form) : base(form) { }
-        public CouponSNInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int CouponID { get; set; }
-        public string SN { get; set; }
+        public CouponSnInfo(object dataItem) : base(dataItem) { }
+        public CouponSnInfo(NameValueCollection form) : base(form) { }
+        public CouponSnInfo(IDataReader rdr) : base(rdr) { }
+        public int PublishmentSystemId { get; set; }
+        public int CouponId { get; set; }
+        public string Sn { get; set; }
         public string Status { get; set; }
         public DateTime HoldDate { get; set; }
         public string HoldRealName { get; set; }
         public string HoldMobile { get; set; }
         public string HoldEmail { get; set; }
         public string HoldAddress { get; set; }
-        public string CookieSN { get; set; }
-        public string WXOpenID { get; set; }
+        public string CookieSn { get; set; }
+        public string WxOpenId { get; set; }
         public DateTime CashDate { get; set; }
         public string CashUserName { get; set; }
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return CouponSNAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => CouponSnAttribute.AllAttributes;
     }
 }

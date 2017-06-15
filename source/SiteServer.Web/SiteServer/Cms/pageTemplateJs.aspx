@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="脚本文件在站点目录 js 中，模板中使用 &amp;lt;script type=&quot;text/javascript&quot; src=&quot;{stl.siteurl}/js/脚本文件.js&quot;&gt;&amp;lt;/script&gt; 引用。" runat="server" />
 
   <asp:dataGrid id="dgContents" showHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">

@@ -6,64 +6,49 @@ using BaiRong.Core.Model;
 
 namespace SiteServer.CMS.WeiXin.Model
 {
-    public class CardSNAttribute
+    public class CardSnAttribute
     {
-        protected CardSNAttribute()
+        protected CardSnAttribute()
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string UserName = "UserName";
-        public const string CardID = "CardID";
-        public const string SN = "SN";
-        public const string Amount = "Amount";
-        public const string IsDisabled = "IsDisabled";
-        public const string AddDate = "AddDate";
+        public const string Id = nameof(CardSnInfo.Id);
+        public const string PublishmentSystemId = nameof(CardSnInfo.PublishmentSystemId);
+        public const string UserName = nameof(CardSnInfo.UserName);
+        public const string CardId = nameof(CardSnInfo.CardId);
+        public const string Sn = nameof(CardSnInfo.Sn);
+        public const string Amount = nameof(CardSnInfo.Amount);
+        public const string IsDisabled = nameof(CardSnInfo.IsDisabled);
+        public const string AddDate = nameof(CardSnInfo.AddDate);
       
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(UserName);
-                    allAttributes.Add(CardID);
-                    allAttributes.Add(SN);
-                    allAttributes.Add(Amount);
-                    allAttributes.Add(IsDisabled);
-                    allAttributes.Add(AddDate);
-                 }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            UserName,
+            CardId,
+            Sn,
+            Amount,
+            IsDisabled,
+            AddDate
+        });
     }
-    public class CardSNInfo : BaseInfo
+
+    public class CardSnInfo : BaseInfo
     {
-        public CardSNInfo() { }
-        public CardSNInfo(object dataItem) : base(dataItem) { }
-        public CardSNInfo(NameValueCollection form) : base(form) { }
-        public CardSNInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
+        public CardSnInfo() { }
+        public CardSnInfo(object dataItem) : base(dataItem) { }
+        public CardSnInfo(NameValueCollection form) : base(form) { }
+        public CardSnInfo(IDataReader rdr) : base(rdr) { }
+        public int PublishmentSystemId { get; set; }
         public string UserName { get; set; }
-        public int CardID { get; set; }
-        public string SN { get; set; }
+        public int CardId { get; set; }
+        public string Sn { get; set; }
         public decimal Amount { get; set; }
         public bool IsDisabled { get; set; }
         public DateTime AddDate { get; set; }
-        
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return CardSNAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => CardSnAttribute.AllAttributes;
     }
 }

@@ -11,81 +11,71 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string AppointmentID = "AppointmentID";
-        public const string UserCount = "UserCount";
-        public const string Title = "Title";
-        public const string TopImageUrl = "TopImageUrl";
-        public const string IsDescription = "IsDescription";
-        public const string DescriptionTitle = "DescriptionTitle";
-        public const string Description = "Description";
-        public const string IsImageUrl = "IsImageUrl";
-        public const string ImageUrlTitle = "ImageUrlTitle";
-        public const string ImageUrl = "ImageUrl";
-        public const string IsVideoUrl = "IsVideoUrl";
-        public const string VideoUrlTitle = "VideoUrlTitle";
-        public const string VideoUrl = "VideoUrl";
-        public const string IsImageUrlCollection = "IsImageUrlCollection";
-        public const string ImageUrlCollectionTitle = "ImageUrlCollectionTitle";
-        public const string ImageUrlCollection = "ImageUrlCollection";
-        public const string LargeImageUrlCollection = "LargeImageUrlCollection";
-        public const string IsMap = "IsMap";
-        public const string MapTitle = "MapTitle";
-        public const string MapAddress = "MapAddress";
-        public const string IsTel = "IsTel";
-        public const string TelTitle = "TelTitle";
-        public const string Tel = "Tel";
-
+        public const string Id = nameof(AppointmentItemInfo.Id);
+        public const string PublishmentSystemId = nameof(AppointmentItemInfo.PublishmentSystemId);
+        public const string AppointmentId = nameof(AppointmentItemInfo.AppointmentId);
+        public const string UserCount = nameof(AppointmentItemInfo.UserCount);
+        public const string Title = nameof(AppointmentItemInfo.Title);
+        public const string TopImageUrl = nameof(AppointmentItemInfo.TopImageUrl);
+        public const string IsDescription = nameof(AppointmentItemInfo.IsDescription);
+        public const string DescriptionTitle = nameof(AppointmentItemInfo.DescriptionTitle);
+        public const string Description = nameof(AppointmentItemInfo.Description);
+        public const string IsImageUrl = nameof(AppointmentItemInfo.IsImageUrl);
+        public const string ImageUrlTitle = nameof(AppointmentItemInfo.ImageUrlTitle);
+        public const string ImageUrl = nameof(AppointmentItemInfo.ImageUrl);
+        public const string IsVideoUrl = nameof(AppointmentItemInfo.IsVideoUrl);
+        public const string VideoUrlTitle = nameof(AppointmentItemInfo.VideoUrlTitle);
+        public const string VideoUrl = nameof(AppointmentItemInfo.VideoUrl);
+        public const string IsImageUrlCollection = nameof(AppointmentItemInfo.IsImageUrlCollection);
+        public const string ImageUrlCollectionTitle = nameof(AppointmentItemInfo.ImageUrlCollectionTitle);
+        public const string ImageUrlCollection = nameof(AppointmentItemInfo.ImageUrlCollection);
+        public const string LargeImageUrlCollection = nameof(AppointmentItemInfo.LargeImageUrlCollection);
+        public const string IsMap = nameof(AppointmentItemInfo.IsMap);
+        public const string MapTitle = nameof(AppointmentItemInfo.MapTitle);
+        public const string MapAddress = nameof(AppointmentItemInfo.MapAddress);
+        public const string IsTel = nameof(AppointmentItemInfo.IsTel);
+        public const string TelTitle = nameof(AppointmentItemInfo.TelTitle);
+        public const string Tel = nameof(AppointmentItemInfo.Tel);
           
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(AppointmentID);
-                    allAttributes.Add(UserCount);
-                    allAttributes.Add(Title);
-                    allAttributes.Add(TopImageUrl);
-                    allAttributes.Add(IsDescription);
-                    allAttributes.Add(DescriptionTitle);
-                    allAttributes.Add(Description);
-                    allAttributes.Add(IsImageUrl);
-                    allAttributes.Add(ImageUrlTitle);
-                    allAttributes.Add(ImageUrl);
-                    allAttributes.Add(IsVideoUrl);
-                    allAttributes.Add(VideoUrlTitle);
-                    allAttributes.Add(VideoUrl);
-                    allAttributes.Add(IsImageUrlCollection);
-                    allAttributes.Add(ImageUrlCollectionTitle);
-                    allAttributes.Add(ImageUrlCollection);
-                    allAttributes.Add(LargeImageUrlCollection);
-                    allAttributes.Add(IsMap);
-                    allAttributes.Add(MapTitle);
-                    allAttributes.Add(MapAddress);
-                    allAttributes.Add(IsTel);
-                    allAttributes.Add(TelTitle);
-                    allAttributes.Add(Tel);
-                     
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            AppointmentId,
+            UserCount,
+            Title,
+            TopImageUrl,
+            IsDescription,
+            DescriptionTitle,
+            Description,
+            IsImageUrl,
+            ImageUrlTitle,
+            ImageUrl,
+            IsVideoUrl,
+            VideoUrlTitle,
+            VideoUrl,
+            IsImageUrlCollection,
+            ImageUrlCollectionTitle,
+            ImageUrlCollection,
+            LargeImageUrlCollection,
+            IsMap,
+            MapTitle,
+            MapAddress,
+            IsTel,
+            TelTitle,
+            Tel
+        });
     }
+
     public class AppointmentItemInfo : BaseInfo
     {
         public AppointmentItemInfo() { }
         public AppointmentItemInfo(object dataItem) : base(dataItem) { }
         public AppointmentItemInfo(NameValueCollection form) : base(form) { }
         public AppointmentItemInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int AppointmentID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int AppointmentId { get; set; }
         public int UserCount { get; set; }
         public string Title { get; set; }
         public string TopImageUrl { get; set; }
@@ -109,12 +99,6 @@ namespace SiteServer.CMS.WeiXin.Model
         public string TelTitle { get; set; }
         public string Tel { get; set; }
            
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return AppointmentItemAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => AppointmentItemAttribute.AllAttributes;
     }
 }

@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
 
   <bairong:alerts text="选择需要生成内容页面的栏目后点击“生成选定内容”即可生成对应的内容页面。" runat="server" />
 

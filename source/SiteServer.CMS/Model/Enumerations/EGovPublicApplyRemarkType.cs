@@ -5,10 +5,10 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EGovPublicApplyRemarkType
 	{
-        Accept,             //受理
-        SwitchTo,           //转办
-        Comment,            //批示
-        Redo                //要求返工
+        Accept,             //鍙楃悊
+        SwitchTo,           //杞姙
+        Comment,            //鎵圭ず
+        Redo                //瑕佹眰杩斿伐
 	}
 
     public class EGovPublicApplyRemarkTypeUtils
@@ -41,19 +41,19 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == EGovPublicApplyRemarkType.Accept)
 			{
-                return "受理";
+                return "鍙楃悊";
 			}
             else if (type == EGovPublicApplyRemarkType.SwitchTo)
             {
-                return "转办";
+                return "杞姙";
             }
             else if (type == EGovPublicApplyRemarkType.Comment)
             {
-                return "批示";
+                return "鎵圭ず";
             }
             else if (type == EGovPublicApplyRemarkType.Redo)
             {
-                return "要求返工";
+                return "瑕佹眰杩斿伐";
             }
 			else
 			{

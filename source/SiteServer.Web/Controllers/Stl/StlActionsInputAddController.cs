@@ -89,12 +89,12 @@ namespace SiteServer.API.Controllers.Stl
                         }
                     }
 
-                    HttpContext.Current.Response.Write(StlInput.GetInputCallbackScript(inputId, true));
+                    HttpContext.Current.Response.Write(StlInput.GetPostMessageScript(inputId, true));
                     HttpContext.Current.Response.End();
                 }
                 catch (Exception)
                 {
-                    HttpContext.Current.Response.Write(StlInput.GetInputCallbackScript(inputId, false));
+                    HttpContext.Current.Response.Write(StlInput.GetPostMessageScript(inputId, false));
                     HttpContext.Current.Response.End();
                 }
             }

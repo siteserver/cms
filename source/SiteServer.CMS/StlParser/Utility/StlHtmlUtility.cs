@@ -95,7 +95,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 list.Add(element);
             }
 
-            regex = "<select\\s*[^>]*?>.*?</select>";
+            regex = "<select\\b[\\s\\S]*?</select>";
             reg = new Regex(regex, options);
             mc = reg.Matches(content);
             for (var i = 0; i < mc.Count; i++)

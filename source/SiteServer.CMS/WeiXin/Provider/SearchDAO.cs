@@ -7,17 +7,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class SearchDAO : DataProviderBase
+    public class SearchDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_Search";
+        private const string TableName = "wx_Search";
 
         public int Insert(SearchInfo searchInfo)
         {
-            var searchID = 0;
+            var searchId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(searchInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(searchInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -26,9 +26,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        searchID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        searchId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -40,79 +38,79 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return searchID;
+            return searchId;
         }
 
         public void Update(SearchInfo searchInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(searchInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(searchInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
         }
   
-        public void AddPVCount(int searchID)
+        public void AddPvCount(int searchId)
         {
-            if (searchID > 0)
+            if (searchId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {SearchAttribute.PVCount} = {SearchAttribute.PVCount} + 1 WHERE ID = {searchID}";
+                    $"UPDATE {TableName} SET {SearchAttribute.PvCount} = {SearchAttribute.PvCount} + 1 WHERE ID = {searchId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemID, int searchID)
+        public void Delete(int publishmentSystemId, int searchId)
         {
-            if (searchID > 0)
+            if (searchId > 0)
             {
-                var SearchIDList = new List<int>();
-                SearchIDList.Add(searchID);
-                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(SearchIDList));
+                var searchIdList = new List<int>();
+                searchIdList.Add(searchId);
+                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(searchIdList));
 
-                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {searchID}";
+                string sqlString = $"DELETE FROM {TableName} WHERE ID = {searchId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemID, List<int> searchIDList)
+        public void Delete(int publishmentSystemId, List<int> searchIdList)
         {
-            if (searchIDList != null && searchIDList.Count > 0)
+            if (searchIdList != null && searchIdList.Count > 0)
             {
-                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(searchIDList));
+                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(searchIdList));
 
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(searchIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(searchIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private List<int> GetKeywordIDList(List<int> searchIDList)
+        private List<int> GetKeywordIdList(List<int> searchIdList)
         {
-            var keywordIDList = new List<int>();
+            var keywordIdList = new List<int>();
 
             string sqlString =
-                $"SELECT {SearchAttribute.KeywordID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(searchIDList)})";
+                $"SELECT {SearchAttribute.KeywordId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(searchIdList)})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    keywordIDList.Add(rdr.GetInt32(0));
+                    keywordIdList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return keywordIDList;
+            return keywordIdList;
         }
 
-        public SearchInfo GetSearchInfo(int SearchID)
+        public SearchInfo GetSearchInfo(int searchId)
         {
             SearchInfo searchInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {SearchID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {searchId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -124,20 +122,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return searchInfo;
         }
 
-        public List<SearchInfo> GetSearchInfoListByKeywordID(int publishmentSystemID, int keywordID)
+        public List<SearchInfo> GetSearchInfoListByKeywordId(int publishmentSystemId, int keywordId)
         {
             var searchInfoList = new List<SearchInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {SearchAttribute.PublishmentSystemID} = {publishmentSystemID} AND {SearchAttribute.IsDisabled} <> '{true}'";
-            if (keywordID > 0)
+            string sqlWhere =
+                $"WHERE {SearchAttribute.PublishmentSystemId} = {publishmentSystemId} AND {SearchAttribute.IsDisabled} <> '{true}'";
+            if (keywordId > 0)
             {
-                SQL_WHERE += $" AND {SearchAttribute.KeywordID} = {keywordID}";
+                sqlWhere += $" AND {SearchAttribute.KeywordId} = {keywordId}";
             }
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -150,14 +148,14 @@ namespace SiteServer.CMS.WeiXin.Provider
             return searchInfoList;
         }
 
-        public string GetTitle(int searchID)
+        public string GetTitle(int searchId)
         {
             var title = string.Empty;
 
-            string SQL_WHERE = $"WHERE ID = {searchID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SearchAttribute.Title, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {searchId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SearchAttribute.Title, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -169,29 +167,29 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
 
-        public string GetSelectString(int publishmentSystemID)
+        public string GetSelectString(int publishmentSystemId)
         {
-            string whereString = $"WHERE {SearchAttribute.PublishmentSystemID} = {publishmentSystemID}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {SearchAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public int GetFirstIDByKeywordID(int publishmentSystemID, int keywordID)
+        public int GetFirstIdByKeywordId(int publishmentSystemId, int keywordId)
         {
             string sqlString =
-                $"SELECT TOP 1 ID FROM {TABLE_NAME} WHERE {SearchAttribute.PublishmentSystemID} = {publishmentSystemID} AND {SearchAttribute.IsDisabled} <> '{true}' AND {SearchAttribute.KeywordID} = {keywordID}";
+                $"SELECT TOP 1 ID FROM {TableName} WHERE {SearchAttribute.PublishmentSystemId} = {publishmentSystemId} AND {SearchAttribute.IsDisabled} <> '{true}' AND {SearchAttribute.KeywordId} = {keywordId}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public List<SearchInfo> GetSearchInfoList(int publishmentSystemID)
+        public List<SearchInfo> GetSearchInfoList(int publishmentSystemId)
         {
             var searchInfoList = new List<SearchInfo>();
 
-            string SQL_WHERE = $"WHERE {SearchAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            string sqlWhere = $"WHERE {SearchAttribute.PublishmentSystemId} = {publishmentSystemId}";
             
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

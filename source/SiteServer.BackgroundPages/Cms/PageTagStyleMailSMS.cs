@@ -97,7 +97,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (string.IsNullOrEmpty(tbSMSContent.Text))
                 {
-                    tbSMSContent.Text = MessageManager.GetSMSContent(styleInfoList);
+                    tbSMSContent.Text = MessageManager.GetSmsContent(styleInfoList);
                 }
 			}
 		}

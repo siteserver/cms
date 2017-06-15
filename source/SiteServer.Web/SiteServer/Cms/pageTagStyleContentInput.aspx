@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="内容提交标签为&amp;lt;stl:contentInput styleName=&quot;样式名称&quot; channelIndex channelName upLevel topLevel&gt;&amp;lt;/stl:contentInput&gt;，用于实现前台添加内容（投稿）功能。" runat="server" />
 
   <asp:dataGrid id="dgContents" showHeader="true" AutoGenerateColumns="false" DataKeyField="StyleID" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">

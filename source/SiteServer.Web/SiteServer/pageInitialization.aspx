@@ -38,7 +38,7 @@
 
 <body>
     <form class="form-inline" runat="server">
-        <asp:Literal ID="ltlBreadCrumb" runat="server" />
+        <asp:Literal ID="LtlBreadCrumb" runat="server" />
         <bairong:Alerts runat="server" />
 
         <div class="well" style="margin-top: 20px;">

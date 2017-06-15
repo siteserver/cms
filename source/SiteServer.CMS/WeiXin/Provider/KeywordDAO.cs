@@ -11,54 +11,54 @@ using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class KeywordDAO : DataProviderBase
+    public class KeywordDao : DataProviderBase
     {
 
-        private const string SQL_UPDATE = "UPDATE wx_Keyword SET PublishmentSystemID = @PublishmentSystemID, Keywords = @Keywords, IsDisabled = @IsDisabled, KeywordType = @KeywordType, MatchType = @MatchType, Reply = @Reply, AddDate = @AddDate, Taxis = @Taxis WHERE KeywordID = @KeywordID";
+        private const string SqlUpdate = "UPDATE wx_Keyword SET PublishmentSystemID = @PublishmentSystemID, Keywords = @Keywords, IsDisabled = @IsDisabled, KeywordType = @KeywordType, MatchType = @MatchType, Reply = @Reply, AddDate = @AddDate, Taxis = @Taxis WHERE KeywordID = @KeywordID";
 
-        private const string SQL_UPDATE_KEYWRODS_AND_ISDISABLED = "UPDATE wx_Keyword SET Keywords = @Keywords, IsDisabled = @IsDisabled WHERE KeywordID = @KeywordID";
+        private const string SqlUpdateKeywrodsAndIsdisabled = "UPDATE wx_Keyword SET Keywords = @Keywords, IsDisabled = @IsDisabled WHERE KeywordID = @KeywordID";
 
-        private const string SQL_UPDATE_KEYWRODS = "UPDATE wx_Keyword SET Keywords = @Keywords, KeywordType = @KeywordType WHERE KeywordID = @KeywordID";
+        private const string SqlUpdateKeywrods = "UPDATE wx_Keyword SET Keywords = @Keywords, KeywordType = @KeywordType WHERE KeywordID = @KeywordID";
 
-        private const string SQL_DELETE = "DELETE FROM wx_Keyword WHERE KeywordID = @KeywordID";
+        private const string SqlDelete = "DELETE FROM wx_Keyword WHERE KeywordID = @KeywordID";
 
-        private const string SQL_SELECT = "SELECT KeywordID, PublishmentSystemID, Keywords, IsDisabled, KeywordType, MatchType, Reply, AddDate, Taxis FROM wx_Keyword WHERE KeywordID = @KeywordID";
+        private const string SqlSelect = "SELECT KeywordID, PublishmentSystemID, Keywords, IsDisabled, KeywordType, MatchType, Reply, AddDate, Taxis FROM wx_Keyword WHERE KeywordID = @KeywordID";
 
-        private const string SQL_SELECT_AVALIABLE = "SELECT TOP 1 KeywordID, PublishmentSystemID, Keywords, IsDisabled, KeywordType, MatchType, Reply, AddDate, Taxis FROM wx_Keyword WHERE PublishmentSystemID = @PublishmentSystemID AND IsDisabled = @IsDisabled AND KeywordType = @KeywordType";
+        private const string SqlSelectAvaliable = "SELECT TOP 1 KeywordID, PublishmentSystemID, Keywords, IsDisabled, KeywordType, MatchType, Reply, AddDate, Taxis FROM wx_Keyword WHERE PublishmentSystemID = @PublishmentSystemID AND IsDisabled = @IsDisabled AND KeywordType = @KeywordType";
 
-        private const string SQL_SELECT_KEYWRODS = "SELECT Keywords FROM wx_Keyword WHERE KeywordID = @KeywordID";
+        private const string SqlSelectKeywrods = "SELECT Keywords FROM wx_Keyword WHERE KeywordID = @KeywordID";
 
-        private const string SQL_SELECT_ALL = "SELECT KeywordID, PublishmentSystemID, Keywords, IsDisabled, KeywordType, MatchType, Reply, AddDate, Taxis FROM wx_Keyword WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY Taxis DESC";
+        private const string SqlSelectAll = "SELECT KeywordID, PublishmentSystemID, Keywords, IsDisabled, KeywordType, MatchType, Reply, AddDate, Taxis FROM wx_Keyword WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY Taxis DESC";
 
-        private const string SQL_SELECT_ALL_BY_TYPE = "SELECT KeywordID, PublishmentSystemID, Keywords, IsDisabled, KeywordType, MatchType, Reply, AddDate, Taxis FROM wx_Keyword WHERE PublishmentSystemID = @PublishmentSystemID AND KeywordType = @KeywordType ORDER BY Taxis DESC";
+        private const string SqlSelectAllByType = "SELECT KeywordID, PublishmentSystemID, Keywords, IsDisabled, KeywordType, MatchType, Reply, AddDate, Taxis FROM wx_Keyword WHERE PublishmentSystemID = @PublishmentSystemID AND KeywordType = @KeywordType ORDER BY Taxis DESC";
 
-        private const string PARM_KEYWORD_ID = "@KeywordID";
-        private const string PARM_PUBLISHMENT_SYSTEM_ID = "@PublishmentSystemID";
-        private const string PARM_KEYWORDS = "@Keywords";
-        private const string PARM_IS_DISABLED = "@IsDisabled";
-        private const string PARM_KEYWORD_TYPE = "@KeywordType";
-        private const string PARM_MATCH_TYPE = "@MatchType";
-        private const string PARM_REPLY = "@Reply";
-        private const string PARM_ADD_DATE = "@AddDate";
-        private const string PARM_TAXIS = "@Taxis";
+        private const string ParmKeywordId = "@KeywordID";
+        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
+        private const string ParmKeywords = "@Keywords";
+        private const string ParmIsDisabled = "@IsDisabled";
+        private const string ParmKeywordType = "@KeywordType";
+        private const string ParmMatchType = "@MatchType";
+        private const string ParmReply = "@Reply";
+        private const string ParmAddDate = "@AddDate";
+        private const string ParmTaxis = "@Taxis";
 
         public int Insert(KeywordInfo keywordInfo)
         {
-            var keywordID = 0;
+            var keywordId = 0;
 
             var sqlString = "INSERT INTO wx_Keyword (PublishmentSystemID, Keywords, IsDisabled, KeywordType, MatchType, Reply, AddDate, Taxis) VALUES (@PublishmentSystemID, @Keywords, @IsDisabled, @KeywordType, @MatchType, @Reply, @AddDate, @Taxis)";
 
-            var taxis = GetMaxTaxis(keywordInfo.PublishmentSystemID, keywordInfo.KeywordType) + 1;
+            var taxis = GetMaxTaxis(keywordInfo.PublishmentSystemId, keywordInfo.KeywordType) + 1;
             var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, keywordInfo.PublishmentSystemID),
-                GetParameter(PARM_KEYWORDS, EDataType.NVarChar, 255, keywordInfo.Keywords),
-                GetParameter(PARM_IS_DISABLED, EDataType.VarChar, 18, keywordInfo.IsDisabled.ToString()),
-                GetParameter(PARM_KEYWORD_TYPE, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordInfo.KeywordType)),
-                GetParameter(PARM_MATCH_TYPE, EDataType.VarChar, 50, EMatchTypeUtils.GetValue(keywordInfo.MatchType)),
-                GetParameter(PARM_REPLY, EDataType.NText, keywordInfo.Reply),
-                GetParameter(PARM_ADD_DATE, EDataType.DateTime, keywordInfo.AddDate),
-                GetParameter(PARM_TAXIS, EDataType.Integer, taxis)
+                GetParameter(ParmPublishmentSystemId, EDataType.Integer, keywordInfo.PublishmentSystemId),
+                GetParameter(ParmKeywords, EDataType.NVarChar, 255, keywordInfo.Keywords),
+                GetParameter(ParmIsDisabled, EDataType.VarChar, 18, keywordInfo.IsDisabled.ToString()),
+                GetParameter(ParmKeywordType, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordInfo.KeywordType)),
+                GetParameter(ParmMatchType, EDataType.VarChar, 50, EMatchTypeUtils.GetValue(keywordInfo.MatchType)),
+                GetParameter(ParmReply, EDataType.NText, keywordInfo.Reply),
+                GetParameter(ParmAddDate, EDataType.DateTime, keywordInfo.AddDate),
+                GetParameter(ParmTaxis, EDataType.Integer, taxis)
 			};
 
             using (var conn = GetConnection())
@@ -68,8 +68,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, sqlString, parms);
-                        keywordID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, "wx_Keyword");
+                        keywordId = ExecuteNonQueryAndReturnId(trans, sqlString, parms);
                         trans.Commit();
                     }
                     catch
@@ -85,126 +84,126 @@ namespace SiteServer.CMS.WeiXin.Provider
                 var keyword = str.Trim();
                 if (!string.IsNullOrEmpty(keyword))
                 {
-                    DataProviderWX.KeywordMatchDAO.Insert(new KeywordMatchInfo(0, keywordInfo.PublishmentSystemID, keyword, keywordID, keywordInfo.IsDisabled, keywordInfo.KeywordType, keywordInfo.MatchType));
+                    DataProviderWx.KeywordMatchDao.Insert(new KeywordMatchInfo(0, keywordInfo.PublishmentSystemId, keyword, keywordId, keywordInfo.IsDisabled, keywordInfo.KeywordType, keywordInfo.MatchType));
                 }
             }
 
-            return keywordID;
+            return keywordId;
         }
 
         public void Update(KeywordInfo keywordInfo)
         {
-            if (keywordInfo != null && keywordInfo.KeywordID > 0)
+            if (keywordInfo != null && keywordInfo.KeywordId > 0)
             {
                 var parms = new IDataParameter[]
 			    {
-                    GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, keywordInfo.PublishmentSystemID),
-                    GetParameter(PARM_KEYWORDS, EDataType.NVarChar, 255, keywordInfo.Keywords),
-                    GetParameter(PARM_IS_DISABLED, EDataType.VarChar, 18, keywordInfo.IsDisabled.ToString()),
-                    GetParameter(PARM_KEYWORD_TYPE, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordInfo.KeywordType)),
-                    GetParameter(PARM_MATCH_TYPE, EDataType.VarChar, 50, EMatchTypeUtils.GetValue(keywordInfo.MatchType)),
-                    GetParameter(PARM_REPLY, EDataType.NText, keywordInfo.Reply),
-                    GetParameter(PARM_ADD_DATE, EDataType.DateTime, keywordInfo.AddDate),
-                    GetParameter(PARM_TAXIS, EDataType.Integer, keywordInfo.Taxis),
-                    GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordInfo.KeywordID)
+                    GetParameter(ParmPublishmentSystemId, EDataType.Integer, keywordInfo.PublishmentSystemId),
+                    GetParameter(ParmKeywords, EDataType.NVarChar, 255, keywordInfo.Keywords),
+                    GetParameter(ParmIsDisabled, EDataType.VarChar, 18, keywordInfo.IsDisabled.ToString()),
+                    GetParameter(ParmKeywordType, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordInfo.KeywordType)),
+                    GetParameter(ParmMatchType, EDataType.VarChar, 50, EMatchTypeUtils.GetValue(keywordInfo.MatchType)),
+                    GetParameter(ParmReply, EDataType.NText, keywordInfo.Reply),
+                    GetParameter(ParmAddDate, EDataType.DateTime, keywordInfo.AddDate),
+                    GetParameter(ParmTaxis, EDataType.Integer, keywordInfo.Taxis),
+                    GetParameter(ParmKeywordId, EDataType.Integer, keywordInfo.KeywordId)
 			    };
 
-                ExecuteNonQuery(SQL_UPDATE, parms);
+                ExecuteNonQuery(SqlUpdate, parms);
 
-                DataProviderWX.KeywordMatchDAO.DeleteByKeywordID(keywordInfo.KeywordID);
+                DataProviderWx.KeywordMatchDao.DeleteByKeywordId(keywordInfo.KeywordId);
 
                 foreach (var str in TranslateUtils.StringCollectionToStringList(keywordInfo.Keywords, ' '))
                 {
                     var keyword = str.Trim();
                     if (!string.IsNullOrEmpty(keyword))
                     {
-                        DataProviderWX.KeywordMatchDAO.Insert(new KeywordMatchInfo(0, keywordInfo.PublishmentSystemID, keyword, keywordInfo.KeywordID, keywordInfo.IsDisabled, keywordInfo.KeywordType, keywordInfo.MatchType));
+                        DataProviderWx.KeywordMatchDao.Insert(new KeywordMatchInfo(0, keywordInfo.PublishmentSystemId, keyword, keywordInfo.KeywordId, keywordInfo.IsDisabled, keywordInfo.KeywordType, keywordInfo.MatchType));
                     }
                 }
             }
         }
 
-        public void Update(int publishmentSystemID, int keywordID, EKeywordType keywordType, EMatchType matchType, string keywords, bool isDisabled)
+        public void Update(int publishmentSystemId, int keywordId, EKeywordType keywordType, EMatchType matchType, string keywords, bool isDisabled)
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_KEYWORDS, EDataType.NVarChar, 255, keywords),
-                GetParameter(PARM_IS_DISABLED, EDataType.VarChar, 18, isDisabled.ToString()),
-                GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
+                GetParameter(ParmKeywords, EDataType.NVarChar, 255, keywords),
+                GetParameter(ParmIsDisabled, EDataType.VarChar, 18, isDisabled.ToString()),
+                GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
 			};
 
-            ExecuteNonQuery(SQL_UPDATE_KEYWRODS_AND_ISDISABLED, parms);
+            ExecuteNonQuery(SqlUpdateKeywrodsAndIsdisabled, parms);
 
-            DataProviderWX.KeywordMatchDAO.DeleteByKeywordID(keywordID);
+            DataProviderWx.KeywordMatchDao.DeleteByKeywordId(keywordId);
 
             foreach (var str in TranslateUtils.StringCollectionToStringList(keywords, ' '))
             {
                 var keyword = str.Trim();
                 if (!string.IsNullOrEmpty(keyword))
                 {
-                    DataProviderWX.KeywordMatchDAO.Insert(new KeywordMatchInfo(0, publishmentSystemID, keyword, keywordID, isDisabled, keywordType, matchType));
+                    DataProviderWx.KeywordMatchDao.Insert(new KeywordMatchInfo(0, publishmentSystemId, keyword, keywordId, isDisabled, keywordType, matchType));
                 }
             }
         }
 
-        public void Update(int publishmentSystemID, int keywordID, EKeywordType keywordType, EMatchType matchType, string keywords)
+        public void Update(int publishmentSystemId, int keywordId, EKeywordType keywordType, EMatchType matchType, string keywords)
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_KEYWORDS, EDataType.NVarChar, 255, keywords),
-                GetParameter(PARM_KEYWORD_TYPE, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordType)),
-                GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
+                GetParameter(ParmKeywords, EDataType.NVarChar, 255, keywords),
+                GetParameter(ParmKeywordType, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordType)),
+                GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
 			};
 
-            ExecuteNonQuery(SQL_UPDATE_KEYWRODS, parms);
+            ExecuteNonQuery(SqlUpdateKeywrods, parms);
 
-            DataProviderWX.KeywordMatchDAO.DeleteByKeywordID(keywordID);
+            DataProviderWx.KeywordMatchDao.DeleteByKeywordId(keywordId);
 
             foreach (var str in TranslateUtils.StringCollectionToStringList(keywords, ' '))
             {
                 var keyword = str.Trim();
                 if (!string.IsNullOrEmpty(keyword))
                 {
-                    DataProviderWX.KeywordMatchDAO.Insert(new KeywordMatchInfo(0, publishmentSystemID, keyword, keywordID, false, keywordType, matchType));
+                    DataProviderWx.KeywordMatchDao.Insert(new KeywordMatchInfo(0, publishmentSystemId, keyword, keywordId, false, keywordType, matchType));
                 }
             }
         }
 
-        public void Delete(int keywordID)
+        public void Delete(int keywordId)
         {
-            if (keywordID > 0)
+            if (keywordId > 0)
             {
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
+				    GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
 			    };
 
-                ExecuteNonQuery(SQL_DELETE, parms);
+                ExecuteNonQuery(SqlDelete, parms);
             }
         }
 
-        public void Delete(List<int> keywordIDList)
+        public void Delete(List<int> keywordIdList)
         {
-            if (keywordIDList != null && keywordIDList.Count > 0)
+            if (keywordIdList != null && keywordIdList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM wx_Keyword WHERE KeywordID IN ({TranslateUtils.ToSqlInStringWithoutQuote(keywordIDList)})";
+                    $"DELETE FROM wx_Keyword WHERE KeywordID IN ({TranslateUtils.ToSqlInStringWithoutQuote(keywordIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public string GetKeywords(int keywordID)
+        public string GetKeywords(int keywordId)
         {
             var keywords = string.Empty;
 
-            if (keywordID > 0)
+            if (keywordId > 0)
             {
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
+				    GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
 			    };
 
-                using (var rdr = ExecuteReader(SQL_SELECT_KEYWRODS, parms))
+                using (var rdr = ExecuteReader(SqlSelectKeywrods, parms))
                 {
                     if (rdr.Read())
                     {
@@ -217,18 +216,18 @@ namespace SiteServer.CMS.WeiXin.Provider
             return keywords;
         }
 
-        public KeywordInfo GetKeywordInfo(int keywordID)
+        public KeywordInfo GetKeywordInfo(int keywordId)
         {
             KeywordInfo keywordInfo = null;
 
-            if (keywordID > 0)
+            if (keywordId > 0)
             {
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
+				    GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
 			    };
 
-                using (var rdr = ExecuteReader(SQL_SELECT, parms))
+                using (var rdr = ExecuteReader(SqlSelect, parms))
                 {
                     if (rdr.Read())
                     {
@@ -240,43 +239,43 @@ namespace SiteServer.CMS.WeiXin.Provider
             else
             {
                 keywordInfo = new KeywordInfo();
-                keywordInfo.KeywordID = 0;
+                keywordInfo.KeywordId = 0;
                 keywordInfo.Keywords = "";
             }
 
             if (keywordInfo == null)
             {
                 keywordInfo = new KeywordInfo();
-                keywordInfo.KeywordID = 0;
+                keywordInfo.KeywordId = 0;
                 keywordInfo.Keywords = "";
             }
             return keywordInfo;
         }
 
-        public int GetKeywordID(int publishmentSystemID, bool isExists, string keywords, EKeywordType keywordType, int existKeywordID)
+        public int GetKeywordId(int publishmentSystemId, bool isExists, string keywords, EKeywordType keywordType, int existKeywordId)
         {
-            var keywordID = existKeywordID;
+            var keywordId = existKeywordId;
 
             if (isExists)
             {
                 if (!string.IsNullOrEmpty(keywords))
                 {
-                    if (existKeywordID > 0)
+                    if (existKeywordId > 0)
                     {
-                        DataProviderWX.KeywordDAO.Update(publishmentSystemID, existKeywordID, keywordType, EMatchType.Exact, keywords);
+                        DataProviderWx.KeywordDao.Update(publishmentSystemId, existKeywordId, keywordType, EMatchType.Exact, keywords);
                     }
                     else
                     {
-                        var keywordInfo = new KeywordInfo(0, publishmentSystemID, keywords, false, keywordType, EMatchType.Exact, string.Empty, DateTime.Now, 0);
-                        keywordID = DataProviderWX.KeywordDAO.Insert(keywordInfo);
+                        var keywordInfo = new KeywordInfo(0, publishmentSystemId, keywords, false, keywordType, EMatchType.Exact, string.Empty, DateTime.Now, 0);
+                        keywordId = DataProviderWx.KeywordDao.Insert(keywordInfo);
                     }
                 }
                 else
                 {
-                    if (existKeywordID > 0)
+                    if (existKeywordId > 0)
                     {
-                        DataProviderWX.KeywordDAO.Delete(existKeywordID);
-                        keywordID = 0;
+                        DataProviderWx.KeywordDao.Delete(existKeywordId);
+                        keywordId = 0;
                     }
                 }
             }
@@ -284,26 +283,26 @@ namespace SiteServer.CMS.WeiXin.Provider
             {
                 if (!string.IsNullOrEmpty(keywords))
                 {
-                    var keywordInfo = new KeywordInfo(0, publishmentSystemID, keywords, false, keywordType, EMatchType.Exact, string.Empty, DateTime.Now, 0);
-                    keywordID = DataProviderWX.KeywordDAO.Insert(keywordInfo);
+                    var keywordInfo = new KeywordInfo(0, publishmentSystemId, keywords, false, keywordType, EMatchType.Exact, string.Empty, DateTime.Now, 0);
+                    keywordId = DataProviderWx.KeywordDao.Insert(keywordInfo);
                 }
             }
 
-            return keywordID;
+            return keywordId;
         }
 
-        public KeywordInfo GetAvaliableKeywordInfo(int publishmentSystemID, EKeywordType keywordType)
+        public KeywordInfo GetAvaliableKeywordInfo(int publishmentSystemId, EKeywordType keywordType)
         {
             KeywordInfo keywordInfo = null;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, publishmentSystemID),
-                GetParameter(PARM_IS_DISABLED, EDataType.VarChar, 18, false.ToString()),
-                GetParameter(PARM_KEYWORD_TYPE, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordType))
+				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
+                GetParameter(ParmIsDisabled, EDataType.VarChar, 18, false.ToString()),
+                GetParameter(ParmKeywordType, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordType))
 			};
 
-            using (var rdr = ExecuteReader(SQL_SELECT_AVALIABLE, parms))
+            using (var rdr = ExecuteReader(SqlSelectAvaliable, parms))
             {
                 if (rdr.Read())
                 {
@@ -315,35 +314,35 @@ namespace SiteServer.CMS.WeiXin.Provider
             return keywordInfo;
         }
 
-        public IEnumerable GetDataSource(int publishmentSystemID, EKeywordType keywordType)
+        public IEnumerable GetDataSource(int publishmentSystemId, EKeywordType keywordType)
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, publishmentSystemID),
-				GetParameter(PARM_KEYWORD_TYPE, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordType))
+                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
+				GetParameter(ParmKeywordType, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordType))
 			};
 
-            var enumerable = (IEnumerable)ExecuteReader(SQL_SELECT_ALL_BY_TYPE, parms);
+            var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllByType, parms);
             return enumerable;
         }
 
-        public int GetCount(int publishmentSystemID, EKeywordType keywordType)
+        public int GetCount(int publishmentSystemId, EKeywordType keywordType)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM wx_Keyword WHERE PublishmentSystemID = {publishmentSystemID} AND KeywordType = '{EKeywordTypeUtils.GetValue(keywordType)}'";
+                $"SELECT COUNT(*) FROM wx_Keyword WHERE PublishmentSystemID = {publishmentSystemId} AND KeywordType = '{EKeywordTypeUtils.GetValue(keywordType)}'";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public List<KeywordInfo> GetKeywordInfoList(int publishmentSystemID)
+        public List<KeywordInfo> GetKeywordInfoList(int publishmentSystemId)
         {
             var list = new List<KeywordInfo>();
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, publishmentSystemID)
+                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
 			};
 
-            using (var rdr = ExecuteReader(SQL_SELECT_ALL, parms))
+            using (var rdr = ExecuteReader(SqlSelectAll, parms))
             {
                 while (rdr.Read())
                 {
@@ -356,17 +355,17 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public List<KeywordInfo> GetKeywordInfoList(int publishmentSystemID, EKeywordType keywordType)
+        public List<KeywordInfo> GetKeywordInfoList(int publishmentSystemId, EKeywordType keywordType)
         {
             var list = new List<KeywordInfo>();
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, publishmentSystemID),
-				GetParameter(PARM_KEYWORD_TYPE, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordType))
+                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
+				GetParameter(ParmKeywordType, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordType))
 			};
 
-            using (var rdr = ExecuteReader(SQL_SELECT_ALL_BY_TYPE, parms))
+            using (var rdr = ExecuteReader(SqlSelectAllByType, parms))
             {
                 while (rdr.Read())
                 {
@@ -379,72 +378,72 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public bool UpdateTaxisToUp(int publishmentSystemID, EKeywordType keywordType, int keywordID)
+        public bool UpdateTaxisToUp(int publishmentSystemId, EKeywordType keywordType, int keywordId)
         {
             string sqlString =
-                $"SELECT TOP 1 KeywordID, Taxis FROM wx_Keyword WHERE (Taxis > (SELECT Taxis FROM wx_Keyword WHERE KeywordID = {keywordID})) AND PublishmentSystemID = {publishmentSystemID} AND KeywordType = '{EKeywordTypeUtils.GetValue(keywordType)}' ORDER BY Taxis";
-            var higherID = 0;
+                $"SELECT TOP 1 KeywordID, Taxis FROM wx_Keyword WHERE (Taxis > (SELECT Taxis FROM wx_Keyword WHERE KeywordID = {keywordId})) AND PublishmentSystemID = {publishmentSystemId} AND KeywordType = '{EKeywordTypeUtils.GetValue(keywordType)}' ORDER BY Taxis";
+            var higherId = 0;
             var higherTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    higherID = rdr.GetInt32(0);
+                    higherId = rdr.GetInt32(0);
                     higherTaxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }
 
-            var selectedTaxis = GetTaxis(keywordID);
+            var selectedTaxis = GetTaxis(keywordId);
 
-            if (higherID > 0)
+            if (higherId > 0)
             {
-                SetTaxis(keywordID, higherTaxis);
-                SetTaxis(higherID, selectedTaxis);
+                SetTaxis(keywordId, higherTaxis);
+                SetTaxis(higherId, selectedTaxis);
                 return true;
             }
             return false;
         }
 
-        public bool UpdateTaxisToDown(int publishmentSystemID, EKeywordType keywordType, int keywordID)
+        public bool UpdateTaxisToDown(int publishmentSystemId, EKeywordType keywordType, int keywordId)
         {
             string sqlString =
-                $"SELECT TOP 1 KeywordID, Taxis FROM wx_Keyword WHERE (Taxis < (SELECT Taxis FROM wx_Keyword WHERE KeywordID = {keywordID})) AND PublishmentSystemID = {publishmentSystemID} AND KeywordType = '{EKeywordTypeUtils.GetValue(keywordType)}' ORDER BY Taxis DESC";
-            var lowerID = 0;
+                $"SELECT TOP 1 KeywordID, Taxis FROM wx_Keyword WHERE (Taxis < (SELECT Taxis FROM wx_Keyword WHERE KeywordID = {keywordId})) AND PublishmentSystemID = {publishmentSystemId} AND KeywordType = '{EKeywordTypeUtils.GetValue(keywordType)}' ORDER BY Taxis DESC";
+            var lowerId = 0;
             var lowerTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    lowerID = rdr.GetInt32(0);
+                    lowerId = rdr.GetInt32(0);
                     lowerTaxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }
 
-            var selectedTaxis = GetTaxis(keywordID);
+            var selectedTaxis = GetTaxis(keywordId);
 
-            if (lowerID > 0)
+            if (lowerId > 0)
             {
-                SetTaxis(keywordID, lowerTaxis);
-                SetTaxis(lowerID, selectedTaxis);
+                SetTaxis(keywordId, lowerTaxis);
+                SetTaxis(lowerId, selectedTaxis);
                 return true;
             }
             return false;
         }
 
-        private int GetMaxTaxis(int publishmentSystemID, EKeywordType keywordType)
+        private int GetMaxTaxis(int publishmentSystemId, EKeywordType keywordType)
         {
             string sqlString =
-                $"SELECT MAX(Taxis) FROM wx_Keyword WHERE PublishmentSystemID = {publishmentSystemID} AND KeywordType = '{EKeywordTypeUtils.GetValue(keywordType)}'";
+                $"SELECT MAX(Taxis) FROM wx_Keyword WHERE PublishmentSystemID = {publishmentSystemId} AND KeywordType = '{EKeywordTypeUtils.GetValue(keywordType)}'";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private int GetTaxis(int keywordID)
+        private int GetTaxis(int keywordId)
         {
-            string sqlString = $"SELECT Taxis FROM wx_Keyword WHERE KeywordID = {keywordID}";
+            string sqlString = $"SELECT Taxis FROM wx_Keyword WHERE KeywordID = {keywordId}";
             var taxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
@@ -459,30 +458,30 @@ namespace SiteServer.CMS.WeiXin.Provider
             return taxis;
         }
 
-        private void SetTaxis(int keywordID, int taxis)
+        private void SetTaxis(int keywordId, int taxis)
         {
-            string sqlString = $"UPDATE wx_Keyword SET Taxis = {taxis} WHERE KeywordID = {keywordID}";
+            string sqlString = $"UPDATE wx_Keyword SET Taxis = {taxis} WHERE KeywordID = {keywordId}";
             ExecuteNonQuery(sqlString);
         }
 
 
-        public int GetKeywordsIDbyName(int publishmentSystemID, string keywords)
+        public int GetKeywordsIDbyName(int publishmentSystemId, string keywords)
         {
             string sqlString =
-                $"SELECT KeywordID FROM wx_Keyword WHERE Keywords = '{keywords}' AND PublishmentSystemID = {publishmentSystemID}";
-            var keywordID = 0;
+                $"SELECT KeywordID FROM wx_Keyword WHERE Keywords = '{keywords}' AND PublishmentSystemID = {publishmentSystemId}";
+            var keywordId = 0;
             if (!string.IsNullOrEmpty(keywords))
             {
                 using (var rdr = ExecuteReader(sqlString))
                 {
                     if (rdr.Read())
                     {
-                        keywordID = Convert.ToInt32(rdr[0]);
+                        keywordId = Convert.ToInt32(rdr[0]);
                     }
                     rdr.Close();
                 }
             }
-            return keywordID;
+            return keywordId;
         }
     }
 }

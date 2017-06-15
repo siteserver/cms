@@ -5,11 +5,11 @@ namespace BaiRong.Core.Model.Enumerations
 {
 	public enum EScopeType
 	{
-		Self,					//±¾¼¶À¸Ä¿
-		Children,				//×ÓÀ¸Ä¿
-		SelfAndChildren,		//±¾¼¶À¸Ä¿¼°×ÓÀ¸Ä¿
-		Descendant,				//ËùÓĞ×ÓÀ¸Ä¿
-		All		                //È«²¿
+		Self,					//æœ¬çº§æ ç›®
+		Children,				//å­æ ç›®
+		SelfAndChildren,		//æœ¬çº§æ ç›®åŠå­æ ç›®
+		Descendant,				//æ‰€æœ‰å­æ ç›®
+		All		                //å…¨éƒ¨
 	}
 
 	public class EScopeTypeUtils
@@ -46,23 +46,23 @@ namespace BaiRong.Core.Model.Enumerations
 		{
 			if (type == EScopeType.Children)
 			{
-				return "×ÓÀ¸Ä¿";
+				return "å­æ ç›®";
 			}
 			else if (type == EScopeType.Descendant)
 			{
-				return "ËùÓĞ×ÓÀ¸Ä¿";
+				return "æ‰€æœ‰å­æ ç›®";
 			}
 			else if (type == EScopeType.Self)
 			{
-				return "±¾¼¶À¸Ä¿";
+				return "æœ¬çº§æ ç›®";
 			}
 			else if (type == EScopeType.SelfAndChildren)
 			{
-				return "±¾¼¶À¸Ä¿¼°×ÓÀ¸Ä¿";
+				return "æœ¬çº§æ ç›®åŠå­æ ç›®";
 			}
 			else if (type == EScopeType.All)
 			{
-				return "È«²¿";
+				return "å…¨éƒ¨";
 			}
 			else
 			{

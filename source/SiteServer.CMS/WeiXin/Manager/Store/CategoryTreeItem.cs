@@ -1,9 +1,8 @@
 ﻿using BaiRong.Core;
-using SiteServer.WeiXin.BackgroundPages;
-using SiteServer.WeiXin.Model;
 using System;
 using System.Collections.Specialized;
 using System.Text;
+using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.WeiXin.Core
 {
@@ -73,7 +72,7 @@ namespace SiteServer.WeiXin.Core
 
         private CategoryTreeItem()
         {
-            var treeDirectoryUrl = PageUtils.GetIconUrl("tree");
+            var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
             iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
             iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
             iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
@@ -94,11 +93,11 @@ namespace SiteServer.WeiXin.Core
             {
                 if (isOpen)
                 {
-                    htmlBuilder.AppendFormat(@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{0}"" src=""{1}"" />", categoryInfo.ID, iconMinusUrl);
+                    htmlBuilder.AppendFormat(@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{0}"" src=""{1}"" />", categoryInfo.Id, iconMinusUrl);
                 }
                 else
                 {
-                    htmlBuilder.AppendFormat(@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{0}"" src=""{1}"" />", categoryInfo.ID, iconPlusUrl);
+                    htmlBuilder.AppendFormat(@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{0}"" src=""{1}"" />", categoryInfo.Id, iconPlusUrl);
                 }
             }
             else
@@ -243,11 +242,11 @@ function displayChildren(img){
     }
 }
 ";
+            //BackgroundService.GetRedirectUrl(publishmentSystemID, BackgroundService.TYPE_GetLoadingCategorys)
             script += $@"
 function loadingChannels(tr, img, div, nodeID){{
-    var url = '{BackgroundService.GetRedirectUrl(publishmentSystemID, BackgroundService.TYPE_GetLoadingCategorys)}';
-    var pars = 'parentID=' + nodeID + '&loadingType={ECategoryLoadingTypeUtils.GetValue(loadingType)}&additional={RuntimeUtils
-                .EncryptStringByTranslate(TranslateUtils.NameValueCollectionToString(additional))}'; 
+    var url = '{string.Empty}';
+    var pars = 'parentID=' + nodeID + '&loadingType={ECategoryLoadingTypeUtils.GetValue(loadingType)}&additional={TranslateUtils.EncryptStringBySecretKey(TranslateUtils.NameValueCollectionToString(additional))}'; 
     jQuery.post(url, pars, function(data, textStatus)
     {{
         $($.parseHTML(data)).insertAfter($(tr));
@@ -281,7 +280,7 @@ function loadingChannelsOnLoad(paths){{
             script = script.Replace("{iconMinusUrl}", item.iconMinusUrl);
             script = script.Replace("{iconPlusUrl}", item.iconPlusUrl);
 
-            script = script.Replace("{iconLoadingUrl}", PageUtils.GetIconUrl("loading.gif"));
+            script = script.Replace("{iconLoadingUrl}", SiteServerAssets.GetIconUrl("loading.gif"));
 
             script = script.Replace("loadingChannels", "loadingChannels_Category");
             script = script.Replace("displayChildren", "displayChildren_Category");

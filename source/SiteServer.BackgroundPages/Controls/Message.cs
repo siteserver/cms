@@ -28,11 +28,11 @@ namespace SiteServer.BackgroundPages.Controls
 
 		protected override void Render(HtmlTextWriter writer)
 		{
-            if (isShowImmidiatary) // ÓĞÖ±½ÓÏÔÊ¾µÄÏûÏ¢
+            if (isShowImmidiatary) // æœ‰ç›´æ¥æ˜¾ç¤ºçš„æ¶ˆæ¯
             {
                 writer.Write(MessageUtils.GetMessageHtml(messageType, content, this));
             }
-            else // Ã»ÓĞÖ±½ÓÏÔÊ¾µÄÏûÏ¢ÔòÈ¥cookiesÖĞ¼ì²éÊÇ·ñÓĞÏûÏ¢ĞèÒªÏÔÊ¾
+            else // æ²¡æœ‰ç›´æ¥æ˜¾ç¤ºçš„æ¶ˆæ¯åˆ™å»cookiesä¸­æ£€æŸ¥æ˜¯å¦æœ‰æ¶ˆæ¯éœ€è¦æ˜¾ç¤º
             {
                 writer.Write(MessageUtils.GetMessageHtml(this));
             }

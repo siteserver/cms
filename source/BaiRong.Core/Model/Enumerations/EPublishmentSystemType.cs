@@ -5,32 +5,37 @@ namespace BaiRong.Core.Model.Enumerations
 {
 	public enum EPublishmentSystemType
 	{
-        CMS,
-        WCM
+        Cms,
+        Wcm,
+        WeiXin
     }
 
 	public class EPublishmentSystemTypeUtils
 	{
 		public static string GetValue(EPublishmentSystemType type)
 		{
-            if (type == EPublishmentSystemType.WCM)
+		    if (type == EPublishmentSystemType.Wcm)
 			{
-                return "WCM";
+                return "Wcm";
             }
-            else
-			{
-                return "CMS";
-            }
+		    if (type == EPublishmentSystemType.WeiXin)
+		    {
+		        return "WeiXin";
+		    }
+		    return "Cms";
 		}
 
         public static string GetText(EPublishmentSystemType type)
         {
-            return type == EPublishmentSystemType.WCM ? "电子政务站点" : "通用站点";
-        }
-
-        public static string GetAppName(EPublishmentSystemType type)
-        {
-            return type == EPublishmentSystemType.WCM ? "SiteServer WCM" : "SiteServer CMS";
+            if (type == EPublishmentSystemType.Wcm)
+            {
+                return "电子政务站点";
+            }
+            if (type == EPublishmentSystemType.WeiXin)
+            {
+                return "微信站点";
+            }
+            return "站点";
         }
 
         public static string GetIconHtml(EPublishmentSystemType type)
@@ -40,7 +45,22 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static string GetIconHtml(EPublishmentSystemType type, string iconClass)
         {
-            return string.Format(type == EPublishmentSystemType.WCM ? @"<i class=""icon-sitemap {0}""></i>" : @"<i class=""icon-globe {0}""></i>", iconClass);
+            string html = string.Empty;
+
+            if (type == EPublishmentSystemType.Cms)
+            {
+                html = @"<i class=""icon-globe {0}""></i>";
+            }
+            else if (type == EPublishmentSystemType.Wcm)
+            {
+                html = @"<i class=""icon-sitemap {0}""></i>";
+            }
+            else if (type == EPublishmentSystemType.WeiXin)
+            {
+                html = @"<i class=""icon-qrcode {0}""></i>";
+            }
+
+            return string.Format(html, iconClass);
         }
 
         public static string GetHtml(EPublishmentSystemType type)
@@ -50,15 +70,15 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static EPublishmentSystemType GetEnumType(string typeStr)
 		{
-			var retval = EPublishmentSystemType.CMS;
+			var retval = EPublishmentSystemType.Cms;
 
-            if (Equals(EPublishmentSystemType.CMS, typeStr))
-			{
-                retval = EPublishmentSystemType.CMS;
-            }
-            else if (Equals(EPublishmentSystemType.WCM, typeStr))
+            if (Equals(EPublishmentSystemType.Wcm, typeStr))
             {
-                retval = EPublishmentSystemType.WCM;
+                retval = EPublishmentSystemType.Wcm;
+            }
+            else if (Equals(EPublishmentSystemType.WeiXin, typeStr))
+            {
+                retval = EPublishmentSystemType.WeiXin;
             }
 
             return retval;
@@ -89,46 +109,40 @@ namespace BaiRong.Core.Model.Enumerations
             return item;
         }
 
-        public static bool IsNodeRelated(EPublishmentSystemType type)
-        {
-            if (type == EPublishmentSystemType.CMS || type == EPublishmentSystemType.WCM)
-            {
-                return true;
-            }
-            return false;
-        }
-
         public static void AddListItems(ListControl listControl)
         {
             if (listControl != null)
             {
-                listControl.Items.Add(GetListItem(EPublishmentSystemType.CMS, false));
-                listControl.Items.Add(GetListItem(EPublishmentSystemType.WCM, false));
+                listControl.Items.Add(GetListItem(EPublishmentSystemType.Cms, false));
+                listControl.Items.Add(GetListItem(EPublishmentSystemType.Wcm, false));
+                listControl.Items.Add(GetListItem(EPublishmentSystemType.WeiXin, false));
             }
         }
 
         public static List<EPublishmentSystemType> AllList()
         {
-            var list = new List<EPublishmentSystemType>();
-
-            list.Add(EPublishmentSystemType.CMS);
-            list.Add(EPublishmentSystemType.WCM);
+            var list = new List<EPublishmentSystemType>
+            {
+                EPublishmentSystemType.Cms,
+                EPublishmentSystemType.Wcm,
+                EPublishmentSystemType.WeiXin
+            };
 
             return list;
         }
 
-        public static string GetAppID(EPublishmentSystemType type)
+        public static string GetAppId(EPublishmentSystemType type)
         {
-            if (type == EPublishmentSystemType.CMS)
-            {
-                return AppManager.Cms.AppId;
-            }
-            else if (type == EPublishmentSystemType.WCM)
+            if (type == EPublishmentSystemType.Wcm)
             {
                 return AppManager.Wcm.AppId;
             }
+            else if (type == EPublishmentSystemType.WeiXin)
+            {
+                return AppManager.WeiXin.AppId;
+            }
 
-            return string.Empty;
+            return AppManager.Cms.AppId;
         }
 	}
 }

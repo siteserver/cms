@@ -78,8 +78,8 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var attributes = new NameValueCollection
             {
-                {"lotteryID", lotteryInfo.ID.ToString()},
-                {"publishmentSystemID", lotteryInfo.PublishmentSystemID.ToString()},
+                {"lotteryID", lotteryInfo.Id.ToString()},
+                {"publishmentSystemID", lotteryInfo.PublishmentSystemId.ToString()},
                 {"wxOpenID", wxOpenId}
             };
 
@@ -96,7 +96,7 @@ namespace SiteServer.CMS.WeiXin.Manager
             LotteryAwardInfo awardInfo = null;
             foreach (var lotteryAwardInfo in awardInfoList)
             {
-                if (lotteryAwardInfo.ID == awardId)
+                if (lotteryAwardInfo.Id == awardId)
                 {
                     awardInfo = lotteryAwardInfo;
                     break;
@@ -110,17 +110,17 @@ namespace SiteServer.CMS.WeiXin.Manager
             errorMessage = string.Empty;
 
             awardInfo = null;
-            winnerInfo = DataProviderWX.LotteryWinnerDAO.GetWinnerInfo(lotteryInfo.PublishmentSystemID, lotteryInfo.ID, cookieSN, wxOpenID, userName);
+            winnerInfo = DataProviderWx.LotteryWinnerDao.GetWinnerInfo(lotteryInfo.PublishmentSystemId, lotteryInfo.Id, cookieSN, wxOpenID, userName);
             if (winnerInfo != null)
             {
-                awardInfo = GetAwardInfo(awardInfoList, winnerInfo.AwardID);
+                awardInfo = GetAwardInfo(awardInfoList, winnerInfo.AwardId);
             }
             else
             {
                 var isMaxCount = false;
                 var isMaxDailyCount = false;
 
-                DataProviderWX.LotteryLogDAO.AddCount(lotteryInfo.PublishmentSystemID, lotteryInfo.ID, cookieSN, wxOpenID, userName, lotteryInfo.AwardMaxCount, lotteryInfo.AwardMaxDailyCount, out isMaxCount, out isMaxDailyCount);
+                DataProviderWx.LotteryLogDao.AddCount(lotteryInfo.PublishmentSystemId, lotteryInfo.Id, cookieSN, wxOpenID, userName, lotteryInfo.AwardMaxCount, lotteryInfo.AwardMaxDailyCount, out isMaxCount, out isMaxDailyCount);
 
                 if (isMaxCount)
                 {
@@ -139,7 +139,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                         var idWithProbabilityDictionary = new Dictionary<int, decimal>();
                         foreach (var lotteryAwardInfo in awardInfoList)
                         {
-                            idWithProbabilityDictionary.Add(lotteryAwardInfo.ID, lotteryAwardInfo.Probability);
+                            idWithProbabilityDictionary.Add(lotteryAwardInfo.Id, lotteryAwardInfo.Probability);
                         }
 
                         var awardID = WeiXinManager.Lottery(idWithProbabilityDictionary);
@@ -149,16 +149,16 @@ namespace SiteServer.CMS.WeiXin.Manager
 
                             if (lotteryAwardInfo != null && lotteryAwardInfo.TotalNum > 0)
                             {
-                                var wonNum = DataProviderWX.LotteryWinnerDAO.GetTotalNum(awardID);
+                                var wonNum = DataProviderWx.LotteryWinnerDao.GetTotalNum(awardID);
                                 if (lotteryAwardInfo.TotalNum > wonNum)
                                 {
                                     awardInfo = lotteryAwardInfo;
-                                    winnerInfo = new LotteryWinnerInfo { PublishmentSystemID = lotteryInfo.PublishmentSystemID, LotteryType = lotteryInfo.LotteryType, LotteryID = lotteryInfo.ID, AwardID = awardID, Status = EWinStatusUtils.GetValue(EWinStatus.Won), CookieSN = cookieSN, WXOpenID = wxOpenID, UserName = userName, AddDate = DateTime.Now };
-                                    winnerInfo.ID = DataProviderWX.LotteryWinnerDAO.Insert(winnerInfo);
+                                    winnerInfo = new LotteryWinnerInfo { PublishmentSystemId = lotteryInfo.PublishmentSystemId, LotteryType = lotteryInfo.LotteryType, LotteryId = lotteryInfo.Id, AwardId = awardID, Status = EWinStatusUtils.GetValue(EWinStatus.Won), CookieSn = cookieSN, WxOpenId = wxOpenID, UserName = userName, AddDate = DateTime.Now };
+                                    winnerInfo.Id = DataProviderWx.LotteryWinnerDao.Insert(winnerInfo);
 
-                                    DataProviderWX.LotteryAwardDAO.UpdateWonNum(awardID);
+                                    DataProviderWx.LotteryAwardDao.UpdateWonNum(awardID);
 
-                                    DataProviderWX.LotteryDAO.AddUserCount(winnerInfo.LotteryID);
+                                    DataProviderWx.LotteryDao.AddUserCount(winnerInfo.LotteryId);
                                 }
                             }
                         }
@@ -171,20 +171,20 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         public static void AddApplication(int winnerID, string realName, string mobile, string email, string address)
         {
-            var winnerInfo = DataProviderWX.LotteryWinnerDAO.GetWinnerInfo(winnerID);
+            var winnerInfo = DataProviderWx.LotteryWinnerDao.GetWinnerInfo(winnerID);
 
-            var oldCashSN = winnerInfo.CashSN;
+            var oldCashSN = winnerInfo.CashSn;
 
             winnerInfo.RealName = realName;
             winnerInfo.Mobile = mobile;
             winnerInfo.Email = email;
             winnerInfo.Address = address;
             winnerInfo.Status = EWinStatusUtils.GetValue(EWinStatus.Applied);
-            winnerInfo.CashSN = StringUtils.GetShortGuid(true);
+            winnerInfo.CashSn = StringUtils.GetShortGuid(true);
 
             if (string.IsNullOrEmpty(oldCashSN))
             {
-                DataProviderWX.LotteryWinnerDAO.Update(winnerInfo);
+                DataProviderWx.LotteryWinnerDao.Update(winnerInfo);
             }
         }
 
@@ -192,11 +192,11 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var lotteryInfoList = DataProviderWX.LotteryDAO.GetLotteryInfoListByKeywordID(keywordInfo.PublishmentSystemID, lotteryType, keywordInfo.KeywordID);
+            var lotteryInfoList = DataProviderWx.LotteryDao.GetLotteryInfoListByKeywordId(keywordInfo.PublishmentSystemId, lotteryType, keywordInfo.KeywordId);
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(keywordInfo.PublishmentSystemID);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(keywordInfo.PublishmentSystemId);
 
             foreach (var lotteryInfo in lotteryInfoList)
             {

@@ -167,7 +167,13 @@ function inputBlur(inputId) {
     });
 }
 
-function inputCallback(containerId, isSuccess) {
+window.addEventListener('message', receiveMessage, false);
+
+function receiveMessage(evt)
+{
+    var containerId = evt.data.containerId;
+    var isSuccess = evt.data.isSuccess;
+
     $('#' + containerId + ' .stl_input_loading').hide();
     if (isSuccess){
         $('#' + containerId + ' .stl_input_yes').show();

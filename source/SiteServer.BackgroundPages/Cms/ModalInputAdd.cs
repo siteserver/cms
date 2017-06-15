@@ -149,8 +149,8 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                var inputNameArrayList = DataProvider.InputDao.GetInputNameArrayList(PublishmentSystemId);
-                if (inputNameArrayList.IndexOf(TbInputName.Text) != -1)
+                var inputNameList = DataProvider.InputDao.GetInputNameList(PublishmentSystemId);
+                if (inputNameList.IndexOf(TbInputName.Text) != -1)
                 {
                     FailMessage("提交表单添加失败，提交表单名称已存在！");
                 }

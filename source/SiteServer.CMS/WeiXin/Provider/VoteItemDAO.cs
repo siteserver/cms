@@ -6,18 +6,18 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class VoteItemDAO : DataProviderBase
+    public class VoteItemDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_VoteItem";
+        private const string TableName = "wx_VoteItem";
 
         
         public int Insert(VoteItemInfo itemInfo)
         {
-            var voteItemID = 0;
+            var voteItemId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(itemInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(itemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -26,9 +26,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        voteItemID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        voteItemId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -40,45 +38,45 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return voteItemID;
+            return voteItemId;
         }
 
         public void Update(VoteItemInfo itemInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(itemInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(itemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
         }
 
-        public void UpdateVoteID(int publishmentSystemID, int voteID)
+        public void UpdateVoteId(int publishmentSystemId, int voteId)
         {
-            if (voteID > 0)
+            if (voteId > 0)
             {
                 var sqlString =
-                    $"UPDATE {TABLE_NAME} SET {VoteItemAttribute.VoteID} = {voteID} WHERE {VoteItemAttribute.VoteID} = 0 AND {VoteItemAttribute.PublishmentSystemID} = {publishmentSystemID}";
+                    $"UPDATE {TableName} SET {VoteItemAttribute.VoteId} = {voteId} WHERE {VoteItemAttribute.VoteId} = 0 AND {VoteItemAttribute.PublishmentSystemId} = {publishmentSystemId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void DeleteAll(int publishmentSystemID, int voteID)
+        public void DeleteAll(int publishmentSystemId, int voteId)
         {
-            if (voteID > 0)
+            if (voteId > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE {VoteItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {VoteItemAttribute.VoteID} = {voteID}";
+                    $"DELETE FROM {TableName} WHERE {VoteItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {VoteItemAttribute.VoteId} = {voteId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public VoteItemInfo GetVoteItemInfo(int itemID)
+        public VoteItemInfo GetVoteItemInfo(int itemId)
         {
             VoteItemInfo voteItemInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {itemID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {itemId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -91,14 +89,14 @@ namespace SiteServer.CMS.WeiXin.Provider
         }
 
 
-        public List<VoteItemInfo> GetVoteItemInfoList(int voteID)
+        public List<VoteItemInfo> GetVoteItemInfoList(int voteId)
         {
             var list = new List<VoteItemInfo>();
 
-            string SQL_WHERE = $"WHERE {VoteItemAttribute.VoteID} = {voteID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE {VoteItemAttribute.VoteId} = {voteId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -111,55 +109,55 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public void AddVoteNum(int voteID, List<int> itemIDList)
+        public void AddVoteNum(int voteId, List<int> itemIdList)
         {
-            if (voteID > 0 && itemIDList != null && itemIDList.Count > 0)
+            if (voteId > 0 && itemIdList != null && itemIdList.Count > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {VoteItemAttribute.VoteNum} = {VoteItemAttribute.VoteNum} + 1 WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(itemIDList)}) AND VoteID = {voteID}";
+                    $"UPDATE {TableName} SET {VoteItemAttribute.VoteNum} = {VoteItemAttribute.VoteNum} + 1 WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(itemIdList)}) AND VoteID = {voteId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void UpdateVoteNumByID(int VNum, int voteItemID)
+        public void UpdateVoteNumById(int vNum, int voteItemId)
         {
-            if (voteItemID > 0)
+            if (voteItemId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {VoteItemAttribute.VoteNum} = {VNum} WHERE ID = {voteItemID} ";
+                    $"UPDATE {TableName} SET {VoteItemAttribute.VoteNum} = {vNum} WHERE ID = {voteItemId} ";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void UpdateAllVoteNumByVoteID(int VNum, int voteID)
+        public void UpdateAllVoteNumByVoteId(int vNum, int voteId)
         {
-            if (voteID > 0)
+            if (voteId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {VoteItemAttribute.VoteNum} = {VNum} WHERE VoteID = {voteID} ";
+                    $"UPDATE {TableName} SET {VoteItemAttribute.VoteNum} = {vNum} WHERE VoteID = {voteId} ";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void UpdateOtherVoteNumByIDList(List<int> logIDList, int VNum, int VoteID)
+        public void UpdateOtherVoteNumByIdList(List<int> logIdList, int vNum, int voteId)
         {
-            if (logIDList != null && logIDList.Count > 0)
+            if (logIdList != null && logIdList.Count > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {VoteItemAttribute.VoteNum} = {VNum} WHERE VoteID = {VoteID} AND ID NOT IN ({TranslateUtils.ToSqlInStringWithoutQuote(logIDList)}) ";
+                    $"UPDATE {TableName} SET {VoteItemAttribute.VoteNum} = {vNum} WHERE VoteID = {voteId} AND ID NOT IN ({TranslateUtils.ToSqlInStringWithoutQuote(logIdList)}) ";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public List<VoteItemInfo> GetVoteItemInfoList(int publishmentSystemID, int voteID)
+        public List<VoteItemInfo> GetVoteItemInfoList(int publishmentSystemId, int voteId)
         {
             var list = new List<VoteItemInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {VoteItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {VoteItemAttribute.VoteID} = {voteID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere =
+                $"WHERE {VoteItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {VoteItemAttribute.VoteId} = {voteId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

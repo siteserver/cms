@@ -5,8 +5,8 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 {
 	public enum EConsumeType
 	{
-        Cash,             //ÏÖ½ğÏû·Ñ
-        CardAmount           //»áÔ±¿¨Óà¶îÏû·Ñ
+        Cash,             //ç°é‡‘æ¶ˆè´¹
+        CardAmount           //ä¼šå‘˜å¡ä½™é¢æ¶ˆè´¹
     }
 
     public class EConsumeTypeUtils
@@ -31,11 +31,11 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == EConsumeType.Cash )
             {
-                return "ÏÖ½ğÏû·Ñ";
+                return "ç°é‡‘æ¶ˆè´¹";
             }
             else if (type == EConsumeType.CardAmount)
             {
-                return "»áÔ±¿¨Óà¶îÏû·Ñ";
+                return "ä¼šå‘˜å¡ä½™é¢æ¶ˆè´¹";
             }
             else
 			{

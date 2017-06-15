@@ -11,7 +11,7 @@
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
         <bairong:Alerts runat="server" />
-        <asp:Literal ID="ltlBreadCrumb" runat="server" />
+        <asp:Literal ID="LtlBreadCrumb" runat="server" />
 
         <div style="width: 100%">
             <!-- 为ECharts准备一个具备大小（宽高）的Dom -->

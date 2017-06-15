@@ -45,23 +45,23 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == EGovPublicCategoryClassType.Channel)
 			{
-                return "Ö÷Ìâ";
+                return "ä¸»é¢˜";
 			}
             else if (type == EGovPublicCategoryClassType.Form)
 			{
-                return "Ìå²Ã";
+                return "ä½“è£";
             }
             else if (type == EGovPublicCategoryClassType.Department)
             {
-                return "»ú¹¹";
+                return "æœºæ„";
             }
             else if (type == EGovPublicCategoryClassType.Service)
             {
-                return "·şÎñ¶ÔÏó";
+                return "æœåŠ¡å¯¹è±¡";
             }
             else if (type == EGovPublicCategoryClassType.UserDefined)
             {
-                return "×Ô¶¨Òå";
+                return "è‡ªå®šä¹‰";
             }
 			else
 			{

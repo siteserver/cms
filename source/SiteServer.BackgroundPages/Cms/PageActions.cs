@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Specialized;
 using BaiRong.Core;
 using SiteServer.CMS.Core;

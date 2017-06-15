@@ -4,7 +4,7 @@ using System.Web.UI.WebControls;
 namespace SiteServer.CMS.Model.Enumerations
 {
 	/// <summary>
-	/// µ¼Èëµ¼³öÔªËØÀàĞÍ
+	/// å¯¼å…¥å¯¼å‡ºå…ƒç´ ç±»å‹
 	/// </summary>
 	public enum EImportExportType
 	{
@@ -46,19 +46,19 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
 			if (type == EImportExportType.Template)
 			{
-				return "ÍøÕ¾Ä£°å";
+				return "ç½‘ç«™æ¨¡æ¿";
 			}
 			else if (type == EImportExportType.DisplayMode)
 			{
-				return "ÁĞ±íÏÔÊ¾·½Ê½";
+				return "åˆ—è¡¨æ˜¾ç¤ºæ–¹å¼";
 			}
 			else if (type == EImportExportType.MenuDisplay)
 			{
-				return "²Ëµ¥ÏÔÊ¾·½Ê½";
+				return "èœå•æ˜¾ç¤ºæ–¹å¼";
 			}
 			if (type == EImportExportType.Vote)
 			{
-				return "Í¶Æ±ÏîÊı¾İ";
+				return "æŠ•ç¥¨é¡¹æ•°æ®";
 			}
 			else
 			{

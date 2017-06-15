@@ -6,17 +6,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class SearchNavigationDAO : DataProviderBase
+    public class SearchNavigationDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_SearchNavigation";
+        private const string TableName = "wx_SearchNavigation";
 
         public int Insert(SearchNavigationInfo searchNavigationInfo)
         {
-            var searchNavigationID = 0;
+            var searchNavigationId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(searchNavigationInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(searchNavigationInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -25,9 +25,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        searchNavigationID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        searchNavigationId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -39,70 +37,70 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return searchNavigationID;
+            return searchNavigationId;
         }
 
         public void Update(SearchNavigationInfo searchNavigationInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(searchNavigationInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(searchNavigationInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
         }
 
-        public void UpdateSearchID(int publishmentSystemID, int searchID)
+        public void UpdateSearchId(int publishmentSystemId, int searchId)
         {
-            if (searchID > 0)
+            if (searchId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {SearchNavigationAttribute.SearchID} = {searchID} WHERE {SearchNavigationAttribute.SearchID} = 0 AND {SearchNavigationAttribute.PublishmentSystemID} = {publishmentSystemID}";
+                    $"UPDATE {TableName} SET {SearchNavigationAttribute.SearchId} = {searchId} WHERE {SearchNavigationAttribute.SearchId} = 0 AND {SearchNavigationAttribute.PublishmentSystemId} = {publishmentSystemId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
 
-        public void Delete(int publishmentSystemID, int searchNavigationID)
+        public void Delete(int publishmentSystemId, int searchNavigationId)
         {
-            if (searchNavigationID > 0)
+            if (searchNavigationId > 0)
             {
-                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {searchNavigationID}";
+                string sqlString = $"DELETE FROM {TableName} WHERE ID = {searchNavigationId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemID, List<int> searchNavigationIDList)
+        public void Delete(int publishmentSystemId, List<int> searchNavigationIdList)
         {
-            if (searchNavigationIDList != null && searchNavigationIDList.Count > 0)
+            if (searchNavigationIdList != null && searchNavigationIdList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(searchNavigationIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(searchNavigationIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void DeleteAllNotInIDList(int publishmentSystemID, int searchID, List<int> idList)
+        public void DeleteAllNotInIdList(int publishmentSystemId, int searchId, List<int> idList)
         {
-            if (searchID > 0)
+            if (searchId > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE {SearchNavigationAttribute.PublishmentSystemID} = {publishmentSystemID} AND {SearchNavigationAttribute.SearchID} = {searchID}";
+                    $"DELETE FROM {TableName} WHERE {SearchNavigationAttribute.PublishmentSystemId} = {publishmentSystemId} AND {SearchNavigationAttribute.SearchId} = {searchId}";
                 if (idList != null && idList.Count > 0)
                 {
                     sqlString =
-                        $"DELETE FROM {TABLE_NAME} WHERE {SearchNavigationAttribute.PublishmentSystemID} = {publishmentSystemID} AND {SearchNavigationAttribute.SearchID} = {searchID} AND ID NOT IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+                        $"DELETE FROM {TableName} WHERE {SearchNavigationAttribute.PublishmentSystemId} = {publishmentSystemId} AND {SearchNavigationAttribute.SearchId} = {searchId} AND ID NOT IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
                 }
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public SearchNavigationInfo GetSearchNavigationInfo(int SearchNavigationID)
+        public SearchNavigationInfo GetSearchNavigationInfo(int searchNavigationId)
         {
             SearchNavigationInfo searchNavigationInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {SearchNavigationID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {searchNavigationId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -114,15 +112,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             return searchNavigationInfo;
         }
 
-        public List<SearchNavigationInfo> GetSearchNavigationInfoList(int publishmentSystemID, int searchID)
+        public List<SearchNavigationInfo> GetSearchNavigationInfoList(int publishmentSystemId, int searchId)
         {
             var searchNavigationInfoList = new List<SearchNavigationInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {SearchNavigationAttribute.PublishmentSystemID} = {publishmentSystemID} AND {SearchNavigationAttribute.SearchID} = {searchID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere =
+                $"WHERE {SearchNavigationAttribute.PublishmentSystemId} = {publishmentSystemId} AND {SearchNavigationAttribute.SearchId} = {searchId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -135,20 +133,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return searchNavigationInfoList;
         }
 
-        public string GetSelectString(int publishmentSystemID)
+        public string GetSelectString(int publishmentSystemId)
         {
-            string whereString = $"WHERE {SearchNavigationAttribute.PublishmentSystemID} = {publishmentSystemID}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {SearchNavigationAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public List<SearchNavigationInfo> GetSearchNavigationInfoList(int publishmentSystemID)
+        public List<SearchNavigationInfo> GetSearchNavigationInfoList(int publishmentSystemId)
         {
             var searchNavigationInfoList = new List<SearchNavigationInfo>();
 
-            string SQL_WHERE = $"WHERE {SearchNavigationAttribute.PublishmentSystemID} = {publishmentSystemID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE {SearchNavigationAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

@@ -9,17 +9,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class CardSNDAO : DataProviderBase
+    public class CardSnDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_CardSN";
+        private const string TableName = "wx_CardSN";
 
-        public int Insert(CardSNInfo cardSNInfo)
+        public int Insert(CardSnInfo cardSnInfo)
         {
-            var cardSNID = 0;
+            var cardSnid = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(cardSNInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(cardSnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
 
             using (var conn = GetConnection())
@@ -29,9 +29,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        cardSNID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        cardSnid = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -43,198 +41,198 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return cardSNID;
+            return cardSnid;
         }
 
-        public void Update(CardSNInfo cardSNInfo)
+        public void Update(CardSnInfo cardSnInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(cardSNInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(cardSnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
         }
 
-        public void UpdateStatus(int cardID, bool isDisabled, List<int> cardSNIDList)
+        public void UpdateStatus(int cardId, bool isDisabled, List<int> cardSnidList)
         {
             string sqlString =
-                $"UPDATE {TABLE_NAME} SET {CardSNAttribute.IsDisabled} = '{isDisabled}' WHERE CardID={cardID} AND ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardSNIDList)})  ";
+                $"UPDATE {TableName} SET {CardSnAttribute.IsDisabled} = '{isDisabled}' WHERE CardID={cardId} AND ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardSnidList)})  ";
 
             ExecuteNonQuery(sqlString);
         }
 
-        public void Delete(int publishmentSystemID, int cardSNID)
+        public void Delete(int publishmentSystemId, int cardSnid)
         {
-            if (cardSNID > 0)
+            if (cardSnid > 0)
             {
-                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {cardSNID}";
+                string sqlString = $"DELETE FROM {TableName} WHERE ID = {cardSnid}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemID, List<int> cardSNIDList)
+        public void Delete(int publishmentSystemId, List<int> cardSnidList)
         {
-            if (cardSNIDList != null && cardSNIDList.Count > 0)
+            if (cardSnidList != null && cardSnidList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardSNIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardSnidList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Recharge(int cardSNID, string userName, decimal amount)
+        public void Recharge(int cardSnid, string userName, decimal amount)
         {
             string sqlString =
-                $"UPDATE {TABLE_NAME} SET {CardSNAttribute.Amount} = {CardSNAttribute.Amount}+{amount} WHERE ID = {cardSNID} AND UserName='{PageUtils.FilterSql(userName)}' ";
+                $"UPDATE {TableName} SET {CardSnAttribute.Amount} = {CardSnAttribute.Amount}+{amount} WHERE ID = {cardSnid} AND UserName='{PageUtils.FilterSql(userName)}' ";
 
             ExecuteNonQuery(sqlString);
         }
 
-        public void Recharge(int cardSNID, string userName, decimal amount, CardCashLogInfo cardCashInfo, IDbTransaction trans)
+        public void Recharge(int cardSnid, string userName, decimal amount, CardCashLogInfo cardCashInfo, IDbTransaction trans)
         {
-            DataProviderWX.CardCashLogDAO.Insert(cardCashInfo);
+            DataProviderWx.CardCashLogDao.Insert(cardCashInfo);
 
             string sqlString =
-                $"UPDATE {TABLE_NAME} SET {CardSNAttribute.Amount} = {CardSNAttribute.Amount}+{amount} WHERE ID = {cardSNID} AND UserName='{PageUtils.FilterSql(userName)}' ";
+                $"UPDATE {TableName} SET {CardSnAttribute.Amount} = {CardSnAttribute.Amount}+{amount} WHERE ID = {cardSnid} AND UserName='{PageUtils.FilterSql(userName)}' ";
 
             ExecuteNonQuery(trans, sqlString);
 
         }
 
-        public void Consume(int cardSNID, string userName, decimal amount)
+        public void Consume(int cardSnid, string userName, decimal amount)
         {
             string sqlString =
-                $"UPDATE {TABLE_NAME} SET {CardSNAttribute.Amount} = {CardSNAttribute.Amount}-{amount} WHERE ID = {cardSNID} AND UserName='{PageUtils.FilterSql(userName)}' ";
+                $"UPDATE {TableName} SET {CardSnAttribute.Amount} = {CardSnAttribute.Amount}-{amount} WHERE ID = {cardSnid} AND UserName='{PageUtils.FilterSql(userName)}' ";
 
             ExecuteNonQuery(sqlString);
         }
 
-        public void Exchange(int cardSNID, string userName, decimal amount)
+        public void Exchange(int cardSnid, string userName, decimal amount)
         {
             string sqlString =
-                $"UPDATE {TABLE_NAME} SET {CardSNAttribute.Amount} = {CardSNAttribute.Amount}+{amount} WHERE ID = {cardSNID} AND UserName='{PageUtils.FilterSql(userName)}' ";
+                $"UPDATE {TableName} SET {CardSnAttribute.Amount} = {CardSnAttribute.Amount}+{amount} WHERE ID = {cardSnid} AND UserName='{PageUtils.FilterSql(userName)}' ";
 
             ExecuteNonQuery(sqlString);
         }
-        public CardSNInfo GetCardSNInfo(int cardSNID)
+        public CardSnInfo GetCardSnInfo(int cardSnid)
         {
-            CardSNInfo cardSNInfo = null;
+            CardSnInfo cardSnInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {cardSNID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {cardSnid}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
-                    cardSNInfo = new CardSNInfo(rdr);
+                    cardSnInfo = new CardSnInfo(rdr);
                 }
                 rdr.Close();
             }
 
-            return cardSNInfo;
+            return cardSnInfo;
         }
 
-        public CardSNInfo GetCardSNInfo(int publishmentSystemID, int cardID, string cardSN, string userName)
+        public CardSnInfo GetCardSnInfo(int publishmentSystemId, int cardId, string cardSn, string userName)
         {
-            CardSNInfo cardSNInfo = null;
+            CardSnInfo cardSnInfo = null;
 
-            string SQL_WHERE = $"WHERE {CardSNAttribute.PublishmentSystemID} = {publishmentSystemID} ";
-            if (cardID > 0)
+            string sqlWhere = $"WHERE {CardSnAttribute.PublishmentSystemId} = {publishmentSystemId} ";
+            if (cardId > 0)
             {
-                SQL_WHERE += $" AND {CardSNAttribute.CardID}='{cardID}'";
+                sqlWhere += $" AND {CardSnAttribute.CardId}='{cardId}'";
             }
-            if (!string.IsNullOrEmpty(cardSN))
+            if (!string.IsNullOrEmpty(cardSn))
             {
-                SQL_WHERE += $" AND {CardSNAttribute.SN}='{PageUtils.FilterSql(cardSN)}'";
+                sqlWhere += $" AND {CardSnAttribute.Sn}='{PageUtils.FilterSql(cardSn)}'";
             }
             if (!string.IsNullOrEmpty(userName))
             {
-                SQL_WHERE += $" AND {CardSNAttribute.UserName}='{PageUtils.FilterSql(userName)}'";
+                sqlWhere += $" AND {CardSnAttribute.UserName}='{PageUtils.FilterSql(userName)}'";
             }
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
-                    cardSNInfo = new CardSNInfo(rdr);
+                    cardSnInfo = new CardSnInfo(rdr);
                 }
                 rdr.Close();
             }
-            return cardSNInfo;
+            return cardSnInfo;
         }
 
-        public List<CardSNInfo> GetCardSNInfoList(int publishmentSystemID, int cardID)
+        public List<CardSnInfo> GetCardSnInfoList(int publishmentSystemId, int cardId)
         {
-            var cardSNInfoList = new List<CardSNInfo>();
+            var cardSnInfoList = new List<CardSnInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {CardSNAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CardSNAttribute.CardID} = {cardID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere =
+                $"WHERE {CardSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CardSnAttribute.CardId} = {cardId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
-                    var cardSNInfo = new CardSNInfo(rdr);
-                    cardSNInfoList.Add(cardSNInfo);
+                    var cardSnInfo = new CardSnInfo(rdr);
+                    cardSnInfoList.Add(cardSnInfo);
                 }
                 rdr.Close();
             }
-            return cardSNInfoList;
+            return cardSnInfoList;
         }
 
-        public ArrayList GetUserNameArrayList(int publishmentSystemID, int cardID, string cardSN, string userName)
+        public List<string> GetUserNameList(int publishmentSystemId, int cardId, string cardSn, string userName)
         {
-            var userNameArrayList = new ArrayList();
+            var userNameList = new List<string>();
 
-            string SQL_WHERE = $"WHERE {CardSNAttribute.PublishmentSystemID} = {publishmentSystemID} ";
+            string sqlWhere = $"WHERE {CardSnAttribute.PublishmentSystemId} = {publishmentSystemId} ";
 
-            if (cardID > 0)
+            if (cardId > 0)
             {
-                SQL_WHERE += $" AND CardID = {cardID}";
+                sqlWhere += $" AND CardID = {cardId}";
             }
-            if (!string.IsNullOrEmpty(cardSN))
+            if (!string.IsNullOrEmpty(cardSn))
             {
-                SQL_WHERE += $" AND {CardSNAttribute.SN}='{PageUtils.FilterSql(cardSN)}'";
+                sqlWhere += $" AND {CardSnAttribute.Sn}='{PageUtils.FilterSql(cardSn)}'";
             }
             if (!string.IsNullOrEmpty(userName))
             {
-                SQL_WHERE += $" AND {CardSNAttribute.UserName} ='{PageUtils.FilterSql(userName)}'";
+                sqlWhere += $" AND {CardSnAttribute.UserName} ='{PageUtils.FilterSql(userName)}'";
             }
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
-                    var cardSNInfo = new CardSNInfo(rdr);
-                    if (!userNameArrayList.Contains(cardSNInfo.UserName))
+                    var cardSnInfo = new CardSnInfo(rdr);
+                    if (!userNameList.Contains(cardSnInfo.UserName))
                     {
-                        userNameArrayList.Add(cardSNInfo.UserName);
+                        userNameList.Add(cardSnInfo.UserName);
                     }
                 }
                 rdr.Close();
             }
-            return userNameArrayList;
+            return userNameList;
         }
 
-        public bool isExists(int publishmentSystemID, int cardID, string userName)
+        public bool IsExists(int publishmentSystemId, int cardId, string userName)
         {
             var isExist = false;
 
-            string SQL_WHERE = $"WHERE PublishmentSystemID = {publishmentSystemID}";
-            if (cardID > 0)
+            string sqlWhere = $"WHERE PublishmentSystemID = {publishmentSystemId}";
+            if (cardId > 0)
             {
-                SQL_WHERE += $" AND CardID={cardID}";
+                sqlWhere += $" AND CardID={cardId}";
             }
             if (!string.IsNullOrEmpty(userName))
             {
-                SQL_WHERE += $" AND UserName='{PageUtils.FilterSql(userName)}'";
+                sqlWhere += $" AND UserName='{PageUtils.FilterSql(userName)}'";
             }
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -245,82 +243,82 @@ namespace SiteServer.CMS.WeiXin.Provider
             return isExist;
         }
 
-        public decimal GetAmount(int cardSNID, string userName)
+        public decimal GetAmount(int cardSnid, string userName)
         {
             decimal amount = 0;
 
-            string SQL_WHERE = $"WHERE ID = {cardSNID} AND userName='{PageUtils.FilterSql(userName)}'";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {cardSnid} AND userName='{PageUtils.FilterSql(userName)}'";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
-                    var cardSNInfo = new CardSNInfo(rdr);
-                    amount = cardSNInfo.Amount;
+                    var cardSnInfo = new CardSnInfo(rdr);
+                    amount = cardSnInfo.Amount;
                 }
                 rdr.Close();
             }
             return amount;
         }
 
-        public string GetNextCardSN(int publishmentSystemID, int cardID)
+        public string GetNextCardSn(int publishmentSystemId, int cardId)
         {
-            var cardSN = string.Empty;
-            string SQL_WHERE =
-                $"WHERE {CardSNAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CardSNAttribute.CardID}={cardID}";
-            string SQL_ORDER = $" ORDER BY AddDate {"DESC"}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, "SN", SQL_WHERE, SQL_ORDER);
+            var cardSn = string.Empty;
+            string sqlWhere =
+                $"WHERE {CardSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CardSnAttribute.CardId}={cardId}";
+            string sqlOrder = $" ORDER BY AddDate {"DESC"}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, "SN", sqlWhere, sqlOrder);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
-                    cardSN = ConvertHelper.GetString(rdr.GetValue(0));
+                    cardSn = ConvertHelper.GetString(rdr.GetValue(0));
                 }
                 rdr.Close();
             }
-            if (string.IsNullOrEmpty(cardSN))
+            if (string.IsNullOrEmpty(cardSn))
             {
-                cardSN = "100001";
+                cardSn = "100001";
             }
             else
             {
-                var curCardSN = Convert.ToInt32(cardSN);
-                var nextCardSN = (curCardSN + 1).ToString();
+                var curCardSn = Convert.ToInt32(cardSn);
+                var nextCardSn = (curCardSn + 1).ToString();
 
-                var len = cardSN.Length;
-                var i = nextCardSN.Length;
+                var len = cardSn.Length;
+                var i = nextCardSn.Length;
                 while (i < len)
                 {
-                    nextCardSN = "0" + nextCardSN;
+                    nextCardSn = "0" + nextCardSn;
                     i++;
                 }
-                return nextCardSN;
+                return nextCardSn;
             }
-            return cardSN;
+            return cardSn;
         }
 
 
-        public string GetSelectString(int publishmentSystemID, int cardID, string cardSN, string userName, string mobile)
+        public string GetSelectString(int publishmentSystemId, int cardId, string cardSn, string userName, string mobile)
         {
             string whereString =
-                $"WHERE {CardSNAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CardSNAttribute.CardID}={cardID}";
-            if (!string.IsNullOrEmpty(cardSN))
+                $"WHERE {CardSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CardSnAttribute.CardId}={cardId}";
+            if (!string.IsNullOrEmpty(cardSn))
             {
-                whereString += $" AND {CardSNAttribute.SN}='{PageUtils.FilterSql(cardSN)}'";
+                whereString += $" AND {CardSnAttribute.Sn}='{PageUtils.FilterSql(cardSn)}'";
             }
             if (!string.IsNullOrEmpty(userName))
             {
-                whereString += $" AND {CardSNAttribute.UserName}='{PageUtils.FilterSql(userName)}'";
+                whereString += $" AND {CardSnAttribute.UserName}='{PageUtils.FilterSql(userName)}'";
             }
             if (!string.IsNullOrEmpty(mobile))
             {
                 whereString +=
-                    $" AND {CardSNAttribute.UserName} IN (SELECT UserName FROM bairong_Users WHERE Mobile='{PageUtils.FilterSql(mobile)}')";
+                    $" AND {CardSnAttribute.UserName} IN (SELECT UserName FROM bairong_Users WHERE Mobile='{PageUtils.FilterSql(mobile)}')";
             }
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
     }

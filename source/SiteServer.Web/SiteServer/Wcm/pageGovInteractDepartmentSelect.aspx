@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="请从下边选择负责部门，所选部门下的所有分类都属于负责范围。" runat="server" />
 
   <script type="text/javascript" language="javascript">

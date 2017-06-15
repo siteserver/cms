@@ -5,16 +5,16 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EAdvWeight 
     {
-        Level1,       //1¼¶
-        Level2,       //2¼¶
-        Level3,       //3¼¶
-        Level4,       //4¼¶
-        Level5,       //5¼¶
-        Level6,       //6¼¶
-        Level7,       //7¼¶
-        Level8,       //8¼¶
-        Level9,       //9¼¶
-        Level10       //10¼¶
+        Level1,       //1çº§
+        Level2,       //2çº§
+        Level3,       //3çº§
+        Level4,       //4çº§
+        Level5,       //5çº§
+        Level6,       //6çº§
+        Level7,       //7çº§
+        Level8,       //8çº§
+        Level9,       //9çº§
+        Level10       //10çº§
     }
 
     public class EAdvWeightUtils

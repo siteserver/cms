@@ -39,7 +39,7 @@ namespace SiteServer.API.Controllers.Stl
                 }
                 GovPublicApplyManager.LogNew(publishmentSystemId, applyId, fromName, toDepartmentName);
 
-                MessageManager.SendSMSByGovPublicApply(publishmentSystemInfo, tagStyleGovPublicApplyInfo, applyInfo);
+                MessageManager.SendSmsByGovPublicApply(publishmentSystemInfo, tagStyleGovPublicApplyInfo, applyInfo);
 
                 HttpContext.Current.Response.Write(GovPublicApplyTemplate.GetCallbackScript(publishmentSystemInfo, true, applyInfo.QueryCode, string.Empty));
                 HttpContext.Current.Response.End();

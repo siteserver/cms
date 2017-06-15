@@ -202,5 +202,17 @@ namespace BaiRong.Core.Model
             get { return GetInt("LoginLockingHours", 3); }
             set { SetExtendedAttribute("LoginLockingHours", value.ToString()); }
         }
+
+        public bool IsFindPassword
+        {
+            get { return GetBool("IsFindPassword", false); }
+            set { SetExtendedAttribute("IsFindPassword", value.ToString()); }
+        }
+
+        public string FindPasswordSmsTplId
+        {
+            get { return GetString("FindPasswordSmsTplId", string.Empty); }
+            set { SetExtendedAttribute("FindPasswordSmsTplId", value); }
+        }
     }
 }

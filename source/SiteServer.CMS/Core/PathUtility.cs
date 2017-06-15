@@ -528,30 +528,29 @@ namespace SiteServer.CMS.Core
             {
             }
 
-            private const string ChannelId = "{@ChannelID}";
-            public const string ChannelIndex = "{@ChannelIndex}";
-            private const string Year = "{@Year}";
-            private const string Month = "{@Month}";
-            private const string Day = "{@Day}";
-            private const string Hour = "{@Hour}";
-            private const string Minute = "{@Minute}";
-            private const string Second = "{@Second}";
-            private const string Sequence = "{@Sequence}";
+            private const string ChannelId = "{@channelId}";
+            private const string Year = "{@year}";
+            private const string Month = "{@month}";
+            private const string Day = "{@day}";
+            private const string Hour = "{@hour}";
+            private const string Minute = "{@minute}";
+            private const string Second = "{@second}";
+            private const string Sequence = "{@sequence}";
+            private const string ParentRule = "{@parentRule}";
+            private const string ChannelName = "{@channelName}";
+            private const string LowerChannelName = "{@lowerChannelName}";
+            private const string ChannelIndex = "{@channelIndex}";
+            private const string LowerChannelIndex = "{@lowerChannelIndex}";
 
-            //继承父级设置 20151113 sessionliang
-            private const string ParentRule = "{@ParentRule}";
-            private const string ChannelName = "{@ChannelName}";
-
-            public static string DefaultRule = "/channels/{@ChannelID}.html";
+            public static string DefaultRule = "/channels/{@channelId}.html";
             public static string DefaultDirectoryName = "/channels/";
-            public static string DefaultRegexString = "/channels/(?<channelID>[^_]*)_?(?<pageIndex>[^_]*)";
+            public static string DefaultRegexString = "/channels/(?<channelId>[^_]*)_?(?<pageIndex>[^_]*)";
 
             public static IDictionary GetDictionary(PublishmentSystemInfo publishmentSystemInfo, int nodeId)
             {
                 var dictionary = new ListDictionary
                 {
                     {ChannelId, "栏目ID"},
-                    {ChannelIndex, "栏目索引"},
                     {Year, "年份"},
                     {Month, "月份"},
                     {Day, "日期"},
@@ -560,10 +559,11 @@ namespace SiteServer.CMS.Core
                     {Second, "秒钟"},
                     {Sequence, "顺序数"},
                     {ParentRule, "父级命名规则"},
-                    {ChannelName, "栏目名称"}
+                    {ChannelName, "栏目名称"},
+                    {LowerChannelName, "栏目名称(小写)"},
+                    {ChannelIndex, "栏目索引"},
+                    {LowerChannelIndex, "栏目索引(小写)"}
                 };
-
-                //继承父级设置 20151113 sessionliang
 
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeId);
 
@@ -572,7 +572,8 @@ namespace SiteServer.CMS.Core
                 {
                     if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Text))
                     {
-                        dictionary.Add($@"{{@{styleInfo.AttributeName}}}", styleInfo.DisplayName);
+                        dictionary.Add($@"{{@{StringUtils.LowerFirst(styleInfo.AttributeName)}}}", styleInfo.DisplayName);
+                        dictionary.Add($@"{{@lower{styleInfo.AttributeName}}}", styleInfo.DisplayName + "(小写)");
                     }
                 }
 
@@ -589,7 +590,6 @@ namespace SiteServer.CMS.Core
             //递归处理
             private static string ParseChannelPath(PublishmentSystemInfo publishmentSystemInfo, int nodeId, string channelFilePathRule)
             {
-
                 var filePath = channelFilePathRule.Trim();
                 const string regex = "(?<element>{@[^}]+})";
                 var elements = RegexUtils.GetContents("element", regex, filePath);
@@ -598,14 +598,10 @@ namespace SiteServer.CMS.Core
                 foreach (var element in elements)
                 {
                     var value = string.Empty;
+                    
                     if (StringUtils.EqualsIgnoreCase(element, ChannelId))
                     {
                         value = nodeId.ToString();
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(element, ChannelIndex))
-                    {
-                        if (nodeInfo == null) nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
-                        value = nodeInfo.NodeIndexName;
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Year))
                     {
@@ -641,7 +637,7 @@ namespace SiteServer.CMS.Core
                     {
                         value = DataProvider.NodeDao.GetSequence(publishmentSystemInfo.PublishmentSystemId, nodeId).ToString();
                     }
-                    else if (StringUtils.EqualsIgnoreCase(element, ParentRule))//继承父级设置 20151113 sessionliang
+                    else if (StringUtils.EqualsIgnoreCase(element, ParentRule))
                     {
                         if (nodeInfo == null) nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
                         var parentInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeInfo.ParentId);
@@ -651,16 +647,39 @@ namespace SiteServer.CMS.Core
                             value = DirectoryUtils.GetDirectoryPath(ParseChannelPath(publishmentSystemInfo, parentInfo.NodeId, parentRule)).Replace("\\", "/");
                         }
                     }
-                    else if (StringUtils.EqualsIgnoreCase(element, ChannelName))//栏目名称 20151113 sessionliang
+                    else if (StringUtils.EqualsIgnoreCase(element, ChannelName))
                     {
                         if (nodeInfo == null) nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
                         value = nodeInfo.NodeName;
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(element, LowerChannelName))
+                    {
+                        if (nodeInfo == null) nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
+                        value = nodeInfo.NodeName.ToLower();
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(element, LowerChannelIndex))
+                    {
+                        if (nodeInfo == null) nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
+                        value = nodeInfo.NodeIndexName.ToLower();
                     }
                     else
                     {
                         if (nodeInfo == null) nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
                         var attributeName = element.Replace("{@", string.Empty).Replace("}", string.Empty);
+
+                        var isLower = false;
+                        if (StringUtils.StartsWithIgnoreCase(attributeName, "lower"))
+                        {
+                            isLower = true;
+                            attributeName = attributeName.Substring(5);
+                        }
+
                         value = nodeInfo.Additional.GetExtendedAttribute(attributeName);
+
+                        if (isLower)
+                        {
+                            value = value.ToLower();
+                        }
                     }
 
                     filePath = filePath.Replace(element, value);
@@ -680,31 +699,30 @@ namespace SiteServer.CMS.Core
             {
             }
 
-            private const string ChannelId = "{@ChannelID}";
-            private const string ChannelIndex = "{@ChannelIndex}";
-            private const string ContentId = "{@ContentID}";
-            private const string Year = "{@Year}";
-            private const string Month = "{@Month}";
-            private const string Day = "{@Day}";
-            private const string Hour = "{@Hour}";
-            private const string Minute = "{@Minute}";
-            private const string Second = "{@Second}";
-            private const string Sequence = "{@Sequence}";
+            private const string ChannelId = "{@channelId}";
+            private const string ContentId = "{@contentId}";
+            private const string Year = "{@year}";
+            private const string Month = "{@month}";
+            private const string Day = "{@day}";
+            private const string Hour = "{@hour}";
+            private const string Minute = "{@minute}";
+            private const string Second = "{@second}";
+            private const string Sequence = "{@sequence}";
+            private const string ParentRule = "{@parentRule}";
+            private const string ChannelName = "{@channelName}";
+            private const string LowerChannelName = "{@lowerChannelName}";
+            private const string ChannelIndex = "{@channelIndex}";
+            private const string LowerChannelIndex = "{@lowerChannelIndex}";
 
-            //继承父级设置 20151113 sessionliang
-            private const string ParentRule = "{@ParentRule}";
-            private const string ChannelName = "{@ChannelName}";
-
-            public const string DefaultRule = "/contents/{@ChannelID}/{@ContentID}.html";
+            public const string DefaultRule = "/contents/{@channelId}/{@contentId}.html";
             public const string DefaultDirectoryName = "/contents/";
-            public const string DefaultRegexString = "/contents/(?<channelID>[^/]*)/(?<contentID>[^/]*)_?(?<pageIndex>[^_]*)";
+            public const string DefaultRegexString = "/contents/(?<channelId>[^/]*)/(?<contentId>[^/]*)_?(?<pageIndex>[^_]*)";
 
             public static IDictionary GetDictionary(PublishmentSystemInfo publishmentSystemInfo, int nodeId)
             {
                 var dictionary = new ListDictionary
                 {
                     {ChannelId, "栏目ID"},
-                    {ChannelIndex, "栏目索引"},
                     {ContentId, "内容ID"},
                     {Year, "年份"},
                     {Month, "月份"},
@@ -714,10 +732,11 @@ namespace SiteServer.CMS.Core
                     {Second, "秒钟"},
                     {Sequence, "顺序数"},
                     {ParentRule, "父级命名规则"},
-                    {ChannelName, "栏目名称"}
+                    {ChannelName, "栏目名称"},
+                    {LowerChannelName, "栏目名称(小写)"},
+                    {ChannelIndex, "栏目索引"},
+                    {LowerChannelIndex, "栏目索引(小写)"}
                 };
-
-                //继承父级设置 20151113 sessionliang
 
                 var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeId);
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
@@ -728,7 +747,8 @@ namespace SiteServer.CMS.Core
                 {
                     if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Text))
                     {
-                        dictionary.Add($@"{{@{styleInfo.AttributeName}}}", styleInfo.DisplayName);
+                        dictionary.Add($@"{{@{StringUtils.LowerFirst(styleInfo.AttributeName)}}}", styleInfo.DisplayName);
+                        dictionary.Add($@"{{@lower{styleInfo.AttributeName}}}", styleInfo.DisplayName + "(小写)");
                     }
                 }
 
@@ -762,17 +782,10 @@ namespace SiteServer.CMS.Core
                 foreach (var element in elements)
                 {
                     var value = string.Empty;
+
                     if (StringUtils.EqualsIgnoreCase(element, ChannelId))
                     {
                         value = nodeId.ToString();
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(element, ChannelIndex))
-                    {
-                        var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
-                        if (nodeInfo != null)
-                        {
-                            value = nodeInfo.NodeIndexName;
-                        }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ContentId))
                     {
@@ -793,10 +806,37 @@ namespace SiteServer.CMS.Core
                             value = DirectoryUtils.GetDirectoryPath(ParseContentPath(publishmentSystemInfo, parentInfo.NodeId, contentInfo, parentRule)).Replace("\\", "/");
                         }
                     }
-                    else if (StringUtils.EqualsIgnoreCase(element, ChannelName))//栏目名称 20151113 sessionliang
+                    else if (StringUtils.EqualsIgnoreCase(element, ChannelName))
                     {
                         var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
-                        value = nodeInfo.NodeName;
+                        if (nodeInfo != null)
+                        {
+                            value = nodeInfo.NodeName;
+                        }
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(element, LowerChannelName))
+                    {
+                        var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
+                        if (nodeInfo != null)
+                        {
+                            value = nodeInfo.NodeName.ToLower();
+                        }
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(element, ChannelIndex))
+                    {
+                        var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
+                        if (nodeInfo != null)
+                        {
+                            value = nodeInfo.NodeIndexName;
+                        }
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(element, LowerChannelIndex))
+                    {
+                        var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
+                        if (nodeInfo != null)
+                        {
+                            value = nodeInfo.NodeIndexName.ToLower();
+                        }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Year) || StringUtils.EqualsIgnoreCase(element, Month) || StringUtils.EqualsIgnoreCase(element, Day) || StringUtils.EqualsIgnoreCase(element, Hour) || StringUtils.EqualsIgnoreCase(element, Minute) || StringUtils.EqualsIgnoreCase(element, Second))
                     {
@@ -836,7 +876,19 @@ namespace SiteServer.CMS.Core
                     else
                     {
                         var attributeName = element.Replace("{@", string.Empty).Replace("}", string.Empty);
+
+                        var isLower = false;
+                        if (StringUtils.StartsWithIgnoreCase(attributeName, "lower"))
+                        {
+                            isLower = true;
+                            attributeName = attributeName.Substring(5);
+                        }
+
                         value = contentInfo.GetExtendedAttribute(attributeName);
+                        if (isLower)
+                        {
+                            value = value.ToLower();
+                        }
                     }
 
                     value = StringUtils.HtmlDecode(value);

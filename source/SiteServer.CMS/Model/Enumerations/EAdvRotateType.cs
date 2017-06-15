@@ -5,9 +5,9 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EAdvRotateType
     {
-        Equality,         //¾ùÔÈ
-        HandWeight,       //ÊÖ¶¯È¨ÖØ
-        SlideRotate       //»ÃµÆÆ¬ÂÖ»»
+        Equality,         //å‡åŒ€
+        HandWeight,       //æ‰‹åŠ¨æƒé‡
+        SlideRotate       //å¹»ç¯ç‰‡è½®æ¢
     }
 
     public class EAdvRotateTypeUtils
@@ -36,15 +36,15 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (type == EAdvRotateType.Equality)
             {
-                return "¾ùÔÈ";
+                return "å‡åŒ€";
             } 
             else if (type == EAdvRotateType.HandWeight)
             {
-                return "ÊÖ¶¯È¨ÖØ";
+                return "æ‰‹åŠ¨æƒé‡";
             }
             else if (type == EAdvRotateType.SlideRotate)
             {
-                return "»ÃµÆÆ¬ÂÖ»»";
+                return "å¹»ç¯ç‰‡è½®æ¢";
             }
             else
             {

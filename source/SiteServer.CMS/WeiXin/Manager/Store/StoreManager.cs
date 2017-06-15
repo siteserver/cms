@@ -45,8 +45,8 @@ namespace SiteServer.CMS.WeiXin.Manager.Store
         public static string GetStoreUrl(PublishmentSystemInfo publishmentSystemInfo, StoreInfo storeInfo, string wxOpenID)
         {
             var attributes = new NameValueCollection();
-            attributes.Add("publishmentSystemID", storeInfo.PublishmentSystemID.ToString());
-            attributes.Add("storeID", storeInfo.ID.ToString());
+            attributes.Add("publishmentSystemID", storeInfo.PublishmentSystemId.ToString());
+            attributes.Add("storeID", storeInfo.Id.ToString());
             attributes.Add("wxOpenID", wxOpenID);
             attributes.Add("parentID", "0");
             return PageUtils.AddQueryString(GetStoreUrl(publishmentSystemInfo), attributes);
@@ -60,9 +60,9 @@ namespace SiteServer.CMS.WeiXin.Manager.Store
         public static string GetStoreItemUrl(PublishmentSystemInfo publishmentSystemInfo, StoreItemInfo storeItemInfo, string wxOpenID)
         {
             var attributes = new NameValueCollection();
-            attributes.Add("publishmentSystemID", storeItemInfo.PublishmentSystemID.ToString());
-            attributes.Add("storeID", storeItemInfo.StoreID.ToString());
-            attributes.Add("storeItemID", storeItemInfo.ID.ToString());
+            attributes.Add("publishmentSystemID", storeItemInfo.PublishmentSystemId.ToString());
+            attributes.Add("storeID", storeItemInfo.StoreId.ToString());
+            attributes.Add("storeItemID", storeItemInfo.Id.ToString());
             attributes.Add("wxOpenID", wxOpenID);
             return PageUtils.AddQueryString(GetStoreItemUrl(publishmentSystemInfo), attributes);
         }
@@ -71,9 +71,9 @@ namespace SiteServer.CMS.WeiXin.Manager.Store
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var storeInfoList = DataProviderWX.StoreDAO.GetStoreInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var storeInfoList = DataProviderWx.StoreDao.GetStoreInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
             foreach (var storeInfo in storeInfoList)
             {
@@ -106,7 +106,7 @@ namespace SiteServer.CMS.WeiXin.Manager.Store
         {
             var articleList = new List<Article>();
 
-            var storeItemInfoList = DataProviderWX.StoreItemDAO.GetAllStoreItemInfoListByLocation(publishmentSystemInfo.PublishmentSystemId, location_X);
+            var storeItemInfoList = DataProviderWx.StoreItemDao.GetAllStoreItemInfoListByLocation(publishmentSystemInfo.PublishmentSystemId, location_X);
 
             foreach (var storeItemInfo in storeItemInfoList)
             {

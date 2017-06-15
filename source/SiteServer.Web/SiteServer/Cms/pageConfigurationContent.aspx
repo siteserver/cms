@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
-        <asp:Literal ID="ltlBreadCrumb" runat="server" />
+        <asp:Literal ID="LtlBreadCrumb" runat="server" />
         <bairong:Alerts Text="如果修改了自动分页选项，需要将所有内容页重新生成" runat="server"></bairong:Alerts>
 
         <div class="popover popover-static">

@@ -134,22 +134,10 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("PhotoSmallWidth", value.ToString()); }
         }
 
-        public int PhotoSmallHeight
-        {
-            get { return GetInt("PhotoSmallHeight", 70); }
-            set { SetExtendedAttribute("PhotoSmallHeight", value.ToString()); }
-        }
-
         public int PhotoMiddleWidth
         {
             get { return GetInt("PhotoMiddleWidth", 400); }
             set { SetExtendedAttribute("PhotoMiddleWidth", value.ToString()); }
-        }
-
-        public int PhotoMiddleHeight
-        {
-            get { return GetInt("PhotoMiddleHeight", 400); }
-            set { SetExtendedAttribute("PhotoMiddleHeight", value.ToString()); }
         }
 
         /****************图片水印设置********************/
@@ -859,64 +847,64 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("WxIsWebMenuLeft", value.ToString()); }
         }
 
-        public bool CardIsClaimCardCredits
+        public bool WxCardIsClaimCardCredits
         {
-            get { return GetBool("CardIsClaimCardCredits", false); }
-            set { SetExtendedAttribute("CardIsClaimCardCredits", value.ToString()); }
+            get { return GetBool("WxCardIsClaimCardCredits", false); }
+            set { SetExtendedAttribute("WxCardIsClaimCardCredits", value.ToString()); }
         }
 
-        public int CardClaimCardCredits
+        public int WxCardClaimCardCredits
         {
-            get { return GetInt("CardClaimCardCredits", 20); }
-            set { SetExtendedAttribute("CardClaimCardCredits", value.ToString()); }
+            get { return GetInt("WxCardClaimCardCredits", 20); }
+            set { SetExtendedAttribute("WxCardClaimCardCredits", value.ToString()); }
         }
 
-        public bool CardIsGiveConsumeCredits
+        public bool WxCardIsGiveConsumeCredits
         {
-            get { return GetBool("CardIsGiveConsumeCredits", false); }
-            set { SetExtendedAttribute("CardIsGiveConsumeCredits", value.ToString()); }
+            get { return GetBool("WxCardIsGiveConsumeCredits", false); }
+            set { SetExtendedAttribute("WxCardIsGiveConsumeCredits", value.ToString()); }
         }
 
-        public decimal CardConsumeAmount
+        public decimal WxCardConsumeAmount
         {
-            get { return GetDecimal("CardConsumeAmount", 100); }
-            set { SetExtendedAttribute("CardConsumeAmount", value.ToString(CultureInfo.InvariantCulture)); }
+            get { return GetDecimal("WxCardConsumeAmount", 100); }
+            set { SetExtendedAttribute("WxCardConsumeAmount", value.ToString(CultureInfo.InvariantCulture)); }
         }
 
-        public int CardGiveCredits
+        public int WxCardGiveCredits
         {
-            get { return GetInt("CardGiveCredits", 50); }
-            set { SetExtendedAttribute("CardGiveCredits", value.ToString()); }
+            get { return GetInt("WxCardGiveCredits", 50); }
+            set { SetExtendedAttribute("WxCardGiveCredits", value.ToString()); }
         }
 
-        public bool CardIsBinding
+        public bool WxCardIsBinding
         {
-            get { return GetBool("CardIsBinding", true); }
-            set { SetExtendedAttribute("CardIsBinding", value.ToString()); }
+            get { return GetBool("WxCardIsBinding", true); }
+            set { SetExtendedAttribute("WxCardIsBinding", value.ToString()); }
         }
 
-        public bool CardIsExchange
+        public bool WxCardIsExchange
         {
-            get { return GetBool("CardIsExchange", true); }
-            set { SetExtendedAttribute("CardIsExchange", value.ToString()); }
+            get { return GetBool("WxCardIsExchange", true); }
+            set { SetExtendedAttribute("WxCardIsExchange", value.ToString()); }
         }
 
-        public decimal CardExchangeProportion
+        public decimal WxCardExchangeProportion
         {
-            get { return GetDecimal("CardExchangeProportion", 10); }
-            set { SetExtendedAttribute("CardExchangeProportion", value.ToString(CultureInfo.InvariantCulture)); }
+            get { return GetDecimal("WxCardExchangeProportion", 10); }
+            set { SetExtendedAttribute("WxCardExchangeProportion", value.ToString(CultureInfo.InvariantCulture)); }
         }
 
-        public bool CardIsSign
+        public bool WxCardIsSign
         {
-            get { return GetBool("CardIsSign", false); }
-            set { SetExtendedAttribute("CardIsSign", value.ToString()); }
+            get { return GetBool("WxCardIsSign", false); }
+            set { SetExtendedAttribute("WxCardIsSign", value.ToString()); }
         }
 
-        public string CardSignCreditsConfigure
+        public string WxCardSignCreditsConfigure
         {
-            get { return GetString("CardSignCreditsConfigure", string.Empty); }
-            set { SetExtendedAttribute("CardSignCreditsConfigure", value); }
+            get { return GetString("WxCardSignCreditsConfigure", string.Empty); }
+            set { SetExtendedAttribute("WxCardSignCreditsConfigure", value); }
         }
 
         #endregion

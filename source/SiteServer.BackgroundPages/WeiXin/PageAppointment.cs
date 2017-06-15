@@ -12,18 +12,18 @@ namespace SiteServer.BackgroundPages.WeiXin
 {
     public class PageAppointment : BasePageCms
     {
-        public Repeater rptContents;
-        public SqlPager spContents;
+        public Repeater RptContents;
+        public SqlPager SpContents;
 
-        public Button btnAddSingle;
-        public Button btnAddMultiple;
-        public Button btnDelete;
+        public Button BtnAddSingle;
+        public Button BtnAddMultiple;
+        public Button BtnDelete;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
             return PageUtils.GetWeiXinUrl(nameof(PageAppointment), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
+                {"PublishmentSystemId", publishmentSystemId.ToString()}
             });
         }
 
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 {
                     try
                     {
-                        DataProviderWX.AppointmentDAO.Delete(PublishmentSystemId,list) ;
+                        DataProviderWx.AppointmentDao.Delete(PublishmentSystemId,list) ;
                         SuccessMessage("微预约删除成功！");
                     }
                     catch (Exception ex)
@@ -48,25 +48,25 @@ namespace SiteServer.BackgroundPages.WeiXin
                 }
             }
 
-            spContents.ControlToPaginate = rptContents;
-            spContents.ItemsPerPage = 30;
-            spContents.SelectCommand = DataProviderWX.AppointmentDAO.GetSelectString(PublishmentSystemId);
-            spContents.SortField = AppointmentAttribute.ID;
-            spContents.SortMode = SortMode.DESC;
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            SpContents.ControlToPaginate = RptContents;
+            SpContents.ItemsPerPage = 30;
+            SpContents.SelectCommand = DataProviderWx.AppointmentDao.GetSelectString(PublishmentSystemId);
+            SpContents.SortField = AppointmentAttribute.Id;
+            SpContents.SortMode = SortMode.DESC;
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             {
                 BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAppointment, "微预约", AppManager.WeiXin.Permission.WebSite.Appointment);
-                spContents.DataBind();
+                SpContents.DataBind();
 
                 var urlAddSingle = PageAppointmentSingleAdd.GetRedirectUrl(PublishmentSystemId, 0,0);
                 var urlAddMultiple = PageAppointmentMultipleAdd.GetRedirectUrl(PublishmentSystemId, 0,0);
-                btnAddSingle.Attributes.Add("onclick", $"location.href='{urlAddSingle}';return false");
-                btnAddMultiple.Attributes.Add("onclick", $"location.href='{urlAddMultiple}';return false");
+                BtnAddSingle.Attributes.Add("onclick", $"location.href='{urlAddSingle}';return false");
+                BtnAddMultiple.Attributes.Add("onclick", $"location.href='{urlAddMultiple}';return false");
 
                 var urlDelete = PageUtils.AddQueryString(GetRedirectUrl(PublishmentSystemId), "Delete", "True");
-                btnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlDelete, "IDCollection", "IDCollection", "请选择需要删除的微预约", "此操作将删除所选微预约，确认吗？"));
+                BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlDelete, "IDCollection", "IDCollection", "请选择需要删除的微预约", "此操作将删除所选微预约，确认吗？"));
             }
         }
 
@@ -82,7 +82,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 var ltlStartDate = e.Item.FindControl("ltlStartDate") as Literal;
                 var ltlEndDate = e.Item.FindControl("ltlEndDate") as Literal;
                 var ltlContentIsSingle = e.Item.FindControl("ltlContentIsSingle") as Literal;
-                var ltlPVCount = e.Item.FindControl("ltlPVCount") as Literal;
+                var ltlPvCount = e.Item.FindControl("ltlPVCount") as Literal;
                 var ltlUserCount = e.Item.FindControl("ltlUserCount") as Literal;
                 var ltlIsEnabled = e.Item.FindControl("ltlIsEnabled") as Literal;
                 var ltlAppointmentContentUrl = e.Item.FindControl("ltlAppointmentContentUrl") as Literal;
@@ -91,35 +91,35 @@ namespace SiteServer.BackgroundPages.WeiXin
 
                 ltlItemIndex.Text = (e.Item.ItemIndex + 1).ToString();
                 ltlTitle.Text = appointmentInfo.Title;
-                ltlKeywords.Text = DataProviderWX.KeywordDAO.GetKeywords(appointmentInfo.KeywordID);
+                ltlKeywords.Text = DataProviderWx.KeywordDao.GetKeywords(appointmentInfo.KeywordId);
                 ltlStartDate.Text = DateUtils.GetDateAndTimeString(appointmentInfo.StartDate);
                 ltlEndDate.Text = DateUtils.GetDateAndTimeString(appointmentInfo.EndDate);
                 ltlContentIsSingle.Text = appointmentInfo.ContentIsSingle == true ? "单预约" : "多预约";
-                ltlPVCount.Text = appointmentInfo.PVCount.ToString();
+                ltlPvCount.Text = appointmentInfo.PvCount.ToString();
                 ltlUserCount.Text = appointmentInfo.UserCount.ToString();
                 ltlIsEnabled.Text = StringUtils.GetTrueOrFalseImageHtml(!appointmentInfo.IsDisabled);
 
-                var urlAppointmentContent = PageAppointmentContent.GetRedirectUrl(PublishmentSystemId, appointmentInfo.ID);
+                var urlAppointmentContent = PageAppointmentContent.GetRedirectUrl(PublishmentSystemId, appointmentInfo.Id);
                 ltlAppointmentContentUrl.Text = $@"<a href=""{urlAppointmentContent}"">预约查看</a>";
 
-                var itemID = 0;
+                var itemId = 0;
                 if (appointmentInfo.ContentIsSingle)
                 {
-                    itemID = DataProviderWX.AppointmentItemDAO.GetItemID(PublishmentSystemId, appointmentInfo.ID);
+                    itemId = DataProviderWx.AppointmentItemDao.GetItemId(PublishmentSystemId, appointmentInfo.Id);
                 }
 
-                var urlPreview = AppointmentManager.GetIndexUrl(PublishmentSystemInfo, appointmentInfo.ID, string.Empty);
+                var urlPreview = AppointmentManager.GetIndexUrl(PublishmentSystemInfo, appointmentInfo.Id, string.Empty);
                 if (appointmentInfo.ContentIsSingle)
                 {
-                    urlPreview = AppointmentManager.GetItemUrl(PublishmentSystemInfo, appointmentInfo.ID, itemID, string.Empty);
+                    urlPreview = AppointmentManager.GetItemUrl(PublishmentSystemInfo, appointmentInfo.Id, itemId, string.Empty);
                 }
                 //urlPreview = BackgroundPreview.GetRedirectUrlToMobile(urlPreview);
                 //ltlPreviewUrl.Text = $@"<a href=""{urlPreview}"" target=""_blank"">预览</a>";
 
-                var urlEdit = PageAppointmentMultipleAdd.GetRedirectUrl(PublishmentSystemId, appointmentInfo.ID, itemID);
+                var urlEdit = PageAppointmentMultipleAdd.GetRedirectUrl(PublishmentSystemId, appointmentInfo.Id, itemId);
                 if (appointmentInfo.ContentIsSingle)
                 {
-                    urlEdit = PageAppointmentSingleAdd.GetRedirectUrl(PublishmentSystemId, appointmentInfo.ID, itemID);
+                    urlEdit = PageAppointmentSingleAdd.GetRedirectUrl(PublishmentSystemId, appointmentInfo.Id, itemId);
                 }
                 ltlEditUrl.Text = $@"<a href=""{urlEdit}"">编辑</a>";
             }

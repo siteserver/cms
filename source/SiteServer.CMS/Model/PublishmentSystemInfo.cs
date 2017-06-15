@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Model
 	{
 		private int _publishmentSystemId;
 		private string _publishmentSystemName = string.Empty;
-        private EPublishmentSystemType _publishmentSystemType = EPublishmentSystemType.CMS;
+        private EPublishmentSystemType _publishmentSystemType = EPublishmentSystemType.Cms;
 		private string _auxiliaryTableForContent = string.Empty;
         private string _auxiliaryTableForGovPublic = string.Empty;
         private string _auxiliaryTableForGovInteract = string.Empty;

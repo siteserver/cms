@@ -2,49 +2,28 @@ namespace SiteServer.CMS.WeiXin.Model
 {
 	public class KeywordGroupInfo
 	{
-        private int groupID;
-        private int publishmentSystemID;
-        private string groupName;
-        private int taxis;
-
-		public KeywordGroupInfo()
+	    public KeywordGroupInfo()
 		{
-            groupID = 0;
-            publishmentSystemID = 0;
-            groupName = string.Empty;
-            taxis = 0;
+            GroupId = 0;
+            PublishmentSystemId = 0;
+            GroupName = string.Empty;
+            Taxis = 0;
 		}
 
-        public KeywordGroupInfo(int groupID, int publishmentSystemID, string groupName, int taxis)
+        public KeywordGroupInfo(int groupId, int publishmentSystemId, string groupName, int taxis)
 		{
-            this.groupID = groupID;
-            this.publishmentSystemID = publishmentSystemID;
-            this.groupName = groupName;
-            this.taxis = taxis;
+            GroupId = groupId;
+            PublishmentSystemId = publishmentSystemId;
+            GroupName = groupName;
+            Taxis = taxis;
 		}
 
-        public int GroupID
-        {
-            get { return groupID; }
-            set { groupID = value; }
-        }
+        public int GroupId { get; set; }
 
-        public int PublishmentSystemID
-        {
-            get { return publishmentSystemID; }
-            set { publishmentSystemID = value; }
-        }
+	    public int PublishmentSystemId { get; set; }
 
-        public string GroupName
-        {
-            get { return groupName; }
-            set { groupName = value; }
-        }
+	    public string GroupName { get; set; }
 
-        public int Taxis
-        {
-            get { return taxis; }
-            set { taxis = value; }
-        }
+	    public int Taxis { get; set; }
 	}
 }

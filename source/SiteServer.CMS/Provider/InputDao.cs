@@ -245,9 +245,9 @@ namespace SiteServer.CMS.Provider
             return enumerable;
         }
 
-        public ArrayList GetInputIdArrayList(int publishmentSystemId)
+        public List<int> GetInputIdList(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<int>();
 
             var selectParms = new IDataParameter[]
             {
@@ -258,17 +258,17 @@ namespace SiteServer.CMS.Provider
             {
                 while (rdr.Read())
                 {
-                    arraylist.Add(GetInt(rdr, 0));
+                    list.Add(GetInt(rdr, 0));
                 }
                 rdr.Close();
             }
 
-            return arraylist;
+            return list;
         }
 
-        public ArrayList GetInputNameArrayList(int publishmentSystemId)
+        public List<string> GetInputNameList(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
 
             var selectParms = new IDataParameter[]
             {
@@ -279,12 +279,12 @@ namespace SiteServer.CMS.Provider
             {
                 while (rdr.Read())
                 {
-                    arraylist.Add(GetString(rdr, 0));
+                    list.Add(GetString(rdr, 0));
                 }
                 rdr.Close();
             }
 
-            return arraylist;
+            return list;
         }
 
         public string GetImportInputName(string inputName, int publishmentSystemId)

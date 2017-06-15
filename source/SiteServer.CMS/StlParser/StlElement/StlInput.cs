@@ -235,10 +235,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             return builder.ToString();
         }
 
-        public static string GetInputCallbackScript(int inputId, bool isSuccess)
+        public static string GetPostMessageScript(int inputId, bool isSuccess)
         {
-            var stlContainerId = $"stl_input_{inputId}";
-            return $"<script>window.parent.inputCallback('{stlContainerId}', {isSuccess.ToString().ToLower()});</script>";
+            var containerId = $"stl_input_{inputId}";
+            return $"<script>window.parent.postMessage({{containerId: '{containerId}', isSuccess: {isSuccess.ToString().ToLower()}}}, '*');</script>";
         }
     }
 }

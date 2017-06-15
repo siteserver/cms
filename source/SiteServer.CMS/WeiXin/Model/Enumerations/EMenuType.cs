@@ -41,19 +41,19 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == EMenuType.None)
             {
-                return "ÎŞ´¥·¢";
+                return "æ— è§¦å‘";
             }
             else if (type == EMenuType.Site)
             {
-                return "Î¢ÍøÕ¾Ò³Ãæ";
+                return "å¾®ç½‘ç«™é¡µé¢";
             }
             else if (type == EMenuType.Keyword)
             {
-                return "¹Ø¼ü´Ê";
+                return "å…³é”®è¯";
             }
             else if (type == EMenuType.Url)
             {
-                return "Ö¸¶¨ÍøÖ·";
+                return "æŒ‡å®šç½‘å€";
             }
 			else
 			{

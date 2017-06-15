@@ -7,18 +7,18 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class MapDAO : DataProviderBase
+    public class MapDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_Map";
+        private const string TableName = "wx_Map";
           
          
         public int Insert(MapInfo mapInfo)
         {
-            var mapID = 0;
+            var mapId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(mapInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(mapInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
              
             
             using (var conn = GetConnection())
@@ -28,9 +28,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        mapID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        mapId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -42,79 +40,79 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return mapID;
+            return mapId;
         }
 
         public void Update(MapInfo mapInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(mapInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(mapInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
         }
 
-        public void AddPVCount(int mapID)
+        public void AddPvCount(int mapId)
         {
-            if (mapID > 0)
+            if (mapId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {MapAttribute.PVCount} = {MapAttribute.PVCount} + 1 WHERE ID = {mapID}";
+                    $"UPDATE {TableName} SET {MapAttribute.PvCount} = {MapAttribute.PvCount} + 1 WHERE ID = {mapId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int mapID)
+        public void Delete(int mapId)
         {
-            if (mapID > 0)
+            if (mapId > 0)
             {
-                var mapIDList = new List<int>();
-                mapIDList.Add(mapID);
-                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(mapIDList));
+                var mapIdList = new List<int>();
+                mapIdList.Add(mapId);
+                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(mapIdList));
 
-                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {mapID}";
+                string sqlString = $"DELETE FROM {TableName} WHERE ID = {mapId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(List<int> mapIDList)
+        public void Delete(List<int> mapIdList)
         {
-            if (mapIDList != null  && mapIDList.Count > 0)
+            if (mapIdList != null  && mapIdList.Count > 0)
             {
-                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(mapIDList));
+                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(mapIdList));
 
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(mapIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(mapIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private List<int> GetKeywordIDList(List<int> mapIDList)
+        private List<int> GetKeywordIdList(List<int> mapIdList)
         {
-            var keywordIDList = new List<int>();
+            var keywordIdList = new List<int>();
 
             string sqlString =
-                $"SELECT {MapAttribute.KeywordID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(mapIDList)})";
+                $"SELECT {MapAttribute.KeywordId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(mapIdList)})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    keywordIDList.Add(rdr.GetInt32(0));
+                    keywordIdList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return keywordIDList;
+            return keywordIdList;
         }
 
-        public MapInfo GetMapInfo(int mapID)
+        public MapInfo GetMapInfo(int mapId)
         {
             MapInfo mapInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {mapID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {mapId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -126,20 +124,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return mapInfo;
         }
 
-        public List<MapInfo> GetMapInfoListByKeywordID(int publishmentSystemID, int keywordID)
+        public List<MapInfo> GetMapInfoListByKeywordId(int publishmentSystemId, int keywordId)
         {
             var mapInfoList = new List<MapInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {MapAttribute.PublishmentSystemID} = {publishmentSystemID} AND {MapAttribute.IsDisabled} <> '{true}'";
-            if (keywordID > 0)
+            string sqlWhere =
+                $"WHERE {MapAttribute.PublishmentSystemId} = {publishmentSystemId} AND {MapAttribute.IsDisabled} <> '{true}'";
+            if (keywordId > 0)
             {
-                SQL_WHERE += $" AND {MapAttribute.KeywordID} = {keywordID}";
+                sqlWhere += $" AND {MapAttribute.KeywordId} = {keywordId}";
             }
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -152,15 +150,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             return mapInfoList;
         }
 
-        public List<MapInfo> GetMapInfoList(int publishmentSystemID)
+        public List<MapInfo> GetMapInfoList(int publishmentSystemId)
         {
             var mapInfoList = new List<MapInfo>();
 
-            string SQL_WHERE = $"WHERE {MapAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            string sqlWhere = $"WHERE {MapAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -173,22 +171,22 @@ namespace SiteServer.CMS.WeiXin.Provider
             return mapInfoList;
         }
 
-        public int GetFirstIDByKeywordID(int publishmentSystemID, int keywordID)
+        public int GetFirstIdByKeywordId(int publishmentSystemId, int keywordId)
         {
             string sqlString =
-                $"SELECT TOP 1 ID FROM {TABLE_NAME} WHERE {MapAttribute.PublishmentSystemID} = {publishmentSystemID} AND {MapAttribute.IsDisabled} <> '{true}' AND {MapAttribute.KeywordID} = {keywordID}";
+                $"SELECT TOP 1 ID FROM {TableName} WHERE {MapAttribute.PublishmentSystemId} = {publishmentSystemId} AND {MapAttribute.IsDisabled} <> '{true}' AND {MapAttribute.KeywordId} = {keywordId}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetTitle(int mapID)
+        public string GetTitle(int mapId)
         {
             var title = string.Empty;
 
-            string SQL_WHERE = $"WHERE ID = {mapID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, MapAttribute.Title, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {mapId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, MapAttribute.Title, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -200,10 +198,10 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
 
-        public string GetSelectString(int publishmentSystemID)
+        public string GetSelectString(int publishmentSystemId)
         {
-            string whereString = $"WHERE {MapAttribute.PublishmentSystemID} = {publishmentSystemID}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {MapAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
     }
 }

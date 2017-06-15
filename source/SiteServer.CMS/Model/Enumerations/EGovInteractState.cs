@@ -5,12 +5,12 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EGovInteractState
 	{
-        New,                //ĞÂ°ì¼ş
-        Denied,             //¾Ü¾øÊÜÀí
-        Accepted,           //ÒÑÊÜÀí
-        Redo,               //ÒªÇó·µ¹¤
-        Replied,            //ÒÑ°ìÀí
-        Checked,            //ÒÑÉóºË
+        New,                //æ–°åŠä»¶
+        Denied,             //æ‹’ç»å—ç†
+        Accepted,           //å·²å—ç†
+        Redo,               //è¦æ±‚è¿”å·¥
+        Replied,            //å·²åŠç†
+        Checked,            //å·²å®¡æ ¸
 	}
 
     public class EGovInteractStateUtils
@@ -51,27 +51,27 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == EGovInteractState.New)
 			{
-                return "ĞÂ°ì¼ş";
+                return "æ–°åŠä»¶";
 			}
             else if (type == EGovInteractState.Denied)
 			{
-                return "¾Ü¾øÊÜÀí";
+                return "æ‹’ç»å—ç†";
             }
             else if (type == EGovInteractState.Accepted)
             {
-                return "ÒÑÊÜÀí";
+                return "å·²å—ç†";
             }
             else if (type == EGovInteractState.Redo)
             {
-                return "ÒªÇó·µ¹¤";
+                return "è¦æ±‚è¿”å·¥";
             }
             else if (type == EGovInteractState.Replied)
             {
-                return "ÒÑ°ìÀí";
+                return "å·²åŠç†";
             }
             else if (type == EGovInteractState.Checked)
             {
-                return "´¦ÀíÍê±Ï";
+                return "å¤„ç†å®Œæ¯•";
             }
 			else
 			{
@@ -83,15 +83,15 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (type == EGovInteractState.Denied)
             {
-                return "¾Ü¾øÊÜÀí";
+                return "æ‹’ç»å—ç†";
             }
             else if (type == EGovInteractState.Checked)
             {
-                return "°ìÀíÍê±Ï";
+                return "åŠç†å®Œæ¯•";
             }
             else
             {
-                return "°ìÀíÖĞ";
+                return "åŠç†ä¸­";
             }
         }
 

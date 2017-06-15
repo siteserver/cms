@@ -1,22 +1,23 @@
 using System.Collections;
 using System.Web.Caching;
 using System.Xml;
+using BaiRong.Core.Configuration;
 
-namespace BaiRong.Core.Configuration
+namespace BaiRong.Core
 {
     public class PermissionConfigManager
 	{
-        public const string CacheKey = "BaiRong.Core.Configuration.PermissionManager";
-        public const string ModuleCacheKey = "BaiRong.Core.Configuration.ModulePermissions";
+        public const string CacheKey = "BaiRong.Core.PermissionManager";
+        public const string ModuleCacheKey = "BaiRong.Core.ModulePermissions";
 
         private static string GetPermissionsFilePathOfPlatform()
         {
             return "~/SiteFiles/Configuration/Menus/Permissions.config";
         }
 
-        private static string GetPermissionsFilePathOfApp(string appID)
+        private static string GetPermissionsFilePathOfApp(string appId)
         {
-            return $"~/SiteFiles/Configuration/Menus/{appID}/Permissions.config";
+            return $"~/SiteFiles/Configuration/Menus/{appId}/Permissions.config";
         }
 
         ArrayList generalPermissions = new ArrayList();
