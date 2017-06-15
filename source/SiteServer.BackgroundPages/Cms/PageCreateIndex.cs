@@ -11,12 +11,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("PublishmentSystemID"); // 检测参数PublishmentSystemID是否合法(不能为空)
 
             if (!IsPostBack)
             {
-                CreateManager.CreateIndex(PublishmentSystemId);
-                PageCreateStatus.Redirect(PublishmentSystemId);
+                CreateManager.CreateIndex(PublishmentSystemId); // 创建任务
+                PageCreateStatus.Redirect(PublishmentSystemId); // 转到查询任务进度页面
             }
         }
     }
