@@ -175,6 +175,8 @@ namespace SiteServer.CMS.StlParser
 
                 //for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 //{
+                //    PageContentsDetail(filePath, pageInfo, stlLabelList, pageContentsElementParser, contentBuilder, stlElementTranslated, totalNum, pageCount, currentPageIndex);
+
                 //    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                 //    var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
                 //    var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
@@ -190,16 +192,26 @@ namespace SiteServer.CMS.StlParser
                 //    pageInfo.ClearLastPageScript();
                 //}
 
-                for (int i = 1; i <= pageCount; i = i + 3)
+                if (PublishmentSystemInfo.Additional.IsCreateMultiThread) // 多线程并发生成页面
                 {
-                    var list = new List<int>();
-                    list.Add(i);
-                    if (i <= pageCount - 1)
-                        list.Add(i + 1);
-                    if (i <= pageCount - 2)
-                        list.Add(i + 2);
-                    Parallel.ForEach(list, currentPageIndex => PageContentsDetail(filePath, pageInfo, stlLabelList, pageContentsElementParser, contentBuilder, stlElementTranslated, totalNum, pageCount, currentPageIndex));
+                    for (int i = 1; i <= pageCount; i = i + 3)
+                    {
+                        var list = new List<int>();
+                        list.Add(i);
+                        if (i <= pageCount - 1)
+                            list.Add(i + 1);
+                        if (i <= pageCount - 2)
+                            list.Add(i + 2);
+                        Parallel.ForEach(list, currentPageIndex => PageContentsDetail(filePath, pageInfo, stlLabelList, pageContentsElementParser, contentBuilder, stlElementTranslated, totalNum, pageCount, currentPageIndex));
+                    }
                 }
+                else // 单线程生成页面
+                { 
+                    for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
+                    {
+                        PageContentsDetail(filePath, pageInfo, stlLabelList, pageContentsElementParser, contentBuilder, stlElementTranslated, totalNum, pageCount, currentPageIndex);
+                    }
+                } 
 
             }
             //如果标签中存在<stl:pageChannels>
@@ -316,21 +328,32 @@ namespace SiteServer.CMS.StlParser
             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
             var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, nodeId, orderByString);
-            
+
             //foreach (var contentId in contentIdList)
             //{
-            //    CreateContent(tableStyle, tableName, nodeId, contentId);
-
+            //    CreateContent(tableStyle, tableName, nodeId, contentId); 
             //}
-            for (int i = 0; i < contentIdList.Count; i = i + 3)
+
+            if (PublishmentSystemInfo.Additional.IsCreateMultiThread) // 多线程并发生成页面
             {
-                var list = new List<int>();
-                list.Add(contentIdList[i]);
-                if (i < contentIdList.Count - 1)
-                    list.Add(contentIdList[i + 1]);
-                if (i < contentIdList.Count - 2)
-                    list.Add(contentIdList[i + 2]);
-                Parallel.ForEach(list, contentId => CreateContent(tableStyle, tableName, nodeId, contentId));
+                for (int i = 0; i < contentIdList.Count; i = i + 3)
+                {
+                    var list = new List<int>();
+                    list.Add(contentIdList[i]);
+                    if (i < contentIdList.Count - 1)
+                        list.Add(contentIdList[i + 1]);
+                    if (i < contentIdList.Count - 2)
+                        list.Add(contentIdList[i + 2]);
+                    Parallel.ForEach(list, contentId => CreateContent(tableStyle, tableName, nodeId, contentId));
+                }
+            }
+            else  // 单线程生成页面
+            {
+                foreach (var contentId in contentIdList)
+                {
+                    CreateContent(tableStyle, tableName, nodeId, contentId);
+
+                } 
             }
         }
 

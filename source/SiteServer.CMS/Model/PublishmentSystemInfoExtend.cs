@@ -345,6 +345,12 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("CreateStaticContentAddDate", DateUtils.GetDateString(value)); }
         }
 
+        public bool IsCreateMultiThread
+        {
+            get { return GetBool("IsCreateMultiThread", false); }
+            set { SetExtendedAttribute("IsCreateMultiThread", value.ToString()); }
+        }
+
         /****************站点地图设置********************/
 
         public string SiteMapGooglePath
