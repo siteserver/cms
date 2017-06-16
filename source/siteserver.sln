@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaiRong.Core", "BaiRong.Core\BaiRong.Core.csproj", "{3D8CB06B-1791-4685-AB56-965B9F41666E}"
 EndProject
@@ -14,6 +14,27 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "siteserver", "siteserver\siteserver.csproj", "{FFB06C04-69CD-4B0D-872B-3FDF9EEC38C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.Plugins", "SiteServer.Plugins\SiteServer.Plugins.csproj", "{61A793E1-3E99-4BDC-BC20-7298CA3E6849}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SiteServer.Web", "SiteServer.Web\", "{B75BBB40-B7B1-4DA7-A05E-174EB22CF50E}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_52644"
+		Debug.AspNetCompiler.PhysicalPath = "SiteServer.Web\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_52644\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_52644"
+		Release.AspNetCompiler.PhysicalPath = "SiteServer.Web\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_52644\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "52644"
+		SlnRelativePath = "SiteServer.Web\"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +92,14 @@ Global
 		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Release|Any CPU.Build.0 = Release|Any CPU
 		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Release|x86.ActiveCfg = Release|x86
 		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Release|x86.Build.0 = Release|x86
+		{B75BBB40-B7B1-4DA7-A05E-174EB22CF50E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B75BBB40-B7B1-4DA7-A05E-174EB22CF50E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B75BBB40-B7B1-4DA7-A05E-174EB22CF50E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B75BBB40-B7B1-4DA7-A05E-174EB22CF50E}.Debug|x86.Build.0 = Debug|Any CPU
+		{B75BBB40-B7B1-4DA7-A05E-174EB22CF50E}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{B75BBB40-B7B1-4DA7-A05E-174EB22CF50E}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{B75BBB40-B7B1-4DA7-A05E-174EB22CF50E}.Release|x86.ActiveCfg = Debug|Any CPU
+		{B75BBB40-B7B1-4DA7-A05E-174EB22CF50E}.Release|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

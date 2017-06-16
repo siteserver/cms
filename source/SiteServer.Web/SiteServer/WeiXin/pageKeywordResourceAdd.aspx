@@ -28,8 +28,8 @@
                     <asp:Literal ID="LtlSite" runat="server" />
 
                     <div class="btn-group">
-                        <asp:Button ID="btnContentSelect" class="btn btn-info" Text="选择内容页" runat="server" />
-                        <asp:Button ID="btnChannelSelect" class="btn btn-info" Text="选择栏目页" runat="server" />
+                        <asp:Button ID="BtnContentSelect" class="btn btn-info" Text="选择内容页" runat="server" />
+                        <asp:Button ID="BtnChannelSelect" class="btn btn-info" Text="选择栏目页" runat="server" />
                     </div>
 
                     <script type="text/javascript">
@@ -123,8 +123,8 @@
                         </strong>
                     </label>
                     <div>
-                        <bairong:BREditor ID="breContent" Width="100%" Height="350" runat="server">
-                        </bairong:BREditor>
+                        <bairong:UEditor ID="BreContent" Width="100%" Height="350" runat="server">
+                        </bairong:UEditor>
                     </div>
                 </div>
 

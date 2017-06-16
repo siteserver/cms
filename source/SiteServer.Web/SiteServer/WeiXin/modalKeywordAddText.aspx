@@ -602,8 +602,8 @@
         <span class="gray">超链接添加形式，如：&lt;a href="http://www.baidu.com"&gt;百度&lt;/a&gt;</span>
         <hr>
         <div id="titles" class="well well-small" style="display:none"></div>
-        <asp:Button id="btnContentSelect" class="btn btn-info" text="添加微官网内容链接" runat="server" />
-        <asp:Button id="btnChannelSelect" class="btn btn-info" text="添加微官网栏目链接" runat="server" />
+        <asp:Button id="BtnContentSelect" class="btn btn-info" text="添加微官网内容链接" runat="server" />
+        <asp:Button id="BtnChannelSelect" class="btn btn-info" text="添加微官网栏目链接" runat="server" />
 
         <input id="idsCollection" name="idsCollection" type="hidden" value="" />
         <script type="text/javascript">
