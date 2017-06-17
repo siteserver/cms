@@ -13,6 +13,8 @@ namespace SiteServer.CMS.Core.Create
 
         CreateTaskInfo GetLastPendingTask();
 
+        List<CreateTaskInfo> GetLastPendingTasks(int topNum);
+
         void RemovePendingAndAddSuccessLog(CreateTaskInfo taskInfo, string timeSpan);
 
         void RemovePendingAndAddFailureLog(CreateTaskInfo taskInfo, Exception ex);
@@ -119,6 +121,38 @@ namespace SiteServer.CMS.Core.Create
                 }
             }
             return null;
+        }
+
+        public List<CreateTaskInfo> GetLastPendingTasks(int topNum)
+        {
+            List<CreateTaskInfo> list = null;
+
+            foreach (var entry in PendingTaskDict)
+            {
+                var pendingTasks = entry.Value;
+                if (pendingTasks.Count > 0)
+                {
+                    list = new List<CreateTaskInfo>();
+                    if (pendingTasks.Count >= topNum)
+                    {
+                        while (topNum > 0)
+                        {
+                            list.Add(pendingTasks[pendingTasks.Count - topNum]);
+                            topNum--;
+                        }
+                    }
+                    else
+                    {
+                        foreach (var taskInfo in pendingTasks)
+                        {
+                            list.Add(taskInfo);
+                        }
+                    } 
+
+                    return list;
+                }
+            }
+            return list;
         }
 
         public void RemovePendingAndAddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
@@ -238,6 +272,11 @@ namespace SiteServer.CMS.Core.Create
         public CreateTaskInfo GetLastPendingTask()
         {
             return DataProvider.CreateTaskDao.GetLastPendingTask();
+        }
+
+        public List<CreateTaskInfo> GetLastPendingTasks(int topNum)
+        {
+            return DataProvider.CreateTaskDao.GetLastPendingTasks(topNum);
         }
 
         public void RemovePendingAndAddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
