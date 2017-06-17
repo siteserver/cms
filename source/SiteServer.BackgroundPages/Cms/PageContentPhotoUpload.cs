@@ -76,7 +76,7 @@ $(document).ready(function(){{
         public string GetPreviewImageSize()
         {
             return
-                $@"width=""{PublishmentSystemInfo.Additional.PhotoSmallWidth}"" height=""{PublishmentSystemInfo.Additional.PhotoSmallHeight}""";
+                $@"width=""{PublishmentSystemInfo.Additional.PhotoSmallWidth}"" height=""{PublishmentSystemInfo.Additional.PhotoSmallWidth}""";
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

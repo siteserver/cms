@@ -7,16 +7,16 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class LotteryLogDAO : DataProviderBase
+    public class LotteryLogDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_LotteryLog";
+        private const string TableName = "wx_LotteryLog";
         public int Insert(LotteryLogInfo lotteryLogInfo)
         {
-            var lotteryLogID = 0;
+            var lotteryLogId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(lotteryLogInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(lotteryLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -25,9 +25,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        lotteryLogID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        lotteryLogId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -39,24 +37,24 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return lotteryLogID;
+            return lotteryLogId;
         }
 
-        public void AddCount(int publishmentSystemID, int lotteryID, string cookieSN, string wxOpenID, string userName, int maxCount, int maxDailyCount, out bool isMaxCount, out bool isMaxDailyCount)
+        public void AddCount(int publishmentSystemId, int lotteryId, string cookieSn, string wxOpenId, string userName, int maxCount, int maxDailyCount, out bool isMaxCount, out bool isMaxDailyCount)
         {
             isMaxCount = false;
             isMaxDailyCount = false;
 
-            var logInfo = GetLogInfo(lotteryID, cookieSN, wxOpenID, userName);
+            var logInfo = GetLogInfo(lotteryId, cookieSn, wxOpenId, userName);
             if (logInfo == null)
             {
-                logInfo = new LotteryLogInfo { PublishmentSystemID = publishmentSystemID, LotteryID = lotteryID, CookieSN = cookieSN, WXOpenID = wxOpenID, UserName = userName, LotteryCount = 1, LotteryDailyCount = 1, LastLotteryDate = DateTime.Now };
+                logInfo = new LotteryLogInfo { PublishmentSystemId = publishmentSystemId, LotteryId = lotteryId, CookieSn = cookieSn, WxOpenId = wxOpenId, UserName = userName, LotteryCount = 1, LotteryDailyCount = 1, LastLotteryDate = DateTime.Now };
 
                 IDataParameter[] parms = null;
 
-                var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(logInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+                var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(logInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-                ExecuteNonQuery(SQL_INSERT, parms);
+                ExecuteNonQuery(sqlInsert, parms);
             }
             else
             {
@@ -78,11 +76,11 @@ namespace SiteServer.CMS.WeiXin.Provider
                     if (!isMaxDailyCount)
                     {
                         string sqlString =
-                            $"UPDATE {TABLE_NAME} SET {LotteryLogAttribute.LotteryCount} = {LotteryLogAttribute.LotteryCount} + 1, {LotteryLogAttribute.LotteryDailyCount} = 1, {LotteryLogAttribute.LastLotteryDate} = getdate() WHERE ID = {logInfo.ID}";
+                            $"UPDATE {TableName} SET {LotteryLogAttribute.LotteryCount} = {LotteryLogAttribute.LotteryCount} + 1, {LotteryLogAttribute.LotteryDailyCount} = 1, {LotteryLogAttribute.LastLotteryDate} = getdate() WHERE ID = {logInfo.Id}";
                         if (theSameDay)
                         {
                             sqlString =
-                                $"UPDATE {TABLE_NAME} SET {LotteryLogAttribute.LotteryCount} = {LotteryLogAttribute.LotteryCount} + 1, {LotteryLogAttribute.LotteryDailyCount} = {LotteryLogAttribute.LotteryDailyCount} + 1, {LotteryLogAttribute.LastLotteryDate} = getdate() WHERE ID = {logInfo.ID}";
+                                $"UPDATE {TableName} SET {LotteryLogAttribute.LotteryCount} = {LotteryLogAttribute.LotteryCount} + 1, {LotteryLogAttribute.LotteryDailyCount} = {LotteryLogAttribute.LotteryDailyCount} + 1, {LotteryLogAttribute.LastLotteryDate} = getdate() WHERE ID = {logInfo.Id}";
                         }
                         ExecuteNonQuery(sqlString);
                     }
@@ -90,44 +88,44 @@ namespace SiteServer.CMS.WeiXin.Provider
             }
         }
 
-        public void DeleteAll(int lotteryID)
+        public void DeleteAll(int lotteryId)
         {
-            if (lotteryID > 0)
+            if (lotteryId > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE {LotteryLogAttribute.LotteryID} = {lotteryID}";
+                    $"DELETE FROM {TableName} WHERE {LotteryLogAttribute.LotteryId} = {lotteryId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(List<int> logIDList)
+        public void Delete(List<int> logIdList)
         {
-            if (logIDList != null && logIDList.Count > 0)
+            if (logIdList != null && logIdList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(logIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(logIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public int GetCount(int lotteryID)
+        public int GetCount(int lotteryId)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {LotteryLogAttribute.LotteryID} = {lotteryID}";
+                $"SELECT COUNT(*) FROM {TableName} WHERE {LotteryLogAttribute.LotteryId} = {lotteryId}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private LotteryLogInfo GetLogInfo(int lotteryID, string cookieSN, string wxOpenID, string userName)
+        private LotteryLogInfo GetLogInfo(int lotteryId, string cookieSn, string wxOpenId, string userName)
         {
             LotteryLogInfo logInfo = null;
 
-            string SQL_WHERE =
-                $"WHERE {LotteryLogAttribute.LotteryID} = {lotteryID} AND {LotteryLogAttribute.CookieSN} = '{cookieSN}'";
+            string sqlWhere =
+                $"WHERE {LotteryLogAttribute.LotteryId} = {lotteryId} AND {LotteryLogAttribute.CookieSn} = '{cookieSn}'";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -139,22 +137,22 @@ namespace SiteServer.CMS.WeiXin.Provider
             return logInfo;
         }
 
-        public string GetSelectString(int lotteryID)
+        public string GetSelectString(int lotteryId)
         {
-            string whereString = $"WHERE {LotteryLogAttribute.LotteryID} = {lotteryID}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {LotteryLogAttribute.LotteryId} = {lotteryId}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public List<LotteryLogInfo> GetLotteryLogInfoList(int publishmentSystemID, int lotteryID)
+        public List<LotteryLogInfo> GetLotteryLogInfoList(int publishmentSystemId, int lotteryId)
         {
             var lotteryLogInfoList = new List<LotteryLogInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {LotteryLogAttribute.PublishmentSystemID} = {publishmentSystemID} AND {LotteryLogAttribute.LotteryID} = {lotteryID}";
+            string sqlWhere =
+                $"WHERE {LotteryLogAttribute.PublishmentSystemId} = {publishmentSystemId} AND {LotteryLogAttribute.LotteryId} = {lotteryId}";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

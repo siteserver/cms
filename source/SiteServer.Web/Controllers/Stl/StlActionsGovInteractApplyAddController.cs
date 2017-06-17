@@ -56,7 +56,7 @@ namespace SiteServer.API.Controllers.Stl
                 }
                 GovInteractApplyManager.LogNew(publishmentSystemId, nodeId, contentId, realName, toDepartmentName);
 
-                MessageManager.SendSMS(publishmentSystemInfo, tagStyleGovInteractApplyInfo, ETableStyle.GovInteractContent, publishmentSystemInfo.AuxiliaryTableForGovInteract, nodeId, contentInfo);
+                MessageManager.SendSms(publishmentSystemInfo, tagStyleGovInteractApplyInfo, ETableStyle.GovInteractContent, publishmentSystemInfo.AuxiliaryTableForGovInteract, nodeId, contentInfo);
 
                 HttpContext.Current.Response.Write(GovInteractApplyTemplate.GetCallbackScript(publishmentSystemInfo, nodeId, true, contentInfo.QueryCode, string.Empty));
             }

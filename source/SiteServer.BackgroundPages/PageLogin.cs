@@ -7,52 +7,54 @@ namespace SiteServer.BackgroundPages
 {
     public class PageLogin : BasePage
 	{
-        protected Literal LtlMessage;
-		protected TextBox TbAccount;
-		protected TextBox TbPassword;
-        protected PlaceHolder PhValidateCode;
-        protected TextBox TbValidateCode;
-        protected Literal LtlValidateCodeImage;
-        protected CheckBox CbRememberMe;
+        public Literal LtlMessage;
+        public TextBox TbAccount;
+        public TextBox TbPassword;
+        public PlaceHolder PhValidateCode;
+        public TextBox TbValidateCode;
+        public Literal LtlValidateCodeImage;
+        public CheckBox CbRememberMe;
+	    public PlaceHolder PhFindPassword;
 
         private VcManager _vcManager; // 验证码类
 
         protected override bool IsAccessable => true; // 设置本页面是否能直接访问 如果为false，则必须管理员登录后才能访问
 
-	    public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
 		{
             if (IsForbidden) return; // 如果无权访问页面，则返回空白页
 
             try
             {
                 _vcManager = VcManager.GetInstance(); // 构建验证码实例
-                if (!Page.IsPostBack)
-                {
-                    if (Body.IsQueryExists("error")) // 如果url参数error不为空，则把错误信息显示到页面上
-                    {
-                        LtlMessage.Text = GetMessageHtml(Body.GetQueryString("error"));
-                    }
-                    // 判断是否满足系统的黑白名单限制要求，即查看后台是否启用了黑白名单功能，如果启用了判断一下现在访问的IP是否允许访问
-                    if (RestrictionManager.IsVisitAllowed(ConfigManager.SystemConfigInfo.RestrictionType, ConfigManager.Instance.RestrictionBlackList, ConfigManager.Instance.RestrictionWhiteList))
-                    {  
-                        PageUtils.DetermineRedirectToInstaller(); // 判断是否需要安装，如果需要则转到安装页面。
+                if (Page.IsPostBack) return;
 
-                        if (FileConfigManager.Instance.IsValidateCode) // 根据配置判断是否需要启用验证码
-                        {
-                            LtlValidateCodeImage.Text =
-                                $@"<a href=""javascript:;"" onclick=""$('#imgVerify').attr('src', $('#imgVerify').attr('src') + '&' + new Date().getTime())""><img id=""imgVerify"" name=""imgVerify"" src=""{PageValidateCode.GetRedirectUrl(_vcManager.GetCookieName())}"" align=""absmiddle"" /></a>";
-                        }
-                        else
-                        {
-                            PhValidateCode.Visible = false;
-                        }
+                PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsFindPassword;
+
+                if (Body.IsQueryExists("error")) // 如果url参数error不为空，则把错误信息显示到页面上
+                {
+                    LtlMessage.Text = GetMessageHtml(Body.GetQueryString("error"));
+                }
+                // 判断是否满足系统的黑白名单限制要求，即查看后台是否启用了黑白名单功能，如果启用了判断一下现在访问的IP是否允许访问
+                if (RestrictionManager.IsVisitAllowed(ConfigManager.SystemConfigInfo.RestrictionType, ConfigManager.Instance.RestrictionBlackList, ConfigManager.Instance.RestrictionWhiteList))
+                {
+                    PageUtils.DetermineRedirectToInstaller(); // 判断是否需要安装，如果需要则转到安装页面。
+
+                    if (FileConfigManager.Instance.IsValidateCode) // 根据配置判断是否需要启用验证码
+                    {
+                        LtlValidateCodeImage.Text =
+                            $@"<a href=""javascript:;"" onclick=""$('#imgVerify').attr('src', $('#imgVerify').attr('src') + '&' + new Date().getTime())""><img id=""imgVerify"" name=""imgVerify"" src=""{PageValidateCode.GetRedirectUrl(_vcManager.GetCookieName())}"" align=""absmiddle"" /></a>";
                     }
                     else // IP被限制了，不允许访问后台
                     {
-                        Page.Response.Write("<h1>此页面禁止访问.</h1>");
-                        Page.Response.Write($"<p>IP地址：{PageUtils.GetIpAddress()}<br />需要访问此页面请与网站管理员联系开通相关权限.</p>");
-                        Page.Response.End();
+                        PhValidateCode.Visible = false;
                     }
+                }
+                else
+                {
+                    Page.Response.Write("<h1>此页面禁止访问.</h1>");
+                    Page.Response.Write($"<p>IP地址：{PageUtils.GetIpAddress()}<br />需要访问此页面请与网站管理员联系开通相关权限.</p>");
+                    Page.Response.End();
                 }
             }
             catch

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Web;
+using BaiRong.Core.Model.Enumerations;
 using Top.Api;
 using Top.Api.Request;
 
@@ -12,14 +14,18 @@ namespace BaiRong.Core
     {
         public static bool IsSmsReady()
         {
-            if (ConfigManager.SystemConfigInfo.IsSmsAliDaYu && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAliDaYuAppKey) && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAliDaYuAppSecret) && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAliDaYuSignName))
+            if (ConfigManager.SystemConfigInfo.SmsProviderType == ESmsProviderType.Aliyun && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAppKey) && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAppSecret) && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsSignName))
             {
                 return true;
             }
-            return ConfigManager.SystemConfigInfo.IsSmsYunPian && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsYunPianApiKey);
+            if (ConfigManager.SystemConfigInfo.SmsProviderType == ESmsProviderType.Yunpian && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAppKey))
+            {
+                return true;
+            }
+            return false;
         }
 
-        public static bool SendCode(string mobile, int code, out string errorMessage)
+        public static bool SendNotify(string mobile, string tplId, NameValueCollection parameters, out string errorMessage)
         {
             if (string.IsNullOrEmpty(mobile) || !StringUtils.IsMobile(mobile))
             {
@@ -30,13 +36,13 @@ namespace BaiRong.Core
             errorMessage = string.Empty;
             var isSuccess = false;
 
-            if (ConfigManager.SystemConfigInfo.IsSmsAliDaYu && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAliDaYuAppKey) && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAliDaYuAppSecret) && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAliDaYuSignName) && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAliDaYuCodeTplId))
+            if (ConfigManager.SystemConfigInfo.SmsProviderType == ESmsProviderType.Aliyun)
             {
-                isSuccess = SendCodeByAliDaYu(mobile, code, out errorMessage);
+                isSuccess = SendByAliyun(mobile, tplId, parameters, out errorMessage);
             }
-            if (!isSuccess && ConfigManager.SystemConfigInfo.IsSmsYunPian && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsYunPianApiKey) && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsYunPianCodeTplId))
+            else if (ConfigManager.SystemConfigInfo.SmsProviderType == ESmsProviderType.Yunpian)
             {
-                isSuccess = SendCodeByYunPian(mobile, code, out errorMessage);
+                isSuccess = SendByYunpian(mobile, tplId, parameters, out errorMessage);
             }
 
             if (!isSuccess && string.IsNullOrEmpty(errorMessage))
@@ -47,19 +53,34 @@ namespace BaiRong.Core
             return isSuccess;
         }
 
-        public static bool SendCodeByAliDaYu(string mobile, int code, out string errorMessage)
+        public static bool SendVerify(string mobile, int code, string tplId, out string errorMessage)
+        {
+            var parameters = new NameValueCollection { { "code", code.ToString() } };
+            return SendNotify(mobile, tplId, parameters, out errorMessage);
+        }
+
+        private static bool SendByAliyun(string mobile, string tplId, NameValueCollection parameters, out string errorMessage)
         {
             errorMessage = null;
+            var param = new StringBuilder("{");
+            foreach (string key in parameters.Keys)
+            {
+                var value = parameters[key];
+                param.Append($"{key}:'{value}',");
+            }
+            param.Length--;
+            param.Append("}");
             try
             {
-                ITopClient client = new DefaultTopClient("http://gw.api.taobao.com/router/rest", ConfigManager.SystemConfigInfo.SmsAliDaYuAppKey, ConfigManager.SystemConfigInfo.SmsAliDaYuAppSecret);
+                ITopClient client = new DefaultTopClient("http://gw.api.taobao.com/router/rest", ConfigManager.SystemConfigInfo.SmsAppKey, ConfigManager.SystemConfigInfo.SmsAppSecret);
                 var req = new AlibabaAliqinFcSmsNumSendRequest
                 {
                     SmsType = "normal",
-                    SmsFreeSignName = ConfigManager.SystemConfigInfo.SmsAliDaYuSignName,
-                    SmsParam = "{code:'" + code + "'}",
+                    SmsFreeSignName = ConfigManager.SystemConfigInfo.SmsSignName,
+                    //SmsParam = "{code:'" + code + "'}",
+                    SmsParam = param.ToString(),
                     RecNum = mobile,
-                    SmsTemplateCode = ConfigManager.SystemConfigInfo.SmsAliDaYuCodeTplId
+                    SmsTemplateCode = tplId
                 };
 
                 var rsp = client.Execute(req);
@@ -77,34 +98,46 @@ namespace BaiRong.Core
             return false;
         }
 
-        public static bool SendCodeByYunPian(string mobile, int code, out string errorMessage)
+        private static bool SendByYunpian(string mobile, string tplId, NameValueCollection parameters, out string errorMessage)
         {
-            mobile = HttpUtility.UrlEncode(mobile, Encoding.UTF8);
-            var tplValue = HttpUtility.UrlEncode(
-                HttpUtility.UrlEncode("#code#", Encoding.UTF8) + "=" +
-                HttpUtility.UrlEncode(code.ToString(), Encoding.UTF8)
-            , Encoding.UTF8);
+            var param = new StringBuilder();
+            foreach (string key in parameters.Keys)
+            {
+                var value = parameters[key];
 
-            return HttpPostToYunPian("https://sms.yunpian.com/v1/sms/tpl_send.json", "apikey=" + ConfigManager.SystemConfigInfo.SmsYunPianApiKey + "&mobile=" + mobile + "&tpl_id=" + ConfigManager.SystemConfigInfo.SmsYunPianCodeTplId + "&tpl_value=" + tplValue, out errorMessage);
+                param.Append(HttpUtility.UrlEncode("#" + key + "#", Encoding.UTF8) + "=" +
+                             HttpUtility.UrlEncode(value, Encoding.UTF8)).Append("&");
+            }
+            param.Length--;
+
+            mobile = HttpUtility.UrlEncode(mobile, Encoding.UTF8);
+            //var tplValue = HttpUtility.UrlEncode(
+            //    HttpUtility.UrlEncode("#code#", Encoding.UTF8) + "=" +
+            //    HttpUtility.UrlEncode(code.ToString(), Encoding.UTF8)
+            //, Encoding.UTF8);
+            var tplValue = HttpUtility.UrlEncode(param.ToString(), Encoding.UTF8);
+
+            return HttpPostToYunpian("https://sms.yunpian.com/v1/sms/tpl_send.json", "apikey=" + ConfigManager.SystemConfigInfo.SmsAppKey + "&mobile=" + mobile + "&tpl_id=" + tplId + "&tpl_value=" + tplValue, out errorMessage);
         }
 
-        private static bool HttpPostToYunPian(string url, string data, out string errorMessage)
+        private static bool HttpPostToYunpian(string url, string data, out string errorMessage)
         {
             errorMessage = null;
             try
             {
-                byte[] dataArray = Encoding.UTF8.GetBytes(data);
+                var dataArray = Encoding.UTF8.GetBytes(data);
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                var request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = "POST";
                 request.ContentType = "application/x-www-form-urlencoded";
                 request.ContentLength = dataArray.Length;
-                Stream dataStream = request.GetRequestStream();
+                var dataStream = request.GetRequestStream();
                 dataStream.Write(dataArray, 0, dataArray.Length);
                 dataStream.Close();
 
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+                var response = (HttpWebResponse)request.GetResponse();
+                // ReSharper disable once AssignNullToNotNullAttribute
+                var reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
                 reader.ReadToEnd();
                 reader.Close();
                 return true;

@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Web.UI.WebControls;
+using BaiRong.Core;
+using System.Collections;
 
-namespace BaiRong.Core.Model.Enumerations
+namespace BaiRong.Model
 {
 	public enum ETheme
 	{
@@ -32,11 +33,11 @@ namespace BaiRong.Core.Model.Enumerations
 		{
             if (type == ETheme.Default)
 			{
-                return "Ĭ�Ϸ��";
+                return "默认风格";
 			}
             else if (type == ETheme.Google)
 			{
-                return "Google���";
+                return "Google风格";
 			}
 			else
 			{
@@ -46,7 +47,7 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static ETheme GetEnumType(string typeStr)
 		{
-            var retval = ETheme.Default;
+            ETheme retval = ETheme.Default;
 
             if (Equals(ETheme.Default, typeStr))
 			{
@@ -77,7 +78,7 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static ListItem GetListItem(ETheme type, bool selected)
 		{
-			var item = new ListItem(GetText(type), GetValue(type));
+			ListItem item = new ListItem(GetText(type), GetValue(type));
 			if (selected)
 			{
 				item.Selected = true;
@@ -96,7 +97,7 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static ArrayList GetArrayList()
         {
-            var arraylist = new ArrayList();
+            ArrayList arraylist = new ArrayList();
             arraylist.Add(ETheme.Default);
             arraylist.Add(ETheme.Google);
             return arraylist;
@@ -106,7 +107,7 @@ namespace BaiRong.Core.Model.Enumerations
 		{
 			if (listControl != null)
 			{
-                var item = new ListItem(trueText, GetValue(ETheme.Default));
+                ListItem item = new ListItem(trueText, GetValue(ETheme.Default));
 				listControl.Items.Add(item);
                 item = new ListItem(falseText, GetValue(ETheme.Google));
 				listControl.Items.Add(item);

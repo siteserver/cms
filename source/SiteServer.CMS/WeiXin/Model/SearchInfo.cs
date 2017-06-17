@@ -11,65 +11,57 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string KeywordID = "KeywordID";
-        public const string IsDisabled = "IsDisabled";
-        public const string PVCount = "PVCount";
-        public const string Title = "Title";
-        public const string ImageUrl = "ImageUrl";
-        public const string Summary = "Summary";
-        public const string ContentImageUrl = "ContentImageUrl";
-        public const string IsOutsiteSearch = "IsOutsiteSearch";
-        public const string IsNavigation = "IsNavigation";
-        public const string NavTitleColor = "NavTitleColor";
-        public const string NavImageColor = "NavImageColor";
-        public const string ImageAreaTitle = "ImageAreaTitle";
-        public const string ImageAreaChannelID = "ImageAreaChannelID";
-        public const string TextAreaTitle = "TextAreaTitle";
-        public const string TextAreaChannelID = "TextAreaChannelID";
+        public const string Id = nameof(SearchInfo.Id);
+        public const string PublishmentSystemId = nameof(SearchInfo.PublishmentSystemId);
+        public const string KeywordId = nameof(SearchInfo.KeywordId);
+        public const string IsDisabled = nameof(SearchInfo.IsDisabled);
+        public const string PvCount = nameof(SearchInfo.PvCount);
+        public const string Title = nameof(SearchInfo.Title);
+        public const string ImageUrl = nameof(SearchInfo.ImageUrl);
+        public const string Summary = nameof(SearchInfo.Summary);
+        public const string ContentImageUrl = nameof(SearchInfo.ContentImageUrl);
+        public const string IsOutsiteSearch = nameof(SearchInfo.IsOutsiteSearch);
+        public const string IsNavigation = nameof(SearchInfo.IsNavigation);
+        public const string NavTitleColor = nameof(SearchInfo.NavTitleColor);
+        public const string NavImageColor = nameof(SearchInfo.NavImageColor);
+        public const string ImageAreaTitle = nameof(SearchInfo.ImageAreaTitle);
+        public const string ImageAreaChannelId = nameof(SearchInfo.ImageAreaChannelId);
+        public const string TextAreaTitle = nameof(SearchInfo.TextAreaTitle);
+        public const string TextAreaChannelId = nameof(SearchInfo.TextAreaChannelId);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(KeywordID);
-                    allAttributes.Add(IsDisabled);
-                    allAttributes.Add(PVCount);
-                    allAttributes.Add(Title);
-                    allAttributes.Add(ImageUrl);
-                    allAttributes.Add(Summary);
-                    allAttributes.Add(ContentImageUrl);
-                    allAttributes.Add(IsOutsiteSearch);
-                    allAttributes.Add(IsNavigation);
-                    allAttributes.Add(NavTitleColor);
-                    allAttributes.Add(NavImageColor);
-                    allAttributes.Add(ImageAreaTitle);
-                    allAttributes.Add(ImageAreaChannelID);
-                    allAttributes.Add(TextAreaTitle);
-                    allAttributes.Add(TextAreaChannelID);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            KeywordId,
+            IsDisabled,
+            PvCount,
+            Title,
+            ImageUrl,
+            Summary,
+            ContentImageUrl,
+            IsOutsiteSearch,
+            IsNavigation,
+            NavTitleColor,
+            NavImageColor,
+            ImageAreaTitle,
+            ImageAreaChannelId,
+            TextAreaTitle,
+            TextAreaChannelId
+        });
     }
+
     public class SearchInfo : BaseInfo
     {
         public SearchInfo() { }
         public SearchInfo(object dataItem) : base(dataItem) { }
         public SearchInfo(NameValueCollection form) : base(form) { }
         public SearchInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int KeywordID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int KeywordId { get; set; }
         public bool IsDisabled { get; set; }
-        public int PVCount { get; set; }
+        public int PvCount { get; set; }
         public string Title { get; set; }
         public string ImageUrl { get; set; }
         public string Summary { get; set; }
@@ -79,15 +71,10 @@ namespace SiteServer.CMS.WeiXin.Model
         public string NavTitleColor { get; set; }
         public string NavImageColor { get; set; }
         public string ImageAreaTitle { get; set; }
-        public int ImageAreaChannelID { get; set; }
+        public int ImageAreaChannelId { get; set; }
         public string TextAreaTitle { get; set; }
-        public int TextAreaChannelID { get; set; }
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return SearchAttribute.AllAttributes;
-            }
-        }
+        public int TextAreaChannelId { get; set; }
+
+        protected override List<string> AllAttributes => SearchAttribute.AllAttributes;
     }
 }

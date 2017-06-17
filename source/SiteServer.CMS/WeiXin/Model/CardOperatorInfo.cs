@@ -11,27 +11,17 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
  
-        public const string UserName = "UserName";
-        public const string Password = "Password";
-        
+        public const string UserName = nameof(CardOperatorInfo.UserName);
+        public const string Password = nameof(CardOperatorInfo.Password);
       
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                   
-                    allAttributes.Add(UserName);
-                    allAttributes.Add(Password);
-                  }
-
-                return allAttributes;
-            }
-        }
+            UserName,
+            Password
+        });
     }
+
     public class CardOperatorInfo : BaseInfo
     {
         public CardOperatorInfo() { }
@@ -41,13 +31,7 @@ namespace SiteServer.CMS.WeiXin.Model
        
         public string UserName { get; set; }
         public string Password { get; set; }
-         
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return CardOperatorAttribute.AllAttributes;
-            }
-        }
+
+        protected override List<string> AllAttributes => CardOperatorAttribute.AllAttributes;
     }
 }

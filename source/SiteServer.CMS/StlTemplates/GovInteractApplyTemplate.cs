@@ -8,7 +8,7 @@ using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.StlTemplates
 {
-    public class GovInteractApplyTemplate : InputTemplateBase
+    public class GovInteractApplyTemplate
     {
         private readonly PublishmentSystemInfo _publishmentSystemInfo;
         private readonly int _nodeId;
@@ -150,7 +150,7 @@ function stlApplyCallback_[nodeID](jsonString){
             {
                 if (styleInfo.IsVisible)
                 {
-                    var value = InputTypeParser.Parse(_publishmentSystemInfo, _nodeId, styleInfo, ETableStyle.GovInteractContent, styleInfo.AttributeName, null, false, false, null, pageScripts, styleInfo.Additional.IsValidate);
+                    var value = InputTypeParser.Parse(_publishmentSystemInfo, styleInfo, styleInfo.AttributeName, pageScripts);
 
                     if (builder.Length > 0)
                     {

@@ -12,46 +12,31 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string UserName = "UserName";
-        public const string SignDate = "SignDate";
+        public const string Id = nameof(CardSignLogInfo.Id);
+        public const string PublishmentSystemId = nameof(CardSignLogInfo.PublishmentSystemId);
+        public const string UserName = nameof(CardSignLogInfo.UserName);
+        public const string SignDate = nameof(CardSignLogInfo.SignDate);
          
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(UserName);
-                    allAttributes.Add(SignDate);
-                    
-                 }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            UserName,
+            SignDate
+        });
     }
+
     public class CardSignLogInfo : BaseInfo
     {
         public CardSignLogInfo() { }
         public CardSignLogInfo(object dataItem) : base(dataItem) { }
         public CardSignLogInfo(NameValueCollection form) : base(form) { }
         public CardSignLogInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
+        public int PublishmentSystemId { get; set; }
         public string UserName { get; set; }
         public DateTime SignDate { get; set; }
          
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return CardSignLogAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => CardSignLogAttribute.AllAttributes;
     }
 }

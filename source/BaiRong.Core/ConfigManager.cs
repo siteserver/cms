@@ -7,8 +7,6 @@ namespace BaiRong.Core
     {
         private const string CacheKey = "BaiRong.Core.ConfigManager";
 
-        private ConfigManager() { }
-
         public static ConfigInfo Instance
         {
             get
@@ -22,10 +20,6 @@ namespace BaiRong.Core
             }
         }
 
-        public static UserConfigInfo UserConfigInfo => Instance.UserConfigInfo;
-
-        public static SystemConfigInfo SystemConfigInfo => Instance.SystemConfigInfo;
-
         public static bool IsChanged
         {
             set
@@ -36,6 +30,12 @@ namespace BaiRong.Core
                 }
             }
         }
+
+        private ConfigManager() { }
+
+        public static UserConfigInfo UserConfigInfo => Instance.UserConfigInfo;
+
+        public static SystemConfigInfo SystemConfigInfo => Instance.SystemConfigInfo;
 
         public static string Cipherkey
         {

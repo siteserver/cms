@@ -44,8 +44,8 @@ namespace SiteServer.CMS.WeiXin.Manager
         public static string GetView360Url(PublishmentSystemInfo publishmentSystemInfo, View360Info view360Info, string wxOpenID)
         {
             var attributes = new NameValueCollection();
-            attributes.Add("publishmentSystemID", view360Info.PublishmentSystemID.ToString());
-            attributes.Add("view360ID", view360Info.ID.ToString());
+            attributes.Add("publishmentSystemID", view360Info.PublishmentSystemId.ToString());
+            attributes.Add("view360ID", view360Info.Id.ToString());
             attributes.Add("wxOpenID", wxOpenID);
             return PageUtils.AddQueryString(GetView360Url(publishmentSystemInfo), attributes);
         }
@@ -54,9 +54,9 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var view360InfoList = DataProviderWX.View360DAO.GetView360InfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var view360InfoList = DataProviderWx.View360Dao.GetView360InfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
             foreach (var view360Info in view360InfoList)
             {

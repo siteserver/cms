@@ -9,17 +9,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class StoreItemDAO : DataProviderBase
+    public class StoreItemDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_StoreItem";
+        private const string TableName = "wx_StoreItem";
 
         public int Insert(StoreItemInfo storeItemInfo)
         {
-            var storeItemID = 0;
+            var storeItemId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(storeItemInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(storeItemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -28,9 +28,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        storeItemID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        storeItemId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -42,16 +40,16 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return storeItemID;
+            return storeItemId;
         }
 
-        public int Insert(int publishmentSystemID, StoreItemInfo storeItemInfo)
+        public int Insert(int publishmentSystemId, StoreItemInfo storeItemInfo)
         {
-            var storeItemID = 0;
+            var storeItemId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(storeItemInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(storeItemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -60,9 +58,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        storeItemID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        storeItemId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -74,74 +70,74 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            DataProviderWX.StoreCategoryDAO.UpdateStoreItemCount(publishmentSystemID);
+            DataProviderWx.StoreCategoryDao.UpdateStoreItemCount(publishmentSystemId);
 
-            return storeItemID;
+            return storeItemId;
         }
 
-        public void Update(int publishmentSystemID, StoreItemInfo storeItemInfo)
+        public void Update(int publishmentSystemId, StoreItemInfo storeItemInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(storeItemInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(storeItemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            ExecuteNonQuery(sqlUpdate, parms);
 
-            DataProviderWX.StoreCategoryDAO.UpdateStoreItemCount(publishmentSystemID);
+            DataProviderWx.StoreCategoryDao.UpdateStoreItemCount(publishmentSystemId);
         }
 
-        public void Delete(int publishmentSystemID, int storeItemID)
+        public void Delete(int publishmentSystemId, int storeItemId)
         {
-            if (storeItemID > 0)
+            if (storeItemId > 0)
             {
-                var categoryIDList = GetCategoryIDList(TranslateUtils.ToIntList(storeItemID));
+                var categoryIdList = GetCategoryIdList(TranslateUtils.ToIntList(storeItemId));
 
-                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {storeItemID}";
+                string sqlString = $"DELETE FROM {TableName} WHERE ID = {storeItemId}";
                 ExecuteNonQuery(sqlString);
 
-                DataProviderWX.StoreCategoryDAO.UpdateStoreItemCount(publishmentSystemID);
+                DataProviderWx.StoreCategoryDao.UpdateStoreItemCount(publishmentSystemId);
             }
         }
 
-        public void Delete(int publishmentSystemID, List<int> storeItemIDList)
+        public void Delete(int publishmentSystemId, List<int> storeItemIdList)
         {
-            if (storeItemIDList != null && storeItemIDList.Count > 0)
+            if (storeItemIdList != null && storeItemIdList.Count > 0)
             {
-                var categoryIDList = GetCategoryIDList(storeItemIDList);
+                var categoryIdList = GetCategoryIdList(storeItemIdList);
 
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(storeItemIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(storeItemIdList)})";
                 ExecuteNonQuery(sqlString);
 
-                DataProviderWX.StoreCategoryDAO.UpdateStoreItemCount(publishmentSystemID);
+                DataProviderWx.StoreCategoryDao.UpdateStoreItemCount(publishmentSystemId);
             }
         }
 
-        private List<int> GetCategoryIDList(List<int> storeItemIDList)
+        private List<int> GetCategoryIdList(List<int> storeItemIdList)
         {
-            var categoryIDList = new List<int>();
+            var categoryIdList = new List<int>();
 
             string sqlString =
-                $"SELECT {StoreItemAttribute.CategoryID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(storeItemIDList)})";
+                $"SELECT {StoreItemAttribute.CategoryId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(storeItemIdList)})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read() && !rdr.IsDBNull(0))
                 {
-                    categoryIDList.Add(rdr.GetInt32(0));
+                    categoryIdList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return categoryIDList;
+            return categoryIdList;
         }
 
-        public StoreItemInfo GetStoreItemInfo(int storeItemID)
+        public StoreItemInfo GetStoreItemInfo(int storeItemId)
         {
             StoreItemInfo storeItemInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {storeItemID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {storeItemId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -153,14 +149,14 @@ namespace SiteServer.CMS.WeiXin.Provider
             return storeItemInfo;
         }
 
-        public StoreItemInfo GetStoreItemInfoByParentID(int publishmentSystemID, int parentID)
+        public StoreItemInfo GetStoreItemInfoByParentId(int publishmentSystemId, int parentId)
         {
             StoreItemInfo storeItemInfo = null;
 
-            string SQL_WHERE = $"WHERE publishmentSystemID = {publishmentSystemID} AND ParentID = {parentID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE publishmentSystemID = {publishmentSystemId} AND ParentID = {parentId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -172,28 +168,28 @@ namespace SiteServer.CMS.WeiXin.Provider
             return storeItemInfo;
         }
 
-        public string GetSelectString(int storeID)
+        public string GetSelectString(int storeId)
         {
-            string whereString = $"WHERE {StoreItemAttribute.StoreID} = {storeID} ";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {StoreItemAttribute.StoreId} = {storeId} ";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public List<StoreItemInfo> GetStoreItemInfoListByCategoryID(int publishmentSystemID, int categoryID)
+        public List<StoreItemInfo> GetStoreItemInfoListByCategoryId(int publishmentSystemId, int categoryId)
         {
             var list = new List<StoreItemInfo>();
             StringBuilder builder;
-            if (categoryID == 0)
+            if (categoryId == 0)
             {
-                builder = new StringBuilder($"WHERE {StoreItemAttribute.PublishmentSystemID} = {publishmentSystemID} ");
+                builder = new StringBuilder($"WHERE {StoreItemAttribute.PublishmentSystemId} = {publishmentSystemId} ");
             }
             else
             {
                 builder = new StringBuilder(
-                    $"WHERE {StoreItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {StoreItemAttribute.CategoryID} = {categoryID} ");
+                    $"WHERE {StoreItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {StoreItemAttribute.CategoryId} = {categoryId} ");
             }
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -206,15 +202,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public List<StoreItemInfo> GetAllStoreItemInfoList(int publishmentSystemID)
+        public List<StoreItemInfo> GetAllStoreItemInfoList(int publishmentSystemId)
         {
             var list = new List<StoreItemInfo>();
 
             var builder = new StringBuilder(
-                $"WHERE {StoreItemAttribute.PublishmentSystemID} = {publishmentSystemID}");
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
+                $"WHERE {StoreItemAttribute.PublishmentSystemId} = {publishmentSystemId}");
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -227,25 +223,25 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public void DeleteAll(int publishmentSystemID, int storeID)
+        public void DeleteAll(int publishmentSystemId, int storeId)
         {
-            if (storeID > 0)
+            if (storeId > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE {StoreItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {StoreItemAttribute.StoreID} = {storeID}";
+                    $"DELETE FROM {TableName} WHERE {StoreItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {StoreItemAttribute.StoreId} = {storeId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public List<StoreItemInfo> GetAllStoreItemInfoListByLocation(int publishmentSystemID, string location_X)
+        public List<StoreItemInfo> GetAllStoreItemInfoListByLocation(int publishmentSystemId, string locationX)
         {
             var list = new List<StoreItemInfo>();
 
             var builder = new StringBuilder(
-                $"WHERE {StoreItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {StoreItemAttribute.Latitude} BETWEEN '{Convert.ToDouble(location_X) - 0.5}' AND '{Convert.ToDouble(location_X) + 0.5}'");
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
+                $"WHERE {StoreItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {StoreItemAttribute.Latitude} BETWEEN '{Convert.ToDouble(locationX) - 0.5}' AND '{Convert.ToDouble(locationX) + 0.5}'");
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -258,33 +254,33 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public int GetCount(int publishmentSystemID, int categoryID)
+        public int GetCount(int publishmentSystemId, int categoryId)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {StoreItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {StoreItemAttribute.CategoryID} = {categoryID}";
+                $"SELECT COUNT(*) FROM {TableName} WHERE {StoreItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {StoreItemAttribute.CategoryId} = {categoryId}";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public int GetAllCount(int publishmentSystemID, int categoryID)
+        public int GetAllCount(int publishmentSystemId, int categoryId)
         {
-            var categoryIDList = DataProviderWX.StoreCategoryDAO.GetCategoryIDListForLastNode(publishmentSystemID, categoryID);
+            var categoryIdList = DataProviderWx.StoreCategoryDao.GetCategoryIdListForLastNode(publishmentSystemId, categoryId);
 
             string sqlString =
-                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {StoreItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {StoreItemAttribute.CategoryID} IN ({TranslateUtils.ToSqlInStringWithoutQuote(categoryIDList)})";
+                $"SELECT COUNT(*) FROM {TableName} WHERE {StoreItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {StoreItemAttribute.CategoryId} IN ({TranslateUtils.ToSqlInStringWithoutQuote(categoryIdList)})";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public List<StoreItemInfo> GetStoreItemInfoList(int publishmentSystemID, int storeID)
+        public List<StoreItemInfo> GetStoreItemInfoList(int publishmentSystemId, int storeId)
         {
             var list = new List<StoreItemInfo>();
             StringBuilder builder;
             builder = new StringBuilder(
-                $"WHERE {StoreItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {StoreItemAttribute.StoreID} = {storeID} ");
+                $"WHERE {StoreItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {StoreItemAttribute.StoreId} = {storeId} ");
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

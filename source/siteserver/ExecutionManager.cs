@@ -11,6 +11,11 @@ namespace siteserver
 {
     public class ExecutionManager
     {
+        public static void ClearAllPendingCreate()
+        {
+            CreateTaskManager.Instance.ClearAllTask();
+        }
+
         public static bool ExecutePendingCreate()
         {
             try

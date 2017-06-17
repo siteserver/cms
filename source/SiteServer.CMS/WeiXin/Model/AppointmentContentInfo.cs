@@ -12,73 +12,63 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string AppointmentID = "AppointmentID";
-        public const string AppointmentItemID = "AppointmentItemID";
-        public const string CookieSN = "CookieSN";
-        public const string WXOpenID = "WXOpenID";
-        public const string UserName = "UserName";
-        public const string RealName = "RealName";
-        public const string Mobile = "Mobile";
-        public const string Email = "Email";
-        public const string SettingsXML = "SettingsXML";
-        public const string Status = "Status";
-        public const string Message = "Message";
-        public const string AddDate = "AddDate";
-        public const string Reason = "Reason";
-        public const string StartDate = "StartDate";
-        public const string EndDate = "EndDate";
+        public const string Id = nameof(AppointmentContentInfo.Id);
+        public const string PublishmentSystemId = nameof(AppointmentContentInfo.PublishmentSystemId);
+        public const string AppointmentId = nameof(AppointmentContentInfo.AppointmentId);
+        public const string AppointmentItemId = nameof(AppointmentContentInfo.AppointmentItemId);
+        public const string CookieSn = nameof(AppointmentContentInfo.CookieSn);
+        public const string WxOpenId = nameof(AppointmentContentInfo.WxOpenId);
+        public const string UserName = nameof(AppointmentContentInfo.UserName);
+        public const string RealName = nameof(AppointmentContentInfo.RealName);
+        public const string Mobile = nameof(AppointmentContentInfo.Mobile);
+        public const string Email = nameof(AppointmentContentInfo.Email);
+        public const string SettingsXml = nameof(AppointmentContentInfo.SettingsXml);
+        public const string Status = nameof(AppointmentContentInfo.Status);
+        public const string Message = nameof(AppointmentContentInfo.Message);
+        public const string AddDate = nameof(AppointmentContentInfo.AddDate);
+        public const string Reason = nameof(AppointmentContentInfo.Reason);
+        public const string StartDate = nameof(AppointmentContentInfo.StartDate);
+        public const string EndDate = nameof(AppointmentContentInfo.EndDate);
 
-
-
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(AppointmentID);
-                    allAttributes.Add(AppointmentItemID);
-                    allAttributes.Add(CookieSN);
-                    allAttributes.Add(WXOpenID);
-                    allAttributes.Add(UserName);
-                    allAttributes.Add(RealName);
-                    allAttributes.Add(Mobile);
-                    allAttributes.Add(Email);
-                    allAttributes.Add(SettingsXML);
-                    allAttributes.Add(Status);
-                    allAttributes.Add(Message);
-                    allAttributes.Add(AddDate);
-                    allAttributes.Add(Reason);
-                    allAttributes.Add(StartDate);
-                    allAttributes.Add(EndDate);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            AppointmentId,
+            AppointmentItemId,
+            CookieSn,
+            WxOpenId,
+            UserName,
+            RealName,
+            Mobile,
+            Email,
+            SettingsXml,
+            Status,
+            Message,
+            AddDate,
+            Reason,
+            StartDate,
+            EndDate
+        });
     }
+
     public class AppointmentContentInfo : BaseInfo
     {
         public AppointmentContentInfo() { }
         public AppointmentContentInfo(object dataItem) : base(dataItem) { }
         public AppointmentContentInfo(NameValueCollection form) : base(form) { }
         public AppointmentContentInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int AppointmentID { get; set; }
-        public int AppointmentItemID { get; set; }
-        public string CookieSN { get; set; }
-        public string WXOpenID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int AppointmentId { get; set; }
+        public int AppointmentItemId { get; set; }
+        public string CookieSn { get; set; }
+        public string WxOpenId { get; set; }
         public string UserName { get; set; }
         public string RealName { get; set; }
         public string Mobile { get; set; }
         public string Email { get; set; }
-        public string SettingsXML { get; set; }
+        public string SettingsXml { get; set; }
         public string Status { get; set; }
         public string Message { get; set; }
         public DateTime AddDate { get; set; }
@@ -86,12 +76,6 @@ namespace SiteServer.CMS.WeiXin.Model
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return AppointmentContentAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => AppointmentContentAttribute.AllAttributes;
     }
 }

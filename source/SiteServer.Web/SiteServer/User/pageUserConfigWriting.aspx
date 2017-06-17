@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
-        <asp:Literal ID="ltlBreadCrumb" runat="server" />
+        <asp:Literal ID="LtlBreadCrumb" runat="server" />
         <bairong:Alerts runat="server" Text="用户的投稿范围为稿件发布者所属角色下有权限的站点及栏目；站点栏目的审核规则为稿件的审核规则，通过设置站点栏目的审核规则来控制稿件的审核" />
 
         <div class="popover popover-static">

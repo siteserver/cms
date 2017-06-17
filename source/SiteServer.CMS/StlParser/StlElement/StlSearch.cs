@@ -4,7 +4,6 @@ using System.Text;
 using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -155,19 +154,19 @@ namespace SiteServer.CMS.StlParser.StlElement
                 string loading;
                 string yes;
                 string no;
-                StlParserUtility.GetSearchOutputTemplateString(node, out loading, out yes, out no, pageInfo, contextInfo);
+                StlInnerUtility.GetLoadingYesNo(node, pageInfo, out loading, out yes, out no);
 
                 if (string.IsNullOrEmpty(loading))
                 {
-                    loading = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath, ECharset.utf_8);
+                    loading = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
                 }
                 if (string.IsNullOrEmpty(yes))
                 {
-                    yes = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath, ECharset.utf_8);
+                    yes = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
                 }
                 if (string.IsNullOrEmpty(no))
                 {
-                    no = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath, ECharset.utf_8);
+                    no = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
                 }
 
                 pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
@@ -177,11 +176,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var apiParameters = ActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.PublishmentSystemId, ajaxDivId, yes);
 
                 var builder = new StringBuilder();
-                builder.Append($@"<div id=""{ajaxDivId}"">");
-                builder.Append($@"<div class=""stl_loading"">{loading}</div>");
-                builder.Append($@"<div class=""stl_yes"" style=""display:none"">{string.Empty}</div>");
-                builder.Append($@"<div class=""stl_no"" style=""display:none"">{no}</div>");
-                builder.Append("</div>");
+                builder.Append($@"
+<div id=""{ajaxDivId}"">
+    <div class=""stl_loading"">{loading}</div>
+    <div class=""stl_yes"" style=""display:none""></div>
+    <div class=""stl_no"" style=""display:none"">{no}</div>
+</div>
+");
 
                 builder.Append($@"
 <script type=""text/javascript"" language=""javascript"">

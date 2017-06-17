@@ -79,9 +79,9 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                         else
                         {
-                            if (!EFileSystemTypeUtils.IsCompressionFile(PathUtils.GetExtension(filePath)))
+                            if (!EFileSystemTypeUtils.IsZip(PathUtils.GetExtension(filePath)))
                             {
-                                FailMessage("必须上传压缩文件");
+                                FailMessage("必须上传Zip压缩文件");
                                 return;
                             }
                         }

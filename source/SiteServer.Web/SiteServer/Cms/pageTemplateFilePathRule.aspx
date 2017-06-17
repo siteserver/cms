@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
 
   <bairong:alerts text="在此可设置各栏目的生成页面命名规则，或者指定对应栏目的生成页面地址。" runat="server" />
 

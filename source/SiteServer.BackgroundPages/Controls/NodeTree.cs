@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using System.Web.UI;
 using BaiRong.Core;

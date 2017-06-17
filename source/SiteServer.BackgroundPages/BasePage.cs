@@ -4,7 +4,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Permissions;
-using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Share;
 
@@ -12,8 +11,7 @@ namespace SiteServer.BackgroundPages
 {
     public class BasePage : Page
     {
-        public Literal ltlBreadCrumb; // 面包屑(头部导航 + 左边一级二级菜单 + 其他)
-        public Message messageCtrl;
+        public Literal LtlBreadCrumb; // 面包屑(头部导航 + 左边一级二级菜单 + 其他)
 
         private MessageUtils.Message.EMessageType _messageType;
         private string _message = string.Empty;
@@ -53,16 +51,7 @@ namespace SiteServer.BackgroundPages
         {
             if (!string.IsNullOrEmpty(_message))
             {
-                if (messageCtrl != null) // 页面有消息显示的控件则立即显示消息
-                {
-                    messageCtrl.IsShowImmidiatary = true;
-                    messageCtrl.MessageType = _messageType;
-                    messageCtrl.Content = _message;
-                }
-                else // 没有的话则把消息存在cookies中到有控件的页面再显示
-                { 
-                    MessageUtils.SaveMessage(_messageType, _message);
-                }
+                MessageUtils.SaveMessage(_messageType, _message);
             }
 
             base.Render(writer);
@@ -189,12 +178,12 @@ $('.operation-area').hide();
 
         public void BreadCrumbSys(string leftMenuId, string pageTitle, string permission)
         {
-            if (ltlBreadCrumb != null)
+            if (LtlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdSys);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSys, topTitle, leftMenuId, leftTitle, String.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSys, topTitle, leftMenuId, leftTitle, String.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
@@ -205,12 +194,12 @@ $('.operation-area').hide();
 
         public void BreadCrumbAdmin(string leftMenuId, string pageTitle, string permission)
         {
-            if (ltlBreadCrumb != null)
+            if (LtlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdAdmin);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdAdmin, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdAdmin, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
@@ -221,12 +210,12 @@ $('.operation-area').hide();
 
         public void BreadCrumbUser(string leftMenuId, string pageTitle, string permission)
         {
-            if (ltlBreadCrumb != null)
+            if (LtlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdUser);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdUser, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdUser, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
@@ -237,12 +226,12 @@ $('.operation-area').hide();
 
         public void BreadCrumbAnalysis(string leftMenuId, string pageTitle, string permission)
         {
-            if (ltlBreadCrumb != null)
+            if (LtlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdAnalysis);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdAnalysis, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdAnalysis, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
@@ -253,12 +242,12 @@ $('.operation-area').hide();
 
         public void BreadCrumbSettings(string leftMenuId, string pageTitle, string permission)
         {
-            if (ltlBreadCrumb != null)
+            if (LtlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdSettings);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSettings, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSettings, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
@@ -269,12 +258,12 @@ $('.operation-area').hide();
 
         public void BreadCrumbService(string leftMenuId, string pageTitle, string permission)
         {
-            if (ltlBreadCrumb != null)
+            if (LtlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdService);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdService, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdService, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))

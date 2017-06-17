@@ -166,7 +166,7 @@ namespace SiteServer.CMS.Core
                 return GetContentByFilePath(filePath, charset);
             }
 
-            public static string GetContentByFilePath(string filePath, ECharset charset)
+            public static string GetContentByFilePath(string filePath, ECharset charset = ECharset.utf_8)
             {
                 try
                 {

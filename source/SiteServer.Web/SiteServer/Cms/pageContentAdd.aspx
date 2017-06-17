@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form id="myForm" class="form-inline" enctype="multipart/form-data" runat="server">
-        <asp:Literal ID="ltlBreadCrumb" runat="server" />
+        <asp:Literal ID="LtlBreadCrumb" runat="server" />
         <bairong:Alerts runat="server" />
 
         <script type="text/javascript" charset="utf-8" src="../assets/validate.js"></script>

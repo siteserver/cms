@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using BaiRong.Core;
+using BaiRong.Core.Data;
 using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Model
@@ -11,114 +12,91 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string MenuID = "MenuID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string MenuName = "MenuName";
-        public const string MenuType = "MenuType";
-        public const string Keyword = "Keyword";
-        public const string Url = "Url";
-        public const string ChannelID = "ChannelID";
-        public const string ContentID = "ContentID";
-        public const string ParentID = "ParentID";
-        public const string Taxis = "Taxis";
+        public const string MenuId = nameof(MenuInfo.MenuId);
+        public const string PublishmentSystemId = nameof(MenuInfo.PublishmentSystemId);
+        public const string MenuName = nameof(MenuInfo.MenuName);
+        public const string MenuType = nameof(MenuInfo.MenuType);
+        public const string Keyword = nameof(MenuInfo.Keyword);
+        public const string Url = nameof(MenuInfo.Url);
+        public const string ChannelId = nameof(MenuInfo.ChannelId);
+        public const string ContentId = nameof(MenuInfo.ContentId);
+        public const string ParentId = nameof(MenuInfo.ParentId);
+        public const string Taxis = nameof(MenuInfo.Taxis);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(MenuID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(MenuName);
-                    allAttributes.Add(MenuType);
-                    allAttributes.Add(Keyword);
-                    allAttributes.Add(Url);
-                    allAttributes.Add(ChannelID);
-                    allAttributes.Add(ContentID);
-                    allAttributes.Add(ParentID);
-                    allAttributes.Add(Taxis);
-                }
-
-                return allAttributes;
-            }
-        }
+            MenuId,
+            PublishmentSystemId,
+            MenuName,
+            MenuType,
+            Keyword,
+            Url,
+            ChannelId,
+            ContentId,
+            ParentId,
+            Taxis
+        });
     }
-
 
     public class MenuInfo
     {
-        private int menuID;
-        private int publishmentSystemID;
-        private string menuName;
-        private EMenuType menuType;
-        private string keyword;
-        private string url;
-        private int channelID;
-        private int contentID;
-        private int parentID;
-        private int taxis;
-
         public MenuInfo()
         {
-            menuID = 0;
-            publishmentSystemID = 0;
-            menuName = string.Empty;
-            menuType = EMenuType.Keyword;
-            keyword = string.Empty;
-            url = string.Empty;
-            channelID = 0;
-            contentID = 0;
-            parentID = 0;
-            taxis = 0;
+            MenuId = 0;
+            PublishmentSystemId = 0;
+            MenuName = string.Empty;
+            MenuType = EMenuType.Keyword;
+            Keyword = string.Empty;
+            Url = string.Empty;
+            ChannelId = 0;
+            ContentId = 0;
+            ParentId = 0;
+            Taxis = 0;
         }
 
-        public MenuInfo(int menuID, int publishmentSystemID, string menuName, EMenuType menuType, string keyword, string url, int channelID, int contentID, int parentID, int taxis)
+        public MenuInfo(int menuId, int publishmentSystemId, string menuName, EMenuType menuType, string keyword, string url, int channelId, int contentId, int parentId, int taxis)
         {
-            this.menuID = menuID;
-            this.publishmentSystemID = publishmentSystemID;
-            this.menuName = menuName;
-            this.menuType = menuType;
-            this.keyword = keyword;
-            this.url = url;
-            this.channelID = channelID;
-            this.contentID = contentID;
-            this.parentID = parentID;
-            this.taxis = taxis;
+            MenuId = menuId;
+            PublishmentSystemId = publishmentSystemId;
+            MenuName = menuName;
+            MenuType = menuType;
+            Keyword = keyword;
+            Url = url;
+            ChannelId = channelId;
+            ContentId = contentId;
+            ParentId = parentId;
+            Taxis = taxis;
         }
 
         public MenuInfo(object dataItem)
         {
-            if (dataItem != null)
+            if (dataItem == null) return;
+
+            foreach (var name in AllAttributes)
             {
-                foreach (var name in AllAttributes)
+                var value = SqlUtils.Eval(dataItem, name);
+                if (value != null)
                 {
-                    var value = TranslateUtils.Eval(dataItem, name);
-                    if (value != null)
-                    {
-                        SetValueInternal(name, value);
-                    }
+                    SetValueInternal(name, value);
                 }
             }
         }
+
         public MenuInfo(NameValueCollection form, bool isFilterSqlAndXss)
         {
-            if (form != null)
+            if (form == null) return;
+
+            foreach (var name in AllAttributes)
             {
-                foreach (var name in AllAttributes)
+                var value = form[name];
+                if (value == null) continue;
+
+                if (isFilterSqlAndXss)
                 {
-                    var value = form[name];
-                    if (value != null)
-                    {
-                        if (isFilterSqlAndXss)
-                        {
-                            value = PageUtils.FilterSqlAndXss(value);
-                        }
-                        SetValueInternal(name, value);
-                    }
+                    value = PageUtils.FilterSqlAndXss(value);
                 }
+                SetValueInternal(name, value);
             }
         }
 
@@ -136,23 +114,20 @@ namespace SiteServer.CMS.WeiXin.Model
             return attributes;
         }
 
-
         public object GetValue(string attributeName)
         {
             foreach (var name in AllAttributes)
             {
-                if (StringUtils.EqualsIgnoreCase(name, attributeName))
+                if (!StringUtils.EqualsIgnoreCase(name, attributeName)) continue;
+
+                var nameVlaue = GetType().GetProperty(name).GetValue(this, null);
+
+                if (attributeName == "MenuType")
                 {
-                    var nameVlaue = GetType().GetProperty(name).GetValue(this, null);
-
-                    if (attributeName == "MenuType")
-                    {
-                        return EMenuTypeUtils.GetEnumType(nameVlaue.ToString());
-                    }
-
-                    return nameVlaue;
-
+                    return EMenuTypeUtils.GetEnumType(nameVlaue.ToString());
                 }
+
+                return nameVlaue;
             }
             return null;
         }
@@ -161,16 +136,17 @@ namespace SiteServer.CMS.WeiXin.Model
         {
             foreach (var name in AllAttributes)
             {
-                if (StringUtils.EqualsIgnoreCase(name, attributeName))
+                if (!StringUtils.EqualsIgnoreCase(name, attributeName)) continue;
+                try
                 {
-                    try
-                    {
-                        SetValueInternal(name, value);
-                    }
-                    catch { }
-
-                    break;
+                    SetValueInternal(name, value);
                 }
+                catch
+                {
+                    // ignored
+                }
+
+                break;
             }
         }
 
@@ -201,71 +177,26 @@ namespace SiteServer.CMS.WeiXin.Model
             }
         }
 
-        protected List<string> AllAttributes
-        {
-            get
-            {
-                return MenuAttribute.AllAttributes;
-            }
-        }
-        public int MenuID
-        {
-            get { return menuID; }
-            set { menuID = value; }
-        }
+        protected List<string> AllAttributes => MenuAttribute.AllAttributes;
 
-        public int PublishmentSystemID
-        {
-            get { return publishmentSystemID; }
-            set { publishmentSystemID = value; }
-        }
+        public int MenuId { get; set; }
 
-        public string MenuName
-        {
-            get { return menuName; }
-            set { menuName = value; }
-        }
+        public int PublishmentSystemId { get; set; }
 
-        public EMenuType MenuType
-        {
-            get { return menuType; }
-            set { menuType = value; }
-        }
+        public string MenuName { get; set; }
 
-        public string Keyword
-        {
-            get { return keyword; }
-            set { keyword = value; }
-        }
+        public EMenuType MenuType { get; set; }
 
-        public string Url
-        {
-            get { return url; }
-            set { url = value; }
-        }
+        public string Keyword { get; set; }
 
-        public int ChannelID
-        {
-            get { return channelID; }
-            set { channelID = value; }
-        }
+        public string Url { get; set; }
 
-        public int ContentID
-        {
-            get { return contentID; }
-            set { contentID = value; }
-        }
+        public int ChannelId { get; set; }
 
-        public int ParentID
-        {
-            get { return parentID; }
-            set { parentID = value; }
-        }
+        public int ContentId { get; set; }
 
-        public int Taxis
-        {
-            get { return taxis; }
-            set { taxis = value; }
-        }
+        public int ParentId { get; set; }
+
+        public int Taxis { get; set; }
     }
 }

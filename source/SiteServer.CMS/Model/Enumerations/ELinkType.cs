@@ -6,18 +6,18 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum ELinkType
 	{
-		LinkNoRelatedToChannelAndContent,	//Ä¬ÈÏ
-		NoLinkIfContentNotExists,			//ÎŞÄÚÈİÊ±²»¿ÉÁ´½Ó
-		LinkToOnlyOneContent,				//½öÒ»ÌõÄÚÈİÊ±Á´½Óµ½´ËÄÚÈİ
-		NoLinkIfContentNotExistsAndLinkToOnlyOneContent,						//ÎŞÄÚÈİÊ±²»¿ÉÁ´½Ó£¬½öÒ»ÌõÄÚÈİÊ±Á´½Óµ½´ËÄÚÈİ
-		LinkToFirstContent,				//Á´½Óµ½µÚÒ»ÌõÄÚÈİ
-		NoLinkIfContentNotExistsAndLinkToFirstContent,						//ÎŞÄÚÈİÊ±²»¿ÉÁ´½Ó£¬ÓĞÄÚÈİÊ±Á´½Óµ½µÚÒ»ÌõÄÚÈİ
-		NoLinkIfChannelNotExists,			//ÎŞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó
-		LinkToLastAddChannel,				//Á´½Óµ½×î½üÔö¼ÓµÄ×ÓÀ¸Ä¿
-		LinkToFirstChannel,					//Á´½Óµ½µÚÒ»¸ö×ÓÀ¸Ä¿
-		NoLinkIfChannelNotExistsAndLinkToLastAddChannel,							//ÎŞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó£¬ÓĞÀ¸Ä¿Ê±Á´½Óµ½×î½üÔö¼ÓµÄ×ÓÀ¸Ä¿
-		NoLinkIfChannelNotExistsAndLinkToFirstChannel,						//ÎŞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó£¬ÓĞÀ¸Ä¿Ê±Á´½Óµ½µÚÒ»¸ö×ÓÀ¸Ä¿
-		NoLink								//²»¿ÉÁ´½Ó
+		LinkNoRelatedToChannelAndContent,	//é»˜è®¤
+		NoLinkIfContentNotExists,			//æ— å†…å®¹æ—¶ä¸å¯é“¾æ¥
+		LinkToOnlyOneContent,				//ä»…ä¸€æ¡å†…å®¹æ—¶é“¾æ¥åˆ°æ­¤å†…å®¹
+		NoLinkIfContentNotExistsAndLinkToOnlyOneContent,						//æ— å†…å®¹æ—¶ä¸å¯é“¾æ¥ï¼Œä»…ä¸€æ¡å†…å®¹æ—¶é“¾æ¥åˆ°æ­¤å†…å®¹
+		LinkToFirstContent,				//é“¾æ¥åˆ°ç¬¬ä¸€æ¡å†…å®¹
+		NoLinkIfContentNotExistsAndLinkToFirstContent,						//æ— å†…å®¹æ—¶ä¸å¯é“¾æ¥ï¼Œæœ‰å†…å®¹æ—¶é“¾æ¥åˆ°ç¬¬ä¸€æ¡å†…å®¹
+		NoLinkIfChannelNotExists,			//æ— æ ç›®æ—¶ä¸å¯é“¾æ¥
+		LinkToLastAddChannel,				//é“¾æ¥åˆ°æœ€è¿‘å¢åŠ çš„å­æ ç›®
+		LinkToFirstChannel,					//é“¾æ¥åˆ°ç¬¬ä¸€ä¸ªå­æ ç›®
+		NoLinkIfChannelNotExistsAndLinkToLastAddChannel,							//æ— æ ç›®æ—¶ä¸å¯é“¾æ¥ï¼Œæœ‰æ ç›®æ—¶é“¾æ¥åˆ°æœ€è¿‘å¢åŠ çš„å­æ ç›®
+		NoLinkIfChannelNotExistsAndLinkToFirstChannel,						//æ— æ ç›®æ—¶ä¸å¯é“¾æ¥ï¼Œæœ‰æ ç›®æ—¶é“¾æ¥åˆ°ç¬¬ä¸€ä¸ªå­æ ç›®
+		NoLink								//ä¸å¯é“¾æ¥
 	}
 
 
@@ -83,51 +83,51 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
 			if (type == ELinkType.NoLinkIfContentNotExists)
 			{
-				return "ÎŞÄÚÈİÊ±²»¿ÉÁ´½Ó";
+				return "æ— å†…å®¹æ—¶ä¸å¯é“¾æ¥";
 			}
 			else if (type == ELinkType.LinkToOnlyOneContent)
 			{
-				return "½öÒ»ÌõÄÚÈİÊ±Á´½Óµ½´ËÄÚÈİ";
+				return "ä»…ä¸€æ¡å†…å®¹æ—¶é“¾æ¥åˆ°æ­¤å†…å®¹";
 			}
 			else if (type == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
 			{
-				return "ÎŞÄÚÈİÊ±²»¿ÉÁ´½Ó£¬½öÒ»ÌõÄÚÈİÊ±Á´½Óµ½´ËÄÚÈİ";
+				return "æ— å†…å®¹æ—¶ä¸å¯é“¾æ¥ï¼Œä»…ä¸€æ¡å†…å®¹æ—¶é“¾æ¥åˆ°æ­¤å†…å®¹";
 			}
 			else if (type == ELinkType.LinkToFirstContent)
 			{
-				return "Á´½Óµ½µÚÒ»ÌõÄÚÈİ";
+				return "é“¾æ¥åˆ°ç¬¬ä¸€æ¡å†…å®¹";
 			}
 			else if (type == ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
 			{
-				return "ÎŞÄÚÈİÊ±²»¿ÉÁ´½Ó£¬ÓĞÄÚÈİÊ±Á´½Óµ½µÚÒ»ÌõÄÚÈİ";
+				return "æ— å†…å®¹æ—¶ä¸å¯é“¾æ¥ï¼Œæœ‰å†…å®¹æ—¶é“¾æ¥åˆ°ç¬¬ä¸€æ¡å†…å®¹";
 			}
 			else if (type == ELinkType.NoLinkIfChannelNotExists)
 			{
-				return "ÎŞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó";
+				return "æ— æ ç›®æ—¶ä¸å¯é“¾æ¥";
 			}
 			else if (type == ELinkType.LinkToLastAddChannel)
 			{
-				return "Á´½Óµ½×î½üÔö¼ÓµÄ×ÓÀ¸Ä¿";
+				return "é“¾æ¥åˆ°æœ€è¿‘å¢åŠ çš„å­æ ç›®";
 			}
 			else if (type == ELinkType.LinkToFirstChannel)
 			{
-				return "Á´½Óµ½µÚÒ»¸ö×ÓÀ¸Ä¿";
+				return "é“¾æ¥åˆ°ç¬¬ä¸€ä¸ªå­æ ç›®";
 			}
 			else if (type == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
 			{
-				return "ÎŞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó£¬ÓĞÀ¸Ä¿Ê±Á´½Óµ½×î½üÔö¼ÓµÄ×ÓÀ¸Ä¿";
+				return "æ— æ ç›®æ—¶ä¸å¯é“¾æ¥ï¼Œæœ‰æ ç›®æ—¶é“¾æ¥åˆ°æœ€è¿‘å¢åŠ çš„å­æ ç›®";
 			}
 			else if (type == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
 			{
-				return "ÎŞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó£¬ÓĞÀ¸Ä¿Ê±Á´½Óµ½µÚÒ»¸ö×ÓÀ¸Ä¿";
+				return "æ— æ ç›®æ—¶ä¸å¯é“¾æ¥ï¼Œæœ‰æ ç›®æ—¶é“¾æ¥åˆ°ç¬¬ä¸€ä¸ªå­æ ç›®";
 			}
 			else if (type == ELinkType.NoLink)
 			{
-				return "²»¿ÉÁ´½Ó";
+				return "ä¸å¯é“¾æ¥";
 			}
 			else if (type == ELinkType.LinkNoRelatedToChannelAndContent)
 			{
-				return "Ä¬ÈÏ";
+				return "é»˜è®¤";
 			}
 			else
 			{

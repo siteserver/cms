@@ -118,6 +118,6 @@ table.radiobuttonlist td{border:none;}
 .validate_tr {border: 1px solid #db9a9a;background-color: #ffe8e8;}
 .validate_span {float: none;color: #c00 !important;}
 .attributeName {background-color: #d9edf7 !important; text-align: right !important; width: 100px;}
-.gray, .gray p{color:#999; font-size: 14px; height: 22px; line-height: 20px; margin: 0;}
+.gray, .gray p{color:#999; font-size: 12px; height: 22px; line-height: 20px; margin: 0;}
 .table-bordered td{border-left:1px solid #dddddd;border-top:1px solid #dddddd;}
 [class^="icon-"],[class*=" icon-"] {font-size: 14px; color: #444;}

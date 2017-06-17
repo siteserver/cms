@@ -2,8 +2,8 @@
 {
     public class ConferenceAgendaInfo
     {
-        public string dateTime { get; set; }
-        public string title { get; set; }
-        public string summary { get; set; }
+        public string DateTime { get; set; }
+        public string Title { get; set; }
+        public string Summary { get; set; }
     }
 }

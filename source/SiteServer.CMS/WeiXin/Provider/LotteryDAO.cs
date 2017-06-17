@@ -8,17 +8,17 @@ using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class LotteryDAO : DataProviderBase
+    public class LotteryDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_Lottery";
+        private const string TableName = "wx_Lottery";
 
         public int Insert(LotteryInfo lotteryInfo)
         {
-            var lotteryID = 0;
+            var lotteryId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(lotteryInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(lotteryInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -27,9 +27,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        lotteryID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        lotteryId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -41,132 +39,132 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return lotteryID;
+            return lotteryId;
         }
 
         public void Update(LotteryInfo lotteryInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(lotteryInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(lotteryInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
         }
 
-        public List<int> GetLotteryIDList(int publishmentSystemID, ELotteryType lotteryType)
+        public List<int> GetLotteryIdList(int publishmentSystemId, ELotteryType lotteryType)
         {
-            var lotteryIDList = new List<int>();
+            var lotteryIdList = new List<int>();
 
-            string SQL_WHERE =
-                $"WHERE {LotteryAttribute.PublishmentSystemID} = {publishmentSystemID} AND {LotteryAttribute.LotteryType} = '{ELotteryTypeUtils.GetValue(lotteryType)}'";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, LotteryAttribute.ID, SQL_WHERE, null);
+            string sqlWhere =
+                $"WHERE {LotteryAttribute.PublishmentSystemId} = {publishmentSystemId} AND {LotteryAttribute.LotteryType} = '{ELotteryTypeUtils.GetValue(lotteryType)}'";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, LotteryAttribute.Id, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
-                    lotteryIDList.Add(rdr.GetInt32(0));
+                    lotteryIdList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return lotteryIDList;
+            return lotteryIdList;
         }
 
-        private List<int> GetLotteryIDList(int publishmentSystemID)
+        private List<int> GetLotteryIdList(int publishmentSystemId)
         {
-            var lotteryIDList = new List<int>();
+            var lotteryIdList = new List<int>();
 
-            string SQL_WHERE = $"WHERE {LotteryAttribute.PublishmentSystemID} = {publishmentSystemID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, LotteryAttribute.ID, SQL_WHERE, null);
+            string sqlWhere = $"WHERE {LotteryAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, LotteryAttribute.Id, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
-                    lotteryIDList.Add(rdr.GetInt32(0));
+                    lotteryIdList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return lotteryIDList;
+            return lotteryIdList;
         }
 
-        public void UpdateUserCount(int publishmentSystemID, Dictionary<int, int> lotteryIDWithCount)
+        public void UpdateUserCount(int publishmentSystemId, Dictionary<int, int> lotteryIdWithCount)
         {
-            if (lotteryIDWithCount.Count == 0)
+            if (lotteryIdWithCount.Count == 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {LotteryAttribute.UserCount} = 0 WHERE {LotteryAttribute.PublishmentSystemID} = {publishmentSystemID}";
+                    $"UPDATE {TableName} SET {LotteryAttribute.UserCount} = 0 WHERE {LotteryAttribute.PublishmentSystemId} = {publishmentSystemId}";
                 ExecuteNonQuery(sqlString);
             }
             else
             {
-                var lotteryIDList = GetLotteryIDList(publishmentSystemID);
-                foreach (var lotteryID in lotteryIDList)
+                var lotteryIdList = GetLotteryIdList(publishmentSystemId);
+                foreach (var lotteryId in lotteryIdList)
                 {
-                    if (lotteryIDWithCount.ContainsKey(lotteryID))
+                    if (lotteryIdWithCount.ContainsKey(lotteryId))
                     {
                         string sqlString =
-                            $"UPDATE {TABLE_NAME} SET {LotteryAttribute.UserCount} = {lotteryIDWithCount[lotteryID]} WHERE ID = {lotteryID}";
+                            $"UPDATE {TableName} SET {LotteryAttribute.UserCount} = {lotteryIdWithCount[lotteryId]} WHERE ID = {lotteryId}";
                         ExecuteNonQuery(sqlString);
                     }
                     else
                     {
                         string sqlString =
-                            $"UPDATE {TABLE_NAME} SET {LotteryAttribute.UserCount} = 0 WHERE ID = {lotteryID}";
+                            $"UPDATE {TableName} SET {LotteryAttribute.UserCount} = 0 WHERE ID = {lotteryId}";
                         ExecuteNonQuery(sqlString);
                     }
                 }
             }
         }
 
-        public void Delete(int publishmentSystemID, List<int> lotteryIDList)
+        public void Delete(int publishmentSystemId, List<int> lotteryIdList)
         {
-            if (lotteryIDList != null && lotteryIDList.Count > 0)
+            if (lotteryIdList != null && lotteryIdList.Count > 0)
             {
-                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(lotteryIDList));
+                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(lotteryIdList));
 
-                foreach (var lotteryID in lotteryIDList)
+                foreach (var lotteryId in lotteryIdList)
                 {
-                    DataProviderWX.LotteryAwardDAO.DeleteAll(lotteryID);
-                    DataProviderWX.LotteryWinnerDAO.DeleteAll(lotteryID);
-                    DataProviderWX.LotteryLogDAO.DeleteAll(lotteryID);
+                    DataProviderWx.LotteryAwardDao.DeleteAll(lotteryId);
+                    DataProviderWx.LotteryWinnerDao.DeleteAll(lotteryId);
+                    DataProviderWx.LotteryLogDao.DeleteAll(lotteryId);
                 }
 
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(lotteryIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(lotteryIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private List<int> GetKeywordIDList(List<int> lotteryIDList)
+        private List<int> GetKeywordIdList(List<int> lotteryIdList)
         {
-            var keywordIDList = new List<int>();
+            var keywordIdList = new List<int>();
 
             string sqlString =
-                $"SELECT {LotteryAttribute.KeywordID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(lotteryIDList)})";
+                $"SELECT {LotteryAttribute.KeywordId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(lotteryIdList)})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    keywordIDList.Add(rdr.GetInt32(0));
+                    keywordIdList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return keywordIDList;
+            return keywordIdList;
         }
 
-        public LotteryInfo GetLotteryInfo(int lotteryID)
+        public LotteryInfo GetLotteryInfo(int lotteryId)
         {
             LotteryInfo lotteryInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {lotteryID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {lotteryId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -178,19 +176,19 @@ namespace SiteServer.CMS.WeiXin.Provider
             return lotteryInfo;
         }
 
-        public List<LotteryInfo> GetLotteryInfoListByKeywordID(int publishmentSystemID, ELotteryType lotteryType, int keywordID)
+        public List<LotteryInfo> GetLotteryInfoListByKeywordId(int publishmentSystemId, ELotteryType lotteryType, int keywordId)
         {
             var lotteryInfoList = new List<LotteryInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {LotteryAttribute.PublishmentSystemID} = {publishmentSystemID} AND {LotteryAttribute.LotteryType} = '{ELotteryTypeUtils.GetValue(lotteryType)}' AND {LotteryAttribute.IsDisabled} <> '{true}'";
-            if (keywordID > 0)
+            string sqlWhere =
+                $"WHERE {LotteryAttribute.PublishmentSystemId} = {publishmentSystemId} AND {LotteryAttribute.LotteryType} = '{ELotteryTypeUtils.GetValue(lotteryType)}' AND {LotteryAttribute.IsDisabled} <> '{true}'";
+            if (keywordId > 0)
             {
-                SQL_WHERE += $" AND {LotteryAttribute.KeywordID} = {keywordID}";
+                sqlWhere += $" AND {LotteryAttribute.KeywordId} = {keywordId}";
             }
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -203,69 +201,69 @@ namespace SiteServer.CMS.WeiXin.Provider
             return lotteryInfoList;
         }
 
-        public int GetFirstIDByKeywordID(int publishmentSystemID, ELotteryType lotteryType, int keywordID)
+        public int GetFirstIdByKeywordId(int publishmentSystemId, ELotteryType lotteryType, int keywordId)
         {
             string sqlString =
-                $"SELECT TOP 1 ID FROM {TABLE_NAME} WHERE {LotteryAttribute.PublishmentSystemID} = {publishmentSystemID} AND {LotteryAttribute.LotteryType} = '{ELotteryTypeUtils.GetValue(lotteryType)}' AND {LotteryAttribute.IsDisabled} <> '{true}' AND {LotteryAttribute.KeywordID} = {keywordID}";
+                $"SELECT TOP 1 ID FROM {TableName} WHERE {LotteryAttribute.PublishmentSystemId} = {publishmentSystemId} AND {LotteryAttribute.LotteryType} = '{ELotteryTypeUtils.GetValue(lotteryType)}' AND {LotteryAttribute.IsDisabled} <> '{true}' AND {LotteryAttribute.KeywordId} = {keywordId}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public int GetKeywordID(int lotteryID)
+        public int GetKeywordId(int lotteryId)
         {
-            var keywordID = 0;
+            var keywordId = 0;
 
-            string SQL_WHERE = $"WHERE ID = {lotteryID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, LotteryAttribute.KeywordID, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {lotteryId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, LotteryAttribute.KeywordId, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))
                 {
-                    keywordID = rdr.GetInt32(0);
+                    keywordId = rdr.GetInt32(0);
                 }
                 rdr.Close();
             }
 
-            return keywordID;
+            return keywordId;
         }
 
-        public string GetSelectString(int publishmentSystemID, ELotteryType lotteryType)
+        public string GetSelectString(int publishmentSystemId, ELotteryType lotteryType)
         {
             string whereString =
-                $"WHERE {LotteryAttribute.PublishmentSystemID} = {publishmentSystemID} AND {LotteryAttribute.LotteryType} = '{ELotteryTypeUtils.GetValue(lotteryType)}'";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+                $"WHERE {LotteryAttribute.PublishmentSystemId} = {publishmentSystemId} AND {LotteryAttribute.LotteryType} = '{ELotteryTypeUtils.GetValue(lotteryType)}'";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public void AddUserCount(int lotteryID)
+        public void AddUserCount(int lotteryId)
         {
-            if (lotteryID > 0)
+            if (lotteryId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {LotteryAttribute.UserCount} = {LotteryAttribute.UserCount} + 1 WHERE ID = {lotteryID}";
+                    $"UPDATE {TableName} SET {LotteryAttribute.UserCount} = {LotteryAttribute.UserCount} + 1 WHERE ID = {lotteryId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void AddPVCount(int lotteryID)
+        public void AddPvCount(int lotteryId)
         {
-            if (lotteryID > 0)
+            if (lotteryId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {LotteryAttribute.PVCount} = {LotteryAttribute.PVCount} + 1 WHERE ID = {lotteryID}";
+                    $"UPDATE {TableName} SET {LotteryAttribute.PvCount} = {LotteryAttribute.PvCount} + 1 WHERE ID = {lotteryId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public List<LotteryInfo> GetLotteryInfoList(int publishmentSystemID)
+        public List<LotteryInfo> GetLotteryInfoList(int publishmentSystemId)
         {
             var lotteryInfoList = new List<LotteryInfo>();
 
-            string SQL_WHERE = $"WHERE {LotteryAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            string sqlWhere = $"WHERE {LotteryAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

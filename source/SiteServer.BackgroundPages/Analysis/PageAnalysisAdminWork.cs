@@ -6,6 +6,7 @@ using System.Data;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -151,8 +152,8 @@ yArrayUpdate.push('{yValueUpdate}');";
 
                 SetXHashtable(nodeId, nodeInfo.NodeName);
 
-                SetYHashtable(nodeId, DataProvider.ContentDao.GetCountOfContentAdd(tableName, PublishmentSystemId, nodeInfo.NodeId, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeNew);
-                SetYHashtable(nodeId, DataProvider.ContentDao.GetCountOfContentUpdate(tableName, PublishmentSystemId, nodeInfo.NodeId, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
+                SetYHashtable(nodeId, DataProvider.ContentDao.GetCountOfContentAdd(tableName, PublishmentSystemId, nodeInfo.NodeId, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeNew);
+                SetYHashtable(nodeId, DataProvider.ContentDao.GetCountOfContentUpdate(tableName, PublishmentSystemId, nodeInfo.NodeId, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
             }
             var ds = BaiRongDataProvider.ContentDao.GetDataSetOfAdminExcludeRecycle(PublishmentSystemInfo.AuxiliaryTableForContent, PublishmentSystemId, _begin, _end);
             if (ds == null || ds.Tables.Count <= 0) return;

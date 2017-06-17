@@ -21,6 +21,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovPublic;
 using SiteServer.CMS.Wcm.Model;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Wcm
 {
@@ -464,7 +465,7 @@ $('#Tags').keyup(function (e) {
                 var contentInfo = new GovPublicContentInfo();
                 try
                 {
-                    InputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
 
                     contentInfo.NodeId = categoryChannelId;
                     contentInfo.Description = tbDescription.Text;
@@ -552,7 +553,7 @@ $('#Tags').keyup(function (e) {
                     }
 
                     var identifier = contentInfo.Identifier;
-                    InputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
 
                     contentInfo.DepartmentId = categoryDepartmentId;
                     SetCategoryAttributes(contentInfo, categoryClassInfoArrayList);

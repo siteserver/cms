@@ -7,17 +7,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class MessageContentDAO : DataProviderBase
+    public class MessageContentDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_MessageContent";
+        private const string TableName = "wx_MessageContent";
         
         public int Insert(MessageContentInfo contentInfo)
         {
-            var messageContentID = 0;
+            var messageContentId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -26,9 +26,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        messageContentID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        messageContentId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -40,66 +38,66 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return messageContentID;
+            return messageContentId;
         }
 
-        public void DeleteAll(int messageID)
+        public void DeleteAll(int messageId)
         {
-            if (messageID > 0)
+            if (messageId > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE {MessageContentAttribute.MessageID} = {messageID}";
+                    $"DELETE FROM {TableName} WHERE {MessageContentAttribute.MessageId} = {messageId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private void UpdateUserCount(int publishmentSystemID)
+        private void UpdateUserCount(int publishmentSystemId)
         {
-            var messageIDWithCount = new Dictionary<int, int>();
+            var messageIdWithCount = new Dictionary<int, int>();
 
             string sqlString =
-                $"SELECT {MessageContentAttribute.MessageID}, COUNT(*) FROM {TABLE_NAME} WHERE {MessageContentAttribute.PublishmentSystemID} = {publishmentSystemID} GROUP BY {MessageContentAttribute.MessageID}";
+                $"SELECT {MessageContentAttribute.MessageId}, COUNT(*) FROM {TableName} WHERE {MessageContentAttribute.PublishmentSystemId} = {publishmentSystemId} GROUP BY {MessageContentAttribute.MessageId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    messageIDWithCount.Add(rdr.GetInt32(0), rdr.GetInt32(1));
+                    messageIdWithCount.Add(rdr.GetInt32(0), rdr.GetInt32(1));
                 }
                 rdr.Close();
             }
 
-            DataProviderWX.MessageDAO.UpdateUserCount(publishmentSystemID, messageIDWithCount);
+            DataProviderWx.MessageDao.UpdateUserCount(publishmentSystemId, messageIdWithCount);
 
         }
 
-        public void Delete(int publishmentSystemID, List<int> contentIDList)
+        public void Delete(int publishmentSystemId, List<int> contentIdList)
         {
-            if (contentIDList != null && contentIDList.Count > 0)
+            if (contentIdList != null && contentIdList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
                 ExecuteNonQuery(sqlString);
 
-                UpdateUserCount(publishmentSystemID);
+                UpdateUserCount(publishmentSystemId);
             }
         }
 
-        public bool AddLikeCount(int contentID, string cookieSN, string wxOpenID)
+        public bool AddLikeCount(int contentId, string cookieSn, string wxOpenId)
         {
             var isAdd = false;
-            if (contentID > 0)
+            if (contentId > 0)
             {
                 string sqlString =
-                    $"SELECT {MessageContentAttribute.LikeCookieSNCollection} FROM {TABLE_NAME} WHERE ID = {contentID}";
+                    $"SELECT {MessageContentAttribute.LikeCookieSnCollection} FROM {TableName} WHERE ID = {contentId}";
 
-                var cookieSNList = TranslateUtils.StringCollectionToStringList(BaiRongDataProvider.DatabaseDao.GetString(sqlString));
-                if (!cookieSNList.Contains(cookieSN))
+                var cookieSnList = TranslateUtils.StringCollectionToStringList(BaiRongDataProvider.DatabaseDao.GetString(sqlString));
+                if (!cookieSnList.Contains(cookieSn))
                 {
-                    cookieSNList.Add(cookieSN);
+                    cookieSnList.Add(cookieSn);
 
                     sqlString =
-                        $"UPDATE {TABLE_NAME} SET {MessageContentAttribute.LikeCount} = {MessageContentAttribute.LikeCount} + 1, {MessageContentAttribute.LikeCookieSNCollection} = '{TranslateUtils.ToSqlInStringWithoutQuote(cookieSNList)}' WHERE ID = {contentID}";
+                        $"UPDATE {TableName} SET {MessageContentAttribute.LikeCount} = {MessageContentAttribute.LikeCount} + 1, {MessageContentAttribute.LikeCookieSnCollection} = '{TranslateUtils.ToSqlInStringWithoutQuote(cookieSnList)}' WHERE ID = {contentId}";
                     ExecuteNonQuery(sqlString);
 
                     isAdd = true;
@@ -108,43 +106,43 @@ namespace SiteServer.CMS.WeiXin.Provider
             return isAdd;
         }
 
-        public void AddReplyCount(int contentID)
+        public void AddReplyCount(int contentId)
         {
-            if (contentID > 0)
+            if (contentId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} SET {MessageContentAttribute.ReplyCount} = {MessageContentAttribute.ReplyCount} + 1 WHERE ID = {contentID}";
+                    $"UPDATE {TableName} SET {MessageContentAttribute.ReplyCount} = {MessageContentAttribute.ReplyCount} + 1 WHERE ID = {contentId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public int GetCount(int messageID, bool isReply)
+        public int GetCount(int messageId, bool isReply)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {MessageContentAttribute.MessageID} = {messageID} AND {MessageContentAttribute.IsReply} = '{isReply}'";
+                $"SELECT COUNT(*) FROM {TableName} WHERE {MessageContentAttribute.MessageId} = {messageId} AND {MessageContentAttribute.IsReply} = '{isReply}'";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetSelectString(int publishmentSystemID, int messageID)
+        public string GetSelectString(int publishmentSystemId, int messageId)
         {
-            string whereString = $"WHERE {MessageContentAttribute.PublishmentSystemID} = {publishmentSystemID}";
-            if (messageID > 0)
+            string whereString = $"WHERE {MessageContentAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            if (messageId > 0)
             {
-                whereString += $" AND {MessageContentAttribute.MessageID} = {messageID}";
+                whereString += $" AND {MessageContentAttribute.MessageId} = {messageId}";
             }
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public List<MessageContentInfo> GetContentInfoList(int messageID, int startNum, int totalNum)
+        public List<MessageContentInfo> GetContentInfoList(int messageId, int startNum, int totalNum)
         {
             var list = new List<MessageContentInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {MessageContentAttribute.IsReply} = '{false}' AND {MessageContentAttribute.MessageID} = {messageID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, startNum, totalNum, SqlUtils.Asterisk, SQL_WHERE, "ORDER BY ID DESC");
+            string sqlWhere =
+                $"WHERE {MessageContentAttribute.IsReply} = '{false}' AND {MessageContentAttribute.MessageId} = {messageId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhere, "ORDER BY ID DESC");
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -157,15 +155,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public List<MessageContentInfo> GetReplyContentInfoList(int messageID, int replyID)
+        public List<MessageContentInfo> GetReplyContentInfoList(int messageId, int replyId)
         {
             var list = new List<MessageContentInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {MessageContentAttribute.IsReply} = '{true}' AND {MessageContentAttribute.MessageID} = {messageID} AND {MessageContentAttribute.ReplyID} = {replyID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, "ORDER BY ID DESC");
+            string sqlWhere =
+                $"WHERE {MessageContentAttribute.IsReply} = '{true}' AND {MessageContentAttribute.MessageId} = {messageId} AND {MessageContentAttribute.ReplyId} = {replyId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, "ORDER BY ID DESC");
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -177,16 +175,16 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             return list;
         }
-        public List<MessageContentInfo> GetMessageContentInfoList(int publishmentSystemID, int messageID)
+        public List<MessageContentInfo> GetMessageContentInfoList(int publishmentSystemId, int messageId)
         {
             var messageContentInfoList = new List<MessageContentInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {MessageContentAttribute.PublishmentSystemID} = {publishmentSystemID} AND {MessageContentAttribute.MessageID} = {messageID} AND ReplyID = 0";
+            string sqlWhere =
+                $"WHERE {MessageContentAttribute.PublishmentSystemId} = {publishmentSystemId} AND {MessageContentAttribute.MessageId} = {messageId} AND ReplyID = 0";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

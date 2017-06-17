@@ -17,220 +17,220 @@ namespace SiteServer.BackgroundPages.WeiXin
 {
     public class PageAppointmentMultipleAdd : BasePageCms
     {
-        public Literal ltlPageTitle;
+        public Literal LtlPageTitle;
 
-        public PlaceHolder phStep1;
-        public TextBox tbKeywords;
-        public TextBox tbTitle;
-        public TextBox tbSummary;
-        public DateTimeTextBox dtbStartDate;
-        public DateTimeTextBox dtbEndDate;
-        public CheckBox cbIsEnabled;
-        public Literal ltlImageUrl;
+        public PlaceHolder PhStep1;
+        public TextBox TbKeywords;
+        public TextBox TbTitle;
+        public TextBox TbSummary;
+        public DateTimeTextBox DtbStartDate;
+        public DateTimeTextBox DtbEndDate;
+        public CheckBox CbIsEnabled;
+        public Literal LtlImageUrl;
 
-        public PlaceHolder phStep2;
-        public TextBox tbContentDescription;
-        public Literal ltlContentImageUrl;
-        public Literal ltlContentResultTopImageUrl;
+        public PlaceHolder PhStep2;
+        public TextBox TbContentDescription;
+        public Literal LtlContentImageUrl;
+        public Literal LtlContentResultTopImageUrl;
          
-        public PlaceHolder phStep3;
-        public Repeater rptContents;
-        public SqlPager spContents;
-        public Button btnAdd;
+        public PlaceHolder PhStep3;
+        public Repeater RptContents;
+        public SqlPager SpContents;
+        public Button BtnAdd;
         //public Button btnDelete;
 
-        public PlaceHolder phStep4;
-        public Literal ltlAwardItems;
-        public CheckBox cbIsFormRealName;
-        public TextBox tbFormRealNameTitle;
-        public CheckBox cbIsFormMobile;
-        public TextBox tbFormMobileTitle;
-        public CheckBox cbIsFormEmail;
-        public TextBox tbFormEmailTitle;
-        public CheckBox cbIsFormAddress;
-        public TextBox tbFormAddressTitle;
+        public PlaceHolder PhStep4;
+        public Literal LtlAwardItems;
+        public CheckBox CbIsFormRealName;
+        public TextBox TbFormRealNameTitle;
+        public CheckBox CbIsFormMobile;
+        public TextBox TbFormMobileTitle;
+        public CheckBox CbIsFormEmail;
+        public TextBox TbFormEmailTitle;
+        public CheckBox CbIsFormAddress;
+        public TextBox TbFormAddressTitle;
 
-        public PlaceHolder phStep5;
-        public TextBox tbEndTitle;
-        public TextBox tbEndSummary;
-        public Literal ltlEndImageUrl;
+        public PlaceHolder PhStep5;
+        public TextBox TbEndTitle;
+        public TextBox TbEndSummary;
+        public Literal LtlEndImageUrl;
 
-        public HtmlInputHidden imageUrl;
-        public HtmlInputHidden contentImageUrl;
-        public HtmlInputHidden contentResultTopImageUrl;
-        public HtmlInputHidden endImageUrl;
+        public HtmlInputHidden ImageUrl;
+        public HtmlInputHidden ContentImageUrl;
+        public HtmlInputHidden ContentResultTopImageUrl;
+        public HtmlInputHidden EndImageUrl;
 
-        public Button btnSubmit;
-        public Button btnReturn;
+        public Button BtnSubmit;
+        public Button BtnReturn;
 
-        private int appointmentID = 0;
-        private int appointmentItemID;
+        private int _appointmentId = 0;
+        private int _appointmentItemId;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int appointmentID, int appointmentItemID)
+        public static string GetRedirectUrl(int publishmentSystemId, int appointmentId, int appointmentItemId)
         {
             return PageUtils.GetWeiXinUrl(nameof(PageAppointmentMultipleAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"appointmentID", appointmentID.ToString()},
-                {"appointmentItemID", appointmentItemID.ToString()}
+                {"PublishmentSystemId", publishmentSystemId.ToString()},
+                {"appointmentID", appointmentId.ToString()},
+                {"appointmentItemID", appointmentItemId.ToString()}
             });
         }
          
         public string GetUploadUrl()
         {
             return string.Empty;
-            //return BackgroundAjaxUpload.GetImageUrlUploadUrl(PublishmentSystemID);
+            //return BackgroundAjaxUpload.GetImageUrlUploadUrl(PublishmentSystemId);
         }
 
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
          
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
-            appointmentID = Body.GetQueryInt("appointmentID");
-            appointmentItemID = Body.GetQueryInt("appointmentItemID");
+            PageUtils.CheckRequestParameter("PublishmentSystemId");
+            _appointmentId = Body.GetQueryInt("appointmentID");
+            _appointmentItemId = Body.GetQueryInt("appointmentItemID");
 
-            spContents.ControlToPaginate = rptContents;
-            spContents.ItemsPerPage = 30;
-            spContents.SelectCommand = DataProviderWX.AppointmentItemDAO.GetSelectString(PublishmentSystemId, appointmentID);
-            spContents.SortField = AlbumAttribute.ID;
-            spContents.SortMode = SortMode.ASC;
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            SpContents.ControlToPaginate = RptContents;
+            SpContents.ItemsPerPage = 30;
+            SpContents.SelectCommand = DataProviderWx.AppointmentItemDao.GetSelectString(PublishmentSystemId, _appointmentId);
+            SpContents.SortField = AlbumAttribute.Id;
+            SpContents.SortMode = SortMode.ASC;
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
 			if (!IsPostBack)
             {
                  
-                var pageTitle = appointmentID > 0 ? "编辑微预约" : "添加微预约";
+                var pageTitle = _appointmentId > 0 ? "编辑微预约" : "添加微预约";
                 BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAppointment, pageTitle, AppManager.WeiXin.Permission.WebSite.Appointment);
  
-                ltlPageTitle.Text = pageTitle;
+                LtlPageTitle.Text = pageTitle;
                   
-                ltlImageUrl.Text =
+                LtlImageUrl.Text =
                     $@"<img id=""preview_imageUrl"" src=""{AppointmentManager.GetImageUrl(PublishmentSystemInfo,
                         string.Empty)}"" width=""370"" align=""middle"" />";
-                ltlContentImageUrl.Text =
+                LtlContentImageUrl.Text =
                     $@"<img id=""preview_contentImageUrl"" src=""{AppointmentManager.GetContentImageUrl(
                         PublishmentSystemInfo, string.Empty)}"" width=""370"" align=""middle"" />";
-                ltlContentResultTopImageUrl.Text =
+                LtlContentResultTopImageUrl.Text =
                     $@"<img id=""preview_contentResultTopImageUrl"" src=""{AppointmentManager.GetContentResultTopImageUrl(
                         PublishmentSystemInfo, string.Empty)}"" width=""370"" align=""middle"" />";
-                ltlEndImageUrl.Text =
+                LtlEndImageUrl.Text =
                     $@"<img id=""preview_endImageUrl"" src=""{AppointmentManager.GetEndImageUrl(PublishmentSystemInfo,
                         string.Empty)}"" width=""370"" align=""middle"" />";
 
-                spContents.DataBind();
+                SpContents.DataBind();
                  
-                btnAdd.Attributes.Add("onclick", ModalAppointmentItemAdd.GetOpenWindowStringToAdd(PublishmentSystemId, appointmentID, 0));
+                BtnAdd.Attributes.Add("onclick", ModalAppointmentItemAdd.GetOpenWindowStringToAdd(PublishmentSystemId, _appointmentId, 0));
 
-                //string urlDelete = PageUtils.AddQueryString(BackgroundAppointmentMultipleAdd.GetRedirectUrl(base.PublishmentSystemID, this.appointmentID,this.tbTitle.Text), "Delete", "True");
-                //this.btnDelete.Attributes.Add("onclick", JsUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlDelete, "IDCollection", "IDCollection", "请选择需要删除的微预约项目", "此操作将删除所选微预约项目，确认吗？"));
+                //string urlDelete = PageUtils.AddQueryString(BackgroundAppointmentMultipleAdd.GetRedirectUrl(base.PublishmentSystemId, this.appointmentID,this.tbTitle.Text), "Delete", "True");
+                //this.btnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlDelete, "IDCollection", "IDCollection", "请选择需要删除的微预约项目", "此操作将删除所选微预约项目，确认吗？"));
                
-                if (appointmentID == 0)
+                if (_appointmentId == 0)
                 { 
-                    dtbEndDate.DateTime = DateTime.Now.AddMonths(1);
+                    DtbEndDate.DateTime = DateTime.Now.AddMonths(1);
                 }
                 else
                 {
-                    var appointmentInfo = DataProviderWX.AppointmentDAO.GetAppointmentInfo(appointmentID);
+                    var appointmentInfo = DataProviderWx.AppointmentDao.GetAppointmentInfo(_appointmentId);
 
                     if (appointmentInfo != null)
                     {
-                        tbKeywords.Text = DataProviderWX.KeywordDAO.GetKeywords(appointmentInfo.KeywordID);
-                        cbIsEnabled.Checked = !appointmentInfo.IsDisabled;
-                        dtbStartDate.DateTime = appointmentInfo.StartDate;
-                        dtbEndDate.DateTime = appointmentInfo.EndDate;
-                        tbTitle.Text = appointmentInfo.Title;
+                        TbKeywords.Text = DataProviderWx.KeywordDao.GetKeywords(appointmentInfo.KeywordId);
+                        CbIsEnabled.Checked = !appointmentInfo.IsDisabled;
+                        DtbStartDate.DateTime = appointmentInfo.StartDate;
+                        DtbEndDate.DateTime = appointmentInfo.EndDate;
+                        TbTitle.Text = appointmentInfo.Title;
                         if (!string.IsNullOrEmpty(appointmentInfo.ImageUrl))
                         {
-                            ltlImageUrl.Text =
+                            LtlImageUrl.Text =
                                 $@"<img id=""preview_imageUrl"" src=""{PageUtility.ParseNavigationUrl(
                                     PublishmentSystemInfo, appointmentInfo.ImageUrl)}"" width=""370"" align=""middle"" />";
                         }
-                        tbSummary.Text = appointmentInfo.Summary;
+                        TbSummary.Text = appointmentInfo.Summary;
                         if (!string.IsNullOrEmpty(appointmentInfo.ContentImageUrl))
                         {
-                            ltlContentImageUrl.Text =
+                            LtlContentImageUrl.Text =
                                 $@"<img id=""preview_contentImageUrl"" src=""{PageUtility.ParseNavigationUrl(
                                     PublishmentSystemInfo, appointmentInfo.ContentImageUrl)}"" width=""370"" align=""middle"" />";
                         }
                         if (!string.IsNullOrEmpty(appointmentInfo.ContentResultTopImageUrl))
                         {
-                            ltlContentResultTopImageUrl.Text =
+                            LtlContentResultTopImageUrl.Text =
                                 $@"<img id=""preview_contentResultTopImageUrl"" src=""{PageUtility.ParseNavigationUrl(
                                     PublishmentSystemInfo, appointmentInfo.ContentResultTopImageUrl)}"" width=""370"" align=""middle"" />";
                         }
 
-                        tbContentDescription.Text = appointmentInfo.ContentDescription;
+                        TbContentDescription.Text = appointmentInfo.ContentDescription;
 
-                        tbEndTitle.Text = appointmentInfo.EndTitle;
-                        tbEndSummary.Text = appointmentInfo.EndSummary;
+                        TbEndTitle.Text = appointmentInfo.EndTitle;
+                        TbEndSummary.Text = appointmentInfo.EndSummary;
                         if (!string.IsNullOrEmpty(appointmentInfo.EndImageUrl))
                         {
-                            ltlEndImageUrl.Text =
+                            LtlEndImageUrl.Text =
                                 $@"<img id=""preview_endImageUrl"" src=""{PageUtility.ParseNavigationUrl(
                                     PublishmentSystemInfo, appointmentInfo.EndImageUrl)}"" width=""370"" align=""middle"" />";
                         }
 
-                        imageUrl.Value = appointmentInfo.ImageUrl;
-                        contentImageUrl.Value = appointmentInfo.ContentImageUrl;
-                        contentResultTopImageUrl.Value = appointmentInfo.ContentResultTopImageUrl;
-                        endImageUrl.Value = appointmentInfo.EndImageUrl;
+                        ImageUrl.Value = appointmentInfo.ImageUrl;
+                        ContentImageUrl.Value = appointmentInfo.ContentImageUrl;
+                        ContentResultTopImageUrl.Value = appointmentInfo.ContentResultTopImageUrl;
+                        EndImageUrl.Value = appointmentInfo.EndImageUrl;
                         #region 拓展属性
                         #region 姓名
                         if (appointmentInfo.IsFormRealName == "True")
                         {
-                            cbIsFormRealName.Checked = true;
-                            tbFormRealNameTitle.Text = appointmentInfo.FormRealNameTitle;
+                            CbIsFormRealName.Checked = true;
+                            TbFormRealNameTitle.Text = appointmentInfo.FormRealNameTitle;
                         }
                         else if (string.IsNullOrEmpty(appointmentInfo.IsFormRealName))
                         {
-                            cbIsFormRealName.Checked = true;
-                            tbFormRealNameTitle.Text = "姓名";
+                            CbIsFormRealName.Checked = true;
+                            TbFormRealNameTitle.Text = "姓名";
                         }
                         else
                         {
-                            cbIsFormRealName.Checked = false;
-                            tbFormRealNameTitle.Text = appointmentInfo.FormRealNameTitle;
+                            CbIsFormRealName.Checked = false;
+                            TbFormRealNameTitle.Text = appointmentInfo.FormRealNameTitle;
                         }
                         #endregion
                         #region 电话
                         if (appointmentInfo.IsFormMobile == "True")
                         {
-                            cbIsFormMobile.Checked = true;
-                            tbFormMobileTitle.Text = appointmentInfo.FormMobileTitle;
+                            CbIsFormMobile.Checked = true;
+                            TbFormMobileTitle.Text = appointmentInfo.FormMobileTitle;
                         }
                         else if (string.IsNullOrEmpty(appointmentInfo.IsFormMobile))
                         {
-                            cbIsFormMobile.Checked = true;
-                            tbFormMobileTitle.Text = "电话";
+                            CbIsFormMobile.Checked = true;
+                            TbFormMobileTitle.Text = "电话";
                         }
                         else
                         {
-                            cbIsFormMobile.Checked = false;
-                            tbFormMobileTitle.Text = appointmentInfo.FormMobileTitle;
+                            CbIsFormMobile.Checked = false;
+                            TbFormMobileTitle.Text = appointmentInfo.FormMobileTitle;
                         }
                         #endregion
                         #region 邮箱
                         if (appointmentInfo.IsFormEmail == "True")
                         {
-                            cbIsFormEmail.Checked = true;
-                            tbFormEmailTitle.Text = appointmentInfo.FormEmailTitle;
+                            CbIsFormEmail.Checked = true;
+                            TbFormEmailTitle.Text = appointmentInfo.FormEmailTitle;
                         }
                         else if (string.IsNullOrEmpty(appointmentInfo.IsFormEmail))
                         {
-                            cbIsFormEmail.Checked = true;
-                            tbFormEmailTitle.Text = "邮箱";
+                            CbIsFormEmail.Checked = true;
+                            TbFormEmailTitle.Text = "邮箱";
                         }
                         else
                         {
-                            cbIsFormEmail.Checked = false;
-                            tbFormEmailTitle.Text = appointmentInfo.FormEmailTitle;
+                            CbIsFormEmail.Checked = false;
+                            TbFormEmailTitle.Text = appointmentInfo.FormEmailTitle;
                         }
                         #endregion
 
-                        appointmentItemID = DataProviderWX.AppointmentItemDAO.GetItemID(PublishmentSystemId, appointmentID);
+                        _appointmentItemId = DataProviderWx.AppointmentItemDao.GetItemId(PublishmentSystemId, _appointmentId);
 
-                        var configExtendInfoList = DataProviderWX.ConfigExtendDAO.GetConfigExtendInfoList(PublishmentSystemId, appointmentInfo.ID, EKeywordTypeUtils.GetValue(EKeywordType.Appointment));
+                        var configExtendInfoList = DataProviderWx.ConfigExtendDao.GetConfigExtendInfoList(PublishmentSystemId, appointmentInfo.Id, EKeywordTypeUtils.GetValue(EKeywordType.Appointment));
                         var itemBuilder = new StringBuilder();
                         foreach (var configExtendInfo in configExtendInfoList)
                         {
@@ -246,17 +246,16 @@ namespace SiteServer.BackgroundPages.WeiXin
                             {
                                 configExtendInfo.IsVisible = "";
                             }
-                            itemBuilder.AppendFormat(@"{{id: '{0}', attributeName: '{1}',isVisible:'{2}'}},", configExtendInfo.ID, configExtendInfo.AttributeName, configExtendInfo.IsVisible);
+                            itemBuilder.AppendFormat(@"{{id: '{0}', attributeName: '{1}',isVisible:'{2}'}},", configExtendInfo.Id, configExtendInfo.AttributeName, configExtendInfo.IsVisible);
                         }
                         if (itemBuilder.Length > 0) itemBuilder.Length--;
-                        ltlAwardItems.Text =
-                            $@"itemController.itemCount = {configExtendInfoList.Count};itemController.items = [{itemBuilder
-                                .ToString()}];";
+                        LtlAwardItems.Text =
+                            $@"itemController.itemCount = {configExtendInfoList.Count};itemController.items = [{itemBuilder}];";
                         #endregion
                     }
                 }
                
-                btnReturn.Attributes.Add("onclick",
+                BtnReturn.Attributes.Add("onclick",
                     $@"location.href=""{PageAppointment.GetRedirectUrl(PublishmentSystemId)}"";return false");
 			}
 		}
@@ -266,74 +265,74 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (Page.IsPostBack && Page.IsValid)
 			{
                 var selectedStep = 0;
-                if (phStep1.Visible)
+                if (PhStep1.Visible)
                 {
                     selectedStep = 1;
                 }
-                else if (phStep2.Visible)
+                else if (PhStep2.Visible)
                 {
                     selectedStep = 2;
                 }
-                else if (phStep3.Visible)
+                else if (PhStep3.Visible)
                 {
                     selectedStep = 3;
                 }
-                else if (phStep4.Visible)
+                else if (PhStep4.Visible)
                 {
                     selectedStep = 4;
                 }
-                else if (phStep5.Visible)
+                else if (PhStep5.Visible)
                 {
                     selectedStep = 5;
                 }
 
-			    phStep1.Visible = false;
-			    phStep2.Visible = false;
-			    phStep3.Visible = false;
-			    phStep4.Visible = false;
-                phStep5.Visible = false;
+			    PhStep1.Visible = false;
+			    PhStep2.Visible = false;
+			    PhStep3.Visible = false;
+			    PhStep4.Visible = false;
+                PhStep5.Visible = false;
 
                 if (selectedStep == 1)
                 {
                     var isConflict = false;
                     var conflictKeywords = string.Empty;
-                    if (!string.IsNullOrEmpty(tbKeywords.Text))
+                    if (!string.IsNullOrEmpty(TbKeywords.Text))
                     {
-                        if (appointmentID > 0)
+                        if (_appointmentId > 0)
                         {
-                            var appointmentInfo = DataProviderWX.AppointmentDAO.GetAppointmentInfo(appointmentID);
-                            isConflict = KeywordManager.IsKeywordUpdateConflict(PublishmentSystemId, appointmentInfo.KeywordID, tbKeywords.Text, out conflictKeywords);
+                            var appointmentInfo = DataProviderWx.AppointmentDao.GetAppointmentInfo(_appointmentId);
+                            isConflict = KeywordManager.IsKeywordUpdateConflict(PublishmentSystemId, appointmentInfo.KeywordId, TbKeywords.Text, out conflictKeywords);
                         }
                         else
                         {
-                            isConflict = KeywordManager.IsKeywordInsertConflict(PublishmentSystemId, tbKeywords.Text, out conflictKeywords);
+                            isConflict = KeywordManager.IsKeywordInsertConflict(PublishmentSystemId, TbKeywords.Text, out conflictKeywords);
                         }
                     }
                     
                     if (isConflict)
                     {
                         FailMessage($"触发关键词“{conflictKeywords}”已存在，请设置其他关键词");
-                        phStep1.Visible = true;
+                        PhStep1.Visible = true;
                     }
                     else
                     {
-                        phStep2.Visible = true;
+                        PhStep2.Visible = true;
                     }
                 }
                 else if (selectedStep == 2)
                 {
-                    phStep3.Visible = true;
+                    PhStep3.Visible = true;
                 }
                 else if (selectedStep == 3)
                 {
-                    phStep4.Visible = true;
+                    PhStep4.Visible = true;
                 }
                 else if (selectedStep == 4)
                 {
                     var isItemReady = true;
                     var itemCount = TranslateUtils.ToInt(Request.Form["itemCount"]);
 
-                    var itemIDList = TranslateUtils.StringCollectionToIntList(Request.Form["itemID"]);
+                    var itemIdList = TranslateUtils.StringCollectionToIntList(Request.Form["itemID"]);
                     var attributeNameList = TranslateUtils.StringCollectionToStringList(Request.Form["itemAttributeName"]);
 
                     var itemIsVisible = "off";
@@ -344,9 +343,9 @@ namespace SiteServer.BackgroundPages.WeiXin
 
                     var isVisibleList = TranslateUtils.StringCollectionToStringList(itemIsVisible);
 
-                    if (isVisibleList.Count < itemIDList.Count)
+                    if (isVisibleList.Count < itemIdList.Count)
                     {
-                        for (var i = isVisibleList.Count; i < itemIDList.Count; i++)
+                        for (var i = isVisibleList.Count; i < itemIdList.Count; i++)
                         {
                             isVisibleList.Add("off");
                         }
@@ -355,7 +354,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                     var configExtendInfoList = new List<ConfigExtendInfo>();
                     for (var i = 0; i < itemCount; i++)
                     {
-                        var configExtendInfo = new ConfigExtendInfo { ID = itemIDList[i], PublishmentSystemID = PublishmentSystemId, KeywordType = EKeywordTypeUtils.GetValue(EKeywordType.Appointment), FunctionID = appointmentID, AttributeName = attributeNameList[i], IsVisible = isVisibleList[i] };
+                        var configExtendInfo = new ConfigExtendInfo { Id = itemIdList[i], PublishmentSystemId = PublishmentSystemId, KeywordType = EKeywordTypeUtils.GetValue(EKeywordType.Appointment), FunctionId = _appointmentId, AttributeName = attributeNameList[i], IsVisible = isVisibleList[i] };
 
                         if (string.IsNullOrEmpty(configExtendInfo.AttributeName))
                         {
@@ -382,99 +381,99 @@ namespace SiteServer.BackgroundPages.WeiXin
 
                     if (isItemReady)
                     {
-                        DataProviderWX.ConfigExtendDAO.DeleteAllNotInIDList(PublishmentSystemId, appointmentID, itemIDList);
+                        DataProviderWx.ConfigExtendDao.DeleteAllNotInIdList(PublishmentSystemId, _appointmentId, itemIdList);
 
                         foreach (var configExtendInfo in configExtendInfoList)
                         {
-                            if (configExtendInfo.ID > 0)
+                            if (configExtendInfo.Id > 0)
                             {
-                                DataProviderWX.ConfigExtendDAO.Update(configExtendInfo);
+                                DataProviderWx.ConfigExtendDao.Update(configExtendInfo);
                             }
                             else
                             {
-                                DataProviderWX.ConfigExtendDAO.Insert(configExtendInfo);
+                                DataProviderWx.ConfigExtendDao.Insert(configExtendInfo);
                             }
                         }
                     }
 
                     if (isItemReady)
                     {
-                        phStep5.Visible = true;
-                        btnSubmit.Text = "确 认";
+                        PhStep5.Visible = true;
+                        BtnSubmit.Text = "确 认";
                     }
                     else
                     {
-                        phStep4.Visible = true;
+                        PhStep4.Visible = true;
                     }
                 }
                 else if (selectedStep == 5)
                 {
                     var appointmentInfo = new AppointmentInfo();
-                    appointmentInfo.PublishmentSystemID = PublishmentSystemId;
+                    appointmentInfo.PublishmentSystemId = PublishmentSystemId;
 
-                    if (appointmentID > 0)
+                    if (_appointmentId > 0)
                     {
-                        appointmentInfo = DataProviderWX.AppointmentDAO.GetAppointmentInfo(appointmentID);
-                        DataProviderWX.KeywordDAO.Update(PublishmentSystemId, appointmentInfo.KeywordID,
-                            EKeywordType.Appointment, EMatchType.Exact, tbKeywords.Text, !cbIsEnabled.Checked);
+                        appointmentInfo = DataProviderWx.AppointmentDao.GetAppointmentInfo(_appointmentId);
+                        DataProviderWx.KeywordDao.Update(PublishmentSystemId, appointmentInfo.KeywordId,
+                            EKeywordType.Appointment, EMatchType.Exact, TbKeywords.Text, !CbIsEnabled.Checked);
                     }
                     else
                     {
                         var keywordInfo = new KeywordInfo();
 
-                        keywordInfo.KeywordID = 0;
-                        keywordInfo.PublishmentSystemID = PublishmentSystemId;
-                        keywordInfo.Keywords = tbKeywords.Text;
-                        keywordInfo.IsDisabled = !cbIsEnabled.Checked;
+                        keywordInfo.KeywordId = 0;
+                        keywordInfo.PublishmentSystemId = PublishmentSystemId;
+                        keywordInfo.Keywords = TbKeywords.Text;
+                        keywordInfo.IsDisabled = !CbIsEnabled.Checked;
                         keywordInfo.KeywordType = EKeywordType.Appointment;
                         keywordInfo.MatchType = EMatchType.Exact;
                         keywordInfo.Reply = string.Empty;
                         keywordInfo.AddDate = DateTime.Now;
                         keywordInfo.Taxis = 0;
 
-                        appointmentInfo.KeywordID = DataProviderWX.KeywordDAO.Insert(keywordInfo);
+                        appointmentInfo.KeywordId = DataProviderWx.KeywordDao.Insert(keywordInfo);
                     }
 
-                    appointmentInfo.StartDate = dtbStartDate.DateTime;
-                    appointmentInfo.EndDate = dtbEndDate.DateTime;
-                    appointmentInfo.Title = tbTitle.Text;
-                    appointmentInfo.ImageUrl = imageUrl.Value;
+                    appointmentInfo.StartDate = DtbStartDate.DateTime;
+                    appointmentInfo.EndDate = DtbEndDate.DateTime;
+                    appointmentInfo.Title = TbTitle.Text;
+                    appointmentInfo.ImageUrl = ImageUrl.Value;
                     ;
-                    appointmentInfo.Summary = tbSummary.Text;
+                    appointmentInfo.Summary = TbSummary.Text;
 
-                    appointmentInfo.ContentImageUrl = contentImageUrl.Value;
-                    appointmentInfo.ContentDescription = tbContentDescription.Text;
-                    appointmentInfo.ContentResultTopImageUrl = contentResultTopImageUrl.Value;
+                    appointmentInfo.ContentImageUrl = ContentImageUrl.Value;
+                    appointmentInfo.ContentDescription = TbContentDescription.Text;
+                    appointmentInfo.ContentResultTopImageUrl = ContentResultTopImageUrl.Value;
                     appointmentInfo.ContentIsSingle = false;
 
-                    appointmentInfo.EndTitle = tbEndTitle.Text;
-                    appointmentInfo.EndImageUrl = endImageUrl.Value;
-                    appointmentInfo.EndSummary = tbEndSummary.Text;
+                    appointmentInfo.EndTitle = TbEndTitle.Text;
+                    appointmentInfo.EndImageUrl = EndImageUrl.Value;
+                    appointmentInfo.EndSummary = TbEndSummary.Text;
 
-                    appointmentInfo.IsFormRealName = cbIsFormRealName.Checked ? "True" : "False";
-                    appointmentInfo.FormRealNameTitle = tbFormRealNameTitle.Text;
-                    appointmentInfo.IsFormMobile = cbIsFormMobile.Checked ? "True" : "False";
-                    appointmentInfo.FormMobileTitle = tbFormMobileTitle.Text;
-                    appointmentInfo.IsFormEmail = cbIsFormEmail.Checked ? "True" : "False";
-                    appointmentInfo.FormEmailTitle = tbFormEmailTitle.Text;
+                    appointmentInfo.IsFormRealName = CbIsFormRealName.Checked ? "True" : "False";
+                    appointmentInfo.FormRealNameTitle = TbFormRealNameTitle.Text;
+                    appointmentInfo.IsFormMobile = CbIsFormMobile.Checked ? "True" : "False";
+                    appointmentInfo.FormMobileTitle = TbFormMobileTitle.Text;
+                    appointmentInfo.IsFormEmail = CbIsFormEmail.Checked ? "True" : "False";
+                    appointmentInfo.FormEmailTitle = TbFormEmailTitle.Text;
 
                     try
                     {
-                        if (appointmentID > 0)
+                        if (_appointmentId > 0)
                         {
-                            DataProviderWX.AppointmentDAO.Update(appointmentInfo);
+                            DataProviderWx.AppointmentDao.Update(appointmentInfo);
 
-                            Body.AddLog(PublishmentSystemId, "修改微预约", $"微预约:{tbTitle.Text}");
+                            Body.AddSiteLog(PublishmentSystemId, "修改微预约", $"微预约:{TbTitle.Text}");
                             SuccessMessage("修改微预约成功！");
                         }
                         else
                         {
-                            appointmentID = DataProviderWX.AppointmentDAO.Insert(appointmentInfo);
+                            _appointmentId = DataProviderWx.AppointmentDao.Insert(appointmentInfo);
 
-                            DataProviderWX.AppointmentItemDAO.UpdateAppointmentID(PublishmentSystemId,
-                                appointmentID);
+                            DataProviderWx.AppointmentItemDao.UpdateAppointmentId(PublishmentSystemId,
+                                _appointmentId);
 
-                            Body.AddLog(PublishmentSystemId, "添加微预约", $"微预约:{tbTitle.Text}");
+                            Body.AddSiteLog(PublishmentSystemId, "添加微预约", $"微预约:{TbTitle.Text}");
                             SuccessMessage("添加微预约成功！");
                         }
 
@@ -485,8 +484,8 @@ namespace SiteServer.BackgroundPages.WeiXin
                         FailMessage(ex, "微预约设置失败！");
                     }
 
-                    btnSubmit.Visible = false;
-                    btnReturn.Visible = false;
+                    BtnSubmit.Visible = false;
+                    BtnReturn.Visible = false;
                 }
 			}
 		}
@@ -508,12 +507,12 @@ namespace SiteServer.BackgroundPages.WeiXin
                 ltlMapAddress.Text = appointmentItemInfo.MapAddress;
                 ltlTel.Text = appointmentItemInfo.Tel;
 
-                var urlEdit = ModalAppointmentItemAdd.GetOpenWindowStringToEdit(PublishmentSystemId, appointmentID, appointmentItemInfo.ID); 
+                var urlEdit = ModalAppointmentItemAdd.GetOpenWindowStringToEdit(PublishmentSystemId, _appointmentId, appointmentItemInfo.Id); 
                 ltlEditUrl.Text = $@"<a href=""javascript:;"" onclick=""{urlEdit}"">编辑</a>";
             }
         }
 
-        public string GetIDCollection()
+        public string GetIdCollection()
         {
             return Request.QueryString["IDCollection"];
         }

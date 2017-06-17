@@ -24,10 +24,7 @@ namespace SiteServer.CMS.Core
 
             if (isFromBackground)
             {
-                if (publishmentSystemInfo.Additional.IsMultiDeployment)
-                {
-                    url = publishmentSystemInfo.Additional.InnerUrl;
-                }
+                url = publishmentSystemInfo.Additional.IsMultiDeployment ? publishmentSystemInfo.Additional.InnerSiteUrl : publishmentSystemInfo.Additional.SiteUrl;
             }
             if (string.IsNullOrEmpty(url))
             {
@@ -46,16 +43,15 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            if (!string.IsNullOrEmpty(requestPath))
-            {
-                requestPath = PathUtils.RemovePathInvalidChar(requestPath);
-                if (requestPath.StartsWith("/"))
-                {
-                    requestPath = requestPath.Substring(1);
-                }
+            if (string.IsNullOrEmpty(requestPath)) return url;
 
-                url = PageUtils.Combine(url, requestPath);
+            requestPath = PathUtils.RemovePathInvalidChar(requestPath);
+            if (requestPath.StartsWith("/"))
+            {
+                requestPath = requestPath.Substring(1);
             }
+
+            url = PageUtils.Combine(url, requestPath);
             return url;
         }
 
@@ -66,10 +62,7 @@ namespace SiteServer.CMS.Core
 
             if (isFromBackground)
             {
-                if (publishmentSystemInfo.Additional.IsMultiDeployment)
-                {
-                    url = publishmentSystemInfo.Additional.InnerUrl;
-                }
+                url = publishmentSystemInfo.Additional.IsMultiDeployment ? publishmentSystemInfo.Additional.InnerSiteUrl : publishmentSystemInfo.Additional.SiteUrl;
             }
             else if (requestPath.StartsWith("@/upload") || requestPath.StartsWith("/upload") || requestPath.StartsWith("@\\upload") || requestPath.StartsWith("\\upload"))
             {
@@ -310,8 +303,13 @@ namespace SiteServer.CMS.Core
 
         public static string GetFileUrl(PublishmentSystemInfo publishmentSystemInfo, int fileTemplateId)
         {
+            return GetFileUrl(publishmentSystemInfo, fileTemplateId, false);
+        }
+
+        public static string GetFileUrl(PublishmentSystemInfo publishmentSystemInfo, int fileTemplateId, bool isFromBackground)
+        {
             var createdFileFullName = TemplateManager.GetCreatedFileFullName(publishmentSystemInfo.PublishmentSystemId, fileTemplateId);
-            return ParseNavigationUrl(publishmentSystemInfo, createdFileFullName);
+            return ParseNavigationUrl(publishmentSystemInfo, createdFileFullName, isFromBackground);
         }
 
         public static string GetContentUrl(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, int contentId, bool isFromBackground)

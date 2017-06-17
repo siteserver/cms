@@ -116,10 +116,10 @@ namespace SiteServer.CMS.Wcm.Provider
             foreach (GovInteractPermissionsInfo permissionsInfo in permissionsInfoArrayList)
             {
                 var list = new List<string>();
-                if (sortedlist[permissionsInfo.NodeID] != null)
-                {
-                    list = sortedlist[permissionsInfo.NodeID];
-                }
+               // if (sortedlist[permissionsInfo.NodeID] != null)//此时sortedlist为空，引起'关键字不在字典中'错误导致用户无法登陆
+               //{
+               //    list = sortedlist[permissionsInfo.NodeID];
+               //}
 
                 var permissionArrayList = TranslateUtils.StringCollectionToStringList(permissionsInfo.Permissions);
                 foreach (string permission in permissionArrayList)

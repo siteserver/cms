@@ -1,4 +1,4 @@
-namespace SiteServer.CMS.Model.Enumerations
+﻿namespace SiteServer.CMS.Model.Enumerations
 {
 
 	public enum EExceptionType 

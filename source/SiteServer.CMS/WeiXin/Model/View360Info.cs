@@ -11,59 +11,51 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string KeywordID = "KeywordID";
-        public const string IsDisabled = "IsDisabled";
-        public const string PVCount = "PVCount";
-        public const string Title = "Title";
-        public const string ImageUrl = "ImageUrl";
-        public const string Summary = "Summary";
-        public const string ContentImageUrl1 = "ContentImageUrl1";
-        public const string ContentImageUrl2 = "ContentImageUrl2";
-        public const string ContentImageUrl3 = "ContentImageUrl3";
-        public const string ContentImageUrl4 = "ContentImageUrl4";
-        public const string ContentImageUrl5 = "ContentImageUrl5";
-        public const string ContentImageUrl6 = "ContentImageUrl6";
+        public const string Id = nameof(View360Info.Id);
+        public const string PublishmentSystemId = nameof(View360Info.PublishmentSystemId);
+        public const string KeywordId = nameof(View360Info.KeywordId);
+        public const string IsDisabled = nameof(View360Info.IsDisabled);
+        public const string PvCount = nameof(View360Info.PvCount);
+        public const string Title = nameof(View360Info.Title);
+        public const string ImageUrl = nameof(View360Info.ImageUrl);
+        public const string Summary = nameof(View360Info.Summary);
+        public const string ContentImageUrl1 = nameof(View360Info.ContentImageUrl1);
+        public const string ContentImageUrl2 = nameof(View360Info.ContentImageUrl2);
+        public const string ContentImageUrl3 = nameof(View360Info.ContentImageUrl3);
+        public const string ContentImageUrl4 = nameof(View360Info.ContentImageUrl4);
+        public const string ContentImageUrl5 = nameof(View360Info.ContentImageUrl5);
+        public const string ContentImageUrl6 = nameof(View360Info.ContentImageUrl6);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(KeywordID);
-                    allAttributes.Add(IsDisabled);
-                    allAttributes.Add(PVCount);
-                    allAttributes.Add(Title);
-                    allAttributes.Add(ImageUrl);
-                    allAttributes.Add(Summary);
-                    allAttributes.Add(ContentImageUrl1);
-                    allAttributes.Add(ContentImageUrl2);
-                    allAttributes.Add(ContentImageUrl3);
-                    allAttributes.Add(ContentImageUrl4);
-                    allAttributes.Add(ContentImageUrl5);
-                    allAttributes.Add(ContentImageUrl6);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            KeywordId,
+            IsDisabled,
+            PvCount,
+            Title,
+            ImageUrl,
+            Summary,
+            ContentImageUrl1,
+            ContentImageUrl2,
+            ContentImageUrl3,
+            ContentImageUrl4,
+            ContentImageUrl5,
+            ContentImageUrl6
+        });
     }
+
     public class View360Info : BaseInfo
     {
         public View360Info() { }
         public View360Info(object dataItem) : base(dataItem) { }
         public View360Info(NameValueCollection form) : base(form) { }
         public View360Info(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int KeywordID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int KeywordId { get; set; }
         public bool IsDisabled { get; set; }
-        public int PVCount { get; set; }
+        public int PvCount { get; set; }
         public string Title { get; set; }
         public string ImageUrl { get; set; }
         public string Summary { get; set; }
@@ -74,12 +66,6 @@ namespace SiteServer.CMS.WeiXin.Model
         public string ContentImageUrl5 { get; set; }
         public string ContentImageUrl6 { get; set; }
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return View360Attribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => View360Attribute.AllAttributes;
     }
 }

@@ -164,6 +164,16 @@ namespace SiteServer.BackgroundPages.Cms
                 }), 460, 360);
         }
 
+        public static string GetOpenWindowStringWithSiteTemplateUnZip(string fileName)
+        {
+            return PageUtils.GetOpenLayerString("站点模板解压",
+                PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
+                {
+                    {"SiteTemplateUnZip", "True"},
+                    {"FileName", fileName}
+                }), 460, 360);
+        }
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
@@ -250,6 +260,14 @@ namespace SiteServer.BackgroundPages.Cms
                 var parameters = AjaxOtherService.GetSiteTemplateZipParameters(Body.GetQueryString("DirectoryName"), userKeyPrefix);
                 RegisterScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateZipUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
+            }
+            else if (Body.IsQueryExists("SiteTemplateUnZip"))
+            {
+                var userKeyPrefix = StringUtils.Guid();
+
+                var parameters = AjaxOtherService.GetSiteTemplateUnZipParameters(Body.GetQueryString("FileName"), userKeyPrefix);
+                RegisterScripts.Text =
+                    AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateUnZipUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }
         }
     }

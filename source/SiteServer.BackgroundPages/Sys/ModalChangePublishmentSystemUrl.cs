@@ -9,13 +9,18 @@ namespace SiteServer.BackgroundPages.Sys
 {
     public class ModalChangePublishmentSystemUrl : BasePageCms
     {
-        public TextBox tbPublishmentSystemUrl;
-        public DropDownList ddlIsMultiDeployment;
-        public PlaceHolder phIsMultiDeployment;
-        public TextBox tbOuterUrl;
-        public TextBox tbInnerUrl;
-        public TextBox tbAPIUrl;
-        public TextBox tbHomeUrl;
+        public TextBox TbPublishmentSystemUrl;
+        public TextBox TbHomeUrl;
+
+        public DropDownList DdlIsMultiDeployment;
+        public PlaceHolder PhSingle;
+        public TextBox TbSiteUrl;
+        public TextBox TbApiUrl;
+        public PlaceHolder PhMulti;
+        public TextBox TbOuterSiteUrl;
+        public TextBox TbInnerSiteUrl;
+        public TextBox TbOuterApiUrl;
+        public TextBox TbInnerApiUrl;
 
         public static string GetOpenWindowString(int publishmentSystemId)
         {
@@ -36,21 +41,28 @@ namespace SiteServer.BackgroundPages.Sys
 
             if (!Page.IsPostBack)
             {
-                tbPublishmentSystemUrl.Text = PublishmentSystemInfo.PublishmentSystemUrl;
-                EBooleanUtils.AddListItems(ddlIsMultiDeployment, "内外网分离部署", "默认部署");
-                ControlUtils.SelectListItems(ddlIsMultiDeployment, PublishmentSystemInfo.Additional.IsMultiDeployment.ToString());
-                tbOuterUrl.Text = PublishmentSystemInfo.Additional.OuterUrl;
-                tbInnerUrl.Text = PublishmentSystemInfo.Additional.InnerUrl;
-                tbAPIUrl.Text = PublishmentSystemInfo.Additional.ApiUrl;
-                tbHomeUrl.Text = PublishmentSystemInfo.Additional.HomeUrl;
+                TbPublishmentSystemUrl.Text = PublishmentSystemInfo.PublishmentSystemUrl;
+                EBooleanUtils.AddListItems(DdlIsMultiDeployment, "内外网分离部署", "默认部署");
+                ControlUtils.SelectListItems(DdlIsMultiDeployment, PublishmentSystemInfo.Additional.IsMultiDeployment.ToString());
 
-                ddlIsMultiDeployment_SelectedIndexChanged(null, EventArgs.Empty);
+                TbSiteUrl.Text = PublishmentSystemInfo.Additional.SiteUrl;
+                TbApiUrl.Text = PublishmentSystemInfo.Additional.ApiUrl;
+
+                TbOuterSiteUrl.Text = PublishmentSystemInfo.Additional.OuterSiteUrl;
+                TbInnerSiteUrl.Text = PublishmentSystemInfo.Additional.InnerSiteUrl;
+                TbOuterApiUrl.Text = PublishmentSystemInfo.Additional.OuterApiUrl;
+                TbInnerApiUrl.Text = PublishmentSystemInfo.Additional.InnerApiUrl;
+
+                TbHomeUrl.Text = PublishmentSystemInfo.Additional.HomeUrl;
+
+                DdlIsMultiDeployment_SelectedIndexChanged(null, EventArgs.Empty);
             }
         }
 
-        public void ddlIsMultiDeployment_SelectedIndexChanged(object sender, EventArgs e)
+        public void DdlIsMultiDeployment_SelectedIndexChanged(object sender, EventArgs e)
         {
-            phIsMultiDeployment.Visible = TranslateUtils.ToBool(ddlIsMultiDeployment.SelectedValue);
+            PhMulti.Visible = TranslateUtils.ToBool(DdlIsMultiDeployment.SelectedValue);
+            PhSingle.Visible = !PhMulti.Visible;
         }
 
         public string GetSiteName()
@@ -60,20 +72,22 @@ namespace SiteServer.BackgroundPages.Sys
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var isChanged = false;
-
             try
             {
-                PublishmentSystemInfo.PublishmentSystemUrl = tbPublishmentSystemUrl.Text;
-                PublishmentSystemInfo.Additional.IsMultiDeployment = TranslateUtils.ToBool(ddlIsMultiDeployment.SelectedValue);
-                PublishmentSystemInfo.Additional.OuterUrl = tbOuterUrl.Text;
-                PublishmentSystemInfo.Additional.InnerUrl = tbInnerUrl.Text;
-                PublishmentSystemInfo.Additional.ApiUrl = tbAPIUrl.Text;
-                PublishmentSystemInfo.Additional.HomeUrl = tbHomeUrl.Text;
+                PublishmentSystemInfo.PublishmentSystemUrl = TbPublishmentSystemUrl.Text;
+
+                PublishmentSystemInfo.Additional.IsMultiDeployment = TranslateUtils.ToBool(DdlIsMultiDeployment.SelectedValue);
+                PublishmentSystemInfo.Additional.SiteUrl = TbSiteUrl.Text;
+                PublishmentSystemInfo.Additional.ApiUrl = TbApiUrl.Text;
+                PublishmentSystemInfo.Additional.OuterSiteUrl = TbOuterSiteUrl.Text;
+                PublishmentSystemInfo.Additional.InnerSiteUrl = TbInnerSiteUrl.Text;
+                PublishmentSystemInfo.Additional.OuterApiUrl = TbOuterApiUrl.Text;
+                PublishmentSystemInfo.Additional.InnerApiUrl = TbInnerApiUrl.Text;
+
+                PublishmentSystemInfo.Additional.HomeUrl = TbHomeUrl.Text;
+
                 DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
                 Body.AddSiteLog(PublishmentSystemId, "修改网站访问设置");
-
-                isChanged = true;
             }
             catch (Exception ex)
             {
@@ -81,10 +95,7 @@ namespace SiteServer.BackgroundPages.Sys
                 return;
             }
 
-            if (isChanged)
-            {
-                PageUtils.CloseModalPage(Page);
-            }
+            PageUtils.CloseModalPage(Page);
         }
     }
 }

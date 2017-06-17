@@ -4,7 +4,7 @@ using System.Web.UI.WebControls;
 namespace SiteServer.CMS.Model.Enumerations
 {
     /// <summary>
-    /// by 20160225 sofuny ¿ÉÍ³¼Æ·ÖÎöµÄ±íµ¥ÀàĞÍ
+    /// by 20160225 sofuny å¯ç»Ÿè®¡åˆ†æçš„è¡¨å•ç±»å‹
     /// </summary>
     public enum EStatisticsInputType
     {
@@ -44,19 +44,19 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (type == EStatisticsInputType.Text)
             {
-                return "ÎÄ±¾¿ò(µ¥ĞĞ)";
+                return "æ–‡æœ¬æ¡†(å•è¡Œ)";
             }
             if (type == EStatisticsInputType.CheckBox)
             {
-                return "¸´Ñ¡ÁĞ±í(checkbox)";
+                return "å¤é€‰åˆ—è¡¨(checkbox)";
             }
             else if (type == EStatisticsInputType.Radio)
             {
-                return "µ¥Ñ¡ÁĞ±í(radio)";
+                return "å•é€‰åˆ—è¡¨(radio)";
             }
             else if (type == EStatisticsInputType.SelectOne)
             {
-                return "ÏÂÀ­ÁĞ±í(selectµ¥Ñ¡)";
+                return "ä¸‹æ‹‰åˆ—è¡¨(selectå•é€‰)";
             }
             else
             {

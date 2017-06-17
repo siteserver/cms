@@ -10,29 +10,16 @@ namespace SiteServer.CMS.WeiXin.Model
         protected CardCashYearCountAttribute()
         {
         }
-        public const string Year = "Year";
-        public const string TotalConsume = "TotalConsume";
-        public const string TotalRecharge = "TotalRecharge";
-        public const string TotalExchange = "TotalExchange";
+        public const string Year = nameof(CardCashYearCountInfo.Year);
+        public const string TotalConsume = nameof(CardCashYearCountInfo.TotalConsume);
+        public const string TotalRecharge = nameof(CardCashYearCountInfo.TotalRecharge);
+        public const string TotalExchange = nameof(CardCashYearCountInfo.TotalExchange);
          
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
-        {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(Year);
-                    allAttributes.Add(TotalConsume);
-                    allAttributes.Add(TotalRecharge);
-                    allAttributes.Add(TotalExchange);
-                }
-
-                return allAttributes;
-            }
-        }
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ??
+                                                    (_allAttributes = new List<string> {Year, TotalConsume, TotalRecharge, TotalExchange});
     }
+
     public class CardCashYearCountInfo : BaseInfo
     {
         public CardCashYearCountInfo() { }
@@ -46,12 +33,6 @@ namespace SiteServer.CMS.WeiXin.Model
 
         public List<CardCashMonthCountInfo> CardCashMonthCountInfoList { get; set; }
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return CardCashYearCountAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => CardCashYearCountAttribute.AllAttributes;
     }
 }

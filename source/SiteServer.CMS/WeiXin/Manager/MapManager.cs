@@ -31,9 +31,9 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var mapInfoList = DataProviderWX.MapDAO.GetMapInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var mapInfoList = DataProviderWx.MapDao.GetMapInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
             foreach (var mapInfo in mapInfoList)
             {
@@ -42,7 +42,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 if (mapInfo != null)
                 {
                     var imageUrl = GetImageUrl(publishmentSystemInfo, mapInfo.ImageUrl);
-                    var pageUrl = GetMapUrl(publishmentSystemInfo, mapInfo.MapWD);
+                    var pageUrl = GetMapUrl(publishmentSystemInfo, mapInfo.MapWd);
 
                     article = new Article()
                     {

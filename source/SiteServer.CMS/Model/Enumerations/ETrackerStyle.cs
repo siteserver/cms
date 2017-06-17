@@ -76,47 +76,47 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (type == ETrackerStyle.None)
             {
-                return "²»ÏÔÊ¾";
+                return "ä¸æ˜¾ç¤º";
             }
             else if (type == ETrackerStyle.Number)
             {
-                return "ÏÔÊ¾Êı×Ö";
+                return "æ˜¾ç¤ºæ•°å­—";
             }
             else if (type == ETrackerStyle.Style1)
             {
-                return "ÑùÊ½1";
+                return "æ ·å¼1";
             }
             else if (type == ETrackerStyle.Style2)
             {
-                return "ÑùÊ½2";
+                return "æ ·å¼2";
             }
             else if (type == ETrackerStyle.Style3)
             {
-                return "ÑùÊ½3";
+                return "æ ·å¼3";
             }
             else if (type == ETrackerStyle.Style4)
             {
-                return "ÑùÊ½4";
+                return "æ ·å¼4";
             }
             else if (type == ETrackerStyle.Style5)
             {
-                return "ÑùÊ½5";
+                return "æ ·å¼5";
             }
             else if (type == ETrackerStyle.Style6)
             {
-                return "ÑùÊ½6";
+                return "æ ·å¼6";
             }
             else if (type == ETrackerStyle.Style7)
             {
-                return "ÑùÊ½7";
+                return "æ ·å¼7";
             }
             else if (type == ETrackerStyle.Style8)
             {
-                return "ÑùÊ½8";
+                return "æ ·å¼8";
             }
             else if (type == ETrackerStyle.Style9)
             {
-                return "ÑùÊ½9";
+                return "æ ·å¼9";
             }
             else
             {
