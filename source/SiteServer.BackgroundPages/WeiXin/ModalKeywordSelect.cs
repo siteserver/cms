@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 var ltlKeyword = e.Item.FindControl("ltlKeyword") as Literal;
 
                 ltlKeyword.Text =
-                    $@"<div class=""alert alert-success pull-left"" style=""margin:5px;padding-right:14px; cursor:pointer;"" onclick=""window.parent.{_jsMethod}('{keyword}');{PageUtils.HidePopWin}""><strong style=""color: #468847"">{keyword}</strong>&nbsp;({EKeywordTypeUtils.GetText(keywordType)})</div>";
+                    $@"<div class=""alert alert-success pull-left"" style=""margin:5px;padding-right:14px; cursor:pointer;"" onclick=""window.parent.{_jsMethod}('{keyword}');;window.parent.closeWindow();""><strong style=""color: #468847"">{keyword}</strong>&nbsp;({EKeywordTypeUtils.GetText(keywordType)})</div>";
             }
         }
 
@@ -101,7 +101,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
                     _pageUrl =
-                        $"modal_keywordSelect.aspx?PublishmentSystemId={PublishmentSystemId}&keywordType={DdlKeywordType.SelectedValue}&keyword={TbKeyword.Text}&jsMethod={_jsMethod}";
+                        $"modalkeywordSelect.aspx?PublishmentSystemId={PublishmentSystemId}&keywordType={DdlKeywordType.SelectedValue}&keyword={TbKeyword.Text}&jsMethod={_jsMethod}";
                 }
                 return _pageUrl;
             }

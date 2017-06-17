@@ -138,7 +138,7 @@
 
     <div class="tool_area">
       <div class="tool_bar">
-        <input type="button" value="返 回" onclick="javascript:location.href='background_keywordNews.aspx?PublishmentSystemID=<%=base.PublishmentSystemID%>    '" class="btn">
+        <input type="button" value="返 回" onclick="javascript:location.href='background_keywordNews.aspx?PublishmentSystemID=<%=base.PublishmentSystemId%>'" class="btn">
         <!-- <span id="js_preview" class="btn btn_input btn_primary">
           <asp:Literal id="LtlPreview" runat="server" />
         </span> -->

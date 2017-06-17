@@ -74,7 +74,7 @@
             <table class="table noborder">
               <tr>
                 <td class="center">
-                  <asp:Button id="btnStatus" onclick="Status_OnClick" runat="server" />
+                  <asp:Button id="BtnStatus" onclick="Status_OnClick" runat="server" />
                   <asp:Button class="btn btn-info" text="复制微信菜单到底部导航菜单" onclick="Sync_OnClick" runat="server" />
                   
                 </td>

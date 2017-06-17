@@ -13,7 +13,7 @@
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="设置关键词自动回复，可以通过添加规则，用户发送的消息内如果有您设置的关键字，即可把您设置在此规则名中回复的内容自动发送给用户。" runat="server" />
 
-  <asp:dataGrid id="dgContents" showHeader="true" AutoGenerateColumns="false"  HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
+  <asp:dataGrid id="DgContents" showHeader="true" AutoGenerateColumns="false"  HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
     <Columns>
       <asp:BoundColumn HeaderText="关键词" DataField="Keywords" >
         <ItemStyle Width="130" cssClass="center" />
@@ -69,7 +69,7 @@
   </asp:dataGrid>
 
   <ul class="breadcrumb breadcrumb-button">
-    <asp:Button class="btn btn-success" id="btnAdd" Text="添加关键词" runat="server" />
+    <asp:Button class="btn btn-success" id="BtnAdd" Text="添加关键词" runat="server" />
   </ul>
 
 </form>
