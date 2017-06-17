@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using BaiRong.Core;
+using SiteServer.CMS.Model;
 using Microsoft.AspNet.SignalR;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -14,6 +17,7 @@ namespace SiteServer.API
             var lockThis = new object();
             lock (lockThis)
             {
+                // 如果服务组件启用了的话，则通过服务组件生成
                 if (ServiceManager.IsServiceOnline())
                 {
                     return;
@@ -41,7 +45,7 @@ namespace SiteServer.API
                     Clients.Client(Context.ConnectionId).next(true);
                 }
             }
-        }
+        } 
 
         public void GetTasks(int publishmentSystemId)
         {

@@ -4,7 +4,7 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.StlParser.StlElement.WCM;
+using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.Wcm.GovInteract;
 using SiteServer.CMS.Wcm.Model;
 

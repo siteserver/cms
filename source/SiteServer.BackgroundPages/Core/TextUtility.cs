@@ -14,7 +14,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.StlParser.StlElement.WCM;
+using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.Wcm.Model;
 
 namespace SiteServer.BackgroundPages.Core

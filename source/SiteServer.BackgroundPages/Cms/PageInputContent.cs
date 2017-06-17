@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            _relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, PublishmentSystemId, _inputInfo.InputID);
+            _relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, PublishmentSystemId, _inputInfo.InputId);
 
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, _relatedIdentities);
 
@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             spContents.ControlToPaginate = rptContents;
             spContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
-            spContents.SelectCommand = DataProvider.InputContentDao.GetSelectStringOfContentId(_inputInfo.InputID, string.Empty);
+            spContents.SelectCommand = DataProvider.InputContentDao.GetSelectStringOfContentId(_inputInfo.InputId, string.Empty);
             spContents.SortField = DataProvider.InputContentDao.GetSortFieldName();
             spContents.SortMode = SortMode.DESC;
             rptContents.ItemDataBound += rptContents_ItemDataBound;
@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var showPopWinString = string.Empty;
 
-                showPopWinString = ModalInputContentAdd.GetOpenWindowStringToAdd(PublishmentSystemId, _inputInfo.InputID, PageUrl);
+                showPopWinString = ModalInputContentAdd.GetOpenWindowStringToAdd(PublishmentSystemId, _inputInfo.InputId, PageUrl);
                 AddButton.Attributes.Add("onclick", showPopWinString);
 
 
@@ -120,18 +120,18 @@ namespace SiteServer.BackgroundPages.Cms
                 Check.Attributes.Add("onclick", "return confirm(\"此操作将把所选内容设为审核通过，确定吗？\");");
 
 
-                showPopWinString = ModalInputContentTaxis.GetOpenWindowString(PublishmentSystemId, _inputInfo.InputID, PageUrl);
+                showPopWinString = ModalInputContentTaxis.GetOpenWindowString(PublishmentSystemId, _inputInfo.InputId, PageUrl);
                 TaxisButton.Attributes.Add("onclick", showPopWinString);
 
-                showPopWinString = ModalSelectColumns.GetOpenWindowStringToInputContent(PublishmentSystemId, _inputInfo.InputID, true);
+                showPopWinString = ModalSelectColumns.GetOpenWindowStringToInputContent(PublishmentSystemId, _inputInfo.InputId, true);
                 SelectListButton.Attributes.Add("onclick", showPopWinString);
 
-                showPopWinString = ModalSelectColumns.GetOpenWindowStringToInputContent(PublishmentSystemId, _inputInfo.InputID, false);
+                showPopWinString = ModalSelectColumns.GetOpenWindowStringToInputContent(PublishmentSystemId, _inputInfo.InputId, false);
                 SelectFormButton.Attributes.Add("onclick", showPopWinString);
 
-                ImportExcel.Attributes.Add("onclick", ModalInputContentImport.GetOpenWindowString(PublishmentSystemId, _inputInfo.InputID));
+                ImportExcel.Attributes.Add("onclick", ModalInputContentImport.GetOpenWindowString(PublishmentSystemId, _inputInfo.InputId));
 
-                ExportExcel.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToInputContent(PublishmentSystemId, _inputInfo.InputID));
+                ExportExcel.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToInputContent(PublishmentSystemId, _inputInfo.InputId));
 
                 var urlReturn = PageInput.GetRedirectUrl(PublishmentSystemId);
                 btnReturn.Attributes.Add("onclick", $"location.href='{urlReturn}';return false;");
@@ -197,10 +197,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                 itemViewRow.Text =
                     $@"<a href=""javascript:;"" onclick=""{ModalInputContentView.GetOpenWindowString(
-                        PublishmentSystemId, _inputInfo.InputID, contentInfo.Id)}"">查看</a>";
+                        PublishmentSystemId, _inputInfo.InputId, contentInfo.Id)}"">查看</a>";
                 itemEidtRow.Text =
                         $@"<a href=""javascript:;"" onclick=""{ModalInputContentAdd.GetOpenWindowStringToEdit(
-                            PublishmentSystemId, _inputInfo.InputID, contentInfo.Id, PageUrl)}"">修改</a>";
+                            PublishmentSystemId, _inputInfo.InputId, contentInfo.Id, PageUrl)}"">修改</a>";
 
                 if (_inputInfo.IsReply)
                 {
@@ -208,7 +208,7 @@ namespace SiteServer.BackgroundPages.Cms
                     itemRowReply.Text = $@"
 <td class=""center"">{StringUtils.GetTrueImageHtml(!string.IsNullOrEmpty(contentInfo.Reply))}</a></td>
 <td class=""center""><a href=""javascript:;"" onclick=""{ModalInputContentReply.GetOpenWindowString(
-                        PublishmentSystemId, _inputInfo.InputID, contentInfo.Id)}"">{text}</a></td>";
+                        PublishmentSystemId, _inputInfo.InputId, contentInfo.Id)}"">{text}</a></td>";
                 }
 
                 itemDateTime.Text = DateUtils.GetDateString(contentInfo.AddDate);

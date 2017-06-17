@@ -2,8 +2,8 @@
 {
     public class ConferenceGuestInfo
     {
-        public string displayName { get; set; }
-        public string position { get; set; }
-        public string picUrl { get; set; }
+        public string DisplayName { get; set; }
+        public string Position { get; set; }
+        public string PicUrl { get; set; }
     }
 }

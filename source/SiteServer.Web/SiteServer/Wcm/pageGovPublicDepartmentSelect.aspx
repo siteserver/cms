@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="请从下边选择本站点可以使用的机构分类，所选部门下的所有分类都属于可使用范围。" runat="server" />
 
   <script type="text/javascript" language="javascript">

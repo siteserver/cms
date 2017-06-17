@@ -34,9 +34,8 @@ namespace SiteServer.API.Controllers.Stl
             var goodNum = counts[0];
             var badNum = counts[1];
 
-            var goodDisplay = (diggType != EDiggType.Bad) ? "display: block" : "display: none";
-            var badDisplay = (diggType != EDiggType.Good) ? "display: block" : "display: none";
-
+            var goodDisplay = diggType != EDiggType.Bad ? "" : "display: none";
+            var badDisplay = diggType != EDiggType.Good ? "" : "display: none";
 
             var clickStringOfGood = $"stlDiggSet_{updaterId}(true);return false;";
             var clickStringOfBad = $"stlDiggSet_{updaterId}(false);return false;";
@@ -72,7 +71,7 @@ namespace SiteServer.API.Controllers.Stl
                 retval = string.Format($@"
 <div class=""newdigg"" id=""newdigg"">
 	<div class=""diggbox digg_good"" onmousemove=""this.style.backgroundPosition='left bottom';"" onmouseout=""this.style.backgroundPosition='left top';"" onclick=""{clickStringOfGood}"" style=""display:{goodDisplay}"">
-        < div class=""digg_act"">{goodText}</div>
+        <div class=""digg_act"">{goodText}</div>
 		<div class=""digg_num"">({goodNum})</div>
 		<div class=""digg_percent"">
 			<div class=""digg_percent_bar""><span style=""width:{goodPercentage}%""></span></div>

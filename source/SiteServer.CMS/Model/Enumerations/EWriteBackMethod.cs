@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using BaiRong.Core;
 
-namespace SiteServer.CMS.Model.Enumerations
+namespace SiteServer.CMS.Model
 {
 
 	public enum EWriteBackMethod
 	{
-		None,				//����Ҫ�ظ�
-		ByWriteBackField,	//ʹ��ǰ̨���ֶλظ�
-		ByEmail,			//ʹ�õ����ʼ��ظ�
-		All					//���ֻظ���ʽ����
+		None,				//不需要回复
+		ByWriteBackField,	//使用前台表字段回复
+		ByEmail,			//使用电子邮件回复
+		All					//两种回复方式均可
 	}
 
 	public class EWriteBackMethodUtils
@@ -42,19 +43,19 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
 			if (type == EWriteBackMethod.None)
 			{
-				return "���ظ���Ϣ";
+				return "不回复信息";
 			}
 			else if (type == EWriteBackMethod.ByWriteBackField)
 			{
-				return "ֱ�ӻظ���Ϣ";
+				return "直接回复信息";
 			}
 			else if (type == EWriteBackMethod.ByEmail)
 			{
-				return "ͨ���ʼ��ظ���Ϣ";
+				return "通过邮件回复信息";
 			}
 			else if (type == EWriteBackMethod.All)
 			{
-				return "ͬʱʹ�����ֻظ���ʽ";
+				return "同时使用两种回复方式";
 			}
 			else
 			{
@@ -64,7 +65,7 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static EWriteBackMethod GetEnumType(string typeStr)
 		{
-			var retval = EWriteBackMethod.None;
+			EWriteBackMethod retval = EWriteBackMethod.None;
 
 			if (Equals(EWriteBackMethod.None, typeStr))
 			{
@@ -103,7 +104,7 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ListItem GetListItem(EWriteBackMethod type, bool selected)
 		{
-			var item = new ListItem(GetText(type), GetValue(type));
+			ListItem item = new ListItem(GetText(type), GetValue(type));
 			if (selected)
 			{
 				item.Selected = true;

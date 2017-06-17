@@ -12,17 +12,17 @@ namespace SiteServer.BackgroundPages.WeiXin
 {
     public class PageAlbum : BasePageCms
     {
-        public Repeater rptContents;
-        public SqlPager spContents;
+        public Repeater RptContents;
+        public SqlPager SpContents;
 
-        public Button btnAdd;
-        public Button btnDelete;
+        public Button BtnAdd;
+        public Button BtnDelete;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
             return PageUtils.GetWeiXinUrl(nameof(PageAlbum), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
+                {"PublishmentSystemId", publishmentSystemId.ToString()}
             });
         }
 
@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 {
                     try
                     {
-                        DataProviderWX.AlbumDAO.Delete(PublishmentSystemId,list) ;
+                        DataProviderWx.AlbumDao.Delete(PublishmentSystemId,list) ;
                         SuccessMessage("微相册删除成功！");
                     }
                     catch (Exception ex)
@@ -47,23 +47,23 @@ namespace SiteServer.BackgroundPages.WeiXin
                 }
             }
 
-            spContents.ControlToPaginate = rptContents;
-            spContents.ItemsPerPage = 30;
-            spContents.SelectCommand = DataProviderWX.AlbumDAO.GetSelectString(PublishmentSystemId);
-            spContents.SortField = AlbumAttribute.ID;
-            spContents.SortMode = SortMode.ASC;
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            SpContents.ControlToPaginate = RptContents;
+            SpContents.ItemsPerPage = 30;
+            SpContents.SelectCommand = DataProviderWx.AlbumDao.GetSelectString(PublishmentSystemId);
+            SpContents.SortField = AlbumAttribute.Id;
+            SpContents.SortMode = SortMode.ASC;
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             {
                 BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAlbum, "微相册", AppManager.WeiXin.Permission.WebSite.Album);
-                spContents.DataBind();
+                SpContents.DataBind();
 
                 var urlAdd = PageAlbumAdd.GetRedirectUrl(PublishmentSystemId, 0);
-                btnAdd.Attributes.Add("onclick", $"location.href='{urlAdd}';return false");
+                BtnAdd.Attributes.Add("onclick", $"location.href='{urlAdd}';return false");
 
                 var urlDelete = PageUtils.AddQueryString(GetRedirectUrl(PublishmentSystemId), "Delete", "True");
-                btnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlDelete, "IDCollection", "IDCollection", "请选择需要删除的微相册", "此操作将删除所选微相册，确认吗？"));
+                BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlDelete, "IDCollection", "IDCollection", "请选择需要删除的微相册", "此操作将删除所选微相册，确认吗？"));
             }
         }
 
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 var ltlItemIndex = e.Item.FindControl("ltlItemIndex") as Literal;
                 var ltlTitle = e.Item.FindControl("ltlTitle") as Literal;
                 var ltlKeywords = e.Item.FindControl("ltlKeywords") as Literal;
-                var ltlPVCount = e.Item.FindControl("ltlPVCount") as Literal;
+                var ltlPvCount = e.Item.FindControl("ltlPVCount") as Literal;
                 var ltlIsEnabled = e.Item.FindControl("ltlIsEnabled") as Literal;
                 var ltlAlbumContentUrl = e.Item.FindControl("ltlAlbumContentUrl") as Literal;
                 var ltlPreviewUrl = e.Item.FindControl("ltlPreviewUrl") as Literal;
@@ -84,12 +84,12 @@ namespace SiteServer.BackgroundPages.WeiXin
 
                 ltlItemIndex.Text = (e.Item.ItemIndex + 1).ToString();
                 ltlTitle.Text = albumInfo.Title;
-                ltlKeywords.Text = DataProviderWX.KeywordDAO.GetKeywords(albumInfo.KeywordID);
-                ltlPVCount.Text = albumInfo.PVCount.ToString();
+                ltlKeywords.Text = DataProviderWx.KeywordDao.GetKeywords(albumInfo.KeywordId);
+                ltlPvCount.Text = albumInfo.PvCount.ToString();
 
                 ltlIsEnabled.Text = StringUtils.GetTrueOrFalseImageHtml(!albumInfo.IsDisabled);
 
-                var urlAlbumContent = PageAlbumContent.GetRedirectUrl(PublishmentSystemId, albumInfo.ID);
+                var urlAlbumContent = PageAlbumContent.GetRedirectUrl(PublishmentSystemId, albumInfo.Id);
 
                 ltlAlbumContentUrl.Text = $@"<a href=""{urlAlbumContent}"">微相册</a>";
 
@@ -97,7 +97,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 //urlPreview = BackgroundPreview.GetRedirectUrlToMobile(urlPreview);
                 ltlPreviewUrl.Text = $@"<a href=""{urlPreview}"" target=""_blank"">预览</a>";
 
-                var urlEdit = PageAlbumAdd.GetRedirectUrl(PublishmentSystemId, albumInfo.ID);
+                var urlEdit = PageAlbumAdd.GetRedirectUrl(PublishmentSystemId, albumInfo.Id);
                 ltlEditUrl.Text = $@"<a href=""{urlEdit}"">编辑</a>";
             }
         }

@@ -1,70 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Web.UI.WebControls;
 
 namespace BaiRong.Core.Model.Enumerations
 {
     public enum ESmsProviderType
     {
-        AliDaYu,
-        YunPian,
+        Aliyun,
+        Yunpian,
+        None
     }
 
     public class ESmsProviderTypeUtils
     {
         public static string GetValue(ESmsProviderType type)
         {
-            if (type == ESmsProviderType.AliDaYu)
+            if (type == ESmsProviderType.Aliyun)
             {
-                return "AliDaYu";
+                return "Aliyun";
             }
-            else if (type == ESmsProviderType.YunPian)
+            if (type == ESmsProviderType.Yunpian)
             {
-                return "YunPian";
+                return "Yunpian";
             }
-            else
-            {
-                throw new Exception();
-            }
+            return "None";
         }
 
         public static string GetText(ESmsProviderType type)
         {
-            if (type == ESmsProviderType.AliDaYu)
+            if (type == ESmsProviderType.Aliyun)
             {
                 return "阿里大于";
             }
-            else if (type == ESmsProviderType.YunPian)
+            if (type == ESmsProviderType.Yunpian)
             {
                 return "云片";
             }
-            else
-            {
-                throw new Exception();
-            }
+            return "无";
         }
 
         public static string GetUrl(ESmsProviderType type)
         {
-            if (type == ESmsProviderType.AliDaYu)
+            if (type == ESmsProviderType.Aliyun)
             {
                 return "http://www.alidayu.com/";
             }
-            else if (type == ESmsProviderType.YunPian)
+            if (type == ESmsProviderType.Yunpian)
             {
                 return "http://www.yunpian.com/";
             }
-            else
-            {
-                throw new Exception();
-            }
+            return string.Empty;
         }
 
         public static ESmsProviderType GetEnumType(string typeStr)
         {
-            var retval = ESmsProviderType.AliDaYu;
-            if (Equals(typeStr, ESmsProviderType.YunPian))
+            var retval = ESmsProviderType.None;
+            if (Equals(typeStr, ESmsProviderType.Aliyun))
             {
-                retval = ESmsProviderType.YunPian;
+                retval = ESmsProviderType.Aliyun;
+            }
+            else if (Equals(typeStr, ESmsProviderType.Yunpian))
+            {
+                retval = ESmsProviderType.Yunpian;
             }
             return retval;
         }
@@ -84,8 +80,27 @@ namespace BaiRong.Core.Model.Enumerations
             return new List<ESmsProviderType>
             {
                 //ESmsProviderType.AliDaYu,
-                ESmsProviderType.YunPian
+                ESmsProviderType.Yunpian
             };
+        }
+
+        public static ListItem GetListItem(ESmsProviderType type, bool selected)
+        {
+            var item = new ListItem(GetText(type), GetValue(type));
+            if (selected)
+            {
+                item.Selected = true;
+            }
+            return item;
+        }
+
+        public static void AddListItems(ListControl listControl)
+        {
+            if (listControl != null)
+            {
+                listControl.Items.Add(GetListItem(ESmsProviderType.None, false));
+                listControl.Items.Add(GetListItem(ESmsProviderType.Yunpian, false));
+            }
         }
     }
 }

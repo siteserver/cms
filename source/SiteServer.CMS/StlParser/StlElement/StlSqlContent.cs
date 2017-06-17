@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Web.UI;
 using System.Xml;
 using BaiRong.Core;
@@ -9,77 +9,65 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlSqlContent
+    [Stl(Usage = "数据库值", Description = "通过 stl:sqlContent 标签在模板中显示数据库值")]
+    public class StlSqlContent
 	{
         private StlSqlContent() { }
-        public const string ElementName = "stl:sqlcontent";//获取内容
+        public const string ElementName = "stl:sqlContent";
 
-        public const string Attribute_ConnectionStringName = "connectionstringname";        //数据库链接字符串名称
-        public const string Attribute_ConnectionString = "connectionstring";	            //数据库链接字符串
-        public const string Attribute_QueryString = "querystring";
+        public const string AttributeConnectionStringName = "connectionStringName";
+        public const string AttributeConnectionString = "connectionString";
+        public const string AttributeQueryString = "queryString";
 
-		public const string Attribute_Type = "type";						//显示的类型
-        public const string Attribute_LeftText = "lefttext";                    //显示在信息前的文字
-        public const string Attribute_RightText = "righttext";                  //显示在信息后的文字
-        public const string Attribute_FormatString = "formatstring";        //显示的格式
-        public const string Attribute_Separator = "separator";              //显示多项时的分割字符串
-        public const string Attribute_StartIndex = "startindex";			//字符开始位置
-        public const string Attribute_Length = "length";			        //指定字符长度
-		public const string Attribute_WordNum = "wordnum";					//显示字符的数目
-        public const string Attribute_Ellipsis = "ellipsis";                //文字超出部分显示的文字
-        public const string Attribute_Replace = "replace";                      //需要替换的文字，可以是正则表达式
-        public const string Attribute_To = "to";                                //替换replace的文字信息
-        public const string Attribute_IsClearTags = "iscleartags";          //是否清除标签信息
-        public const string Attribute_IsReturnToBR = "isreturntobr";        //是否将回车替换为HTML换行标签
-        public const string Attribute_IsLower = "islower";			        //转换为小写
-        public const string Attribute_IsUpper = "isupper";			        //转换为大写
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+		public const string AttributeType = "type";
+        public const string AttributeLeftText = "leftText";
+        public const string AttributeRightText = "rightText";
+        public const string AttributeFormatString = "formatString";
+        public const string AttributeStartIndex = "startIndex";
+        public const string AttributeLength = "length";
+		public const string AttributeWordNum = "wordNum";
+        public const string AttributeEllipsis = "ellipsis";
+        public const string AttributeReplace = "replace";
+        public const string AttributeTo = "to";
+        public const string AttributeIsClearTags = "isClearTags";
+        public const string AttributeIsReturnToBr = "isReturnToBr";
+        public const string AttributeIsLower = "isLower";
+        public const string AttributeIsUpper = "isUpper";
+        public const string AttributeIsDynamic = "isDynamic";
 
-		public static ListDictionary AttributeList
-		{
-			get
-			{
-				var attributes = new ListDictionary();
-                attributes.Add(Attribute_ConnectionStringName, "数据库链接字符串名称");
-                attributes.Add(Attribute_ConnectionString, "数据库链接字符串");
-                attributes.Add(Attribute_QueryString, "数据库查询语句");
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {AttributeConnectionStringName, "数据库链接字符串名称"},
+	        {AttributeConnectionString, "数据库链接字符串"},
+	        {AttributeQueryString, "数据库查询语句"},
+	        {AttributeType, "显示的类型"},
+	        {AttributeLeftText, "显示在信息前的文字"},
+	        {AttributeRightText, "显示在信息后的文字"},
+	        {AttributeFormatString, "显示的格式"},
+	        {AttributeStartIndex, "字符开始位置"},
+	        {AttributeLength, "指定字符长度"},
+	        {AttributeWordNum, "显示字符的数目"},
+	        {AttributeEllipsis, "文字超出部分显示的文字"},
+	        {AttributeReplace, "需要替换的文字，可以是正则表达式"},
+	        {AttributeTo, "替换replace的文字信息"},
+	        {AttributeIsClearTags, "是否清除标签信息"},
+	        {AttributeIsReturnToBr, "是否将回车替换为HTML换行标签"},
+	        {AttributeIsLower, "是否转换为小写"},
+	        {AttributeIsUpper, "是否转换为大写"},
+	        {AttributeIsDynamic, "是否动态显示"}
+	    };
 
-				attributes.Add(Attribute_Type, "显示的类型");
-                attributes.Add(Attribute_LeftText, "显示在信息前的文字");
-                attributes.Add(Attribute_RightText, "显示在信息后的文字");
-                attributes.Add(Attribute_FormatString, "显示的格式");
-                attributes.Add(Attribute_Separator, "显示多项时的分割字符串");
-                attributes.Add(Attribute_StartIndex, "字符开始位置");
-                attributes.Add(Attribute_Length, "指定字符长度");
-				attributes.Add(Attribute_WordNum, "显示字符的数目");
-                attributes.Add(Attribute_Ellipsis, "文字超出部分显示的文字");
-                attributes.Add(Attribute_Replace, "需要替换的文字，可以是正则表达式");
-                attributes.Add(Attribute_To, "替换replace的文字信息");
-                attributes.Add(Attribute_IsClearTags, "是否清除标签信息");
-                attributes.Add(Attribute_IsReturnToBR, "是否将回车替换为HTML换行标签");
-                attributes.Add(Attribute_IsLower, "转换为小写");
-                attributes.Add(Attribute_IsUpper, "转换为大写");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
-
-
-        //对“获取内容”（stl:sqlcontent）元素进行解析
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			var parsedContent = string.Empty;
+			string parsedContent;
 			try
 			{
-                var ie = node.Attributes.GetEnumerator();
-				var attributes = new StringDictionary();
                 var connectionString = string.Empty;
                 var queryString = string.Empty;
 
                 var leftText = string.Empty;
                 var rightText = string.Empty;
                 var formatString = string.Empty;
-                string separator = null;
                 var startIndex = 0;
                 var length = 0;
 				var wordNum = 0;
@@ -87,110 +75,98 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var replace = string.Empty;
                 var to = string.Empty;
                 var isClearTags = false;
-                var isReturnToBR = false;
+                var isReturnToBr = false;
                 var isLower = false;
                 var isUpper = false;
                 var type = string.Empty;
                 var isDynamic = false;
 
-				while (ie.MoveNext())
-				{
-					var attr = (XmlAttribute)ie.Current;
-					var attributeName = attr.Name.ToLower();
+                var ie = node.Attributes?.GetEnumerator();
+			    if (ie != null)
+			    {
+			        while (ie.MoveNext())
+			        {
+			            var attr = (XmlAttribute) ie.Current;
 
-                    if (attributeName.Equals(Attribute_ConnectionString))
-                    {
-                        connectionString = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_ConnectionStringName))
-                    {
-                        if (string.IsNullOrEmpty(connectionString))
-                        {
-                            connectionString = WebConfigUtils.ConnectionString;
-                        }
-                    }
-                    else if (attributeName.Equals(Attribute_QueryString))
-                    {
-                        queryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_Type))
-					{
-						type = attr.Value.ToLower();
-					}
-                    else if (attributeName.Equals(Attribute_LeftText))
-                    {
-                        leftText = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_RightText))
-                    {
-                        rightText = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_FormatString))
-					{
-                        formatString = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_Separator))
-                    {
-                        separator = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_StartIndex))
-                    {
-                        startIndex = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Length))
-                    {
-                        length = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_WordNum))
-                    {
-                        wordNum = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Ellipsis))
-                    {
-                        ellipsis = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_Replace))
-                    {
-                        replace = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_To))
-                    {
-                        to = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsClearTags))
-                    {
-                        isClearTags = TranslateUtils.ToBool(attr.Value, false);
-                    }
-                    else if (attributeName.Equals(Attribute_IsReturnToBR))
-                    {
-                        isReturnToBR = TranslateUtils.ToBool(attr.Value, false);
-                    }
-                    else if (attributeName.Equals(Attribute_IsLower))
-                    {
-                        isLower = TranslateUtils.ToBool(attr.Value, true);
-                    }
-                    else if (attributeName.Equals(Attribute_IsUpper))
-                    {
-                        isUpper = TranslateUtils.ToBool(attr.Value, true);
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
-                    }
-					else
-					{
-						attributes.Add(attributeName, attr.Value);
-					}
-				}
+			            if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeConnectionString))
+			            {
+			                connectionString = attr.Value;
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeConnectionStringName))
+			            {
+			                if (string.IsNullOrEmpty(connectionString))
+			                {
+			                    connectionString = WebConfigUtils.ConnectionString;
+			                }
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeQueryString))
+			            {
+			                queryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
+			            {
+			                type = attr.Value.ToLower();
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLeftText))
+			            {
+			                leftText = attr.Value;
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeRightText))
+			            {
+			                rightText = attr.Value;
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeFormatString))
+			            {
+			                formatString = attr.Value;
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeStartIndex))
+			            {
+			                startIndex = TranslateUtils.ToInt(attr.Value);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLength))
+			            {
+			                length = TranslateUtils.ToInt(attr.Value);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWordNum))
+			            {
+			                wordNum = TranslateUtils.ToInt(attr.Value);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeEllipsis))
+			            {
+			                ellipsis = attr.Value;
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeReplace))
+			            {
+			                replace = attr.Value;
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTo))
+			            {
+			                to = attr.Value;
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsClearTags))
+			            {
+			                isClearTags = TranslateUtils.ToBool(attr.Value, false);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsReturnToBr))
+			            {
+			                isReturnToBr = TranslateUtils.ToBool(attr.Value, false);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsLower))
+			            {
+			                isLower = TranslateUtils.ToBool(attr.Value, true);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsUpper))
+			            {
+			                isUpper = TranslateUtils.ToBool(attr.Value, true);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
+			            {
+			                isDynamic = TranslateUtils.ToBool(attr.Value);
+			            }
+			        }
+			    }
 
-                if (isDynamic)
-                {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
-                }
-                else
-                {
-                    parsedContent = ParseImpl(node, pageInfo, contextInfo, attributes, connectionString, queryString, leftText, rightText, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBR, isLower, isUpper, type);
-                }
+			    parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(contextInfo, connectionString, queryString, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
 			}
             catch (Exception ex)
             {
@@ -200,11 +176,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 			return parsedContent;
 		}
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, StringDictionary attributes, string connectionString, string queryString, string leftText, string rightText, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBR, bool isLower, bool isUpper, string type)
+        private static string ParseImpl(ContextInfo contextInfo, string connectionString, string queryString, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
         {
             var parsedContent = string.Empty;
 
-            if (!string.IsNullOrEmpty(type) && contextInfo.ItemContainer != null && contextInfo.ItemContainer.SqlItem != null)
+            if (!string.IsNullOrEmpty(type) && contextInfo.ItemContainer?.SqlItem != null)
             {
                 if (!string.IsNullOrEmpty(formatString))
                 {
@@ -227,14 +203,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.SqlItem.ItemIndex, type, contextInfo);
 
-                    if (!string.IsNullOrEmpty(formatString))
-                    {
-                        parsedContent = string.Format(formatString, itemIndex);
-                    }
-                    else
-                    {
-                        parsedContent = itemIndex.ToString();
-                    }
+                    parsedContent = !string.IsNullOrEmpty(formatString) ? string.Format(formatString, itemIndex) : itemIndex.ToString();
                 }
                 else
                 {
@@ -253,7 +222,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (!string.IsNullOrEmpty(parsedContent))
             {
-                parsedContent = StringUtils.ParseString(parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBR, isLower, isUpper, formatString);
+                parsedContent = StringUtils.ParseString(parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                 if (!string.IsNullOrEmpty(parsedContent))
                 {

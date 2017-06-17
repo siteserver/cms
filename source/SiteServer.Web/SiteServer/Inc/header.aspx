@@ -1,5 +1,6 @@
 ﻿<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <bairong:Code type="jQuery" runat="server" />
 <bairong:Code type="calendar" runat="server" />
 <bairong:Code type="bootstrap" runat="server" />

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Owin;
 using Owin;
 using SiteServer.API;
+using SiteServer.CMS.Plugins;
 
 [assembly: OwinStartup(typeof(Startup))]
 

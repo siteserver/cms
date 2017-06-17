@@ -192,15 +192,15 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public int GetCountOfContentAdd(string tableName, int publishmentSystemId, int nodeId, DateTime begin, DateTime end, string userName)
+        public int GetCountOfContentAdd(string tableName, int publishmentSystemId, int nodeId, EScopeType scope, DateTime begin, DateTime end, string userName)
         {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, EScopeType.All, string.Empty, string.Empty);
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scope, string.Empty, string.Empty);
             return BaiRongDataProvider.ContentDao.GetCountOfContentAdd(tableName, publishmentSystemId, nodeIdList, begin, end, userName);
         }
 
-        public int GetCountOfContentUpdate(string tableName, int publishmentSystemId, int nodeId, DateTime begin, DateTime end, string userName)
+        public int GetCountOfContentUpdate(string tableName, int publishmentSystemId, int nodeId, EScopeType scope, DateTime begin, DateTime end, string userName)
         {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, EScopeType.All, string.Empty, string.Empty);
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scope, string.Empty, string.Empty);
             return BaiRongDataProvider.ContentDao.GetCountOfContentUpdate(tableName, publishmentSystemId, nodeIdList, begin, end, userName);
         }
 
@@ -381,50 +381,90 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public string GetWhereStringBySearchOutput(PublishmentSystemInfo publishmentSystemInfo, int nodeId, ETableStyle tableStyle, string word, StringCollection typeCollection, string channelId, string dateFrom, string dateTo, string date, string dateAttribute, string excludeAttributes, NameValueCollection form)
+        public string GetWhereStringByStlSearch(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int publishmentSystemId, List<string> excludeAttributes, NameValueCollection form, out bool isDefaultCondition)
         {
+            isDefaultCondition = true;
             var whereBuilder = new StringBuilder();
 
-            if (typeCollection.Count == 0)
+            PublishmentSystemInfo publishmentSystemInfo = null;
+            if (!string.IsNullOrEmpty(siteName))
             {
-                typeCollection.Add(ContentAttribute.Title);
-                if (tableStyle == ETableStyle.BackgroundContent)
-                {
-                    typeCollection.Add(BackgroundContentAttribute.Content);
-                }
-                else if (tableStyle == ETableStyle.JobContent)
-                {
-                    typeCollection.Add(JobContentAttribute.Location);
-                    typeCollection.Add(JobContentAttribute.Department);
-                    typeCollection.Add(JobContentAttribute.Requirement);
-                    typeCollection.Add(JobContentAttribute.Responsibility);
-                }
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoBySiteName(siteName);
+            }
+            else if (!string.IsNullOrEmpty(siteDir))
+            {
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoByDirectory(siteDir);
+            }
+            if (publishmentSystemInfo == null)
+            {
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             }
 
-            whereBuilder.Append($"(PublishmentSystemID = {publishmentSystemInfo.PublishmentSystemId}) ");
+            var channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(publishmentSystemId, publishmentSystemId, channelIndex, channelName);
+            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+
+            if (isAllSites)
+            {
+                whereBuilder.Append("(PublishmentSystemID > 0) ");
+            }
+            else if (!string.IsNullOrEmpty(siteIds))
+            {
+                whereBuilder.Append($"(PublishmentSystemID IN ({TranslateUtils.ToSqlInStringWithoutQuote(TranslateUtils.StringCollectionToIntList(siteIds))})) ");
+            }
+            else
+            {
+                whereBuilder.Append($"(PublishmentSystemID = {publishmentSystemInfo.PublishmentSystemId}) ");
+            }
+
+            if (!string.IsNullOrEmpty(channelIds))
+            {
+                whereBuilder.Append(" AND ");
+                var nodeIdList = new List<int>();
+                foreach (var nodeId in TranslateUtils.StringCollectionToIntList(channelIds))
+                {
+                    nodeIdList.Add(nodeId);
+                    nodeIdList.AddRange(DataProvider.NodeDao.GetNodeIdListForDescendant(nodeId));
+                }
+                whereBuilder.Append(nodeIdList.Count == 1
+                    ? $"(NodeID = {nodeIdList[0]}) "
+                    : $"(NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
+            }
+            else if (channelId != publishmentSystemId)
+            {
+                whereBuilder.Append(" AND ");
+                var nodeIdList = DataProvider.NodeDao.GetNodeIdListForDescendant(channelId);
+                nodeIdList.Add(channelId);
+                whereBuilder.Append(nodeIdList.Count == 1
+                    ? $"(NodeID = {nodeIdList[0]}) "
+                    : $"(NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
+            }
+
+            var typeList = new List<string>();
+            if (string.IsNullOrEmpty(type))
+            {
+                typeList.Add(ContentAttribute.Title);
+            }
+            else
+            {
+                typeList = TranslateUtils.StringCollectionToStringList(type);
+            }
+
             if (!string.IsNullOrEmpty(word))
             {
                 whereBuilder.Append(" AND (");
-                foreach (var attributeName in typeCollection)
+                foreach (var attributeName in typeList)
                 {
-                    whereBuilder.Append($"[{attributeName}] like '%{PageUtils.FilterSql(word)}%' OR ");
+                    whereBuilder.Append($"[{attributeName}] LIKE '%{PageUtils.FilterSql(word)}%' OR ");
                 }
                 whereBuilder.Length = whereBuilder.Length - 3;
                 whereBuilder.Append(")");
             }
-            if (!string.IsNullOrEmpty(channelId))
+
+            if (string.IsNullOrEmpty(dateAttribute))
             {
-                var theChannelId = TranslateUtils.ToInt(channelId);
-                if (theChannelId > 0 && theChannelId != publishmentSystemInfo.PublishmentSystemId)
-                {
-                    whereBuilder.Append(" AND ");
-                    var nodeIdList = DataProvider.NodeDao.GetNodeIdListForDescendant(theChannelId);
-                    nodeIdList.Add(theChannelId);
-                    whereBuilder.Append(nodeIdList.Count == 1
-                        ? $"(NodeID = {nodeIdList[0]}) "
-                        : $"(NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
-                }
+                dateAttribute = ContentAttribute.AddDate;
             }
+
             if (!string.IsNullOrEmpty(dateFrom))
             {
                 whereBuilder.Append(" AND ");
@@ -435,87 +475,87 @@ namespace SiteServer.CMS.Provider
                 whereBuilder.Append(" AND ");
                 whereBuilder.Append($" {dateAttribute} <= '{dateTo}' ");
             }
-            if (!string.IsNullOrEmpty(date))
+            if (!string.IsNullOrEmpty(since))
             {
-                var days = TranslateUtils.ToInt(date);
-                if (days > 0)
-                {
-                    whereBuilder.Append(" AND ");
-                    whereBuilder.Append(SqlUtils.GetDateDiffLessThanDays(dateAttribute, days.ToString()));
-                }
+                var sinceDate = DateTime.Now.AddHours(-DateUtils.GetSinceHours(since));
+                whereBuilder.Append($" AND {dateAttribute} BETWEEN '{DateUtils.GetDateAndTimeString(sinceDate)}' AND {SqlUtils.GetDefaultDateString()} ");
             }
 
-            var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, tableStyle, nodeId);
-            var tableName = RelatedIdentities.GetTableName(publishmentSystemInfo, tableStyle, nodeId);
+            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
+            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, tableStyle, nodeInfo.NodeId);
 
-            var arraylist = TranslateUtils.StringCollectionToStringList(excludeAttributes);
             foreach (string key in form.Keys)
             {
-                if (arraylist.Contains(key.ToLower())) continue;
-                if (!string.IsNullOrEmpty(form[key]))
+                if (excludeAttributes.Contains(key.ToLower())) continue;
+                if (string.IsNullOrEmpty(form[key])) continue;
+
+                var value = StringUtils.Trim(form[key]);
+                if (string.IsNullOrEmpty(value)) continue;
+
+                if (TableManager.IsAttributeNameExists(tableStyle, tableName, key))
                 {
-                    var value = StringUtils.Trim(form[key]);
-                    if (!string.IsNullOrEmpty(value))
+                    whereBuilder.Append(" AND ");
+                    whereBuilder.Append($"({key} LIKE '%{value}%')");
+                }
+                else
+                {
+                    foreach (var tableStyleInfo in styleInfoList)
                     {
-                        if (TableManager.IsAttributeNameExists(tableStyle, tableName, key))
+                        if (StringUtils.EqualsIgnoreCase(tableStyleInfo.AttributeName, key))
                         {
                             whereBuilder.Append(" AND ");
-                            whereBuilder.Append($"([{key}] LIKE '%{value}%')");
-                        }
-                        else
-                        {
-                            foreach (var tableStyleInfo in styleInfoList)
-                            {
-                                if (StringUtils.EqualsIgnoreCase(tableStyleInfo.AttributeName, key))
-                                {
-                                    whereBuilder.Append(" AND ");
-                                    whereBuilder.Append($"({ContentAttribute.SettingsXml} LIKE '%{key}={value}%')");
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (tableStyle == ETableStyle.GovPublicContent)
-                        {
-                            if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.DepartmentId))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category1Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category2Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category3Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category4Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category5Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category6Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
+                            whereBuilder.Append($"({ContentAttribute.SettingsXml} LIKE '%{key}={value}%')");
+                            break;
                         }
                     }
                 }
+
+                if (tableStyle == ETableStyle.GovPublicContent)
+                {
+                    if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.DepartmentId))
+                    {
+                        whereBuilder.Append(" AND ");
+                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category1Id))
+                    {
+                        whereBuilder.Append(" AND ");
+                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category2Id))
+                    {
+                        whereBuilder.Append(" AND ");
+                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category3Id))
+                    {
+                        whereBuilder.Append(" AND ");
+                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category4Id))
+                    {
+                        whereBuilder.Append(" AND ");
+                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category5Id))
+                    {
+                        whereBuilder.Append(" AND ");
+                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category6Id))
+                    {
+                        whereBuilder.Append(" AND ");
+                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
+                    }
+                }
             }
+
+            if (whereBuilder.ToString().Contains(" AND "))
+            {
+                isDefaultCondition = false;
+            }
+
             return whereBuilder.ToString();
         }
 
@@ -630,10 +670,10 @@ namespace SiteServer.CMS.Provider
             return sqlString;
         }
 
-        public IEnumerable GetStlDataSourceChecked(string tableName, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup, NameValueCollection otherAttributes)
+        public IEnumerable GetStlDataSourceChecked(string tableName, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup, LowerNameValueCollection others)
         {
             var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, groupChannel, groupChannelNot);
-            return BaiRongDataProvider.ContentDao.GetStlDataSourceChecked(tableName, nodeIdList, startNum, totalNum, orderByString, whereString, isNoDup, otherAttributes);
+            return BaiRongDataProvider.ContentDao.GetStlDataSourceChecked(tableName, nodeIdList, startNum, totalNum, orderByString, whereString, isNoDup, others);
         }
 
         public string GetStlSqlStringChecked(string tableName, int publishmentSystemId, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup)
@@ -655,6 +695,23 @@ namespace SiteServer.CMS.Provider
                 sqlWhereString = nodeIdList.Count == 1 ? $"WHERE (NodeID = {nodeIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})";
             }
 
+            if (isNoDup)
+            {
+                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(ID)", sqlWhereString + " GROUP BY Title");
+                sqlWhereString += $" AND ID IN ({sqlString})";
+            }
+
+            if (!string.IsNullOrEmpty(tableName))
+            {
+                return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+            }
+            return string.Empty;
+        }
+
+        public string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup)
+        {
+            string sqlWhereString =
+                    $"WHERE (NodeID > 0 AND IsChecked = '{true}' {whereString})";
             if (isNoDup)
             {
                 var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(ID)", sqlWhereString + " GROUP BY Title");

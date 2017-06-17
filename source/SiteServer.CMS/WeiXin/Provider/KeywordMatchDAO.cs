@@ -8,23 +8,23 @@ using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class KeywordMatchDAO : DataProviderBase
+    public class KeywordMatchDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_KeywordMatch";
+        private const string TableName = "wx_KeywordMatch";
 
-        private const string SQL_DELETE_BY_KEYWORD_ID = "DELETE FROM wx_KeywordMatch WHERE KeywordID = @KeywordID";
+        private const string SqlDeleteByKeywordId = "DELETE FROM wx_KeywordMatch WHERE KeywordID = @KeywordID";
 
-        private const string SQL_SELECT_KEYOWRD_BY_TYPE = "SELECT Keyword FROM wx_KeywordMatch WHERE PublishmentSystemID = @PublishmentSystemID AND KeywordType = @KeywordType ORDER BY Keyword";
+        private const string SqlSelectKeyowrdByType = "SELECT Keyword FROM wx_KeywordMatch WHERE PublishmentSystemID = @PublishmentSystemID AND KeywordType = @KeywordType ORDER BY Keyword";
 
-        private const string SQL_SELECT_KEYOWRD_ENABLED = "SELECT Keyword FROM wx_KeywordMatch WHERE PublishmentSystemID = @PublishmentSystemID AND IsDisabled = @IsDisabled ORDER BY Keyword";
+        private const string SqlSelectKeyowrdEnabled = "SELECT Keyword FROM wx_KeywordMatch WHERE PublishmentSystemID = @PublishmentSystemID AND IsDisabled = @IsDisabled ORDER BY Keyword";
 
-        private const string PARM_MATCH_ID = "@MatchID";
-        private const string PARM_PUBLISHMENT_SYSTEM_ID = "@PublishmentSystemID";
-        private const string PARM_KEYWORD = "@Keyword";
-        private const string PARM_KEYWORD_ID = "@KeywordID";
-        private const string PARM_IS_DISABLED = "@IsDisabled";
-        private const string PARM_KEYWORD_TYPE = "@KeywordType";
-        private const string PARM_MATCH_TYPE = "@MatchType";
+        private const string ParmMatchId = "@MatchID";
+        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
+        private const string ParmKeyword = "@Keyword";
+        private const string ParmKeywordId = "@KeywordID";
+        private const string ParmIsDisabled = "@IsDisabled";
+        private const string ParmKeywordType = "@KeywordType";
+        private const string ParmMatchType = "@MatchType";
 
         public void Insert(KeywordMatchInfo matchInfo)
         {
@@ -32,38 +32,38 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, matchInfo.PublishmentSystemID),
-                GetParameter(PARM_KEYWORD, EDataType.NVarChar, 255, matchInfo.Keyword),
-                GetParameter(PARM_KEYWORD_ID, EDataType.Integer, matchInfo.KeywordID),
-                GetParameter(PARM_IS_DISABLED, EDataType.VarChar, 18, matchInfo.IsDisabled.ToString()),
-                GetParameter(PARM_KEYWORD_TYPE, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(matchInfo.KeywordType)),
-                GetParameter(PARM_MATCH_TYPE, EDataType.VarChar, 50, EMatchTypeUtils.GetValue(matchInfo.MatchType))
+                GetParameter(ParmPublishmentSystemId, EDataType.Integer, matchInfo.PublishmentSystemId),
+                GetParameter(ParmKeyword, EDataType.NVarChar, 255, matchInfo.Keyword),
+                GetParameter(ParmKeywordId, EDataType.Integer, matchInfo.KeywordId),
+                GetParameter(ParmIsDisabled, EDataType.VarChar, 18, matchInfo.IsDisabled.ToString()),
+                GetParameter(ParmKeywordType, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(matchInfo.KeywordType)),
+                GetParameter(ParmMatchType, EDataType.VarChar, 50, EMatchTypeUtils.GetValue(matchInfo.MatchType))
 			};
 
             ExecuteNonQuery(sqlString, parms);
         }
 
-        public void DeleteByKeywordID(int keywordID)
+        public void DeleteByKeywordId(int keywordId)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
+				GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
 			};
 
-            ExecuteNonQuery(SQL_DELETE_BY_KEYWORD_ID, parms);
+            ExecuteNonQuery(SqlDeleteByKeywordId, parms);
         }
 
-        public List<string> GetKeywordList(int publishmentSystemID, EKeywordType keywordType)
+        public List<string> GetKeywordList(int publishmentSystemId, EKeywordType keywordType)
         {
             var list = new List<string>();
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, publishmentSystemID),
-                GetParameter(PARM_KEYWORD_TYPE, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordType))
+                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
+                GetParameter(ParmKeywordType, EDataType.VarChar, 50, EKeywordTypeUtils.GetValue(keywordType))
 			};
 
-            using (var rdr = ExecuteReader(SQL_SELECT_KEYOWRD_BY_TYPE, parms))
+            using (var rdr = ExecuteReader(SqlSelectKeyowrdByType, parms))
             {
                 while (rdr.Read())
                 {
@@ -75,17 +75,17 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public List<string> GetKeywordListEnabled(int publishmentSystemID)
+        public List<string> GetKeywordListEnabled(int publishmentSystemId)
         {
             var list = new List<string>();
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, publishmentSystemID),
-                GetParameter(PARM_IS_DISABLED, EDataType.VarChar, 18, false.ToString())
+                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
+                GetParameter(ParmIsDisabled, EDataType.VarChar, 18, false.ToString())
 			};
 
-            using (var rdr = ExecuteReader(SQL_SELECT_KEYOWRD_ENABLED, parms))
+            using (var rdr = ExecuteReader(SqlSelectKeyowrdEnabled, parms))
             {
                 while (rdr.Read())
                 {
@@ -97,9 +97,9 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public int GetKeywordIDByMPController(int publishmentSystemID, string keyword)
+        public int GetKeywordIdbyMpController(int publishmentSystemId, string keyword)
         {
-            var keywordID = 0;
+            var keywordId = 0;
 
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -107,8 +107,8 @@ namespace SiteServer.CMS.WeiXin.Provider
 
                 #region 张浩然 2014-8-25 修改关键词触发规则（全字匹配优先）
                 string sqlString =
-                    $@"SELECT TOP 1 KeywordID FROM ( SELECT wx_KeywordMatch.*,'Exact' AS TypeName FROM wx_KeywordMatch WHERE PublishmentSystemID ={publishmentSystemID} AND IsDisabled <> 'True' AND MatchType = '{EMatchTypeUtils
-                        .GetValue(EMatchType.Exact)}' AND Keyword = '{keyword}' union SELECT wx_KeywordMatch.*,'Contains' AS TypeName FROM wx_KeywordMatch WHERE PublishmentSystemID ={publishmentSystemID} AND IsDisabled <> 'True' AND MatchType = '{EMatchTypeUtils
+                    $@"SELECT TOP 1 KeywordID FROM ( SELECT wx_KeywordMatch.*,'Exact' AS TypeName FROM wx_KeywordMatch WHERE PublishmentSystemID ={publishmentSystemId} AND IsDisabled <> 'True' AND MatchType = '{EMatchTypeUtils
+                        .GetValue(EMatchType.Exact)}' AND Keyword = '{keyword}' union SELECT wx_KeywordMatch.*,'Contains' AS TypeName FROM wx_KeywordMatch WHERE PublishmentSystemID ={publishmentSystemId} AND IsDisabled <> 'True' AND MatchType = '{EMatchTypeUtils
                         .GetValue(EMatchType.Contains)}' AND CHARINDEX(Keyword, '{keyword}') <> 0 ) AS wx_KM";
                 #endregion
 
@@ -116,24 +116,24 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     if (rdr.Read() && !rdr.IsDBNull(0))
                     {
-                        keywordID = rdr.GetInt32(0);
+                        keywordId = rdr.GetInt32(0);
                     }
                     rdr.Close();
                 }
             }
 
-            return keywordID;
+            return keywordId;
         }
 
-        public string GetSelectString(int publishmentSystemID)
+        public string GetSelectString(int publishmentSystemId)
         {
-            string whereString = $"WHERE PublishmentSystemID = {publishmentSystemID}";
+            string whereString = $"WHERE PublishmentSystemID = {publishmentSystemId}";
             return BaiRongDataProvider.TableStructureDao.GetSelectSqlString("wx_KeywordMatch", SqlUtils.Asterisk, whereString);
         }
 
-        public string GetSelectString(int publishmentSystemID, string keywordType, string keyword)
+        public string GetSelectString(int publishmentSystemId, string keywordType, string keyword)
         {
-            string whereString = $"WHERE PublishmentSystemID = {publishmentSystemID}";
+            string whereString = $"WHERE PublishmentSystemID = {publishmentSystemId}";
             if (!string.IsNullOrEmpty(keywordType))
             {
                 whereString += $" AND KeywordType = '{keywordType}'";
@@ -150,12 +150,12 @@ namespace SiteServer.CMS.WeiXin.Provider
             return "MatchID";
         }
 
-        public bool IsExists(int publishmentSystemID, string keyword)
+        public bool IsExists(int publishmentSystemId, string keyword)
         {
             var isExists = false;
 
             string sqlString =
-                $"SELECT MatchID FROM wx_KeywordMatch WHERE PublishmentSystemID = {publishmentSystemID} AND Keyword = '{keyword}'";
+                $"SELECT MatchID FROM wx_KeywordMatch WHERE PublishmentSystemID = {publishmentSystemId} AND Keyword = '{keyword}'";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -168,17 +168,17 @@ namespace SiteServer.CMS.WeiXin.Provider
             return isExists;
         }
 
-        public List<KeywordMatchInfo> GetKeywordMatchInfoList(int publishmentSystemID, int keyWordID)
+        public List<KeywordMatchInfo> GetKeywordMatchInfoList(int publishmentSystemId, int keyWordId)
         {
 
             var keywordMatchInfoList = new List<KeywordMatchInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {KeywordMatchAttribute.PublishmentSystemID} = {publishmentSystemID} AND {KeywordMatchAttribute.KeywordID} = {keyWordID}";
+            string sqlWhere =
+                $"WHERE {KeywordMatchAttribute.PublishmentSystemId} = {publishmentSystemId} AND {KeywordMatchAttribute.KeywordId} = {keyWordId}";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

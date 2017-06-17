@@ -1,0 +1,19 @@
+﻿@charset "utf-8";
+/* CSS Document */
+
+.maddBox .popover { max-width:100%; margin-bottom:10px; color:#333}
+.maddBox *{ font-size: 14px!important; }
+.mad_t1 { background: #1D9B72; color: #FFF; }
+.mad_ul li { line-height: 30px; background: url(../images/mad_ico1.jpg) no-repeat left center; height: 30px; width: 38%; float: left; overflow: hidden; padding: 0px 50px 0px 14px; }
+.mad_a1 { color: #333; font-size: 14px; }
+.mad_ul li span { float: right; line-height: 30px; }
+.mad_ul { padding: 0px; margin: 0px; }
+.maddBox .mad_a1:hover{ color: #1D9B72; }
+.madtab1 tr td { border-width: 0px!important; border-style: none!important; padding:4px 8px; }
+.mad_btn1 { margin-top: 6px; }
+.mad_imgBox { }
+.mad_btnL { float: left; margin: 150px 54px 0px 0px; cursor: pointer; }
+.mad_imgBox { width: 700px; padding: 18px 0px 18px 50px; }
+.mad_imgConbox { float: left; height: 354px; width: 536px; overflow: hidden; }
+.mad_btnR { float: right; margin-top: 150px; cursor: pointer; }
+.mad_imgConbox ul li { float: left; height: 354px; width: 536px; list-style: none; }

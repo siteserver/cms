@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="在此编辑字段,子栏目默认继承父栏目字段设置。" runat="server" />
 
   <div class="well well-small">

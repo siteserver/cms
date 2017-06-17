@@ -45,7 +45,7 @@ namespace BaiRong.Core
 
         public static bool IsMobile(string val)
         {
-            return Regex.IsMatch(val, @"^1[358]\d{9}$", RegexOptions.IgnoreCase);
+            return Regex.IsMatch(val, @"^1[3456789]\d{9}$", RegexOptions.IgnoreCase);
         }
 
         public static bool IsEmail(string val)
@@ -1017,14 +1017,7 @@ namespace BaiRong.Core
 
         public static string ParseString(EInputType inputType, string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
         {
-            if (EInputTypeUtils.IsPureString(inputType))
-            {
-                return ParseString(content, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
-            }
-            else
-            {
-                return content;
-            }
+            return EInputTypeUtils.IsPureString(inputType) ? ParseString(content, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString) : content;
         }
 
         public static string ParseString(string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
@@ -1254,6 +1247,23 @@ namespace BaiRong.Core
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
             return input.First().ToString().ToLower() + input.Substring(1);
+        }
+
+        public static string SortedListToAttributeValueString(string name, SortedList<string, string> attributeValues)
+        {
+            const string seperator = "<br />&nbsp;&nbsp;&nbsp;&nbsp;";
+
+            var builder = new StringBuilder();
+            if (attributeValues != null && attributeValues.Count > 0)
+            {
+                foreach (var key in attributeValues.Keys)
+                {
+                    builder.Append(
+                        $@"{key}：{attributeValues[key]}{seperator}");
+                }
+                builder.Length = builder.Length - seperator.Length;
+            }
+            return name + "，可选值包含：<br />&nbsp;&nbsp;&nbsp;&nbsp;" + builder;
         }
     }
 }

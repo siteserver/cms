@@ -3,7 +3,6 @@ using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Administrators;
 using SiteServer.CMS.Core;
-using BaiRong.Core.Text;
 
 namespace SiteServer.API.Controllers.Administrators
 {

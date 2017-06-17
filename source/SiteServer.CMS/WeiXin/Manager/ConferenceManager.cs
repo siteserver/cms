@@ -45,26 +45,26 @@ namespace SiteServer.CMS.WeiXin.Manager
         public static string GetConferenceUrl(PublishmentSystemInfo publishmentSystemInfo, ConferenceInfo conferenceInfo, string wxOpenID)
         {
             var attributes = new NameValueCollection();
-            attributes.Add("publishmentSystemID", conferenceInfo.PublishmentSystemID.ToString());
-            attributes.Add("conferenceID", conferenceInfo.ID.ToString());
+            attributes.Add("publishmentSystemID", conferenceInfo.PublishmentSystemId.ToString());
+            attributes.Add("conferenceID", conferenceInfo.Id.ToString());
             attributes.Add("wxOpenID", wxOpenID);
             return PageUtils.AddQueryString(GetConferenceUrl(publishmentSystemInfo), attributes);
         }
 
         public static void AddContent(int publishmentSystemID, int conferenceID, string realName, string mobile, string email, string company, string position, string note, string ipAddress, string cookieSN, string wxOpenID, string userName)
         {
-            DataProviderWX.ConferenceDAO.AddUserCount(conferenceID);
-            var contentInfo = new ConferenceContentInfo { ID = 0, PublishmentSystemID = publishmentSystemID, ConferenceID = conferenceID, IPAddress = ipAddress, CookieSN = cookieSN, WXOpenID = wxOpenID, UserName = userName, RealName = realName, Mobile = mobile, Email = email, Company = company, Position = position, Note = note, AddDate = DateTime.Now };
-            DataProviderWX.ConferenceContentDAO.Insert(contentInfo);
+            DataProviderWx.ConferenceDao.AddUserCount(conferenceID);
+            var contentInfo = new ConferenceContentInfo { Id = 0, PublishmentSystemId = publishmentSystemID, ConferenceId = conferenceID, IpAddress = ipAddress, CookieSn = cookieSN, WxOpenId = wxOpenID, UserName = userName, RealName = realName, Mobile = mobile, Email = email, Company = company, Position = position, Note = note, AddDate = DateTime.Now };
+            DataProviderWx.ConferenceContentDao.Insert(contentInfo);
         }
 
         public static List<Article> Trigger(PublishmentSystemInfo publishmentSystemInfo, Model.KeywordInfo keywordInfo, string wxOpenID)
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var conferenceInfoList = DataProviderWX.ConferenceDAO.GetConferenceInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var conferenceInfoList = DataProviderWx.ConferenceDao.GetConferenceInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
             foreach (var conferenceInfo in conferenceInfoList)
             {

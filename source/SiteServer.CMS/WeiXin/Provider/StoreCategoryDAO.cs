@@ -11,42 +11,42 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class StoreCategoryDAO : DataProviderBase
+    public class StoreCategoryDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_StoreCategory";
+        private const string TableName = "wx_StoreCategory";
 
-        private const string SQL_SELECT = "SELECT ID, PublishmentSystemID, CategoryName, ParentID, Taxis, ChildCount, ParentsCount, ParentsPath, StoreCount, IsLastNode FROM wx_StoreCategory WHERE ID = @ID";
+        private const string SqlSelect = "SELECT ID, PublishmentSystemID, CategoryName, ParentID, Taxis, ChildCount, ParentsCount, ParentsPath, StoreCount, IsLastNode FROM wx_StoreCategory WHERE ID = @ID";
 
-        private const string SQL_SELECT_ALL = "SELECT ID, PublishmentSystemID, CategoryName, ParentID, Taxis, ChildCount, ParentsCount, ParentsPath, StoreCount, IsLastNode FROM wx_StoreCategory WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY TAXIS";
+        private const string SqlSelectAll = "SELECT ID, PublishmentSystemID, CategoryName, ParentID, Taxis, ChildCount, ParentsCount, ParentsPath, StoreCount, IsLastNode FROM wx_StoreCategory WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY TAXIS";
 
-        private const string SQL_SELECT_NAME = "SELECT CategoryName FROM wx_StoreCategory WHERE ID = @ID";
+        private const string SqlSelectName = "SELECT CategoryName FROM wx_StoreCategory WHERE ID = @ID";
 
-        private const string SQL_SELECT_ID = "SELECT ID FROM wx_StoreCategory WHERE ID = @ID";
+        private const string SqlSelectId = "SELECT ID FROM wx_StoreCategory WHERE ID = @ID";
 
-        private const string SQL_SELECT_PARENT_ID = "SELECT ParentID FROM wx_StoreCategory WHERE ID = @ID";
+        private const string SqlSelectParentId = "SELECT ParentID FROM wx_StoreCategory WHERE ID = @ID";
 
-        private const string SQL_SELECT_COUNT = "SELECT COUNT(*) FROM wx_StoreCategory WHERE PublishmentSystemID = @PublishmentSystemID AND ParentID = @ParentID";
+        private const string SqlSelectCount = "SELECT COUNT(*) FROM wx_StoreCategory WHERE PublishmentSystemID = @PublishmentSystemID AND ParentID = @ParentID";
 
-        private const string SQL_UPDATE = "UPDATE wx_StoreCategory SET CategoryName = @CategoryName, ParentsPath = @ParentsPath, ParentsCount = @ParentsCount, ChildCount = @ChildCount, IsLastNode = @IsLastNode WHERE ID = @ID";
+        private const string SqlUpdate = "UPDATE wx_StoreCategory SET CategoryName = @CategoryName, ParentsPath = @ParentsPath, ParentsCount = @ParentsCount, ChildCount = @ChildCount, IsLastNode = @IsLastNode WHERE ID = @ID";
 
-        private const string PARM_ID = "@ID";
-        private const string PARM_PUBLISHIMENTSYSTEMID = "@PublishmentSystemID";
-        private const string PARM_NAME = "@CategoryName";
-        private const string PARM_PARENT_ID = "@ParentID";
-        private const string PARM_PARENTS_PATH = "@ParentsPath";
-        private const string PARM_PARENTS_COUNT = "@ParentsCount";
-        private const string PARM_CHILDREN_COUNT = "@ChildCount";
-        private const string PARM_IS_LAST_NODE = "@IsLastNode";
-        private const string PARM_TAXIS = "@Taxis";
+        private const string ParmId = "@ID";
+        private const string ParmPublishimentsystemid = "@PublishmentSystemID";
+        private const string ParmName = "@CategoryName";
+        private const string ParmParentId = "@ParentID";
+        private const string ParmParentsPath = "@ParentsPath";
+        private const string ParmParentsCount = "@ParentsCount";
+        private const string ParmChildrenCount = "@ChildCount";
+        private const string ParmIsLastNode = "@IsLastNode";
+        private const string ParmTaxis = "@Taxis";
 
 
         public int Insert(StoreCategoryInfo storeCategoryInfo)
         {
-            var storeCategoryID = 0;
+            var storeCategoryId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(storeCategoryInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(storeCategoryInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -55,9 +55,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        storeCategoryID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        storeCategoryId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -69,17 +67,17 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return storeCategoryID;
+            return storeCategoryId;
         }
 
-        private void InsertWithTrans(int publishmentSystemID, StoreCategoryInfo parentInfo, StoreCategoryInfo categoryInfo, IDbTransaction trans)
+        private void InsertWithTrans(int publishmentSystemId, StoreCategoryInfo parentInfo, StoreCategoryInfo categoryInfo, IDbTransaction trans)
         {
             if (parentInfo != null)
             {
-                categoryInfo.ParentsPath = parentInfo.ParentsPath + "," + parentInfo.ID;
+                categoryInfo.ParentsPath = parentInfo.ParentsPath + "," + parentInfo.Id;
                 categoryInfo.ParentsCount = parentInfo.ParentsCount + 1;
 
-                var maxTaxis = GetMaxTaxisByParentPath(publishmentSystemID, categoryInfo.ParentsPath);
+                var maxTaxis = GetMaxTaxisByParentPath(publishmentSystemId, categoryInfo.ParentsPath);
                 if (maxTaxis == 0)
                 {
                     maxTaxis = parentInfo.Taxis;
@@ -90,30 +88,28 @@ namespace SiteServer.CMS.WeiXin.Provider
             {
                 categoryInfo.ParentsPath = "0";
                 categoryInfo.ParentsCount = 0;
-                var maxTaxis = GetMaxTaxisByParentPath(publishmentSystemID, "0");
+                var maxTaxis = GetMaxTaxisByParentPath(publishmentSystemId, "0");
                 categoryInfo.Taxis = maxTaxis + 1;
             }
 
-            var SQL_INSERT = "INSERT INTO wx_StoreCategory (PublishmentSystemID, CategoryName, ParentID, ParentsPath, ParentsCount, ChildCount, IsLastNode, Taxis) VALUES (@PublishmentSystemID, @CategoryName, @ParentID, @ParentsPath, @ParentsCount, @ChildCount, @IsLastNode, @Taxis)";
+            var sqlInsert = "INSERT INTO wx_StoreCategory (PublishmentSystemID, CategoryName, ParentID, ParentsPath, ParentsCount, ChildCount, IsLastNode, Taxis) VALUES (@PublishmentSystemID, @CategoryName, @ParentID, @ParentsPath, @ParentsCount, @ChildCount, @IsLastNode, @Taxis)";
 
             var insertParms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHIMENTSYSTEMID, EDataType.Integer, categoryInfo.PublishmentSystemID),
-				GetParameter(PARM_NAME, EDataType.NVarChar, 255, categoryInfo.CategoryName),
-				GetParameter(PARM_PARENT_ID, EDataType.Integer, categoryInfo.ParentID),
-				GetParameter(PARM_PARENTS_PATH, EDataType.NVarChar, 255, categoryInfo.ParentsPath),
-				GetParameter(PARM_PARENTS_COUNT, EDataType.Integer, categoryInfo.ParentsCount),
-				GetParameter(PARM_CHILDREN_COUNT, EDataType.Integer, 0),
-				GetParameter(PARM_IS_LAST_NODE, EDataType.VarChar, 18, true.ToString()),
-				GetParameter(PARM_TAXIS, EDataType.Integer, categoryInfo.Taxis),
+                GetParameter(ParmPublishimentsystemid, EDataType.Integer, categoryInfo.PublishmentSystemId),
+				GetParameter(ParmName, EDataType.NVarChar, 255, categoryInfo.CategoryName),
+				GetParameter(ParmParentId, EDataType.Integer, categoryInfo.ParentId),
+				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, categoryInfo.ParentsPath),
+				GetParameter(ParmParentsCount, EDataType.Integer, categoryInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, EDataType.Integer, 0),
+				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, true.ToString()),
+				GetParameter(ParmTaxis, EDataType.Integer, categoryInfo.Taxis),
 			};
 
             string sqlString = $"UPDATE wx_StoreCategory SET Taxis = Taxis + 1 WHERE (Taxis >= {categoryInfo.Taxis})";
             ExecuteNonQuery(trans, sqlString);
 
-            ExecuteNonQuery(trans, SQL_INSERT, insertParms);
-
-            categoryInfo.ID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, "wx_StoreCategory");
+            categoryInfo.Id = ExecuteNonQueryAndReturnId(trans, sqlInsert, insertParms);
 
             if (!string.IsNullOrEmpty(categoryInfo.ParentsPath))
             {
@@ -122,17 +118,17 @@ namespace SiteServer.CMS.WeiXin.Provider
                 ExecuteNonQuery(trans, sqlString);
             }
 
-            sqlString = $"UPDATE wx_StoreCategory SET IsLastNode = 'False' WHERE ParentID = {categoryInfo.ParentID}";
+            sqlString = $"UPDATE wx_StoreCategory SET IsLastNode = 'False' WHERE ParentID = {categoryInfo.ParentId}";
 
             ExecuteNonQuery(trans, sqlString);
 
             sqlString =
-                $"UPDATE wx_StoreCategory SET IsLastNode = 'True' WHERE (ID IN (SELECT TOP 1 ID FROM wx_StoreCategory WHERE ParentID = {categoryInfo.ParentID} ORDER BY Taxis DESC))";
+                $"UPDATE wx_StoreCategory SET IsLastNode = 'True' WHERE (ID IN (SELECT TOP 1 ID FROM wx_StoreCategory WHERE ParentID = {categoryInfo.ParentId} ORDER BY Taxis DESC))";
             
             ExecuteNonQuery(trans, sqlString);
         }
 
-        private void UpdateSubtractChildCount(int publishmentSystemID, string parentsPath, int subtractNum)
+        private void UpdateSubtractChildCount(int publishmentSystemId, string parentsPath, int subtractNum)
         {
             if (!string.IsNullOrEmpty(parentsPath))
             {
@@ -141,14 +137,14 @@ namespace SiteServer.CMS.WeiXin.Provider
             }
         }
 
-        public StoreCategoryInfo GetStoreCategoryInfo(int storeID)
+        public StoreCategoryInfo GetStoreCategoryInfo(int storeId)
         {
             StoreCategoryInfo storeCategoryInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {storeID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {storeId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -160,14 +156,14 @@ namespace SiteServer.CMS.WeiXin.Provider
             return storeCategoryInfo;
         }
 
-        public StoreCategoryInfo GetStoreCategoryInfoByParentID(int publishmentSystemID, int parentID)
+        public StoreCategoryInfo GetStoreCategoryInfoByParentId(int publishmentSystemId, int parentId)
         {
             StoreCategoryInfo storeCategoryInfo = null;
 
-            string SQL_WHERE = $"WHERE PublishmentSystemID = {publishmentSystemID} AND ParentID = {parentID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE PublishmentSystemID = {publishmentSystemId} AND ParentID = {parentId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -179,21 +175,21 @@ namespace SiteServer.CMS.WeiXin.Provider
             return storeCategoryInfo;
         }
 
-        public string GetSelectString(int publishmentSystemID)
+        public string GetSelectString(int publishmentSystemId)
         {
-            string whereString = $"WHERE {StoreCategoryAttribute.PublishmentSystemID} = {publishmentSystemID}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {StoreCategoryAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public Dictionary<string, int> GetStoreCategoryDictionary(int publishmentSystemID)
+        public Dictionary<string, int> GetStoreCategoryDictionary(int publishmentSystemId)
         {
             var dictionary = new Dictionary<string, int>();
 
-            string SQL_WHERE = $" WHERE {StoreCategoryAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            string sqlWhere = $" WHERE {StoreCategoryAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, StoreCategoryAttribute.CategoryName + "," + StoreCategoryAttribute.Taxis, SQL_WHERE);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, StoreCategoryAttribute.CategoryName + "," + StoreCategoryAttribute.Taxis, sqlWhere);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -205,15 +201,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             return dictionary;
         }
 
-        public List<StoreCategoryInfo> GetStoreCategoryInfoList(int publishmentSystemID, int parentID)
+        public List<StoreCategoryInfo> GetStoreCategoryInfoList(int publishmentSystemId, int parentId)
         {
             var list = new List<StoreCategoryInfo>();
 
             var builder = new StringBuilder(
-                $"WHERE {StoreCategoryAttribute.PublishmentSystemID} = {publishmentSystemID} AND {StoreCategoryAttribute.ParentID} = {parentID} ");
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY Taxis");
+                $"WHERE {StoreCategoryAttribute.PublishmentSystemId} = {publishmentSystemId} AND {StoreCategoryAttribute.ParentId} = {parentId} ");
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY Taxis");
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -226,20 +222,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public List<StoreCategoryInfo> GetAllStoreCategoryInfoList(int publishmentSystemID)
+        public List<StoreCategoryInfo> GetAllStoreCategoryInfoList(int publishmentSystemId)
         {
             var list = new List<StoreCategoryInfo>();
 
             var builder = new StringBuilder(
-                $"WHERE {StoreCategoryAttribute.PublishmentSystemID} = {publishmentSystemID}");
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
+                $"WHERE {StoreCategoryAttribute.PublishmentSystemId} = {publishmentSystemId}");
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
-                    var StoreCategoryInfo = new StoreCategoryInfo(rdr);
-                    list.Add(StoreCategoryInfo);
+                    var storeCategoryInfo = new StoreCategoryInfo(rdr);
+                    list.Add(storeCategoryInfo);
                 }
                 rdr.Close();
             }
@@ -247,14 +243,14 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public string GetCategoryName(int storeID)
+        public string GetCategoryName(int storeId)
         {
             var title = string.Empty;
 
-            string SQL_WHERE = $"WHERE ID = {storeID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, StoreCategoryAttribute.CategoryName, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {storeId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, StoreCategoryAttribute.CategoryName, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -266,12 +262,12 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
 
-        private void TaxisSubtract(int publishmentSystemID, int selectedID)
+        private void TaxisSubtract(int publishmentSystemId, int selectedId)
         {
-            var categoryInfo = GetCategoryInfo(selectedID);
+            var categoryInfo = GetCategoryInfo(selectedId);
             if (categoryInfo == null) return;
             //Get Lower Taxis and ID
-            var lowerID = 0;
+            var lowerId = 0;
             var lowerChildCount = 0;
             var lowerParentsPath = "";
             var sqlString = @"SELECT TOP 1 ID, ChildCount, ParentsPath
@@ -281,17 +277,17 @@ ORDER BY Taxis DESC";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(PARM_PUBLISHIMENTSYSTEMID, EDataType.Integer, publishmentSystemID),
-                GetParameter(PARM_PARENT_ID, EDataType.Integer, categoryInfo.ParentID),
-				GetParameter(PARM_ID, EDataType.Integer, categoryInfo.ID),
-				GetParameter(PARM_TAXIS, EDataType.Integer, categoryInfo.Taxis),
+				GetParameter(ParmPublishimentsystemid, EDataType.Integer, publishmentSystemId),
+                GetParameter(ParmParentId, EDataType.Integer, categoryInfo.ParentId),
+				GetParameter(ParmId, EDataType.Integer, categoryInfo.Id),
+				GetParameter(ParmTaxis, EDataType.Integer, categoryInfo.Taxis),
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
             {
                 if (rdr.Read())
                 {
-                    lowerID = Convert.ToInt32(rdr[0]);
+                    lowerId = Convert.ToInt32(rdr[0]);
                     lowerChildCount = Convert.ToInt32(rdr[1]);
                     lowerParentsPath = rdr.GetValue(2).ToString();
                 }
@@ -302,21 +298,21 @@ ORDER BY Taxis DESC";
                 rdr.Close();
             }
 
-            var lowerNodePath = String.Concat(lowerParentsPath, ",", lowerID);
-            var selectedNodePath = String.Concat(categoryInfo.ParentsPath, ",", categoryInfo.ID);
+            var lowerNodePath = String.Concat(lowerParentsPath, ",", lowerId);
+            var selectedNodePath = String.Concat(categoryInfo.ParentsPath, ",", categoryInfo.Id);
 
-            SetTaxisSubtract(publishmentSystemID, selectedID, selectedNodePath, lowerChildCount + 1);
-            SetTaxisAdd(publishmentSystemID, lowerID, lowerNodePath, categoryInfo.ChildCount + 1);
+            SetTaxisSubtract(publishmentSystemId, selectedId, selectedNodePath, lowerChildCount + 1);
+            SetTaxisAdd(publishmentSystemId, lowerId, lowerNodePath, categoryInfo.ChildCount + 1);
 
-            UpdateIsLastNode(publishmentSystemID, categoryInfo.ParentID);
+            UpdateIsLastNode(publishmentSystemId, categoryInfo.ParentId);
         }
 
-        private void TaxisAdd(int publishmentSystemID, int selectedID)
+        private void TaxisAdd(int publishmentSystemId, int selectedId)
         {
-            var categoryInfo = GetCategoryInfo(selectedID);
+            var categoryInfo = GetCategoryInfo(selectedId);
             if (categoryInfo == null) return;
             //Get Higher Taxis and ID
-            var higherID = 0;
+            var higherId = 0;
             var higherChildCount = 0;
             var higherParentsPath = "";
             var sqlString = @"SELECT TOP 1 ID, ChildCount, ParentsPath
@@ -326,17 +322,17 @@ ORDER BY Taxis";
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHIMENTSYSTEMID, EDataType.Integer, publishmentSystemID),
-				GetParameter(PARM_PARENT_ID, EDataType.Integer, categoryInfo.ParentID),
-				GetParameter(PARM_ID, EDataType.Integer, categoryInfo.ID),
-				GetParameter(PARM_TAXIS, EDataType.Integer, categoryInfo.Taxis)
+                GetParameter(ParmPublishimentsystemid, EDataType.Integer, publishmentSystemId),
+				GetParameter(ParmParentId, EDataType.Integer, categoryInfo.ParentId),
+				GetParameter(ParmId, EDataType.Integer, categoryInfo.Id),
+				GetParameter(ParmTaxis, EDataType.Integer, categoryInfo.Taxis)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
             {
                 if (rdr.Read())
                 {
-                    higherID = Convert.ToInt32(rdr[0]);
+                    higherId = Convert.ToInt32(rdr[0]);
                     higherChildCount = Convert.ToInt32(rdr[1]);
                     higherParentsPath = rdr.GetValue(2).ToString();
                 }
@@ -347,57 +343,57 @@ ORDER BY Taxis";
                 rdr.Close();
             }
 
-            var higherNodePath = String.Concat(higherParentsPath, ",", higherID);
-            var selectedNodePath = String.Concat(categoryInfo.ParentsPath, ",", categoryInfo.ID);
+            var higherNodePath = String.Concat(higherParentsPath, ",", higherId);
+            var selectedNodePath = String.Concat(categoryInfo.ParentsPath, ",", categoryInfo.Id);
 
-            SetTaxisAdd(publishmentSystemID, selectedID, selectedNodePath, higherChildCount + 1);
-            SetTaxisSubtract(publishmentSystemID, higherID, higherNodePath, categoryInfo.ChildCount + 1);
+            SetTaxisAdd(publishmentSystemId, selectedId, selectedNodePath, higherChildCount + 1);
+            SetTaxisSubtract(publishmentSystemId, higherId, higherNodePath, categoryInfo.ChildCount + 1);
 
-            UpdateIsLastNode(publishmentSystemID, categoryInfo.ParentID);
+            UpdateIsLastNode(publishmentSystemId, categoryInfo.ParentId);
         }
 
-        private void SetTaxisAdd(int publishmentSystemID, int id, string parentsPath, int addNum)
+        private void SetTaxisAdd(int publishmentSystemId, int id, string parentsPath, int addNum)
         {
             string sqlString =
-                $"UPDATE wx_StoreCategory SET Taxis = Taxis + {addNum} WHERE PublishmentSystemID = {publishmentSystemID} AND (ID = {id} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%')";
+                $"UPDATE wx_StoreCategory SET Taxis = Taxis + {addNum} WHERE PublishmentSystemID = {publishmentSystemId} AND (ID = {id} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%')";
 
             ExecuteNonQuery(sqlString);
         }
 
-        private void SetTaxisSubtract(int publishmentSystemID, int id, string parentsPath, int subtractNum)
+        private void SetTaxisSubtract(int publishmentSystemId, int id, string parentsPath, int subtractNum)
         {
             string sqlString =
-                $"UPDATE wx_StoreCategory SET Taxis = Taxis - {subtractNum} WHERE PublishmentSystemID = {publishmentSystemID} AND (ID = {id} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%')";
+                $"UPDATE wx_StoreCategory SET Taxis = Taxis - {subtractNum} WHERE PublishmentSystemID = {publishmentSystemId} AND (ID = {id} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%')";
 
             ExecuteNonQuery(sqlString);
         }
 
-        private void UpdateIsLastNode(int publishmentSystemID, int parentID)
+        private void UpdateIsLastNode(int publishmentSystemId, int parentId)
         {
-            if (parentID > 0)
+            if (parentId > 0)
             {
                 var sqlString = "UPDATE wx_StoreCategory SET IsLastNode = @IsLastNode WHERE PublishmentSystemID = @PublishmentSystemID AND ParentID = @ParentID";
 
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter(PARM_IS_LAST_NODE, EDataType.VarChar, 18, false.ToString()),
-                    GetParameter(PARM_PUBLISHIMENTSYSTEMID, EDataType.Integer, publishmentSystemID),
-				    GetParameter(PARM_PARENT_ID, EDataType.Integer, parentID)
+				    GetParameter(ParmIsLastNode, EDataType.VarChar, 18, false.ToString()),
+                    GetParameter(ParmPublishimentsystemid, EDataType.Integer, publishmentSystemId),
+				    GetParameter(ParmParentId, EDataType.Integer, parentId)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);
 
                 sqlString =
-                    $"UPDATE wx_StoreCategory SET IsLastNode = '{true.ToString()}' WHERE (ID IN (SELECT TOP 1 ID FROM wx_StoreCategory WHERE ParentID = {parentID} ORDER BY Taxis DESC))";
+                    $"UPDATE wx_StoreCategory SET IsLastNode = '{true.ToString()}' WHERE (ID IN (SELECT TOP 1 ID FROM wx_StoreCategory WHERE ParentID = {parentId} ORDER BY Taxis DESC))";
 
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private int GetMaxTaxisByParentPath(int publishmentSystemID, string parentPath)
+        private int GetMaxTaxisByParentPath(int publishmentSystemId, string parentPath)
         {
             string sqlString =
-                $"SELECT MAX(Taxis) AS MaxTaxis FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemID} AND (ParentsPath = '{parentPath}' OR ParentsPath LIKE '{parentPath},%')";
+                $"SELECT MAX(Taxis) AS MaxTaxis FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemId} AND (ParentsPath = '{parentPath}' OR ParentsPath LIKE '{parentPath},%')";
             var maxTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
@@ -414,32 +410,32 @@ ORDER BY Taxis";
             return maxTaxis;
         }
 
-        private int GetParentID(int id)
+        private int GetParentId(int id)
         {
-            var parentID = 0;
+            var parentId = 0;
 
             var nodeParms = new IDataParameter[]
 			{
-				GetParameter(PARM_ID, EDataType.Integer, id)
+				GetParameter(ParmId, EDataType.Integer, id)
 			};
 
-            using (var rdr = ExecuteReader(SQL_SELECT_PARENT_ID, nodeParms))
+            using (var rdr = ExecuteReader(SqlSelectParentId, nodeParms))
             {
                 if (rdr.Read())
                 {
-                    parentID = Convert.ToInt32(rdr[0]);
+                    parentId = Convert.ToInt32(rdr[0]);
                 }
                 rdr.Close();
             }
-            return parentID;
+            return parentId;
         }
 
-        private int GetIDByParentIDAndOrder(int publishmentSystemID, int parentID, int order)
+        private int GetIdByParentIdAndOrder(int publishmentSystemId, int parentId, int order)
         {
-            var id = parentID;
+            var id = parentId;
 
             string sqlString =
-                $"SELECT ID FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemID} AND ParentID = {parentID} ORDER BY Taxis";
+                $"SELECT ID FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemId} AND ParentID = {parentId} ORDER BY Taxis";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -453,7 +449,7 @@ ORDER BY Taxis";
             return id;
         }
 
-        public int Insert(int publishmentSystemID, StoreCategoryInfo categoryInfo)
+        public int Insert(int publishmentSystemId, StoreCategoryInfo categoryInfo)
         {
             using (var conn = GetConnection())
             {
@@ -462,9 +458,9 @@ ORDER BY Taxis";
                 {
                     try
                     {
-                        var parentCategoryInfo = GetCategoryInfo(categoryInfo.ParentID);
+                        var parentCategoryInfo = GetCategoryInfo(categoryInfo.ParentId);
 
-                        InsertWithTrans(publishmentSystemID, parentCategoryInfo, categoryInfo, trans);
+                        InsertWithTrans(publishmentSystemId, parentCategoryInfo, categoryInfo, trans);
 
                         trans.Commit();
                     }
@@ -476,38 +472,38 @@ ORDER BY Taxis";
                 }
             }
 
-            return categoryInfo.ID;
+            return categoryInfo.Id;
         }
 
-        public void Update(int publishmentSystemID, StoreCategoryInfo categoryInfo)
+        public void Update(int publishmentSystemId, StoreCategoryInfo categoryInfo)
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(PARM_NAME, EDataType.NVarChar, 255, categoryInfo.CategoryName),
-				GetParameter(PARM_PARENTS_PATH, EDataType.NVarChar, 255, categoryInfo.ParentsPath),
-				GetParameter(PARM_PARENTS_COUNT, EDataType.Integer, categoryInfo.ParentsCount),
-				GetParameter(PARM_CHILDREN_COUNT, EDataType.Integer, categoryInfo.ChildCount),
-				GetParameter(PARM_IS_LAST_NODE, EDataType.VarChar, 18, categoryInfo.IsLastNode.ToString()),
+				GetParameter(ParmName, EDataType.NVarChar, 255, categoryInfo.CategoryName),
+				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, categoryInfo.ParentsPath),
+				GetParameter(ParmParentsCount, EDataType.Integer, categoryInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, EDataType.Integer, categoryInfo.ChildCount),
+				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, categoryInfo.IsLastNode.ToString()),
 
-				GetParameter(PARM_ID, EDataType.Integer, categoryInfo.ID)
+				GetParameter(ParmId, EDataType.Integer, categoryInfo.Id)
 			};
 
-            ExecuteNonQuery(SQL_UPDATE, updateParms);
+            ExecuteNonQuery(SqlUpdate, updateParms);
         }
 
-        public void UpdateTaxis(int publishmentSystemID, int selectedID, bool isSubtract)
+        public void UpdateTaxis(int publishmentSystemId, int selectedId, bool isSubtract)
         {
             if (isSubtract)
             {
-                TaxisSubtract(publishmentSystemID, selectedID);
+                TaxisSubtract(publishmentSystemId, selectedId);
             }
             else
             {
-                TaxisAdd(publishmentSystemID, selectedID);
+                TaxisAdd(publishmentSystemId, selectedId);
             }
         }
 
-        public void Delete(int publishmentSystemID, int id)
+        public void Delete(int publishmentSystemId, int id)
         {
             var categoryInfo = GetCategoryInfo(id);
             if (categoryInfo != null)
@@ -515,7 +511,7 @@ ORDER BY Taxis";
                 var idList = new List<int>();
                 if (categoryInfo.ChildCount > 0)
                 {
-                    idList = GetCategoryIDListForDescendant(publishmentSystemID, id);
+                    idList = GetCategoryIdListForDescendant(publishmentSystemId, id);
                 }
                 idList.Add(id);
 
@@ -549,21 +545,21 @@ ORDER BY Taxis";
                         }
                     }
                 }
-                UpdateIsLastNode(publishmentSystemID, categoryInfo.ParentID);
-                UpdateSubtractChildCount(publishmentSystemID, categoryInfo.ParentsPath, deletedNum);
+                UpdateIsLastNode(publishmentSystemId, categoryInfo.ParentId);
+                UpdateSubtractChildCount(publishmentSystemId, categoryInfo.ParentsPath, deletedNum);
             }
         }
 
-        public StoreCategoryInfo GetCategoryInfo(int categoryID)
+        public StoreCategoryInfo GetCategoryInfo(int categoryId)
         {
             StoreCategoryInfo categoryInfo = null;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(PARM_ID, EDataType.Integer, categoryID)
+				GetParameter(ParmId, EDataType.Integer, categoryId)
 			};
 
-            using (var rdr = ExecuteReader(SQL_SELECT, parms))
+            using (var rdr = ExecuteReader(SqlSelect, parms))
             {
                 if (rdr.Read())
                 {
@@ -574,16 +570,16 @@ ORDER BY Taxis";
             return categoryInfo;
         }
 
-        private ArrayList GetCategoryInfoArrayList(int publishmentSystemID)
+        private ArrayList GetCategoryInfoArrayList(int publishmentSystemId)
         {
             var arraylist = new ArrayList();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(PARM_PUBLISHIMENTSYSTEMID, EDataType.Integer, publishmentSystemID)
+				GetParameter(ParmPublishimentsystemid, EDataType.Integer, publishmentSystemId)
 			};
 
-            using (var rdr = ExecuteReader(SQL_SELECT_ALL, parms))
+            using (var rdr = ExecuteReader(SqlSelectAll, parms))
             {
                 while (rdr.Read())
                 {
@@ -596,17 +592,17 @@ ORDER BY Taxis";
             return arraylist;
         }
 
-        public int GetNodeCount(int publishmentSystemID, int id)
+        public int GetNodeCount(int publishmentSystemId, int id)
         {
             var nodeCount = 0;
 
             var nodeParms = new IDataParameter[]
 			{
-                GetParameter(PARM_PUBLISHIMENTSYSTEMID, EDataType.Integer, publishmentSystemID),
-				GetParameter(PARM_PARENT_ID, EDataType.Integer, id)
+                GetParameter(ParmPublishimentsystemid, EDataType.Integer, publishmentSystemId),
+				GetParameter(ParmParentId, EDataType.Integer, id)
 			};
 
-            using (var rdr = ExecuteReader(SQL_SELECT_COUNT, nodeParms))
+            using (var rdr = ExecuteReader(SqlSelectCount, nodeParms))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))
                 {
@@ -618,12 +614,12 @@ ORDER BY Taxis";
             return nodeCount;
         }
 
-        public List<int> GetCategoryIDListByParentID(int publishmentSystemID, int parentID)
+        public List<int> GetCategoryIdListByParentId(int publishmentSystemId, int parentId)
         {
             var list = new List<int>();
 
             string sqlString =
-                $@"SELECT ID FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemID} AND ParentID = {parentID} ORDER BY Taxis";
+                $@"SELECT ID FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemId} AND ParentID = {parentId} ORDER BY Taxis";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -637,17 +633,17 @@ ORDER BY Taxis";
             return list;
         }
 
-        public List<int> GetCategoryIDListForDescendant(int publishmentSystemID, int categoryID)
+        public List<int> GetCategoryIdListForDescendant(int publishmentSystemId, int categoryId)
         {
             var list = new List<int>();
 
             string sqlString = $@"SELECT ID
 FROM wx_StoreCategory
-WHERE PublishmentSystemID = {publishmentSystemID} AND (
-    (ParentsPath LIKE '{categoryID},%') OR
-    (ParentsPath LIKE '%,{categoryID},%') OR
-    (ParentsPath LIKE '%,{categoryID}') OR
-    (ParentID = {categoryID})
+WHERE PublishmentSystemID = {publishmentSystemId} AND (
+    (ParentsPath LIKE '{categoryId},%') OR
+    (ParentsPath LIKE '%,{categoryId},%') OR
+    (ParentsPath LIKE '%,{categoryId}') OR
+    (ParentID = {categoryId})
 )
 ";
 
@@ -663,12 +659,12 @@ WHERE PublishmentSystemID = {publishmentSystemID} AND (
             return list;
         }
 
-        public List<int> GetAllCategoryIDList(int publishmentSystemID)
+        public List<int> GetAllCategoryIdList(int publishmentSystemId)
         {
             var list = new List<int>();
 
             string sqlString =
-                $@"SELECT ID FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemID} ORDER BY Taxis";
+                $@"SELECT ID FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemId} ORDER BY Taxis";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -682,18 +678,18 @@ WHERE PublishmentSystemID = {publishmentSystemID} AND (
             return list;
         }
 
-        public List<int> GetCategoryIDListForLastNode(int publishmentSystemID, int categoryID)
+        public List<int> GetCategoryIdListForLastNode(int publishmentSystemId, int categoryId)
         {
             var list = new List<int>();
 
             string sqlString = $@"SELECT ID
 FROM wx_StoreCategory
-WHERE PublishmentSystemID = {publishmentSystemID} AND ChildCount = 0 AND (
-    (ParentsPath LIKE '{categoryID},%') OR
-    (ParentsPath LIKE '%,{categoryID},%') OR
-    (ParentsPath LIKE '%,{categoryID}') OR
-    (ParentID = {categoryID}) OR
-    (ID = {categoryID})
+WHERE PublishmentSystemID = {publishmentSystemId} AND ChildCount = 0 AND (
+    (ParentsPath LIKE '{categoryId},%') OR
+    (ParentsPath LIKE '%,{categoryId},%') OR
+    (ParentsPath LIKE '%,{categoryId}') OR
+    (ParentID = {categoryId}) OR
+    (ID = {categoryId})
 )
 ";
 
@@ -709,14 +705,14 @@ WHERE PublishmentSystemID = {publishmentSystemID} AND ChildCount = 0 AND (
             return list;
         }
 
-        public List<int> GetCategoryIDListByCategoryIDCollection(int publishmentSystemID, string idCollection)
+        public List<int> GetCategoryIdListByCategoryIdCollection(int publishmentSystemId, string idCollection)
         {
             var list = new List<int>();
 
             if (!string.IsNullOrEmpty(idCollection))
             {
                 string sqlString =
-                    $@"SELECT ID FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemID} AND ID IN ({idCollection})";
+                    $@"SELECT ID FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemId} AND ID IN ({idCollection})";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
@@ -731,21 +727,21 @@ WHERE PublishmentSystemID = {publishmentSystemID} AND ChildCount = 0 AND (
             return list;
         }
 
-        public List<int> GetCategoryIDListByFirstCategoryIDArrayList(int publishmentSystemID, ArrayList firstIDArrayList)
+        public List<int> GetCategoryIdListByFirstCategoryIdArrayList(int publishmentSystemId, ArrayList firstIdArrayList)
         {
             var list = new List<int>();
 
-            if (firstIDArrayList.Count > 0)
+            if (firstIdArrayList.Count > 0)
             {
                 var builder = new StringBuilder();
-                foreach (int id in firstIDArrayList)
+                foreach (int id in firstIdArrayList)
                 {
                     builder.AppendFormat("ID = {0} OR ParentID = {0} OR ParentsPath LIKE '{0},%' OR ", id);
                 }
                 builder.Length -= 3;
 
                 string sqlString =
-                    $"SELECT ID FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemID} AND ({builder.ToString()}) ORDER BY Taxis";
+                    $"SELECT ID FROM wx_StoreCategory WHERE PublishmentSystemID = {publishmentSystemId} AND ({builder.ToString()}) ORDER BY Taxis";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
@@ -760,28 +756,28 @@ WHERE PublishmentSystemID = {publishmentSystemID} AND ChildCount = 0 AND (
             return list;
         }
 
-        public void UpdateStoreItemCount(int publishmentSystemID)
+        public void UpdateStoreItemCount(int publishmentSystemId)
         {
-            var categoryIDList = GetAllCategoryIDList(publishmentSystemID);
+            var categoryIdList = GetAllCategoryIdList(publishmentSystemId);
 
-            foreach (var categoryID in categoryIDList)
+            foreach (var categoryId in categoryIdList)
             {
-                var count = DataProviderWX.StoreItemDAO.GetCount(publishmentSystemID, categoryID);
+                var count = DataProviderWx.StoreItemDao.GetCount(publishmentSystemId, categoryId);
                 string sqlString =
-                    $@"UPDATE wx_StoreCategory SET StoreCount = {count} WHERE PublishmentSystemID = {publishmentSystemID} AND ID = {categoryID}";
+                    $@"UPDATE wx_StoreCategory SET StoreCount = {count} WHERE PublishmentSystemID = {publishmentSystemId} AND ID = {categoryId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public List<StoreCategoryInfo> GetStoreCategoryInfoList(int publishmentSystemID)
+        public List<StoreCategoryInfo> GetStoreCategoryInfoList(int publishmentSystemId)
         {
             var list = new List<StoreCategoryInfo>();
 
             var builder = new StringBuilder(
-                $"WHERE {StoreCategoryAttribute.PublishmentSystemID} = {publishmentSystemID}");
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY Taxis");
+                $"WHERE {StoreCategoryAttribute.PublishmentSystemId} = {publishmentSystemId}");
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY Taxis");
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

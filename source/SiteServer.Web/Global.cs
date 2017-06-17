@@ -4,6 +4,7 @@ using System.Web.Http.Cors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using SiteServer.CMS.Plugins;
 
 namespace SiteServer.API
 {
@@ -40,6 +41,14 @@ namespace SiteServer.API
             jsonFormatter.Indent = true;
 
             configuration.EnsureInitialized();
+
+            var list = PluginManager.GetPluginInfoList();
+            foreach (var pluginInfo in list)
+            {
+                pluginInfo.Instance.Initialize();
+            }
         }
+
+
     }
 }

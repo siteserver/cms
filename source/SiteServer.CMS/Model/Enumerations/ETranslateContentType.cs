@@ -5,10 +5,10 @@ namespace SiteServer.CMS.Model.Enumerations
 {
 	public enum ETranslateContentType
 	{
-		Copy,				//复制
-		Cut,				//剪切
-		Reference,           //引用地址
-        ReferenceContent,   //引用内容
+		Copy,				//澶嶅埗
+		Cut,				//鍓垏
+		Reference,           //寮曠敤鍦板潃
+        ReferenceContent,   //寮曠敤鍐呭
 	}
 
 	public class ETranslateContentTypeUtils
@@ -41,19 +41,19 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == ETranslateContentType.Copy)
 			{
-                return "复制";
+                return "澶嶅埗";
 			}
             else if (type == ETranslateContentType.Cut)
 			{
-                return "剪切";
+                return "鍓垏";
 			}
             else if (type == ETranslateContentType.Reference)
 			{
-                return "引用地址";
+                return "寮曠敤鍦板潃";
 			}
             else if (type == ETranslateContentType.ReferenceContent)
             {
-                return "引用内容";
+                return "寮曠敤鍐呭";
             }
 			else
 			{

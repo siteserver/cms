@@ -10,10 +10,10 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />
 
-  <asp:dataGrid id="dgContents" showHeader="true" AutoGenerateColumns="false" DataKeyField="Name" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
+  <asp:dataGrid id="DgDirectories" showHeader="true" AutoGenerateColumns="false" DataKeyField="Name" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
     <Columns>
       <asp:TemplateColumn HeaderText="站点模板名称">
         <ItemTemplate><asp:Literal ID="ltlTemplateName" runat="server"></asp:Literal></ItemTemplate>
@@ -56,8 +56,35 @@
     </Columns>
   </asp:dataGrid>
 
+  <hr />
+
+  <asp:dataGrid id="DgZipFiles" showHeader="true" AutoGenerateColumns="false" DataKeyField="Name" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
+    <Columns>
+      <asp:TemplateColumn HeaderText="未解压站点模板">
+        <ItemTemplate><asp:Literal ID="ltlFileName" runat="server"></asp:Literal></ItemTemplate>
+        <ItemStyle HorizontalAlign="left"/>
+      </asp:TemplateColumn>
+      <asp:TemplateColumn HeaderText="创建日期">
+        <ItemTemplate><asp:Literal ID="ltlCreationDate" runat="server"></asp:Literal></ItemTemplate>
+        <ItemStyle Width="70" cssClass="center" />
+      </asp:TemplateColumn>
+      <asp:TemplateColumn>
+        <ItemTemplate>
+          <asp:Literal ID="ltlDownloadUrl" runat="server"></asp:Literal>
+        </ItemTemplate>
+        <ItemStyle Width="180" cssClass="center"/>
+      </asp:TemplateColumn>
+      <asp:TemplateColumn>
+        <ItemTemplate>
+          <asp:Literal ID="ltlDeleteUrl" runat="server"></asp:Literal>
+        </ItemTemplate>
+        <ItemStyle Width="50" cssClass="center"/>
+      </asp:TemplateColumn>
+    </Columns>
+  </asp:dataGrid>
+
   <ul class="breadcrumb breadcrumb-button">
-    <asp:Button class="btn btn-success" id="Import" Text="导入站点模板" runat="server" />
+    <asp:Button class="btn btn-success" id="BtnImport" Text="导入站点模板" runat="server" />
   </ul>
 
 </form>

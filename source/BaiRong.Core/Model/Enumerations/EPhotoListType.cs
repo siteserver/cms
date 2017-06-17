@@ -5,8 +5,8 @@ namespace BaiRong.Core.Model.Enumerations
 {
     public enum EPhotoListType
     {
-        Large,			    //´óÍ¼ä¯ÀÀ
-        Thumbnail,			//Ğ¡Í¼ä¯ÀÀ
+        Large,			    //å¤§å›¾æµè§ˆ
+        Thumbnail,			//å°å›¾æµè§ˆ
     }
 
     public class EPhotoListTypeUtils
@@ -31,11 +31,11 @@ namespace BaiRong.Core.Model.Enumerations
         {
             if (type == EPhotoListType.Large)
             {
-                return "´óÍ¼ä¯ÀÀ";
+                return "å¤§å›¾æµè§ˆ";
             }
             else if (type == EPhotoListType.Thumbnail)
             {
-                return "Ğ¡Í¼ä¯ÀÀ";
+                return "å°å›¾æµè§ˆ";
             }
             else
             {

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Drawing;
+using System.Web.UI.WebControls;
+using BaiRong.Core;
 
-namespace BaiRong.Core.Model.Enumerations
+namespace BaiRong.Model
 {
 	public enum EImageSizeType
 	{
@@ -47,23 +49,23 @@ namespace BaiRong.Core.Model.Enumerations
 		{
 			if (type == EImageSizeType.Square)
 			{
-				return "����";
+				return "矩形";
 			}
 			else if (type == EImageSizeType.Thumbnail)
 			{
-				return "Сͼ";
+				return "小图";
 			}
 			else if (type == EImageSizeType.Small)
 			{
-				return "��С�ߴ�";
+				return "较小尺寸";
 			}
 			else if (type == EImageSizeType.Medium)
 			{
-				return "�еȳߴ�";
+				return "中等尺寸";
 			}
 			else if (type == EImageSizeType.Original)
 			{
-				return "ԭʼ�ߴ�";
+				return "原始尺寸";
 			}
 			else
 			{
@@ -73,7 +75,7 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static EImageSizeType GetEnumType(string typeStr)
 		{
-			var retval = EImageSizeType.Original;
+			EImageSizeType retval = EImageSizeType.Original;
 
 			if (Equals(EImageSizeType.Square, typeStr))
 			{
@@ -101,7 +103,7 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static string GetAppendix(EImageSizeType type)
 		{
-			var retval = string.Empty;
+			string retval = string.Empty;
 
 			if (type == EImageSizeType.Square)
 			{
@@ -135,7 +137,7 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static int GetMaxSize(EImageSizeType type)
         {
-            var size = Size_Max_Medium;
+            int size = Size_Max_Medium;
 
             if (type == EImageSizeType.Square)
             {
@@ -155,7 +157,7 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static ArrayList GetEImageSizeTypeArrayListByLargerInt(int largerInt)
 		{
-			var arraylist = new ArrayList();
+			ArrayList arraylist = new ArrayList();
 
             arraylist.Add(EImageSizeType.Square);
 
@@ -178,7 +180,7 @@ namespace BaiRong.Core.Model.Enumerations
 
 		private static int GetSmallerInt(Size originalSize, EImageSizeType sizeType, bool isWidthLarger, int largerInt)
 		{
-			var retval = 0;
+			int retval = 0;
 			if (isWidthLarger)
 			{
 				retval = Convert.ToInt32((Convert.ToDouble(largerInt) / Convert.ToDouble(originalSize.Width)) * Convert.ToDouble(originalSize.Height));
@@ -192,9 +194,9 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static Size GetSize(Size originalSize, EImageSizeType sizeType)
 		{
-			var size = new Size(originalSize.Width, originalSize.Height);
-			var isWidthLarger = (originalSize.Width > originalSize.Height);
-			var largerInt = Math.Max(originalSize.Width, originalSize.Height);
+			Size size = new Size(originalSize.Width, originalSize.Height);
+			bool isWidthLarger = (originalSize.Width > originalSize.Height);
+			int largerInt = Math.Max(originalSize.Width, originalSize.Height);
 
 			if (sizeType == EImageSizeType.Medium)
 			{
@@ -210,8 +212,8 @@ namespace BaiRong.Core.Model.Enumerations
 			}
 			else if (sizeType == EImageSizeType.Square)
 			{
-                var squareWidth = Size_Square;
-                var squareHeight = Size_Square;
+                int squareWidth = Size_Square;
+                int squareHeight = Size_Square;
                 if (originalSize.Width < Size_Square)
                 {
                     squareWidth = originalSize.Width;

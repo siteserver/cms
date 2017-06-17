@@ -1,4 +1,4 @@
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
@@ -65,12 +65,12 @@ namespace SiteServer.BackgroundPages
 
         public void BreadCrumbWithItemTitle(string leftMenuId, string leftSubMenuId, string pageTitle, string itemTitle, string permission)
         {
-            if (ltlBreadCrumb != null)
+            if (LtlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
                 var leftSubTitle = AppManager.GetLeftSubMenuName(leftSubMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdManagement, string.Empty, leftMenuId, leftTitle, leftSubMenuId, leftSubTitle, pageUrl, pageTitle, itemTitle);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdManagement, string.Empty, leftMenuId, leftTitle, leftSubMenuId, leftSubTitle, pageUrl, pageTitle, itemTitle);
             }
 
             if (!string.IsNullOrEmpty(permission))

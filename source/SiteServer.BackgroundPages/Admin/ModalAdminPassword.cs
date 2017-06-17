@@ -2,8 +2,6 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 
 namespace SiteServer.BackgroundPages.Admin
 {
@@ -48,7 +46,7 @@ namespace SiteServer.BackgroundPages.Admin
 				try
 				{
                     string errorMessage;
-                    if (!BaiRongDataProvider.AdministratorDao.ChangePassword(_userName, EPasswordFormat.Encrypted, Password.Text, out errorMessage))
+                    if (!BaiRongDataProvider.AdministratorDao.ChangePassword(_userName, Password.Text, out errorMessage))
                     {
                         FailMessage(errorMessage);
                         return;

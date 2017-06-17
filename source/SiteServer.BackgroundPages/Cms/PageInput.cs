@@ -10,9 +10,9 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageInput : BasePageCms
     {
-		public DataGrid dgContents;
-        public Button AddInput;
-        public Button Import;
+		public DataGrid DgContents;
+        public Button BtnAddInput;
+        public Button BtnImport;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
@@ -70,12 +70,12 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 BreadCrumb(AppManager.Cms.LeftMenu.IdFunction, String.Empty, "提交表单管理", AppManager.Cms.Permission.WebSite.Input);
 
-                dgContents.DataSource = DataProvider.InputDao.GetDataSource(PublishmentSystemId);
-                dgContents.ItemDataBound += dgContents_ItemDataBound;
-                dgContents.DataBind();
+                DgContents.DataSource = DataProvider.InputDao.GetDataSource(PublishmentSystemId);
+                DgContents.ItemDataBound += DgContents_ItemDataBound;
+                DgContents.DataBind();
 
-                AddInput.Attributes.Add("onclick", ModalInputAdd.GetOpenWindowStringToAdd(PublishmentSystemId));
-                Import.Attributes.Add("onclick", ModalImport.GetOpenWindowString(PublishmentSystemId, ModalImport.TypeInput));
+                BtnAddInput.Attributes.Add("onclick", ModalInputAdd.GetOpenWindowStringToAdd(PublishmentSystemId));
+                BtnImport.Attributes.Add("onclick", ModalImport.GetOpenWindowString(PublishmentSystemId, ModalImport.TypeInput));
 
                 if (Body.IsQueryExists("RefreshLeft") || Body.IsQueryExists("Delete"))
                 {
@@ -88,65 +88,68 @@ top.frames[""left""].location.reload( false );
 			}
 		}
 
-        public string GetIsCheckedHtml(string isCheckedString)
+        private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
-            var val = !TranslateUtils.ToBool(isCheckedString);
-            return StringUtils.GetTrueImageHtml(val.ToString());
-        }
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-        public string GetIsCodeValidateHtml(string isCodeValidateString)
-        {
-            return StringUtils.GetTrueImageHtml(isCodeValidateString);
-        }
+            var inputId = SqlUtils.EvalInt(e.Item.DataItem, "InputID");
+            var inputName = SqlUtils.EvalString(e.Item.DataItem, "InputName");
+            var isChecked = SqlUtils.EvalBool(e.Item.DataItem, "IsChecked");
+            var isIsReply = SqlUtils.EvalBool(e.Item.DataItem, "IsReply");
 
-        void dgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
-        {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
+            var ltlIsCheck = (Literal) e.Item.FindControl("ltlIsCheck");
+            var ltlIsReply = (Literal)e.Item.FindControl("ltlIsReply");
+            var ltlUpLink = (Literal)e.Item.FindControl("ltlUpLink");
+            var ltlDownLink = (Literal)e.Item.FindControl("ltlDownLink");
+            var ltlStyleUrl = (Literal)e.Item.FindControl("ltlStyleUrl");
+            var ltlPreviewUrl = (Literal)e.Item.FindControl("ltlPreviewUrl");
+            var ltlEditUrl = (Literal)e.Item.FindControl("ltlEditUrl");
+            var ltlExportUrl = (Literal)e.Item.FindControl("ltlExportUrl");
+            var ltlDeleteUrl = (Literal) e.Item.FindControl("ltlDeleteUrl");
+
+            ltlTitle.Text = $@"<a href=""{PageInputContent.GetRedirectUrl(PublishmentSystemId, inputName)}"">{inputName}</a>";
+            ltlIsCheck.Text = StringUtils.GetTrueImageHtml(!isChecked);
+            ltlIsReply.Text = StringUtils.GetTrueImageHtml(isIsReply);
+
+            var urlUp = PageUtils.GetCmsUrl(nameof(PageInput), new NameValueCollection
             {
-                var inputID = SqlUtils.EvalInt(e.Item.DataItem, "InputID");
-                var inputName = SqlUtils.EvalString(e.Item.DataItem, "InputName");
+                {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                {"InputID", inputId.ToString()},
+                {"Up", true.ToString()}
+            });
+            ltlUpLink.Text = $@"<a href=""{urlUp}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
 
-                var LtlTitle = (Literal)e.Item.FindControl("LtlTitle");
-                var upLink = (Literal)e.Item.FindControl("UpLink");
-                var downLink = (Literal)e.Item.FindControl("DownLink");
-                var styleUrl = (Literal)e.Item.FindControl("StyleUrl");
-                var previewUrl = (Literal)e.Item.FindControl("PreviewUrl");
-                var editUrl = (Literal)e.Item.FindControl("EditUrl");
-                var exportUrl = (Literal)e.Item.FindControl("ExportUrl");
+            var urlDown = PageUtils.GetCmsUrl(nameof(PageInput), new NameValueCollection
+            {
+                {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                {"InputID", inputId.ToString()},
+                {"Down", true.ToString()}
+            });
+            ltlDownLink.Text =
+                $@"<a href=""{urlDown}""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
 
-                LtlTitle.Text = $@"<a href=""{PageInputContent.GetRedirectUrl(PublishmentSystemId, inputName)}"">{inputName}</a>";
+            ltlStyleUrl.Text =
+                $@"<a href=""{PageTableStyle.GetRedirectUrl(PublishmentSystemId, ETableStyle.InputContent,
+                    DataProvider.InputContentDao.TableName, inputId)}"">表单字段</a>";
 
-                var urlUp = PageUtils.GetCmsUrl(nameof(PageInput), new NameValueCollection
-                {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                    {"InputID", inputID.ToString()},
-                    {"Up", true.ToString()}
-                });
-                upLink.Text = $@"<a href=""{urlUp}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
+            ltlPreviewUrl.Text = $@"<a href=""{PageInputPreview.GetRedirectUrl(PublishmentSystemId, inputId, string.Empty)}"">预览</a>";
 
-                var urlDown = PageUtils.GetCmsUrl(nameof(PageInput), new NameValueCollection
-                {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                    {"InputID", inputID.ToString()},
-                    {"Down", true.ToString()}
-                });
-                downLink.Text =
-                    $@"<a href=""{urlDown}""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
+            ltlEditUrl.Text =
+                $@"<a href=""javascript:;"" onclick=""{ModalInputAdd.GetOpenWindowStringToEdit(
+                    PublishmentSystemId, inputId, false)}"">编辑</a>";
 
-                styleUrl.Text =
-                    $@"<a href=""{PageTableStyle.GetRedirectUrl(PublishmentSystemId, ETableStyle.InputContent,
-                        DataProvider.InputContentDao.TableName, inputID)}"">表单字段</a>";
+            ltlExportUrl.Text =
+                $@"<a href=""javascript:;"" onclick=""{ModalExportMessage.GetOpenWindowStringToInput(
+                    PublishmentSystemId, inputId)}"">导出</a>";
 
-                previewUrl.Text = $@"<a href=""{PageInputPreview.GetRedirectUrl(PublishmentSystemId, inputID, string.Empty)}"">预览</a>";
-
-                editUrl.Text =
-                    $@"<a href=""javascript:;"" onclick=""{ModalInputAdd.GetOpenWindowStringToEdit(
-                        PublishmentSystemId, inputID, false)}"">编辑</a>";
-
-                exportUrl.Text =
-                    $@"<a href=""javascript:;"" onclick=""{ModalExportMessage.GetOpenWindowStringToInput(
-                        PublishmentSystemId, inputID)}"">导出</a>";
-            }
+            var urlDelete = PageUtils.GetCmsUrl(nameof(PageInput), new NameValueCollection
+            {
+                {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                {"InputID", inputId.ToString()},
+                {"Delete", true.ToString()}
+            });
+            ltlDeleteUrl.Text = $@"<a href=""{urlDelete}"" onClick=""javascript:return confirm('此操作将删除提交表单“{inputName}”及相关数据，确认吗？');"">删除</a> </ItemTemplate>";
         }
 	}
 }

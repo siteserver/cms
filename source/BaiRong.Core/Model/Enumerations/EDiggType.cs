@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 
 namespace BaiRong.Core.Model.Enumerations
@@ -36,15 +37,15 @@ namespace BaiRong.Core.Model.Enumerations
         {
             if (type == EDiggType.Good)
             {
-                return "½öÏÔÊ¾ÔŞÍ¬";
+                return "ä»…æ˜¾ç¤ºèµåŒ";
             }
             else if (type == EDiggType.Bad)
             {
-                return "½öÏÔÊ¾²»ÔŞÍ¬";
+                return "ä»…æ˜¾ç¤ºä¸èµåŒ";
             }
             else if (type == EDiggType.All)
             {
-                return "ÏÔÊ¾È«²¿";
+                return "æ˜¾ç¤ºå…¨éƒ¨";
             }
             else
             {
@@ -102,5 +103,12 @@ namespace BaiRong.Core.Model.Enumerations
                 listControl.Items.Add(GetListItem(EDiggType.Bad, false));
             }
         }
-	}
+
+        public static SortedList<string, string> TypeList => new SortedList<string, string>
+        {
+            {GetValue(EDiggType.All), GetText(EDiggType.All)},
+            {GetValue(EDiggType.Good), GetText(EDiggType.Good)},
+            {GetValue(EDiggType.Bad), GetText(EDiggType.Bad)}
+        };
+    }
 }

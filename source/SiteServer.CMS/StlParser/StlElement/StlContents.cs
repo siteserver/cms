@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using System.Xml;
 using BaiRong.Core;
@@ -13,144 +12,106 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "内容列表", Description = "通过 stl:contents 标签在模板中显示内容列表")]
     public class StlContents
     {
-        public const string ElementName = "stl:contents";//内容列表
+        public const string ElementName = "stl:contents";
 
-        public const string Attribute_ChannelIndex = "channelindex";			//栏目索引
-        public const string Attribute_ChannelName = "channelname";				//栏目名称
-        public const string Attribute_UpLevel = "uplevel";						//上级栏目的级别
-        public const string Attribute_TopLevel = "toplevel";					//从首页向下的栏目级别
-        public const string Attribute_Scope = "scope";							//内容范围
-        public const string Attribute_Group = "group";		                    //指定显示的内容组
-        public const string Attribute_GroupNot = "groupnot";	                //指定不显示的内容组
-        public const string Attribute_GroupChannel = "groupchannel";		    //指定显示的栏目组
-        public const string Attribute_GroupChannelNot = "groupchannelnot";	    //指定不显示的栏目组
-        public const string Attribute_GroupContent = "groupcontent";		    //指定显示的内容组
-        public const string Attribute_GroupContentNot = "groupcontentnot";	    //指定不显示的内容组
-        public const string Attribute_Tags = "tags";	                        //指定标签
+        public const string AttributeChannelIndex = "channelIndex";
+        public const string AttributeChannelName = "channelName";
+        public const string AttributeUpLevel = "upLevel";
+        public const string AttributeTopLevel = "topLevel";
+        public const string AttributeScope = "scope";
+        public const string AttributeGroup = "group";
+        public const string AttributeGroupNot = "groupNot";
+        public const string AttributeGroupChannel = "groupChannel";
+        public const string AttributeGroupChannelNot = "groupChannelNot";
+        public const string AttributeGroupContent = "groupContent";
+        public const string AttributeGroupContentNot = "groupContentNot";
+        public const string AttributeTags = "tags";
+        public const string AttributeIsTop = "isTop";
+        public const string AttributeIsRecommend = "isRecommend";
+        public const string AttributeIsHot = "isHot";
+        public const string AttributeIsColor = "isColor";
+        public const string AttributeTotalNum = "totalNum";
+        public const string AttributeStartNum = "startNum";
+        public const string AttributeTitleWordNum = "titleWordNum";
+        public const string AttributeOrder = "order";
+        public const string AttributeIsImage = "isImage";
+        public const string AttributeIsVideo = "isVideo";
+        public const string AttributeIsFile = "isFile";
+        public const string AttributeIsNoDup = "isNoDup";
+        public const string AttributeIsRelatedContents = "isRelatedContents";
+        public const string AttributeWhere = "where";
+        public const string AttributeIsDynamic = "isDynamic";
+        public const string AttributeCellPadding = "cellPadding";
+        public const string AttributeCellSpacing = "cellSpacing";
+        public const string AttributeClass = "class";
+        public const string AttributeColumns = "columns";
+        public const string AttributeDirection = "direction";
+        public const string AttributeHeight = "height";
+        public const string AttributeWidth = "width";
+        public const string AttributeAlign = "align";
+        public const string AttributeItemHeight = "itemHeight";
+        public const string AttributeItemWidth = "itemWidth";
+        public const string AttributeItemAlign = "itemAlign";
+        public const string AttributeItemVerticalAlign = "itemVerticalAlign";
+        public const string AttributeItemClass = "itemClass";
+        public const string AttributeLayout = "layout";
 
-        public const string Attribute_IsTop = "istop";                          //仅显示置顶内容
-        public const string Attribute_IsRecommend = "isrecommend";              //仅显示推荐内容
-        public const string Attribute_IsHot = "ishot";                          //仅显示热点内容
-        public const string Attribute_IsColor = "iscolor";                      //仅显示醒目内容
-
-        public const string Attribute_TotalNum = "totalnum";					//显示内容数目
-        public const string Attribute_StartNum = "startnum";					//从第几条信息开始显示
-        public const string Attribute_TitleWordNum = "titlewordnum";			//内容标题文字数量
-        public const string Attribute_Order = "order";						    //排序
-        public const string Attribute_IsImage = "isimage";					    //仅显示图片内容
-        public const string Attribute_IsVideo = "isvideo";					    //仅显示视频内容
-        public const string Attribute_IsFile = "isfile";                        //仅显示附件内容
-        public const string Attribute_IsNoDup = "isnodup";                      //不显示重复标题的内容
-        public const string Attribute_IsRelatedContents = "isrelatedcontents";  //显示相关内容列表
-        public const string Attribute_Where = "where";                          //获取内容列表的条件判断
-        public const string Attribute_IsDynamic = "isdynamic";                  //是否动态显示
-
-        public const string Attribute_Columns = "columns";
-        public const string Attribute_Direction = "direction";
-        public const string Attribute_Height = "height";
-        public const string Attribute_Width = "width";
-        public const string Attribute_Align = "align";
-        public const string Attribute_ItemHeight = "itemheight";
-        public const string Attribute_ItemWidth = "itemwidth";
-        public const string Attribute_ItemAlign = "itemalign";
-        public const string Attribute_ItemVerticalAlign = "itemverticalalign";
-        public const string Attribute_ItemClass = "itemclass";
-        public const string Attribute_Layout = "layout";
-
-        public static ListDictionary AttributeList
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            get
-            {
-                var attributes = new ListDictionary();
+            {AttributeChannelIndex, "栏目索引"},
+            {AttributeChannelName, "栏目名称"},
+            {AttributeUpLevel, "上级栏目的级别"},
+            {AttributeTopLevel, "从首页向下的栏目级别"},
+            {AttributeScope, "内容范围"},
+            {AttributeGroupChannel, "指定显示的栏目组"},
+            {AttributeGroupChannelNot, "指定不显示的栏目组"},
+            {AttributeGroup, "指定显示的内容组"},
+            {AttributeGroupNot, "指定不显示的内容组"},
+            {AttributeGroupContent, "指定显示的内容组"},
+            {AttributeGroupContentNot, "指定不显示的内容组"},
+            {AttributeTags, "指定标签"},
+            {AttributeIsTop, "仅显示置顶内容"},
+            {AttributeIsRecommend, "仅显示推荐内容"},
+            {AttributeIsHot, "仅显示热点内容"},
+            {AttributeIsColor, "仅显示醒目内容"},
+            {AttributeTotalNum, "显示内容数目"},
+            {AttributeStartNum, "从第几条信息开始显示"},
+            {AttributeTitleWordNum, "内容标题文字数量"},
+            {AttributeOrder, "排序"},
+            {AttributeIsImage, "仅显示图片内容"},
+            {AttributeIsVideo, "仅显示视频内容"},
+            {AttributeIsFile, "仅显示附件内容"},
+            {AttributeIsNoDup, "不显示重复标题的内容"},
+            {AttributeIsRelatedContents, "显示相关内容列表"},
+            {AttributeWhere, "获取内容列表的条件判断"},
+            {AttributeIsDynamic, "是否动态显示"},
+            {AttributeCellPadding, "填充"},
+            {AttributeCellSpacing, "间距"},
+            {AttributeClass, "Css类"},
+            {AttributeColumns, "列数"},
+            {AttributeDirection, "方向"},
+            {AttributeLayout, "指定列表布局方式"},
+            {AttributeHeight, "整体高度"},
+            {AttributeWidth, "整体宽度"},
+            {AttributeAlign, "整体对齐"},
+            {AttributeItemHeight, "项高度"},
+            {AttributeItemWidth, "项宽度"},
+            {AttributeItemAlign, "项水平对齐"},
+            {AttributeItemVerticalAlign, "项垂直对齐"},
+            {AttributeItemClass, "项Css类"},
+        };
 
-                attributes.Add("cellpadding", "填充");
-                attributes.Add("cellspacing", "间距");
-                attributes.Add("class", "Css类");
-                attributes.Add(Attribute_Columns, "列数");
-                attributes.Add(Attribute_Direction, "方向");
-                attributes.Add(Attribute_Layout, "指定列表布局方式");
-
-                attributes.Add(Attribute_Height, "整体高度");
-                attributes.Add(Attribute_Width, "整体宽度");
-                attributes.Add(Attribute_Align, "整体对齐");
-                attributes.Add(Attribute_ItemHeight, "项高度");
-                attributes.Add(Attribute_ItemWidth, "项宽度");
-                attributes.Add(Attribute_ItemAlign, "项水平对齐");
-                attributes.Add(Attribute_ItemVerticalAlign, "项垂直对齐");
-                attributes.Add(Attribute_ItemClass, "项Css类");
-
-                attributes.Add(Attribute_TotalNum, "显示内容数目");
-                attributes.Add(Attribute_StartNum, "从第几条信息开始显示");
-                attributes.Add(Attribute_TitleWordNum, "内容标题文字数量");
-                attributes.Add(Attribute_Order, "排序");
-                attributes.Add(Attribute_IsImage, "仅显示图片内容");
-                attributes.Add(Attribute_IsVideo, "仅显示视频内容");
-                attributes.Add(Attribute_IsFile, "仅显示附件内容");
-                attributes.Add(Attribute_IsNoDup, "不显示重复标题的内容");
-                attributes.Add(Attribute_IsRelatedContents, "显示相关内容列表");
-                attributes.Add(Attribute_Where, "获取内容列表的条件判断");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-
-                attributes.Add(Attribute_ChannelIndex, "栏目索引");
-                attributes.Add(Attribute_ChannelName, "栏目名称");
-                attributes.Add(Attribute_UpLevel, "上级栏目的级别");
-                attributes.Add(Attribute_TopLevel, "从首页向下的栏目级别");
-                attributes.Add(Attribute_Scope, "内容范围");
-                attributes.Add(Attribute_GroupChannel, "指定显示的栏目组");
-                attributes.Add(Attribute_GroupChannelNot, "指定不显示的栏目组");
-                attributes.Add(Attribute_GroupContent, "指定显示的内容组");
-                attributes.Add(Attribute_GroupContentNot, "指定不显示的内容组");
-                attributes.Add(Attribute_Tags, "指定标签");
-                attributes.Add(Attribute_IsTop, "仅显示置顶内容");
-                attributes.Add(Attribute_IsRecommend, "仅显示推荐内容");
-                attributes.Add(Attribute_IsHot, "仅显示热点内容");
-                attributes.Add(Attribute_IsColor, "仅显示醒目内容");
-
-                return attributes;
-            }
-        }
-
-        public static Dictionary<string, string> BooleanAttributeList
-        {
-            get
-            {
-                var attributes = new Dictionary<string, string>();
-
-                attributes.Add(Attribute_IsTop, "仅显示置顶内容");
-                attributes.Add(Attribute_IsRecommend, "仅显示推荐内容");
-                attributes.Add(Attribute_IsHot, "仅显示热点内容");
-                attributes.Add(Attribute_IsColor, "仅显示醒目内容");
-
-                attributes.Add(Attribute_IsImage, "仅显示图片内容");
-                attributes.Add(Attribute_IsVideo, "仅显示视频内容");
-                attributes.Add(Attribute_IsFile, "仅显示附件内容");
-                attributes.Add(Attribute_IsNoDup, "不显示重复标题的内容");
-                attributes.Add(Attribute_IsRelatedContents, "显示相关内容列表");
-
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-
-                return attributes;
-            }
-        }
-
-        //对不能够翻页的“内容列表”（stl:contents）元素进行解析
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var parsedContent = string.Empty;
+            string parsedContent;
             try
             {
-                var displayInfo = ContentsDisplayInfo.GetContentsDisplayInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Content);
+                var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Content);
 
-                if (displayInfo.IsDynamic)
-                {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
-                }
-                else
-                {
-                    parsedContent = ParseImpl(pageInfo, contextInfo, displayInfo);
-                }
+                parsedContent = listInfo.IsDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, listInfo);
             }
             catch (Exception ex)
             {
@@ -160,44 +121,49 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        public static IEnumerable GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ContentsDisplayInfo displayInfo)
+        public static IEnumerable GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
-            var channelID = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelID, displayInfo.UpLevel, displayInfo.TopLevel);
+            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
-            channelID = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelID, displayInfo.ChannelIndex, displayInfo.ChannelName);
+            channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
-            return StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelID, contextInfo.ContentID, displayInfo.GroupContent, displayInfo.GroupContentNot, displayInfo.Tags, displayInfo.IsImageExists, displayInfo.IsImage, displayInfo.IsVideoExists, displayInfo.IsVideo, displayInfo.IsFileExists, displayInfo.IsFile, displayInfo.IsNoDup, displayInfo.IsRelatedContents, displayInfo.StartNum, displayInfo.TotalNum, displayInfo.OrderByString, displayInfo.IsTopExists, displayInfo.IsTop, displayInfo.IsRecommendExists, displayInfo.IsRecommend, displayInfo.IsHotExists, displayInfo.IsHot, displayInfo.IsColorExists, displayInfo.IsColor, displayInfo.Where, displayInfo.Scope, displayInfo.GroupChannel, displayInfo.GroupChannelNot, displayInfo.OtherAttributes);
+            return StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsNoDup, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ContentsDisplayInfo displayInfo)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var parsedContent = string.Empty;
 
             var titleWordNum = contextInfo.TitleWordNum;
-            contextInfo.TitleWordNum = displayInfo.TitleWordNum;
+            contextInfo.TitleWordNum = listInfo.TitleWordNum;
 
-            var dataSource = GetDataSource(pageInfo, contextInfo, displayInfo);
+            var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
 
-            if (displayInfo.Layout == ELayout.None)
+            if (listInfo.Layout == ELayout.None)
             {
-                var rptContents = new Repeater();
+                var rptContents = new Repeater
+                {
+                    ItemTemplate =
+                        new RepeaterTemplate(listInfo.ItemTemplate, listInfo.SelectedItems,
+                            listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat,
+                            pageInfo, EContextType.Content, contextInfo)
+                };
 
-                rptContents.ItemTemplate = new RepeaterTemplate(displayInfo.ItemTemplate, displayInfo.SelectedItems, displayInfo.SelectedValues, displayInfo.SeparatorRepeatTemplate, displayInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
-                if (!string.IsNullOrEmpty(displayInfo.HeaderTemplate))
+                if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
                 {
-                    rptContents.HeaderTemplate = new SeparatorTemplate(displayInfo.HeaderTemplate);
+                    rptContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.FooterTemplate))
+                if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
                 {
-                    rptContents.FooterTemplate = new SeparatorTemplate(displayInfo.FooterTemplate);
+                    rptContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.SeparatorTemplate))
+                if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
                 {
-                    rptContents.SeparatorTemplate = new SeparatorTemplate(displayInfo.SeparatorTemplate);
+                    rptContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.AlternatingItemTemplate))
+                if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
-                    rptContents.AlternatingItemTemplate = new RepeaterTemplate(displayInfo.AlternatingItemTemplate, displayInfo.SelectedItems, displayInfo.SelectedValues, displayInfo.SeparatorRepeatTemplate, displayInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
+                    rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
                 }
 
                 rptContents.DataSource = dataSource;
@@ -212,24 +178,24 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var pdlContents = new ParsedDataList();
 
-                TemplateUtility.PutContentsDisplayInfoToMyDataList(pdlContents, displayInfo);
+                TemplateUtility.PutListInfoToMyDataList(pdlContents, listInfo);
 
-                pdlContents.ItemTemplate = new DataListTemplate(displayInfo.ItemTemplate, displayInfo.SelectedItems, displayInfo.SelectedValues, displayInfo.SeparatorRepeatTemplate, displayInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
-                if (!string.IsNullOrEmpty(displayInfo.HeaderTemplate))
+                pdlContents.ItemTemplate = new DataListTemplate(listInfo.ItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
+                if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
                 {
-                    pdlContents.HeaderTemplate = new SeparatorTemplate(displayInfo.HeaderTemplate);
+                    pdlContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.FooterTemplate))
+                if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
                 {
-                    pdlContents.FooterTemplate = new SeparatorTemplate(displayInfo.FooterTemplate);
+                    pdlContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.SeparatorTemplate))
+                if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
                 {
-                    pdlContents.SeparatorTemplate = new SeparatorTemplate(displayInfo.SeparatorTemplate);
+                    pdlContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
                 }
-                if (!string.IsNullOrEmpty(displayInfo.AlternatingItemTemplate))
+                if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
-                    pdlContents.AlternatingItemTemplate = new DataListTemplate(displayInfo.AlternatingItemTemplate, displayInfo.SelectedItems, displayInfo.SelectedValues, displayInfo.SeparatorRepeatTemplate, displayInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
+                    pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
                 }
 
                 pdlContents.DataSource = dataSource;

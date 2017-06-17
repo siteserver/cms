@@ -6,59 +6,59 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class VoteLogDAO : DataProviderBase
+    public class VoteLogDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_VoteLog";
+        private const string TableName = "wx_VoteLog";
 
         public void Insert(VoteLogInfo logInfo)
         {
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(logInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(logInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_INSERT, parms);
+            ExecuteNonQuery(sqlInsert, parms);
         }
 
-        public void DeleteAll(int voteID)
+        public void DeleteAll(int voteId)
         {
-            if (voteID > 0)
+            if (voteId > 0)
             {
-                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE {VoteLogAttribute.VoteID} = {voteID}";
+                string sqlString = $"DELETE FROM {TableName} WHERE {VoteLogAttribute.VoteId} = {voteId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(List<int> logIDList)
+        public void Delete(List<int> logIdList)
         {
-            if (logIDList != null && logIDList.Count > 0)
+            if (logIdList != null && logIdList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(logIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(logIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public int GetCount(int voteID)
+        public int GetCount(int voteId)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {VoteLogAttribute.VoteID} = {voteID}";
+                $"SELECT COUNT(*) FROM {TableName} WHERE {VoteLogAttribute.VoteId} = {voteId}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public bool IsVoted(int voteID, string cookieSN, string wxOpenID)
+        public bool IsVoted(int voteId, string cookieSn, string wxOpenId)
         {
             var isVoted = false;
             string sqlString;
-            if (string.IsNullOrEmpty(wxOpenID))
+            if (string.IsNullOrEmpty(wxOpenId))
             {
                 sqlString =
-                    $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {VoteLogAttribute.VoteID} = {voteID} AND {VoteLogAttribute.CookieSN} = '{cookieSN}' ";
+                    $"SELECT COUNT(*) FROM {TableName} WHERE {VoteLogAttribute.VoteId} = {voteId} AND {VoteLogAttribute.CookieSn} = '{cookieSn}' ";
             }
             else
             {
                 sqlString =
-                    $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {VoteLogAttribute.VoteID} = {voteID} AND {VoteLogAttribute.WXOpenID} = '{wxOpenID}' ";
+                    $"SELECT COUNT(*) FROM {TableName} WHERE {VoteLogAttribute.VoteId} = {voteId} AND {VoteLogAttribute.WxOpenId} = '{wxOpenId}' ";
             } 
 
             isVoted = BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString) > 0;
@@ -66,22 +66,22 @@ namespace SiteServer.CMS.WeiXin.Provider
             return isVoted;
         }
 
-        public string GetSelectString(int voteID)
+        public string GetSelectString(int voteId)
         {
-            string whereString = $"WHERE {VoteLogAttribute.VoteID} = {voteID}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {VoteLogAttribute.VoteId} = {voteId}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public List<VoteLogInfo> GetVoteLogInfoListByVoteID(int publishmentSystemID, int voteID)
+        public List<VoteLogInfo> GetVoteLogInfoListByVoteId(int publishmentSystemId, int voteId)
         {
             var voteLogInfoList = new List<VoteLogInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {VoteLogAttribute.PublishmentSystemID} = {publishmentSystemID} AND {VoteLogAttribute.VoteID} = '{voteID}'";
+            string sqlWhere =
+                $"WHERE {VoteLogAttribute.PublishmentSystemId} = {publishmentSystemId} AND {VoteLogAttribute.VoteId} = '{voteId}'";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -94,15 +94,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             return voteLogInfoList;
         }
 
-        public List<VoteLogInfo> GetVoteLogInfoList(int publishmentSystemID)
+        public List<VoteLogInfo> GetVoteLogInfoList(int publishmentSystemId)
         {
             var voteLogInfoList = new List<VoteLogInfo>();
 
-            string SQL_WHERE = $"WHERE {VoteLogAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            string sqlWhere = $"WHERE {VoteLogAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -115,11 +115,11 @@ namespace SiteServer.CMS.WeiXin.Provider
             return voteLogInfoList;
         }
 
-        public int GetCount(int voteID, string iPAddress)
+        public int GetCount(int voteId, string iPAddress)
         {
 
             string sqlString =
-                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {VoteLogAttribute.VoteID} = {voteID} AND {VoteLogAttribute.IPAddress} = '{iPAddress}'";
+                $"SELECT COUNT(*) FROM {TableName} WHERE {VoteLogAttribute.VoteId} = {voteId} AND {VoteLogAttribute.IpAddress} = '{iPAddress}'";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }

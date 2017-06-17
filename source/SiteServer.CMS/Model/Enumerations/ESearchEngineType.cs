@@ -7,12 +7,12 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum ESearchEngineType
 	{
-		Baidu,						//°Ù¶È
-		Google_CN,					//Google(¼òÌåÖĞÎÄ)
+		Baidu,						//ç™¾åº¦
+		Google_CN,					//Google(ç®€ä½“ä¸­æ–‡)
 		Google,						//Google
 		Yahoo,						//Yahoo
 		Live,						//Live
-		Sogou,						//ËÑ¹·
+		Sogou,						//æœç‹—
 	}
 
 	public class ESearchEngineTypeUtils
@@ -53,15 +53,15 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
 			if (type == ESearchEngineType.Baidu)
 			{
-				return "°Ù¶È";
+				return "ç™¾åº¦";
 			}
 			else if (type == ESearchEngineType.Google_CN)
 			{
-				return "Google(¼òÌåÖĞÎÄ)";
+				return "Google(ç®€ä½“ä¸­æ–‡)";
 			}
 			else if (type == ESearchEngineType.Google)
 			{
-				return "Google(È«²¿ÓïÑÔ)";
+				return "Google(å…¨éƒ¨è¯­è¨€)";
 			}
 			else if (type == ESearchEngineType.Yahoo)
 			{
@@ -69,11 +69,11 @@ namespace SiteServer.CMS.Model.Enumerations
 			}
 			else if (type == ESearchEngineType.Live)
 			{
-				return "Live ËÑË÷";
+				return "Live æœç´¢";
 			}
 			else if (type == ESearchEngineType.Sogou)
 			{
-				return "ËÑ¹·";
+				return "æœç‹—";
 			}
 			else
 			{

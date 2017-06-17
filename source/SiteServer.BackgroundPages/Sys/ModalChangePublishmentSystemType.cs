@@ -4,9 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.IO.FileManagement;
-using BaiRong.Core.Text;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Sys
@@ -83,12 +81,12 @@ namespace SiteServer.BackgroundPages.Sys
                     }
 
                     //主站下的单页模板
-                    var fileTemplateInfoList = DataProvider.TemplateDao.GetTemplateInfoArrayListByType(PublishmentSystemId, ETemplateType.FileTemplate);
-                    foreach (TemplateInfo fileT in fileTemplateInfoList)
+                    var fileTemplateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(PublishmentSystemId, ETemplateType.FileTemplate);
+                    foreach (var fileT in fileTemplateInfoList)
                     {
                         if (fileT.CreatedFileFullName.StartsWith("@/") || fileT.CreatedFileFullName.StartsWith("~/"))
                         {
-                            var arr = fileT.CreatedFileFullName.Substring(2).Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                            var arr = fileT.CreatedFileFullName.Substring(2).Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
                             if (arr.Length > 0)
                                 selectedList.Add(arr[0]);
                         }
@@ -97,10 +95,10 @@ namespace SiteServer.BackgroundPages.Sys
                 else
                 {
                     var headquartersExists = false;
-                    var publishmentSystemIDArrayList = PublishmentSystemManager.GetPublishmentSystemIdList();
-                    foreach (int psID in publishmentSystemIDArrayList)
+                    var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdList();
+                    foreach (var psId in publishmentSystemIdList)
                     {
-                        var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psID);
+                        var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psId);
                         if (psInfo.IsHeadquarters)
                         {
                             headquartersExists = true;
@@ -190,16 +188,8 @@ namespace SiteServer.BackgroundPages.Sys
 
             if (isChanged)
             {
-                if (_isHeadquarters)
-                {
-                    Body.AddAdminLog("转移到子目录",
-                        $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
-                }
-                else
-                {
-                    Body.AddAdminLog("转移到根目录",
-                        $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
-                }
+                Body.AddAdminLog(_isHeadquarters ? "转移到子目录" : "转移到根目录",
+                    $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
                 PageUtils.CloseModalPage(Page);
             }
         }

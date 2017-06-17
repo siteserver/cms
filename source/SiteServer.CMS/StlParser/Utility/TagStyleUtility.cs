@@ -3,7 +3,6 @@ using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.CMS.StlParser.StlElement.WCM;
 using SiteServer.CMS.StlTemplates;
 
 namespace SiteServer.CMS.StlParser.Utility

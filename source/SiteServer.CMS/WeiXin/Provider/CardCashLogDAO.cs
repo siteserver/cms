@@ -7,17 +7,16 @@ using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class CardCashLogDAO : DataProviderBase
+    public class CardCashLogDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_CardCashLog";
+        private const string TableName = "wx_CardCashLog";
          
         public int Insert(CardCashLogInfo cardCashLogInfo)
         {
-            var cardCashLogID = 0;
+            int cardCashLogId;
 
-            IDataParameter[] parms = null;
-
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(cardCashLogInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            IDataParameter[] parms;
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(cardCashLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
              
             using (var conn = GetConnection())
             {
@@ -26,9 +25,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                         cardCashLogID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                         cardCashLogId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -40,44 +37,44 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return cardCashLogID;
+            return cardCashLogId;
         }
 
         public void Update(CardCashLogInfo cardCashLogInfo)
         {
-            IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(cardCashLogInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            IDataParameter[] parms;
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(cardCashLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
         }
    
-        public void Delete(int publishmentSystemID, int cardCashLogID)
+        public void Delete(int publishmentSystemId, int cardCashLogId)
         {
-            if (cardCashLogID > 0)
+            if (cardCashLogId > 0)
             { 
-                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {cardCashLogID}";
+                string sqlString = $"DELETE FROM {TableName} WHERE ID = {cardCashLogId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemID, List<int> cardCashLogIDList)
+        public void Delete(int publishmentSystemId, List<int> cardCashLogIdList)
         {
-            if (cardCashLogIDList != null && cardCashLogIDList.Count > 0)
+            if (cardCashLogIdList != null && cardCashLogIdList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardCashLogIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardCashLogIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
          
-        public CardCashLogInfo GetCardCashLogInfo(int  cardCashLogID)
+        public CardCashLogInfo GetCardCashLogInfo(int  cardCashLogId)
         {
             CardCashLogInfo cardCashLogInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {cardCashLogID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {cardCashLogId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -89,20 +86,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return cardCashLogInfo;
         }
 
-        public List<CardCashLogInfo> GetCardCashLogInfoList(int cardID,int cardSNID,string userName,string startDate,string endDate)
+        public List<CardCashLogInfo> GetCardCashLogInfoList(int cardId,int cardSnid,string userName,string startDate,string endDate)
         {
             var cardCashLogInfoList = new List<CardCashLogInfo>();
 
-            string SQL_WHERE =
-                $"WHERE CardID = {cardID} AND CardSNID={cardSNID} AND UserName='{PageUtils.FilterSql(userName)}'";
+            string sqlWhere =
+                $"WHERE CardID = {cardId} AND CardSNID={cardSnid} AND UserName='{PageUtils.FilterSql(userName)}'";
             if (!string.IsNullOrEmpty(startDate))
             {
-                SQL_WHERE += $" AND AddDate >='{startDate}' AND AddDate < '{endDate}'";
+                sqlWhere += $" AND AddDate >='{startDate}' AND AddDate < '{endDate}'";
             }
-            string SQL_ORDER = $" ORDER BY {CardCashLogAttribute.AddDate} DESC";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, SQL_ORDER);
+            string sqlOrder = $" ORDER BY {CardCashLogAttribute.AddDate} DESC";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, sqlOrder);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -115,22 +112,24 @@ namespace SiteServer.CMS.WeiXin.Provider
             return cardCashLogInfoList;
         }
 
-        public List<CardCashYearCountInfo> GetCardCashYearCountInfoList(int cardID, int cardSNID,string userName)
+        public List<CardCashYearCountInfo> GetCardCashYearCountInfoList(int cardId, int cardSnid,string userName)
         {
             var cardCashYearCountInfoList = new List<CardCashYearCountInfo>();
 
             string sqlString =
-                $"select datepart(year,addDate)as 年份,sum( case CashType when 'Consume' then Amount else 0 end)as '消费',sum(case CashType when 'Recharge' then Amount else 0 end )as '充值' ,sum(case CashType when 'Exchange' then Amount else 0 end )as '积分兑换' from wx_CardCashLog  where CardID= {cardID} and CardSNID={cardSNID} and UserName = '{PageUtils.FilterSql(userName)}'  group by  datepart(year,addDate) order by datepart(year,addDate) desc ";
+                $"select datepart(year,addDate)as 年份,sum( case CashType when 'Consume' then Amount else 0 end)as '消费',sum(case CashType when 'Recharge' then Amount else 0 end )as '充值' ,sum(case CashType when 'Exchange' then Amount else 0 end )as '积分兑换' from wx_CardCashLog  where CardID= {cardId} and CardSNID={cardSnid} and UserName = '{PageUtils.FilterSql(userName)}'  group by  datepart(year,addDate) order by datepart(year,addDate) desc ";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    var cardCashYearCountInfo = new CardCashYearCountInfo();
-                    cardCashYearCountInfo.Year =ConvertHelper.GetString( rdr.GetValue(0));
-                    cardCashYearCountInfo.TotalConsume = ConvertHelper.GetDecimal(rdr.GetValue(1));
-                    cardCashYearCountInfo.TotalRecharge = ConvertHelper.GetDecimal(rdr.GetValue(2));
-                    cardCashYearCountInfo.TotalExchange = ConvertHelper.GetDecimal(rdr.GetValue(3));
+                    var cardCashYearCountInfo = new CardCashYearCountInfo
+                    {
+                        Year = ConvertHelper.GetString(rdr.GetValue(0)),
+                        TotalConsume = ConvertHelper.GetDecimal(rdr.GetValue(1)),
+                        TotalRecharge = ConvertHelper.GetDecimal(rdr.GetValue(2)),
+                        TotalExchange = ConvertHelper.GetDecimal(rdr.GetValue(3))
+                    };
                     cardCashYearCountInfoList.Add(cardCashYearCountInfo);
                 }
                 rdr.Close();
@@ -139,23 +138,25 @@ namespace SiteServer.CMS.WeiXin.Provider
             return cardCashYearCountInfoList;
         }
 
-        public List<CardCashMonthCountInfo> GetCardCashMonthCountInfoList(int cardID, int cardSNID, string userName,string year)
+        public List<CardCashMonthCountInfo> GetCardCashMonthCountInfoList(int cardId, int cardSnid, string userName,string year)
         {
             var cardCashMonthCountInfoList = new List<CardCashMonthCountInfo>();
 
             string sqlString =
-                $"select datepart(year,addDate)as 年份, datepart(month,addDate)as 月份,sum( case CashType when 'Consume' then Amount else 0 end)as '消费',sum(case CashType when 'Recharge' then Amount else 0 end )as '充值' ,sum(case CashType when 'Exchange' then Amount else 0 end )as '积分兑换' from wx_CardCashLog where CardID= {cardID} and  CardSNID= {cardSNID} and  UserName='{PageUtils.FilterSql(userName)}' and AddDate like '%{year}%'  group by datepart(month,addDate), datepart(year,addDate) order by datepart(year,addDate) desc,datepart(month,addDate) desc ";
+                $"select datepart(year,addDate)as 年份, datepart(month,addDate)as 月份,sum( case CashType when 'Consume' then Amount else 0 end)as '消费',sum(case CashType when 'Recharge' then Amount else 0 end )as '充值' ,sum(case CashType when 'Exchange' then Amount else 0 end )as '积分兑换' from wx_CardCashLog where CardID= {cardId} and  CardSNID= {cardSnid} and  UserName='{PageUtils.FilterSql(userName)}' and AddDate like '%{year}%'  group by datepart(month,addDate), datepart(year,addDate) order by datepart(year,addDate) desc,datepart(month,addDate) desc ";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    var cardCashMonthCountInfo = new CardCashMonthCountInfo();
-                    cardCashMonthCountInfo.Year = ConvertHelper.GetString(rdr.GetValue(0));
-                    cardCashMonthCountInfo.Month = ConvertHelper.GetString(rdr.GetValue(1));
-                    cardCashMonthCountInfo.TotalConsume = ConvertHelper.GetDecimal(rdr.GetValue(2));
-                    cardCashMonthCountInfo.TotalRecharge = ConvertHelper.GetDecimal(rdr.GetValue(3));
-                    cardCashMonthCountInfo.TotalExchange = ConvertHelper.GetDecimal(rdr.GetValue(4));
+                    var cardCashMonthCountInfo = new CardCashMonthCountInfo
+                    {
+                        Year = ConvertHelper.GetString(rdr.GetValue(0)),
+                        Month = ConvertHelper.GetString(rdr.GetValue(1)),
+                        TotalConsume = ConvertHelper.GetDecimal(rdr.GetValue(2)),
+                        TotalRecharge = ConvertHelper.GetDecimal(rdr.GetValue(3)),
+                        TotalExchange = ConvertHelper.GetDecimal(rdr.GetValue(4))
+                    };
                     cardCashMonthCountInfoList.Add(cardCashMonthCountInfo);
                 }
                 rdr.Close();
@@ -164,17 +165,17 @@ namespace SiteServer.CMS.WeiXin.Provider
             return cardCashMonthCountInfoList;
         }
 
-        public string GetSelectString(int publishmentSystemID, ECashType cashType, int cardID, string cardSN, string userName, string mobile)
+        public string GetSelectString(int publishmentSystemId, ECashType cashType, int cardId, string cardSn, string userName, string mobile)
         {
             string whereString =
-                $"WHERE {CardCashLogAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CardCashLogAttribute.CashType}='{cashType}'";
-            if (cardID > 0)
+                $"WHERE {CardCashLogAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CardCashLogAttribute.CashType}='{cashType}'";
+            if (cardId > 0)
             {
-                whereString += $" AND {CardCashLogAttribute.CardID}={cardID}";
+                whereString += $" AND {CardCashLogAttribute.CardId}={cardId}";
             }
-            if (!string.IsNullOrEmpty(cardSN))
+            if (!string.IsNullOrEmpty(cardSn))
             {
-                whereString += $" AND {CardCashLogAttribute.CardSNID} IN (SELECT ID FROM wx_CardSN WHERE SN='{cardSN}')";
+                whereString += $" AND {CardCashLogAttribute.CardSnId} IN (SELECT ID FROM wx_CardSN WHERE SN='{cardSn}')";
             }
             if (!string.IsNullOrEmpty(userName))
             {
@@ -185,20 +186,20 @@ namespace SiteServer.CMS.WeiXin.Provider
                 whereString +=
                     $" AND {CardCashLogAttribute.UserName} IN (SELECT UserName FROM bairong_Users WHERE Mobile='{PageUtils.FilterSql(mobile)}')";
             }
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public List<CardCashLogInfo> GetCardCashLogInfoList(int publishmentSystemID, int cardID, int cardSNID)
+        public List<CardCashLogInfo> GetCardCashLogInfoList(int publishmentSystemId, int cardId, int cardSnid)
         {
             var cardCashLogInfoList = new List<CardCashLogInfo>();
 
-            string SQL_WHERE =
-                $"WHERE PublishmentSystemID={publishmentSystemID} AND CardID = {cardID} AND CardSNID = {cardSNID}";
+            string sqlWhere =
+                $"WHERE PublishmentSystemID={publishmentSystemId} AND CardID = {cardId} AND CardSNID = {cardSnid}";
             
-            string SQL_ORDER = $" ORDER BY {CardCashLogAttribute.AddDate} DESC";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, SQL_ORDER);
+            string sqlOrder = $" ORDER BY {CardCashLogAttribute.AddDate} DESC";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, sqlOrder);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

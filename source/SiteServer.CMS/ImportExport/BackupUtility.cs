@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.ImportExport
@@ -104,9 +103,9 @@ namespace SiteServer.CMS.ImportExport
             }
             if (isDeleteTemplates)
             {
-                var templateInfoArrayList =
-                    DataProvider.TemplateDao.GetTemplateInfoArrayListByPublishmentSystemId(publishmentSystemId);
-                foreach (TemplateInfo templateInfo in templateInfoArrayList)
+                var templateInfoList =
+                    DataProvider.TemplateDao.GetTemplateInfoListByPublishmentSystemId(publishmentSystemId);
+                foreach (var templateInfo in templateInfoList)
                 {
                     if (templateInfo.IsDefault == false)
                     {

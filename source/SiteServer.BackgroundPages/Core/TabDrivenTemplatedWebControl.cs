@@ -1,9 +1,10 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Web.UI;
 using BaiRong.Core;
 using BaiRong.Core.Tabs;
+using SiteServer.CMS.Plugins;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -13,206 +14,154 @@ namespace SiteServer.BackgroundPages.Core
 	/// </summary>
 	public abstract class TabDrivenTemplatedWebControl : Control
 	{
-		#region Public Properties
-
-		/// <summary>
-		/// Returns the currently selected tab
-		/// </summary>
-		public virtual string Selected
-		{
-			get 
-			{
-				return (string) ViewState["Selected"]; 
-			}
-			set 
-			{  
-				ViewState["Selected"] = value; 
-			}
-		}
-        
-		/// <summary>
-		/// returns the location of the current tab configuration file
-		/// </summary>
-		public virtual string FileLocation
-		{
-			get
-			{
-				var path = Context.Server.MapPath(ResolveUrl(FileName));
-				return path;
-			}
-		}
-
-		/// <summary>
-		/// returns the file name containing the tab configuration
-		/// </summary>
-		public virtual string FileName
-		{
-			get 
-			{
-				var state = ViewState["FileName"];
-				if ( state != null ) 
-				{
-					return (String)state;
-				}
-                return null;
-				//return "tabs.config";
-			}
-			set 
-			{
-				ViewState["FileName"] = value;
-			}
-		}
-
-        TabCollection tabs;
-        public virtual TabCollection Tabs
+        /// <summary>
+        /// Returns the currently selected tab
+        /// </summary>
+        public virtual string Selected
         {
             get
             {
-                return tabs;
+                return (string)ViewState["Selected"];
             }
             set
             {
-                tabs = value;
+                ViewState["Selected"] = value;
             }
         }
 
-        List<string> permissionList;
-		public virtual List<string> PermissionList
-		{
-			get 
-			{
-				return permissionList;
-			}
-			set 
-			{
-                permissionList = value;
-			}
-		}
-
-		/// <summary>
-		/// if true, the url is written into the control label
-		/// </summary>
-		public virtual bool UseDirectNavigation
-		{
-			get 
-			{
-				var state = ViewState["UseDirectNavigation"];
-				if ( state != null ) 
-				{
-					return (bool)state;
-				}
-				return false;
-			}
-			set 
-			{
-				ViewState["UseDirectNavigation"] = value;
-			}
-		}
-		#endregion
-
-		#region GetTabs()
-		/// <summary>
-		/// Returns the current instance of the TabCollection
-		/// </summary>
-		/// <returns></returns>
-		protected TabCollection GetTabs()
-		{
-            if (tabs != null)
+        /// <summary>
+        /// returns the file name containing the tab configuration
+        /// </summary>
+        public virtual string FileName
+        {
+            get
             {
-                return tabs;
+                var state = ViewState["FileName"];
+                return (string) state;
+                //return "tabs.config";
             }
-            else
+            set
             {
-                if (!string.IsNullOrEmpty(FileName))
+                ViewState["FileName"] = value;
+            }
+        }
+
+	    public virtual List<string> PermissionList { get; set; }
+
+        /// <summary>
+        /// Returns the current instance of the TabCollection
+        /// </summary>
+        /// <returns></returns>
+        protected TabCollection GetTabs()
+        {
+            var tabCollection = new TabCollection();
+            if (!string.IsNullOrEmpty(FileName))
+            {
+                var path = Context.Server.MapPath(ResolveUrl(FileName));
+                tabCollection = TabCollection.GetTabs(path);
+
+                var pluginInfoList = PluginManager.GetPluginInfoList();
+                foreach (var pluginInfo in pluginInfoList)
                 {
-                    var path = FileLocation;
-                    return TabCollection.GetTabs(path);
+                    if (string.IsNullOrEmpty(pluginInfo.MenusPath)) continue;
+
+                    var pluginTabCollection = TabCollection.GetTabsByPluginDirectory(pluginInfo.MenusPath, pluginInfo.DirectoryName);
+                    var i = 0;
+                    foreach (var pluginTab in pluginTabCollection.Tabs)
+                    {
+                        foreach (var tab in tabCollection.Tabs)
+                        {
+                            if (tab.Id == pluginTab.ParentId)
+                            {
+                                var isExists = false;
+                                foreach (var childTab in tab.Children)
+                                {
+                                    if (childTab.Id == pluginTab.Id)
+                                    {
+                                        isExists = true;
+                                    }
+                                }
+
+                                if (!isExists)
+                                {
+                                    var list = new List<Tab>();
+                                    if (tab.Children != null)
+                                    {
+                                        list = tab.Children.ToList();
+                                    }
+                                    list.Add(pluginTab);
+                                    tab.Children = list.ToArray();
+                                }
+                            }
+                        }
+                    }
                 }
-                return new TabCollection();
             }
-		}
-		#endregion
+            return tabCollection;
+        }
 
-		#region Tab Helpers
+        /// <summary>
+        /// Resolves the current url and attempts to append the specified querystring
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        protected string FormatLink(Tab t)
+        {
+            if (!t.HasHref)
+                return null;
 
-		/// <summary>
-		/// Resolves the current url and attempts to append the specified querystring
-		/// </summary>
-		/// <param name="t"></param>
-		/// <returns></returns>
-		protected string FormatLink(Tab t)
-		{
-			string url = null;
+            var url = t.KeepQueryString ? PageUtils.AddQueryString(t.Href, Context.Request.QueryString) : t.Href;
 
-			if(!t.HasHref)
-				return null;
+            return url;
 
-			if(t.KeepQueryString)
-			{
-				url = PageUtils.AddQueryString(t.Href, Context.Request.QueryString);
-			}
-			else
-			{
-				url = t.Href;
-			}
+            //return ResolveUrl(url);
+        }
 
-		    return url;
+        protected virtual string GetText(Tab t)
+        {
+            return t.Text;
+        }
 
-			//return ResolveUrl(url);
-		}
+        /// <summary>
+        /// Walks the tab and it's children to see if any of them are currently selected
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        protected SelectedState GetState(Tab t)
+        {
+            //Check the parent
+            if (string.Compare(t.Name, Selected, true, CultureInfo.InvariantCulture) == 0)
+                return SelectedState.Selected;
 
-		protected virtual string GetText(Tab t)
-		{
-			return t.Text;
-		}
-		#endregion
+            //Walk each of the child tabs
+            if (t.HasChildren)
+            {
+                foreach (var child in t.Children)
+                {
+                    if (string.Compare(child.Name, Selected, true, CultureInfo.InvariantCulture) == 0)
+                        return SelectedState.ChildSelected;
 
-		#region GetState
-		/// <summary>
-		/// Walks the tab and it's children to see if any of them are currently selected
-		/// </summary>
-		/// <param name="t"></param>
-		/// <returns></returns>
-		protected SelectedState GetState(Tab t)
-		{
-			//Check the parent
-			if(string.Compare(t.Name,Selected,true,CultureInfo.InvariantCulture) == 0)
-				return SelectedState.Selected;
+                    else if (child.HasChildren)
+                    {
+                        foreach (var cc in child.Children)
+                            if (string.Compare(cc.Name, Selected, true, CultureInfo.InvariantCulture) == 0)
+                                return SelectedState.ChildSelected;
+                    }
+                }
+            }
 
-			//Walk each of the child tabs
-			if(t.HasChildren)
-			{
-				foreach(var child in t.Children)
-				{
-					if(string.Compare(child.Name,Selected,true,CultureInfo.InvariantCulture) == 0)
-						return SelectedState.ChildSelected;
+            //Nothing here is selected
+            return SelectedState.Not;
+        }
 
-					else if(child.HasChildren)
-					{
-						foreach(var cc in child.Children)
-							if(string.Compare(cc.Name,Selected,true,CultureInfo.InvariantCulture) == 0)
-								return SelectedState.ChildSelected;
-					}
-				}
-			}
-
-			//Nothing here is selected
-			return SelectedState.Not;
-		}
-
-		#endregion
-
-		#region SelectedState
-		/// <summary>
-		/// Internal enum used to track if a tab is selected
-		/// </summary>
-		protected enum SelectedState
-		{
-			Not,
-			Selected,
-			ChildSelected
-		};
-		#endregion
-
-	}
+        /// <summary>
+        /// Internal enum used to track if a tab is selected
+        /// </summary>
+        protected enum SelectedState
+        {
+            Not,
+            Selected,
+            ChildSelected
+        }
+    }
 }

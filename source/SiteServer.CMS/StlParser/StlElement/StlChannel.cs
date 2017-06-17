@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml;
 using BaiRong.Core;
@@ -13,42 +14,42 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "获取栏目值", Description = "通过 stl:channel 标签在模板中显示指定栏目的属性值")]
     public class StlChannel
     {
         private StlChannel() { }
-        public const string ElementName = "stl:channel";                        //栏目值
+        public const string ElementName = "stl:channel";
 
-        public const string AttributeChannelIndex = "channelindex";             //栏目索引
-        public const string AttributeChannelName = "channelname";               //栏目名称
-        public const string AttributeParent = "parent";                         //显示父栏目属性
-        public const string AttributeUpLevel = "uplevel";						//上级栏目的级别
-        public const string AttributeTopLevel = "toplevel";                     //从首页向下的栏目级别
-        public const string AttributeType = "type";							    //显示的类型
+        public const string AttributeChannelIndex = "channelIndex";
+        public const string AttributeChannelName = "channelName";
+        public const string AttributeParent = "parent";
+        public const string AttributeUpLevel = "upLevel";
+        public const string AttributeTopLevel = "topLevel";
+        public const string AttributeType = "type";
+        public const string AttributeLeftText = "leftText";
+        public const string AttributeRightText = "rightText";
+        public const string AttributeFormatString = "formatString";
+        public const string AttributeSeparator = "separator";
+        public const string AttributeStartIndex = "startIndex";
+        public const string AttributeLength = "length";
+        public const string AttributeWordNum = "wordNum";
+        public const string AttributeEllipsis = "ellipsis";
+        public const string AttributeReplace = "replace";
+        public const string AttributeTo = "to";
+        public const string AttributeIsClearTags = "isClearTags";
+        public const string AttributeIsReturnToBr = "isReturnToBr";
+        public const string AttributeIsLower = "isLower";
+        public const string AttributeIsUpper = "isUpper";
+        public const string AttributeIsDynamic = "isDynamic";
 
-        public const string AttributeLeftText = "lefttext";                     //显示在信息前的文字
-        public const string AttributeRightText = "righttext";                   //显示在信息后的文字
-        public const string AttributeFormatString = "formatstring";             //显示的格式
-        public const string AttributeSeparator = "separator";                   //显示多项时的分割字符串
-        public const string AttributeStartIndex = "startindex";			        //字符开始位置
-        public const string AttributeLength = "length";                         //指定字符长度
-        public const string AttributeWordNum = "wordnum";						//显示字符的数目
-        public const string AttributeEllipsis = "ellipsis";                     //文字超出部分显示的文字
-        public const string AttributeReplace = "replace";                       //需要替换的文字，可以是正则表达式
-        public const string AttributeTo = "to";                                 //替换replace的文字信息
-        public const string AttributeIsClearTags = "iscleartags";               //是否显示清除HTML标签后的文字
-        public const string AttributeIsReturnToBr = "isreturntobr";             //是否将回车替换为HTML换行标签
-        public const string AttributeIsLower = "islower";			            //转换为小写
-        public const string AttributeIsUpper = "isupper";			            //转换为大写
-        public const string AttributeIsDynamic = "isdynamic";                   //是否动态显示
-
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeChannelIndex, "栏目索引"},
             {AttributeChannelName, "栏目名称"},
-            {AttributeType, "显示的类型"},
             {AttributeParent, "显示父栏目属性"},
             {AttributeUpLevel, "上级栏目的级别"},
             {AttributeTopLevel, "从首页向下的栏目级别"},
+            {AttributeType, "显示的类型"},
             {AttributeLeftText, "显示在信息前的文字"},
             {AttributeRightText, "显示在信息后的文字"},
             {AttributeFormatString, "显示的格式"},
@@ -59,10 +60,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeEllipsis, "文字超出部分显示的文字"},
             {AttributeReplace, "需要替换的文字，可以是正则表达式"},
             {AttributeTo, "替换replace的文字信息"},
-            {AttributeIsClearTags, "是否清除标签信息"},
+            {AttributeIsClearTags, "是否清除HTML标签"},
             {AttributeIsReturnToBr, "是否将回车替换为HTML换行标签"},
-            {AttributeIsLower, "转换为小写"},
-            {AttributeIsUpper, "转换为大写"},
+            {AttributeIsLower, "是否转换为小写"},
+            {AttributeIsUpper, "是否转换为大写"},
             {AttributeIsDynamic, "是否动态显示"}
         };
 
@@ -99,97 +100,97 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributeChannelIndex))
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
                         {
                             channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                         }
-                        else if (attributeName.Equals(AttributeChannelName))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
                         {
                             channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                         }
-                        else if (attributeName.Equals(AttributeParent))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeParent))
                         {
                             if (TranslateUtils.ToBool(attr.Value))
                             {
                                 upLevel = 1;
                             }
                         }
-                        else if (attributeName.Equals(AttributeUpLevel))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeUpLevel))
                         {
                             upLevel = TranslateUtils.ToInt(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeTopLevel))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTopLevel))
                         {
                             topLevel = TranslateUtils.ToInt(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeType))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
                         {
                             type = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeLeftText))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLeftText))
                         {
                             leftText = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeRightText))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeRightText))
                         {
                             rightText = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeFormatString))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeFormatString))
                         {
                             formatString = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeSeparator))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSeparator))
                         {
                             separator = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeStartIndex))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeStartIndex))
                         {
                             startIndex = TranslateUtils.ToInt(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeLength))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLength))
                         {
                             length = TranslateUtils.ToInt(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeWordNum))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWordNum))
                         {
                             wordNum = TranslateUtils.ToInt(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeEllipsis))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeEllipsis))
                         {
                             ellipsis = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeReplace))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeReplace))
                         {
                             replace = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeTo))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTo))
                         {
                             to = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeIsClearTags))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsClearTags))
                         {
                             isClearTags = TranslateUtils.ToBool(attr.Value, false);
                         }
-                        else if (attributeName.Equals(AttributeIsReturnToBr))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsReturnToBr))
                         {
                             isReturnToBr = TranslateUtils.ToBool(attr.Value, false);
                         }
-                        else if (attributeName.Equals(AttributeIsLower))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsLower))
                         {
                             isLower = TranslateUtils.ToBool(attr.Value, true);
                         }
-                        else if (attributeName.Equals(AttributeIsUpper))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsUpper))
                         {
                             isUpper = TranslateUtils.ToBool(attr.Value, true);
                         }
-                        else if (attributeName.Equals(AttributeIsDynamic))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
                         {
                             isDynamic = TranslateUtils.ToBool(attr.Value, false);
                         }
                         else
                         {
-                            attributes.Add(attributeName, attr.Value);
+                            attributes.Add(attr.Name, attr.Value);
                         }
                     }
                 }
@@ -208,7 +209,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelID, upLevel, topLevel);
+            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
             channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
             var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);

@@ -43,7 +43,7 @@ namespace SiteServer.CMS.Core
                     EContentModelType.Photo)
             };
 
-            if (publishmentSystemInfo.PublishmentSystemType == EPublishmentSystemType.WCM)
+            if (publishmentSystemInfo.PublishmentSystemType == EPublishmentSystemType.Wcm)
             {
                 list.Add(EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemType, publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForGovPublic, EContentModelType.GovPublic));
 

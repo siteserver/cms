@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.CMS.StlParser.StlElement.WCM;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.Parser
@@ -24,8 +22,8 @@ namespace SiteServer.CMS.StlParser.Parser
         /// </summary>
         public static void ReplaceStlElements(StringBuilder parsedBuilder, PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var stlElementArrayList = StlParserUtility.GetStlElementList(parsedBuilder.ToString());
-            foreach (var stlElement in stlElementArrayList)
+            var stlElements = StlParserUtility.GetStlElementList(parsedBuilder.ToString());
+            foreach (var stlElement in stlElements)
             {
                 try
                 {
@@ -70,71 +68,70 @@ namespace SiteServer.CMS.StlParser.Parser
 
         private static readonly Dictionary<string, Func<string, XmlNode, PageInfo, ContextInfo, string>> ElementsToParseDic = new Dictionary<string, Func<string, XmlNode, PageInfo, ContextInfo, string>>
         {
-            {StlA.ElementName, StlA.Parse},
-            {StlAction.ElementName, StlAction.Parse},
-            {StlAd.ElementName, StlAd.Parse},
-            {StlAnalysis.ElementName, StlAnalysis.Parse},
-            {StlAudio.ElementName, StlAudio.Parse},
-            {StlChannel.ElementName, StlChannel.Parse},
-            {StlChannels.ElementName, StlChannels.Parse},
-            {StlComment.ElementName, StlComment.Parse},
-            {StlCommentInput.ElementName, StlCommentInput.Parse},
-            {StlComments.ElementName, StlComments.Parse},
-            {StlContainer.ElementName, StlContainer.Parse},
-            {StlContent.ElementName, StlContent.Parse},
-            {StlContents.ElementName, StlContents.Parse},
-            {StlCount.ElementName, StlCount.Parse},
-            {StlDigg.ElementName, StlDigg.Parse},
-            {StlDynamic.ElementName, StlDynamic.Parse},
-            {StlEach.ElementName, StlEach.Parse},
-            {StlFile.ElementName, StlFile.Parse},
-            {StlFlash.ElementName, StlFlash.Parse},
-            {StlFocusViewer.ElementName, StlFocusViewer.Parse},
-            {StlIf.ElementName, StlIf.Parse},
-            {StlImage.ElementName, StlImage.Parse},
-            {StlInclude.ElementName, StlInclude.Parse},
-            {StlInput.ElementName, StlInput.Parse},
-            {StlInputContent.ElementName, StlInputContent.Parse},
-            {StlInputContents.ElementName, StlInputContents.Parse},
-            {StlLayout.ElementName, StlLayout.Parse},
-            {StlLocation.ElementName, StlLocation.Parse},
-            {StlMarquee.ElementName, StlMarquee.Parse},
-            {StlMenu.ElementName, StlMenu.Parse},
-            {StlNavigation.ElementName, StlNavigation.Parse},
-            {StlPhoto.ElementName, StlPhoto.Parse},
-            {StlPlayer.ElementName, StlPlayer.Parse},
-            {StlPrinter.ElementName, StlPrinter.Parse},
-            {StlResume.ElementName, StlResume.Parse},
-            {StlRss.ElementName, StlRss.Parse},
-            {StlSearchOutput.ElementName, StlSearchOutput.Parse},
-            {StlSearchOutput.ElementName2, StlSearchOutput.Parse},
-            {StlSelect.ElementName, StlSelect.Parse},
-            {StlSite.ElementName, StlSite.Parse},
-            {StlSites.ElementName, StlSites.Parse},
-            {StlSlide.ElementName, StlSlide.Parse},
-            {StlSqlContent.ElementName, StlSqlContent.Parse},
-            {StlSqlContents.ElementName, StlSqlContents.Parse},
-            {StlStar.ElementName, StlStar.Parse},
-            {StlTabs.ElementName, StlTabs.Parse},
-            {StlTags.ElementName, StlTags.Parse},
-            {StlTree.ElementName, StlTree.Parse},
-            {StlValue.ElementName, StlValue.Parse},
-            {StlVideo.ElementName, StlVideo.Parse},
-            {StlVote.ElementName, StlVote.Parse},
-            {StlZoom.ElementName, StlZoom.Parse},
-            {StlGovInteractApply.ElementName, StlGovInteractApply.Parse},
-            {StlGovInteractQuery.ElementName, StlGovInteractQuery.Parse},
-            {StlGovPublicApply.ElementName, StlGovPublicApply.Parse},
-            {StlGovPublicQuery.ElementName, StlGovPublicQuery.Parse}
+            {StlA.ElementName.ToLower(), StlA.Parse},
+            {StlAction.ElementName.ToLower(), StlAction.Parse},
+            {StlAd.ElementName.ToLower(), StlAd.Parse},
+            {StlAnalysis.ElementName.ToLower(), StlAnalysis.Parse},
+            {StlAudio.ElementName.ToLower(), StlAudio.Parse},
+            {StlChannel.ElementName.ToLower(), StlChannel.Parse},
+            {StlChannels.ElementName.ToLower(), StlChannels.Parse},
+            {StlComment.ElementName.ToLower(), StlComment.Parse},
+            {StlCommentInput.ElementName.ToLower(), StlCommentInput.Parse},
+            {StlComments.ElementName.ToLower(), StlComments.Parse},
+            {StlContainer.ElementName.ToLower(), StlContainer.Parse},
+            {StlContent.ElementName.ToLower(), StlContent.Parse},
+            {StlContents.ElementName.ToLower(), StlContents.Parse},
+            {StlCount.ElementName.ToLower(), StlCount.Parse},
+            {StlDigg.ElementName.ToLower(), StlDigg.Parse},
+            {StlDynamic.ElementName.ToLower(), StlDynamic.Parse},
+            {StlEach.ElementName.ToLower(), StlEach.Parse},
+            {StlFile.ElementName.ToLower(), StlFile.Parse},
+            {StlFlash.ElementName.ToLower(), StlFlash.Parse},
+            {StlFocusViewer.ElementName.ToLower(), StlFocusViewer.Parse},
+            {StlIf.ElementName.ToLower(), StlIf.Parse},
+            {StlImage.ElementName.ToLower(), StlImage.Parse},
+            {StlInclude.ElementName.ToLower(), StlInclude.Parse},
+            {StlInput.ElementName.ToLower(), StlInput.Parse},
+            {StlInputContent.ElementName.ToLower(), StlInputContent.Parse},
+            {StlInputContents.ElementName.ToLower(), StlInputContents.Parse},
+            {StlLocation.ElementName.ToLower(), StlLocation.Parse},
+            {StlMarquee.ElementName.ToLower(), StlMarquee.Parse},
+            {StlMenu.ElementName.ToLower(), StlMenu.Parse},
+            {StlNavigation.ElementName.ToLower(), StlNavigation.Parse},
+            {StlPhoto.ElementName.ToLower(), StlPhoto.Parse},
+            {StlPlayer.ElementName.ToLower(), StlPlayer.Parse},
+            {StlPrinter.ElementName.ToLower(), StlPrinter.Parse},
+            {StlResume.ElementName.ToLower(), StlResume.Parse},
+            {StlRss.ElementName.ToLower(), StlRss.Parse},
+            {StlSearch.ElementName.ToLower(), StlSearch.Parse},
+            {StlSearch.ElementName2.ToLower(), StlSearch.Parse},
+            {StlSelect.ElementName.ToLower(), StlSelect.Parse},
+            {StlSite.ElementName.ToLower(), StlSite.Parse},
+            {StlSites.ElementName.ToLower(), StlSites.Parse},
+            {StlSlide.ElementName.ToLower(), StlSlide.Parse},
+            {StlSqlContent.ElementName.ToLower(), StlSqlContent.Parse},
+            {StlSqlContents.ElementName.ToLower(), StlSqlContents.Parse},
+            {StlStar.ElementName.ToLower(), StlStar.Parse},
+            {StlTabs.ElementName.ToLower(), StlTabs.Parse},
+            {StlTags.ElementName.ToLower(), StlTags.Parse},
+            {StlTree.ElementName.ToLower(), StlTree.Parse},
+            {StlValue.ElementName.ToLower(), StlValue.Parse},
+            {StlVideo.ElementName.ToLower(), StlVideo.Parse},
+            {StlVote.ElementName.ToLower(), StlVote.Parse},
+            {StlZoom.ElementName.ToLower(), StlZoom.Parse},
+            {StlGovInteractApply.ElementName.ToLower(), StlGovInteractApply.Parse},
+            {StlGovInteractQuery.ElementName.ToLower(), StlGovInteractQuery.Parse},
+            {StlGovPublicApply.ElementName.ToLower(), StlGovPublicApply.Parse},
+            {StlGovPublicQuery.ElementName.ToLower(), StlGovPublicQuery.Parse}
         };
 
         private static readonly Dictionary<string, Func<string, string>> ElementsToTranslateDic = new Dictionary<string, Func<string, string>>
         {
-            {StlPageContents.ElementName, StlPageContents.Translate},
-            {StlPageChannels.ElementName, StlPageChannels.Translate},
-            {StlPageSqlContents.ElementName, StlPageSqlContents.Translate},
-            {StlPageInputContents.ElementName, StlPageInputContents.Translate},
-            {StlPageItems.ElementName, StlPageItems.Translate}
+            {StlPageContents.ElementName.ToLower(), StlPageContents.Translate},
+            {StlPageChannels.ElementName.ToLower(), StlPageChannels.Translate},
+            {StlPageSqlContents.ElementName.ToLower(), StlPageSqlContents.Translate},
+            {StlPageInputContents.ElementName.ToLower(), StlPageInputContents.Translate},
+            {StlPageItems.ElementName.ToLower(), StlPageItems.Translate}
         };
 
         internal static string ParseStlElement(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)

@@ -566,8 +566,6 @@ namespace BaiRong.Core.Provider
 
         public string GetSelectSqlString(string connectionString, string tableName, int totalNum, string columns, string whereString, string orderByString, string joinString)
         {
-            string sqlString;
-
             if (!string.IsNullOrEmpty(whereString))
             {
                 whereString = StringUtils.ReplaceStartsWith(whereString.Trim(), "AND", string.Empty);
@@ -590,9 +588,7 @@ namespace BaiRong.Core.Provider
             //{
             //    sqlString = $"SELECT {columns} FROM {tableName} {whereString} {orderByString}";
             //}
-            sqlString = SqlUtils.GetTopSqlString(tableName, columns, whereString + orderByString, totalNum);
-
-            return sqlString;
+            return SqlUtils.GetTopSqlString(tableName, columns, whereString + " " + orderByString, totalNum);
         }
 
         public string GetSelectSqlString(string tableName, int startNum, int totalNum, string columns, string whereString, string orderByString)

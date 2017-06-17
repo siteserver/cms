@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -9,10 +9,8 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageTemplateReference : BasePageCms
     {
-		public DataGrid DataGrid;
-
-		public Literal ltlTemplateElements;
-		public Literal ltlTemplateEntities;
+		public Literal LtlTemplateElements;
+		public Literal LtlTemplateEntities;
 
 		public void Page_Load(object sender, EventArgs e)
         {
@@ -25,58 +23,47 @@ namespace SiteServer.BackgroundPages.Cms
                 BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "模板语言参考", AppManager.Cms.Permission.WebSite.Template);
 
                 var elementsDictionary = StlAll.StlElements.GetElementsNameDictionary();
-                var attributesDictionary = StlAll.StlElements.GetElementsAttributesDictionary();
-                ltlTemplateElements.Text = GetElementsString(elementsDictionary, attributesDictionary, "StlElements", false);
+                var attributesDictionary = StlAll.StlElements.ElementsAttributesDictionary;
+                LtlTemplateElements.Text = GetElementsString(elementsDictionary, attributesDictionary, false);
 
                 elementsDictionary = StlAll.StlEntities.GetEntitiesNameDictionary();
-                attributesDictionary = StlAll.StlEntities.GetEntitiesAttributesDictionary();
-                ltlTemplateEntities.Text = GetElementsString(elementsDictionary, attributesDictionary, "StlEntities", true);
-
-                //this.TemplateEntities.Text = this.GetEntitiesString(StlEntities.GetStlEntitiesDictionary(), "通用实体");
-                //this.TemplateEntities.Text += this.GetEntitiesString(StlContentEntities.GetContentEntitiesDirectory(base.PublishmentSystemInfo), "内容实体");
-                //this.TemplateEntities.Text += this.GetEntitiesString(StlChannelEntities.GetChannelEntitiesDirectory(base.PublishmentSystemInfo), "栏目实体");
-                //this.TemplateEntities.Text += this.GetEntitiesString(StlCommentEntities.GetCommentEntitiesDirectory(base.PublishmentSystemInfo), "评论实体");
-                //this.TemplateEntities.Text += this.GetEntitiesString(StlSqlEntities.GetSqlEntitiesDirectory(), "Sql实体");
+                attributesDictionary = StlAll.StlEntities.EntitiesAttributesDictionary;
+                LtlTemplateEntities.Text = GetElementsString(elementsDictionary, attributesDictionary, true);
 			}
 		}
 
 
-        private string GetElementsString(IDictionary elementsDictionary, IDictionary attributesDictionary, string elementsName, bool isEntities)
+        private string GetElementsString(SortedList<string, StlAttribute> elementsDictionary, SortedList<string, SortedList<string, string>> attributesDictionary, bool isEntities)
 		{
 			var retval = string.Empty;
 
-			if (elementsDictionary != null)
+            if (elementsDictionary != null)
 			{
 				var builder = new StringBuilder();
-				var tr = "<tr>";
-				foreach (string label in elementsDictionary.Keys)
+				foreach (string name in elementsDictionary.Keys)
 				{
-					var labelName = (string)elementsDictionary[label];
-                    var helpUrl = string.Empty;
-                    var target = string.Empty;
-                    helpUrl = StringUtils.Constants.GetStlUrl(isEntities, label);
-                    target = " target=\"_blank\"";
-                    string tdName =
-                        $"<td width=\"0\" align=\"Left\" ><a href=\"{helpUrl}\"{target}>&lt;{label}&gt;</a></td><td width=\"0\" align=\"Left\" >{labelName}&nbsp;</td>";
+					var stlAttribute = elementsDictionary[name];
+				    var helpUrl = StringUtils.Constants.GetStlUrl(isEntities, name);
+                    string tdName = $@"<a href=""{helpUrl}"" target=""_blank"">&lt;{name}&gt;</a>";
                     if (isEntities)
                     {
-                        tdName =
-                            $"<td width=\"0\" align=\"Left\" ><a href=\"{helpUrl}\"{target}>{{{label}}}</a></td><td width=\"0\" align=\"Left\" >{labelName}&nbsp;</td>";
+                        tdName = $@"<a href=""{helpUrl}"" target=""_blank"">{{{name}}}</a>";
                     }
 
-					var attributesList = (IDictionary)attributesDictionary[label];
+					var attributesList = attributesDictionary[name];
 					var attributesBuilder = new StringBuilder();
                     if (attributesList != null)
                     {
-                        foreach (string attributeName in attributesList.Keys)
+                        foreach (var attributeName in attributesList.Keys)
                         {
-                            attributesBuilder.Append($"{attributeName}({attributesList[attributeName]})&nbsp;&nbsp;");
+                            attributesBuilder.Append($@"<a href=""{helpUrl + "#" + attributeName}"" target=""_blank"">{attributeName}</a>=""{attributesList[attributeName]}""<br />");
                         }
                     }
+				    if (attributesBuilder.Length > 0) attributesBuilder.Length = attributesBuilder.Length - 6;
 
-					string tdAttributes = $"<td width=\"0\" align=\"Left\" >{attributesBuilder}<br /></td>";
+                    string tdAttributes = $@"<td>{attributesBuilder}<br /></td>";
 
-					builder.Append(tr + tdName + tdAttributes);
+					builder.Append(@"<tr><td>" + tdName + $@"</td><td>{stlAttribute.Usage}</td><td>{stlAttribute.Description}</td>" + tdAttributes);
 				}
 				retval = builder.ToString();
 			}

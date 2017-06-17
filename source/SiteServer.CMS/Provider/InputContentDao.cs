@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
@@ -325,7 +325,7 @@ namespace SiteServer.CMS.Provider
             return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, "ID, Taxis", where);
         }
 
-        public string GetSelectSqlStringWithChecked(int publishmentSystemId, int inputId, bool isReplyExists, bool isReply, int startNum, int totalNum, string whereString, string orderByString, NameValueCollection otherAttributes)
+        public string GetSelectSqlStringWithChecked(int publishmentSystemId, int inputId, bool isReplyExists, bool isReply, int startNum, int totalNum, string whereString, string orderByString, LowerNameValueCollection others)
         {
             if (!string.IsNullOrEmpty(whereString) && !StringUtils.StartsWithIgnoreCase(whereString.Trim(), "AND "))
             {
@@ -336,23 +336,23 @@ namespace SiteServer.CMS.Provider
             {
                 if (isReply)
                 {
-                    sqlWhereString += " AND datalength(Reply) > 0";
+                    sqlWhereString += " AND " + SqlUtils.GetNotNullAndEmpty("Reply");
                 }
                 else
                 {
-                    sqlWhereString += " AND datalength(Reply) = 0";
+                    sqlWhereString += " AND " + SqlUtils.GetNullOrEmpty("Reply");
                 }
             }
-            if (otherAttributes != null && otherAttributes.Count > 0)
+            if (others != null && others.Count > 0)
             {
                 var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, publishmentSystemId, inputId);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent, TableName, relatedIdentities);
                 foreach (var tableStyleInfo in styleInfoList)
                 {
-                    if (!string.IsNullOrEmpty(otherAttributes[tableStyleInfo.AttributeName.ToLower()]))
+                    if (!string.IsNullOrEmpty(others.Get(tableStyleInfo.AttributeName)))
                     {
                         sqlWhereString +=
-                            $" AND ({InputContentAttribute.SettingsXml} like '%{tableStyleInfo.AttributeName}={otherAttributes[tableStyleInfo.AttributeName.ToLower()]}%')";
+                            $" AND ({InputContentAttribute.SettingsXml} LIKE '%{tableStyleInfo.AttributeName}={others.Get(tableStyleInfo.AttributeName)}%')";
                     }
                 }
             }

@@ -16,7 +16,7 @@
     <!--#include file="../inc/openWindow.html"-->
 
     <form class="form-inline" runat="server">
-        <asp:Literal ID="ltlBreadCrumb" runat="server" />
+        <asp:Literal ID="LtlBreadCrumb" runat="server" />
         <bairong:Alerts runat="server" />
         <script type="text/javascript" charset="utf-8" src="../assets/validate.js"></script>
         <div class="popover popover-static operation-area">

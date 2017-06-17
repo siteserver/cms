@@ -12,60 +12,46 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string LotteryID = "LotteryID";
-        public const string CookieSN = "CookieSN";
-        public const string WXOpenID = "WXOpenID";
-        public const string UserName = "UserName";
-        public const string LotteryCount = "LotteryCount";
-        public const string LotteryDailyCount = "LotteryDailyCount";
-        public const string LastLotteryDate = "LastLotteryDate";
+        public const string Id = nameof(LotteryLogInfo.Id);
+        public const string PublishmentSystemId = nameof(LotteryLogInfo.PublishmentSystemId);
+        public const string LotteryId = nameof(LotteryLogInfo.LotteryId);
+        public const string CookieSn = nameof(LotteryLogInfo.CookieSn);
+        public const string WxOpenId = nameof(LotteryLogInfo.WxOpenId);
+        public const string UserName = nameof(LotteryLogInfo.UserName);
+        public const string LotteryCount = nameof(LotteryLogInfo.LotteryCount);
+        public const string LotteryDailyCount = nameof(LotteryLogInfo.LotteryDailyCount);
+        public const string LastLotteryDate = nameof(LotteryLogInfo.LastLotteryDate);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(LotteryID);
-                    allAttributes.Add(CookieSN);
-                    allAttributes.Add(WXOpenID);
-                    allAttributes.Add(UserName);
-                    allAttributes.Add(LotteryCount);
-                    allAttributes.Add(LotteryDailyCount);
-                    allAttributes.Add(LastLotteryDate);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            LotteryId,
+            CookieSn,
+            WxOpenId,
+            UserName,
+            LotteryCount,
+            LotteryDailyCount,
+            LastLotteryDate
+        });
     }
+
     public class LotteryLogInfo : BaseInfo
     {
         public LotteryLogInfo() { }
         public LotteryLogInfo(object dataItem) : base(dataItem) { }
         public LotteryLogInfo(NameValueCollection form) : base(form) { }
         public LotteryLogInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int LotteryID { get; set; }
-        public string CookieSN { get; set; }
-        public string WXOpenID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int LotteryId { get; set; }
+        public string CookieSn { get; set; }
+        public string WxOpenId { get; set; }
         public string UserName { get; set; }
         public int LotteryCount { get; set; }
         public int LotteryDailyCount { get; set; }
         public DateTime LastLotteryDate { get; set; }
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return LotteryLogAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => LotteryLogAttribute.AllAttributes;
     }
 }

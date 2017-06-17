@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaiRong.Core", "BaiRong.Core\BaiRong.Core.csproj", "{3D8CB06B-1791-4685-AB56-965B9F41666E}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServe.API", "SiteServer.Web\SiteServe.API.csproj", "{10782686-B998-4E54-B2AF-86233C12355D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "siteserver", "siteserver\siteserver.csproj", "{FFB06C04-69CD-4B0D-872B-3FDF9EEC38C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.Plugins", "SiteServer.Plugins\SiteServer.Plugins.csproj", "{61A793E1-3E99-4BDC-BC20-7298CA3E6849}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,8 +63,17 @@ Global
 		{FFB06C04-69CD-4B0D-872B-3FDF9EEC38C3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FFB06C04-69CD-4B0D-872B-3FDF9EEC38C3}.Release|x86.ActiveCfg = Release|x86
 		{FFB06C04-69CD-4B0D-872B-3FDF9EEC38C3}.Release|x86.Build.0 = Release|x86
+		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Debug|x86.ActiveCfg = Debug|x86
+		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Debug|x86.Build.0 = Debug|x86
+		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Release|x86.ActiveCfg = Release|x86
+		{61A793E1-3E99-4BDC-BC20-7298CA3E6849}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
+

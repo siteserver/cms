@@ -45,11 +45,11 @@ namespace SiteServer.CMS.Provider
 
             var sqlString = "INSERT INTO siteserver_Input (InputName, PublishmentSystemID, AddDate, IsChecked, IsReply, Taxis, SettingsXML) VALUES (@InputName, @PublishmentSystemID, @AddDate, @IsChecked, @IsReply, @Taxis, @SettingsXML)";
 
-            var taxis = GetMaxTaxis(inputInfo.PublishmentSystemID) + 1;
+            var taxis = GetMaxTaxis(inputInfo.PublishmentSystemId) + 1;
             var insertParms = new IDataParameter[]
             {
                 GetParameter(ParmInputName, EDataType.NVarChar, 50, inputInfo.InputName),
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, inputInfo.PublishmentSystemID),
+                GetParameter(ParmPublishmentsystemid, EDataType.Integer, inputInfo.PublishmentSystemId),
                 GetParameter(ParmAddDate, EDataType.DateTime, inputInfo.AddDate),
                 GetParameter(ParmIsChecked, EDataType.VarChar, 18, inputInfo.IsChecked.ToString()),
                 GetParameter(ParmIsReply, EDataType.VarChar, 18, inputInfo.IsReply.ToString()),
@@ -86,7 +86,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmIsChecked, EDataType.VarChar, 18, inputInfo.IsChecked.ToString()),
                 GetParameter(ParmIsReply, EDataType.VarChar, 18, inputInfo.IsReply.ToString()),
                 GetParameter(ParmSettingsXml, EDataType.NText, inputInfo.Additional.ToString()),
-                GetParameter(ParmInputId, EDataType.Integer, inputInfo.InputID)
+                GetParameter(ParmInputId, EDataType.Integer, inputInfo.InputId)
             };
 
             ExecuteNonQuery(SqlUpdateInput, updateParms);
@@ -157,7 +157,7 @@ namespace SiteServer.CMS.Provider
                 var inputInfo = GetLastAddInputInfo(publishmentSystemId);
                 if (inputInfo != null)
                 {
-                    inputId = inputInfo.InputID;
+                    inputId = inputInfo.InputId;
                 }
             }
 
@@ -166,6 +166,8 @@ namespace SiteServer.CMS.Provider
 
         public InputInfo GetInputInfo(int inputId)
         {
+            if (inputId == 0) return null;
+            
             InputInfo inputInfo = null;
 
             var parms = new IDataParameter[]
@@ -243,9 +245,9 @@ namespace SiteServer.CMS.Provider
             return enumerable;
         }
 
-        public ArrayList GetInputIdArrayList(int publishmentSystemId)
+        public List<int> GetInputIdList(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<int>();
 
             var selectParms = new IDataParameter[]
             {
@@ -256,17 +258,17 @@ namespace SiteServer.CMS.Provider
             {
                 while (rdr.Read())
                 {
-                    arraylist.Add(GetInt(rdr, 0));
+                    list.Add(GetInt(rdr, 0));
                 }
                 rdr.Close();
             }
 
-            return arraylist;
+            return list;
         }
 
-        public ArrayList GetInputNameArrayList(int publishmentSystemId)
+        public List<string> GetInputNameList(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
 
             var selectParms = new IDataParameter[]
             {
@@ -277,12 +279,12 @@ namespace SiteServer.CMS.Provider
             {
                 while (rdr.Read())
                 {
-                    arraylist.Add(GetString(rdr, 0));
+                    list.Add(GetString(rdr, 0));
                 }
                 rdr.Close();
             }
 
-            return arraylist;
+            return list;
         }
 
         public string GetImportInputName(string inputName, int publishmentSystemId)

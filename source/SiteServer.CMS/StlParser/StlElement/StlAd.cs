@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Xml;
+using BaiRong.Core;
 using SiteServer.CMS.Controllers.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Advertisement;
@@ -11,14 +12,15 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "固定广告", Description = "通过 stl:ad 标签在模板中显示指定位置的广告")]
     public class StlAd
     {
         private StlAd() { }
-        public const string ElementName = "stl:ad";         //固定广告
+        public const string ElementName = "stl:ad";
 
-        public const string AttributeArea = "area";			//广告位名称
+        public const string AttributeArea = "area";
 
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeArea, "广告位"}
         };
@@ -36,8 +38,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributeArea))
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeArea))
                         {
                             area = attr.Value;
                         }

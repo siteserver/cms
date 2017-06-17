@@ -10,17 +10,17 @@ using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class CouponSNDAO : DataProviderBase
+    public class CouponSnDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_CouponSN";
+        private const string TableName = "wx_CouponSN";
 
-        public int Insert(CouponSNInfo couponSNInfo)
+        public int Insert(CouponSnInfo couponSnInfo)
         {
-            var couponSNID = 0;
+            var couponSnid = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(couponSNInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(couponSnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
 
             using (var conn = GetConnection())
@@ -30,9 +30,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        couponSNID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        couponSnid = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -44,25 +42,25 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return couponSNID;
+            return couponSnid;
         }
 
-        public void Insert(int publishmentSystemID, int couponID, int totalNum)
+        public void Insert(int publishmentSystemId, int couponId, int totalNum)
         {
-            var couponSNList = CouponManager.GetCouponSN(totalNum);
-            foreach (var sn in couponSNList)
+            var couponSnList = CouponManager.GetCouponSN(totalNum);
+            foreach (var sn in couponSnList)
             {
                 string sqlString =
-                    $"INSERT INTO {TABLE_NAME} (PublishmentSystemID, CouponID, SN, Status) VALUES ({publishmentSystemID}, {couponID}, '{sn}', '{ECouponStatusUtils.GetValue(ECouponStatus.Unused)}')";
+                    $"INSERT INTO {TableName} (PublishmentSystemID, CouponID, SN, Status) VALUES ({publishmentSystemId}, {couponId}, '{sn}', '{ECouponStatusUtils.GetValue(ECouponStatus.Unused)}')";
 
                 ExecuteNonQuery(sqlString);
 
             }
 
-            DataProviderWX.CouponDAO.UpdateTotalNum(couponID, DataProviderWX.CouponSNDAO.GetTotalNum(publishmentSystemID, couponID));
+            DataProviderWx.CouponDao.UpdateTotalNum(couponId, DataProviderWx.CouponSnDao.GetTotalNum(publishmentSystemId, couponId));
         }
 
-        public void Insert(int publishmentSystemID, int couponID, List<string> snList)
+        public void Insert(int publishmentSystemId, int couponId, List<string> snList)
         {
 
             foreach (var sn in snList)
@@ -70,115 +68,115 @@ namespace SiteServer.CMS.WeiXin.Provider
                 if (!string.IsNullOrEmpty(sn))
                 {
                     string sqlString =
-                        $"INSERT INTO {TABLE_NAME} (PublishmentSystemID, CouponID, SN, Status) VALUES ({publishmentSystemID}, {couponID}, '{sn}', '{ECouponStatusUtils.GetValue(ECouponStatus.Unused)}')";
+                        $"INSERT INTO {TableName} (PublishmentSystemID, CouponID, SN, Status) VALUES ({publishmentSystemId}, {couponId}, '{sn}', '{ECouponStatusUtils.GetValue(ECouponStatus.Unused)}')";
                     ExecuteNonQuery(sqlString);
 
                 }
             }
 
-            DataProviderWX.CouponDAO.UpdateTotalNum(couponID, DataProviderWX.CouponSNDAO.GetTotalNum(publishmentSystemID, couponID));
+            DataProviderWx.CouponDao.UpdateTotalNum(couponId, DataProviderWx.CouponSnDao.GetTotalNum(publishmentSystemId, couponId));
         }
 
-        public void Update(CouponSNInfo couponSNInfo)
+        public void Update(CouponSnInfo couponSnInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(couponSNInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(couponSnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
 
         }
 
-        public void UpdateStatus(ECouponStatus status, List<int> snIDList)
+        public void UpdateStatus(ECouponStatus status, List<int> snIdList)
         {
             string sqlString =
-                $"UPDATE {TABLE_NAME} SET {CouponSNAttribute.Status} = '{ECouponStatusUtils.GetValue(status)}' WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(snIDList)})";
+                $"UPDATE {TableName} SET {CouponSnAttribute.Status} = '{ECouponStatusUtils.GetValue(status)}' WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(snIdList)})";
 
             if (status == ECouponStatus.Cash)
             {
                 sqlString =
-                    $"UPDATE {TABLE_NAME} SET {CouponSNAttribute.Status} = '{ECouponStatusUtils.GetValue(status)}', {CouponSNAttribute.HoldDate} = getdate(), {CouponSNAttribute.CashDate} = getdate() WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(snIDList)})";
+                    $"UPDATE {TableName} SET {CouponSnAttribute.Status} = '{ECouponStatusUtils.GetValue(status)}', {CouponSnAttribute.HoldDate} = getdate(), {CouponSnAttribute.CashDate} = getdate() WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(snIdList)})";
             }
             else if (status == ECouponStatus.Hold)
             {
                 sqlString =
-                    $"UPDATE {TABLE_NAME} SET {CouponSNAttribute.Status} = '{ECouponStatusUtils.GetValue(status)}', {CouponSNAttribute.HoldDate} = getdate() WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(snIDList)})";
+                    $"UPDATE {TableName} SET {CouponSnAttribute.Status} = '{ECouponStatusUtils.GetValue(status)}', {CouponSnAttribute.HoldDate} = getdate() WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(snIdList)})";
             }
 
             ExecuteNonQuery(sqlString);
         }
 
-        public int Hold(int publishmentSystemID, int actID, string cookieSN)
+        public int Hold(int publishmentSystemId, int actId, string cookieSn)
         {
-            var snID = 0;
+            var snId = 0;
 
             string sqlString = $@"SELECT ID FROM wx_CouponSN WHERE 
-PublishmentSystemID = {publishmentSystemID} AND 
-CookieSN = '{cookieSN}' AND 
+PublishmentSystemID = {publishmentSystemId} AND 
+CookieSN = '{cookieSn}' AND 
 Status <> '{ECouponStatusUtils.GetValue(ECouponStatus.Unused)}' AND
-CouponID IN (SELECT ID FROM wx_Coupon WHERE ActID = {actID})";
+CouponID IN (SELECT ID FROM wx_Coupon WHERE ActID = {actId})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    snID = rdr.GetInt32(0);
+                    snId = rdr.GetInt32(0);
                 }
                 rdr.Close();
             }
 
-            if (snID == 0)
+            if (snId == 0)
             {
                 sqlString = $@"SELECT TOP 1 ID FROM wx_CouponSN WHERE 
-PublishmentSystemID = {publishmentSystemID} AND
+PublishmentSystemID = {publishmentSystemId} AND
 Status = '{ECouponStatusUtils.GetValue(ECouponStatus.Unused)}' AND
-CouponID IN (SELECT ID FROM wx_Coupon WHERE ActID = {actID})
+CouponID IN (SELECT ID FROM wx_Coupon WHERE ActID = {actId})
 ORDER BY ID";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
                     if (rdr.Read())
                     {
-                        snID = rdr.GetInt32(0);
+                        snId = rdr.GetInt32(0);
                     }
                     rdr.Close();
                 }
 
             }
 
-            return snID;
+            return snId;
         }
 
-        public void Delete(int snID)
+        public void Delete(int snId)
         {
-            if (snID > 0)
+            if (snId > 0)
             {
-                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {snID}";
+                string sqlString = $"DELETE FROM {TableName} WHERE ID = {snId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(List<int> snIDList)
+        public void Delete(List<int> snIdList)
         {
-            if (snIDList != null && snIDList.Count > 0)
+            if (snIdList != null && snIdList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(snIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(snIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public CouponSNInfo GetSNInfo(int snID)
+        public CouponSnInfo GetSnInfo(int snId)
         {
-            CouponSNInfo snInfo = null;
+            CouponSnInfo snInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {snID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {snId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
-                    snInfo = new CouponSNInfo(rdr);
+                    snInfo = new CouponSnInfo(rdr);
                 }
                 rdr.Close();
             }
@@ -186,27 +184,27 @@ ORDER BY ID";
             return snInfo;
         }
 
-        public List<CouponSNInfo> GetSNInfoByCookieSN(int publishmentSystemID, string cookieSN, string uniqueID)
+        public List<CouponSnInfo> GetSnInfoByCookieSn(int publishmentSystemId, string cookieSn, string uniqueId)
         {
-            var list = new List<CouponSNInfo>();
+            var list = new List<CouponSnInfo>();
             StringBuilder builder;
-            if (string.IsNullOrEmpty(uniqueID))
+            if (string.IsNullOrEmpty(uniqueId))
             {
                 builder = new StringBuilder(
-                    $"WHERE {CouponSNAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CouponSNAttribute.CookieSN} = '{PageUtils.FilterSql(cookieSN)}'");
+                    $"WHERE {CouponSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponSnAttribute.CookieSn} = '{PageUtils.FilterSql(cookieSn)}'");
             }
             else
             {
                 builder = new StringBuilder(
-                    $"WHERE {CouponSNAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CouponSNAttribute.WXOpenID} = '{uniqueID}'");
+                    $"WHERE {CouponSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponSnAttribute.WxOpenId} = '{uniqueId}'");
             }
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
-                    var couponSnInfo = new CouponSNInfo(rdr);
+                    var couponSnInfo = new CouponSnInfo(rdr);
                     list.Add(couponSnInfo);
                 }
                 rdr.Close();
@@ -215,54 +213,54 @@ ORDER BY ID";
             return list;
         }
 
-        public int GetTotalNum(int publishmentSystemID, int couponID)
+        public int GetTotalNum(int publishmentSystemId, int couponId)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {CouponSNAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CouponSNAttribute.CouponID} = {couponID}";
+                $"SELECT COUNT(*) FROM {TableName} WHERE {CouponSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponSnAttribute.CouponId} = {couponId}";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public int GetHoldNum(int publishmentSystemID, int couponID)
+        public int GetHoldNum(int publishmentSystemId, int couponId)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {CouponSNAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CouponSNAttribute.CouponID} = {couponID} AND ({CouponSNAttribute.Status} = '{ECouponStatusUtils.GetValue(ECouponStatus.Hold)}')";
+                $"SELECT COUNT(*) FROM {TableName} WHERE {CouponSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponSnAttribute.CouponId} = {couponId} AND ({CouponSnAttribute.Status} = '{ECouponStatusUtils.GetValue(ECouponStatus.Hold)}')";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public int GetCashNum(int publishmentSystemID, int couponID)
+        public int GetCashNum(int publishmentSystemId, int couponId)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {CouponSNAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CouponSNAttribute.CouponID} = {couponID} AND {CouponSNAttribute.Status} = '{ECouponStatusUtils.GetValue(ECouponStatus.Cash)}'";
+                $"SELECT COUNT(*) FROM {TableName} WHERE {CouponSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponSnAttribute.CouponId} = {couponId} AND {CouponSnAttribute.Status} = '{ECouponStatusUtils.GetValue(ECouponStatus.Cash)}'";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetSelectString(int publishmentSystemID, int couponID)
+        public string GetSelectString(int publishmentSystemId, int couponId)
         {
             string whereString =
-                $"WHERE {CouponSNAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CouponSNAttribute.CouponID} = {couponID}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+                $"WHERE {CouponSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponSnAttribute.CouponId} = {couponId}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public List<CouponSNInfo> GetCouponSNInfoList(int publishmentSystemID, int couponID)
+        public List<CouponSnInfo> GetCouponSnInfoList(int publishmentSystemId, int couponId)
         {
-            var couponSNInfoList = new List<CouponSNInfo>();
+            var couponSnInfoList = new List<CouponSnInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {CouponSNAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CouponSNAttribute.CouponID} = {couponID}";
+            string sqlWhere =
+                $"WHERE {CouponSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponSnAttribute.CouponId} = {couponId}";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
-                    var couponSNInfo = new CouponSNInfo(rdr);
-                    couponSNInfoList.Add(couponSNInfo);
+                    var couponSnInfo = new CouponSnInfo(rdr);
+                    couponSnInfoList.Add(couponSnInfo);
                 }
                 rdr.Close();
             }
 
-            return couponSNInfoList;
+            return couponSnInfoList;
         }
 
     }

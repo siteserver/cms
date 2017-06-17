@@ -65,8 +65,8 @@ namespace SiteServer.CMS.WeiXin.Manager
         public static string GetVoteUrl(PublishmentSystemInfo publishmentSystemInfo, VoteInfo voteInfo, string wxOpenID)
         {
             var attributes = new NameValueCollection();
-            attributes.Add("voteID", voteInfo.ID.ToString());
-            attributes.Add("publishmentSystemID", voteInfo.PublishmentSystemID.ToString());
+            attributes.Add("voteID", voteInfo.Id.ToString());
+            attributes.Add("publishmentSystemID", voteInfo.PublishmentSystemId.ToString());
             attributes.Add("wxOpenID", wxOpenID);
             return PageUtils.AddQueryString(GetVoteUrl(publishmentSystemInfo, voteInfo), attributes);
         }
@@ -75,9 +75,9 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var voteInfoList = DataProviderWX.VoteDAO.GetVoteInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var voteInfoList = DataProviderWx.VoteDao.GetVoteInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
             foreach (var voteInfo in voteInfoList)
             {
@@ -129,10 +129,10 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         public static void Vote(int publishmentSystemID, int voteID, List<int> itemIDList, string ipAddress, string cookieSN, string wxOpenID, string userName)
         {
-            DataProviderWX.VoteDAO.AddUserCount(voteID);
-            DataProviderWX.VoteItemDAO.AddVoteNum(voteID, itemIDList);
-            var logInfo = new VoteLogInfo { ID = 0, PublishmentSystemID = publishmentSystemID, VoteID = voteID, ItemIDCollection = TranslateUtils.ObjectCollectionToString(itemIDList), IPAddress = ipAddress, CookieSN = cookieSN, WXOpenID = wxOpenID, UserName = userName, AddDate = DateTime.Now };
-            DataProviderWX.VoteLogDAO.Insert(logInfo);
+            DataProviderWx.VoteDao.AddUserCount(voteID);
+            DataProviderWx.VoteItemDao.AddVoteNum(voteID, itemIDList);
+            var logInfo = new VoteLogInfo { Id = 0, PublishmentSystemId = publishmentSystemID, VoteId = voteID, ItemIdCollection = TranslateUtils.ObjectCollectionToString(itemIDList), IpAddress = ipAddress, CookieSn = cookieSN, WxOpenId = wxOpenID, UserName = userName, AddDate = DateTime.Now };
+            DataProviderWx.VoteLogDao.Insert(logInfo);
         }
 	}
 }

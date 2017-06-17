@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Xml;
@@ -12,24 +12,24 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "获取链接", Description = "通过 stl:a 标签在模板中创建链接，系统将根据所处上下文计算链接地址")]
     public class StlA
     {
-        private StlA() { }
-        public const string ElementName = "stl:a";//获取链接
+        public const string ElementName = "stl:a";
 
-        public const string AttributeId = "id";							    //唯一标识符
-        public const string AttributeChannelIndex = "channelindex";		    //栏目索引
-        public const string AttributeChannelName = "channelname";			//栏目名称
-        public const string AttributeParent = "parent";					    //显示父栏目
-        public const string AttributeUpLevel = "uplevel";					//上级栏目的级别
-        public const string AttributeTopLevel = "toplevel";				    //从首页向下的栏目级别
-        public const string AttributeContext = "context";                   //所处上下文
-        public const string AttributeHref = "href";						    //链接地址
-        public const string AttributeHost = "host";                         //链接域名
-        public const string AttributeQueryString = "querystring";           //链接参数
-        public const string AttributeIsDynamic = "isdynamic";               //是否动态显示
+        public const string AttributeId = "id";
+        public const string AttributeChannelIndex = "channelIndex";
+        public const string AttributeChannelName = "channelName";
+        public const string AttributeParent = "parent";
+        public const string AttributeUpLevel = "upLevel";
+        public const string AttributeTopLevel = "topLevel";
+        public const string AttributeContext = "context";
+        public const string AttributeHref = "href";
+        public const string AttributeHost = "host";
+        public const string AttributeQueryString = "queryString";
+        public const string AttributeIsDynamic = "isDynamic";
 
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeId, "唯一标识符"},
             {AttributeChannelIndex, "栏目索引"},
@@ -39,6 +39,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeTopLevel, "从首页向下的栏目级别"},
             {AttributeContext, "所处上下文"},
             {AttributeHref, "链接地址"},
+            {AttributeHost, "链接域名"},
             {AttributeQueryString, "链接参数"},
             {AttributeIsDynamic, "是否动态显示"}
         };
@@ -68,12 +69,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributeId))
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeId))
                         {
                             htmlId = attr.Value;
                         }
-                        else if (attributeName.Equals(AttributeChannelIndex))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
                         {
                             channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                             if (!string.IsNullOrEmpty(channelIndex))
@@ -81,7 +81,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 contextInfo.ContextType = EContextType.Channel;
                             }
                         }
-                        else if (attributeName.Equals(AttributeChannelName))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
                         {
                             channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                             if (!string.IsNullOrEmpty(channelName))
@@ -89,7 +89,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 contextInfo.ContextType = EContextType.Channel;
                             }
                         }
-                        else if (attributeName.Equals(AttributeParent))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeParent))
                         {
                             if (TranslateUtils.ToBool(attr.Value))
                             {
@@ -97,7 +97,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 contextInfo.ContextType = EContextType.Channel;
                             }
                         }
-                        else if (attributeName.Equals(AttributeUpLevel))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeUpLevel))
                         {
                             upLevel = TranslateUtils.ToInt(attr.Value);
                             if (upLevel > 0)
@@ -105,7 +105,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 contextInfo.ContextType = EContextType.Channel;
                             }
                         }
-                        else if (attributeName.Equals(AttributeTopLevel))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTopLevel))
                         {
                             topLevel = TranslateUtils.ToInt(attr.Value);
                             if (topLevel >= 0)
@@ -113,29 +113,29 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 contextInfo.ContextType = EContextType.Channel;
                             }
                         }
-                        else if (attributeName.Equals(AttributeContext))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeContext))
                         {
                             contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeHref))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeHref))
                         {
                             href = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                         }
-                        else if (attributeName.Equals(AttributeQueryString))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeQueryString))
                         {
                             queryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                         }
-                        else if (attributeName.Equals(AttributeIsDynamic))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
                         {
                             isDynamic = TranslateUtils.ToBool(attr.Value, false);
                         }
-                        else if (attributeName.Equals(AttributeHost))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeHost))
                         {
                             host = attr.Value;
                         }
                         else
                         {
-                            ControlUtils.AddAttributeIfNotExists(stlAnchor, attributeName, attr.Value);
+                            ControlUtils.AddAttributeIfNotExists(stlAnchor, attr.Name, attr.Value);
                         }
                     }
                 }
@@ -152,9 +152,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, XmlNode node, HtmlAnchor stlAnchor, string htmlId, string channelIndex, string channelName, int upLevel, int topLevel, bool removeTarget, string href, string queryString, string host)
         {
-            if (!string.IsNullOrEmpty(htmlId) && !string.IsNullOrEmpty(contextInfo.ContainerClientID))
+            if (!string.IsNullOrEmpty(htmlId) && !string.IsNullOrEmpty(contextInfo.ContainerClientId))
             {
-                htmlId = contextInfo.ContainerClientID + "_" + htmlId;
+                htmlId = contextInfo.ContainerClientId + "_" + htmlId;
             }
             stlAnchor.ID = htmlId;
 
@@ -172,7 +172,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contextInfo.ContextType == EContextType.Undefined)
                 {
-                    contextInfo.ContextType = contextInfo.ContentID != 0 ? EContextType.Content : EContextType.Channel;
+                    contextInfo.ContextType = contextInfo.ContentId != 0 ? EContextType.Content : EContextType.Channel;
                 }
                 if (contextInfo.ContextType == EContextType.Content)//获取内容Url
                 {
@@ -182,8 +182,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelID);
-                        url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, nodeInfo, contextInfo.ContentID, false);
+                        var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
+                        url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, nodeInfo, contextInfo.ContentId, false);
                     }
                     if (string.IsNullOrEmpty(node.InnerXml))
                     {
@@ -206,9 +206,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (contextInfo.ContextType == EContextType.Channel)//获取栏目Url
                 {
-                    contextInfo.ChannelID = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelID, upLevel, topLevel);
-                    contextInfo.ChannelID = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelID, channelIndex, channelName);
-                    var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelID);
+                    contextInfo.ChannelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
+                    contextInfo.ChannelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
+                    var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
 
                     url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, channel);
                     if (node.InnerXml.Trim().Length == 0)

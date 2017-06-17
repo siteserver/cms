@@ -8,89 +8,89 @@ namespace SiteServer.CMS.StlParser.Utility
 {
 	public class RepeaterTemplate : ITemplate
 	{
-	    readonly string templateString;
-	    readonly LowerNameValueCollection selectedItems;
-	    readonly LowerNameValueCollection selectedValues;
-        readonly string separatorRepeatTemplate;
-        readonly int separatorRepeat;
-	    readonly PageInfo pageInfo;
-        readonly EContextType contextType;
-        readonly ContextInfo contextInfo;
-        private int i = 0;
+        private readonly string _templateString;
+        private readonly LowerNameValueCollection _selectedItems;
+        private readonly LowerNameValueCollection _selectedValues;
+        private readonly string _separatorRepeatTemplate;
+        private readonly int _separatorRepeat;
+        private readonly PageInfo _pageInfo;
+        private readonly EContextType _contextType;
+        private readonly ContextInfo _contextInfo;
+        private int _i;
 
         public RepeaterTemplate(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string separatorRepeatTemplate, int separatorRepeat, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfo)
 		{
-			this.templateString = templateString;
-            this.selectedItems = selectedItems;
-            this.selectedValues = selectedValues;
-            this.separatorRepeatTemplate = separatorRepeatTemplate;
-            this.separatorRepeat = separatorRepeat;
-            this.pageInfo = pageInfo;
-            this.contextType = contextType;
-            this.contextInfo = contextInfo;
+			_templateString = templateString;
+            _selectedItems = selectedItems;
+            _selectedValues = selectedValues;
+            _separatorRepeatTemplate = separatorRepeatTemplate;
+            _separatorRepeat = separatorRepeat;
+            _pageInfo = pageInfo;
+            _contextType = contextType;
+            _contextInfo = contextInfo;
 		}
 
 		public void InstantiateIn(Control container)
 		{
-			var noTagText = new Literal();
-			noTagText.DataBinding += TemplateControl_DataBinding;
-			container.Controls.Add(noTagText);
+			var literal = new Literal();
+            literal.DataBinding += TemplateControl_DataBinding;
+			container.Controls.Add(literal);
 		}
 
 		private void TemplateControl_DataBinding(object sender, EventArgs e)
 		{
-			var noTagText = (Literal) sender;
-			var container = (RepeaterItem) noTagText.NamingContainer;
+			var literal = (Literal) sender;
+			var container = (RepeaterItem)literal.NamingContainer;
 
             var itemInfo = new DbItemInfo(container.DataItem, container.ItemIndex);
 
-            if (contextType == EContextType.Channel)
+            if (_contextType == EContextType.Channel)
             {
-                pageInfo.ChannelItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetChannelsItemTemplateString(templateString, selectedItems, selectedValues, container.ClientID, pageInfo, contextType, contextInfo);
+                _pageInfo.ChannelItems.Push(itemInfo);
+                literal.Text = TemplateUtility.GetChannelsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
-            else if (contextType == EContextType.Content)
+            else if (_contextType == EContextType.Content)
             {
-                pageInfo.ContentItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetContentsItemTemplateString(templateString, selectedItems, selectedValues, container.ClientID, pageInfo, contextType, contextInfo);
+                _pageInfo.ContentItems.Push(itemInfo);
+                literal.Text = TemplateUtility.GetContentsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
-            else if (contextType == EContextType.Comment)
+            else if (_contextType == EContextType.Comment)
             {
-                pageInfo.CommentItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetCommentsTemplateString(templateString, container.ClientID, pageInfo, contextType, contextInfo);
+                _pageInfo.CommentItems.Push(itemInfo);
+                literal.Text = TemplateUtility.GetCommentsTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
-            else if (contextType == EContextType.InputContent)
+            else if (_contextType == EContextType.InputContent)
             {
-                pageInfo.InputItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetInputContentsTemplateString(templateString, container.ClientID, pageInfo, contextType, contextInfo);
+                _pageInfo.InputItems.Push(itemInfo);
+                literal.Text = TemplateUtility.GetInputContentsTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
-            else if (contextType == EContextType.SqlContent)
+            else if (_contextType == EContextType.SqlContent)
             {
-                pageInfo.SqlItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetSqlContentsTemplateString(templateString, selectedItems, selectedValues, container.ClientID, pageInfo, contextType, contextInfo);
+                _pageInfo.SqlItems.Push(itemInfo);
+                literal.Text = TemplateUtility.GetSqlContentsTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
-            else if (contextType == EContextType.Site)
+            else if (_contextType == EContextType.Site)
             {
-                pageInfo.SiteItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetSitesTemplateString(templateString, container.ClientID, pageInfo, contextType, contextInfo);
+                _pageInfo.SiteItems.Push(itemInfo);
+                literal.Text = TemplateUtility.GetSitesTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
-            else if (contextType == EContextType.Photo)
+            else if (_contextType == EContextType.Photo)
             {
-                pageInfo.PhotoItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetPhotosTemplateString(templateString, selectedItems, selectedValues, container.ClientID, pageInfo, contextType, contextInfo);
+                _pageInfo.PhotoItems.Push(itemInfo);
+                literal.Text = TemplateUtility.GetPhotosTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
-            else if (contextType == EContextType.Each)
+            else if (_contextType == EContextType.Each)
             {
-                pageInfo.EachItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetEachsTemplateString(templateString, selectedItems, selectedValues, container.ClientID, pageInfo, contextType, contextInfo);
+                _pageInfo.EachItems.Push(itemInfo);
+                literal.Text = TemplateUtility.GetEachsTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
 
-            if (separatorRepeat > 1)
+            if (_separatorRepeat > 1)
             {
-                i++;
-                if (i % separatorRepeat == 0)
+                _i++;
+                if (_i % _separatorRepeat == 0)
                 {
-                    noTagText.Text += separatorRepeatTemplate;
+                    literal.Text += _separatorRepeatTemplate;
                 }
             }
 		}

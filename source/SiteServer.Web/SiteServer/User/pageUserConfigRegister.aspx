@@ -9,7 +9,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />
 
   <div class="popover popover-static">
@@ -40,11 +40,22 @@
       <tr>
         <td>新用户注册验证：</td>
         <td>
-          <asp:DropDownList ID="DdlRegisterVerifyType" runat="server"></asp:DropDownList>
+          <asp:DropDownList ID="DdlRegisterVerifyType" OnSelectedIndexChanged="DdlRegisterVerifyType_SelectedIndexChanged" runat="server" AutoPostBack="true"></asp:DropDownList>
           <br>
-          <span>选择<code>短信验证</code>将向用户发送短信验证码以确认手机号码，此选项需要开启短信发送功能</span>
+          <span>选择短信验证将向用户发送短信验证码以确认手机号码，此选项需要开启短信发送功能</span>
         </td>
       </tr>
+      <asp:PlaceHolder ID="PhRegisterSms" runat="server">
+          <tr>
+              <td>发送验证码短信模板Id：</td>
+              <td>
+                  <asp:TextBox ID="TbRegisterSmsTplId" runat="server"></asp:TextBox>
+                  <asp:RequiredFieldValidator ControlToValidate="TbRegisterSmsTplId" runat="server" ErrorMessage="*" foreColor="Red"></asp:RequiredFieldValidator>
+                  <br />
+                  <span>需进入短信供应商模板管理界面，添加验证码类短信模板并获取模板Id</span>
+              </td>
+          </tr>
+      </asp:PlaceHolder>
       <tr>
         <td>同一IP注册间隔限制：</td>
         <td>

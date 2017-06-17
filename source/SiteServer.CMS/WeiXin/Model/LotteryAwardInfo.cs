@@ -11,57 +11,43 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string LotteryID = "LotteryID";
-        public const string AwardName = "AwardName";
-        public const string Title = "Title";
-        public const string TotalNum = "TotalNum";
-        public const string Probability = "Probability";
-        public const string WonNum = "WonNum";
+        public const string Id = nameof(LotteryAwardInfo.Id);
+        public const string PublishmentSystemId = nameof(LotteryAwardInfo.PublishmentSystemId);
+        public const string LotteryId = nameof(LotteryAwardInfo.LotteryId);
+        public const string AwardName = nameof(LotteryAwardInfo.AwardName);
+        public const string Title = nameof(LotteryAwardInfo.Title);
+        public const string TotalNum = nameof(LotteryAwardInfo.TotalNum);
+        public const string Probability = nameof(LotteryAwardInfo.Probability);
+        public const string WonNum = nameof(LotteryAwardInfo.WonNum);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(LotteryID);
-                    allAttributes.Add(AwardName);
-                    allAttributes.Add(Title);
-                    allAttributes.Add(TotalNum);
-                    allAttributes.Add(Probability);
-                    allAttributes.Add(WonNum);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            LotteryId,
+            AwardName,
+            Title,
+            TotalNum,
+            Probability,
+            WonNum
+        });
     }
+
     public class LotteryAwardInfo : BaseInfo
     {
         public LotteryAwardInfo() { }
         public LotteryAwardInfo(object dataItem) : base(dataItem) { }
         public LotteryAwardInfo(NameValueCollection form) : base(form) { }
         public LotteryAwardInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int LotteryID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int LotteryId { get; set; }
         public string AwardName { get; set; }
         public string Title { get; set; }
         public int TotalNum { get; set; }
         public decimal Probability { get; set; }
         public int WonNum { get; set; }
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return LotteryAwardAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => LotteryAwardAttribute.AllAttributes;
     }
 }

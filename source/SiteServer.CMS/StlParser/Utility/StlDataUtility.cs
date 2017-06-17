@@ -1,16 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
 using System.Xml;
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
+using BaiRong.Core.Model;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
@@ -166,44 +165,6 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
             }
             return taxisType;
-        }
-
-        public static IEnumerable GetPropertysDataSource(PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, EContextType contextType, string property, int startNum, int totalNum)
-        {
-            var arrayList = new ArrayList();
-            var propertyList = new List<string>();
-            if (contextType == EContextType.Content)
-            {
-                //第一条
-                propertyList.Add(contentInfo.GetExtendedAttribute(property));
-                //第n条
-                var extentAttributeName = ContentAttribute.GetExtendAttributeName(property);
-                propertyList.AddRange(TranslateUtils.StringCollectionToStringList(contentInfo.GetExtendedAttribute(extentAttributeName)));
-
-            }
-            if (startNum > propertyList.Count)
-            {
-                startNum = propertyList.Count;
-                totalNum = 1;
-            }
-            if (startNum + totalNum > propertyList.Count)
-            {
-                totalNum = propertyList.Count - startNum + 1;
-            }
-            if (totalNum == 0)
-            {
-                totalNum = propertyList.Count - startNum + 1;
-            }
-            for (var i = startNum; i < startNum + totalNum; i++)
-            {
-                contentInfo.SetExtendedAttribute(property, propertyList[i - 1]);
-                var item = contentInfo.Copy() as ContentInfo;
-                if (item != null)
-                {
-                    arrayList.Add(item);
-                }
-            }
-            return arrayList;
         }
 
         public static string GetOrderByString(int publishmentSystemId, string orderValue, ETableStyle tableStyle, ETaxisType defaultType)
@@ -363,22 +324,22 @@ namespace SiteServer.CMS.StlParser.Utility
                 var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
-                string sqlWhereString;
-                if (tableStyle == ETableStyle.BackgroundContent)
-                {
-                    sqlWhereString = DataProvider.BackgroundContentDao.GetStlWhereString(publishmentSystemInfo, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
-                }
-                else
-                {
-                    sqlWhereString = BaiRongDataProvider.ContentDao.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where);
-                }
+                var sqlWhereString = tableStyle == ETableStyle.BackgroundContent ? DataProvider.BackgroundContentDao.GetStlWhereString(publishmentSystemInfo, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where) : BaiRongDataProvider.ContentDao.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where);
                 sqlString = DataProvider.ContentDao.GetStlSqlStringChecked(tableName, publishmentSystemInfo.PublishmentSystemId, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot, isNoDup);
             }
 
             return sqlString;
         }
 
-        public static IEnumerable GetContentsDataSource(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection otherAttributes)
+        public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
+        {
+            var sqlWhereString = DataProvider.BackgroundContentDao.GetStlWhereStringBySearch(tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
+            var sqlString = DataProvider.ContentDao.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup);
+
+            return sqlString;
+        }
+
+        public static IEnumerable GetContentsDataSource(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, LowerNameValueCollection others)
         {
             IEnumerable ie = null;
 
@@ -434,7 +395,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     sqlWhereString = BaiRongDataProvider.ContentDao.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where);
                 }
-                ie = DataProvider.ContentDao.GetStlDataSourceChecked(tableName, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot, isNoDup, otherAttributes);
+                ie = DataProvider.ContentDao.GetStlDataSourceChecked(tableName, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot, isNoDup, others);
             }
 
             return ie;
@@ -456,19 +417,19 @@ namespace SiteServer.CMS.StlParser.Utility
             return dataSet;
         }
 
-        public static IEnumerable GetInputContentsDataSource(int publishmentSystemId, int inputId, ContentsDisplayInfo displayInfo)
+        public static IEnumerable GetInputContentsDataSource(int publishmentSystemId, int inputId, ListInfo listInfo)
         {
-            var isReplyExists = displayInfo.OtherAttributes[StlInputContents.Attribute_IsReply] != null;
-            var isReply = TranslateUtils.ToBool(displayInfo.OtherAttributes[StlInputContents.Attribute_IsReply]);
-            var sqlString = DataProvider.InputContentDao.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, displayInfo.StartNum, displayInfo.TotalNum, displayInfo.Where, displayInfo.OrderByString, displayInfo.OtherAttributes);
+            var isReplyExists = listInfo.Others.Get(StlInputContents.AttributeIsReply) != null;
+            var isReply = TranslateUtils.ToBool(listInfo.Others.Get(StlInputContents.AttributeIsReply));
+            var sqlString = DataProvider.InputContentDao.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others);
             return BaiRongDataProvider.DatabaseDao.GetDataSource(sqlString);
         }
 
-        public static DataSet GetPageInputContentsDataSet(int publishmentSystemId, int inputId, ContentsDisplayInfo displayInfo)
+        public static DataSet GetPageInputContentsDataSet(int publishmentSystemId, int inputId, ListInfo listInfo)
         {
-            var isReplyExists = displayInfo.OtherAttributes[StlInputContents.Attribute_IsReply] != null;
-            var isReply = TranslateUtils.ToBool(displayInfo.OtherAttributes[StlInputContents.Attribute_IsReply]);
-            var sqlString = DataProvider.InputContentDao.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, displayInfo.StartNum, displayInfo.TotalNum, displayInfo.Where, displayInfo.OrderByString, displayInfo.OtherAttributes);
+            var isReplyExists = listInfo.Others.Get(StlInputContents.AttributeIsReply) != null;
+            var isReply = TranslateUtils.ToBool(listInfo.Others.Get(StlInputContents.AttributeIsReply));
+            var sqlString = DataProvider.InputContentDao.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others);
             return BaiRongDataProvider.DatabaseDao.GetDataSet(sqlString);
         }
 
@@ -527,9 +488,9 @@ namespace SiteServer.CMS.StlParser.Utility
             return BaiRongDataProvider.DatabaseDao.GetDataSet(connectionString, sqlString);
         }
 
-        public static IEnumerable GetSitesDataSource(string siteName, string directory, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
+        public static IEnumerable GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
         {
-            return DataProvider.PublishmentSystemDao.GetStlDataSource(siteName, directory, startNum, totalNum, whereString, scopeType, orderByString, since);
+            return DataProvider.PublishmentSystemDao.GetStlDataSource(siteName, siteDir, startNum, totalNum, whereString, scopeType, orderByString, since);
         }
 
         public static IEnumerable GetPhotosDataSource(PublishmentSystemInfo publishmentSystemInfo, int contentId, int startNum, int totalNum)
@@ -553,15 +514,15 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     if (elementName == StlChannels.ElementName)
                     {
-                        var displayInfo = ContentsDisplayInfo.GetContentsDisplayInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Channel);
+                        var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Channel);
 
-                        return StlChannels.GetDataSource(pageInfo, contextInfo, displayInfo);
+                        return StlChannels.GetDataSource(pageInfo, contextInfo, listInfo);
                     }
                     else if (elementName == StlContents.ElementName)
                     {
-                        var displayInfo = ContentsDisplayInfo.GetContentsDisplayInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Content);
+                        var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Content);
 
-                        return StlContents.GetDataSource(pageInfo, contextInfo, displayInfo);
+                        return StlContents.GetDataSource(pageInfo, contextInfo, listInfo);
                     }
                 }
             }

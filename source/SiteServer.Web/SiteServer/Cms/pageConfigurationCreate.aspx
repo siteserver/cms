@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
-        <asp:Literal ID="ltlBreadCrumb" runat="server" />
+        <asp:Literal ID="LtlBreadCrumb" runat="server" />
         <bairong:Alerts Text="在此对生成页面进行详细设置" runat="server"></bairong:Alerts>
 
         <div class="popover popover-static">
@@ -91,6 +91,13 @@
                             </td>
                         </tr>
                     </asp:PlaceHolder>
+                    <tr>
+                        <td>是否启用多线程生成页面：</td>
+                        <td>
+                            <asp:RadioButtonList ID="IsCreateMultiThread" RepeatDirection="Horizontal" class="noborder" runat="server"></asp:RadioButtonList>
+                            <span>此功能通常用于CMS服务器配置较高而且现在生成页面时CPU和内存利用率不太高（不超过60%）时建议启用</span>
+                        </td>
+                    </tr>
                 </table>
 
                 <hr />

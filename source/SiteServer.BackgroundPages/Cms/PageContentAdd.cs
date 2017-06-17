@@ -8,7 +8,6 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -43,8 +42,6 @@ namespace SiteServer.BackgroundPages.Cms
 
         private NodeInfo _nodeInfo;
         private List<int> _relatedIdentities;
-        private bool _isAjaxSubmit;
-        private bool _isPreview;
         private ETableStyle _tableStyle;
         private string _tableName;
 
@@ -80,8 +77,6 @@ namespace SiteServer.BackgroundPages.Cms
             var nodeId = Body.GetQueryInt("NodeID");
             var contentId = Body.GetQueryInt("ID");
             ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
-            _isAjaxSubmit = Body.GetQueryBool("isAjaxSubmit");
-            _isPreview = Body.GetQueryBool("isPreview");
 
             _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
             _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
@@ -89,143 +84,133 @@ namespace SiteServer.BackgroundPages.Cms
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeId);
             ContentInfo contentInfo = null;
 
-            if (_isAjaxSubmit == false)
+            if (contentId == 0)
             {
-                if (contentId == 0)
+                if (_nodeInfo != null && _nodeInfo.Additional.IsContentAddable == false)
                 {
-                    if (_nodeInfo != null && _nodeInfo.Additional.IsContentAddable == false)
+                    PageUtils.RedirectToErrorPage("此栏目不能添加内容！");
+                    return;
+                }
+
+                if (!HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentAdd))
+                {
+                    if (!Body.IsAdministratorLoggin)
                     {
-                        PageUtils.RedirectToErrorPage("此栏目不能添加内容！");
+                        PageUtils.RedirectToLoginPage();
                         return;
                     }
-
-                    if (!HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentAdd))
+                    else
                     {
-                        if (!Body.IsAdministratorLoggin)
-                        {
-                            PageUtils.RedirectToLoginPage();
-                            return;
-                        }
-                        else
-                        {
-                            PageUtils.RedirectToErrorPage("您无此栏目的添加内容权限！");
-                            return;
-                        }
-                    }
-                }
-                else
-                {
-                    contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentId);
-                    if (!HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentEdit))
-                    {
-                        if (!Body.IsAdministratorLoggin)
-                        {
-                            PageUtils.RedirectToLoginPage();
-                            return;
-                        }
-                        PageUtils.RedirectToErrorPage("您无此栏目的修改内容权限！");
+                        PageUtils.RedirectToErrorPage("您无此栏目的添加内容权限！");
                         return;
                     }
                 }
-
-                if (!IsPostBack)
+            }
+            else
+            {
+                contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentId);
+                if (!HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentEdit))
                 {
-                    var nodeNames = NodeManager.GetNodeNameNavigation(PublishmentSystemId, _nodeInfo.NodeId);
-                    var pageTitle = (contentId == 0) ?
-                        $"添加{ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId).ModelName}"
-                        : $"编辑{ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId).ModelName}";
-                    BreadCrumbWithItemTitle(AppManager.Cms.LeftMenu.IdContent, pageTitle, nodeNames, string.Empty);
+                    if (!Body.IsAdministratorLoggin)
+                    {
+                        PageUtils.RedirectToLoginPage();
+                        return;
+                    }
+                    PageUtils.RedirectToErrorPage("您无此栏目的修改内容权限！");
+                    return;
+                }
+            }
 
-                    LtlPageTitle.Text = pageTitle;
-                    LtlPageTitle.Text += $@"
+            if (!IsPostBack)
+            {
+                var nodeNames = NodeManager.GetNodeNameNavigation(PublishmentSystemId, _nodeInfo.NodeId);
+                var pageTitle = (contentId == 0) ?
+                    $"添加{ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId).ModelName}"
+                    : $"编辑{ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId).ModelName}";
+                BreadCrumbWithItemTitle(AppManager.Cms.LeftMenu.IdContent, pageTitle, nodeNames, string.Empty);
+
+                LtlPageTitle.Text = pageTitle;
+                LtlPageTitle.Text += $@"
 <script language=""javascript"" type=""text/javascript"">
 var previewUrl = '{PagePreview.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentId, 0, 0)}';
 </script>
 ";
 
-                    if (PublishmentSystemInfo.Additional.IsAutoSaveContent && PublishmentSystemInfo.Additional.AutoSaveContentInterval > 0)
-                    {
-                        LtlPageTitle.Text += $@"
-<input type=""hidden"" id=""savedContentID"" name=""savedContentID"" value=""{contentId}"">
-<script language=""javascript"" type=""text/javascript"">setInterval(""autoSave()"",{PublishmentSystemInfo.Additional.AutoSaveContentInterval*1000});</script>
-";
-                    }
+                //转移
+                if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, _nodeInfo.NodeId, AppManager.Cms.Permission.Channel.ContentTranslate))
+                {
+                    PhTranslate.Visible = PublishmentSystemInfo.Additional.IsTranslate;
+                    DivTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
 
-                    //转移
-                    if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, _nodeInfo.NodeId, AppManager.Cms.Permission.Channel.ContentTranslate))
-                    {
-                        PhTranslate.Visible = PublishmentSystemInfo.Additional.IsTranslate;
-                        DivTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
+                    ETranslateContentTypeUtils.AddListItems(DdlTranslateType, true);
+                    ControlUtils.SelectListItems(DdlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
+                }
+                else
+                {
+                    PhTranslate.Visible = false;
+                }
 
-                        ETranslateContentTypeUtils.AddListItems(DdlTranslateType, true);
-                        ControlUtils.SelectListItems(DdlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
-                    }
-                    else
-                    {
-                        PhTranslate.Visible = false;
-                    }
+                //内容属性
+                var excludeAttributeNames = TableManager.GetExcludeAttributeNames(_tableStyle);
+                AcAttributes.AddExcludeAttributeNames(excludeAttributeNames);
 
-                    //内容属性
-                    var excludeAttributeNames = TableManager.GetExcludeAttributeNames(_tableStyle);
-                    AcAttributes.AddExcludeAttributeNames(excludeAttributeNames);
-
-                    if (excludeAttributeNames.Count == 0)
+                if (excludeAttributeNames.Count == 0)
+                {
+                    PhContentAttributes.Visible = false;
+                }
+                else
+                {
+                    PhContentAttributes.Visible = true;
+                    foreach (var attributeName in excludeAttributeNames)
                     {
-                        PhContentAttributes.Visible = false;
-                    }
-                    else
-                    {
-                        PhContentAttributes.Visible = true;
-                        foreach (var attributeName in excludeAttributeNames)
+                        var styleInfo = TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, attributeName, _relatedIdentities);
+                        if (styleInfo.IsVisible)
                         {
-                            var styleInfo = TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, attributeName, _relatedIdentities);
-                            if (styleInfo.IsVisible)
-                            {
-                                var listItem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                                if (contentId > 0)
-                                {
-                                    listItem.Selected = TranslateUtils.ToBool(contentInfo?.GetExtendedAttribute(styleInfo.AttributeName));
-                                }
-                                else
-                                {
-                                    if (TranslateUtils.ToBool(styleInfo.DefaultValue))
-                                    {
-                                        listItem.Selected = true;
-                                    }
-                                }
-                                CblContentAttributes.Items.Add(listItem);
-                            }
-                        }
-                    }
-
-                    //内容组
-                    var contentGroupNameList = DataProvider.ContentGroupDao.GetContentGroupNameList(PublishmentSystemId);
-
-                    if (!PublishmentSystemInfo.Additional.IsGroupContent || contentGroupNameList.Count == 0)
-                    {
-                        PhContentGroup.Visible = false;
-                    }
-                    else
-                    {
-                        foreach (var groupName in contentGroupNameList)
-                        {
-                            var item = new ListItem(groupName, groupName);
+                            var listItem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
                             if (contentId > 0)
                             {
-                                item.Selected = StringUtils.In(contentInfo?.ContentGroupNameCollection, groupName);
+                                listItem.Selected = TranslateUtils.ToBool(contentInfo?.GetExtendedAttribute(styleInfo.AttributeName));
                             }
-                            CblContentGroupNameCollection.Items.Add(item);
+                            else
+                            {
+                                if (TranslateUtils.ToBool(styleInfo.DefaultValue))
+                                {
+                                    listItem.Selected = true;
+                                }
+                            }
+                            CblContentAttributes.Items.Add(listItem);
                         }
                     }
+                }
 
-                    //标签
-                    if (!PublishmentSystemInfo.Additional.IsRelatedByTags)
+                //内容组
+                var contentGroupNameList = DataProvider.ContentGroupDao.GetContentGroupNameList(PublishmentSystemId);
+
+                if (!PublishmentSystemInfo.Additional.IsGroupContent || contentGroupNameList.Count == 0)
+                {
+                    PhContentGroup.Visible = false;
+                }
+                else
+                {
+                    foreach (var groupName in contentGroupNameList)
                     {
-                        PhTags.Visible = false;
+                        var item = new ListItem(groupName, groupName);
+                        if (contentId > 0)
+                        {
+                            item.Selected = StringUtils.In(contentInfo?.ContentGroupNameCollection, groupName);
+                        }
+                        CblContentGroupNameCollection.Items.Add(item);
                     }
-                    else
-                    {
-                        var tagScript = @"
+                }
+
+                //标签
+                if (!PublishmentSystemInfo.Additional.IsRelatedByTags)
+                {
+                    PhTags.Visible = false;
+                }
+                else
+                {
+                    var tagScript = @"
 <script type=""text/javascript"">
 function getTags(tag){
 	$.get('[url]&tag=' + encodeURIComponent(tag) + '&r=' + Math.random(), function(data) {
@@ -274,91 +259,76 @@ $('#TbTags').keyup(function (e) {
 </script>
 <div id=""tagTips"" class=""inputTips""></div>
 ";
-                        LtlTags.Text = tagScript.Replace("[url]", AjaxCmsService.GetTagsUrl(PublishmentSystemId));
-                    }
+                    LtlTags.Text = tagScript.Replace("[url]", AjaxCmsService.GetTagsUrl(PublishmentSystemId));
+                }
 
-                    if (contentId == 0)
+                if (contentId == 0)
+                {
+                    var formCollection = new NameValueCollection();
+                    if (Body.IsQueryExists("isUploadWord"))
                     {
-                        var formCollection = new NameValueCollection();
-                        if (Body.IsQueryExists("isUploadWord"))
-                        {
-                            var isFirstLineTitle = Body.GetQueryBool("isFirstLineTitle");
-                            var isFirstLineRemove = Body.GetQueryBool("isFirstLineRemove");
-                            var isClearFormat = Body.GetQueryBool("isClearFormat");
-                            var isFirstLineIndent = Body.GetQueryBool("isFirstLineIndent");
-                            var isClearFontSize = Body.GetQueryBool("isClearFontSize");
-                            var isClearFontFamily = Body.GetQueryBool("isClearFontFamily");
-                            var isClearImages = Body.GetQueryBool("isClearImages");
-                            var contentLevel = Body.GetQueryInt("contentLevel");
-                            var fileName = Body.GetQueryString("fileName");
+                        var isFirstLineTitle = Body.GetQueryBool("isFirstLineTitle");
+                        var isFirstLineRemove = Body.GetQueryBool("isFirstLineRemove");
+                        var isClearFormat = Body.GetQueryBool("isClearFormat");
+                        var isFirstLineIndent = Body.GetQueryBool("isFirstLineIndent");
+                        var isClearFontSize = Body.GetQueryBool("isClearFontSize");
+                        var isClearFontFamily = Body.GetQueryBool("isClearFontFamily");
+                        var isClearImages = Body.GetQueryBool("isClearImages");
+                        var contentLevel = Body.GetQueryInt("contentLevel");
+                        var fileName = Body.GetQueryString("fileName");
 
-                            formCollection = WordUtils.GetWordNameValueCollection(PublishmentSystemId, _nodeInfo.ContentModelId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, contentLevel, fileName);
-                        }
-
-                        AcAttributes.SetParameters(formCollection, PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities, _tableStyle, _tableName, false, IsPostBack);
-                    }
-                    else
-                    {
-                        AcAttributes.SetParameters(contentInfo?.Attributes, PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities, _tableStyle, _tableName, true, IsPostBack);
-                        TbTags.Text = contentInfo?.Tags;
+                        formCollection = WordUtils.GetWordNameValueCollection(PublishmentSystemId, _nodeInfo.ContentModelId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, contentLevel, fileName);
                     }
 
-                    if (HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentCheck))
-                    {
-                        PhStatus.Visible = true;
-                        int checkedLevel;
-                        var isChecked = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo.NodeId, out checkedLevel);
-                        if (Body.IsQueryExists("contentLevel"))
-                        {
-                            checkedLevel = TranslateUtils.ToIntWithNagetive(Body.GetQueryString("contentLevel"));
-                            if (checkedLevel != LevelManager.LevelInt.NotChange)
-                            {
-                                isChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
-                            }
-                        }
-
-                        LevelManager.LoadContentLevelToEdit(RblContentLevel, PublishmentSystemInfo, nodeId, contentInfo, isChecked, checkedLevel);
-                    }
-                    else
-                    {
-                        PhStatus.Visible = false;
-                    }
-
-                    BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm", true, "autoCheckKeywords()"));
-                    //自动检测敏感词
-                    ClientScriptRegisterStartupScript("autoCheckKeywords", WebUtils.GetAutoCheckKeywordsScript(PublishmentSystemInfo));
+                    AcAttributes.SetParameters(formCollection, PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities, _tableStyle, _tableName, false, IsPostBack);
                 }
                 else
                 {
-                    AcAttributes.SetParameters(Request.Form, PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities,
-                        _tableStyle, _tableName, contentId != 0, IsPostBack);
+                    AcAttributes.SetParameters(contentInfo?.Attributes, PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities, _tableStyle, _tableName, true, IsPostBack);
+                    TbTags.Text = contentInfo?.Tags;
                 }
-                DataBind();
+
+                if (HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentCheck))
+                {
+                    PhStatus.Visible = true;
+                    int checkedLevel;
+                    var isChecked = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo.NodeId, out checkedLevel);
+                    if (Body.IsQueryExists("contentLevel"))
+                    {
+                        checkedLevel = TranslateUtils.ToIntWithNagetive(Body.GetQueryString("contentLevel"));
+                        if (checkedLevel != LevelManager.LevelInt.NotChange)
+                        {
+                            isChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
+                        }
+                    }
+
+                    LevelManager.LoadContentLevelToEdit(RblContentLevel, PublishmentSystemInfo, nodeId, contentInfo, isChecked, checkedLevel);
+                }
+                else
+                {
+                    PhStatus.Visible = false;
+                }
+
+                BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm", true, "autoCheckKeywords()"));
+                //自动检测敏感词
+                ClientScriptRegisterStartupScript("autoCheckKeywords", WebUtils.GetAutoCheckKeywordsScript(PublishmentSystemInfo));
             }
             else
             {
-                var success = false;
-                string errorMessage;
-                var savedContentId = SaveContentInfo(true, _isPreview, out errorMessage);
-                if (savedContentId > 0)
-                {
-                    success = true;
-                }
-
-                string jsonString = $@"{{success:'{success.ToString().ToLower()}',savedContentID:'{savedContentId}'}}";
-
-                PageUtils.ResponseToJson(jsonString);
+                AcAttributes.SetParameters(Request.Form, PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities,
+                    _tableStyle, _tableName, contentId != 0, IsPostBack);
             }
+            DataBind();
         }
 
-        private int SaveContentInfo(bool isAjaxSubmit, bool isPreview, out string errorMessage)
+        private int SaveContentInfo(bool isPreview, out string errorMessage)
         {
             int savedContentId;
             errorMessage = string.Empty;
             var contentId = 0;
             if (!isPreview)
             {
-                contentId = isAjaxSubmit ? TranslateUtils.ToInt(Request.Form["savedContentID"]) : Body.GetQueryInt("ID");
+                contentId = Body.GetQueryInt("ID");
             }
 
             if (contentId == 0)
@@ -378,36 +348,23 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.LastEditDate = DateTime.Now;
 
                     //自动保存的时候，不保存编辑器的图片
-                    InputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes, !_isAjaxSubmit);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes, true);
 
-                    StringCollection tagCollection;
+                    contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
+                    var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
 
-                    if (isAjaxSubmit)
+                    if (PhContentAttributes.Visible)
                     {
-                        contentInfo.ContentGroupNameCollection = Request.Form[ContentAttribute.ContentGroupNameCollection];
-                        tagCollection = TagUtils.ParseTagsString(Request.Form[ContentAttribute.Tags]);
-
-                        contentInfo.CheckedLevel = LevelManager.LevelInt.CaoGao;
-                        contentInfo.IsChecked = false;
-                    }
-                    else
-                    {
-                        contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
-                        tagCollection = TagUtils.ParseTagsString(TbTags.Text);
-
-                        if (PhContentAttributes.Visible)
+                        foreach (ListItem listItem in CblContentAttributes.Items)
                         {
-                            foreach (ListItem listItem in CblContentAttributes.Items)
-                            {
-                                var value = listItem.Selected.ToString();
-                                var attributeName = listItem.Value;
-                                contentInfo.SetExtendedAttribute(attributeName, value);
-                            }
+                            var value = listItem.Selected.ToString();
+                            var attributeName = listItem.Value;
+                            contentInfo.SetExtendedAttribute(attributeName, value);
                         }
-
-                        contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
-                        contentInfo.IsChecked = contentInfo.CheckedLevel >= PublishmentSystemInfo.CheckContentLevel;
                     }
+
+                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
+                    contentInfo.IsChecked = contentInfo.CheckedLevel >= PublishmentSystemInfo.CheckContentLevel;
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
                     if (isPreview)
@@ -441,24 +398,21 @@ $('#TbTags').keyup(function (e) {
                     return 0;
                 }
 
-                if (!isAjaxSubmit)
+                if (contentInfo.IsChecked)
                 {
-                    if (contentInfo.IsChecked)
-                    {
-                        CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id);
-                    }
-
-                    Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, "添加内容",
-                        $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
-
-                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName);
-
-                    PageUtils.Redirect(EContentModelTypeUtils.Equals(_nodeInfo.ContentModelId, EContentModelType.Photo)
-                        ? PageContentPhotoUpload.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
-                            Body.GetQueryString("ReturnUrl"))
-                        : PageContentAddAfter.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
-                            ReturnUrl));
+                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id);
                 }
+
+                Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, "添加内容",
+                    $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
+
+                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName);
+
+                PageUtils.Redirect(EContentModelTypeUtils.Equals(_nodeInfo.ContentModelId, EContentModelType.Photo)
+                    ? PageContentPhotoUpload.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
+                        Body.GetQueryString("ReturnUrl"))
+                    : PageContentAddAfter.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
+                        ReturnUrl));
             }
             else
             {
@@ -471,35 +425,26 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.LastEditDate = DateTime.Now;
 
                     //自动保存的时候，不保存编辑器的图片
-                    InputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes, !_isAjaxSubmit);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes, true);
 
-                    StringCollection tagCollection;
-                    if (isAjaxSubmit)
+                    contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
+                    var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
+
+                    if (PhContentAttributes.Visible)
                     {
-                        contentInfo.ContentGroupNameCollection = Request.Form[ContentAttribute.ContentGroupNameCollection];
-                        tagCollection = TagUtils.ParseTagsString(Request.Form[ContentAttribute.Tags]);
+                        foreach (ListItem listItem in CblContentAttributes.Items)
+                        {
+                            var value = listItem.Selected.ToString();
+                            var attributeName = listItem.Value;
+                            contentInfo.SetExtendedAttribute(attributeName, value);
+                        }
                     }
-                    else
+
+                    var checkedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
+                    if (checkedLevel != LevelManager.LevelInt.NotChange)
                     {
-                        contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
-                        tagCollection = TagUtils.ParseTagsString(TbTags.Text);
-
-                        if (PhContentAttributes.Visible)
-                        {
-                            foreach (ListItem listItem in CblContentAttributes.Items)
-                            {
-                                var value = listItem.Selected.ToString();
-                                var attributeName = listItem.Value;
-                                contentInfo.SetExtendedAttribute(attributeName, value);
-                            }
-                        }
-
-                        var checkedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
-                        if (checkedLevel != LevelManager.LevelInt.NotChange)
-                        {
-                            contentInfo.IsChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
-                            contentInfo.CheckedLevel = checkedLevel;
-                        }
+                        contentInfo.IsChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
+                        contentInfo.CheckedLevel = checkedLevel;
                     }
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
@@ -510,83 +455,79 @@ $('#TbTags').keyup(function (e) {
                         TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, PublishmentSystemId, contentId);
                     }
 
-                    if (!isAjaxSubmit)
+                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName);
+
+                    if (EContentModelTypeUtils.Equals(_nodeInfo.ContentModelId, EContentModelType.Photo))
                     {
-                        ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName);
+                        PageUtils.Redirect(PageContentPhotoUpload.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, Body.GetQueryString("ReturnUrl")));
+                    }
 
-                        if (EContentModelTypeUtils.Equals(_nodeInfo.ContentModelId, EContentModelType.Photo))
-                        {
-                            PageUtils.Redirect(PageContentPhotoUpload.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, Body.GetQueryString("ReturnUrl")));
-                        }
-
-                        //更新引用该内容的信息
-                        //如果不是异步自动保存，那么需要将引用此内容的content修改
-                        var sourceContentIdList = new List<int>
+                    //更新引用该内容的信息
+                    //如果不是异步自动保存，那么需要将引用此内容的content修改
+                    var sourceContentIdList = new List<int>
                         {
                             contentInfo.Id
                         };
-                        var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent, EAuxiliaryTableType.JobContent, EAuxiliaryTableType.VoteContent);
-                        foreach (var table in tableList)
+                    var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent, EAuxiliaryTableType.JobContent, EAuxiliaryTableType.VoteContent);
+                    foreach (var table in tableList)
+                    {
+                        var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, sourceContentIdList);
+                        foreach (int targetContentId in targetContentIdList)
                         {
-                            var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, sourceContentIdList);
-                            foreach (int targetContentId in targetContentIdList)
+                            var targetContentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyleUtils.GetEnumType(table.AuxiliaryTableType.ToString()), table.TableEnName, targetContentId);
+                            if (targetContentInfo != null && targetContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType) == ETranslateContentType.ReferenceContent.ToString())
                             {
-                                var targetContentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyleUtils.GetEnumType(table.AuxiliaryTableType.ToString()), table.TableEnName, targetContentId);
-                                if (targetContentInfo != null && targetContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType) == ETranslateContentType.ReferenceContent.ToString())
-                                {
-                                    contentInfo.Id = targetContentId;
-                                    contentInfo.PublishmentSystemId = targetContentInfo.PublishmentSystemId;
-                                    contentInfo.NodeId = targetContentInfo.NodeId;
-                                    contentInfo.SourceId = targetContentInfo.SourceId;
-                                    contentInfo.ReferenceId = targetContentInfo.ReferenceId;
-                                    contentInfo.Taxis = targetContentInfo.Taxis;
-                                    contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, targetContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType));
-                                    BaiRongDataProvider.ContentDao.Update(table.TableEnName, contentInfo);
+                                contentInfo.Id = targetContentId;
+                                contentInfo.PublishmentSystemId = targetContentInfo.PublishmentSystemId;
+                                contentInfo.NodeId = targetContentInfo.NodeId;
+                                contentInfo.SourceId = targetContentInfo.SourceId;
+                                contentInfo.ReferenceId = targetContentInfo.ReferenceId;
+                                contentInfo.Taxis = targetContentInfo.Taxis;
+                                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, targetContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType));
+                                BaiRongDataProvider.ContentDao.Update(table.TableEnName, contentInfo);
 
-                                    //资源：图片，文件，视频
-                                    var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetContentInfo.PublishmentSystemId);
-                                    var bgContentInfo = contentInfo as BackgroundContentInfo;
-                                    var bgTargetContentInfo = targetContentInfo as BackgroundContentInfo;
-                                    if (bgTargetContentInfo != null && bgContentInfo != null)
+                                //资源：图片，文件，视频
+                                var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetContentInfo.PublishmentSystemId);
+                                var bgContentInfo = contentInfo as BackgroundContentInfo;
+                                var bgTargetContentInfo = targetContentInfo as BackgroundContentInfo;
+                                if (bgTargetContentInfo != null && bgContentInfo != null)
+                                {
+                                    if (bgContentInfo.ImageUrl != bgTargetContentInfo.ImageUrl)
                                     {
-                                        if (bgContentInfo.ImageUrl != bgTargetContentInfo.ImageUrl)
+                                        //修改图片
+                                        var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.ImageUrl);
+                                        CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl);
+                                    }
+                                    else if (bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)) != bgTargetContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)))
+                                    {
+                                        var sourceImageUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
+
+                                        foreach (string imageUrl in sourceImageUrls)
                                         {
-                                            //修改图片
-                                            var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.ImageUrl);
+                                            var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, imageUrl);
                                             CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl);
                                         }
-                                        else if (bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)) != bgTargetContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)))
-                                        {
-                                            var sourceImageUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
+                                    }
+                                    if (bgContentInfo.FileUrl != bgTargetContentInfo.FileUrl)
+                                    {
+                                        //修改附件
+                                        var sourceFileUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.FileUrl);
+                                        CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl);
 
-                                            foreach (string imageUrl in sourceImageUrls)
-                                            {
-                                                var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, imageUrl);
-                                                CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl);
-                                            }
-                                        }
-                                        if (bgContentInfo.FileUrl != bgTargetContentInfo.FileUrl)
+                                    }
+                                    else if (bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)) != bgTargetContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)))
+                                    {
+                                        var sourceFileUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
+
+                                        foreach (string fileUrl in sourceFileUrls)
                                         {
-                                            //修改附件
-                                            var sourceFileUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.FileUrl);
+                                            var sourceFileUrl = PathUtility.MapPath(PublishmentSystemInfo, fileUrl);
                                             CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl);
-
-                                        }
-                                        else if (bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)) != bgTargetContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)))
-                                        {
-                                            var sourceFileUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
-
-                                            foreach (string fileUrl in sourceFileUrls)
-                                            {
-                                                var sourceFileUrl = PathUtility.MapPath(PublishmentSystemInfo, fileUrl);
-                                                CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl);
-                                            }
                                         }
                                     }
                                 }
                             }
                         }
-
                     }
                 }
                 catch (Exception ex)
@@ -596,18 +537,15 @@ $('#TbTags').keyup(function (e) {
                     return 0;
                 }
 
-                if (!isAjaxSubmit)
+                if (contentInfo.IsChecked)
                 {
-                    if (contentInfo.IsChecked)
-                    {
-                        CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentId);
-                    }
-
-                    Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentId, "修改内容",
-                        $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
-
-                    PageUtils.Redirect(ReturnUrl);
+                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentId);
                 }
+
+                Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentId, "修改内容",
+                    $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
+
+                PageUtils.Redirect(ReturnUrl);
                 savedContentId = contentId;
             }
 
@@ -619,7 +557,7 @@ $('#TbTags').keyup(function (e) {
             if (Page.IsPostBack && Page.IsValid)
             {
                 string errorMessage;
-                var savedContentId = SaveContentInfo(false, false, out errorMessage);
+                var savedContentId = SaveContentInfo(false, out errorMessage);
                 if (savedContentId == 0)
                 {
                     FailMessage(errorMessage);

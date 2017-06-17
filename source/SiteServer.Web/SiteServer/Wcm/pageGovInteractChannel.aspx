@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="互动交流提交标签为&amp;lt;stl:govInteractApply channelIndex=&quot;栏目索引&quot;&gt;&amp;lt;/stl:govInteractApply&gt;，互动交流查询标签为&amp;lt;stl:govInteractQuery channelIndex=&quot;栏目索引&quot;&gt;&amp;lt;/stl:govInteractQuery&gt;。" runat="server" />
 
   <table class="table table-bordered table-hover">

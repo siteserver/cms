@@ -843,7 +843,7 @@ namespace BaiRong.Core.Provider
             }
         }
 
-        public bool ChangePassword(string userName, EPasswordFormat passwordFormat, string password, out string errorMessage)
+        public bool ChangePassword(string userName, string password, out string errorMessage)
         {
             errorMessage = string.Empty;
 
@@ -865,8 +865,8 @@ namespace BaiRong.Core.Provider
             }
 
             string passwordSalt;
-            password = EncodePassword(password, passwordFormat, out passwordSalt);
-            return ChangePassword(userName, passwordFormat, passwordSalt, password);
+            password = EncodePassword(password, EPasswordFormat.Encrypted, out passwordSalt);
+            return ChangePassword(userName, EPasswordFormat.Encrypted, passwordSalt, password);
         }
 
         public bool ValidateAccount(string account, string password, out string userName, out string errorMessage)

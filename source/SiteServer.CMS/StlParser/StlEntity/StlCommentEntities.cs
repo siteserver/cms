@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.Data;
 using SiteServer.CMS.StlParser.Model;
@@ -6,32 +6,35 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-	public class StlCommentEntities
+    [Stl(Usage = "评论实体", Description = "通过 {comment.} 实体在模板中显示评论值")]
+    public class StlCommentEntities
 	{
         private StlCommentEntities()
 		{
 		}
 
-        public const string EntityName = "Comment";        //评论实体
+        public const string EntityName = "comment";
 
-        private static string DiggGood = "DiggGood";       //支持
+        private const string Id = "Id";
+        private const string AddDate = "AddDate";
+        private const string UserName = "UserName";
+        private const string DisplayName = "DisplayName";
+        private const string GoodCount = "GoodCount";
+        private const string DiggGood = "DiggGood";
+        private const string Content = "Content";
+        private const string ItemIndex = "ItemIndex";
 
-        public static ListDictionary AttributeList
-        {
-            get
-            {
-                var attributes = new ListDictionary();
-                attributes.Add("ID", "评论ID");
-                attributes.Add("AddDate", "评论时间");
-                attributes.Add("UserName", "评论人");
-                attributes.Add("GoodCount", "支持数目");
-                attributes.Add(DiggGood, "支持");
-                attributes.Add("Content", "评论正文");
-                attributes.Add(StlParserUtility.ItemIndex, "评论排序");                
-
-                return attributes;
-            }
-        }
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {Id, "评论Id"},
+	        {AddDate, "评论时间"},
+	        {UserName, "评论人用户名"},
+            {DisplayName, "评论人姓名"},
+            {GoodCount, "支持数目"},
+	        {DiggGood, "支持"},
+	        {Content, "评论正文"},
+	        {ItemIndex, "评论排序"}
+	    };
 
         internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -43,43 +46,47 @@ namespace SiteServer.CMS.StlParser.StlEntity
             {
                 var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
 
-                var type = entityName.Substring(9, entityName.Length - 10).ToLower();
+                var type = entityName.Substring(9, entityName.Length - 10);
 
-                var commentID = SqlUtils.EvalInt(contextInfo.ItemContainer.CommentItem, "ID");
-                var nodeID = SqlUtils.EvalInt(contextInfo.ItemContainer.CommentItem, "NodeID");
-                var contentID = SqlUtils.EvalInt(contextInfo.ItemContainer.CommentItem, "ContentID");
+                var commentId = SqlUtils.EvalInt(contextInfo.ItemContainer.CommentItem, "ID");
                 var goodCount = SqlUtils.EvalInt(contextInfo.ItemContainer.CommentItem, "GoodCount");
                 var userName = SqlUtils.EvalString(contextInfo.ItemContainer.CommentItem, "UserName");
-                var isChecked = TranslateUtils.ToBool(SqlUtils.EvalString(contextInfo.ItemContainer.CommentItem, "IsChecked"));
                 var addDate = SqlUtils.EvalDateTime(contextInfo.ItemContainer.CommentItem, "AddDate");
                 var content = SqlUtils.EvalString(contextInfo.ItemContainer.CommentItem, "Content");
 
-                if (type == "id")
+                if (StringUtils.EqualsIgnoreCase(type, Id))
                 {
-                    parsedContent = commentID.ToString();
+                    parsedContent = commentId.ToString();
                 }
-                else if (type == "adddate")
+                else if (StringUtils.EqualsIgnoreCase(type, AddDate))
                 {
                     parsedContent = DateUtils.Format(addDate, string.Empty);
                 }
-                else if (type == "username")
+                else if (StringUtils.EqualsIgnoreCase(type, UserName))
                 {
                     parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : userName;
                 }
-                else if (type == "goodcount")
+                else if (StringUtils.EqualsIgnoreCase(type, DisplayName))
+                {
+                    parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : BaiRongDataProvider.UserDao.GetDisplayName(userName);
+                }
+                else if (StringUtils.EqualsIgnoreCase(type, GoodCount))
                 {
                     parsedContent = goodCount.ToString();
                 }
-                else if (type == "content")
+                else if (StringUtils.EqualsIgnoreCase(type, Content))
                 {
                     parsedContent = content;
                 }
-                else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex))
+                else if (StringUtils.StartsWithIgnoreCase(type, ItemIndex))
                 {
                     parsedContent = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.CommentItem.ItemIndex, type, contextInfo).ToString();
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
             return parsedContent;
         }

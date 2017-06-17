@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using CommandLine;
 
 namespace siteserver
@@ -17,6 +18,12 @@ namespace siteserver
     internal class TestSubOptions
     {
         // Remainder omitted
+    }
+
+    internal class EncodeSubOptions
+    {
+        [Option('s', "string", Required = true, HelpText = "Input string to be processed.")]
+        public string String { get; set; }
     }
 
     internal class Options
@@ -46,5 +53,8 @@ namespace siteserver
 
         [VerbOption("test", HelpText = "Update remote refs along with associated objects.")]
         public TestSubOptions TestVerb { get; set; }
+
+        [VerbOption("encode", HelpText = "Update remote refs along with associated objects.")]
+        public EncodeSubOptions EncodeVerb { get; set; }
     }
 }

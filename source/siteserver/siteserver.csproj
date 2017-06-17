@@ -85,6 +85,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="commands\Encode.cs" />
+    <Compile Include="commands\Build.cs" />
+    <Compile Include="commands\Test.cs" />
+    <Compile Include="commands\Run.cs" />
     <Compile Include="ServiceUtils.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="ExecutionManager.cs" />
@@ -111,6 +115,10 @@
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{61a793e1-3e99-4bdc-bc20-7298ca3e0000}</Project>
       <Name>SiteServer.CMS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiteServer.Plugins\SiteServer.Plugins.csproj">
+      <Project>{61a793e1-3e99-4bdc-bc20-7298ca3e6849}</Project>
+      <Name>SiteServer.Plugins</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

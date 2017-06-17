@@ -215,9 +215,6 @@
     <Compile Include="AreaManager.cs" />
     <Compile Include="CacheManager.cs" />
     <Compile Include="AppManager.cs" />
-    <Compile Include="ProductFileUtils.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="SmsManager.cs" />
     <Compile Include="DepartmentManager.cs" />
     <Compile Include="IO\CSVUtils.cs" />
@@ -242,17 +239,13 @@
     <Compile Include="Model\Enumerations\EUploadType.cs" />
     <Compile Include="Model\Enumerations\EUserLockType.cs" />
     <Compile Include="Model\Enumerations\ESmsProviderType.cs" />
-    <Compile Include="Model\Enumerations\EThirdLoginType.cs" />
     <Compile Include="Model\CaseExtendedAttributes.cs" />
-    <Compile Include="Model\ThirdLoginAuthInfo.cs" />
-    <Compile Include="Model\ThirdLoginInfo.cs" />
     <Compile Include="Model\UserInfoExtend.cs" />
     <Compile Include="Model\UserLogInfo.cs" />
     <Compile Include="Data\SqlServer.cs" />
     <Compile Include="Provider\AdministratorDao.cs" />
     <Compile Include="Provider\AreaDao.cs" />
     <Compile Include="Provider\AuxiliaryTableDataDao.cs" />
-    <Compile Include="Provider\ThirdLoginDao.cs" />
     <Compile Include="Provider\ConfigDao.cs" />
     <Compile Include="Provider\ContentCheckDao.cs" />
     <Compile Include="Provider\ContentDao.cs" />
@@ -272,7 +265,6 @@
     <Compile Include="Provider\TableStructureDao.cs" />
     <Compile Include="Provider\TableStyleDao.cs" />
     <Compile Include="Provider\TagDao.cs" />
-    <Compile Include="Provider\UserBindingDao.cs" />
     <Compile Include="Provider\UserDao.cs" />
     <Compile Include="Provider\UserGroupDao.cs" />
     <Compile Include="Provider\UserLogDao.cs" />
@@ -339,8 +331,8 @@
     </Compile>
     <Compile Include="Controls\TemplatedWebControl.cs" />
     <Compile Include="Controls\TextEditorBase.cs" />
-    <Compile Include="Text\HtmlClearUtils.cs" />
-    <Compile Include="Text\WordSpliter.cs" />
+    <Compile Include="HtmlClearUtils.cs" />
+    <Compile Include="WordSpliter.cs" />
     <Compile Include="ThirdParty\AliDaYu\Aliyun\AliyunResponse.cs" />
     <Compile Include="ThirdParty\AliDaYu\Aliyun\DefaultAliyunClient.cs" />
     <Compile Include="ThirdParty\AliDaYu\Aliyun\IAliyunClient.cs" />
@@ -591,7 +583,6 @@
     <Compile Include="Model\UserGroupInfoExtend.cs" />
     <Compile Include="Model\UserInfo.cs" />
     <Compile Include="Model\PermissionsInRolesInfo.cs" />
-    <Compile Include="Model\UserBindingInfo.cs" />
     <Compile Include="Model\UserConfigInfo.cs" />
     <Compile Include="Base64Decoder.cs" />
     <Compile Include="Base64Encoder.cs" />
@@ -897,9 +888,9 @@
     <Compile Include="TagUtils.cs" />
     <Compile Include="ThirdParty\Sgml\SgmlParser.cs" />
     <Compile Include="ThirdParty\Sgml\SgmlReader.cs" />
-    <Compile Include="Text\XmlUtils.cs" />
-    <Compile Include="Text\CompareUtils.cs" />
-    <Compile Include="Text\LogUtils.cs" />
+    <Compile Include="XmlUtils.cs" />
+    <Compile Include="CompareUtils.cs" />
+    <Compile Include="LogUtils.cs" />
     <Compile Include="Collection\PairList.cs" />
     <Compile Include="CacheUtils.cs" />
     <Compile Include="ControlUtils.cs" />

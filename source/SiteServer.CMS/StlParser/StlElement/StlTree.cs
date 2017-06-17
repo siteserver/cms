@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
@@ -17,150 +15,136 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlTree
+    [Stl(Usage = "树状导航", Description = "通过 stl:tree 标签在模板中显示树状导航")]
+    public class StlTree
 	{
         private StlTree() { }
-        public const string ElementName = "stl:tree";//树状导航
+        public const string ElementName = "stl:tree";
 
-		public const string Attribute_ChannelIndex = "channelindex";			        //栏目索引
-		public const string Attribute_ChannelName = "channelname";				        //栏目名称
-        public const string Attribute_UpLevel = "uplevel";					            //上级栏目的级别
-        public const string Attribute_TopLevel = "toplevel";				            //从首页向下的栏目级别
+		public const string AttributeChannelIndex = "channelIndex";
+		public const string AttributeChannelName = "channelName";
+        public const string AttributeUpLevel = "upLevel";
+        public const string AttributeTopLevel = "topLevel";
+        public const string AttributeGroupChannel = "groupChannel";
+        public const string AttributeGroupChannelNot = "groupChannelNot";
+        public const string AttributeTitle = "title";
+        public const string AttributeIsLoading = "isLoading";
+        public const string AttributeIsShowContentNum = "isShowContentNum";
+        public const string AttributeIsShowTreeLine = "isShowTreeLine";
+        public const string AttributeCurrentFormatString = "currentFormatString";
+        public const string AttributeTarget = "target";
+        public const string AttributeIsDynamic = "isDynamic";
 
-        public const string Attribute_GroupChannel = "groupchannel";		    //指定显示的栏目组
-        public const string Attribute_GroupChannelNot = "groupchannelnot";	    //指定不显示的栏目组
-
-        public const string Attribute_Title = "title";							        //根节点显示名称
-        public const string Attribute_IsLoading = "isloading";				            //是否AJAX方式动态载入
-        public const string Attribute_IsShowContentNum = "isshowcontentnum";            //是否显示栏目内容数
-        public const string Attribute_IsShowTreeLine = "isshowtreeline";                //是否显示树状线
-        public const string Attribute_CurrentFormatString = "currentformatstring";      //当前项格式化字符串
-        public const string Attribute_Target = "target";							        //打开窗口目标
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
-
-		public static ListDictionary AttributeList
-		{
-			get
-			{
-				var attributes = new ListDictionary();
-
-				attributes.Add(Attribute_ChannelIndex, "栏目索引");
-				attributes.Add(Attribute_ChannelName, "栏目名称");
-                attributes.Add(Attribute_UpLevel, "上级栏目的级别");
-                attributes.Add(Attribute_TopLevel, "从首页向下的栏目级别");
-                attributes.Add(Attribute_GroupChannel, "指定显示的栏目组");
-                attributes.Add(Attribute_GroupChannelNot, "指定不显示的栏目组");
-
-                attributes.Add(Attribute_Title, "根节点显示名称");
-                attributes.Add(Attribute_IsLoading, "是否AJAX方式即时载入");
-                attributes.Add(Attribute_IsShowContentNum, "是否显示栏目内容数");
-                attributes.Add(Attribute_IsShowTreeLine, "是否显示树状线");
-                attributes.Add(Attribute_CurrentFormatString, "当前项格式化字符串");
-                attributes.Add(Attribute_Target, "打开窗口目标");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {AttributeChannelIndex, "栏目索引"},
+	        {AttributeChannelName, "栏目名称"},
+	        {AttributeUpLevel, "上级栏目的级别"},
+	        {AttributeTopLevel, "从首页向下的栏目级别"},
+	        {AttributeGroupChannel, "指定显示的栏目组"},
+	        {AttributeGroupChannelNot, "指定不显示的栏目组"},
+	        {AttributeTitle, "根节点显示名称"},
+	        {AttributeIsLoading, "是否AJAX方式即时载入"},
+	        {AttributeIsShowContentNum, "是否显示栏目内容数"},
+	        {AttributeIsShowTreeLine, "是否显示树状线"},
+	        {AttributeCurrentFormatString, "当前项格式化字符串"},
+	        {AttributeTarget, "打开窗口目标"},
+	        {AttributeIsDynamic, "是否动态显示"}
+	    };
 
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			var parsedContent = string.Empty;
+			string parsedContent;
 			try
 			{
-                var attributes = new LowerNameValueCollection();
-				var ie = node.Attributes.GetEnumerator();
-
 				var channelIndex = string.Empty;
 				var channelName = string.Empty;
                 var upLevel = 0;
                 var topLevel = -1;
                 var groupChannel = string.Empty;
                 var groupChannelNot = string.Empty;
-
                 var title = string.Empty;
                 var isLoading = false;
                 var isShowContentNum = false;
                 var isShowTreeLine = true;
                 var currentFormatString = "<strong>{0}</strong>";
                 var isDynamic = false;
+                var attributes = new LowerNameValueCollection();
 
-				while (ie.MoveNext())
-				{
-					var attr = (XmlAttribute)ie.Current;
-					var attributeName = attr.Name.ToLower();
-                    
-                    if (attributeName.Equals(Attribute_ChannelIndex))
-					{
-                        channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-					}
-					else if (attributeName.Equals(Attribute_ChannelName))
-					{
-                        channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-					}
-                    else if (attributeName.Equals(Attribute_UpLevel))
-                    {
-                        upLevel = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_TopLevel))
-                    {
-                        topLevel = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_GroupChannel))
-                    {
-                        groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_GroupChannelNot))
-                    {
-                        groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_Title))
-                    {
-                        title = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_IsLoading))
-                    {
-                        isLoading = TranslateUtils.ToBool(attr.Value, false);
-                    }
-                    else if (attributeName.Equals(Attribute_IsShowContentNum))
-                    {
-                        isShowContentNum = TranslateUtils.ToBool(attr.Value, false);
-                    }
-                    else if (attributeName.Equals(Attribute_IsShowTreeLine))
-                    {
-                        isShowTreeLine = TranslateUtils.ToBool(attr.Value, true);
-                    }
-                    else if (attributeName.Equals(Attribute_CurrentFormatString))
-                    {
-                        currentFormatString = attr.Value;
-                        if (!StringUtils.Contains(currentFormatString, "{0}"))
-                        {
-                            currentFormatString += "{0}";
-                        }
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
-                    }
-					else
-					{
-                        attributes[attributeName] = attr.Value;
-					}
-				}
+                var ie = node.Attributes?.GetEnumerator();
+			    if (ie != null)
+			    {
+			        while (ie.MoveNext())
+			        {
+			            var attr = (XmlAttribute) ie.Current;
 
-                if (isDynamic)
+			            if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
+			            {
+			                channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
+			            {
+			                channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeUpLevel))
+			            {
+			                upLevel = TranslateUtils.ToInt(attr.Value);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTopLevel))
+			            {
+			                topLevel = TranslateUtils.ToInt(attr.Value);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupChannel))
+			            {
+			                groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupChannelNot))
+			            {
+			                groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo,
+			                    contextInfo);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTitle))
+			            {
+			                title = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsLoading))
+			            {
+			                isLoading = TranslateUtils.ToBool(attr.Value, false);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsShowContentNum))
+			            {
+			                isShowContentNum = TranslateUtils.ToBool(attr.Value, false);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsShowTreeLine))
+			            {
+			                isShowTreeLine = TranslateUtils.ToBool(attr.Value, true);
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeCurrentFormatString))
+			            {
+			                currentFormatString = attr.Value;
+			                if (!StringUtils.Contains(currentFormatString, "{0}"))
+			                {
+			                    currentFormatString += "{0}";
+			                }
+			            }
+			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
+			            {
+			                isDynamic = TranslateUtils.ToBool(attr.Value);
+			            }
+			            else
+			            {
+			                attributes.Set(attr.Name, attr.Value);
+			            }
+			        }
+			    }
+
+			    if (isDynamic)
                 {
                     parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
                 }
                 else
                 {
-                    if (isLoading)
-                    {
-                        parsedContent = ParseImplAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString);
-                    }
-                    else
-                    {
-                        parsedContent = ParseImplNotAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString);
-                    }
+                    parsedContent = isLoading ? ParseImplAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString) : ParseImplNotAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString);
                 }
 			}
             catch (Exception ex)
@@ -173,11 +157,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImplNotAjax(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, int upLevel, int topLevel, string groupChannel, string groupChannelNot, string title, bool isShowContentNum, bool isShowTreeLine, string currentFormatString)
         {
-            var channelID = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelID, upLevel, topLevel);
+            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelID = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelID, channelIndex, channelName);
+            channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
 
-            var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelID);
+            var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
             var target = "";
 
@@ -187,32 +171,32 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var theNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(channel, EScopeType.All, groupChannel, groupChannelNot);
             var isLastNodeArray = new bool[theNodeIdList.Count];
-            var nodeIDArrayList = new List<int>();
+            var nodeIdArrayList = new List<int>();
 
             var currentNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, pageInfo.PageNodeId);
             if (currentNodeInfo != null)
             {
-                nodeIDArrayList = TranslateUtils.StringCollectionToIntList(currentNodeInfo.ParentsPath);
-                nodeIDArrayList.Add(currentNodeInfo.NodeId);
+                nodeIdArrayList = TranslateUtils.StringCollectionToIntList(currentNodeInfo.ParentsPath);
+                nodeIdArrayList.Add(currentNodeInfo.NodeId);
             }
 
-            foreach (int theNodeID in theNodeIdList)
+            foreach (int theNodeId in theNodeIdList)
             {
-                var theNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, theNodeID);
+                var theNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, theNodeId);
                 var nodeInfo = new NodeInfo(theNodeInfo);
-                if (theNodeID == pageInfo.PublishmentSystemId && !string.IsNullOrEmpty(title))
+                if (theNodeId == pageInfo.PublishmentSystemId && !string.IsNullOrEmpty(title))
                 {
                     nodeInfo.NodeName = title;
                 }
-                var isDisplay = nodeIDArrayList.Contains(theNodeID);
+                var isDisplay = nodeIdArrayList.Contains(theNodeId);
                 if (!isDisplay)
                 {
 
-                    isDisplay = (nodeInfo.ParentId == channelID || nodeIDArrayList.Contains(nodeInfo.ParentId));
+                    isDisplay = (nodeInfo.ParentId == channelId || nodeIdArrayList.Contains(nodeInfo.ParentId));
                 }
 
-                var selected = (theNodeID == channelID);
-                if (!selected && nodeIDArrayList.Contains(nodeInfo.NodeId))
+                var selected = (theNodeId == channelId);
+                if (!selected && nodeIdArrayList.Contains(nodeInfo.NodeId))
                 {
                     selected = true;
                 }
@@ -220,7 +204,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 var linkUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo);
                 var level = theNodeInfo.ParentsCount - channel.ParentsCount;
-                var item = new StlTreeItemNotAjax(isDisplay, selected, pageInfo, nodeInfo, hasChildren, linkUrl, target, isShowTreeLine, isShowContentNum, isLastNodeArray, currentFormatString, channelID, level);
+                var item = new StlTreeItemNotAjax(isDisplay, selected, pageInfo, nodeInfo, hasChildren, linkUrl, target, isShowTreeLine, isShowContentNum, isLastNodeArray, currentFormatString, channelId, level);
 
                 htmlBuilder.Append(item.GetTrHtml());
             }
@@ -234,58 +218,54 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private class StlTreeItemNotAjax
         {
-            private string treeDirectoryUrl;
-            private string iconFolderUrl;
-            private string iconOpenedFolderUrl;
-            private readonly string iconEmptyUrl;
-            private readonly string iconMinusUrl;
-            private readonly string iconPlusUrl;
+            private readonly string _treeDirectoryUrl;
+            private readonly string _iconFolderUrl;
+            private readonly string _iconEmptyUrl;
+            private readonly string _iconMinusUrl;
+            private readonly string _iconPlusUrl;
 
-            private bool isDisplay = false;
-            private bool selected = false;
-            private PageInfo pageInfo;
-            private NodeInfo nodeInfo;
-            private bool hasChildren = false;
-            private string linkUrl = string.Empty;
-            private string target = string.Empty;
-            private bool isShowTreeLine = true;
-            private bool isShowContentNum = false;
-            bool[] isLastNodeArray;
-            string currentFormatString;
-            private int topNodeID = 0;
-            private int level = 0;
+            private readonly bool _isDisplay;
+            private readonly bool _selected;
+            private readonly PageInfo _pageInfo;
+            private readonly NodeInfo _nodeInfo;
+            private readonly bool _hasChildren;
+            private readonly string _linkUrl;
+            private readonly string _target;
+            private readonly bool _isShowTreeLine;
+            private readonly bool _isShowContentNum;
+            private readonly bool[] _isLastNodeArray;
+            private readonly string _currentFormatString;
+            private readonly int _topNodeId;
+            private readonly int _level;
 
-            private StlTreeItemNotAjax() { }
-
-            public StlTreeItemNotAjax(bool isDisplay, bool selected, PageInfo pageInfo, NodeInfo nodeInfo, bool hasChildren, string linkUrl, string target, bool isShowTreeLine, bool isShowContentNum, bool[] isLastNodeArray, string currentFormatString, int topNodeID, int level)
+            public StlTreeItemNotAjax(bool isDisplay, bool selected, PageInfo pageInfo, NodeInfo nodeInfo, bool hasChildren, string linkUrl, string target, bool isShowTreeLine, bool isShowContentNum, bool[] isLastNodeArray, string currentFormatString, int topNodeId, int level)
             {
-                this.isDisplay = isDisplay;
-                this.selected = selected;
-                this.pageInfo = pageInfo;
-                this.nodeInfo = nodeInfo;
-                this.hasChildren = hasChildren;
-                this.linkUrl = linkUrl;
-                this.target = target;
-                this.isShowTreeLine = isShowTreeLine;
-                this.isShowContentNum = isShowContentNum;
-                this.isLastNodeArray = isLastNodeArray;
-                this.currentFormatString = currentFormatString;
-                this.topNodeID = topNodeID;
-                this.level = level;
+                _isDisplay = isDisplay;
+                _selected = selected;
+                _pageInfo = pageInfo;
+                _nodeInfo = nodeInfo;
+                _hasChildren = hasChildren;
+                _linkUrl = linkUrl;
+                _target = target;
+                _isShowTreeLine = isShowTreeLine;
+                _isShowContentNum = isShowContentNum;
+                _isLastNodeArray = isLastNodeArray;
+                _currentFormatString = currentFormatString;
+                _topNodeId = topNodeId;
+                _level = level;
 
-                treeDirectoryUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, "tree");
-                iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
-                iconOpenedFolderUrl = PageUtils.Combine(treeDirectoryUrl, "openedfolder.gif");
-                iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
-                iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
-                iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
+                _treeDirectoryUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, "tree");
+                _iconFolderUrl = PageUtils.Combine(_treeDirectoryUrl, "folder.gif");
+                _iconEmptyUrl = PageUtils.Combine(_treeDirectoryUrl, "empty.gif");
+                _iconMinusUrl = PageUtils.Combine(_treeDirectoryUrl, "minus.png");
+                _iconPlusUrl = PageUtils.Combine(_treeDirectoryUrl, "plus.png");
             }
 
             public string GetTrHtml()
             {
-                var displayHtml = (isDisplay) ? StringUtils.Constants.ShowElementStyle : StringUtils.Constants.HideElementStyle;
+                var displayHtml = (_isDisplay) ? StringUtils.Constants.ShowElementStyle : StringUtils.Constants.HideElementStyle;
                 string trElementHtml = $@"
-<tr style='{displayHtml}' treeItemLevel='{level + 1}'>
+<tr style='{displayHtml}' treeItemLevel='{_level + 1}'>
 	<td nowrap>
 		{GetItemHtml()}
 	</td>
@@ -295,186 +275,146 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return trElementHtml;
             }
 
-            public string GetItemHtml()
+            private string GetItemHtml()
             {
                 var htmlBuilder = new StringBuilder();
-                if (isShowTreeLine)
+                if (_isShowTreeLine)
                 {
-                    if (topNodeID == nodeInfo.NodeId)
+                    if (_topNodeId == _nodeInfo.NodeId)
                     {
-                        nodeInfo.IsLastNode = true;
+                        _nodeInfo.IsLastNode = true;
                     }
-                    if (nodeInfo.IsLastNode == false)
+                    if (_nodeInfo.IsLastNode == false)
                     {
-                        isLastNodeArray[level] = false;
+                        _isLastNodeArray[_level] = false;
                     }
                     else
                     {
-                        isLastNodeArray[level] = true;
+                        _isLastNodeArray[_level] = true;
                     }
-                    for (var i = 0; i < level; i++)
+                    for (var i = 0; i < _level; i++)
                     {
-                        if (isLastNodeArray[i])
-                        {
-                            htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{iconEmptyUrl}\"/>");
-                        }
-                        else
-                        {
-                            htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_line.gif\"/>");
-                        }
+                        htmlBuilder.Append(_isLastNodeArray[i]
+                            ? $"<img align=\"absmiddle\" src=\"{_iconEmptyUrl}\"/>"
+                            : $"<img align=\"absmiddle\" src=\"{_treeDirectoryUrl}/tree_line.gif\"/>");
                     }
                 }
                 else
                 {
-                    for (var i = 0; i < level; i++)
+                    for (var i = 0; i < _level; i++)
                     {
-                        htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{iconEmptyUrl}\"/>");
+                        htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{_iconEmptyUrl}\"/>");
                     }
                 }
 
-                if (isDisplay)
+                if (_isDisplay)
                 {
-                    if (isShowTreeLine)
+                    if (_isShowTreeLine)
                     {
-                        if (nodeInfo.IsLastNode)
+                        if (_nodeInfo.IsLastNode)
                         {
-                            if (hasChildren)
+                            if (_hasChildren)
                             {
-                                if (selected)
-                                {
-                                    htmlBuilder.Append(
-                                        $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"true\" src=\"{treeDirectoryUrl}/tree_minusbottom.gif\"/>");
-                                }
-                                else
-                                {
-                                    htmlBuilder.Append(
-                                        $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{treeDirectoryUrl}/tree_plusbottom.gif\"/>");
-                                }
+                                htmlBuilder.Append(
+                                    _selected
+                                        ? $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"true\" src=\"{_treeDirectoryUrl}/tree_minusbottom.gif\"/>"
+                                        : $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{_treeDirectoryUrl}/tree_plusbottom.gif\"/>");
                             }
                             else
                             {
                                 htmlBuilder.Append(
-                                    $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_bottom.gif\"/>");
+                                    $"<img align=\"absmiddle\" src=\"{_treeDirectoryUrl}/tree_bottom.gif\"/>");
                             }
                         }
                         else
                         {
-                            if (hasChildren)
+                            if (_hasChildren)
                             {
-                                if (selected)
-                                {
-                                    htmlBuilder.Append(
-                                        $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"true\" src=\"{treeDirectoryUrl}/tree_minusmiddle.gif\"/>");
-                                }
-                                else
-                                {
-                                    htmlBuilder.Append(
-                                        $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{treeDirectoryUrl}/tree_plusmiddle.gif\"/>");
-                                }
+                                htmlBuilder.Append(
+                                    _selected
+                                        ? $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"true\" src=\"{_treeDirectoryUrl}/tree_minusmiddle.gif\"/>"
+                                        : $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{_treeDirectoryUrl}/tree_plusmiddle.gif\"/>");
                             }
                             else
                             {
                                 htmlBuilder.Append(
-                                    $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_middle.gif\"/>");
+                                    $"<img align=\"absmiddle\" src=\"{_treeDirectoryUrl}/tree_middle.gif\"/>");
                             }
                         }
                     }
                     else
                     {
-                        if (hasChildren)
-                        {
-                            if (selected)
-                            {
-                                htmlBuilder.Append(
-                                    $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"true\" src=\"{iconMinusUrl}\"/>");
-                            }
-                            else
-                            {
-                                htmlBuilder.Append(
-                                    $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{iconPlusUrl}\"/>");
-                            }
-                        }
-                        else
-                        {
-                            htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{iconEmptyUrl}\"/>");
-                        }
-                    }
-                }
-                else
-                {
-                    if (isShowTreeLine)
-                    {
-                        if (nodeInfo.IsLastNode)
-                        {
-                            if (hasChildren)
-                            {
-                                htmlBuilder.Append(
-                                    $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{treeDirectoryUrl}/tree_plusbottom.gif\"/>");
-                            }
-                            else
-                            {
-                                htmlBuilder.Append(
-                                    $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_bottom.gif\"/>");
-                            }
-                        }
-                        else
-                        {
-                            if (hasChildren)
-                            {
-                                htmlBuilder.Append(
-                                    $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{treeDirectoryUrl}/tree_plusmiddle.gif\"/>");
-                            }
-                            else
-                            {
-                                htmlBuilder.Append(
-                                    $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_middle.gif\"/>");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (hasChildren)
+                        if (_hasChildren)
                         {
                             htmlBuilder.Append(
-                                $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{iconPlusUrl}\"/>");
+                                _selected
+                                    ? $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"true\" src=\"{_iconMinusUrl}\"/>"
+                                    : $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{_iconPlusUrl}\"/>");
                         }
                         else
                         {
-                            htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{iconEmptyUrl}\"/>");
+                            htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{_iconEmptyUrl}\"/>");
                         }
                     }
                 }
-
-                if (!string.IsNullOrEmpty(iconFolderUrl))
+                else
                 {
-                    htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{iconFolderUrl}\"/>");
+                    if (_isShowTreeLine)
+                    {
+                        if (_nodeInfo.IsLastNode)
+                        {
+                            htmlBuilder.Append(
+                                _hasChildren
+                                    ? $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{_treeDirectoryUrl}/tree_plusbottom.gif\"/>"
+                                    : $"<img align=\"absmiddle\" src=\"{_treeDirectoryUrl}/tree_bottom.gif\"/>");
+                        }
+                        else
+                        {
+                            htmlBuilder.Append(
+                                _hasChildren
+                                    ? $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{_treeDirectoryUrl}/tree_plusmiddle.gif\"/>"
+                                    : $"<img align=\"absmiddle\" src=\"{_treeDirectoryUrl}/tree_middle.gif\"/>");
+                        }
+                    }
+                    else
+                    {
+                        htmlBuilder.Append(
+                            _hasChildren
+                                ? $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isOpen=\"false\" src=\"{_iconPlusUrl}\"/>"
+                                : $"<img align=\"absmiddle\" src=\"{_iconEmptyUrl}\"/>");
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(_iconFolderUrl))
+                {
+                    htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{_iconFolderUrl}\"/>");
                 }
 
                 htmlBuilder.Append("&nbsp;");
 
-                var nodeName = nodeInfo.NodeName;
-                if ((pageInfo.TemplateInfo.TemplateType == ETemplateType.ChannelTemplate || pageInfo.TemplateInfo.TemplateType == ETemplateType.ContentTemplate) && pageInfo.PageNodeId == nodeInfo.NodeId)
+                var nodeName = _nodeInfo.NodeName;
+                if ((_pageInfo.TemplateInfo.TemplateType == ETemplateType.ChannelTemplate || _pageInfo.TemplateInfo.TemplateType == ETemplateType.ContentTemplate) && _pageInfo.PageNodeId == _nodeInfo.NodeId)
                 {
-                    nodeName = string.Format(currentFormatString, nodeName);
+                    nodeName = string.Format(_currentFormatString, nodeName);
                 }
 
-                if (!string.IsNullOrEmpty(linkUrl))
+                if (!string.IsNullOrEmpty(_linkUrl))
                 {
-                    var targetHtml = (string.IsNullOrEmpty(target)) ? string.Empty : $"target='{target}'";
+                    var targetHtml = (string.IsNullOrEmpty(_target)) ? string.Empty : $"target='{_target}'";
                     var clickChangeHtml = "onclick='stltree_openFolderByA(this);'";
 
                     htmlBuilder.Append(
-                        $"<a href='{linkUrl}' {targetHtml} {clickChangeHtml} isTreeLink='true'>{nodeName}</a>");
+                        $"<a href='{_linkUrl}' {targetHtml} {clickChangeHtml} isTreeLink='true'>{nodeName}</a>");
                 }
                 else
                 {
                     htmlBuilder.Append(nodeName);
                 }
 
-                if (isShowContentNum && nodeInfo.ContentNum >= 0)
+                if (_isShowContentNum && _nodeInfo.ContentNum >= 0)
                 {
                     htmlBuilder.Append("&nbsp;");
-                    htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({nodeInfo.ContentNum})</span>");
+                    htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({_nodeInfo.ContentNum})</span>");
                 }
 
                 return htmlBuilder.ToString();
@@ -662,11 +602,11 @@ var stltree_isNodeTree = {isNodeTree};
         {
             pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
 
-            var channelID = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelID, upLevel, topLevel);
+            var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelID = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelID, channelIndex, channelName);
+            channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
 
-            var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelID);
+            var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
             var target = "";
 
@@ -675,39 +615,31 @@ var stltree_isNodeTree = {isNodeTree};
             htmlBuilder.Append(@"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;"">");
 
             var theNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(channel, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
-            var nodeIDArrayList = new List<int>();
 
-            var currentNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, pageInfo.PageNodeId);
-            if (currentNodeInfo != null)
+            foreach (int theNodeId in theNodeIdList)
             {
-                nodeIDArrayList = TranslateUtils.StringCollectionToIntList(currentNodeInfo.ParentsPath);
-                nodeIDArrayList.Add(currentNodeInfo.NodeId);
-            }
-
-            foreach (int theNodeID in theNodeIdList)
-            {
-                var theNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, theNodeID);
+                var theNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, theNodeId);
                 var nodeInfo = new NodeInfo(theNodeInfo);
-                if (theNodeID == pageInfo.PublishmentSystemId && !string.IsNullOrEmpty(title))
+                if (theNodeId == pageInfo.PublishmentSystemId && !string.IsNullOrEmpty(title))
                 {
                     nodeInfo.NodeName = title;
                 }
 
-                var rowHtml = GetChannelRowHtml(pageInfo.PublishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelID, channel.ParentsCount, pageInfo.PageNodeId);
+                var rowHtml = GetChannelRowHtml(pageInfo.PublishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageNodeId);
 
                 htmlBuilder.Append(rowHtml);
             }
 
             htmlBuilder.Append("</table>");
 
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAgStlTreeAjax, StlTreeItemAjax.GetScript(pageInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelID, channel.ParentsCount, pageInfo.PageNodeId));
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAgStlTreeAjax, StlTreeItemAjax.GetScript(pageInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageNodeId));
 
             return htmlBuilder.ToString();
         }
 
-        public static string GetChannelRowHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeID, int topParantsCount, int currentNodeID)
+        public static string GetChannelRowHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeId, int topParantsCount, int currentNodeId)
         {
-            var nodeTreeItem = new StlTreeItemAjax(publishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, topNodeID, topParantsCount, currentNodeID);
+            var nodeTreeItem = new StlTreeItemAjax(publishmentSystemInfo, nodeInfo, target, isShowContentNum, currentFormatString, topNodeId, topParantsCount, currentNodeId);
             var title = nodeTreeItem.GetItemHtml();
 
             string rowHtml = $@"
@@ -723,110 +655,95 @@ var stltree_isNodeTree = {isNodeTree};
 
         private class StlTreeItemAjax
         {
-            private string treeDirectoryUrl;
-            private string iconFolderUrl;
-            private string iconOpenedFolderUrl;
-            private readonly string iconEmptyUrl;
-            private readonly string iconMinusUrl;
-            private readonly string iconPlusUrl;
+            private readonly string _iconFolderUrl;
+            private readonly string _iconEmptyUrl;
+            private readonly string _iconMinusUrl;
+            private readonly string _iconPlusUrl;
 
-            private PublishmentSystemInfo publishmentSystemInfo;
-            private NodeInfo nodeInfo;
-            private bool hasChildren = false;
-            private string linkUrl = string.Empty;
-            private string target = string.Empty;
-            private bool isShowTreeLine = true;
-            private bool isShowContentNum = false;
-            string currentFormatString;
-            private int topNodeID = 0;
-            private int level = 0;
-            private int currentNodeID = 0;
+            private readonly NodeInfo _nodeInfo;
+            private readonly bool _hasChildren;
+            private readonly string _linkUrl;
+            private readonly string _target;
+            private readonly bool _isShowContentNum;
+            private readonly string _currentFormatString;
+            private readonly int _topNodeId;
+            private readonly int _level;
+            private readonly int _currentNodeId;
 
-            private StlTreeItemAjax() { }
-
-            public StlTreeItemAjax(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeID, int topParentsCount, int currentNodeID)
+            public StlTreeItemAjax(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topNodeId, int topParentsCount, int currentNodeId)
             {
-                this.publishmentSystemInfo = publishmentSystemInfo;
-                this.nodeInfo = nodeInfo;
-                hasChildren = (nodeInfo.ChildrenCount != 0);
-                linkUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
-                this.target = target;
-                this.isShowTreeLine = isShowTreeLine;
-                this.isShowContentNum = isShowContentNum;
-                this.currentFormatString = currentFormatString;
-                this.topNodeID = topNodeID;
-                level = nodeInfo.ParentsCount - topParentsCount;
-                this.currentNodeID = currentNodeID;
+                _nodeInfo = nodeInfo;
+                _hasChildren = nodeInfo.ChildrenCount != 0;
+                _linkUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
+                _target = target;
+                _isShowContentNum = isShowContentNum;
+                _currentFormatString = currentFormatString;
+                _topNodeId = topNodeId;
+                _level = nodeInfo.ParentsCount - topParentsCount;
+                _currentNodeId = currentNodeId;
 
-                treeDirectoryUrl = SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "tree");
-                iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
-                iconOpenedFolderUrl = PageUtils.Combine(treeDirectoryUrl, "openedfolder.gif");
-                iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
-                iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
-                iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
+                var treeDirectoryUrl = SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "tree");
+                _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
+                _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
+                _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
+                _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
             }
 
             public string GetItemHtml()
             {
                 var htmlBuilder = new StringBuilder();
 
-                for (var i = 0; i < level; i++)
+                for (var i = 0; i < _level; i++)
                 {
-                    htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{iconEmptyUrl}\"/>");
+                    htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{_iconEmptyUrl}\"/>");
                 }
 
-                if (hasChildren)
+                if (_hasChildren)
                 {
-                    if (topNodeID != nodeInfo.NodeId)
-                    {
-                        htmlBuilder.Append(
-                            $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isAjax=\"true\" isOpen=\"false\" id=\"{nodeInfo.NodeId}\" src=\"{iconPlusUrl}\"/>");
-                    }
-                    else
-                    {
-                        htmlBuilder.Append(
-                            $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isAjax=\"false\" isOpen=\"true\" id=\"{nodeInfo.NodeId}\" src=\"{iconMinusUrl}\"/>");
-                    }
+                    htmlBuilder.Append(
+                        _topNodeId != _nodeInfo.NodeId
+                            ? $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isAjax=\"true\" isOpen=\"false\" id=\"{_nodeInfo.NodeId}\" src=\"{_iconPlusUrl}\"/>"
+                            : $"<img align=\"absmiddle\" style=\"cursor:pointer;\" onClick=\"stltree_displayChildren(this);\" isAjax=\"false\" isOpen=\"true\" id=\"{_nodeInfo.NodeId}\" src=\"{_iconMinusUrl}\"/>");
                 }
                 else
                 {
-                    htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{iconEmptyUrl}\"/>");
+                    htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{_iconEmptyUrl}\"/>");
                 }
 
-                if (!string.IsNullOrEmpty(iconFolderUrl))
+                if (!string.IsNullOrEmpty(_iconFolderUrl))
                 {
-                    htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{iconFolderUrl}\"/>");
+                    htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{_iconFolderUrl}\"/>");
                 }
 
                 htmlBuilder.Append("&nbsp;");
 
-                var nodeName = nodeInfo.NodeName;
-                if (currentNodeID == nodeInfo.NodeId)
+                var nodeName = _nodeInfo.NodeName;
+                if (_currentNodeId == _nodeInfo.NodeId)
                 {
-                    nodeName = string.Format(currentFormatString, nodeName);
+                    nodeName = string.Format(_currentFormatString, nodeName);
                 }
 
-                if (!string.IsNullOrEmpty(linkUrl))
+                if (!string.IsNullOrEmpty(_linkUrl))
                 {
-                    var targetHtml = (string.IsNullOrEmpty(target)) ? string.Empty : $"target='{target}'";
+                    var targetHtml = (string.IsNullOrEmpty(_target)) ? string.Empty : $"target='{_target}'";
 
-                    htmlBuilder.Append($"<a href='{linkUrl}' {targetHtml} isTreeLink='true'>{nodeName}</a>");
+                    htmlBuilder.Append($"<a href='{_linkUrl}' {targetHtml} isTreeLink='true'>{nodeName}</a>");
                 }
                 else
                 {
                     htmlBuilder.Append(nodeName);
                 }
 
-                if (isShowContentNum && nodeInfo.ContentNum >= 0)
+                if (_isShowContentNum && _nodeInfo.ContentNum >= 0)
                 {
                     htmlBuilder.Append("&nbsp;");
-                    htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({nodeInfo.ContentNum})</span>");
+                    htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({_nodeInfo.ContentNum})</span>");
                 }
 
                 return htmlBuilder.ToString();
             }
 
-            public static string GetScript(PageInfo pageInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeID, int topParentsCount, int currentNodeID)
+            public static string GetScript(PageInfo pageInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeId, int topParentsCount, int currentNodeId)
             {
                 var script = @"
 <script language=""JavaScript"">
@@ -964,7 +881,7 @@ function stltree_displayChildren(img){
                 script += $@"
 function loadingChannels(tr, img, div, nodeID){{
     var url = '{loadingUrl}';
-    var pars = 'publishmentSystemID={pageInfo.PublishmentSystemId}&parentID=' + nodeID + '&target={target}&isShowTreeLine={isShowTreeLine}&isShowContentNum={isShowContentNum}&currentFormatString={formatString}&topNodeID={topNodeID}&topParentsCount={topParentsCount}&currentNodeID={currentNodeID}';
+    var pars = 'publishmentSystemID={pageInfo.PublishmentSystemId}&parentID=' + nodeID + '&target={target}&isShowTreeLine={isShowTreeLine}&isShowContentNum={isShowContentNum}&currentFormatString={formatString}&topNodeID={topNodeId}&topParentsCount={topParentsCount}&currentNodeID={currentNodeId}';
 
     //jQuery.post(url, pars, function(data, textStatus){{
         //$($.parseHTML(data)).insertAfter($(tr));
@@ -1015,7 +932,7 @@ function loadingChannelsOnLoad(path){{
 </script>
 ";
 
-                script += GetScriptOnLoad(pageInfo.PublishmentSystemId, topNodeID, pageInfo.PageNodeId);
+                script += GetScriptOnLoad(pageInfo.PublishmentSystemId, topNodeId, pageInfo.PageNodeId);
 
                 var treeDirectoryUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, "tree");
                 var iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
@@ -1034,30 +951,29 @@ function loadingChannelsOnLoad(path){{
                 return script;
             }
 
-            public static string GetScriptOnLoad(int publishmentSystemID, int topNodeID, int currentNodeID)
+            private static string GetScriptOnLoad(int publishmentSystemId, int topNodeId, int currentNodeId)
             {
-                if (currentNodeID != 0 && currentNodeID != publishmentSystemID && currentNodeID != topNodeID)
+                if (currentNodeId == 0 || currentNodeId == publishmentSystemId || currentNodeId == topNodeId)
+                    return string.Empty;
+                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, currentNodeId);
+                if (nodeInfo != null)
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemID, currentNodeID);
-                    if (nodeInfo != null)
+                    string path;
+                    if (nodeInfo.ParentId == publishmentSystemId)
                     {
-                        var path = string.Empty;
-                        if (nodeInfo.ParentId == publishmentSystemID)
-                        {
-                            path = currentNodeID.ToString();
-                        }
-                        else
-                        {
-                            path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",") + 1) + "," + currentNodeID.ToString();
-                        }
-                        return $@"
+                        path = currentNodeId.ToString();
+                    }
+                    else
+                    {
+                        path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",", StringComparison.Ordinal) + 1) + "," + currentNodeId;
+                    }
+                    return $@"
 <script language=""JavaScript"">
 Event.observe(window,'load', function(){{
     loadingChannelsOnLoad('{path}');
 }});
 </script>
 ";
-                    }
                 }
                 return string.Empty;
             }

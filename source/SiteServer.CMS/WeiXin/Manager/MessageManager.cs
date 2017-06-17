@@ -45,8 +45,8 @@ namespace SiteServer.CMS.WeiXin.Manager
         public static string GetMessageUrl(PublishmentSystemInfo publishmentSystemInfo, MessageInfo messageInfo, string wxOpenID)
         {
             var attributes = new NameValueCollection();
-            attributes.Add("publishmentSystemID", messageInfo.PublishmentSystemID.ToString());
-            attributes.Add("messageID", messageInfo.ID.ToString());
+            attributes.Add("publishmentSystemID", messageInfo.PublishmentSystemId.ToString());
+            attributes.Add("messageID", messageInfo.Id.ToString());
             attributes.Add("wxOpenID", wxOpenID);
             return PageUtils.AddQueryString(GetMessageUrl(publishmentSystemInfo), attributes);
         }
@@ -55,9 +55,9 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var messageInfoList = DataProviderWX.MessageDAO.GetMessageInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var messageInfoList = DataProviderWx.MessageDao.GetMessageInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
             foreach (var messageInfo in messageInfoList)
             {
@@ -88,17 +88,17 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         public static void AddContent(int publishmentSystemID, int messageID, string displayName, string color, string content, string ipAddress, string cookieSN, string wxOpenID, string userName)
         {
-            DataProviderWX.MessageDAO.AddUserCount(messageID);
-            var contentInfo = new MessageContentInfo { ID = 0, PublishmentSystemID = publishmentSystemID, MessageID = messageID, IPAddress = ipAddress, CookieSN = cookieSN, WXOpenID = wxOpenID, UserName = userName, ReplyCount = 0, LikeCount = 0, IsReply = false, ReplyID = 0, DisplayName = displayName, Color = color, Content = content, AddDate = DateTime.Now };
-            DataProviderWX.MessageContentDAO.Insert(contentInfo);
+            DataProviderWx.MessageDao.AddUserCount(messageID);
+            var contentInfo = new MessageContentInfo { Id = 0, PublishmentSystemId = publishmentSystemID, MessageId = messageID, IpAddress = ipAddress, CookieSn = cookieSN, WxOpenId = wxOpenID, UserName = userName, ReplyCount = 0, LikeCount = 0, IsReply = false, ReplyId = 0, DisplayName = displayName, Color = color, Content = content, AddDate = DateTime.Now };
+            DataProviderWx.MessageContentDao.Insert(contentInfo);
         }
 
         public static void AddReply(int publishmentSystemID, int messageID, int replyContentID, string displayName, string content, string ipAddress, string cookieSN, string wxOpenID, string userName)
         {
-            DataProviderWX.MessageDAO.AddUserCount(messageID);
-            var contentInfo = new MessageContentInfo { ID = 0, PublishmentSystemID = publishmentSystemID, MessageID = messageID, IPAddress = ipAddress, CookieSN = cookieSN, WXOpenID = wxOpenID, UserName = userName, ReplyCount = 0, LikeCount = 0, IsReply = true, ReplyID = replyContentID, DisplayName = displayName, Color = string.Empty, Content = content, AddDate = DateTime.Now };
-            DataProviderWX.MessageContentDAO.Insert(contentInfo);
-            DataProviderWX.MessageContentDAO.AddReplyCount(replyContentID);
+            DataProviderWx.MessageDao.AddUserCount(messageID);
+            var contentInfo = new MessageContentInfo { Id = 0, PublishmentSystemId = publishmentSystemID, MessageId = messageID, IpAddress = ipAddress, CookieSn = cookieSN, WxOpenId = wxOpenID, UserName = userName, ReplyCount = 0, LikeCount = 0, IsReply = true, ReplyId = replyContentID, DisplayName = displayName, Color = string.Empty, Content = content, AddDate = DateTime.Now };
+            DataProviderWx.MessageContentDao.Insert(contentInfo);
+            DataProviderWx.MessageContentDao.AddReplyCount(replyContentID);
         }
 	}
 }

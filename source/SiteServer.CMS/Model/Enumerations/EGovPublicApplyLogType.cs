@@ -5,14 +5,14 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EGovPublicApplyLogType
 	{
-        New,                //ĞÂÉêÇë
-        Accept,             //ÊÜÀí
-        Deny,               //¾Ü¾ø
-        SwitchTo,           //×ª°ì
-        Comment,            //ÅúÊ¾
-        Redo,               //ÒªÇó·µ¹¤
-        Reply,              //°ìÀí
-        Check,              //ÉóºË
+        New,                //æ–°ç”³è¯·
+        Accept,             //å—ç†
+        Deny,               //æ‹’ç»
+        SwitchTo,           //è½¬åŠ
+        Comment,            //æ‰¹ç¤º
+        Redo,               //è¦æ±‚è¿”å·¥
+        Reply,              //åŠç†
+        Check,              //å®¡æ ¸
 	}
 
     public class EGovPublicApplyLogTypeUtils
@@ -61,35 +61,35 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == EGovPublicApplyLogType.New)
             {
-                return "Ç°Ì¨ ÍøÓÑ Ìá½»ÉêÇë";
+                return "å‰å°ç½‘å‹æäº¤ç”³è¯·";
             }
             else if (type == EGovPublicApplyLogType.Accept)
             {
-                return "ÊÜÀíÉêÇë";
+                return "å—ç†ç”³è¯·";
             }
             else if (type == EGovPublicApplyLogType.Deny)
             {
-                return "¾Ü¾øÉêÇë";
+                return "æ‹’ç»ç”³è¯·";
             }
             else if (type == EGovPublicApplyLogType.SwitchTo)
             {
-                return "×ª°ìÉêÇë";
+                return "è½¬åŠç”³è¯·";
             }
             else if (type == EGovPublicApplyLogType.Comment)
             {
-                return "ÅúÊ¾ÉêÇë";
+                return "æ‰¹ç¤ºç”³è¯·";
             }
             else if (type == EGovPublicApplyLogType.Redo)
             {
-                return "ÒªÇó·µ¹¤";
+                return "è¦æ±‚è¿”å·¥";
             }
             else if (type == EGovPublicApplyLogType.Reply)
             {
-                return "»Ø¸´ÉêÇë";
+                return "å›å¤ç”³è¯·";
             }
             else if (type == EGovPublicApplyLogType.Check)
             {
-                return "ÉóºËÉêÇë Í¨¹ı";
+                return "å®¡æ ¸ç”³è¯· é€šè¿‡";
             }
             else
             {

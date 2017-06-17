@@ -5,41 +5,48 @@ namespace BaiRong.Core.Model.Enumerations
 {
     public enum ESmsTemplateType
     {
-        Code,
+        Verify,
+        Notify
     }
 
     public class ESmsTemplateTypeUtils
     {
         public static string GetValue(ESmsTemplateType type)
         {
-            if (type == ESmsTemplateType.Code)
+            if (type == ESmsTemplateType.Verify)
             {
-                return "Code";
+                return "Verify";
             }
-            else
+            if (type == ESmsTemplateType.Notify)
             {
-                throw new Exception();
+                return "Notify";
             }
+            throw new Exception();
         }
 
         public static string GetText(ESmsTemplateType type)
         {
-            if (type == ESmsTemplateType.Code)
+            if (type == ESmsTemplateType.Verify)
             {
-                return "验证码";
+                return "验证码类";
             }
-            else
+            if (type == ESmsTemplateType.Notify)
             {
-                throw new Exception();
+                return "通知类";
             }
+            throw new Exception();
         }
 
         public static ESmsTemplateType GetEnumType(string typeStr)
         {
-            var retval = ESmsTemplateType.Code;
-            if (Equals(typeStr, ESmsTemplateType.Code))
+            var retval = ESmsTemplateType.Verify;
+            if (Equals(typeStr, ESmsTemplateType.Verify))
             {
-                retval = ESmsTemplateType.Code;
+                retval = ESmsTemplateType.Verify;
+            }
+            else if (Equals(typeStr, ESmsTemplateType.Notify))
+            {
+                retval = ESmsTemplateType.Notify;
             }
             return retval;
         }
@@ -58,7 +65,8 @@ namespace BaiRong.Core.Model.Enumerations
         {
             return new List<ESmsTemplateType>
             {
-                ESmsTemplateType.Code
+                ESmsTemplateType.Verify,
+                ESmsTemplateType.Notify
             };
         }
     }

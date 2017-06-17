@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Data;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Json;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Web.Script.Serialization;
 using BaiRong.Core.Cryptography;
 using System.Text.RegularExpressions;
@@ -666,7 +664,7 @@ namespace BaiRong.Core
             var builder = new StringBuilder();
             if (attributes != null && attributes.Count > 0)
             {
-                foreach (string key in attributes.Keys)
+                foreach (var key in attributes.Keys)
                 {
                     builder.Append(
                         $@"{StringUtils.ValueToUrl(key)}={StringUtils.ValueToUrl(attributes[key])}{seperator}");
@@ -681,9 +679,9 @@ namespace BaiRong.Core
             var builder = new StringBuilder();
             if (attributes != null && attributes.Count > 0)
             {
-                foreach (string key in attributes.Keys)
+                foreach (var key in attributes.Keys)
                 {
-                    var value = attributes[key];
+                    var value = attributes.Get(key);
                     if (!string.IsNullOrEmpty(value))
                     {
                         value = value.Replace("\"", "'");

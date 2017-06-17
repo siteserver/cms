@@ -6,9 +6,9 @@ namespace SiteServer.CMS.Model.Enumerations
 
     public enum EAdvertisementType
     {
-        FloatImage,				//漂浮广告
-        ScreenDown,             //全屏下推
-        OpenWindow,             //弹出窗口
+        FloatImage,				//婕傛诞骞垮憡
+        ScreenDown,             //鍏ㄥ睆涓嬫帹
+        OpenWindow,             //寮瑰嚭绐楀彛
     }
 
     public class EAdvertisementTypeUtils
@@ -37,15 +37,15 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (type == EAdvertisementType.FloatImage)
             {
-                return "漂浮广告";
+                return "婕傛诞骞垮憡";
             }
             else if (type == EAdvertisementType.ScreenDown)
             {
-                return "全屏下推";
+                return "鍏ㄥ睆涓嬫帹";
             }
             else if (type == EAdvertisementType.OpenWindow)
             {
-                return "弹出窗口";
+                return "寮瑰嚭绐楀彛";
             }
             else
             {

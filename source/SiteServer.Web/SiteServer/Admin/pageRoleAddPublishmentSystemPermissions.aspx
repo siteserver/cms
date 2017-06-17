@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="本页面设置对应站点的具体权限，确认后需在在角色编辑页面再次点击确认才能最终保存" runat="server" />
 
   <script type="text/javascript" language="javascript">

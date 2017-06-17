@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Web.UI;
 using BaiRong.Core;
-using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;

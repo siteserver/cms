@@ -1,5 +1,4 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Service.PageCreateStatus" %>
-
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 

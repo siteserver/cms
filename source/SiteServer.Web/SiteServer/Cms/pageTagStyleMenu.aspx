@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="下拉菜单标签为&amp;lt;stl:menu styleName=&quot;样式名称&quot;&gt;&amp;lt;/stl:menu&gt;，用于显示下拉菜单。" runat="server"></bairong:alerts>
 
   <asp:dataGrid id="dgContents" showHeader="true" AutoGenerateColumns="false" DataKeyField="MenuDisplayID" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">

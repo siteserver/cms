@@ -1,5 +1,8 @@
 using System;
+using System.IO;
 using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugins;
 
 namespace siteserver
 {
@@ -18,5 +21,14 @@ namespace siteserver
         }
 
         public static bool IsInitialized => BaiRongDataProvider.ConfigDao.IsInitialized();
+
+        public static void OnFileChanged(object sender, FileSystemEventArgs e)
+        {
+            var pluginInfoList = PluginManager.GetPluginInfoList();
+            foreach (var pluginInfo in pluginInfoList)
+            {
+                pluginInfo.Instance.OnFileChanged(e);
+            }
+        }
     }
 }

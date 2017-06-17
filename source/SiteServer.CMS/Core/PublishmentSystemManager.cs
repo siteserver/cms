@@ -412,7 +412,7 @@ namespace SiteServer.CMS.Core
                         if (!publishmentSystemIdList.Contains(itemForPsid))
                         {
                             var publishmentSystemInfo = GetPublishmentSystemInfo(itemForPsid);
-                            if ((Equals(EPublishmentSystemType.CMS, publishmentSystemInfo.PublishmentSystemType) || Equals(EPublishmentSystemType.WCM, publishmentSystemInfo.PublishmentSystemType)))
+                            if ((Equals(EPublishmentSystemType.Cms, publishmentSystemInfo.PublishmentSystemType) || Equals(EPublishmentSystemType.Wcm, publishmentSystemInfo.PublishmentSystemType)))
                             {
                                 publishmentSystemInfoList.Add(publishmentSystemInfo);
                                 publishmentSystemIdList.Add(itemForPsid);

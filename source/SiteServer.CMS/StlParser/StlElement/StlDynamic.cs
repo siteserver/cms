@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
@@ -9,15 +9,16 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "动态显示", Description = "通过 stl:dynamic 标签在模板中实现动态显示功能")]
     public class StlDynamic
     {
         private StlDynamic() { }
-        public const string ElementName = "stl:dynamic";                    //显示动态内容
+        public const string ElementName = "stl:dynamic";
 
-        public const string AttributeContext = "context";                   //所处上下文
-        public const string AttributeIsPageRefresh = "ispagerefresh";       //翻页时是否刷新页面
+        public const string AttributeContext = "context";
+        public const string AttributeIsPageRefresh = "isPageRefresh";
 
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeContext, "所处上下文"},
             {AttributeIsPageRefresh, "翻页时是否刷新页面"}
@@ -37,12 +38,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributeContext))
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeContext))
                         {
                             contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
                         }
-                        else if (attributeName.Equals(AttributeIsPageRefresh))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsPageRefresh))
                         {
                             isPageRefresh = TranslateUtils.ToBool(attr.Value);
                         }
@@ -73,9 +74,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             var apiUrl = ActionsDynamic.GetUrl(pageInfo.ApiUrl);
-            var currentPageUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo);
+            var currentPageUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
             currentPageUrl = PageUtils.AddQuestionOrAndToUrl(currentPageUrl);
-            var apiParameters = ActionsDynamic.GetParameters(pageInfo.PublishmentSystemId, contextInfo.ChannelID, contextInfo.ContentID, pageInfo.TemplateInfo.TemplateId, currentPageUrl, ajaxDivId, isPageRefresh, templateContent);
+            var apiParameters = ActionsDynamic.GetParameters(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.TemplateId, currentPageUrl, ajaxDivId, isPageRefresh, templateContent);
 
             var builder = new StringBuilder();
             builder.Append($@"<span id=""{ajaxDivId}""></span>");

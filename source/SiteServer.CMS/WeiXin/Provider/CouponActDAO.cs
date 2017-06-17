@@ -7,17 +7,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class CouponActDAO : DataProviderBase
+    public class CouponActDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_CouponAct";
+        private const string TableName = "wx_CouponAct";
 
         public int Insert(CouponActInfo actInfo)
         {
-            var actID = 0;
+            var actId = 0;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(actInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(actInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -26,9 +26,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        actID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        actId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -40,79 +38,79 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return actID;
+            return actId;
         }
 
         public void Update(CouponActInfo actInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(actInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(actInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
         }
 
-        public void UpdateUserCount(int actID, int publishmentSystemID)
+        public void UpdateUserCount(int actId, int publishmentSystemId)
         {
-            if (actID > 0)
+            if (actId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} set UserCount= UserCount+1 WHERE ID = {actID} AND publishmentSystemID = {publishmentSystemID}";
+                    $"UPDATE {TableName} set UserCount= UserCount+1 WHERE ID = {actId} AND publishmentSystemID = {publishmentSystemId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void UpdatePVCount(int actID, int publishmentSystemID)
+        public void UpdatePvCount(int actId, int publishmentSystemId)
         {
-            if (actID > 0)
+            if (actId > 0)
             {
                 string sqlString =
-                    $"UPDATE {TABLE_NAME} set PVCount= PVCount+1 WHERE ID = {actID} AND publishmentSystemID = {publishmentSystemID}";
+                    $"UPDATE {TableName} set PVCount= PVCount+1 WHERE ID = {actId} AND publishmentSystemID = {publishmentSystemId}";
                 ExecuteNonQuery(sqlString);
             }
         }
         
-        public void Delete(List<int> actIDList)
+        public void Delete(List<int> actIdList)
         {
-            if (actIDList != null && actIDList.Count > 0)
+            if (actIdList != null && actIdList.Count > 0)
             {
-                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(actIDList));
+                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(actIdList));
 
                 string sqlString =
-                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(actIDList)})";
+                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(actIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private List<int> GetKeywordIDList(List<int> actIDList)
+        private List<int> GetKeywordIdList(List<int> actIdList)
         {
-            var keywordIDList = new List<int>();
+            var keywordIdList = new List<int>();
 
-            if (actIDList != null && actIDList.Count > 0)
+            if (actIdList != null && actIdList.Count > 0)
             {
                 string sqlString =
-                    $"SELECT {CouponActAttribute.KeywordID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(actIDList)})";
+                    $"SELECT {CouponActAttribute.KeywordId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(actIdList)})";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
                     while (rdr.Read())
                     {
-                        keywordIDList.Add(rdr.GetInt32(0));
+                        keywordIdList.Add(rdr.GetInt32(0));
                     }
                     rdr.Close();
                 }
             }
 
-            return keywordIDList;
+            return keywordIdList;
         }
 
-        public CouponActInfo GetActInfo(int actID)
+        public CouponActInfo GetActInfo(int actId)
         {
             CouponActInfo actInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {actID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {actId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -124,12 +122,12 @@ namespace SiteServer.CMS.WeiXin.Provider
             return actInfo;
         }
 
-        public List<int> GetActIDList(int publishmentSystemID)
+        public List<int> GetActIdList(int publishmentSystemId)
         {
             var list = new List<int>();
 
             string sqlString =
-                $"SELECT ID FROM {TABLE_NAME} WHERE {CouponActAttribute.PublishmentSystemID} = {publishmentSystemID}";
+                $"SELECT ID FROM {TableName} WHERE {CouponActAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -143,19 +141,19 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public List<CouponActInfo> GetActInfoListByKeywordID(int publishmentSystemID, int keywordID)
+        public List<CouponActInfo> GetActInfoListByKeywordId(int publishmentSystemId, int keywordId)
         {
             var actInfoList = new List<CouponActInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {CouponActAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CouponActAttribute.IsDisabled} <> '{true}'";
-            if (keywordID > 0)
+            string sqlWhere =
+                $"WHERE {CouponActAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponActAttribute.IsDisabled} <> '{true}'";
+            if (keywordId > 0)
             {
-                SQL_WHERE += $" AND {CouponActAttribute.KeywordID} = {keywordID}";
+                sqlWhere += $" AND {CouponActAttribute.KeywordId} = {keywordId}";
             }
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -168,33 +166,33 @@ namespace SiteServer.CMS.WeiXin.Provider
             return actInfoList;
         }
 
-        public int GetKeywordID(int actID)
+        public int GetKeywordId(int actId)
         {
-            var keywordID = 0;
+            var keywordId = 0;
 
-            string SQL_WHERE = $"WHERE ID = {actID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, CouponActAttribute.KeywordID, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {actId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, CouponActAttribute.KeywordId, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))
                 {
-                    keywordID = rdr.GetInt32(0);
+                    keywordId = rdr.GetInt32(0);
                 }
                 rdr.Close();
             }
 
-            return keywordID;
+            return keywordId;
         }
 
-        public string GetTitle(int actID)
+        public string GetTitle(int actId)
         {
             var title = string.Empty;
 
-            string SQL_WHERE = $"WHERE ID = {actID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, CouponActAttribute.Title, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {actId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, CouponActAttribute.Title, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -206,29 +204,29 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
 
-        public string GetSelectString(int publishmentSystemID)
+        public string GetSelectString(int publishmentSystemId)
         {
-            string whereString = $"WHERE {CouponActAttribute.PublishmentSystemID} = {publishmentSystemID}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {CouponActAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public int GetFirstIDByKeywordID(int publishmentSystemID, int keywordID)
+        public int GetFirstIdByKeywordId(int publishmentSystemId, int keywordId)
         {
             string sqlString =
-                $"SELECT TOP 1 ID FROM {TABLE_NAME} WHERE {CouponActAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CouponActAttribute.IsDisabled} <> '{true}' AND {CouponActAttribute.KeywordID} = {keywordID}";
+                $"SELECT TOP 1 ID FROM {TableName} WHERE {CouponActAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponActAttribute.IsDisabled} <> '{true}' AND {CouponActAttribute.KeywordId} = {keywordId}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public List<CouponActInfo> GetCouponActInfoList(int publishmentSystemID)
+        public List<CouponActInfo> GetCouponActInfoList(int publishmentSystemId)
         {
             var couponActInfoList = new List<CouponActInfo>();
 
-            string SQL_WHERE = $"WHERE {CouponActAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            string sqlWhere = $"WHERE {CouponActAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

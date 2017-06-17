@@ -17,64 +17,75 @@ namespace SiteServer.API.Controllers.Stl
             var body = new RequestBody();
 
             var publishmentSystemId = body.GetQueryInt("publishmentSystemId");
-            var channelId = body.GetQueryInt("channelId");
-            if (channelId == 0)
-            {
-                channelId = publishmentSystemId;
-            }
-            var contentId = body.GetQueryInt("contentId");
-            var fileTemplateId = body.GetQueryInt("fileTemplateId");
-            var isRedirect = TranslateUtils.ToBool(body.GetQueryString("isRedirect"));
-
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var fso = new FileSystemObject(publishmentSystemId);
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-            if (fileTemplateId != 0)
-            {
-                fso.CreateFile(fileTemplateId);
-            }
-            else if (contentId != 0)
-            {
-                fso.CreateContent(tableStyle, tableName, channelId, contentId);
-            }
-            else if (channelId != 0)
-            {
-                fso.CreateChannel(channelId);
-            }
-            else if (publishmentSystemId != 0)
-            {
-                fso.CreateChannel(publishmentSystemId);
-            }
 
-            if (isRedirect)
+            try
             {
-                var redirectUrl = string.Empty;
+                
+                var channelId = body.GetQueryInt("channelId");
+                if (channelId == 0)
+                {
+                    channelId = publishmentSystemId;
+                }
+                var contentId = body.GetQueryInt("contentId");
+                var fileTemplateId = body.GetQueryInt("fileTemplateId");
+                var isRedirect = TranslateUtils.ToBool(body.GetQueryString("isRedirect"));
+
+                var fso = new FileSystemObject(publishmentSystemId);
+                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
+                var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
                 if (fileTemplateId != 0)
                 {
-                    redirectUrl = PageUtility.GetFileUrl(publishmentSystemInfo, fileTemplateId);
+                    fso.CreateFile(fileTemplateId);
                 }
                 else if (contentId != 0)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
-                    redirectUrl = PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo);
+                    fso.CreateContent(tableStyle, tableName, channelId, contentId);
                 }
                 else if (channelId != 0)
                 {
-                    redirectUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
+                    fso.CreateChannel(channelId);
                 }
                 else if (publishmentSystemId != 0)
                 {
-                    redirectUrl = PageUtility.GetIndexPageUrl(publishmentSystemInfo);
+                    fso.CreateChannel(publishmentSystemId);
                 }
 
-                if (!string.IsNullOrEmpty(redirectUrl))
+                if (isRedirect)
                 {
-                    redirectUrl = PageUtils.AddQueryString(redirectUrl, "__r", StringUtils.GetRandomInt(1, 10000).ToString());
-                    HttpContext.Current.Response.Redirect(redirectUrl, true);
-                    return;
+                    var redirectUrl = string.Empty;
+                    if (fileTemplateId != 0)
+                    {
+                        redirectUrl = PageUtility.GetFileUrl(publishmentSystemInfo, fileTemplateId, true);
+                    }
+                    else if (contentId != 0)
+                    {
+                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                        redirectUrl = PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo, true);
+                    }
+                    else if (channelId != 0)
+                    {
+                        redirectUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true);
+                    }
+                    else if (publishmentSystemId != 0)
+                    {
+                        redirectUrl = PageUtility.GetIndexPageUrl(publishmentSystemInfo, true);
+                    }
+
+                    if (!string.IsNullOrEmpty(redirectUrl))
+                    {
+                        redirectUrl = PageUtils.AddQueryString(redirectUrl, "__r", StringUtils.GetRandomInt(1, 10000).ToString());
+                        HttpContext.Current.Response.Redirect(redirectUrl, true);
+                        return;
+                    }
                 }
+            }
+            catch
+            {
+                var redirectUrl = PageUtility.GetIndexPageUrl(publishmentSystemInfo, true);
+                HttpContext.Current.Response.Redirect(redirectUrl, true);
+                return;
             }
 
             HttpContext.Current.Response.Write(string.Empty);

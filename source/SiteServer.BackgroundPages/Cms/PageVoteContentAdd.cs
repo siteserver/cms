@@ -7,8 +7,8 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.User;
@@ -178,7 +178,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var contentInfo = new VoteContentInfo();
                     try
                     {
-                        InputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                        BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
 
                         contentInfo.NodeId = nodeID;
                         contentInfo.PublishmentSystemId = PublishmentSystemId;
@@ -250,7 +250,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var contentInfo = DataProvider.VoteContentDao.GetContentInfo(PublishmentSystemInfo, contentID);
                     try
                     {                        
-                        InputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                        BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
 
                         contentInfo.LastEditUserName = Body.AdministratorName;
                         contentInfo.LastEditDate = DateTime.Now;

@@ -234,6 +234,122 @@ namespace SiteServer.CMS.Provider
             return whereBuilder.ToString();
         }
 
+        public string GetStlWhereStringBySearch(string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        {
+            var whereBuilder = new StringBuilder();
+
+            if (isImageExists)
+            {
+                if (isImage)
+                {
+                    whereBuilder.Append($" AND {BackgroundContentAttribute.ImageUrl} <> '' ");
+                }
+                else
+                {
+                    whereBuilder.Append($" AND {BackgroundContentAttribute.ImageUrl} = '' ");
+                }
+            }
+
+            if (isVideoExists)
+            {
+                if (isVideo)
+                {
+                    whereBuilder.Append($" AND {BackgroundContentAttribute.VideoUrl} <> '' ");
+                }
+                else
+                {
+                    whereBuilder.Append($" AND {BackgroundContentAttribute.VideoUrl} = '' ");
+                }
+            }
+
+            if (isFileExists)
+            {
+                if (isFile)
+                {
+                    whereBuilder.Append($" AND {BackgroundContentAttribute.FileUrl} <> '' ");
+                }
+                else
+                {
+                    whereBuilder.Append($" AND {BackgroundContentAttribute.FileUrl} = '' ");
+                }
+            }
+
+            if (isTopExists)
+            {
+                whereBuilder.Append($" AND IsTop = '{isTop}' ");
+            }
+
+            if (isRecommendExists)
+            {
+                whereBuilder.Append($" AND {BackgroundContentAttribute.IsRecommend} = '{isRecommend}' ");
+            }
+
+            if (isHotExists)
+            {
+                whereBuilder.Append($" AND {BackgroundContentAttribute.IsHot} = '{isHot}' ");
+            }
+
+            if (isColorExists)
+            {
+                whereBuilder.Append($" AND {BackgroundContentAttribute.IsColor} = '{isColor}' ");
+            }
+
+            if (!string.IsNullOrEmpty(group))
+            {
+                group = group.Trim().Trim(',');
+                var groupArr = group.Split(',');
+                if (groupArr != null && groupArr.Length > 0)
+                {
+                    whereBuilder.Append(" AND (");
+                    foreach (var theGroup in groupArr)
+                    {
+                        var trimGroup = theGroup.Trim();
+                        //whereBuilder.Append(
+                        //    $" ({ContentAttribute.ContentGroupNameCollection} = '{trimGroup}' OR CHARINDEX('{trimGroup},',{ContentAttribute.ContentGroupNameCollection}) > 0 OR CHARINDEX(',{trimGroup},',{ContentAttribute.ContentGroupNameCollection}) > 0 OR CHARINDEX(',{trimGroup}',{ContentAttribute.ContentGroupNameCollection}) > 0) OR ");
+
+                        whereBuilder.Append(
+                                $" ({ContentAttribute.ContentGroupNameCollection} = '{trimGroup}' OR {SqlUtils.GetInStr(ContentAttribute.ContentGroupNameCollection, trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.ContentGroupNameCollection, "," + trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.ContentGroupNameCollection, "," + trimGroup)}) OR ");
+                    }
+                    if (groupArr.Length > 0)
+                    {
+                        whereBuilder.Length = whereBuilder.Length - 3;
+                    }
+                    whereBuilder.Append(") ");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(groupNot))
+            {
+                groupNot = groupNot.Trim().Trim(',');
+                var groupNotArr = groupNot.Split(',');
+                if (groupNotArr != null && groupNotArr.Length > 0)
+                {
+                    whereBuilder.Append(" AND (");
+                    foreach (var theGroupNot in groupNotArr)
+                    {
+                        var trimGroup = theGroupNot.Trim();
+                        //whereBuilder.Append(
+                        //    $" ({ContentAttribute.ContentGroupNameCollection} <> '{trimGroup}' AND CHARINDEX('{trimGroup},',{ContentAttribute.ContentGroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup},',{ContentAttribute.ContentGroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup}',{ContentAttribute.ContentGroupNameCollection}) = 0) AND ");
+
+                        whereBuilder.Append(
+                                $" ({ContentAttribute.ContentGroupNameCollection} <> '{trimGroup}' AND {SqlUtils.GetNotInStr(ContentAttribute.ContentGroupNameCollection, trimGroup + ",")} AND {SqlUtils.GetNotInStr(ContentAttribute.ContentGroupNameCollection, "," + trimGroup + ",")} AND {SqlUtils.GetNotInStr(ContentAttribute.ContentGroupNameCollection, "," + trimGroup)}) AND ");
+                    }
+                    if (groupNotArr.Length > 0)
+                    {
+                        whereBuilder.Length = whereBuilder.Length - 4;
+                    }
+                    whereBuilder.Append(") ");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(where))
+            {
+                whereBuilder.Append($" AND ({where}) ");
+            }
+
+            return whereBuilder.ToString();
+        }
+
         public string GetSelectCommendByDownloads(string tableName, int publishmentSystemId)
         {
             var whereString = new StringBuilder();

@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages
         private string _menuId = string.Empty;
         private PublishmentSystemInfo _publishmentSystemInfo = new PublishmentSystemInfo();
         private PublishmentSystemInfo _hqPublishmentSystemInfo;
-        private readonly ArrayList _addedSiteIdArrayList = new ArrayList();
+        private readonly List<int> _addedSiteIdList = new List<int>();
         private AdministratorWithPermissions _permissions;
 
         protected override bool IsSinglePage => true;
@@ -77,11 +77,9 @@ namespace SiteServer.BackgroundPages
 
                 var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList;
 
-                //站点要判断是否存在，是否有权限，update by sessionliang 20160104
+                //站点要判断是否存在，是否有权限
                 if (publishmentSystemId == 0 || !PublishmentSystemManager.IsExists(publishmentSystemId) || !publishmentSystemIdList.Contains(publishmentSystemId))
                 {
-                    //ArrayList publishmentSystemIDArrayList = PublishmentSystemManager.GetPublishmentSystemIDArrayListOrderByLevel();
-                    // List<int> publishmentSystemIDList = ProductPermissionsManager.Current.PublishmentSystemIDList;
                     if (publishmentSystemIdList != null && publishmentSystemIdList.Count > 0)
                     {
                         publishmentSystemId = publishmentSystemIdList[0];
@@ -114,7 +112,7 @@ namespace SiteServer.BackgroundPages
                     ICollection nodeIdCollection = ProductPermissionsManager.Current.ChannelPermissionDict.Keys;
                     foreach (int nodeId in nodeIdCollection)
                     {
-                        if (ChannelUtility.IsAncestorOrSelf(_publishmentSystemInfo.PublishmentSystemId, _publishmentSystemInfo.PublishmentSystemId, nodeId))
+                        if (NodeManager.IsAncestorOrSelf(_publishmentSystemInfo.PublishmentSystemId, _publishmentSystemInfo.PublishmentSystemId, nodeId))
                         {
                             showPublishmentSystem = true;
                             var list = ProductPermissionsManager.Current.ChannelPermissionDict[nodeId];
@@ -188,7 +186,7 @@ namespace SiteServer.BackgroundPages
             RptTopMenu.ItemDataBound += RptTopMenu_ItemDataBound;
             RptTopMenu.DataBind();
 
-            //update at 20141106，避免空引用异常
+            //避免空引用异常
             if (_publishmentSystemInfo != null && _publishmentSystemInfo.PublishmentSystemId > 0)
             {
                 BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemId(Body.AdministratorName, _publishmentSystemInfo.PublishmentSystemId);
@@ -248,13 +246,13 @@ namespace SiteServer.BackgroundPages
                     if (_publishmentSystemInfo.Additional.IsMultiDeployment)
                     {
                         builder.Append(
-                            $@"<li><a href=""{_publishmentSystemInfo.Additional.OuterUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点外网地址</a></li>");
+                            $@"<li><a href=""{_publishmentSystemInfo.Additional.OuterSiteUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点外网地址</a></li>");
                         builder.Append(
-                            $@"<li><a href=""{_publishmentSystemInfo.Additional.InnerUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点内网地址</a></li>");
+                            $@"<li><a href=""{_publishmentSystemInfo.Additional.InnerSiteUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点内网地址</a></li>");
                     }
                     else
                     {
-                        var publishmentSystemUrl = PageUtility.GetPublishmentSystemUrl(_publishmentSystemInfo, string.Empty);
+                        var publishmentSystemUrl = PageUtility.GetPublishmentSystemUrl(_publishmentSystemInfo, string.Empty, true);
 
                         builder.Append(
                             $@"<li><a href=""{publishmentSystemUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点</a></li>");
@@ -274,33 +272,29 @@ namespace SiteServer.BackgroundPages
             }
             else if (index == 2)
             {
-
                 ltlMenuLi.Text = @"<li>";
 
-                var tabArrayList = ProductFileUtils.GetMenuTopArrayList();
+                var topMenuTabs = TabManager.GetTopMenuTabs();
 
                 var builder = new StringBuilder();
-                foreach (Tab tab in tabArrayList)
+                foreach (var tab in topMenuTabs)
                 {
-                    if (TabManager.IsValid(tab, _permissions.PermissionList))
+                    if (!TabManager.IsValid(tab, _permissions.PermissionList)) continue;
+
+                    var loadingUrl = GetRedirectUrl(0, tab.Id);
+                    if (!string.IsNullOrEmpty(tab.Href))
                     {
-                        var loadingUrl = GetRedirectUrl(0, tab.Id);
-                        if (!string.IsNullOrEmpty(tab.Href))
-                        {
-                            loadingUrl = PageUtils.ParseNavigationUrl(tab.Href);
-                        }
-
-                        var target = "_self";
-                        if (!string.IsNullOrEmpty(tab.Target))
-                        {
-                            target = tab.Target;
-                        }
-
-                        //菜单平铺，update by sessionliang at 20151207
-                        builder.Append(
-                            $@"<span><a href=""{loadingUrl}"" target=""{target}"" style=""padding: 10px 15px;color: #fff;"">{tab
-                                .Text}</a></span>");
+                        loadingUrl = PageUtils.ParseNavigationUrl(tab.Href);
                     }
+
+                    var target = "_self";
+                    if (!string.IsNullOrEmpty(tab.Target))
+                    {
+                        target = tab.Target;
+                    }
+
+                    builder.Append(
+                        $@"<span><a href=""{loadingUrl}"" target=""{target}"" style=""padding: 10px 15px;color: #fff;"">{tab.Text}</a></span>");
                 }
 
                 if (builder.Length == 0)
@@ -316,19 +310,18 @@ namespace SiteServer.BackgroundPages
 
         private bool GetPublishmentSystemListHtml(StringBuilder builder)
         {
-
             var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList;
 
             //操作者拥有的站点列表
-            var mySystemInfoArrayList = new ArrayList();
+            var mySystemInfoList = new List<PublishmentSystemInfo>();
 
-            var parentWithChildren = new Hashtable();
+            var parentWithChildren = new Dictionary<int, List<PublishmentSystemInfo>>();
 
             if (ProductPermissionsManager.Current.IsSystemAdministrator)
             {
                 foreach (var publishmentSystemId in publishmentSystemIdList)
                 {
-                    AddToMySystemInfoArrayList(mySystemInfoArrayList, parentWithChildren, publishmentSystemId);
+                    AddToMySystemInfoList(mySystemInfoList, parentWithChildren, publishmentSystemId);
                 }
             }
             else
@@ -340,7 +333,7 @@ namespace SiteServer.BackgroundPages
                     var showPublishmentSystem = IsShowPublishmentSystem(publishmentSystemId, publishmentSystemIdCollection, nodeIdCollection);
                     if (showPublishmentSystem)
                     {
-                        AddToMySystemInfoArrayList(mySystemInfoArrayList, parentWithChildren, publishmentSystemId);
+                        AddToMySystemInfoList(mySystemInfoList, parentWithChildren, publishmentSystemId);
                     }
                 }
             }
@@ -355,17 +348,17 @@ namespace SiteServer.BackgroundPages
                 builder.Append(@"<li class=""divider""></li>");
             }
 
-            if (_hqPublishmentSystemInfo != null || mySystemInfoArrayList.Count > 0)
+            if (_hqPublishmentSystemInfo != null || mySystemInfoList.Count > 0)
             {
                 if (_hqPublishmentSystemInfo != null)
                 {
                     AddSite(builder, _hqPublishmentSystemInfo, parentWithChildren, 0);
                 }
 
-                if (mySystemInfoArrayList.Count > 0)
+                if (mySystemInfoList.Count > 0)
                 {
                     var count = 0;
-                    foreach (PublishmentSystemInfo publishmentSystemInfo in mySystemInfoArrayList)
+                    foreach (var publishmentSystemInfo in mySystemInfoList)
                     {
                         if (publishmentSystemInfo.IsHeadquarters == false)
                         {
@@ -377,8 +370,7 @@ namespace SiteServer.BackgroundPages
                             builder.Append(@"<li class=""divider""></li>");
                             builder.Append(
                                 $@"<li style=""background:#eee;""><a href=""javascript:;"" onclick=""{ModalPublishmentSystemSelect
-                                    .GetOpenLayerString()}""><i class=""icon-search icon-large
-                    ""></i> 列出全部站点...</a></li>");
+                                    .GetOpenLayerString()}""><i class=""icon-search icon-large""></i> 列出全部站点...</a></li>");
                             break;
                         }
                     }
@@ -404,7 +396,7 @@ namespace SiteServer.BackgroundPages
             }
             foreach (int nodeId in nodeIdCollection)
             {
-                if (ChannelUtility.IsAncestorOrSelf(publishmentSystemId, publishmentSystemId, nodeId))
+                if (NodeManager.IsAncestorOrSelf(publishmentSystemId, publishmentSystemId, nodeId))
                 {
                     return true;
                 }
@@ -412,7 +404,7 @@ namespace SiteServer.BackgroundPages
             return false;
         }
 
-        private void AddToMySystemInfoArrayList(ArrayList mySystemInfoArrayList, Hashtable parentWithChildren, int publishmentSystemId)
+        private void AddToMySystemInfoList(List<PublishmentSystemInfo> mySystemInfoArrayList, Dictionary<int, List<PublishmentSystemInfo>> parentWithChildren, int publishmentSystemId)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             if (publishmentSystemInfo != null)
@@ -423,28 +415,27 @@ namespace SiteServer.BackgroundPages
                 }
                 else if (publishmentSystemInfo.ParentPublishmentSystemId > 0)
                 {
-                    var children = new ArrayList();
-                    if (parentWithChildren.Contains(publishmentSystemInfo.ParentPublishmentSystemId))
+                    var children = new List<PublishmentSystemInfo>();
+                    if (parentWithChildren.ContainsKey(publishmentSystemInfo.ParentPublishmentSystemId))
                     {
-                        children = (ArrayList)parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId];
+                        children = parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId];
                     }
                     children.Add(publishmentSystemInfo);
                     parentWithChildren[publishmentSystemInfo.ParentPublishmentSystemId] = children;
                 }
                 mySystemInfoArrayList.Add(publishmentSystemInfo);
             }
-
         }
 
-        private void AddSite(StringBuilder builder, PublishmentSystemInfo publishmentSystemInfo, Hashtable parentWithChildren, int level)
+        private void AddSite(StringBuilder builder, PublishmentSystemInfo publishmentSystemInfo, Dictionary<int, List<PublishmentSystemInfo>> parentWithChildren, int level)
         {
-            if (_addedSiteIdArrayList.Contains(publishmentSystemInfo.PublishmentSystemId)) return;
+            if (_addedSiteIdList.Contains(publishmentSystemInfo.PublishmentSystemId)) return;
 
             var loadingUrl = PageUtils.GetLoadingUrl(GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId, string.Empty));
 
-            if (parentWithChildren[publishmentSystemInfo.PublishmentSystemId] != null)
+            if (parentWithChildren.ContainsKey(publishmentSystemInfo.PublishmentSystemId))
             {
-                var children = (ArrayList)parentWithChildren[publishmentSystemInfo.PublishmentSystemId];
+                var children = parentWithChildren[publishmentSystemInfo.PublishmentSystemId];
 
                 builder.Append($@"
 <li class=""dropdown-submenu"">
@@ -454,7 +445,7 @@ namespace SiteServer.BackgroundPages
 ");
 
                 level++;
-                foreach (PublishmentSystemInfo subSiteInfo in children)
+                foreach (var subSiteInfo in children)
                 {
                     AddSite(builder, subSiteInfo, parentWithChildren, level);
                 }
@@ -470,7 +461,7 @@ namespace SiteServer.BackgroundPages
                         publishmentSystemInfo.PublishmentSystemType)}&nbsp;{publishmentSystemInfo.PublishmentSystemName}</a></li>");
             }
 
-            _addedSiteIdArrayList.Add(publishmentSystemInfo.PublishmentSystemId);
+            _addedSiteIdList.Add(publishmentSystemInfo.PublishmentSystemId);
         }
     }
 }

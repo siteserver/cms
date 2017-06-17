@@ -11,19 +11,19 @@ using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class WebMenuDAO : DataProviderBase
+    public class WebMenuDao : DataProviderBase
     {
-        private const string TABLE_NAME = "wx_WebMenu";
+        private const string TableName = "wx_WebMenu";
 
         public int Insert(WebMenuInfo menuInfo)
         {
-            var menuID = 0;
+            var menuId = 0;
 
-            menuInfo.Taxis = GetMaxTaxis(menuInfo.ParentID) + 1;
+            menuInfo.Taxis = GetMaxTaxis(menuInfo.ParentId) + 1;
 
             IDataParameter[] parms = null;
 
-            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(menuInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(menuInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -32,9 +32,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(trans, SQL_INSERT, parms);
-
-                        menuID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
+                        menuId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
                         trans.Commit();
                     }
@@ -46,41 +44,41 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return menuID;
+            return menuId;
         }
 
         public void Update(WebMenuInfo menuInfo)
         {
             IDataParameter[] parms = null;
-            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(menuInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(menuInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
-            ExecuteNonQuery(SQL_UPDATE, parms);
+            ExecuteNonQuery(sqlUpdate, parms);
         }
 
-        public void Delete(int menuID)
+        public void Delete(int menuId)
         {
-            if (menuID > 0)
+            if (menuId > 0)
             {
-                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {menuID}";
+                string sqlString = $"DELETE FROM {TableName} WHERE ID = {menuId}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void DeleteAll(int publishmentSystemID)
+        public void DeleteAll(int publishmentSystemId)
         {
             string sqlString =
-                $"DELETE FROM {TABLE_NAME} WHERE {WebMenuAttribute.PublishmentSystemID} = {publishmentSystemID}";
+                $"DELETE FROM {TableName} WHERE {WebMenuAttribute.PublishmentSystemId} = {publishmentSystemId}";
             ExecuteNonQuery(sqlString);
         }
 
-        public WebMenuInfo GetMenuInfo(int menuID)
+        public WebMenuInfo GetMenuInfo(int menuId)
         {
             WebMenuInfo menuInfo = null;
 
-            string SQL_WHERE = $"WHERE ID = {menuID}";
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            string sqlWhere = $"WHERE ID = {menuId}";
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 if (rdr.Read())
                 {
@@ -92,16 +90,16 @@ namespace SiteServer.CMS.WeiXin.Provider
             return menuInfo;
         }
 
-        public List<WebMenuInfo> GetMenuInfoList(int publishmentSystemID, int parentID)
+        public List<WebMenuInfo> GetMenuInfoList(int publishmentSystemId, int parentId)
         {
             var menuInfoList = new List<WebMenuInfo>();
 
-            string SQL_WHERE =
-                $"WHERE {WebMenuAttribute.PublishmentSystemID} = {publishmentSystemID} AND {WebMenuAttribute.ParentID} = {parentID}";
+            string sqlWhere =
+                $"WHERE {WebMenuAttribute.PublishmentSystemId} = {publishmentSystemId} AND {WebMenuAttribute.ParentId} = {parentId}";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {
@@ -114,88 +112,88 @@ namespace SiteServer.CMS.WeiXin.Provider
             return menuInfoList;
         }
 
-        public IEnumerable GetDataSource(int publishmentSystemID, int parentID)
+        public IEnumerable GetDataSource(int publishmentSystemId, int parentId)
         {
             string whereString =
-                $"WHERE {WebMenuAttribute.PublishmentSystemID} = {publishmentSystemID} AND {WebMenuAttribute.ParentID} = {parentID}";
-            var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
+                $"WHERE {WebMenuAttribute.PublishmentSystemId} = {publishmentSystemId} AND {WebMenuAttribute.ParentId} = {parentId}";
+            var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
 
             var enumerable = (IEnumerable)ExecuteReader(sqlString);
             return enumerable;
         }
 
-        public int GetCount(int publishmentSystemID, int parentID)
+        public int GetCount(int publishmentSystemId, int parentId)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {WebMenuAttribute.PublishmentSystemID} = {publishmentSystemID} AND {WebMenuAttribute.ParentID} = {parentID}";
+                $"SELECT COUNT(*) FROM {TableName} WHERE {WebMenuAttribute.PublishmentSystemId} = {publishmentSystemId} AND {WebMenuAttribute.ParentId} = {parentId}";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public bool UpdateTaxisToUp(int publishmentSystemID, int parentID, int menuID)
+        public bool UpdateTaxisToUp(int publishmentSystemId, int parentId, int menuId)
         {
             string sqlString =
-                $"SELECT TOP 1 MenuID, Taxis FROM wx_WebMenu WHERE (Taxis > (SELECT Taxis FROM wx_WebMenu WHERE MenuID = {menuID} AND ParentID = {parentID} AND PublishmentSystemID = {publishmentSystemID})) AND ParentID = {parentID} AND PublishmentSystemID = {publishmentSystemID} ORDER BY Taxis";
-            var higherID = 0;
+                $"SELECT TOP 1 MenuID, Taxis FROM wx_WebMenu WHERE (Taxis > (SELECT Taxis FROM wx_WebMenu WHERE MenuID = {menuId} AND ParentID = {parentId} AND PublishmentSystemID = {publishmentSystemId})) AND ParentID = {parentId} AND PublishmentSystemID = {publishmentSystemId} ORDER BY Taxis";
+            var higherId = 0;
             var higherTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    higherID = rdr.GetInt32(0);
+                    higherId = rdr.GetInt32(0);
                     higherTaxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }
 
-            var selectedTaxis = GetTaxis(menuID);
+            var selectedTaxis = GetTaxis(menuId);
 
-            if (higherID > 0)
+            if (higherId > 0)
             {
-                SetTaxis(menuID, higherTaxis);
-                SetTaxis(higherID, selectedTaxis);
+                SetTaxis(menuId, higherTaxis);
+                SetTaxis(higherId, selectedTaxis);
                 return true;
             }
             return false;
         }
 
-        public bool UpdateTaxisToDown(int publishmentSystemID, int parentID, int menuID)
+        public bool UpdateTaxisToDown(int publishmentSystemId, int parentId, int menuId)
         {
             string sqlString =
-                $"SELECT TOP 1 MenuID, Taxis FROM wx_WebMenu WHERE (Taxis < (SELECT Taxis FROM wx_WebMenu WHERE MenuID = {menuID} AND ParentID = {parentID} AND PublishmentSystemID = {publishmentSystemID})) AND ParentID = {parentID} AND PublishmentSystemID = {publishmentSystemID} ORDER BY Taxis DESC";
-            var lowerID = 0;
+                $"SELECT TOP 1 MenuID, Taxis FROM wx_WebMenu WHERE (Taxis < (SELECT Taxis FROM wx_WebMenu WHERE MenuID = {menuId} AND ParentID = {parentId} AND PublishmentSystemID = {publishmentSystemId})) AND ParentID = {parentId} AND PublishmentSystemID = {publishmentSystemId} ORDER BY Taxis DESC";
+            var lowerId = 0;
             var lowerTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    lowerID = rdr.GetInt32(0);
+                    lowerId = rdr.GetInt32(0);
                     lowerTaxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }
 
-            var selectedTaxis = GetTaxis(menuID);
+            var selectedTaxis = GetTaxis(menuId);
 
-            if (lowerID > 0)
+            if (lowerId > 0)
             {
-                SetTaxis(menuID, lowerTaxis);
-                SetTaxis(lowerID, selectedTaxis);
+                SetTaxis(menuId, lowerTaxis);
+                SetTaxis(lowerId, selectedTaxis);
                 return true;
             }
             return false;
         }
 
-        private int GetMaxTaxis(int parentID)
+        private int GetMaxTaxis(int parentId)
         {
-            string sqlString = $"SELECT MAX(Taxis) FROM wx_WebMenu WHERE ParentID = {parentID}";
+            string sqlString = $"SELECT MAX(Taxis) FROM wx_WebMenu WHERE ParentID = {parentId}";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private int GetTaxis(int menuID)
+        private int GetTaxis(int menuId)
         {
-            string sqlString = $"SELECT Taxis FROM wx_WebMenu WHERE MenuID = {menuID}";
+            string sqlString = $"SELECT Taxis FROM wx_WebMenu WHERE MenuID = {menuId}";
             var taxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
@@ -210,17 +208,17 @@ namespace SiteServer.CMS.WeiXin.Provider
             return taxis;
         }
 
-        private void SetTaxis(int menuID, int taxis)
+        private void SetTaxis(int menuId, int taxis)
         {
-            string sqlString = $"UPDATE wx_WebMenu SET Taxis = {taxis} WHERE MenuID = {menuID}";
+            string sqlString = $"UPDATE wx_WebMenu SET Taxis = {taxis} WHERE MenuID = {menuId}";
             ExecuteNonQuery(sqlString);
         }
 
-        public void Sync(int publishmentSystemID)
+        public void Sync(int publishmentSystemId)
         {
-            DeleteAll(publishmentSystemID);
+            DeleteAll(publishmentSystemId);
 
-            var menuInfoList = DataProviderWX.MenuDAO.GetMenuInfoList(publishmentSystemID, 0);
+            var menuInfoList = DataProviderWx.MenuDao.GetMenuInfoList(publishmentSystemId, 0);
             foreach (var menuInfo in menuInfoList)
             {
                 var navigationType = ENavigationType.Url;
@@ -233,22 +231,22 @@ namespace SiteServer.CMS.WeiXin.Provider
                     navigationType = ENavigationType.Function;
                 }
                 var keywordType = EKeywordType.Text;
-                var functionID = 0;
+                var functionId = 0;
                 if (menuInfo.MenuType == EMenuType.Keyword && !string.IsNullOrEmpty(menuInfo.Keyword))
                 {
-                    var keywordID = DataProviderWX.KeywordMatchDAO.GetKeywordIDByMPController(publishmentSystemID, menuInfo.Keyword);
-                    if (keywordID > 0)
+                    var keywordId = DataProviderWx.KeywordMatchDao.GetKeywordIdbyMpController(publishmentSystemId, menuInfo.Keyword);
+                    if (keywordId > 0)
                     {
-                        var keywordInfo = DataProviderWX.KeywordDAO.GetKeywordInfo(keywordID);
-                        functionID = KeywordManager.GetFunctionID(keywordInfo);
+                        var keywordInfo = DataProviderWx.KeywordDao.GetKeywordInfo(keywordId);
+                        functionId = KeywordManager.GetFunctionID(keywordInfo);
                     }
                 }
 
-                var webMenuInfo = new WebMenuInfo { PublishmentSystemID = publishmentSystemID, MenuName = menuInfo.MenuName, NavigationType = ENavigationTypeUtils.GetValue(navigationType), Url = menuInfo.Url, ChannelID = menuInfo.ChannelID, ContentID = menuInfo.ContentID, KeywordType = EKeywordTypeUtils.GetValue(keywordType), FunctionID = functionID, ParentID = 0 };
+                var webMenuInfo = new WebMenuInfo { PublishmentSystemId = publishmentSystemId, MenuName = menuInfo.MenuName, NavigationType = ENavigationTypeUtils.GetValue(navigationType), Url = menuInfo.Url, ChannelId = menuInfo.ChannelId, ContentId = menuInfo.ContentId, KeywordType = EKeywordTypeUtils.GetValue(keywordType), FunctionId = functionId, ParentId = 0 };
 
-                var menuID = Insert(webMenuInfo);
+                var menuId = Insert(webMenuInfo);
 
-                var subMenuInfoList = DataProviderWX.MenuDAO.GetMenuInfoList(publishmentSystemID, menuInfo.MenuID);
+                var subMenuInfoList = DataProviderWx.MenuDao.GetMenuInfoList(publishmentSystemId, menuInfo.MenuId);
                 if (subMenuInfoList != null && subMenuInfoList.Count > 0)
                 {
                     foreach (var subMenuInfo in subMenuInfoList)
@@ -263,18 +261,18 @@ namespace SiteServer.CMS.WeiXin.Provider
                             navigationType = ENavigationType.Function;
                         }
                         keywordType = EKeywordType.Text;
-                        functionID = 0;
+                        functionId = 0;
                         if (subMenuInfo.MenuType == EMenuType.Keyword && !string.IsNullOrEmpty(subMenuInfo.Keyword))
                         {
-                            var keywordID = DataProviderWX.KeywordMatchDAO.GetKeywordIDByMPController(publishmentSystemID, subMenuInfo.Keyword);
-                            if (keywordID > 0)
+                            var keywordId = DataProviderWx.KeywordMatchDao.GetKeywordIdbyMpController(publishmentSystemId, subMenuInfo.Keyword);
+                            if (keywordId > 0)
                             {
-                                var keywordInfo = DataProviderWX.KeywordDAO.GetKeywordInfo(keywordID);
-                                functionID = KeywordManager.GetFunctionID(keywordInfo);
+                                var keywordInfo = DataProviderWx.KeywordDao.GetKeywordInfo(keywordId);
+                                functionId = KeywordManager.GetFunctionID(keywordInfo);
                             }
                         }
 
-                        var subWebMenuInfo = new WebMenuInfo { PublishmentSystemID = publishmentSystemID, MenuName = subMenuInfo.MenuName, NavigationType = ENavigationTypeUtils.GetValue(navigationType), Url = subMenuInfo.Url, ChannelID = subMenuInfo.ChannelID, ContentID = subMenuInfo.ContentID, KeywordType = EKeywordTypeUtils.GetValue(keywordType), FunctionID = functionID, ParentID = menuID };
+                        var subWebMenuInfo = new WebMenuInfo { PublishmentSystemId = publishmentSystemId, MenuName = subMenuInfo.MenuName, NavigationType = ENavigationTypeUtils.GetValue(navigationType), Url = subMenuInfo.Url, ChannelId = subMenuInfo.ChannelId, ContentId = subMenuInfo.ContentId, KeywordType = EKeywordTypeUtils.GetValue(keywordType), FunctionId = functionId, ParentId = menuId };
 
                         Insert(subWebMenuInfo);
                     }
@@ -282,15 +280,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             }
         }
 
-        public List<WebMenuInfo> GetWebMenuInfoList(int publishmentSystemID)
+        public List<WebMenuInfo> GetWebMenuInfoList(int publishmentSystemId)
         {
             var menuInfoList = new List<WebMenuInfo>();
 
-            string SQL_WHERE = $"WHERE {WebMenuAttribute.PublishmentSystemID} = {publishmentSystemID} AND ParentID = 0";
+            string sqlWhere = $"WHERE {WebMenuAttribute.PublishmentSystemId} = {publishmentSystemId} AND ParentID = 0";
 
-            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
+            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
-            using (var rdr = ExecuteReader(SQL_SELECT))
+            using (var rdr = ExecuteReader(sqlSelect))
             {
                 while (rdr.Read())
                 {

@@ -25,7 +25,7 @@ namespace SiteServer.CMS.Core.Office
             var rows = new List<List<string>>();
 
             var relatedidentityes = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent,
-                publishmentSystemInfo.PublishmentSystemId, inputInfo.InputID);
+                publishmentSystemInfo.PublishmentSystemId, inputInfo.InputId);
             var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent,
                 DataProvider.InputContentDao.TableName, relatedidentityes);
 
@@ -45,7 +45,7 @@ namespace SiteServer.CMS.Core.Office
             }
             head.Add("添加时间");
 
-            var contentIdList = DataProvider.InputContentDao.GetContentIdListWithChecked(inputInfo.InputID);
+            var contentIdList = DataProvider.InputContentDao.GetContentIdListWithChecked(inputInfo.InputId);
             foreach (var contentId in contentIdList)
             {
                 var contentInfo = DataProvider.InputContentDao.GetContentInfo(contentId);
@@ -629,7 +629,7 @@ namespace SiteServer.CMS.Core.Office
             if (rows.Count > 0)
             {
                 var relatedidentityes = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent,
-                    publishmentSystemInfo.PublishmentSystemId, inputInfo.InputID);
+                    publishmentSystemInfo.PublishmentSystemId, inputInfo.InputId);
                 var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent,
                     DataProvider.InputContentDao.TableName, relatedidentityes);
 
@@ -660,7 +660,7 @@ namespace SiteServer.CMS.Core.Office
                 {
                     if (row.Count != attributeNames.Count) continue;
 
-                    var contentInfo = new InputContentInfo(0, inputInfo.InputID, 0, true, string.Empty, string.Empty,
+                    var contentInfo = new InputContentInfo(0, inputInfo.InputId, 0, true, string.Empty, string.Empty,
                         DateTime.Now, string.Empty);
 
                     for (var i = 0; i < attributeNames.Count; i++)

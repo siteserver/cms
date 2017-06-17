@@ -12,82 +12,74 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string KeywordID = "KeywordID";
-        public const string IsDisabled = "IsDisabled";
-        public const string UserCount = "UserCount";
-        public const string PVCount = "PVCount";
-        public const string StartDate = "StartDate";
-        public const string EndDate = "EndDate";
-        public const string Title = "Title";
-        public const string ImageUrl = "ImageUrl";
-        public const string Summary = "Summary";
-        public const string BackgroundImageUrl = "BackgroundImageUrl";
-        public const string ConferenceName = "ConferenceName";
-        public const string Address = "Address";
-        public const string Duration = "Duration";
-        public const string Introduction = "Introduction";
-        public const string IsAgenda = "IsAgenda";
-        public const string AgendaTitle = "AgendaTitle";
-        public const string AgendaList = "AgendaList";
-        public const string IsGuest = "IsGuest";
-        public const string GuestTitle = "GuestTitle";
-        public const string GuestList = "GuestList";
-        public const string EndTitle = "EndTitle";
-        public const string EndImageUrl = "EndImageUrl";
-        public const string EndSummary = "EndSummary";
+        public const string Id = nameof(ConferenceInfo.Id);
+        public const string PublishmentSystemId = nameof(ConferenceInfo.PublishmentSystemId);
+        public const string KeywordId = nameof(ConferenceInfo.KeywordId);
+        public const string IsDisabled = nameof(ConferenceInfo.IsDisabled);
+        public const string UserCount = nameof(ConferenceInfo.UserCount);
+        public const string PvCount = nameof(ConferenceInfo.PvCount);
+        public const string StartDate = nameof(ConferenceInfo.StartDate);
+        public const string EndDate = nameof(ConferenceInfo.EndDate);
+        public const string Title = nameof(ConferenceInfo.Title);
+        public const string ImageUrl = nameof(ConferenceInfo.ImageUrl);
+        public const string Summary = nameof(ConferenceInfo.Summary);
+        public const string BackgroundImageUrl = nameof(ConferenceInfo.BackgroundImageUrl);
+        public const string ConferenceName = nameof(ConferenceInfo.ConferenceName);
+        public const string Address = nameof(ConferenceInfo.Address);
+        public const string Duration = nameof(ConferenceInfo.Duration);
+        public const string Introduction = nameof(ConferenceInfo.Introduction);
+        public const string IsAgenda = nameof(ConferenceInfo.IsAgenda);
+        public const string AgendaTitle = nameof(ConferenceInfo.AgendaTitle);
+        public const string AgendaList = nameof(ConferenceInfo.AgendaList);
+        public const string IsGuest = nameof(ConferenceInfo.IsGuest);
+        public const string GuestTitle = nameof(ConferenceInfo.GuestTitle);
+        public const string GuestList = nameof(ConferenceInfo.GuestList);
+        public const string EndTitle = nameof(ConferenceInfo.EndTitle);
+        public const string EndImageUrl = nameof(ConferenceInfo.EndImageUrl);
+        public const string EndSummary = nameof(ConferenceInfo.EndSummary);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(KeywordID);
-                    allAttributes.Add(IsDisabled);
-                    allAttributes.Add(UserCount);
-                    allAttributes.Add(PVCount);
-                    allAttributes.Add(StartDate);
-                    allAttributes.Add(EndDate);
-                    allAttributes.Add(Title);
-                    allAttributes.Add(ImageUrl);
-                    allAttributes.Add(Summary);
-                    allAttributes.Add(BackgroundImageUrl);
-                    allAttributes.Add(ConferenceName);
-                    allAttributes.Add(Address);
-                    allAttributes.Add(Duration);
-                    allAttributes.Add(Introduction);
-                    allAttributes.Add(IsAgenda);
-                    allAttributes.Add(AgendaTitle);
-                    allAttributes.Add(AgendaList);
-                    allAttributes.Add(IsGuest);
-                    allAttributes.Add(GuestTitle);
-                    allAttributes.Add(GuestList);
-                    allAttributes.Add(EndTitle);
-                    allAttributes.Add(EndImageUrl);
-                    allAttributes.Add(EndSummary);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            KeywordId,
+            IsDisabled,
+            UserCount,
+            PvCount,
+            StartDate,
+            EndDate,
+            Title,
+            ImageUrl,
+            Summary,
+            BackgroundImageUrl,
+            ConferenceName,
+            Address,
+            Duration,
+            Introduction,
+            IsAgenda,
+            AgendaTitle,
+            AgendaList,
+            IsGuest,
+            GuestTitle,
+            GuestList,
+            EndTitle,
+            EndImageUrl,
+            EndSummary
+        });
     }
+
     public class ConferenceInfo : BaseInfo
     {
         public ConferenceInfo() { }
         public ConferenceInfo(object dataItem) : base(dataItem) { }
         public ConferenceInfo(NameValueCollection form) : base(form) { }
         public ConferenceInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int KeywordID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int KeywordId { get; set; }
         public bool IsDisabled { get; set; }
         public int UserCount { get; set; }
-        public int PVCount { get; set; }
+        public int PvCount { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Title { get; set; }
@@ -108,12 +100,6 @@ namespace SiteServer.CMS.WeiXin.Model
         public string EndImageUrl { get; set; }
         public string EndSummary { get; set; }
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return ConferenceAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => ConferenceAttribute.AllAttributes;
     }
 }

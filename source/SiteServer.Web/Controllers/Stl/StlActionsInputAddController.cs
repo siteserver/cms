@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Web;
 using System.Web.Http;
 using BaiRong.Core;
+using BaiRong.Core.AuxiliaryTable;
+using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.StlTemplates;
+using SiteServer.CMS.StlParser.StlElement;
 
 namespace SiteServer.API.Controllers.Stl
 {
@@ -26,11 +29,11 @@ namespace SiteServer.API.Controllers.Stl
             }
             if (inputInfo != null)
             {
-                var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, publishmentSystemId, inputInfo.InputID);
+                var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, publishmentSystemId, inputInfo.InputId);
 
                 var ipAddress = PageUtils.GetIpAddress();
 
-                var contentInfo = new InputContentInfo(0, inputInfo.InputID, 0, inputInfo.IsChecked, body.UserName, ipAddress, DateTime.Now, string.Empty);
+                var contentInfo = new InputContentInfo(0, inputInfo.InputId, 0, inputInfo.IsChecked, body.UserName, ipAddress, DateTime.Now, string.Empty);
 
                 try
                 {
@@ -53,58 +56,45 @@ namespace SiteServer.API.Controllers.Stl
                         }
                     }
 
-                    DataProvider.InputContentDao.Insert(contentInfo);
+                    contentInfo.Id = DataProvider.InputContentDao.Insert(contentInfo);
 
-                    string message;
-                    if (string.IsNullOrEmpty(HttpContext.Current.Request.Form["successTemplateString"]))
+                    if (inputInfo.Additional.IsAdministratorSmsNotify)
                     {
-                        if (string.IsNullOrEmpty(inputInfo.Additional.MessageSuccess))
+                        var keys =
+                            TranslateUtils.StringCollectionToStringList(inputInfo.Additional.AdministratorSmsNotifyKeys);
+                        if (keys.Count > 0)
                         {
-                            message = "表单提交成功，正在审核。";
-                            if (contentInfo.IsChecked)
+                            var parameters = new NameValueCollection();
+                            if (keys.Contains(InputContentAttribute.Id))
                             {
-                                message = "表单提交成功。";
+                                parameters.Add(InputContentAttribute.Id, contentInfo.Id.ToString());
                             }
+                            if (keys.Contains(InputContentAttribute.AddDate))
+                            {
+                                parameters.Add(InputContentAttribute.AddDate, DateUtils.GetDateAndTimeString(contentInfo.AddDate));
+                            }
+                            var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, relatedIdentities);
+                            foreach (var styleInfo in styleInfoList)
+                            {
+                                if (keys.Contains(styleInfo.AttributeName))
+                                {
+                                    var value = contentInfo.GetExtendedAttribute(styleInfo.AttributeName);
+                                    parameters.Add(styleInfo.AttributeName, value);
+                                }
+                            }
+
+                            string errorMessage;
+                            SmsManager.SendNotify(inputInfo.Additional.AdministratorSmsNotifyMobile,
+                                inputInfo.Additional.AdministratorSmsNotifyTplId, parameters, out errorMessage);
                         }
-                        else
-                        {
-                            message = inputInfo.Additional.MessageSuccess;
-                        }
-                    }
-                    else
-                    {
-                        message = TranslateUtils.DecryptStringBySecretKey(HttpContext.Current.Request.Form["successTemplateString"]);
                     }
 
-                    HttpContext.Current.Response.Write(InputTemplate.GetInputCallbackScript(publishmentSystemInfo, inputId, true, message));
+                    HttpContext.Current.Response.Write(StlInput.GetPostMessageScript(inputId, true));
                     HttpContext.Current.Response.End();
-
-                    //if (contentInfo.IsChecked == EBoolean.True)
-                    //{
-                    //    FileSystemObject FSO = new FileSystemObject(base.PublishmentSystemID);
-                    //    FSO.CreateImmediately(EChangedType.Add, ETemplateTypeUtils.GetEnumType(templateType), channelID, contentID, fileTemplateID);
-                    //}
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    string message;
-                    if (string.IsNullOrEmpty(HttpContext.Current.Request.Form["failureTemplateString"]))
-                    {
-                        if (string.IsNullOrEmpty(inputInfo.Additional.MessageFailure))
-                        {
-                            message = "表单提交失败，" + ex.Message;
-                        }
-                        else
-                        {
-                            message = inputInfo.Additional.MessageFailure;
-                        }
-                    }
-                    else
-                    {
-                        message = TranslateUtils.DecryptStringBySecretKey(HttpContext.Current.Request.Form["failureTemplateString"]);
-                    }
-
-                    HttpContext.Current.Response.Write(InputTemplate.GetInputCallbackScript(publishmentSystemInfo, inputId, false, message));
+                    HttpContext.Current.Response.Write(StlInput.GetPostMessageScript(inputId, false));
                     HttpContext.Current.Response.End();
                 }
             }

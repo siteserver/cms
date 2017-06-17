@@ -11,60 +11,46 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string KeywordID = "KeywordID";
-        public const string IsDisabled = "IsDisabled";
-        public const string PVCount = "PVCount";
-        public const string Title = "Title";
-        public const string ImageUrl = "ImageUrl";
-        public const string Summary = "Summary";
-        public const string MapWD = "MapWD";
+        public const string Id = nameof(MapInfo.Id);
+        public const string PublishmentSystemId = nameof(MapInfo.PublishmentSystemId);
+        public const string KeywordId = nameof(MapInfo.KeywordId);
+        public const string IsDisabled = nameof(MapInfo.IsDisabled);
+        public const string PvCount = nameof(MapInfo.PvCount);
+        public const string Title = nameof(MapInfo.Title);
+        public const string ImageUrl = nameof(MapInfo.ImageUrl);
+        public const string Summary = nameof(MapInfo.Summary);
+        public const string MapWd = nameof(MapInfo.MapWd);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(KeywordID);
-                    allAttributes.Add(IsDisabled);
-                    allAttributes.Add(PVCount);
-                    allAttributes.Add(Title);
-                    allAttributes.Add(ImageUrl);
-                    allAttributes.Add(Summary);
-                    allAttributes.Add(MapWD);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            KeywordId,
+            IsDisabled,
+            PvCount,
+            Title,
+            ImageUrl,
+            Summary,
+            MapWd
+        });
     }
+
     public class MapInfo : BaseInfo
     {
         public MapInfo() { }
         public MapInfo(object dataItem) : base(dataItem) { }
         public MapInfo(NameValueCollection form) : base(form) { }
         public MapInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int KeywordID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int KeywordId { get; set; }
         public bool IsDisabled { get; set; }
-        public int PVCount { get; set; }
+        public int PvCount { get; set; }
         public string Title { get; set; }
         public string ImageUrl { get; set; }
         public string Summary { get; set; }
-        public string MapWD { get; set; }
+        public string MapWd { get; set; }
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return MapAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => MapAttribute.AllAttributes;
     }
 }

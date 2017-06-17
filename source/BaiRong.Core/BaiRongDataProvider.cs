@@ -7,7 +7,6 @@ namespace BaiRong.Core
         private static AdministratorDao _administratorDao;
         private static AreaDao _areaDao;
         private static AuxiliaryTableDataDao _auxiliaryTableDataDao;
-        private static ThirdLoginDao _thirdLoginDao;
         private static ConfigDao _configDao;
 
         private static TableCollectionDao _tableCollectionDao;
@@ -31,7 +30,6 @@ namespace BaiRong.Core
         private static PermissionsInRolesDao _permissionsInRolesDao;
         
         private static UserDao _userDao;
-        private static UserBindingDao _userBindingDao;
         private static UserGroupDao _userGroupDao;
         private static UserLogDao _userLogDao;
 
@@ -40,8 +38,6 @@ namespace BaiRong.Core
         public static AdministratorDao AdministratorDao => _administratorDao ?? (_administratorDao = new AdministratorDao());
 
         public static AuxiliaryTableDataDao AuxiliaryTableDataDao => _auxiliaryTableDataDao ?? (_auxiliaryTableDataDao = new AuxiliaryTableDataDao());
-
-        public static ThirdLoginDao ThirdLoginDao => _thirdLoginDao ?? (_thirdLoginDao = new ThirdLoginDao());
 
         public static ConfigDao ConfigDao => _configDao ?? (_configDao = new ConfigDao());
 
@@ -82,8 +78,6 @@ namespace BaiRong.Core
         public static PermissionsInRolesDao PermissionsInRolesDao => _permissionsInRolesDao ?? (_permissionsInRolesDao = new PermissionsInRolesDao());
 
         public static UserDao UserDao => _userDao ?? (_userDao = new UserDao());
-
-        public static UserBindingDao UserBindingDao => _userBindingDao ?? (_userBindingDao = new UserBindingDao());
 
         public static UserGroupDao UserGroupDao => _userGroupDao ?? (_userGroupDao = new UserGroupDao());
 

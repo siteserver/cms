@@ -216,8 +216,8 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.CreateDirectoryIfNotExists(inputDirectoryPath);
 
             var inputIe = new InputIe(Fso.PublishmentSystemId, inputDirectoryPath);
-            var inputIdArrayList = DataProvider.InputDao.GetInputIdArrayList(Fso.PublishmentSystemId);
-            foreach (int inputId in inputIdArrayList)
+            var inputIdList = DataProvider.InputDao.GetInputIdList(Fso.PublishmentSystemId);
+            foreach (var inputId in inputIdList)
             {
                 inputIe.ExportInput(inputId);
             }

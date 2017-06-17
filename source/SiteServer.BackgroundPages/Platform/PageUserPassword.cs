@@ -27,8 +27,8 @@ namespace SiteServer.BackgroundPages.Platform
             {
                 if (BaiRongDataProvider.AdministratorDao.CheckPassword(CurrentPassword.Text, Body.AdministratorInfo.Password, Body.AdministratorInfo.PasswordFormat, Body.AdministratorInfo.PasswordSalt))
                 {
-                    var errorMessage = string.Empty;
-                    if (BaiRongDataProvider.AdministratorDao.ChangePassword(Body.AdministratorInfo.UserName, Body.AdministratorInfo.PasswordFormat, NewPassword.Text, out errorMessage))
+                    string errorMessage;
+                    if (BaiRongDataProvider.AdministratorDao.ChangePassword(Body.AdministratorInfo.UserName, NewPassword.Text, out errorMessage))
                     {
                         SuccessMessage("密码更改成功");
                     }

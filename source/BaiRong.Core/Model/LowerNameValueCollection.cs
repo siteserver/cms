@@ -1,45 +1,47 @@
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace BaiRong.Core.Model
 {
-	public class LowerNameValueCollection : NameValueCollection
-	{
-        public override void Add(string name, string value)
+    public class LowerNameValueCollection
+    {
+        private readonly NameValueCollection _nvcLower;
+
+        public LowerNameValueCollection()
         {
-            if (!string.IsNullOrEmpty(name))
+            Keys = new List<string>();
+            _nvcLower = new NameValueCollection();
+        }
+
+        public void Set(string name, string value)
+        {
+            if (string.IsNullOrEmpty(name)) return;
+
+            _nvcLower.Set(name.ToLower(), value);
+            if (!Keys.Contains(name))
             {
-                base.Add(name.ToLower(), value);
+                Keys.Add(name);
             }
         }
 
-        public override void Set(string name, string value)
+        public string Get(string name)
         {
-            if (!string.IsNullOrEmpty(name))
-            {
-                base.Set(name.ToLower(), value);
-            }
+            if (string.IsNullOrEmpty(name)) return null;
+
+            return _nvcLower.Get(name.ToLower());
         }
 
-        public override string Get(string name)
+        public void Remove(string name)
         {
-            if (!string.IsNullOrEmpty(name))
-            {
-                return base.Get(name.ToLower());
-            }
-            return null;
+            if (string.IsNullOrEmpty(name)) return;
+
+            _nvcLower.Remove(name.ToLower());
+
+            Keys.Remove(name);
         }
 
-        public override void Remove(string name)
-        {
-            if (!string.IsNullOrEmpty(name))
-            {
-                base.Remove(name.ToLower());
-            }
-        }
+        public List<string> Keys { get; }
 
-        public override string[] GetValues(string name)
-        {
-            return !string.IsNullOrEmpty(name) ? base.GetValues(name.ToLower()) : null;
-        }
-	}
+        public int Count => Keys.Count;
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.HtmlControls;
@@ -10,85 +11,76 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlLocation
+    [Stl(Usage = "当前位置", Description = "通过 stl:location 标签在模板中插入页面的当前位置")]
+    public class StlLocation
 	{
 		private StlLocation(){}
-		public const string ElementName = "stl:location";//显示位置
+		public const string ElementName = "stl:location";
 
-		public const string Attribute_Separator = "separator";				//当前位置分隔符
-		public const string Attribute_Target = "target";					//打开窗口的目标
-		public const string Attribute_LinkClass = "linkclass";				//链接CSS样式
-        public const string Attribute_WordNum = "wordnum";                  //链接字数
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+		public const string AttributeSeparator = "separator";
+		public const string AttributeTarget = "target";
+		public const string AttributeLinkClass = "linkClass";
+        public const string AttributeWordNum = "wordNum";
+        public const string AttributeIsDynamic = "isDynamic";
 
-		public static ListDictionary AttributeList
-		{
-			get
-			{
-				var attributes = new ListDictionary();
-				attributes.Add(Attribute_Separator, "当前位置分隔符");
-				attributes.Add(Attribute_Target, "打开窗口的目标");
-				attributes.Add(Attribute_LinkClass, "链接CSS样式");
-                attributes.Add(Attribute_WordNum, "链接字数");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {AttributeSeparator, "当前位置分隔符"},
+	        {AttributeTarget, "打开窗口的目标"},
+	        {AttributeLinkClass, "链接CSS样式"},
+	        {AttributeWordNum, "链接字数"},
+	        {AttributeIsDynamic, "是否动态显示"}
+	    };
 
 
-		//对“当前位置”（stl:location）元素进行解析
+        //对“当前位置”（stl:location）元素进行解析
         public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			var parsedContent = string.Empty;
+			string parsedContent;
 			try
 			{
-				var ie = node.Attributes.GetEnumerator();
 				var separator = " - ";
 				var target = string.Empty;
 				var linkClass = string.Empty;
                 var wordNum = 0;
                 var isDynamic = false;
-
 				var attributes = new StringDictionary();
 
-				while (ie.MoveNext())
-				{
-					var attr = (XmlAttribute)ie.Current;
-					var attributeName = attr.Name.ToLower();
-					if (attributeName.Equals(Attribute_Separator))
-					{
-						separator = attr.Value;
-					}
-					else if (attributeName.Equals(Attribute_Target))
-					{
-						target = attr.Value;
-					}
-					else if (attributeName.Equals(Attribute_LinkClass))
-					{
-						linkClass = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_WordNum))
+                var ie = node.Attributes?.GetEnumerator();
+			    if (ie != null)
+			    {
+                    while (ie.MoveNext())
                     {
-                        wordNum = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
-                    }
-					else
-					{
-						attributes.Add(attributeName, attr.Value);
-					}
-				}
+                        var attr = (XmlAttribute)ie.Current;
 
-                if (isDynamic)
-                {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSeparator))
+                        {
+                            separator = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTarget))
+                        {
+                            target = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLinkClass))
+                        {
+                            linkClass = attr.Value;
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWordNum))
+                        {
+                            wordNum = TranslateUtils.ToInt(attr.Value);
+                        }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
+                        {
+                            isDynamic = TranslateUtils.ToBool(attr.Value);
+                        }
+                        else
+                        {
+                            attributes.Add(attr.Name, attr.Value);
+                        }
+                    }
                 }
-                else
-                {
-                    parsedContent = ParseImpl(node, pageInfo, contextInfo, separator, target, linkClass, wordNum, attributes);
-                }
+
+                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, separator, target, linkClass, wordNum, attributes);
 			}
             catch (Exception ex)
             {
@@ -105,7 +97,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 separator = node.InnerXml;
             }
 
-            var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelID);
+            var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
 
             var builder = new StringBuilder();
 
@@ -113,13 +105,13 @@ namespace SiteServer.CMS.StlParser.StlElement
             var parentsCount = nodeInfo.ParentsCount;
             if (parentsPath.Length != 0)
             {
-                var nodePath = parentsPath + "," + contextInfo.ChannelID;
-                var nodeIDArrayList = TranslateUtils.StringCollectionToStringList(nodePath);
-                foreach (string nodeIDStr in nodeIDArrayList)
+                var nodePath = parentsPath + "," + contextInfo.ChannelId;
+                var nodeIdArrayList = TranslateUtils.StringCollectionToStringList(nodePath);
+                foreach (var nodeIdStr in nodeIdArrayList)
                 {
-                    var currentID = int.Parse(nodeIDStr);
-                    var currentNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, currentID);
-                    if (currentID == pageInfo.PublishmentSystemId)
+                    var currentId = int.Parse(nodeIdStr);
+                    var currentNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, currentId);
+                    if (currentId == pageInfo.PublishmentSystemId)
                     {
                         var stlAnchor = new HtmlAnchor();
                         if (!string.IsNullOrEmpty(target))
@@ -147,7 +139,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             builder.Append(separator);
                         }
                     }
-                    else if (currentID == contextInfo.ChannelID)
+                    else if (currentId == contextInfo.ChannelId)
                     {
                         var stlAnchor = new HtmlAnchor();
                         if (!string.IsNullOrEmpty(target))

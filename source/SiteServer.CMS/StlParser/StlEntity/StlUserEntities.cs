@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -6,13 +6,14 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-	public class StlUserEntities
+    [Stl(Usage = "用户实体", Description = "通过 {user.} 实体在模板中显示用户值")]
+    public class StlUserEntities
 	{
         private StlUserEntities()
 		{
 		}
 
-        public const string EntityName = "User";                //用户实体
+        public const string EntityName = "user";
 
         public static string GroupName = "GroupName";
         public static string UserId = "UserId";
@@ -40,8 +41,8 @@ namespace SiteServer.CMS.StlParser.StlEntity
         public static string Interests = "Interests";
         public static string Signature = "Signature";
 
-        public static ListDictionary AttributeList => new ListDictionary
-	    {
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        {
 	        {GroupName, "用户组名称"},
             {UserId, "用户ID"},
             {UserName, "用户名"},

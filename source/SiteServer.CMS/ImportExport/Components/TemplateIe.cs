@@ -24,9 +24,9 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-			var templateInfoArrayList = DataProvider.TemplateDao.GetTemplateInfoArrayListByPublishmentSystemId(_publishmentSystemId);
+			var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByPublishmentSystemId(_publishmentSystemId);
 
-			foreach (TemplateInfo templateInfo in templateInfoArrayList)
+			foreach (var templateInfo in templateInfoList)
 			{
 				var entry = ExportTemplateInfo(templateInfo);
 				feed.Entries.Add(entry);
@@ -38,9 +38,9 @@ namespace SiteServer.CMS.ImportExport.Components
         {
             var feed = AtomUtility.GetEmptyFeed();
 
-            var templateInfoArrayList = DataProvider.TemplateDao.GetTemplateInfoArrayListByPublishmentSystemId(_publishmentSystemId);
+            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByPublishmentSystemId(_publishmentSystemId);
 
-            foreach (TemplateInfo templateInfo in templateInfoArrayList)
+            foreach (var templateInfo in templateInfoList)
             {
                 if (templateIdList.Contains(templateInfo.TemplateId))
                 {

@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
-        <asp:Literal ID="ltlBreadCrumb" runat="server" />
+        <asp:Literal ID="LtlBreadCrumb" runat="server" />
         <bairong:Alerts runat="server" />
 
         <bairong:Code Type="ajaxUpload" runat="server" />
@@ -77,7 +77,8 @@
                                   if (response) {
                                     response = JSON.parse(response)
                                     if (response.success === 'true') {
-                                        location.reload()
+                                        $('#img_upload_txt').text('');
+                                        $('#logoUrl').attr('src', response.logoUrl + '?v=' + Math.random());
                                     } else {
                                         $('#img_upload_txt').text(response.message);
                                     }

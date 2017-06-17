@@ -6,7 +6,6 @@ using BaiRong.Core;
 using BaiRong.Core.Auth;
 using BaiRong.Core.Auth.JWT;
 using BaiRong.Core.Model;
-using BaiRong.Core.Text;
 using Newtonsoft.Json.Linq;
 
 namespace SiteServer.CMS.Core
@@ -94,7 +93,9 @@ namespace SiteServer.CMS.Core
 
         public bool GetQueryBool(string name, bool defaultValue = false)
         {
-            return !string.IsNullOrEmpty(HttpContext.Current.Request.QueryString[name]) ? TranslateUtils.ToBool(HttpContext.Current.Request.QueryString[name]) : defaultValue;
+            var str = HttpContext.Current.Request.QueryString[name];
+            var retval = !string.IsNullOrEmpty(str) ? TranslateUtils.ToBool(str) : defaultValue;
+            return retval;
         }
 
         public string GetPostString(string name)

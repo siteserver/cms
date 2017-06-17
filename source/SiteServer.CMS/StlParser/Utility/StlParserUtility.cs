@@ -7,12 +7,9 @@ using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Text;
-using BaiRong.Core.Text.Sgml;
+using BaiRong.Core.ThirdParty.Sgml;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.CMS.StlParser.StlElement.Inner;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
@@ -258,7 +255,6 @@ namespace SiteServer.CMS.StlParser.Utility
             return stlPageContentElement;
         }
 
-
         public static string GetNameFromEntity(string stlEntity)
         {
             var name = stlEntity;
@@ -299,7 +295,6 @@ namespace SiteServer.CMS.StlParser.Utility
             return (label.StartsWith("{stl.") || label.StartsWith("{content.") || label.StartsWith("{channel.")) && label.EndsWith("}");
         }
 
-
         public static bool IsStlEntityInclude(string content)
         {
             if (content == null) return false;
@@ -307,12 +302,10 @@ namespace SiteServer.CMS.StlParser.Utility
             return StringUtils.Contains(content, "}") && (StringUtils.Contains(content, "{stl.") || StringUtils.Contains(content, "{content.") || StringUtils.Contains(content, "{channel."));
         }
 
-
         public static bool IsSpecifiedStlEntity(EStlEntityType entityType, string stlEntity)
         {
             return stlEntity != null && stlEntity.TrimStart('{').ToLower().StartsWith(EStlEntityTypeUtils.GetValue(entityType).ToLower());
         }
-
 
         /// <summary>
         /// 判断此标签是否为Stl元素
@@ -322,28 +315,21 @@ namespace SiteServer.CMS.StlParser.Utility
         public static bool IsStlElement(string label)
         {
             if (label == null) return false;
-            if (label.ToLower().StartsWith("<stl:") && label.IndexOf(">", StringComparison.Ordinal) != -1)
-            {
-                return true;
-            }
-            return false;
+            return label.ToLower().StartsWith("<stl:") && label.IndexOf(">", StringComparison.Ordinal) != -1;
         }
-
 
         public static bool IsSpecifiedStlElement(string stlElement, string elementName)
         {
             if (stlElement == null) return false;
-            if ((stlElement.ToLower().StartsWith($"<{elementName} ") || stlElement.ToLower().StartsWith(
-                     $"<{elementName}>")) && (stlElement.ToLower().EndsWith($"</{elementName}>") || stlElement.ToLower().EndsWith("/>")))
-            {
-                return true;
-            }
-            return false;
+            return (StringUtils.StartsWithIgnoreCase(stlElement, $"<{elementName} ") ||
+                    StringUtils.StartsWithIgnoreCase(stlElement, $"<{elementName}>")) &&
+                   (StringUtils.EndsWithIgnoreCase(stlElement, $"</{elementName}>") ||
+                    StringUtils.EndsWithIgnoreCase(stlElement, "/>"));
         }
 
         public static Regex GetStlEntityRegex(string entityName)
         {
-            return new Regex($@"{{{entityName}.[^{{}}]*}}", (RegexOptions.Singleline | RegexOptions.IgnoreCase) | RegexOptions.Compiled);
+            return new Regex($@"{{{entityName}.[^{{}}]*}}", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
         }
 
         /// <summary>
@@ -438,13 +424,11 @@ namespace SiteServer.CMS.StlParser.Utility
             return RegexUtils.IsMatch($@"<stl:channel[^>]+type=""{type}""[^>]*>", labelString);
         }
 
-        //TODO:测试
         public static string GetInnerXml(string stlElement, bool isInnerElement)
         {
             return GetInnerXml(stlElement, isInnerElement, null);
         }
 
-        //TODO:测试
         public static string GetInnerXml(string stlElement, bool isInnerElement, LowerNameValueCollection attributes)
         {
             var retval = string.Empty;
@@ -590,156 +574,6 @@ namespace SiteServer.CMS.StlParser.Utility
             }
 
             return contextInfo.PageItemIndex + dbItemIndex + 1;
-        }
-
-        public static void GetYesOrNoTemplateString(XmlNode node, PageInfo pageInfo, out string successTemplateString, out string failureTemplateString)
-        {
-            successTemplateString = string.Empty;
-            failureTemplateString = string.Empty;
-
-            if (!string.IsNullOrEmpty(node.InnerXml))
-            {
-                var stlElementList = GetStlElementList(node.InnerXml);
-                if (stlElementList.Count > 0)
-                {
-                    foreach (var theStlElement in stlElementList)
-                    {
-                        if (IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
-                        {
-                            successTemplateString = GetInnerXml(theStlElement, true);
-                        }
-                        else if (IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
-                        {
-                            failureTemplateString = GetInnerXml(theStlElement, true);
-                        }
-                    }
-                }
-                if (string.IsNullOrEmpty(successTemplateString) && string.IsNullOrEmpty(failureTemplateString))
-                {
-                    successTemplateString = node.InnerXml;
-                }
-            }
-        }
-
-        public static void GetInnerTemplateString(XmlNode node, out string successTemplateString, out string failureTemplateString, PageInfo pageInfo, ContextInfo contextInfo)
-        {
-            successTemplateString = string.Empty;
-            failureTemplateString = string.Empty;
-
-            if (!string.IsNullOrEmpty(node.InnerXml))
-            {
-                var stlElementList = GetStlElementList(node.InnerXml);
-                if (stlElementList.Count > 0)
-                {
-                    foreach (var theStlElement in stlElementList)
-                    {
-                        if (IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
-                        {
-                            var innerBuilder = new StringBuilder(GetInnerXml(theStlElement, true));
-                            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            successTemplateString = innerBuilder.ToString();
-
-                        }
-                        else if (IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
-                        {
-                            var innerBuilder = new StringBuilder(GetInnerXml(theStlElement, true));
-                            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            failureTemplateString = innerBuilder.ToString();
-                        }
-                    }
-                }
-                if (string.IsNullOrEmpty(successTemplateString) && string.IsNullOrEmpty(failureTemplateString))
-                {
-                    var innerBuilder = new StringBuilder(node.InnerXml);
-                    StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                    successTemplateString = innerBuilder.ToString();
-                }
-            }
-        }
-
-        public static void GetSearchOutputTemplateString(XmlNode node, out string loadingTemplateString, out string yesTemplateString, out string noTemplateString, PageInfo pageInfo, ContextInfo contextInfo)
-        {
-            loadingTemplateString = string.Empty;
-            yesTemplateString = string.Empty;
-            noTemplateString = string.Empty;
-
-            if (!string.IsNullOrEmpty(node.InnerXml))
-            {
-                var stlElementList = GetStlElementList(node.InnerXml);
-                if (stlElementList.Count > 0)
-                {
-                    foreach (var theStlElement in stlElementList)
-                    {
-                        if (IsSpecifiedStlElement(theStlElement, StlLoading.ElementName))
-                        {
-                            var innerBuilder = new StringBuilder(GetInnerXml(theStlElement, true));
-                            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            loadingTemplateString = innerBuilder.ToString();
-                        }
-                        else if (IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
-                        {
-                            yesTemplateString = GetInnerXml(theStlElement, true);
-                        }
-                        else if (IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
-                        {
-                            var innerBuilder = new StringBuilder(GetInnerXml(theStlElement, true));
-                            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            noTemplateString = innerBuilder.ToString();
-                        }
-                    }
-                }
-
-                if (string.IsNullOrEmpty(loadingTemplateString) && string.IsNullOrEmpty(yesTemplateString) && string.IsNullOrEmpty(noTemplateString))
-                {
-                    yesTemplateString = node.InnerXml;
-                }
-            }
-
-            loadingTemplateString = StringUtils.Trim(loadingTemplateString);
-            yesTemplateString = StringUtils.Trim(yesTemplateString);
-            noTemplateString = StringUtils.Trim(noTemplateString);
-        }
-
-        public static void GetInnerTemplateStringOfInput(XmlNode node, out string inputTemplateString, out string successTemplateString, out string failureTemplateString, PageInfo pageInfo, ContextInfo contextInfo)
-        {
-            inputTemplateString = string.Empty;
-            successTemplateString = string.Empty;
-            failureTemplateString = string.Empty;
-
-            if (!string.IsNullOrEmpty(node.InnerXml))
-            {
-                var stlElementList = GetStlElementList(node.InnerXml);
-                if (stlElementList.Count > 0)
-                {
-                    foreach (var theStlElement in stlElementList)
-                    {
-                        if (IsSpecifiedStlElement(theStlElement, StlTemplate.ElementName))
-                        {
-                            var innerBuilder = new StringBuilder(GetInnerXml(theStlElement, true));
-                            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            inputTemplateString = innerBuilder.ToString();
-                        }
-                        else if (IsSpecifiedStlElement(theStlElement, StlYes.ElementName) || IsSpecifiedStlElement(theStlElement, StlYes.ElementName2))
-                        {
-                            var innerBuilder = new StringBuilder(GetInnerXml(theStlElement, true));
-                            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            successTemplateString = innerBuilder.ToString();
-                        }
-                        else if (IsSpecifiedStlElement(theStlElement, StlNo.ElementName) || IsSpecifiedStlElement(theStlElement, StlNo.ElementName2))
-                        {
-                            var innerBuilder = new StringBuilder(GetInnerXml(theStlElement, true));
-                            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            failureTemplateString = innerBuilder.ToString();
-                        }
-                    }
-                }
-                if (string.IsNullOrEmpty(inputTemplateString) && string.IsNullOrEmpty(successTemplateString) && string.IsNullOrEmpty(failureTemplateString))
-                {
-                    var innerBuilder = new StringBuilder(node.InnerXml);
-                    StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                    inputTemplateString = innerBuilder.ToString();
-                }
-            }
         }
 
         public static string GetStlErrorMessage(string elementName, Exception ex)

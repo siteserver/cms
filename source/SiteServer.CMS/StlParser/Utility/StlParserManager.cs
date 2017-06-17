@@ -35,19 +35,28 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             var isInnerElement = contextInfo.IsInnerElement;
             contextInfo.IsInnerElement = false;
-            contextInfo.ContainerClientID = string.Empty;
+            contextInfo.ContainerClientId = string.Empty;
             StlElementParser.ReplaceStlElements(parsedBuilder, pageInfo, contextInfo);
             StlEntityParser.ReplaceStlEntities(parsedBuilder, pageInfo, contextInfo);
             contextInfo.IsInnerElement = isInnerElement;
         }
 
-        public static void ParseInnerContent(StringBuilder parsedBuilder, PageInfo pageInfo, ContextInfo contextInfo)
+        public static void ParseInnerContent(StringBuilder builder, PageInfo pageInfo, ContextInfo contextInfo)
         {
             var isInnerElement = contextInfo.IsInnerElement;
             contextInfo.IsInnerElement = true;
-            StlElementParser.ReplaceStlElements(parsedBuilder, pageInfo, contextInfo);
-            StlEntityParser.ReplaceStlEntities(parsedBuilder, pageInfo, contextInfo);
+            StlElementParser.ReplaceStlElements(builder, pageInfo, contextInfo);
+            StlEntityParser.ReplaceStlEntities(builder, pageInfo, contextInfo);
             contextInfo.IsInnerElement = isInnerElement;
+        }
+
+        public static string ParseInnerContent(string template, PageInfo pageInfo, ContextInfo contextInfo)
+        {
+            if (string.IsNullOrEmpty(template)) return string.Empty;
+
+            var builder = new StringBuilder(template);
+            ParseInnerContent(builder, pageInfo, contextInfo);
+            return builder.ToString();
         }
 
         public static void ReplacePageElementsInContentPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, int nodeId, int contentId, int currentPageIndex, int pageCount)
@@ -135,7 +144,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var builder = new StringBuilder();
 
             builder.Append(
-                $@"<script>var $pageInfo = {{publishmentSystemID : {pageInfo.PublishmentSystemId}, channelID : {pageInfo.PageNodeId}, contentID : {pageInfo.PageContentId}, siteUrl : ""{pageInfo.PublishmentSystemInfo.PublishmentSystemUrl.TrimEnd('/')}"", homeUrl : ""{pageInfo.HomeUrl.TrimEnd('/')}"", currentUrl : ""{StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo)}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{pageInfo.ApiUrl.TrimEnd('/')}""}};</script>");
+                $@"<script>var $pageInfo = {{publishmentSystemID : {pageInfo.PublishmentSystemId}, channelID : {pageInfo.PageNodeId}, contentID : {pageInfo.PageContentId}, siteUrl : ""{pageInfo.PublishmentSystemInfo.PublishmentSystemUrl.TrimEnd('/')}"", homeUrl : ""{pageInfo.HomeUrl.TrimEnd('/')}"", currentUrl : ""{StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo)}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{pageInfo.ApiUrl.TrimEnd('/')}""}};</script>");
 
             foreach (string key in pageInfo.PageHeadScriptKeys)
             {

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.StlControls;
@@ -8,15 +8,16 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "评论提交及显示", Description = "通过 stl:commentInput 标签在模板中实现评论提交及显示功能")]
     public class StlCommentInput
     {
         private StlCommentInput() { }
-        public const string ElementName = "stl:commentinput";
+        public const string ElementName = "stl:commentInput";
 
-        public const string AttributePageNum = "pagenum";					            //每页显示的评论数目
-        public const string AttributeIsAnonymous = "isanonymous";                       //是否允许匿名评论
+        public const string AttributePageNum = "pageNum";
+        public const string AttributeIsAnonymous = "isAnonymous";
 
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributePageNum, "每页显示的评论数目"},
             {AttributeIsAnonymous, "是否允许匿名评论"}
@@ -37,12 +38,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                     while (ie.MoveNext())
                     {
                         var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributePageNum))
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributePageNum))
                         {
                             pageNum = TranslateUtils.ToInt(attr.Value, 10);
                         }
-                        else if (attributeName.Equals(AttributeIsAnonymous))
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsAnonymous))
                         {
                             isAnonymous = TranslateUtils.ToBool(attr.Value);
                         }

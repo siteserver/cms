@@ -51,27 +51,27 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == ECrossSiteTransType.None)
             {
-                return "²»×ª·¢";
+                return "ä¸è½¬å‘";
             }
             else if (type == ECrossSiteTransType.SelfSite)
             {
-                return "¿ÉÏò±¾Õ¾×ª·¢";
+                return "å¯å‘æœ¬ç«™è½¬å‘";
             }
             else if (type == ECrossSiteTransType.SpecifiedSite)
             {
-                return "¿ÉÏòÖ¸¶¨Õ¾µã×ª·¢";
+                return "å¯å‘æŒ‡å®šç«™ç‚¹è½¬å‘";
             }
             else if (type == ECrossSiteTransType.ParentSite)
             {
-                return "¿ÉÏòÉÏÒ»¼¶Õ¾µã×ª·¢";
+                return "å¯å‘ä¸Šä¸€çº§ç«™ç‚¹è½¬å‘";
             }
             else if (type == ECrossSiteTransType.AllParentSite)
 			{
-                return "¿ÉÏòËùÓĞÉÏ¼¶Õ¾µã×ª·¢";
+                return "å¯å‘æ‰€æœ‰ä¸Šçº§ç«™ç‚¹è½¬å‘";
             }
             else if (type == ECrossSiteTransType.AllSite)
             {
-                return "¿ÉÏòËùÓĞÕ¾µã×ª·¢";
+                return "å¯å‘æ‰€æœ‰ç«™ç‚¹è½¬å‘";
             }
 			else
 			{

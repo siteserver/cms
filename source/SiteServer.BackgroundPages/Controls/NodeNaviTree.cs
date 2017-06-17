@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Web.UI;
 using BaiRong.Core;
 using BaiRong.Core.Tabs;
@@ -27,6 +27,8 @@ namespace SiteServer.BackgroundPages.Controls
             {
                 if (!TabManager.IsValid(parent, PermissionList)) continue;
 
+                var tabCollection = NodeNaviTabManager.GetTabCollection(parent, PublishmentSystemId);
+
                 var linkUrl = FormatLink(parent);
                 if (!string.IsNullOrEmpty(linkUrl) && !StringUtils.EqualsIgnoreCase(linkUrl, PageUtils.UnclickedUrl))
                 {
@@ -38,11 +40,17 @@ namespace SiteServer.BackgroundPages.Controls
                 var item = NavigationTreeItem.CreateNavigationBarItem(isDisplay, parent.Selected, parentsCount, hasChildren, openWindow, parent.Text, linkUrl, parent.Target, parent.Enabled, parent.IconUrl);
 
                 builder.Append(item.GetTrHtml());
-                if (parent.Children != null && parent.Children.Length > 0)
+
+                if (tabCollection?.Tabs != null && tabCollection.Tabs.Length > 0)
                 {
-                    var tc2 = NodeNaviTabManager.GetTabCollection(parent, PublishmentSystemId);
-                    BuildNavigationTree(builder, tc2, parentsCount + 1, parent.Selected);
+                    BuildNavigationTree(builder, tabCollection, parentsCount + 1, parent.Selected);
                 }
+
+                //if (parent.Children != null && parent.Children.Length > 0)
+                //{
+                //    var tc2 = NodeNaviTabManager.GetTabCollection(parent, PublishmentSystemId);
+                //    BuildNavigationTree(builder, tc2, parentsCount + 1, parent.Selected);
+                //}
             }
         }
 

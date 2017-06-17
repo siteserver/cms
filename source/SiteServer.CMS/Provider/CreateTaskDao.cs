@@ -46,6 +46,13 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString, parms);
         }
 
+        public void DeleteAll()
+        {
+            const string sqlString = "DELETE FROM siteserver_CreateTask";
+
+            ExecuteNonQuery(sqlString);
+        }
+
         public void DeleteByPublishmentSystemId(int publishmentSystemId)
         {
             const string sqlString = "DELETE FROM siteserver_CreateTask WHERE PublishmentSystemID = @PublishmentSystemID";
@@ -154,6 +161,30 @@ namespace SiteServer.CMS.Provider
                 rdr.Close();
             }
             return info;
+        }
+
+        /// <summary>
+        /// 一次获取多个任务
+        /// </summary>
+        /// <param name="topNum"></param>
+        /// <returns></returns>
+        public List<CreateTaskInfo> GetLastPendingTasks(int topNum)
+        {
+            List<CreateTaskInfo> list = null;
+
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "ID, CreateType, PublishmentSystemID, ChannelID, ContentID, TemplateID", "ORDER BY ID", topNum);
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    var i = 0;
+                    var info = new CreateTaskInfo(GetInt(rdr, i++), ECreateTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i));
+                    list.Add(info);
+                }
+                rdr.Close();
+            }
+            return list;
         }
 
         public bool IsPendingTask()

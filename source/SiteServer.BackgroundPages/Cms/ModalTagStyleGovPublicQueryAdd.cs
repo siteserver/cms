@@ -4,7 +4,7 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.StlParser.StlElement.WCM;
+using SiteServer.CMS.StlParser.StlElement;
 
 namespace SiteServer.BackgroundPages.Cms
 {

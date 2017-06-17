@@ -44,8 +44,8 @@
             create.server.execute();
           }
         };
-        $.connection.hub.start().done(function () {
-          create.server.execute();
+        $.connection.hub.start({ transport: 'longPolling' }).done(function () {
+            create.server.execute();
         });
 
         $('#right').height($(window).height() - 40);

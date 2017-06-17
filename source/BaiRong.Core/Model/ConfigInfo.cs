@@ -45,6 +45,6 @@ namespace BaiRong.Core.Model
         public UserConfigInfo UserConfigInfo => _userConfigInfo ?? (_userConfigInfo = new UserConfigInfo(UserConfig));
 
 	    private SystemConfigInfo _systemConfigInfo;
-        public SystemConfigInfo SystemConfigInfo => _systemConfigInfo ?? (_systemConfigInfo = new SystemConfigInfo(SystemConfig));
+	    public SystemConfigInfo SystemConfigInfo => _systemConfigInfo ?? (_systemConfigInfo = new SystemConfigInfo(SystemConfig));
 	}
 }
