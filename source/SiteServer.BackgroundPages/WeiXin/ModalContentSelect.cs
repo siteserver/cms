@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.WeiXin
         public static string GetOpenWindowString(int publishmentSystemId, bool isMultiple, string jsMethod)
         {
             return PageUtils.GetOpenWindowString("选择微官网内容",
-                PageUtils.GetWeiXinUrl(nameof(ModalCardSnSetting), new NameValueCollection
+                PageUtils.GetWeiXinUrl(nameof(ModalContentSelect), new NameValueCollection
                 {
                     {"publishmentSystemId", publishmentSystemId.ToString()},
                     {"isMultiple", isMultiple.ToString()},

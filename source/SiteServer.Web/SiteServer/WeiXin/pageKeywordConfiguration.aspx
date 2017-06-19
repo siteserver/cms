@@ -15,11 +15,12 @@
 
   <script type="text/javascript">
     var selectWelcomeKeyword = function(keyword){
-      $('#tbWelcomeKeyword').val(keyword);
+      $('#TbWelcomeKeyword').val(keyword);
     };
     var selectDefaultReplyKeyword = function(keyword){
-      $('#tbDefaultReplyKeyword').val(keyword);
-    };
+      $('#TbDefaultReplyKeyword').val(keyword);
+      };
+     
   </script>
 
   <div class="popover popover-static">

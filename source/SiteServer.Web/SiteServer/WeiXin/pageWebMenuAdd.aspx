@@ -49,7 +49,7 @@
         <asp:PlaceHolder id="PhNavigationType" runat="server">
         <tr>
           <td>点击菜单触发：</td>
-          <td><asp:DropDownList ID="DdlNavigationType" AutoPostBack="true" OnSelectedIndexChanged="DdlNavigationType_OnSelectedIndexChanged" runat="server"></asp:DropDownList></td>
+          <td><asp:DropDownList ID="DdlNavigationType" AutoPostBack="true" OnSelectedIndexChanged="ddlNavigationType_OnSelectedIndexChanged" runat="server"></asp:DropDownList></td>
         </tr>
         </asp:PlaceHolder>
         <asp:PlaceHolder id="PhFunction" visible="false" runat="server">

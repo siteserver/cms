@@ -123,8 +123,8 @@
                         </strong>
                     </label>
                     <div>
-                        <bairong:BREditor ID="breContent" Width="100%" Height="350" runat="server">
-                        </bairong:BREditor>
+                        <bairong:UEditor ID="BreContent" Width="100%" Height="350" runat="server">
+                        </bairong:UEditor>
                     </div>
                 </div>
 

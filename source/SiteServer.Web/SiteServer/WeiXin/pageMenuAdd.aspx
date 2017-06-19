@@ -22,7 +22,7 @@
                 $('#idsCollection').val(nodeID + '_0');
             };
             var selectKeyword = function (keyword) {
-                $('#tbKeyword').val(keyword);
+                $('#TbKeyword').val(keyword);
             };
         </script>
 
@@ -45,7 +45,7 @@
                         <tr>
                             <td>点击菜单触发：</td>
                             <td>
-                                <asp:DropDownList ID="DdlMenuType" AutoPostBack="true" OnSelectedIndexChanged="DdlMenuType_OnSelectedIndexChanged" runat="server"></asp:DropDownList></td>
+                                <asp:DropDownList ID="DdlMenuType" AutoPostBack="true" OnSelectedIndexChanged="ddlMenuType_OnSelectedIndexChanged" runat="server"></asp:DropDownList></td>
                         </tr>
                     </asp:PlaceHolder>
                     <asp:PlaceHolder ID="PhKeyword" Visible="false" runat="server">
