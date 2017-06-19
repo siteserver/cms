@@ -134,12 +134,8 @@ namespace SiteServer.CMS.Plugin
         {
             var plugins = AllPlugins.Where(o => !o.Metadata.Disabled && o.Metadata.Menus != null);
 
-            var apiUrl = PageUtils.GetApiUrl();
-            if (siteId > 0)
-            {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
-                apiUrl = publishmentSystemInfo.Additional.ApiUrl;
-            }
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var apiUrl = PageUtility.GetApiUrl(publishmentSystemInfo);
 
             var menus = new List<PluginMenu>();
             foreach (var pluginPair in plugins)

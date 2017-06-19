@@ -28,6 +28,8 @@ namespace SiteServer.CMS.Core
 
         public static PublishmentSystemInfo GetPublishmentSystemInfo(int publishmentSystemId)
         {
+            if (publishmentSystemId <= 0) return null;
+
             var list = GetPublishmentSystemInfoKeyValuePairList();
 
             foreach (var pair in list)

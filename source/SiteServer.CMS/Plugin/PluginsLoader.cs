@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using BaiRong.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin
@@ -38,8 +39,8 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (Exception e)
                 {
-                    Log.Exception($"|PluginsLoader.CSharpPlugins|Couldn't load assembly for {metadata.Name}", e);
-                    return;
+                    LogUtils.AddErrorLog(e, $"Couldn't load assembly for {metadata.Name}");
+                    continue;
                 }
                 var types = assembly.GetTypes();
                 Type type;
@@ -49,8 +50,8 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (InvalidOperationException e)
                 {
-                    Log.Exception($"|PluginsLoader.CSharpPlugins|Can't find class implement IPlugin for <{metadata.Name}>", e);
-                    return;
+                    LogUtils.AddErrorLog(e, $"Can't find class implement IPlugin for <{metadata.Name}>");
+                    continue;
                 }
                 IPlugin plugin;
                 try
@@ -59,8 +60,8 @@ namespace SiteServer.CMS.Plugin
                 }
                 catch (Exception e)
                 {
-                    Log.Exception($"|PluginsLoader.CSharpPlugins|Can't create instance for <{metadata.Name}>", e);
-                    return;
+                    LogUtils.AddErrorLog(e, $"Can't create instance for <{metadata.Name}>");
+                    continue;
                 }
 #endif
                 plugins.Add(new PluginPair(metadata, plugin));
