@@ -15,6 +15,10 @@
 
   <asp:dataGrid id="DgEnabled" showHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
     <Columns>
+      <asp:TemplateColumn HeaderText="插件Id">
+        <ItemTemplate><asp:Literal ID="ltlPluginId" runat="server"></asp:Literal></ItemTemplate>
+        <ItemStyle HorizontalAlign="left"/>
+      </asp:TemplateColumn>
       <asp:TemplateColumn HeaderText="插件名称">
         <ItemTemplate><asp:Literal ID="ltlPluginName" runat="server"></asp:Literal></ItemTemplate>
         <ItemStyle HorizontalAlign="left"/>

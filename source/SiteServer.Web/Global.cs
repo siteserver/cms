@@ -5,7 +5,7 @@ using System.Web.Http.Routing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Core.Plugin;
 
 namespace SiteServer.API
 {

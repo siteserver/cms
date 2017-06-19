@@ -136,7 +136,7 @@
     <Compile Include="Admin\PageRoleAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\PageRoleAddPublishmentSystemPermissions.cs">
+    <Compile Include="Admin\PagePermissionAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Admin\ModalAdminPassword.cs">

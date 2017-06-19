@@ -208,13 +208,17 @@
     <Compile Include="Controllers\Writing\ActionsGetTableStyles.cs" />
     <Compile Include="Controllers\Writing\ActionsGetContents.cs" />
     <Compile Include="Controllers\Writing\ActionsGetContent.cs" />
+    <Compile Include="Core\Permissions\AdministratorWithPermissions.cs" />
+    <Compile Include="Core\Permissions\PermissionConfig.cs" />
+    <Compile Include="Core\Permissions\PermissionConfigManager.cs" />
+    <Compile Include="Core\Permissions\PermissionManager.cs" />
     <Compile Include="Model\InputInfoExtend.cs" />
     <Compile Include="Core\ContentUtility.cs" />
-    <Compile Include="Plugin\PluginConfig.cs" />
-    <Compile Include="Plugin\PluginInstaller.cs" />
-    <Compile Include="Plugin\PluginManager.cs" />
-    <Compile Include="Plugin\PluginsLoader.cs" />
-    <Compile Include="Plugin\PublicApiInstance.cs" />
+    <Compile Include="Core\Plugin\PluginConfig.cs" />
+    <Compile Include="Core\Plugin\PluginInstaller.cs" />
+    <Compile Include="Core\Plugin\PluginManager.cs" />
+    <Compile Include="Core\Plugin\PluginsLoader.cs" />
+    <Compile Include="Core\Plugin\PublicApiInstance.cs" />
     <Compile Include="StlParser\Model\StlAttribute.cs" />
     <Compile Include="StlParser\StlElement\StlTemplate.cs" />
     <Compile Include="StlParser\Utility\StlInnerUtility.cs" />
@@ -837,9 +841,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Plugin\README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

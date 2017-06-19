@@ -6,7 +6,7 @@ using System.Web.UI;
 using BaiRong.Core;
 using BaiRong.Core.Tabs;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Core.Plugin;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls

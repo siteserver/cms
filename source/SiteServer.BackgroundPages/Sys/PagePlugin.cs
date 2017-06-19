@@ -8,9 +8,9 @@ using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Plugin;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Sys
@@ -107,14 +107,16 @@ namespace SiteServer.BackgroundPages.Sys
             if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
             var pluginPair = (PluginPair)e.Item.DataItem;
 
+            var ltlPluginId = (Literal)e.Item.FindControl("ltlPluginId");
             var ltlPluginName = (Literal)e.Item.FindControl("ltlPluginName");
             var ltlDirectoryName = (Literal)e.Item.FindControl("ltlDirectoryName");
             var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");
             var ltlInitTime = (Literal)e.Item.FindControl("ltlInitTime");
             var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
 
+            ltlPluginId.Text = pluginPair.Metadata.Id;
             ltlPluginName.Text = $@"<img src={PageUtils.GetPluginUrl(pluginPair.Metadata.Id, pluginPair.Metadata.LogoUrl)} width=""48"" height=""48"" /> {pluginPair.Metadata.Name}";
-            ltlDirectoryName.Text = pluginPair.Metadata.Id;
+            ltlDirectoryName.Text = pluginPair.Metadata.DirectoryPath;
             ltlDescription.Text = pluginPair.Metadata.Description;
 
             if (pluginPair.Metadata.InitTime > 1000)

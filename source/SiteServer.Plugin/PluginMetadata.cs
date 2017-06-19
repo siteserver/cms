@@ -7,6 +7,7 @@ namespace SiteServer.Plugin
     [JsonObject(MemberSerialization.OptOut)]
     public class PluginMetadata
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Author { get; set; }
         public string Version { get; set; }
@@ -32,15 +33,11 @@ namespace SiteServer.Plugin
             {
                 _directoryPath = value;
                 ExecuteFilePath = Path.Combine(value, ExecuteFileName);
-                Id = new DirectoryInfo(_directoryPath).Name;
             }
         }
 
         [JsonIgnore]
         public string ExecuteFilePath { get; private set; }
-
-        [JsonIgnore]
-        public string Id { get; private set; }
 
         [JsonIgnore]
         public long InitTime { get; internal set; }

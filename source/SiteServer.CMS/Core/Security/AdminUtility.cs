@@ -1,6 +1,6 @@
 using BaiRong.Core;
 using System.Collections.Generic;
-using BaiRong.Core.Permissions;
+using SiteServer.CMS.Core.Permissions;
 
 namespace SiteServer.CMS.Core.Security
 {

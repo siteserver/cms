@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Core.Plugin;
 using SiteServer.Plugin;
 
 namespace siteserver

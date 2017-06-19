@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Permissions;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Share;
 
 namespace SiteServer.BackgroundPages
@@ -188,7 +188,7 @@ $('.operation-area').hide();
 
             if (!string.IsNullOrEmpty(permission))
             {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 
@@ -204,7 +204,7 @@ $('.operation-area').hide();
 
             if (!string.IsNullOrEmpty(permission))
             {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 
@@ -220,7 +220,7 @@ $('.operation-area').hide();
 
             if (!string.IsNullOrEmpty(permission))
             {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 
@@ -236,7 +236,7 @@ $('.operation-area').hide();
 
             if (!string.IsNullOrEmpty(permission))
             {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 
@@ -252,7 +252,7 @@ $('.operation-area').hide();
 
             if (!string.IsNullOrEmpty(permission))
             {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 
@@ -268,7 +268,7 @@ $('.operation-area').hide();
 
             if (!string.IsNullOrEmpty(permission))
             {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 

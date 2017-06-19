@@ -3,7 +3,7 @@ using System.Linq;
 using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Core.Plugin;
 using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers

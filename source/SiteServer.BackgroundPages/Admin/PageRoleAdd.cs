@@ -5,9 +5,8 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Configuration;
-using BaiRong.Core.Permissions;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
@@ -58,7 +57,7 @@ namespace SiteServer.BackgroundPages.Admin
                     space = "<tr>";
                 }
 
-                var pageUrl = PageRoleAddPublishmentSystemPermissions.GetRedirectUrl(publishmentSystemId, Body.GetQueryString("RoleName"));
+                var pageUrl = PagePermissionAdd.GetRedirectUrl(publishmentSystemId, Body.GetQueryString("RoleName"));
                 string content = $@"
 					<td height=20>
                         <img id='PublishmentSystemImage_{publishmentSystemId}' align='absmiddle' border='0' src='../pic/{imageName}.gif'/>
@@ -83,7 +82,7 @@ namespace SiteServer.BackgroundPages.Admin
 
             if (!IsPostBack)
             {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, AppManager.Admin.Permission.AdminManagement);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, AppManager.Admin.Permission.AdminManagement);
 
                 if (!string.IsNullOrEmpty(_theRoleName))
                 {
@@ -107,10 +106,10 @@ namespace SiteServer.BackgroundPages.Admin
 
                 var cblPermissions = new CheckBoxList();
 
-                var permissions = PermissionConfigManager.GetGeneralPermissions();
+                var permissions = PermissionConfigManager.Instance.GeneralPermissions;
                 if (permissions.Count > 0)
                 {
-                    foreach (PermissionConfig permission in permissions)
+                    foreach (var permission in permissions)
                     {
                         if (_generalPermissionList.Contains(permission.Name))
                         {
