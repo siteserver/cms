@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Wcm
 	        return PageUtils.GetOpenWindowStringWithCheckBoxValue("转移办件",
 	            PageUtils.GetWcmUrl(nameof(ModalGovInteractApplyTranslate), new NameValueCollection
 	            {
-	                {"PublishmentSystemID", publishmentSystemId.ToString()},
+	                {"siteId", publishmentSystemId.ToString()},
 	                {"NodeID", nodeId.ToString()}
 	            }), "IDCollection", "请选择需要转移的办件！", 580, 400);
 	    }

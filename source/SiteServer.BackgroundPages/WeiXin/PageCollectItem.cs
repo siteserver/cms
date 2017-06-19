@@ -82,7 +82,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             SpContents.SelectCommand = DataProviderWx.CollectItemDao.GetSelectString(PublishmentSystemId, _collectId);
             SpContents.SortField = CollectItemAttribute.Id;
             SpContents.SortMode = SortMode.ASC;
-            RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             {

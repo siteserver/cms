@@ -1,1 +1,1 @@
-﻿<%@ Page Language="c#" Inherits="SSiteServer.BackgroundPages.WeiXin.Pageervice" Trace="False" %>
+﻿<%@ Page Language="c#" Inherits="SiteServer.BackgroundPages.WeiXin.PageService" Trace="False" %>

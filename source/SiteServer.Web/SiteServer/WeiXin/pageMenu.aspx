@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SSiteServer.BackgroundPages.WeiXin.Pageenu" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageMenu" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>

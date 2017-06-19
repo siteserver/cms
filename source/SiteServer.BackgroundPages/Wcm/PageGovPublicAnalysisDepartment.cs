@@ -21,8 +21,6 @@ namespace SiteServer.BackgroundPages.Wcm
 
 		public void Page_Load(object sender, EventArgs e)
 		{
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
-
 			if(!IsPostBack)
             {
                 BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicAnalysis, "主动公开统计", AppManager.Wcm.Permission.WebSite.GovPublicAnalysis);

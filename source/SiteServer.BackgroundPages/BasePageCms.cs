@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages
         }
 
         private int _publishmentSystemId = -1;
-        public int PublishmentSystemId
+        public virtual int PublishmentSystemId
         {
             get
             {

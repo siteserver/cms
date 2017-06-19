@@ -25,55 +25,55 @@
     </div>
     <div class="content clearfix">
       <div class="items">
-        <a class="box" href="../cms/background_contentMain.aspx?publishmentSystemID=<%=PublishmentSystemID%>">
+        <a class="box" href="../cms/background_contentMain.aspx?publishmentSystemID=<%=PublishmentSystemId%>">
           <span>内容管理</span>
           <i class="icon-file-text"></i>
         </a>
-        <a class="box" href="../cms/background_channel.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #43b51f;">
+        <a class="box" href="../cms/background_channel.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #43b51f;">
           <span>栏目管理</span>
           <i class="icon-folder-close"></i>
         </a>
-        <a class="box" href="../cms/background_contentCheck.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #00aeef;">
+        <a class="box" href="../cms/background_contentCheck.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #00aeef;">
           <span>内容审核  </span>
           <i class="icon-shield"></i>
         </a>
-        <a class="box" href="../cms/background_contentSearch.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #f58d00;">
+        <a class="box" href="../cms/background_contentSearch.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #f58d00;">
           <span>内容搜索</span>
           <i class="icon-search"></i>
         </a>
-        <a class="box" href="../cms/background_contentTrash.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #00aba9;">
+        <a class="box" href="../cms/background_contentTrash.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #00aba9;">
           <span>内容回收站</span>
           <i class="icon-trash"></i>
         </a>
-        <a class="box height2" href="../stl/background_templateMain.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #d32c2c;">
+        <a class="box height2" href="../stl/background_templateMain.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #d32c2c;">
           <span>模板管理</span>
           <i class="icon-dashboard big"></i>
         </a>
-        <a class="box" href="../stl/background_templateMatch.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #3c5b9b;">
+        <a class="box" href="../stl/background_templateMatch.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #3c5b9b;">
           <span>匹配模板</span>
           <i class="icon-refresh"></i>
         </a>
-        <a class="box" href="../stl/background_templateInclude.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #ffc808;">
+        <a class="box" href="../stl/background_templateInclude.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #ffc808;">
           <span>包含文件管理</span>
           <i class="icon-file"></i>
         </a>
-        <a class="box height2" href="../stl/background_progressBar.aspx?CreateIndex=True&publishmentSystemID=<%=PublishmentSystemID%>" style="background: #00a300;">
+        <a class="box height2" href="../stl/background_progressBar.aspx?CreateIndex=True&publishmentSystemID=<%=PublishmentSystemId%>" style="background: #00a300;">
           <span>生成首页</span>
           <i class="icon-globe big"></i>
         </a>
-        <a class="box" href="../stl/background_createChannel.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #00aeef;">
+        <a class="box" href="../stl/background_createChannel.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #00aeef;">
           <span>生成栏目页  </span>
           <i class="icon-globe"></i>
         </a>
-        <a class="box" href="../stl/background_createContent.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #f58d00;">
+        <a class="box" href="../stl/background_createContent.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #f58d00;">
           <span>生成内容页</span>
           <i class="icon-globe"></i>
         </a>
-        <a class="box" href="../stl/background_createFile.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #640f6c;">
+        <a class="box" href="../stl/background_createFile.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #640f6c;">
           <span>生成文件页</span>
           <i class="icon-globe"></i>
         </a>
-        <a class="box" href="../cms/background_configurationSite.aspx?publishmentSystemID=<%=PublishmentSystemID%>" style="background: #0C7710;">
+        <a class="box" href="../cms/background_configurationSite.aspx?publishmentSystemID=<%=PublishmentSystemId%>" style="background: #0C7710;">
           <span>站点设置</span>
           <i class="icon-cog"></i>
         </a>

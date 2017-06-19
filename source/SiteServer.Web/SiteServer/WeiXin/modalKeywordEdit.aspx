@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
+<asp:Button id="BtnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
 <bairong:alerts runat="server"></bairong:alerts>
 
   <table class="table table-noborder">
@@ -37,4 +37,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

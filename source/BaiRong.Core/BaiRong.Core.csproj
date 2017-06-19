@@ -32,7 +32,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -235,7 +235,6 @@
     <Compile Include="Model\Enumerations\ESubscribePushType.cs" />
     <Compile Include="Model\Enumerations\EUserActionType.cs" />
     <Compile Include="Model\Enumerations\ELevelPeriodType.cs" />
-    <Compile Include="Model\Enumerations\EPublishmentSystemType.cs" />
     <Compile Include="Model\Enumerations\EUploadType.cs" />
     <Compile Include="Model\Enumerations\EUserLockType.cs" />
     <Compile Include="Model\Enumerations\ESmsProviderType.cs" />

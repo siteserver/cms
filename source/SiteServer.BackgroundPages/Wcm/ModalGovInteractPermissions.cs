@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("权限设置", PageUtils.GetWcmUrl(nameof(ModalGovInteractPermissions), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"UserName", userName}
             }), 450, 320);

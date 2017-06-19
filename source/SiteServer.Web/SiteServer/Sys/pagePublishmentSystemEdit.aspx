@@ -68,32 +68,6 @@
               runat="server"/>
           </td>
         </tr>
-        <asp:PlaceHolder id="phWCMTables" visible="false" runat="server">
-          <tr>
-            <td>信息公开辅助表：</td>
-            <td>
-              <asp:DropDownList ID="AuxiliaryTableForGovPublic" runat="server" ></asp:DropDownList>
-              <asp:RequiredFieldValidator
-                ControlToValidate="AuxiliaryTableForGovPublic"
-                ErrorMessage="辅助表不能为空！"
-                foreColor="red"
-                Display="Dynamic"
-                runat="server"/>
-            </td>
-          </tr>
-         <tr>
-            <td>互动交流辅助表：</td>
-            <td>
-              <asp:DropDownList ID="AuxiliaryTableForGovInteract" runat="server" > </asp:DropDownList>
-              <asp:RequiredFieldValidator
-                ControlToValidate="AuxiliaryTableForGovInteract"
-                ErrorMessage="辅助表不能为空！"
-                foreColor="red"
-                Display="Dynamic"
-                runat="server"/>
-            </td>
-          </tr>
-        </asp:PlaceHolder>
         <tr>
           <td>投票辅助表：</td>
           <td>

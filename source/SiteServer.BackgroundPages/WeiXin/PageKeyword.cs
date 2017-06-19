@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             SpContents.ItemsPerPage = 60;
             SpContents.SortField = "KeywordId";
             SpContents.SortMode = SortMode.DESC;
-            RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
 			if (!IsPostBack)
             {

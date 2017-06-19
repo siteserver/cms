@@ -8,29 +8,16 @@ namespace BaiRong.Core
     public class PermissionConfigManager
 	{
         public const string CacheKey = "BaiRong.Core.PermissionManager";
-        public const string ModuleCacheKey = "BaiRong.Core.ModulePermissions";
 
-        private static string GetPermissionsFilePathOfPlatform()
-        {
-            return "~/SiteFiles/Configuration/Menus/Permissions.config";
-        }
+        public const string FilePath = "~/SiteFiles/Configuration/Menus/Permissions.config";
 
-        private static string GetPermissionsFilePathOfApp(string appId)
-        {
-            return $"~/SiteFiles/Configuration/Menus/{appId}/Permissions.config";
-        }
+	    public ArrayList GeneralPermissions { get; } = new ArrayList();
 
-        ArrayList generalPermissions = new ArrayList();
-        public ArrayList GeneralPermissions => generalPermissions;
+	    public ArrayList WebsitePermissions { get; } = new ArrayList();
 
-	    ArrayList websitePermissions = new ArrayList();
-        public ArrayList WebsitePermissions => websitePermissions;
+	    public ArrayList ChannelPermissions { get; } = new ArrayList();
 
-	    ArrayList channelPermissions = new ArrayList();
-        public ArrayList ChannelPermissions => channelPermissions;
-
-	    ArrayList govInteractPermissions = new ArrayList();
-        public ArrayList GovInteractPermissions => govInteractPermissions;
+	    public ArrayList GovInteractPermissions { get; } = new ArrayList();
 
 	    private PermissionConfigManager()
 		{
@@ -45,16 +32,9 @@ namespace BaiRong.Core
 				{
                     permissionManager = new PermissionConfigManager();
 
-                    //ArrayList pathArrayList = new ArrayList();
-                    //string path = PathUtils.MapPath(PermissionsPathGlobal);
-                    //pathArrayList.Add(path);
-                    //XmlDocument doc = new XmlDocument();
-                    //doc.Load(path);
-                    //permissionManager.LoadValuesFromConfigurationXml(doc, false);
-
                     var pathArrayList = new ArrayList();
 
-                    var path = PathUtils.MapPath(GetPermissionsFilePathOfPlatform());
+                    var path = PathUtils.MapPath(FilePath);
                     if (FileUtils.IsFileExists(path))
                     {
                         pathArrayList.Add(path);
@@ -64,120 +44,17 @@ namespace BaiRong.Core
                         permissionManager.LoadValuesFromConfigurationXml(doc);
                     }
 
-                    foreach (var appID in AppManager.GetAppIdList())
-                    {
-                        path = PathUtils.MapPath(GetPermissionsFilePathOfApp(appID));
-                        if (FileUtils.IsFileExists(path))
-                        {
-                            pathArrayList.Add(path);
-
-                            var doc = new XmlDocument();
-                            doc.Load(path);
-                            permissionManager.LoadValuesFromConfigurationXml(doc);
-                        }
-                    }
-
                     CacheUtils.Max(CacheKey, permissionManager, new CacheDependency(TranslateUtils.ArrayListToStringArray(pathArrayList)));
 				}
                 return permissionManager;
 			}
 		}
 
-        public static void SaveGeneralPermissionsOfApp(string appID, ArrayList permissions)
-        {
-            var path = PathUtils.MapPath(GetPermissionsFilePathOfApp(appID));
-            if (FileUtils.IsFileExists(path))
-            {
-                var doc = new XmlDocument();
-                doc.Load(path);
-
-                var configSettings = doc.SelectSingleNode("Config/generalPermissions");
-                if (configSettings == null)
-                {
-                    configSettings = doc.SelectSingleNode("Config");
-                }
-
-                configSettings.RemoveAll();
-                foreach (PermissionConfig config in permissions)
-                {
-                    var setting = doc.CreateElement("add");
-                    setting.SetAttribute("name", config.Name);
-                    setting.SetAttribute("text", config.Text);
-                    configSettings.AppendChild(setting);
-                }
-
-                var writer = new XmlTextWriter(path, System.Text.Encoding.UTF8);
-                writer.Formatting = Formatting.Indented;
-                doc.Save(writer);
-                writer.Flush();
-                writer.Close();
-            }
-        }
-
-        public static ArrayList GetGeneralPermissionsOfProduct()
+        public static ArrayList GetGeneralPermissions()
         {
             var permissions = new ArrayList();
 
-            var path = PathUtils.MapPath(GetPermissionsFilePathOfPlatform());
-            if (FileUtils.IsFileExists(path))
-            {
-                var XmlDoc = new XmlDocument();
-                XmlDoc.Load(path);
-                var coreNode = XmlDoc.SelectSingleNode("Config");
-
-                var isGet = false;
-
-                foreach (XmlNode child in coreNode.ChildNodes)
-                {
-                    if (child.Name == "generalPermissions")
-                    {
-                        isGet = true;
-                        GetPermissions(child, permissions);
-                        break;
-                    }
-                }
-
-                if (isGet == false)
-                {
-                    GetPermissions(coreNode, permissions);
-                }
-            }
-
-            foreach (var appID in AppManager.GetAppIdList())
-            {
-                path = PathUtils.MapPath(GetPermissionsFilePathOfApp(appID));
-                if (FileUtils.IsFileExists(path))
-                {
-                    var XmlDoc = new XmlDocument();
-                    XmlDoc.Load(path);
-                    var coreNode = XmlDoc.SelectSingleNode("Config");
-
-                    var isGet = false;
-
-                    foreach (XmlNode child in coreNode.ChildNodes)
-                    {
-                        if (child.Name == "generalPermissions")
-                        {
-                            isGet = true;
-                            GetPermissions(child, permissions);
-                            break;
-                        }
-                    }
-
-                    if (isGet == false)
-                    {
-                        GetPermissions(coreNode, permissions);
-                    }
-                }
-            }
-            return permissions;
-        }
-
-        public static ArrayList GetGeneralPermissionsOfApp(string appID)
-        {
-            var permissions = new ArrayList();
-
-            var path = PathUtils.MapPath(GetPermissionsFilePathOfApp(appID));
+            var path = PathUtils.MapPath(FilePath);
             if (FileUtils.IsFileExists(path))
             {
                 var XmlDoc = new XmlDocument();
@@ -205,48 +82,42 @@ namespace BaiRong.Core
             return permissions;
         }
 
-        public static ArrayList GetWebsitePermissionsOfApp(string appID)
+        public static ArrayList GetWebsitePermissions()
         {
             var permissions = new ArrayList();
-            if (!string.IsNullOrEmpty(appID))
+            var path = PathUtils.MapPath(FilePath);
+            if (FileUtils.IsFileExists(path))
             {
-                var path = PathUtils.MapPath(GetPermissionsFilePathOfApp(appID));
-                if (FileUtils.IsFileExists(path))
+                var XmlDoc = new XmlDocument();
+                XmlDoc.Load(path);
+                var coreNode = XmlDoc.SelectSingleNode("Config");
+                foreach (XmlNode child in coreNode.ChildNodes)
                 {
-                    var XmlDoc = new XmlDocument();
-                    XmlDoc.Load(path);
-                    var coreNode = XmlDoc.SelectSingleNode("Config");
-                    foreach (XmlNode child in coreNode.ChildNodes)
+                    if (child.Name == "websitePermissions")
                     {
-                        if (child.Name == "websitePermissions")
-                        {
-                            GetPermissions(child, permissions);
-                            break;
-                        }
+                        GetPermissions(child, permissions);
+                        break;
                     }
                 }
             }
             return permissions;
         }
 
-        public static ArrayList GetChannelPermissionsOfApp(string appID)
+        public static ArrayList GetChannelPermissions()
         {
             var permissions = new ArrayList();
-            if (!string.IsNullOrEmpty(appID))
+            var path = PathUtils.MapPath(FilePath);
+            if (FileUtils.IsFileExists(path))
             {
-                var path = PathUtils.MapPath(GetPermissionsFilePathOfApp(appID));
-                if (FileUtils.IsFileExists(path))
+                var XmlDoc = new XmlDocument();
+                XmlDoc.Load(path);
+                var coreNode = XmlDoc.SelectSingleNode("Config");
+                foreach (XmlNode child in coreNode.ChildNodes)
                 {
-                    var XmlDoc = new XmlDocument();
-                    XmlDoc.Load(path);
-                    var coreNode = XmlDoc.SelectSingleNode("Config");
-                    foreach (XmlNode child in coreNode.ChildNodes)
+                    if (child.Name == "channelPermissions")
                     {
-                        if (child.Name == "channelPermissions")
-                        {
-                            GetPermissions(child, permissions);
-                            break;
-                        }
+                        GetPermissions(child, permissions);
+                        break;
                     }
                 }
             }
@@ -263,19 +134,19 @@ namespace BaiRong.Core
                 if (child.NodeType == XmlNodeType.Comment) continue;
                 if (child.Name == "generalPermissions")
                 {
-                    GetPermissions(child, generalPermissions);
+                    GetPermissions(child, GeneralPermissions);
                 }
                 else if (child.Name == "websitePermissions")
                 {
-                    GetPermissions(child, websitePermissions);
+                    GetPermissions(child, WebsitePermissions);
                 }
                 else if (child.Name == "channelPermissions")
                 {
-                    GetPermissions(child, channelPermissions);
+                    GetPermissions(child, ChannelPermissions);
                 }
                 else if (child.Name == "govInteractPermissions")
                 {
-                    GetPermissions(child, govInteractPermissions);
+                    GetPermissions(child, GovInteractPermissions);
                 }
                 else
                 {
@@ -285,7 +156,7 @@ namespace BaiRong.Core
             }
             if (!isMultiple)
             {
-                GetPermissions(coreNode, generalPermissions);
+                GetPermissions(coreNode, GeneralPermissions);
             }
 		}
 

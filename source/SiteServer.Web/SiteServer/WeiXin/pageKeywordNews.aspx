@@ -176,11 +176,10 @@
   <!-- end -->
 
   <ul class="breadcrumb breadcrumb-button">
-    <asp:Button class="btn btn-success" id="btnAddSingle" Text="添加单图文回复" runat="server" />
-    <asp:Button class="btn btn-success" id="btnAddMultiple" Text="添加多图文回复" runat="server" />
+    <asp:Button class="btn btn-success" id="BtnAddSingle" Text="添加单图文回复" runat="server" />
+    <asp:Button class="btn btn-success" id="BtnAddMultiple" Text="添加多图文回复" runat="server" />
   </ul>
 
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

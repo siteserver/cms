@@ -137,8 +137,7 @@
         <div id="left">
             <form runat="server">
                 <table class="table table-condensed table-hover left-table">
-                    <bairong:NodeNaviTree ID="NtLeftMenuSite" runat="server" />
-                    <bairong:NavigationTree ID="NtLeftMenuSystem" runat="server" />
+                    <bairong:NavigationTree ID="NtLeftMenu" runat="server" />
                     <tr><td></td></tr>
                 </table>
             </form>

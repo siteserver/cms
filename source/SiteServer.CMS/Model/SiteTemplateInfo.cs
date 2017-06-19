@@ -7,63 +7,53 @@ namespace SiteServer.CMS.Model
 	[XmlRoot("SiteTemplate")]
 	public class SiteTemplateInfo
 	{
-		private string siteTemplateName;
-        private string publishmentSystemType;
-		private string webSiteUrl;
-		private string picFileName;
-		private string description;
+		private string _siteTemplateName;
+		private string _webSiteUrl;
+		private string _picFileName;
+		private string _description;
 
 		public SiteTemplateInfo()
 		{
-			siteTemplateName = string.Empty;
-            publishmentSystemType = string.Empty;
-			webSiteUrl = string.Empty;
-			picFileName = string.Empty;
-			description = string.Empty;
+			_siteTemplateName = string.Empty;
+			_webSiteUrl = string.Empty;
+			_picFileName = string.Empty;
+			_description = string.Empty;
 		}
 
-        public SiteTemplateInfo(string siteTemplateName, string publishmentSystemType, string webSiteUrl, string picFileName, string description) 
+        public SiteTemplateInfo(string siteTemplateName, string webSiteUrl, string picFileName, string description) 
 		{
-			this.siteTemplateName = siteTemplateName;
-            this.publishmentSystemType = publishmentSystemType;
-			this.webSiteUrl = webSiteUrl;
-			this.picFileName = picFileName;
-			this.description = description;
+			_siteTemplateName = siteTemplateName;
+			_webSiteUrl = webSiteUrl;
+			_picFileName = picFileName;
+			_description = description;
 		}
 
 		[XmlElement(ElementName = "SiteTemplateName")]
 		public string SiteTemplateName
 		{
-			get { return siteTemplateName; }
-			set { siteTemplateName = value; }
+			get { return _siteTemplateName; }
+			set { _siteTemplateName = value; }
 		}
-
-        [XmlElement(ElementName = "PublishmentSystemType")]
-        public string PublishmentSystemType
-        {
-            get { return publishmentSystemType; }
-            set { publishmentSystemType = value; }
-        }
 
 		[XmlElement(ElementName = "WebSiteUrl")]
 		public string WebSiteUrl
 		{
-			get { return webSiteUrl; }
-			set { webSiteUrl = value; }
+			get { return _webSiteUrl; }
+			set { _webSiteUrl = value; }
 		}
 
 		[XmlElement(ElementName = "PicFileName")]
 		public string PicFileName
 		{
-			get { return picFileName; }
-			set { picFileName = value; }
+			get { return _picFileName; }
+			set { _picFileName = value; }
 		}
 
 		[XmlElement(ElementName = "Description")]
 		public string Description
 		{
-			get { return description; }
-			set { description = value; }
+			get { return _description; }
+			set { _description = value; }
 		}
 
 	}

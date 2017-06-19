@@ -1,10 +1,11 @@
 ﻿using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using System.Web.Http.Routing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using SiteServer.CMS.Plugins;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API
 {
@@ -27,6 +28,8 @@ namespace SiteServer.API
                 new { id = RouteParameter.Optional }
             );
 
+            configuration.Routes.Add("name", new HttpRoute());
+
             var jsonFormatter = configuration.Formatters.JsonFormatter;
             var settings = new JsonSerializerSettings
             {
@@ -42,11 +45,13 @@ namespace SiteServer.API
 
             configuration.EnsureInitialized();
 
-            var list = PluginManager.GetPluginInfoList();
-            foreach (var pluginInfo in list)
-            {
-                pluginInfo.Instance.Initialize();
-            }
+            PluginManager.LoadPlugins();
+
+            //var list = PluginManager.GetPluginInfoList();
+            //foreach (var pluginInfo in list)
+            //{
+            //    pluginInfo.Instance.Initialize();
+            //}
         }
 
 

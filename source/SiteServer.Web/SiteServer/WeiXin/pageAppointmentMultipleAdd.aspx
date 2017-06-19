@@ -316,9 +316,9 @@
       <bairong:sqlPager id="SpContents" runat="server" class="table table-pager" />
 
         <ul class="breadcrumb breadcrumb-button">
-        <asp:Button class="btn btn-success" id="btnAdd" Text="添 加" runat="server" />
-       <%-- <asp:Button class="btn" id="btnDelete" Text="删 除" runat="server" /> --%>
-         <input type="button" class="btn" id="btnDelete" value="删 除" />
+        <asp:Button class="btn btn-success" id="BtnAdd" Text="添 加" runat="server" />
+       <%-- <asp:Button class="btn" id="BtnDelete" Text="删 除" runat="server" /> --%>
+         <input type="button" class="btn" id="BtnDelete" value="删 除" />
         </ul>
           
        </div>
@@ -547,8 +547,8 @@
       <table class="table table-noborder">
         <tr>
           <td class="center">
-            <asp:Button class="btn btn-primary" id="btnSubmit" text="下一步" OnClick="Submit_OnClick" runat="server"/>
-            <asp:Button class="btn" id="btnReturn" text="返 回" runat="server"/>
+            <asp:Button class="btn btn-primary" id="BtnSubmit" text="下一步" OnClick="Submit_OnClick" runat="server"/>
+            <asp:Button class="btn" id="BtnReturn" text="返 回" runat="server"/>
           </td>
         </tr>
       </table>
@@ -559,4 +559,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

@@ -1,0 +1,17 @@
+{
+  "Name": "阿里云OSS云存储",
+  "Description": "监控站点文件变动并同步到阿里云OSS云存储中",
+  "Author": "SiteServer CMS",
+  "Version": "1.0.0",
+  "Website": "http://www.siteserver.cn",
+  "ExecuteFileName": "SiteServer.Plugin.Oss.dll",
+  "LogoUrl": "logo.png",
+  "Menus": [
+    {
+      "TopId": "Management",
+      "ParentId": "Configration",
+      "Text": "阿里云OSS云存储",
+      "Href": "configuration.html"
+    }
+  ]
+}

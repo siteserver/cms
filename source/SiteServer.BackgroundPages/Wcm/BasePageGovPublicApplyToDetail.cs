@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             base.OnInit(e);
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "ApplyID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("ApplyID", "ReturnUrl");
 
             applyInfo = DataProvider.GovPublicApplyDao.GetApplyInfo(TranslateUtils.ToInt(Request.QueryString["ApplyID"]));
             returnUrl = StringUtils.ValueFromUrl(Request.QueryString["ReturnUrl"]);

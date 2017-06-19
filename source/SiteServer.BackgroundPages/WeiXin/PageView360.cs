@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             SpContents.SelectCommand = DataProviderWx.View360Dao.GetSelectString(PublishmentSystemId);
             SpContents.SortField = View360Attribute.Id;
             SpContents.SortMode = SortMode.ASC;
-            RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             {

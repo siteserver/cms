@@ -341,7 +341,7 @@
                                                 ErrorMessage=" *" ForeColor="red"
                                                 Display="Dynamic" />
 
-                                            <input type="button" id="btnMap" class="btn" value="查看效果" />
+                                            <input type="button" id="BtnMap" class="btn" value="查看效果" />
                                             <script type="text/javascript">
                                                 $(function () {
                                                     if ($("#tbShopAddress").val().length > 0) {
@@ -418,8 +418,8 @@
                 <table class="table table-noborder">
                     <tr>
                         <td class="center">
-                            <asp:Button class="btn btn-primary" ID="btnSubmit" Text="确 定" OnClick="Submit_OnClick" runat="server" />
-                            <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
+                            <asp:Button class="btn btn-primary" id="BtnSubmit" Text="确 定" OnClick="Submit_OnClick" runat="server" />
+                            <asp:Button class="btn" id="BtnReturn" Text="返 回" runat="server" />
                          </td>
                     </tr>
                 </table>
@@ -430,4 +430,4 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+

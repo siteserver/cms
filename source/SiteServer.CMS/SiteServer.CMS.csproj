@@ -20,7 +20,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <PublishUrl>http://localhost/BaiRongZhiDao/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -165,6 +165,7 @@
     <Compile Include="Controllers\Files\ActionsUploadAvatarResize.cs" />
     <Compile Include="Controllers\Files\ActionsUploadSiteFiles.cs" />
     <Compile Include="Controllers\Files\UEditor.cs" />
+    <Compile Include="Controllers\Plugins.cs" />
     <Compile Include="Controllers\Stl\ActionsRelatedField.cs" />
     <Compile Include="Controllers\Stl\ActionsUpload.cs" />
     <Compile Include="Controllers\Stl\ActionsLoadingChannels.cs" />
@@ -208,11 +209,12 @@
     <Compile Include="Controllers\Writing\ActionsGetContents.cs" />
     <Compile Include="Controllers\Writing\ActionsGetContent.cs" />
     <Compile Include="Model\InputInfoExtend.cs" />
-    <Compile Include="Plugins\PluginBase.cs" />
-    <Compile Include="Plugins\PluginInfo.cs" />
-    <Compile Include="Plugins\PluginUtils.cs" />
-    <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Core\ContentUtility.cs" />
+    <Compile Include="Plugin\PluginConfig.cs" />
+    <Compile Include="Plugin\PluginInstaller.cs" />
+    <Compile Include="Plugin\PluginManager.cs" />
+    <Compile Include="Plugin\PluginsLoader.cs" />
+    <Compile Include="Plugin\PublicApiInstance.cs" />
     <Compile Include="StlParser\Model\StlAttribute.cs" />
     <Compile Include="StlParser\StlElement\StlTemplate.cs" />
     <Compile Include="StlParser\Utility\StlInnerUtility.cs" />
@@ -665,7 +667,7 @@
     <Compile Include="WeiXin\Model\Enumerations\EVoteResultVisible.cs" />
     <Compile Include="WeiXin\Model\Enumerations\EWebMenuType.cs" />
     <Compile Include="WeiXin\Model\Enumerations\EWinStatus.cs" />
-    <Compile Include="WeiXin\Model\Enumerations\EWXAccountType.cs" />
+    <Compile Include="WeiXin\Model\Enumerations\EWxAccountType.cs" />
     <Compile Include="WeiXin\Model\KeywordGroupInfo.cs" />
     <Compile Include="WeiXin\Model\KeywordInfo.cs" />
     <Compile Include="WeiXin\Model\KeywordMatchInfo.cs" />
@@ -829,10 +831,15 @@
       <Project>{3d8cb06b-1791-4685-ab56-965b9f41666e}</Project>
       <Name>BaiRong.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{8451ecdd-2ea4-4966-bb0a-7bbc40138e80}</Project>
+      <Name>SiteServer.Plugin</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Plugin\README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

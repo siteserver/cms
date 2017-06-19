@@ -39,6 +39,7 @@ namespace BaiRong.Core
             public const string BackupFiles = "BackupFiles";
             public const string TemporaryFiles = "TemporaryFiles";
             public const string Configuration = "Configuration";
+            public const string Plugins = "Plugins";
         }
 
         public class SiteTemplates

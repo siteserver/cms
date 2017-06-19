@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
-        <asp:Button ID="btnSubmit" UseSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" Style="display: none" />
+        <asp:Button id="BtnSubmit" UseSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" Style="display: none" />
         <bairong:Alerts runat="server"></bairong:Alerts>
         <bairong:Code Type="ajaxupload" runat="server" />
 
@@ -77,4 +77,4 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+

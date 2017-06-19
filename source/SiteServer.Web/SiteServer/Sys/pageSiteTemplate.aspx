@@ -19,10 +19,6 @@
         <ItemTemplate><asp:Literal ID="ltlTemplateName" runat="server"></asp:Literal></ItemTemplate>
         <ItemStyle HorizontalAlign="left"/>
       </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="站点类型">
-        <ItemTemplate><asp:Literal ID="ltlTemplateType" runat="server"></asp:Literal></ItemTemplate>
-        <ItemStyle cssClass="center"/>
-      </asp:TemplateColumn>
       <asp:TemplateColumn HeaderText="站点模板文件夹">
         <ItemTemplate><asp:Literal ID="ltlDirectoryName" runat="server"></asp:Literal></ItemTemplate>
         <ItemStyle HorizontalAlign="left"/>

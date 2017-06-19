@@ -13,7 +13,7 @@
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />
 
-  <asp:dataGrid id="dgContents" showHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
+  <asp:dataGrid id="DgContents" showHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
     <Columns>
       <asp:TemplateColumn HeaderText="应用名称">
         <ItemTemplate>
@@ -62,4 +62,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

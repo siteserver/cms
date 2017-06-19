@@ -55,7 +55,7 @@
                                 <asp:TextBox ID="TbKeyword" runat="server" />
                                 <asp:RequiredFieldValidator ControlToValidate="TbKeyword" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server" />
                                 <asp:RegularExpressionValidator runat="server" ControlToValidate="TbKeyword" ValidationExpression="[^']+" ErrorMessage=" *" ForeColor="red" Display="Dynamic" />
-                                &nbsp;<asp:Button ID="btnKeywordSelect" class="btn btn-info" Text="选择" runat="server" />
+                                &nbsp;<asp:Button id="BtnKeywordSelect" class="btn btn-info" Text="选择" runat="server" />
                             </td>
                         </tr>
                     </asp:PlaceHolder>
@@ -74,8 +74,8 @@
                             <td>微网站页面：</td>
                             <td>
                                 <div id="titles" class="well well-small" style="display: none"></div>
-                                <asp:Button ID="btnContentSelect" class="btn btn-info" Text="选择内容页" runat="server" />
-                                <asp:Button ID="btnChannelSelect" class="btn btn-info" Text="选择栏目页" runat="server" />
+                                <asp:Button id="BtnContentSelect" class="btn btn-info" Text="选择内容页" runat="server" />
+                                <asp:Button id="BtnChannelSelect" class="btn btn-info" Text="选择栏目页" runat="server" />
                                 <input id="idsCollection" name="idsCollection" type="hidden" value="" />
                             </td>
                         </tr>
@@ -98,4 +98,4 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+

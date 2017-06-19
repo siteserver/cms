@@ -7,10 +7,11 @@ using BaiRong.Core.Auth;
 using BaiRong.Core.Auth.JWT;
 using BaiRong.Core.Model;
 using Newtonsoft.Json.Linq;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
-    public class RequestBody
+    public class RequestBody : IRequestContext
     {
         private const string UserAccessToken = "ss_user_access_token";
         private const string AdministratorAccessToken = "ss_administrator_access_token";
@@ -30,6 +31,8 @@ namespace SiteServer.CMS.Core
             }
         }
 
+        public HttpRequest Request => HttpContext.Current.Request;
+
         public string UserName { get; private set; }
 
         public string AdministratorName { get; private set; }
@@ -37,6 +40,8 @@ namespace SiteServer.CMS.Core
         public bool IsUserLoggin => !string.IsNullOrEmpty(UserName);
 
         public bool IsAdministratorLoggin => !string.IsNullOrEmpty(AdministratorName);
+
+        public int SiteId => GetQueryInt("siteId");
 
         private UserInfo _userInfo;
         public UserInfo UserInfo
@@ -103,19 +108,14 @@ namespace SiteServer.CMS.Core
             return PostData[name]?.ToString();
         }
 
-        public int GetPostInt(string name)
-        {
-            return TranslateUtils.ToInt(PostData[name]?.ToString());
-        }
-
-        public int GetPostInt(string name, int defaultValue)
+        public int GetPostInt(string name, int defaultValue = 0)
         {
             return TranslateUtils.ToInt(PostData[name]?.ToString(), defaultValue);
         }
 
-        public bool GetPostBool(string name)
+        public bool GetPostBool(string name, bool defaultValue = false)
         {
-            return TranslateUtils.ToBool(PostData[name]?.ToString());
+            return TranslateUtils.ToBool(PostData[name]?.ToString(), defaultValue);
         }
 
         public NameValueCollection GetPostCollection()

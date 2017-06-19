@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             SpContents.SelectCommand = DataProviderWx.ConferenceContentDao.GetSelectString(PublishmentSystemId, _conferenceId);
             SpContents.SortField = ConferenceContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
-            RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             { 

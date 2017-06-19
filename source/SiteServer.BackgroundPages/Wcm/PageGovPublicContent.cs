@@ -38,29 +38,27 @@ namespace SiteServer.BackgroundPages.Wcm
 
         private readonly Hashtable _valueHashtable = new Hashtable();
 
-        public static string GetRedirectUrl(int publishmentSystemId, string classCode, int categoryId)
+        public static string GetRedirectUrl(int siteId, string classCode, int categoryId)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicContent), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", siteId.ToString()},
                 {"ClassCode", classCode},
                 {"CategoryID", categoryId.ToString()}
             });
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, int departmentId)
+        public static string GetRedirectUrl(int siteId, int departmentId)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicContent), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", siteId.ToString()},
                 {"DepartmentID", departmentId.ToString()}
             });
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
-
             var permissioins = PermissionsManager.GetPermissions(Body.AdministratorName);
 
             _departmentId = TranslateUtils.ToInt(Request.QueryString["DepartmentID"]);
@@ -194,7 +192,7 @@ $(document).ready(function() {
                     {
                         _pageUrl = PageUtils.GetWcmUrl(nameof(PageGovPublicContent), new NameValueCollection
                         {
-                            {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                            {"siteId", PublishmentSystemId.ToString()},
                             {"DepartmentID", _departmentId.ToString()},
                             {"page", TranslateUtils.ToInt(Request.QueryString["page"], 1).ToString()}
                         });
@@ -203,7 +201,7 @@ $(document).ready(function() {
                     {
                         _pageUrl = PageUtils.GetWcmUrl(nameof(PageGovPublicContent), new NameValueCollection
                         {
-                            {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                            {"siteId", PublishmentSystemId.ToString()},
                             {"ClassCode", _classCode},
                             {"CategoryID", _categoryId.ToString()},
                             {"page", TranslateUtils.ToInt(Request.QueryString["page"], 1).ToString()}

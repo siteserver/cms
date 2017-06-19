@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SSiteServer.BackgroundPages.WeiXin.PageollectItem" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageCollectItem" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>
@@ -67,8 +67,8 @@
         <bairong:SqlPager ID="SpContents" runat="server" class="table table-pager" />
 
         <ul class="breadcrumb breadcrumb-button">
-            <asp:Button class="btn" ID="btnDelete" Text="删 除" runat="server" />
-            <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
+            <asp:Button class="btn" id="BtnDelete" Text="删 除" runat="server" />
+            <asp:Button class="btn" id="BtnReturn" Text="返 回" runat="server" />
         </ul>
 
     </form>

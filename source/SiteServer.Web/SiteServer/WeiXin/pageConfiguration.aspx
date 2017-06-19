@@ -76,4 +76,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

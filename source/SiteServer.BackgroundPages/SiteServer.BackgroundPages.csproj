@@ -20,7 +20,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <PublishUrl>http://localhost/BaiRongZhiDao/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -127,6 +127,10 @@
       <Project>{61a793e1-3e99-4bdc-bc20-7298ca3e0000}</Project>
       <Name>SiteServer.CMS</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{8451ecdd-2ea4-4966-bb0a-7bbc40138e80}</Project>
+      <Name>SiteServer.Plugin</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Admin\PageRoleAdd.cs">
@@ -201,13 +205,11 @@
     <Compile Include="Controls\AuxiliaryControl.cs" />
     <Compile Include="Controls\AuxiliarySingleControl.cs" />
     <Compile Include="Controls\ChannelAuxiliaryControl.cs" />
-    <Compile Include="Controls\NodeNaviTree.cs" />
     <Compile Include="Controls\NodeTree.cs" />
     <Compile Include="Controls\TextEditorControl.cs" />
     <Compile Include="Core\DepartmentTreeItem.cs" />
     <Compile Include="Core\GovPublicCategoryTreeItem.cs" />
     <Compile Include="Core\AjaxManager.cs" />
-    <Compile Include="Core\TabDrivenTemplatedWebControl.cs" />
     <Compile Include="Controls\NavigationTree.cs" />
     <Compile Include="Core\NavigationTreeItem.cs" />
     <Compile Include="Core\PagerStyle.cs" />
@@ -256,6 +258,9 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Sys\ModalTableStyleValidateAdd.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Sys\PagePlugin.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Sys\PageTableStyle.cs">
@@ -1215,9 +1220,6 @@
     <Compile Include="Analysis\PageAnalysisSiteHits.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PageAppAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Sys\PagePublishmentSystem.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -1317,7 +1319,7 @@
     <Compile Include="WeiXin\PageCardCreditsLog.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="WeiXin\PageCardEntitySN.cs">
+    <Compile Include="WeiXin\PageCardEntitySn.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="WeiXin\PageCardExchangeLog.cs">
@@ -1326,10 +1328,10 @@
     <Compile Include="WeiXin\PageCardRechargeLog.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="WeiXin\PageCardSN.cs">
+    <Compile Include="WeiXin\PageCardSn.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="WeiXin\PageCardSNAdd.cs">
+    <Compile Include="WeiXin\PageCardSnAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="WeiXin\PageCollect.cs">
@@ -1368,7 +1370,7 @@
     <Compile Include="WeiXin\PageCouponActAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="WeiXin\PageCouponSN.cs">
+    <Compile Include="WeiXin\PageCouponSn.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="WeiXin\PageFlapAdd.cs">
@@ -1420,9 +1422,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="WeiXin\PageMessageContent.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="WeiXin\PageNavFunction.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="WeiXin\PageNavTransaction.cs">
@@ -1614,6 +1613,9 @@
     <Compile Include="WeiXin\PageBigWheelAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -37,7 +37,7 @@
           <td>关注时回复关键词：</td>
           <td>
             <asp:TextBox id="TbWelcomeKeyword" runat="server"/>
-            &nbsp;<asp:Button id="btnWelcomeKeywordSelect" class="btn btn-info" text="选择" runat="server" />
+            &nbsp;<asp:Button id="BtnWelcomeKeywordSelect" class="btn btn-info" text="选择" runat="server" />
           </td>
         </tr>
         <tr>
@@ -50,7 +50,7 @@
           <td>默认无匹配回复关键词：</td>
           <td>
             <asp:TextBox id="TbDefaultReplyKeyword" runat="server"/>
-            &nbsp;<asp:Button id="btnDefaultReplyKeywordSelect" class="btn btn-info" text="选择" runat="server" />
+            &nbsp;<asp:Button id="BtnDefaultReplyKeywordSelect" class="btn btn-info" text="选择" runat="server" />
           </td>
         </tr>
       </table>
@@ -70,4 +70,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("选择部门", PageUtils.GetWcmUrl(nameof(ModalGovInteractDepartmentSelect), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
             }), 460, 360, true);
         }
@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Wcm
             _additional.Add("UrlFormatString",
                 PageUtils.GetWcmUrl(nameof(ModalGovInteractDepartmentSelect), new NameValueCollection
                 {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()}
+                    {"siteId", PublishmentSystemId.ToString()}
                 }));
 
 			if (!IsPostBack)

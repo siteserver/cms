@@ -64,21 +64,21 @@ namespace SiteServer.BackgroundPages.Wcm
         private ETableStyle _tableStyle;
         private List<int> _relatedIdentities;
 
-        public static string GetRedirectUrlOfAdd(int publishmentSystemId, int nodeId, string returnUrl)
+        public static string GetRedirectUrlOfAdd(int siteId, int nodeId, string returnUrl)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicContentAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", siteId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
 
-        public static string GetRedirectUrlOfEdit(int publishmentSystemId, int nodeId, int id, string returnUrl)
+        public static string GetRedirectUrlOfEdit(int siteId, int nodeId, int id, string returnUrl)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicContentAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", siteId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ID", id.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -87,8 +87,6 @@ namespace SiteServer.BackgroundPages.Wcm
 
         public void Page_Load(object sender, EventArgs e)
         {
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
-
             var nodeId = TranslateUtils.ToInt(Request.QueryString["NodeID"]);
             if (nodeId == 0)
             {

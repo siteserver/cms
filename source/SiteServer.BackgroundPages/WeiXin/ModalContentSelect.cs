@@ -126,7 +126,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
             SpContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisType.OrderByIdDesc);
-            RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             {

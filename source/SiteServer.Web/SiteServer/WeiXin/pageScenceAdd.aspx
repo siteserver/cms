@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SSiteServer.BackgroundPages.WeiXin.PagecenceAdd" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageScenceAdd" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>
@@ -179,7 +179,7 @@
                     <table class="table table-noborder">
                         <tr>
                             <td class="center">
-                                <asp:Button class="btn btn-primary" ID="btnSubmit" Text="确定" OnClick="Submit_OnClick" runat="server" />
+                                <asp:Button class="btn btn-primary" id="BtnSubmit" Text="确定" OnClick="Submit_OnClick" runat="server" />
                             </td>
                         </tr>
                     </table>
@@ -188,4 +188,4 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+

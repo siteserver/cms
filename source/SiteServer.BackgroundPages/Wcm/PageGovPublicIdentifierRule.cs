@@ -15,11 +15,11 @@ namespace SiteServer.BackgroundPages.Wcm
         public DataGrid dgContents;
         public Button AddButton;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicIdentifierRule), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 hlUpLinkButton.NavigateUrl = PageUtils.GetWcmUrl(nameof(PageGovPublicIdentifierRule),
                     new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                        {"siteId", PublishmentSystemId.ToString()},
                         {"RuleID", ruleInfo.RuleID.ToString()},
                         {"Up", true.ToString()}
                     });
@@ -100,7 +100,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 hlDownLinkButton.NavigateUrl = PageUtils.GetWcmUrl(nameof(PageGovPublicIdentifierRule),
                     new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                        {"siteId", PublishmentSystemId.ToString()},
                         {"RuleID", ruleInfo.RuleID.ToString()},
                         {"Down", true.ToString()}
                     });
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 var urlDelete = PageUtils.GetWcmUrl(nameof(PageGovPublicIdentifierRule),
                     new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                        {"siteId", PublishmentSystemId.ToString()},
                         {"RuleID", ruleInfo.RuleID.ToString()},
                         {"Delete", true.ToString()}
                     });

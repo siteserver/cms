@@ -6,7 +6,6 @@ using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Configuration;
-using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Permissions;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
@@ -63,8 +62,7 @@ namespace SiteServer.BackgroundPages.Admin
                 string content = $@"
 					<td height=20>
                         <img id='PublishmentSystemImage_{publishmentSystemId}' align='absmiddle' border='0' src='../pic/{imageName}.gif'/>
-					    <a href='{pageUrl}'>{psInfo.PublishmentSystemName}&nbsp;{EPublishmentSystemTypeUtils.GetIconHtml(
-                    psInfo.PublishmentSystemType)}</a>{space}
+					    <a href='{pageUrl}'>{psInfo.PublishmentSystemName}</a>{space}
                     </td>
 				";
                 htmlBuilder.Append(content);
@@ -109,7 +107,7 @@ namespace SiteServer.BackgroundPages.Admin
 
                 var cblPermissions = new CheckBoxList();
 
-                var permissions = PermissionConfigManager.GetGeneralPermissionsOfProduct();
+                var permissions = PermissionConfigManager.GetGeneralPermissions();
                 if (permissions.Count > 0)
                 {
                     foreach (PermissionConfig permission in permissions)

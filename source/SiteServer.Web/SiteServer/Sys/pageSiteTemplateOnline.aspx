@@ -20,12 +20,6 @@
           <asp:Literal ID="ltlTemplateName" runat="server"></asp:Literal>
         </ItemTemplate>
       </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="站点类型">
-        <ItemTemplate>
-          <asp:Literal ID="ltlTemplateType" runat="server"></asp:Literal>
-        </ItemTemplate>
-        <ItemStyle Width="110" cssClass="center"/>
-      </asp:TemplateColumn>
       <asp:TemplateColumn HeaderText="站点模板文件夹">
         <ItemTemplate>
           <asp:Literal ID="ltlDirectoryName" runat="server"></asp:Literal>

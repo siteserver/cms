@@ -1,4 +1,4 @@
-<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageCouponSN" %>
+<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageCouponSn" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>
@@ -75,11 +75,11 @@
         <bairong:SqlPager ID="SpContents" runat="server" class="table table-pager" />
 
         <ul class="breadcrumb breadcrumb-button">
-            <asp:Button class="btn btn-success" ID="btnAdd" Text="添 加" runat="server" />
-            <asp:Button class="btn" ID="btnSetting" Text="设置状态" runat="server" />
-            <asp:Button class="btn" ID="btnUpFile" Text="上传SN码" runat="server" />
+            <asp:Button class="btn btn-success" id="BtnAdd" Text="添 加" runat="server" />
+            <asp:Button class="btn" id="BtnSetting" Text="设置状态" runat="server" />
+            <asp:Button class="btn" id="BtnUpFile" Text="上传SN码" runat="server" />
             <a class="btn" href="../../SiteFiles/Services/WeiXin/coupon/sncode-example.csv">下载示例SN码文件</a>
-            <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
+            <asp:Button class="btn" id="BtnReturn" Text="返 回" runat="server" />
         </ul>
 
     </form>

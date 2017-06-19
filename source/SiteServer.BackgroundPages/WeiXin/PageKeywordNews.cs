@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 }
 
                 RptContents.DataSource = DataProviderWx.KeywordDao.GetDataSource(PublishmentSystemId, EKeywordType.News);
-                RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+                RptContents.ItemDataBound += rptContents_ItemDataBound;
                 RptContents.DataBind();
 
                 BtnAddSingle.Attributes.Add("onclick", ModalKeywordAddNews.GetOpenWindowStringToAdd(PublishmentSystemId, true));

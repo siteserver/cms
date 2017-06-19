@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SSiteServer.BackgroundPages.WeiXin.PagetoreCategory" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageStoreCategory" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>
@@ -31,8 +31,8 @@
   </table>
 
   <ul class="breadcrumb breadcrumb-button">
-    <asp:Button class="btn btn-success" id="btnAdd" Text="新 增" runat="server" />
-    <asp:Button class="btn" id="btnDelete" Text="删 除" runat="server" />
+    <asp:Button class="btn btn-success" id="BtnAdd" Text="新 增" runat="server" />
+    <asp:Button class="btn" id="BtnDelete" Text="删 除" runat="server" />
   </ul>
 
 </form>

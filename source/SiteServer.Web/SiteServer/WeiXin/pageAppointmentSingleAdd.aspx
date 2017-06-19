@@ -317,15 +317,15 @@
                                     <tr>
                                         <td>上传照片：</td>
                                         <td>
-                                            <input type="button" class="btn" id="btnAddImageUrl" value="上传相册照片" />
+                                            <input type="button" class="btn" id="BtnAddImageUrl" value="上传相册照片" />
                                             <script type="text/javascript">
                                                 $("#btnAddImageUrl").click(function () {
                                                     var imageUrlCollection = $("#imageUrlCollection").val();
                                                     var largeImageUrlCollection = $("#largeImageUrlCollection").val();
-                                                    openWindow('上传照片', '/siteserver/weixin/modal_appointmentItemPhotoUpload.aspx?publishmentSystemID=<%=base.PublishmentSystemID%>&imageUrlCollection=' + imageUrlCollection + '&largeImageUrlCollection=' + largeImageUrlCollection + '', 0, 0, 'false');
+                                                    openWindow('上传照片', '/siteserver/weixin/modal_appointmentItemPhotoUpload.aspx?publishmentSystemID=<%=base.PublishmentSystemId%>&imageUrlCollection=' + imageUrlCollection + '&largeImageUrlCollection=' + largeImageUrlCollection + '', 0, 0, 'false');
                                                 });
                                             </script>
-                                            <%-- <asp:Button class="btn" id="btnAddImageUrl" text="上传照片" runat="server"/> --%>
+                                            <%-- <asp:Button class="btn" id="BtnAddImageUrl" text="上传照片" runat="server"/> --%>
                                         </td>
                                     </tr>
 
@@ -361,7 +361,7 @@
                                         <td>预约地址：</td>
                                         <td>
                                             <asp:TextBox ID="TbMapAddress" class="input-xlarge" runat="server" />
-                                            <input type="button" id="btnMap" class="btn" value="查看效果" />
+                                            <input type="button" id="BtnMap" class="btn" value="查看效果" />
                                             <script type="text/javascript">
                                                 $("#btnMap").click(function () {
                                                     $("#map").children().remove();
@@ -370,7 +370,7 @@
                                                     $("#map").append(iframe);
                                                 });
                                             </script>
-                                            <%-- <asp:Button class="btn" id="btnMap" text="查看效果" OnClick="Preview_OnClick" runat="server"/>--%>
+                                            <%-- <asp:Button class="btn" id="BtnMap" text="查看效果" OnClick="Preview_OnClick" runat="server"/>--%>
                                         </td>
                                     </tr>
 
@@ -751,8 +751,8 @@
                 <table class="table table-noborder">
                     <tr>
                         <td class="center">
-                            <asp:Button class="btn btn-primary" ID="btnSubmit" Text="下一步" OnClick="Submit_OnClick" runat="server" />
-                            <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
+                            <asp:Button class="btn btn-primary" id="BtnSubmit" Text="下一步" OnClick="Submit_OnClick" runat="server" />
+                            <asp:Button class="btn" id="BtnReturn" Text="返 回" runat="server" />
                         </td>
                     </tr>
                 </table>
@@ -763,4 +763,4 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+

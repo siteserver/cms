@@ -106,7 +106,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             SpContents.SelectCommand = DataProviderWx.VoteLogDao.GetSelectString(_voteId);
             SpContents.SortField = VoteLogAttribute.Id;
             SpContents.SortMode = SortMode.ASC;
-            RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             {

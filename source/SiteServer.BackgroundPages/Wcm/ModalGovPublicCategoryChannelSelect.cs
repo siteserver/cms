@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Wcm
 	        return PageUtils.GetOpenWindowString("选择分类",
 	            PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryChannelSelect), new NameValueCollection
 	            {
-	                {"PublishmentSystemID", publishmentSystemId.ToString()},
+	                {"siteId", publishmentSystemId.ToString()},
 	                {"NodeID", nodeId.ToString()}
 	            }), 500, 360);
 	    }
@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Wcm
 	        return PageUtils.GetOpenWindowString("设置分类",
 	            PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryChannelSelect), new NameValueCollection
 	            {
-	                {"PublishmentSystemID", publishmentSystemId.ToString()}
+	                {"siteId", publishmentSystemId.ToString()}
 	            }), 460, 360, true);
 	    }
 
@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryChannelSelect), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"siteId", publishmentSystemId.ToString()},
                     {"NodeID", nodeId.ToString()}
                 });
         }

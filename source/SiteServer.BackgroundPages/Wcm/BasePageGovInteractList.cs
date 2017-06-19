@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             base.OnInit(e);
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
+            PageUtils.CheckRequestParameter("NodeID");
             nodeID = TranslateUtils.ToInt(Request.QueryString["NodeID"]);
 
             isPermissionReply = GovInteractManager.IsPermission(PublishmentSystemId, nodeID, AppManager.Wcm.Permission.GovInteract.GovInteractReply);

@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
 		public void Page_Load(object sender, EventArgs e)
 		{
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
+            PageUtils.CheckRequestParameter("siteId");
 
 			if(!IsPostBack)
             {

@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetWcmUrl(nameof(PageGovInteractType), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
             });
         }
@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
                 hlUpLinkButton.NavigateUrl = PageUtils.GetWcmUrl(nameof(PageGovInteractType), new NameValueCollection
                 {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                    {"siteId", PublishmentSystemId.ToString()},
                     {"NodeID", _nodeId.ToString()},
                     {"TypeID", typeId.ToString()},
                     {"Up", true.ToString()}
@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
                 hlDownLinkButton.NavigateUrl = PageUtils.GetWcmUrl(nameof(PageGovInteractType), new NameValueCollection
                 {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                    {"siteId", PublishmentSystemId.ToString()},
                     {"NodeID", _nodeId.ToString()},
                     {"TypeID", typeId.ToString()},
                     {"Down", true.ToString()}
@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
                 var urlDelete = PageUtils.GetWcmUrl(nameof(PageGovInteractType), new NameValueCollection
                 {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                    {"siteId", PublishmentSystemId.ToString()},
                     {"NodeID", _nodeId.ToString()},
                     {"TypeID", typeId.ToString()},
                     {"Delete", true.ToString()}

@@ -38,7 +38,7 @@
       </table> -->
 
       <div>
-        <asp:dataList id="dlContents" CssClass="table" repeatDirection="Horizontal" repeatColumns="4" runat="server">
+        <asp:dataList id="DlContents" CssClass="table" repeatDirection="Horizontal" repeatColumns="4" runat="server">
           <ItemTemplate>
             <asp:Literal ID="LtlImageUrl" runat="server"></asp:Literal>
             <asp:Literal ID="LtlDescription" runat="server"></asp:Literal>
@@ -63,4 +63,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

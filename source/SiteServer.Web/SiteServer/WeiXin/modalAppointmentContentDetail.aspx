@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" ValidateRequest="false" Inherits="SSiteServer.BackgroundPages.WeiXin.ModalppointmentContentDetail" Trace="false" %>
+﻿<%@ Page Language="C#" ValidateRequest="false" Inherits="SiteServer.BackgroundPages.WeiXin.ModalAppointmentContentDetail" Trace="false" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>
@@ -47,5 +47,5 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+
 

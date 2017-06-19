@@ -57,7 +57,7 @@
           <td>微功能页面：</td>
           <td>
             <div id="functionTitle" class="well well-small" style="display:none"></div>
-            <asp:Button id="btnFunctionSelect" class="btn btn-info" text="选择微功能页面" runat="server" />
+            <asp:Button id="BtnFunctionSelect" class="btn btn-info" text="选择微功能页面" runat="server" />
             <input id="keywordType" name="keywordType" type="hidden" value="" />
             <input id="functionID" name="functionID" type="hidden" value="" />
           </td>
@@ -78,8 +78,8 @@
           <td>微网站页面：</td>
           <td>
             <div id="siteTitle" class="well well-small" style="display:none"></div>
-            <asp:Button id="btnContentSelect" class="btn btn-info" text="选择内容页" runat="server" />
-            <asp:Button id="btnChannelSelect" class="btn btn-info" text="选择栏目页" runat="server" />
+            <asp:Button id="BtnContentSelect" class="btn btn-info" text="选择内容页" runat="server" />
+            <asp:Button id="BtnChannelSelect" class="btn btn-info" text="选择栏目页" runat="server" />
             <input id="idsCollection" name="idsCollection" type="hidden" value="" />
           </td>
         </tr>
@@ -103,4 +103,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

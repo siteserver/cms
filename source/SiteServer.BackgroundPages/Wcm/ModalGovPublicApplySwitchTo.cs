@@ -20,20 +20,18 @@ namespace SiteServer.BackgroundPages.Wcm
 
         private List<int> _idArrayList;
 
-	    public static string GetOpenWindowString(int publishmentSystemId)
+	    public static string GetOpenWindowString(int siteId)
 	    {
 	        return PageUtils.GetOpenWindowStringWithCheckBoxValue("转办申请",
 	            PageUtils.GetWcmUrl(nameof(ModalGovPublicApplySwitchTo), new NameValueCollection
 	            {
-	                {"PublishmentSystemID", publishmentSystemId.ToString()}
+	                {"siteId", siteId.ToString()}
 	            }), "IDCollection", "请选择需要转办的申请！", 500, 500);
 	    }
 
 	    public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
-
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
 
             _idArrayList = TranslateUtils.StringCollectionToIntList(Request.QueryString["IDCollection"]);
 

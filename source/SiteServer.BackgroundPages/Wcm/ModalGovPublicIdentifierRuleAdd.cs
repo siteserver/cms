@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("添加规则", PageUtils.GetWcmUrl(nameof(ModalGovPublicIdentifierRuleAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
+                {"siteId", publishmentSystemId.ToString()}
             }), 520, 460);
         }
 
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("修改规则", PageUtils.GetWcmUrl(nameof(ModalGovPublicIdentifierRuleAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", publishmentSystemId.ToString()},
                 {"RuleID", ruleId.ToString()}
             }), 520, 460);
         }

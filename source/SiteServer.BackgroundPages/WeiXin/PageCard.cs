@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             SpContents.SelectCommand = DataProviderWx.CardDao.GetSelectString(PublishmentSystemId);
             SpContents.SortField = CardAttribute.Id;
             SpContents.SortMode = SortMode.ASC;
-            RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             {

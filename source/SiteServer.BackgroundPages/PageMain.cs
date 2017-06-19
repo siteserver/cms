@@ -20,8 +20,7 @@ namespace SiteServer.BackgroundPages
 {
     public class PageMain : BasePageCms
     {
-        public NodeNaviTree NtLeftMenuSite;
-        public NavigationTree NtLeftMenuSystem;
+        public NavigationTree NtLeftMenu;
         public Repeater RptTopMenu;
         public Literal LtlUserName;
 
@@ -140,11 +139,9 @@ namespace SiteServer.BackgroundPages
                         return;
                     }
 
-                    var appId = EPublishmentSystemTypeUtils.GetValue(_publishmentSystemInfo.PublishmentSystemType);
-
-                    NtLeftMenuSite.FileName = $"~/SiteFiles/Configuration/Menus/{appId}/Management.config";
-                    NtLeftMenuSite.PublishmentSystemId = _publishmentSystemInfo.PublishmentSystemId;
-                    NtLeftMenuSite.PermissionList = permissionList;
+                    NtLeftMenu.TopId = AppManager.IdManagement;
+                    NtLeftMenu.PublishmentSystemId = _publishmentSystemInfo.PublishmentSystemId;
+                    NtLeftMenu.PermissionList = permissionList;
 
                     ClientScriptRegisterClientScriptBlock("NodeTreeScript", NodeNaviTreeItem.GetNavigationBarScript());
                 }
@@ -152,7 +149,7 @@ namespace SiteServer.BackgroundPages
                 {
                     if (_permissions.IsSystemAdministrator)
                     {
-                        PageUtils.Redirect(PageAppAdd.GetRedirectUrl());
+                        PageUtils.Redirect(PagePublishmentSystemAdd.GetRedirectUrl());
                         return;
                     }
                 }
@@ -170,8 +167,8 @@ namespace SiteServer.BackgroundPages
                 }
                 
                 permissionList.AddRange(_permissions.PermissionList);
-                NtLeftMenuSystem.FileName = $"~/SiteFiles/Configuration/Menus/{_menuId}.config";
-                NtLeftMenuSystem.PermissionList = permissionList;
+                NtLeftMenu.TopId = _menuId;
+                NtLeftMenu.PermissionList = permissionList;
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", NavigationTreeItem.GetNavigationBarScript());
             }
@@ -205,9 +202,7 @@ namespace SiteServer.BackgroundPages
                 if (_publishmentSystemInfo != null && _publishmentSystemInfo.PublishmentSystemId > 0)
                 {
                     ltlMenuLi.Text = @"<li class=""active"">";
-                    ltlMenuName.Text =
-                        $@"{EPublishmentSystemTypeUtils.GetIconHtml(_publishmentSystemInfo.PublishmentSystemType)}&nbsp;{_publishmentSystemInfo
-                            .PublishmentSystemName}";
+                    ltlMenuName.Text = _publishmentSystemInfo.PublishmentSystemName;
                 }
                 else
                 {
@@ -340,7 +335,7 @@ namespace SiteServer.BackgroundPages
 
             if (_permissions.IsConsoleAdministrator)
             {
-                var redirectUrl = PageAppAdd.GetRedirectUrl();
+                var redirectUrl = PagePublishmentSystemAdd.GetRedirectUrl();
                 builder.Append(
                     $@"<li style=""background:#eee;""><a href=""{PageUtils.GetLoadingUrl(redirectUrl)}""><i class=""icon-plus icon-large
 ""></i> 创建新站点</a></li>");
@@ -439,8 +434,7 @@ namespace SiteServer.BackgroundPages
 
                 builder.Append($@"
 <li class=""dropdown-submenu"">
-    <a tabindex=""-1"" href=""{loadingUrl}"" target=""_self"">{EPublishmentSystemTypeUtils.GetIconHtml(
-                    publishmentSystemInfo.PublishmentSystemType)}&nbsp;{publishmentSystemInfo.PublishmentSystemName}</a>
+    <a tabindex=""-1"" href=""{loadingUrl}"" target=""_self"">{publishmentSystemInfo.PublishmentSystemName}</a>
     <ul class=""dropdown-menu"">
 ");
 
@@ -457,8 +451,7 @@ namespace SiteServer.BackgroundPages
             else
             {
                 builder.Append(
-                    $@"<li><a href=""{loadingUrl}"" target=""_self"">{EPublishmentSystemTypeUtils.GetIconHtml(
-                        publishmentSystemInfo.PublishmentSystemType)}&nbsp;{publishmentSystemInfo.PublishmentSystemName}</a></li>");
+                    $@"<li><a href=""{loadingUrl}"" target=""_self"">{publishmentSystemInfo.PublishmentSystemName}</a></li>");
             }
 
             _addedSiteIdList.Add(publishmentSystemInfo.PublishmentSystemId);

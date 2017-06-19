@@ -25,8 +25,8 @@ namespace SiteServer.BackgroundPages.WeiXin
 			{
                 //base.BreadCrumbConsole(AppManager.CMS.LeftMenu.ID_Site, "系统站点管理", AppManager.Permission.Platform_Site);
 
-                DgContents.DataSource = PublishmentSystemManager.GetPublishmentSystemIdList(EPublishmentSystemType.WeiXin);
-                DgContents.ItemDataBound += new DataGridItemEventHandler(dgContents_ItemDataBound);
+                DgContents.DataSource = PublishmentSystemManager.GetPublishmentSystemIdList();
+                DgContents.ItemDataBound += dgContents_ItemDataBound;
                 DgContents.DataBind();
 			}
 		}
@@ -40,7 +40,6 @@ namespace SiteServer.BackgroundPages.WeiXin
                 if (publishmentSystemInfo != null)
                 {
                     var ltlPublishmentSystemName = e.Item.FindControl("ltlPublishmentSystemName") as Literal;
-                    var ltlPublishmentSystemType = e.Item.FindControl("ltlPublishmentSystemType") as Literal;
                     var ltlPublishmentSystemDir = e.Item.FindControl("ltlPublishmentSystemDir") as Literal;
                     var ltlAddDate = e.Item.FindControl("ltlAddDate") as Literal;
                     var ltlManage = e.Item.FindControl("ltlManage") as Literal;
@@ -49,12 +48,10 @@ namespace SiteServer.BackgroundPages.WeiXin
 
                     ltlPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
 
-                    ltlPublishmentSystemType.Text = EPublishmentSystemTypeUtils.GetHtml(publishmentSystemInfo.PublishmentSystemType);
                     ltlPublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
                     ltlAddDate.Text = DateUtils.GetDateString(NodeManager.GetAddDate(publishmentSystemId, publishmentSystemId));
 
-                    var manageUrl = PageUtils.GetLoadingUrl(PageUtils.GetAdminDirectoryUrl(
-                        $"main.aspx?PublishmentSystemId={publishmentSystemId}"));
+                    var manageUrl = PageMain.GetRedirectUrl(publishmentSystemId, string.Empty);
                     ltlManage.Text = $@"<a href=""{manageUrl}"" target=""top"">管理</a>";
 
                     var bindingUrl = PageAccountBinding.GetRedirectUrl(publishmentSystemId, GetRedirectUrl());

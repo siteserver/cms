@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Wcm
             return PageUtils.GetOpenWindowString("添加分类法",
                 PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryClassAdd), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()}
+                    {"siteId", publishmentSystemId.ToString()}
                 }), 400, 360);
         }
 
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Wcm
             return PageUtils.GetOpenWindowString("修改分类法",
                 PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryClassAdd), new NameValueCollection
                 {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"siteId", publishmentSystemId.ToString()},
                     {"ClassCode", classCode}
                 }), 400, 360);
         }

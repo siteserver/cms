@@ -11,5 +11,18 @@ namespace SiteServer.BackgroundPages.Wcm
 
             GovInteractManager.Initialize(PublishmentSystemInfo);
         }
-	}
+
+        private int _publishmentSystemId = -1;
+        public override int PublishmentSystemId
+        {
+            get
+            {
+                if (_publishmentSystemId == -1)
+                {
+                    _publishmentSystemId = Body.GetQueryInt("siteId");
+                }
+                return _publishmentSystemId;
+            }
+        }
+    }
 }

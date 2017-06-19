@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Wcm
 	        return PageUtils.GetOpenWindowString("添加部门",
 	            PageUtils.GetWcmUrl(nameof(ModalGovPublicDepartmentAdd), new NameValueCollection
 	            {
-	                {"PublishmentSystemID", publishmentSystemId.ToString()},
+	                {"siteId", publishmentSystemId.ToString()},
 	                {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
 	            }), 460, 360);
 	    }

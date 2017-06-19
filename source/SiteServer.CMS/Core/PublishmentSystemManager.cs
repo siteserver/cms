@@ -74,25 +74,6 @@ namespace SiteServer.CMS.Core
             return null;
         }
 
-        public static List<EPublishmentSystemType> GetPublishmentSystemTypeList()
-        {
-            var list = new List<EPublishmentSystemType>();
-
-            var pairList = GetPublishmentSystemInfoKeyValuePairList();
-
-            foreach (var pair in pairList)
-            {
-                var publishmentSystemInfo = pair.Value;
-                if (publishmentSystemInfo == null) continue;
-
-                if (!list.Contains(publishmentSystemInfo.PublishmentSystemType))
-                {
-                    list.Add(publishmentSystemInfo.PublishmentSystemType);
-                }
-            }
-            return list;
-        }
-
         public static List<int> GetPublishmentSystemIdList()
         {
             var pairList = GetPublishmentSystemInfoKeyValuePairList();
@@ -101,23 +82,6 @@ namespace SiteServer.CMS.Core
             {
                 list.Add(pair.Key);
             }
-            return list;
-        }
-
-        public static List<int> GetPublishmentSystemIdList(EPublishmentSystemType publishmentSystemType)
-        {
-            var list = new List<int>();
-
-            var publishmentSystemIdList = GetPublishmentSystemIdList();
-            foreach (var publishmentSystemId in publishmentSystemIdList)
-            {
-                var publishmentSystemInfo = GetPublishmentSystemInfo(publishmentSystemId);
-                if (publishmentSystemInfo.PublishmentSystemType == publishmentSystemType)
-                {
-                    list.Add(publishmentSystemInfo.PublishmentSystemId);
-                }
-            }
-
             return list;
         }
 
@@ -412,11 +376,8 @@ namespace SiteServer.CMS.Core
                         if (!publishmentSystemIdList.Contains(itemForPsid))
                         {
                             var publishmentSystemInfo = GetPublishmentSystemInfo(itemForPsid);
-                            if ((Equals(EPublishmentSystemType.Cms, publishmentSystemInfo.PublishmentSystemType) || Equals(EPublishmentSystemType.Wcm, publishmentSystemInfo.PublishmentSystemType)))
-                            {
-                                publishmentSystemInfoList.Add(publishmentSystemInfo);
-                                publishmentSystemIdList.Add(itemForPsid);
-                            }
+                            publishmentSystemInfoList.Add(publishmentSystemInfo);
+                            publishmentSystemIdList.Add(itemForPsid);
                         }
                     }
                 }

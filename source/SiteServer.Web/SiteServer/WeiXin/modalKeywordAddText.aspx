@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
+<asp:Button id="BtnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
 <bairong:alerts runat="server"></bairong:alerts>
   
   <link href="css/emotion.css" rel="stylesheet">
@@ -602,8 +602,8 @@
         <span class="gray">超链接添加形式，如：&lt;a href="http://www.baidu.com"&gt;百度&lt;/a&gt;</span>
         <hr>
         <div id="titles" class="well well-small" style="display:none"></div>
-        <asp:Button id="btnContentSelect" class="btn btn-info" text="添加微官网内容链接" runat="server" />
-        <asp:Button id="btnChannelSelect" class="btn btn-info" text="添加微官网栏目链接" runat="server" />
+        <asp:Button id="BtnContentSelect" class="btn btn-info" text="添加微官网内容链接" runat="server" />
+        <asp:Button id="BtnChannelSelect" class="btn btn-info" text="添加微官网栏目链接" runat="server" />
 
         <input id="idsCollection" name="idsCollection" type="hidden" value="" />
         <script type="text/javascript">
@@ -632,4 +632,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

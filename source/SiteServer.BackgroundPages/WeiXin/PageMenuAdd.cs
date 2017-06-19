@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                         $"<script>{MPUtils.GetChannelOrContentSelectScript(PublishmentSystemInfo, menuInfo.ChannelId, menuInfo.ContentId)}</script>";
                 }
 
-                ddlMenuType_OnSelectedIndexChanged(null, EventArgs.Empty);
+                DdlMenuType_OnSelectedIndexChanged(null, EventArgs.Empty);
 
                 BtnKeywordSelect.Attributes.Add("onclick", "parent." + ModalKeywordSelect.GetOpenWindowString(PublishmentSystemId, "selectKeyword"));
 
@@ -87,7 +87,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			}
 		}
 
-        public void ddlMenuType_OnSelectedIndexChanged(object sender, EventArgs e)
+        public void DdlMenuType_OnSelectedIndexChanged(object sender, EventArgs e)
         {
             var isHideAll = false;
             if (_parentId == 0 && _menuId > 0)

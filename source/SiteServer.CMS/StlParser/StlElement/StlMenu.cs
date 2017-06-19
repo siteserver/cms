@@ -358,15 +358,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var scriptBuilder = new StringBuilder();
 
                 string functionHead =
-                    $@"<script language=""JavaScript"" src=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.MmMenu.Js)}""></script>
-<script language=""JavaScript"">
+                    $@"<script src=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.MmMenu.Js)}""></script>
+<script>
 //HEAD
 function siteserverLoadMenus() {{";
-                var functionFoot = @"
+                const string functionFoot = @"
 //FOOT
-}}
+}
 </script>
-<script language=""JavaScript1.2"">siteserverLoadMenus();writeMenus();</script>";
+<script>siteserverLoadMenus();writeMenus();</script>";
                 //取得已经保存的js
                 var existScript = string.Empty;
                 if (pageInfo.IsPageScriptsExists(PageInfo.JsAcMenuScripts, true))

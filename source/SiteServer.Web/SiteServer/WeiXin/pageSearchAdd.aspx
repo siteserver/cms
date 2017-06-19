@@ -346,7 +346,7 @@
                 <td width="120">选择图文栏目：</td>
                 <td>
                     <code id="imageChannelTitle" style="display:none"></code>
-                    <asp:Button id="btnImageChannelSelect" class="btn btn-info" text="选择图文栏目" runat="server" />
+                    <asp:Button id="BtnImageChannelSelect" class="btn btn-info" text="选择图文栏目" runat="server" />
                     <input id="imageChannelID" name="imageChannelID" type="hidden" value="" />
               </td>
               </tr>
@@ -371,7 +371,7 @@
                 <td width="120">选择文本栏目：</td>
                 <td>
                    <code id="textChannelTitle" style="display:none"></code>
-                    <asp:Button id="btnTextChannelSelect" class="btn btn-info" text="选择文本栏目" runat="server" />
+                    <asp:Button id="BtnTextChannelSelect" class="btn btn-info" text="选择文本栏目" runat="server" />
                     <input id="textChannelID" name="textChannelID" type="hidden" value="" />
               </td>
               </tr>
@@ -388,8 +388,8 @@
       <table class="table table-noborder">
         <tr>
           <td class="center">
-            <asp:Button class="btn btn-primary" id="btnSubmit" text="下一步" OnClick="Submit_OnClick" runat="server"/>
-            <asp:Button class="btn" id="btnReturn" text="返 回" runat="server"/>
+            <asp:Button class="btn btn-primary" id="BtnSubmit" text="下一步" OnClick="Submit_OnClick" runat="server"/>
+            <asp:Button class="btn" id="BtnReturn" text="返 回" runat="server"/>
           </td>
         </tr>
       </table>
@@ -400,4 +400,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

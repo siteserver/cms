@@ -29,8 +29,6 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             base.OnInit(e);
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
-
             if (Body.IsQueryExists("Delete"))
             {
                 var arraylist = TranslateUtils.StringCollectionToIntList(Request.QueryString["IDCollection"]);

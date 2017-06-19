@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Wcm
             return PageUtils.GetOpenWindowString("添加节点", PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryAdd), new NameValueCollection
             {
                 {"ClassCode", classCode},
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", publishmentSystemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), 500, 340);
         }
@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Wcm
             return PageUtils.GetOpenWindowString("修改节点", PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryAdd), new NameValueCollection
             {
                 {"ClassCode", classCode},
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", publishmentSystemId.ToString()},
                 {"CategoryID", categoryId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), 520, 320);

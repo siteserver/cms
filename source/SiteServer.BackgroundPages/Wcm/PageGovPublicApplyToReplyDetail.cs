@@ -6,11 +6,11 @@ namespace SiteServer.BackgroundPages.Wcm
 {
 	public class PageGovPublicApplyToReplyDetail : BasePageGovPublicApplyToDetail
     {
-        public static string GetRedirectUrl(int publishmentSystemId, int applyId, string listPageUrl)
+        public static string GetRedirectUrl(int siteId, int applyId, string listPageUrl)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicApplyToReplyDetail), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", siteId.ToString()},
                 {"ApplyID", applyId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(listPageUrl)}
             });

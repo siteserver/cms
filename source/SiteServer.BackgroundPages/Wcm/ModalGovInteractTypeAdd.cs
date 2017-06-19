@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("添加办件类型", PageUtils.GetWcmUrl(nameof(ModalGovInteractTypeAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
             }), 450, 220);
         }
@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("修改办件类型", PageUtils.GetWcmUrl(nameof(ModalGovInteractTypeAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"TypeID", typeId.ToString()}
             }), 450, 220);

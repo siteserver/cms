@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             base.OnInit(e);
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "ContentID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("ContentID", "ReturnUrl");
 
             contentInfo = DataProvider.GovInteractContentDao.GetContentInfo(PublishmentSystemInfo, TranslateUtils.ToInt(Request.QueryString["ContentID"]));
             returnUrl = StringUtils.ValueFromUrl(Request.QueryString["ReturnUrl"]);

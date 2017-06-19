@@ -20,12 +20,12 @@ namespace SiteServer.BackgroundPages.Wcm
 
         private GovInteractContentInfo _contentInfo;
 
-	    public static string GetOpenWindowString(int publishmentSystemId, int nodeId, int contentId)
+	    public static string GetOpenWindowString(int siteId, int nodeId, int contentId)
 	    {
 	        return PageUtils.GetOpenWindowString("回复办件",
 	            PageUtils.GetWcmUrl(nameof(ModalGovInteractApplyReply), new NameValueCollection
 	            {
-	                {"PublishmentSystemID", publishmentSystemId.ToString()},
+	                {"siteId", siteId.ToString()},
 	                {"ContentID", contentId.ToString()}
 	            }), 600, 450);
 	    }
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "ContentID");
+            PageUtils.CheckRequestParameter("ContentID");
 
             _contentInfo = DataProvider.GovInteractContentDao.GetContentInfo(PublishmentSystemInfo, TranslateUtils.ToInt(Request.QueryString["ContentID"]));
 

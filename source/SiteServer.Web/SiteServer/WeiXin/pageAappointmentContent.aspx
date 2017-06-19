@@ -80,10 +80,10 @@
         <bairong:SqlPager ID="SpContents" runat="server" class="table table-pager" />
 
         <ul class="breadcrumb breadcrumb-button">
-            <asp:Button class="btn btn-success" ID="btnHandle" Text="预约处理" runat="server" />
-            <asp:Button class="btn" ID="btnDelete" Text="删 除" runat="server" />
-            <asp:Button class="btn" ID="btnExport" Text="导出CSV" runat="server" />
-            <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
+            <asp:Button class="btn btn-success" id="BtnHandle" Text="预约处理" runat="server" />
+            <asp:Button class="btn" id="BtnDelete" Text="删 除" runat="server" />
+            <asp:Button class="btn" id="BtnExport" Text="导出CSV" runat="server" />
+            <asp:Button class="btn" id="BtnReturn" Text="返 回" runat="server" />
         </ul>
 
     </form>
