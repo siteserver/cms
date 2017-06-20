@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Web;
 using System.Xml;
 using BaiRong.Core.Data;
@@ -39,7 +38,7 @@ namespace BaiRong.Core
 
         static WebConfigUtils()
         {
-            var physicalApplicationPath = string.Empty;
+            string physicalApplicationPath;
             var applicationPath = string.Empty;
             if (HttpContext.Current != null)
             {
@@ -195,6 +194,46 @@ namespace BaiRong.Core
             IsMySql = isMySql;
             ConnectionString = connectionString;
             _helper = null;
+        }
+
+        public static string GetConnectionStringByName(string name)
+        {
+            var connectionString = string.Empty;
+            try
+            {
+                var doc = new XmlDocument();
+
+                var configFile = PathUtils.Combine(PhysicalApplicationPath, "web.config");
+
+                doc.Load(configFile);
+
+                var appSettings = doc.SelectSingleNode("configuration/appSettings");
+                if (appSettings != null)
+                {
+                    foreach (XmlNode setting in appSettings)
+                    {
+                        if (setting.Name != "add") continue;
+
+                        var attrKey = setting.Attributes?["key"];
+                        if (attrKey == null) continue;
+
+                        if (!StringUtils.EqualsIgnoreCase(attrKey.Value, name)) continue;
+
+                        var attrValue = setting.Attributes["value"];
+                        if (attrValue != null)
+                        {
+                            connectionString = attrValue.Value;
+                        }
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return connectionString;
         }
     }
 }

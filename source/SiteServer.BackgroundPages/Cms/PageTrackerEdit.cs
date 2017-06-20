@@ -3,7 +3,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -15,7 +14,6 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TrackerPageView;
         public TextBox TrackerUniqueVisitor;
         public TextBox TrackerCurrentMinute;
-        public DropDownList TrackerStyle;
 
 		public void Page_Load(object sender, EventArgs e)
         {
@@ -34,8 +32,6 @@ namespace SiteServer.BackgroundPages.Cms
                 TrackerPageView.Text = PublishmentSystemInfo.Additional.TrackerPageView.ToString();
                 TrackerUniqueVisitor.Text = PublishmentSystemInfo.Additional.TrackerUniqueVisitor.ToString();
                 TrackerCurrentMinute.Text = PublishmentSystemInfo.Additional.TrackerCurrentMinute.ToString();
-                ETrackerStyleUtils.AddListItems(TrackerStyle);
-                ControlUtils.SelectListItems(TrackerStyle, ETrackerStyleUtils.GetValue(PublishmentSystemInfo.Additional.TrackerStyle));
             }
 		}
 
@@ -49,7 +45,6 @@ namespace SiteServer.BackgroundPages.Cms
                 PublishmentSystemInfo.Additional.TrackerPageView = int.Parse(TrackerPageView.Text);
                 PublishmentSystemInfo.Additional.TrackerUniqueVisitor = int.Parse(TrackerUniqueVisitor.Text);
                 PublishmentSystemInfo.Additional.TrackerCurrentMinute = int.Parse(TrackerCurrentMinute.Text);
-                PublishmentSystemInfo.Additional.TrackerStyle = ETrackerStyleUtils.GetEnumType(TrackerStyle.SelectedValue);
 
 				try
 				{

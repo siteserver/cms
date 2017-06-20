@@ -12,13 +12,6 @@ namespace SiteServer.CMS.Core.Plugin
     {
         public static List<PluginPair> Plugins(List<PluginMetadata> metadatas)
         {
-            var csharpPlugins = CSharpPlugins(metadatas).ToList();
-            var plugins = csharpPlugins.ToList();
-            return plugins;
-        }
-
-        public static IEnumerable<PluginPair> CSharpPlugins(List<PluginMetadata> metadatas)
-        {
             var plugins = new List<PluginPair>();
 
             foreach (var metadata in metadatas)

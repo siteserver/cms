@@ -430,12 +430,6 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("TrackerCurrentMinute", value.ToString()); }
         }
 
-        public ETrackerStyle TrackerStyle
-        {
-            get { return ETrackerStyleUtils.GetEnumType(GetString("TrackerStyle", ETrackerStyleUtils.GetValue(ETrackerStyle.Style1))); }
-            set { SetExtendedAttribute("TrackerStyle", ETrackerStyleUtils.GetValue(value)); }
-        }
-
         /****************显示项设置********************/
 
         public string ChannelDisplayAttributes

@@ -1,11 +1,9 @@
 using System;
-using System.Web.UI.WebControls;
 
 namespace SiteServer.CMS.Model.Enumerations
 {
 	public enum ETrackerStyle
 	{
-		None,					
 		Number,					
 		Style1,
 		Style2,
@@ -22,11 +20,7 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ETrackerStyle type)
 		{
-			if (type == ETrackerStyle.None)
-			{
-				return "None";
-			}
-			else if (type == ETrackerStyle.Number)
+			if (type == ETrackerStyle.Number)
 			{
 				return "Number";
 			}
@@ -74,11 +68,7 @@ namespace SiteServer.CMS.Model.Enumerations
 
         public static string GetText(ETrackerStyle type)
         {
-            if (type == ETrackerStyle.None)
-            {
-                return "不显示";
-            }
-            else if (type == ETrackerStyle.Number)
+            if (type == ETrackerStyle.Number)
             {
                 return "显示数字";
             }
@@ -126,13 +116,9 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ETrackerStyle GetEnumType(string typeStr)
 		{
-			var retval = ETrackerStyle.None;
+			var retval = ETrackerStyle.Number;
 
-			if (Equals(ETrackerStyle.None, typeStr))
-			{
-				retval = ETrackerStyle.None;
-			}
-			else if (Equals(ETrackerStyle.Number, typeStr))
+			if (Equals(ETrackerStyle.Number, typeStr))
 			{
 				retval = ETrackerStyle.Number;
 			}
@@ -189,34 +175,6 @@ namespace SiteServer.CMS.Model.Enumerations
         public static bool Equals(string typeStr, ETrackerStyle type)
         {
             return Equals(type, typeStr);
-        }
-
-        public static ListItem GetListItem(ETrackerStyle type, bool selected)
-        {
-            var item = new ListItem(GetText(type), GetValue(type));
-            if (selected)
-            {
-                item.Selected = true;
-            }
-            return item;
-        }
-
-        public static void AddListItems(ListControl listControl)
-        {
-            if (listControl != null)
-            {
-                listControl.Items.Add(GetListItem(ETrackerStyle.Style1, false));
-                listControl.Items.Add(GetListItem(ETrackerStyle.Style2, false));
-                listControl.Items.Add(GetListItem(ETrackerStyle.Style3, false));
-                listControl.Items.Add(GetListItem(ETrackerStyle.Style4, false));
-                listControl.Items.Add(GetListItem(ETrackerStyle.Style5, false));
-                listControl.Items.Add(GetListItem(ETrackerStyle.Style6, false));
-                listControl.Items.Add(GetListItem(ETrackerStyle.Style7, false));
-                listControl.Items.Add(GetListItem(ETrackerStyle.Style8, false));
-                listControl.Items.Add(GetListItem(ETrackerStyle.Style9, false));
-                listControl.Items.Add(GetListItem(ETrackerStyle.Number, false));
-                listControl.Items.Add(GetListItem(ETrackerStyle.None, false));
-            }
         }
 	}
 }

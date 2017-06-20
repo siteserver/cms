@@ -21,8 +21,6 @@ namespace SiteServer.CMS.Core.Plugin
 
         public static List<PluginPair> AllPlugins { get; private set; }
 
-        private static List<PluginMetadata> _metadatas;
-
         private static void ValidateDirectory()
         {
             var pluginsPath = PathUtils.GetPluginsPath();
@@ -39,8 +37,8 @@ namespace SiteServer.CMS.Core.Plugin
 
         public static void LoadPlugins()
         {
-            _metadatas = PluginConfig.Parse();
-            AllPlugins = PluginsLoader.Plugins(_metadatas);
+            var metadatas = PluginConfig.Parse();
+            AllPlugins = PluginsLoader.Plugins(metadatas);
 
             Parallel.ForEach(AllPlugins, pair =>
             {

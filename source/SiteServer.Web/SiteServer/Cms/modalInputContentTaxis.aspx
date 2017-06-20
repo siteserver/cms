@@ -19,22 +19,22 @@
                     <bairong:Help HelpText="对所选内容的方向" Text="排序方向：" runat="server"></bairong:Help>
                 </td>
                 <td>
-                    <asp:RadioButtonList ID="TaxisType" RepeatDirection="Horizontal" class="noborder" runat="server"></asp:RadioButtonList></td>
+                    <asp:RadioButtonList ID="RblTaxisType" RepeatDirection="Horizontal" class="noborder" runat="server"></asp:RadioButtonList></td>
             </tr>
             <tr>
                 <td width="120">
                     <bairong:Help HelpText="对所选内容的数目" Text="移动数目：" runat="server"></bairong:Help>
                 </td>
                 <td>
-                    <asp:TextBox class="input-mini" Text="1" MaxLength="50" ID="TaxisNum" runat="server" />
+                    <asp:TextBox class="input-mini" Text="1" MaxLength="50" ID="TbTaxisNum" runat="server" />
                     <asp:RequiredFieldValidator
-                        ControlToValidate="TaxisNum"
+                        ControlToValidate="TbTaxisNum"
                         ErrorMessage=" *" ForeColor="red"
                         Display="Dynamic"
                         runat="server" />
                     <asp:RegularExpressionValidator
                         runat="server"
-                        ControlToValidate="TaxisNum"
+                        ControlToValidate="TbTaxisNum"
                         ValidationExpression="^([1-9]|[1-9][0-9]{1,})$"
                         ErrorMessage=" *" ForeColor="red"
                         Display="Dynamic" /></td>

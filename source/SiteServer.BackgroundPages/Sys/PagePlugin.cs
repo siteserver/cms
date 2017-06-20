@@ -1,44 +1,45 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Plugin;
 using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Sys
 {
     public class PagePlugin : BasePageCms
     {
-        public DataGrid DgEnabled;
-        public DataGrid DgDisabled;
+        public Literal LtlNav;
+        public DataGrid DgPlugins;
         public Button BtnImport;
 
-        public static string GetRedirectUrl()
+        private int _type;
+
+        public static string GetRedirectUrl(int type)
         {
-            return PageUtils.GetSysUrl(nameof(PagePlugin), null);
+            return PageUtils.GetSysUrl(nameof(PagePlugin), new NameValueCollection
+            {
+                {"type", type.ToString()}
+            });
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            if (Body.IsQueryExists("DeleteDirectory"))
+            if (Body.IsQueryExists("delete"))
             {
-                var siteTemplateDir = Body.GetQueryString("SiteTemplateDir");
+                var pluginId = Body.GetQueryString("pluginId");
 
                 try
                 {
-                    SiteTemplateManager.Instance.DeleteSiteTemplate(siteTemplateDir);
+                    //PluginManager.
+                    //SiteTemplateManager.Instance.DeleteSiteTemplate(siteTemplateDir);
 
-                    Body.AddAdminLog("删除站点模板", $"站点模板:{siteTemplateDir}");
+                    //Body.AddAdminLog("删除站点模板", $"站点模板:{siteTemplateDir}");
 
                     SuccessDeleteMessage();
                 }
@@ -47,7 +48,24 @@ namespace SiteServer.BackgroundPages.Sys
                     FailDeleteMessage(ex);
                 }
             }
-            else if (Body.IsQueryExists("DeleteZipFile"))
+            else if (Body.IsQueryExists("enable"))
+            {
+                var fileName = Body.GetQueryString("FileName");
+
+                try
+                {
+                    SiteTemplateManager.Instance.DeleteZipSiteTemplate(fileName);
+
+                    Body.AddAdminLog("删除未解压站点模板", $"站点模板:{fileName}");
+
+                    SuccessDeleteMessage();
+                }
+                catch (Exception ex)
+                {
+                    FailDeleteMessage(ex);
+                }
+            }
+            else if (Body.IsQueryExists("disable"))
             {
                 var fileName = Body.GetQueryString("FileName");
 
@@ -67,57 +85,80 @@ namespace SiteServer.BackgroundPages.Sys
 
             if (Page.IsPostBack) return;
 
+            _type = Body.GetQueryInt("type");
+
             BreadCrumbSys(AppManager.Sys.LeftMenu.Plugin, "插件管理", AppManager.Sys.Permission.SysPlugin);
 
-            var disabledList = new List<PluginPair>();
-            var enabledList = new List<PluginPair>();
+            var list = new List<PluginPair>();
+            int[] arr = new[] {0, 0, 0, 0};
             foreach (var pluginPair in PluginManager.AllPlugins)
             {
-                if (pluginPair.Metadata.Disabled)
+                arr[0]++;
+                if (!pluginPair.Metadata.Disabled)
                 {
-                    disabledList.Add(pluginPair);
+                    arr[1]++;
                 }
                 else
                 {
-                    enabledList.Add(pluginPair);
+                    arr[2]++;
+                }
+
+                if (_type == 0)
+                {
+                    list.Add(pluginPair);
+                }
+                else if (_type == 1)
+                {
+                    if (!pluginPair.Metadata.Disabled)
+                    {
+                        list.Add(pluginPair);
+                    }
+                }
+                else if (_type == 2)
+                {
+                    if (pluginPair.Metadata.Disabled)
+                    {
+                        list.Add(pluginPair);
+                    }
                 }
             }
 
-            DgEnabled.DataSource = enabledList;
-            DgEnabled.ItemDataBound += DgEnabled_ItemDataBound;
-            DgEnabled.DataBind();
+            const string activeStyle = @"style=""color: #333;font-weight: bold;""";
 
-            if (disabledList.Count > 0)
-            {
-                DgDisabled.Visible = true;
-                DgDisabled.DataSource = disabledList;
-                DgDisabled.ItemDataBound += DgDisabled_ItemDataBound;
-                DgDisabled.DataBind();
-            }
-            else
-            {
-                DgDisabled.Visible = false;
-            }
+            LtlNav.Text = $@"
+<a href=""{GetRedirectUrl(0)}"" {(_type == 0 ? activeStyle : string.Empty)}> 所有插件 </a> <span class=""gray"">({arr[0]})</span>
+<span class=""gray"">&nbsp;|&nbsp;</span>
+<a href=""{GetRedirectUrl(1)}"" {(_type == 1 ? activeStyle : string.Empty)}> 已启用 </a> <span class=""gray"">({arr[1]})</span>
+<span class=""gray"">&nbsp;|&nbsp;</span>
+<a href=""{GetRedirectUrl(2)}"" {(_type == 2 ? activeStyle : string.Empty)}> 已禁用 </a> <span class=""gray"">({arr[2]})</span>
+<span class=""gray"">&nbsp;|&nbsp;</span>
+<a href=""{GetRedirectUrl(3)}"" {(_type == 3 ? activeStyle : string.Empty)}> 有新版本 </a> <span class=""gray"">({arr[3]})</span>";
+
+            DgPlugins.DataSource = list;
+            DgPlugins.ItemDataBound += DgPlugins_ItemDataBound;
+            DgPlugins.DataBind();
 
             BtnImport.Attributes.Add("onclick", ModalUploadSiteTemplate.GetOpenWindowString());
         }
 
-        private void DgEnabled_ItemDataBound(object sender, DataGridItemEventArgs e)
+        private void DgPlugins_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
             var pluginPair = (PluginPair)e.Item.DataItem;
 
             var ltlPluginId = (Literal)e.Item.FindControl("ltlPluginId");
             var ltlPluginName = (Literal)e.Item.FindControl("ltlPluginName");
-            var ltlDirectoryName = (Literal)e.Item.FindControl("ltlDirectoryName");
             var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");
             var ltlInitTime = (Literal)e.Item.FindControl("ltlInitTime");
-            var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
+            var ltlCmd = (Literal)e.Item.FindControl("ltlCmd");
 
             ltlPluginId.Text = pluginPair.Metadata.Id;
             ltlPluginName.Text = $@"<img src={PageUtils.GetPluginUrl(pluginPair.Metadata.Id, pluginPair.Metadata.LogoUrl)} width=""48"" height=""48"" /> {pluginPair.Metadata.Name}";
-            ltlDirectoryName.Text = pluginPair.Metadata.DirectoryPath;
-            ltlDescription.Text = pluginPair.Metadata.Description;
+            ltlDescription.Text = $@"{pluginPair.Metadata.Description}<br />
+Version： {pluginPair.Metadata.Version}
+<span class=""gray"">&nbsp;|&nbsp;</span>
+作者： <a href="""" target=""_blank"">{pluginPair.Metadata.Author}</a>
+";
 
             if (pluginPair.Metadata.InitTime > 1000)
             {
@@ -128,33 +169,19 @@ namespace SiteServer.BackgroundPages.Sys
                 ltlInitTime.Text = pluginPair.Metadata.InitTime + "毫秒";
             }
 
-            var urlDelete = PageUtils.GetSysUrl(nameof(PageSiteTemplate), new NameValueCollection
-            {
-                {"DeleteDirectory", "True"},
-                {"SiteTemplateDir", pluginPair.Metadata.Id}
-            });
-            ltlDeleteUrl.Text =
-                $@"<a href=""{urlDelete}"" onClick=""javascript:return confirm('此操作将会删除此插件“{pluginPair.Metadata.Name}”，确认吗？');"">删除</a>";
-        }
-
-        private void DgDisabled_ItemDataBound(object sender, DataGridItemEventArgs e)
-        {
-            if (e.Item.ItemType != ListItemType.AlternatingItem && e.Item.ItemType != ListItemType.Item) return;
-            var pluginPair = (PluginPair)e.Item.DataItem;
-
-            var ltlPluginName = (Literal)e.Item.FindControl("ltlPluginName");
-            var ltlCreationDate = (Literal)e.Item.FindControl("ltlCreationDate");
-            var ltlDownloadUrl = (Literal)e.Item.FindControl("ltlDownloadUrl");
-            var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
-
-            var urlDelete = PageUtils.GetSysUrl(nameof(PageSiteTemplate), new NameValueCollection
+            var ableText = pluginPair.Metadata.Disabled ? "启用" : "禁用";
+            ltlCmd.Text =
+                $@"<a href=""{PageUtils.GetSysUrl(nameof(PagePlugin), new NameValueCollection
                 {
-                    {"DeleteZipFile", "True"},
-                    {"FileName", pluginPair.Metadata.Id}
-                });
-            ltlDeleteUrl.Text =
-                $@"<a href=""{urlDelete}"" onClick=""javascript:return confirm('此操作将会删除此插件“{pluginPair.Metadata.Name}”，确认吗？');"">删除</a>";
+                    {pluginPair.Metadata.Disabled ? "enable" : "disable", true.ToString()},
+                    {"pluginId", pluginPair.Metadata.Id}
+                })}"" onClick=""javascript:return confirm('此操作将会{ableText}“{pluginPair.Metadata.Name}”插件，确认吗？');"">{ableText}</a>
+&nbsp;&nbsp;
+<a href=""{PageUtils.GetSysUrl(nameof(PagePlugin), new NameValueCollection
+                {
+                    {"delete", true.ToString()},
+                    {"pluginId", pluginPair.Metadata.Id}
+                })}"" onClick=""javascript:return confirm('此操作将会删除“{pluginPair.Metadata.Name}”插件，确认吗？');"">删除</a>";
         }
-
     }
 }

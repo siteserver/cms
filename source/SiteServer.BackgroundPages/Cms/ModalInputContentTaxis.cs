@@ -9,12 +9,12 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalInputContentTaxis : BasePageCms
     {
-        protected RadioButtonList TaxisType;
-        protected TextBox TaxisNum;
+        protected RadioButtonList RblTaxisType;
+        protected TextBox TbTaxisNum;
 
         private int _inputId;
         private string _returnUrl;
-        private List<int> _contentIdArrayList;
+        private List<int> _contentIdList;
 
         public static string GetOpenWindowString(int publishmentSystemId,   int inputId, string returnUrl)
         {
@@ -33,45 +33,37 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("PublishmentSystemID",  "ReturnUrl");
             _inputId = Body.GetQueryInt("InputID");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
-            _contentIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
+            _contentIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
 
             if (!IsPostBack)
             {
-                TaxisType.Items.Add(new ListItem("上升", "Up"));
-                TaxisType.Items.Add(new ListItem("下降", "Down"));
-                ControlUtils.SelectListItems(TaxisType, "Up");
-
-
+                RblTaxisType.Items.Add(new ListItem("上升", "Up"));
+                RblTaxisType.Items.Add(new ListItem("下降", "Down"));
+                ControlUtils.SelectListItems(RblTaxisType, "Up");
             }
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var isUp = (TaxisType.SelectedValue == "Up");
-            var taxisNum = int.Parse(TaxisNum.Text);
+            var isUp = RblTaxisType.SelectedValue == "Up";
+            var taxisNum = TranslateUtils.ToInt(TbTaxisNum.Text);
 
             if (isUp == false)
             {
-                _contentIdArrayList.Reverse();
+                _contentIdList.Reverse();
             }
 
-            foreach (int contentID in _contentIdArrayList)
+            foreach (var contentId in _contentIdList)
             {
-                for (var i = 1; i <= taxisNum; i++)
+                for (var i = 0; i < taxisNum; i++)
                 {
                     if (isUp)
                     {
-                        if (DataProvider.InputContentDao.UpdateTaxisToUp(_inputId, contentID))
-                        {
-                            break;
-                        }
+                        DataProvider.InputContentDao.UpdateTaxisToUp(_inputId, contentId);
                     }
                     else
                     {
-                        if (DataProvider.InputContentDao.UpdateTaxisToDown(_inputId, contentID))
-                        {
-                            break;
-                        }
+                        DataProvider.InputContentDao.UpdateTaxisToDown(_inputId, contentId);
                     }
                 }
             }
