@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Plugin;
 
 namespace siteserver.commands
 {
@@ -60,6 +61,8 @@ namespace siteserver.commands
             // Some biolerplate to react to close window event, CTRL-C, kill, etc
             _handler += Handler;
             SetConsoleCtrlHandler(_handler, true);
+
+            PluginManager.LoadPlugins();
 
             Console.WriteLine("SiteServer Service is running...");
 

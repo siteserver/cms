@@ -62,12 +62,14 @@ namespace BaiRong.Core
             public class LeftMenu
             {
                 public const string Site = "Site";
+                public const string Plugin = "Plugin";
                 public const string Auxiliary = "Auxiliary";
             }
 
             public class Permission
             {
                 public const string SysSite = "sys_site";
+                public const string SysPlugin = "sys_plugin";
                 public const string SysAuxiliary = "sys_auxiliary";
             }
         }
@@ -267,6 +269,10 @@ namespace BaiRong.Core
             else if (menuId == Sys.LeftMenu.Site)
             {
                 retval = "系统站点管理";
+            }
+            else if (menuId == Sys.LeftMenu.Plugin)
+            {
+                retval = "插件管理";
             }
             else if (menuId == Sys.LeftMenu.Auxiliary)
             {

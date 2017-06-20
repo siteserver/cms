@@ -21,8 +21,6 @@ namespace SiteServer.BackgroundPages.Wcm
 
         public void Page_Load(object sender, EventArgs e)
         {
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
-
             if (IsPostBack) return;
 
             LtlCategoryChannel.Text = string.Format($@"<a href='{PageContent.GetRedirectUrl(PublishmentSystemId, PublishmentSystemInfo.Additional.GovPublicNodeId)}' isLink='true' onclick='fontWeightLink(this)' target='content'>主题分类</a>");
@@ -31,7 +29,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
             var additional = new NameValueCollection
             {
-                {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                {"siteId", PublishmentSystemId.ToString()},
                 {
                     "DepartmentIDCollection",
                     TranslateUtils.ObjectCollectionToString(

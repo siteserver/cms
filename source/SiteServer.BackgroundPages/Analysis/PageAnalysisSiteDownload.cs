@@ -73,7 +73,7 @@ xArrayDownload.push('{GetXHashtable(key)}');
             var ltlPublishmentSystemName = (Literal)e.Item.FindControl("ltlPublishmentSystemName");
             var ltlDownloadNum = (Literal)e.Item.FindControl("ltlDownloadNum");
 
-            ltlPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName + "&nbsp;" + EPublishmentSystemTypeUtils.GetIconHtml(publishmentSystemInfo.PublishmentSystemType);
+            ltlPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
             ltlDownloadNum.Text = GetYHashtable(publishmentSystemId);
         }
 

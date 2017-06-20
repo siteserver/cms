@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SSiteServer.BackgroundPages.WeiXin.PageardConfiguration" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageCardConfiguration" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>
@@ -149,4 +149,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

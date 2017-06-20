@@ -177,7 +177,12 @@ namespace BaiRong.Core
 
         public static string GetSiteFilesPath(params string[] paths)
         {
-            return MapPath(Combine("~/sitefiles", Combine(paths)));
+            return MapPath(Combine("~/" + DirectoryUtils.SiteFiles.DirectoryName, Combine(paths)));
+        }
+
+        public static string GetPluginsPath(params string[] paths)
+        {
+            return GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins, Combine(paths));
         }
 
         public static string RemovePathInvalidChar(string filePath)

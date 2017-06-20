@@ -2,7 +2,8 @@ using System;
 using System.IO;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugins;
+using SiteServer.CMS.Core.Plugin;
+using SiteServer.Plugin;
 
 namespace siteserver
 {
@@ -24,10 +25,10 @@ namespace siteserver
 
         public static void OnFileChanged(object sender, FileSystemEventArgs e)
         {
-            var pluginInfoList = PluginManager.GetPluginInfoList();
-            foreach (var pluginInfo in pluginInfoList)
+            foreach (var pluginPair in PluginManager.GetPluginsForInterface<IFileSystemWatcher>())
             {
-                pluginInfo.Instance.OnFileChanged(e);
+                var watcher = (IFileSystemWatcher) pluginPair.Plugin;
+                watcher.OnFileChanged(sender, e);
             }
         }
     }

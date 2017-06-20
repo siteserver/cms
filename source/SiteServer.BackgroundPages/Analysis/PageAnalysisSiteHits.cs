@@ -79,8 +79,7 @@ yArrayHits.push('{yValueHits}');";
             var ltlPublishmentSystemName = (Literal)e.Item.FindControl("ltlPublishmentSystemName");
             var ltlHitsNum = (Literal)e.Item.FindControl("ltlHitsNum");
 
-            ltlPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName + "&nbsp;" +
-                                            EPublishmentSystemTypeUtils.GetIconHtml(publishmentSystemInfo.PublishmentSystemType);
+            ltlPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
             ltlHitsNum.Text = GetYHashtable(publishmentSystemId);
         }
 

@@ -92,8 +92,8 @@
         <bairong:SqlPager ID="SpContents" runat="server" class="table table-pager" />
 
         <ul class="breadcrumb breadcrumb-button">
-            <asp:Button class="btn" ID="btnDelete" Text="删 除" runat="server" />
-            <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
+            <asp:Button class="btn" id="BtnDelete" Text="删 除" runat="server" />
+            <asp:Button class="btn" id="BtnReturn" Text="返 回" runat="server" />
         </ul>
 
     </form>

@@ -29,37 +29,37 @@
 
             <div class="items">
 
-                <a class="box" href="javascript:;" onclick="openWindow('会员消费','/siteserver/weixin/modal_cardConsume.aspx?publishmentSystemID=<%=PublishmentSystemID%>',430,380,'false');return false;" style="background: #00acdc;">
+                <a class="box" href="javascript:;" onclick="openWindow('会员消费','/siteserver/weixin/modal_cardConsume.aspx?publishmentSystemID=<%=PublishmentSystemId%>',430,380,'false');return false;" style="background: #00acdc;">
                     <span>会员消费</span>
                     <i class="icon-yen"></i>
                 </a>
 
-                <a class="box" href="javascript:;" onclick="openWindow('会员卡充值','/siteserver/weixin/modal_cardRecharge.aspx?publishmentSystemID=<%=PublishmentSystemID%>',430,380,'false');return false;" style="background: #99251C;">
+                <a class="box" href="javascript:;" onclick="openWindow('会员卡充值','/siteserver/weixin/modal_cardRecharge.aspx?publishmentSystemID=<%=PublishmentSystemId%>',430,380,'false');return false;" style="background: #99251C;">
                     <span>会员卡充值</span>
                     <i class="icon-money"></i>
                 </a>
 
-                <a class="box" href="javascript:;" onclick="openWindow('修改积分','/siteserver/weixin/modal_cardCredits.aspx?publishmentSystemID=<%=PublishmentSystemID%>',430,380,'false');return false;" style="background: #19a657;">
+                <a class="box" href="javascript:;" onclick="openWindow('修改积分','/siteserver/weixin/modal_cardCredits.aspx?publishmentSystemID=<%=PublishmentSystemId%>',430,380,'false');return false;" style="background: #19a657;">
                     <span>修改积分</span>
                     <i class="icon-pencil"></i>
                 </a>
 
-                <a class="box" href="../weixin/background_cardConsumeLog.aspx?publishmentSystemID=<%=PublishmentSystemID%>&cardSN=&userName=&mobile=" style="background: #00acdc;">
+                <a class="box" href="../weixin/background_cardConsumeLog.aspx?publishmentSystemID=<%=PublishmentSystemId%>&cardSN=&userName=&mobile=" style="background: #00acdc;">
                     <span>会员消费查询</span>
                     <i class="icon-search"></i>
                 </a>
 
-                 <a class="box" href="../weixin/background_cardRechargeLog.aspx?publishmentSystemID=<%=PublishmentSystemID%>&cardSN=&userName=&mobile=" style="background: #cc2749;">
+                 <a class="box" href="../weixin/background_cardRechargeLog.aspx?publishmentSystemID=<%=PublishmentSystemId%>&cardSN=&userName=&mobile=" style="background: #cc2749;">
                     <span>会员卡充值查询</span>
                     <i class="icon-zoom-in"></i>
                 </a>
 
-                 <a class="box" href="../weixin/background_cardExchangeLog.aspx?publishmentSystemID=<%=PublishmentSystemID%>&cardSN=&userName=&mobile=" style="background: #9b50ba;">
+                 <a class="box" href="../weixin/background_cardExchangeLog.aspx?publishmentSystemID=<%=PublishmentSystemId%>&cardSN=&userName=&mobile=" style="background: #9b50ba;">
                     <span>积分兑换查询</span>
                     <i class="icon-zoom-in"></i>
                 </a>
                    
-                 <a class="box" href="../weixin/background_cardCreditsLog.aspx?publishmentSystemID=<%=PublishmentSystemID%>&cardSN=&userName=&mobile=" style="background: #5133AB;">
+                 <a class="box" href="../weixin/background_cardCreditsLog.aspx?publishmentSystemID=<%=PublishmentSystemId%>&cardSN=&userName=&mobile=" style="background: #5133AB;">
                     <span>会员积分查询</span>
                     <i class="icon-zoom-out"></i>
                 </a>

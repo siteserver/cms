@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             SpContents.ItemsPerPage = 50;
             SpContents.SortField = DataProviderWx.KeywordMatchDao.GetSortField();
             SpContents.SortMode = SortMode.DESC;
-            RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
 			if(!IsPostBack)
             {
@@ -100,8 +100,13 @@ namespace SiteServer.BackgroundPages.WeiXin
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl =
-                        $"modalkeywordSelect.aspx?PublishmentSystemId={PublishmentSystemId}&keywordType={DdlKeywordType.SelectedValue}&keyword={TbKeyword.Text}&jsMethod={_jsMethod}";
+                    _pageUrl = PageUtils.GetWeiXinUrl(nameof(ModalKeywordSelect), new NameValueCollection
+                    {
+                        {"publishmentSystemId", PublishmentSystemId.ToString()},
+                        {"keywordType", DdlKeywordType.SelectedValue},
+                        {"keyword", TbKeyword.Text},
+                        {"jsMethod", _jsMethod}
+                    });
                 }
                 return _pageUrl;
             }

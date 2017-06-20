@@ -735,5 +735,17 @@ namespace SiteServer.CMS.Core
 
             return SiteFilesAssets.GetUrl(apiUrl, "default_avatar.png");
         }
+
+        public static string GetApiUrl(PublishmentSystemInfo publishmentSystemInfo = null)
+        {
+            if (publishmentSystemInfo == null) return PageUtils.GetApiUrl();
+
+            var apiUrl = publishmentSystemInfo.Additional.ApiUrl;
+            if (publishmentSystemInfo.Additional.IsMultiDeployment)
+            {
+                apiUrl = publishmentSystemInfo.Additional.InnerApiUrl;
+            }
+            return apiUrl;
+        }
     }
 }

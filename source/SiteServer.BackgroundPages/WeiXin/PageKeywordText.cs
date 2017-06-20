@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 }
 
                 DgContents.DataSource = DataProviderWx.KeywordDao.GetDataSource(PublishmentSystemId, EKeywordType.Text);
-                DgContents.ItemDataBound += new DataGridItemEventHandler(dgContents_ItemDataBound);
+                DgContents.ItemDataBound += dgContents_ItemDataBound;
                 DgContents.DataBind();
 
                 var showPopWinString = ModalKeywordAddText.GetOpenWindowStringToAdd(PublishmentSystemId);

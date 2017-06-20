@@ -348,6 +348,12 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("CreateStaticContentAddDate", DateUtils.GetDateString(value)); }
         }
 
+        public bool IsCreateMultiThread
+        {
+            get { return GetBool("IsCreateMultiThread", false); }
+            set { SetExtendedAttribute("IsCreateMultiThread", value.ToString()); }
+        }
+
         /****************站点地图设置********************/
 
         public string SiteMapGooglePath
@@ -422,12 +428,6 @@ namespace SiteServer.CMS.Model
         {
             get { return GetInt("TrackerCurrentMinute", 30); }
             set { SetExtendedAttribute("TrackerCurrentMinute", value.ToString()); }
-        }
-
-        public ETrackerStyle TrackerStyle
-        {
-            get { return ETrackerStyleUtils.GetEnumType(GetString("TrackerStyle", ETrackerStyleUtils.GetValue(ETrackerStyle.Style1))); }
-            set { SetExtendedAttribute("TrackerStyle", ETrackerStyleUtils.GetValue(value)); }
         }
 
         /****************显示项设置********************/

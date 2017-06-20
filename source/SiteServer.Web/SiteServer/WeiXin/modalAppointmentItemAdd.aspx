@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
-      <asp:Button ID="btnSubmit" UseSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" Style="display: none" />
+      <asp:Button id="BtnSubmit" UseSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" Style="display: none" />
       <bairong:Alerts runat="server"></bairong:Alerts>
       <bairong:Code type="ajaxupload" runat="server" />
       <script type="text/javascript" src="../../sitefiles/bairong/scripts/swfUpload/swfupload.js"></script>
@@ -150,15 +150,15 @@
               <tr>
                 <td>上传照片：</td>
                 <td>
-                   <input type="button" class="btn" id="btnAddImageUrl" value="上传照片" />
+                   <input type="button" class="btn" id="BtnAddImageUrl" value="上传照片" />
                     <script type="text/javascript">
                         $("#btnAddImageUrl").click(function () {
                             var imageUrlCollection = $("#imageUrlCollection").val();
                             var largeImageUrlCollection = $("#largeImageUrlCollection").val();
-                            openWindow('上传照片', '/siteserver/weixin/modal_appointmentItemPhotoUpload.aspx?publishmentSystemID=<%=base.PublishmentSystemID%>&imageUrlCollection=' + imageUrlCollection + '&largeImageUrlCollection=' + largeImageUrlCollection + '', 0, 0, 'false');
+                            openWindow('上传照片', '/siteserver/weixin/modal_appointmentItemPhotoUpload.aspx?publishmentSystemID=<%=base.PublishmentSystemId%>&imageUrlCollection=' + imageUrlCollection + '&largeImageUrlCollection=' + largeImageUrlCollection + '', 0, 0, 'false');
                         });
                     </script>
-                <%-- <asp:Button class="btn" id="btnAddImageUrl" text="上传照片" runat="server"/> --%>
+                <%-- <asp:Button class="btn" id="BtnAddImageUrl" text="上传照片" runat="server"/> --%>
                 </td>
               </tr>
 
@@ -194,7 +194,7 @@
                 <td>预约地址：</td>
                 <td>
                    <asp:TextBox id="TbMapAddress" class="input-xlarge" runat="server" />
-                     <input type="button" id="btnMap"  class="btn" value="查看效果" />
+                     <input type="button" id="BtnMap"  class="btn" value="查看效果" />
                    <script type="text/javascript">
                        $("#btnMap").click(function () {
                            $("#map").children().remove();
@@ -203,7 +203,7 @@
                            $("#map").append(iframe);
                        });
                    </script>
-                  <%-- <asp:Button class="btn" id="btnMap" text="查看效果" OnClick="Preview_OnClick" runat="server"/>--%>
+                  <%-- <asp:Button class="btn" id="BtnMap" text="查看效果" OnClick="Preview_OnClick" runat="server"/>--%>
                 </td>
               </tr>
 
@@ -356,4 +356,4 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+

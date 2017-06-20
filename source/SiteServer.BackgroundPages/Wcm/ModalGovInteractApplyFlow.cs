@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("流动轨迹", PageUtils.GetWcmUrl(nameof(ModalGovInteractApplyFlow), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ContentID", contentId.ToString()}
             }), 300, 600, true);

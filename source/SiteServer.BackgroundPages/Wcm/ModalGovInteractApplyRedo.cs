@@ -18,19 +18,17 @@ namespace SiteServer.BackgroundPages.Wcm
 
         private List<int> _idArrayList;
 
-        public static string GetOpenWindowString(int publishmentSystemId)
+        public static string GetOpenWindowString(int siteId)
         {
             return PageUtils.GetOpenWindowStringWithCheckBoxValue("要求返工", PageUtils.GetWcmUrl(nameof(ModalGovInteractApplyRedo), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", siteId.ToString()}
             }), "IDCollection", "请选择需要返工的申请！", 450, 320);
         }
         
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
-
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
 
             _idArrayList = TranslateUtils.StringCollectionToIntList(Request.QueryString["IDCollection"]);
 

@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SSiteServer.BackgroundPages.WeiXin.PagetoreAdd" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageStoreAdd" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>
@@ -164,8 +164,8 @@
                 <table class="table table-noborder">
                     <tr>
                         <td class="center">
-                            <asp:Button class="btn btn-primary" ID="btnSubmit" Text="确定" OnClick="Submit_OnClick" runat="server" />
-                            <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
+                            <asp:Button class="btn btn-primary" id="BtnSubmit" Text="确定" OnClick="Submit_OnClick" runat="server" />
+                            <asp:Button class="btn" id="BtnReturn" Text="返 回" runat="server" />
                         </td>
                     </tr>
                 </table>
@@ -176,4 +176,4 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+

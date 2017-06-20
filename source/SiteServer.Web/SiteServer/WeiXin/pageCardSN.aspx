@@ -1,4 +1,4 @@
-<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageCardSN" %>
+<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageCardSn" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>
@@ -104,15 +104,15 @@
 
         <ul class="breadcrumb breadcrumb-button">
 
-             <asp:Button class="btn btn-success" id="btnAdd" Text="添加" runat="server" />
+             <asp:Button class="btn btn-success" id="BtnAdd" Text="添加" runat="server" />
 
-            <asp:Button class="btn" ID="btnDelete" Text="删 除" runat="server" />
+            <asp:Button class="btn" id="BtnDelete" Text="删 除" runat="server" />
 
-             <asp:Button class="btn" ID="btnStatus" Text="设置状态" runat="server" />
+             <asp:Button class="btn" id="BtnStatus" Text="设置状态" runat="server" />
 
-             <asp:Button class="btn" id="btnExport" Text="导出CSV" runat="server" />
+             <asp:Button class="btn" id="BtnExport" Text="导出CSV" runat="server" />
 
-             <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
+             <asp:Button class="btn" id="BtnReturn" Text="返 回" runat="server" />
         </ul>
 
     </form>

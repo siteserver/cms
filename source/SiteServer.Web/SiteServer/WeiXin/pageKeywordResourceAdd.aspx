@@ -28,8 +28,8 @@
                     <asp:Literal ID="LtlSite" runat="server" />
 
                     <div class="btn-group">
-                        <asp:Button ID="BtnContentSelect" class="btn btn-info" Text="选择内容页" runat="server" />
-                        <asp:Button ID="BtnChannelSelect" class="btn btn-info" Text="选择栏目页" runat="server" />
+                        <asp:Button id="BtnContentSelect" class="btn btn-info" Text="选择内容页" runat="server" />
+                        <asp:Button id="BtnChannelSelect" class="btn btn-info" Text="选择栏目页" runat="server" />
                     </div>
 
                     <script type="text/javascript">
@@ -203,4 +203,4 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+

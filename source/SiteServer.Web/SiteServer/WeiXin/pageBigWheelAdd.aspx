@@ -585,8 +585,8 @@
       <table class="table table-noborder">
         <tr>
           <td class="center">
-            <asp:Button class="btn btn-primary" id="btnSubmit" text="下一步" OnClick="Submit_OnClick" runat="server"/>
-            <asp:Button class="btn" id="btnReturn" text="返 回" runat="server"/>
+            <asp:Button class="btn btn-primary" id="BtnSubmit" text="下一步" OnClick="Submit_OnClick" runat="server"/>
+            <asp:Button class="btn" id="BtnReturn" text="返 回" runat="server"/>
           </td>
         </tr>
       </table>
@@ -597,4 +597,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             try
             {
                 RptContents.DataSource = DataProviderWx.StoreCategoryDao.GetCategoryIdListByParentId(PublishmentSystemId, 0);
-                RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+                RptContents.ItemDataBound += rptContents_ItemDataBound;
                 RptContents.DataBind();
             }
             catch (Exception ex)

@@ -21,12 +21,6 @@
                     </ItemTemplate>
                     <ItemStyle HorizontalAlign="left" />
                 </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="站点类型">
-                    <ItemTemplate>
-                        <asp:Literal ID="ltlPublishmentSystemType" runat="server"></asp:Literal>
-                    </ItemTemplate>
-                    <ItemStyle Width="110" CssClass="center" />
-                </asp:TemplateColumn>
                 <asp:TemplateColumn HeaderText="文件夹">
                     <ItemTemplate>
                         <asp:Literal ID="ltlPublishmentSystemDir" runat="server"></asp:Literal>

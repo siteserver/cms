@@ -96,17 +96,17 @@
         <bairong:SqlPager ID="SpContents" runat="server" class="table table-pager" />
 
         <ul class="breadcrumb breadcrumb-button">
-              <asp:Button class="btn btn-success" id="btnAdd" Text="添加" runat="server" />
+              <asp:Button class="btn btn-success" id="BtnAdd" Text="添加" runat="server" />
 
-             <asp:Button class="btn" ID="btnDelete" Text="删 除" runat="server" />
+             <asp:Button class="btn" id="BtnDelete" Text="删 除" runat="server" />
 
-             <asp:Button class="btn" ID="btnStatus" Text="设置状态" runat="server" />
+             <asp:Button class="btn" id="BtnStatus" Text="设置状态" runat="server" />
 
-             <asp:Button class="btn" ID="btnImport" Text="导入实体卡" runat="server" />
+             <asp:Button class="btn" id="BtnImport" Text="导入实体卡" runat="server" />
 
              <a class="btn" href="../../SiteFiles/Services/WeiXin/card/cardsn-example.csv">下载模板</a>
 
-            <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
+            <asp:Button class="btn" id="BtnReturn" Text="返 回" runat="server" />
         </ul>
 
     </form>

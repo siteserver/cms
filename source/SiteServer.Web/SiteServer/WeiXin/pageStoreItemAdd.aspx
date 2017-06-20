@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SSiteServer.BackgroundPages.WeiXin.PagetoreItemAdd" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.WeiXin.PageStoreItemAdd" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>
@@ -162,7 +162,7 @@
                             <div class="Span6">
                                 <script src="js/map.js"></script>
                                 <input type="text" id="suggestId" class="input-xlarge" value="请输入门店地址" />
-                                <input id="btnSearchMP" type="button" value="搜索" />
+                                <input id="BtnSearchMP" type="button" value="搜索" />
                                 <div style="width: 530px; height: 400px; border: 1px solid #000; margin-top: 10px;" id="container"></div>
                                 <script type="text/javascript">
                                     $(function () {
@@ -181,8 +181,8 @@
                 <table class="table table-noborder">
                     <tr>
                         <td class="center">
-                            <asp:Button class="btn btn-primary" ID="btnSubmit" Text="确定" OnClick="Submit_OnClick" runat="server" />
-                            <asp:Button class="btn" ID="btnReturn" Text="返 回" runat="server" />
+                            <asp:Button class="btn btn-primary" id="BtnSubmit" Text="确定" OnClick="Submit_OnClick" runat="server" />
+                            <asp:Button class="btn" id="BtnReturn" Text="返 回" runat="server" />
                         </td>
                     </tr>
                 </table>
@@ -193,5 +193,5 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+
 

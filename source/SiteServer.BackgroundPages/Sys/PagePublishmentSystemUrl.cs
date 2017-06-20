@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -101,10 +100,7 @@ namespace SiteServer.BackgroundPages.Sys
                 padding += "└ ";
             }
 
-            string retval = $"<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;<a href='{publishmentSystemInfo.PublishmentSystemUrl}' target='_blank'>{publishmentSystemInfo.PublishmentSystemName}</a>";
-
-            return
-                $"{padding}{retval}&nbsp;{EPublishmentSystemTypeUtils.GetIconHtml(publishmentSystemInfo.PublishmentSystemType)}";
+            return $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;<a href='{publishmentSystemInfo.PublishmentSystemUrl}' target='_blank'>{publishmentSystemInfo.PublishmentSystemName}</a>";
 		}
 	}
 }

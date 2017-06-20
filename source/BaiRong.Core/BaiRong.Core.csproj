@@ -32,7 +32,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -126,6 +126,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AdminManager.cs" />
     <Compile Include="Auth\Base64Utils.cs" />
     <Compile Include="Auth\JWT\DefaultJsonSerializer.cs" />
     <Compile Include="Auth\JWT\IJsonSerializer.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="AuxiliaryTable\TableUtils.cs" />
     <Compile Include="AuxiliaryTable\TableStyleManager.cs" />
     <Compile Include="Collection\Pair.cs" />
+    <Compile Include="RoleManager.cs" />
     <Compile Include="SiteFilesAssets.cs" />
     <Compile Include="SiteServerAssets.cs" />
     <Compile Include="ThirdParty\Atom\Atom.AdditionalElements\DublinCore\DcElement.cs" />
@@ -235,7 +237,6 @@
     <Compile Include="Model\Enumerations\ESubscribePushType.cs" />
     <Compile Include="Model\Enumerations\EUserActionType.cs" />
     <Compile Include="Model\Enumerations\ELevelPeriodType.cs" />
-    <Compile Include="Model\Enumerations\EPublishmentSystemType.cs" />
     <Compile Include="Model\Enumerations\EUploadType.cs" />
     <Compile Include="Model\Enumerations\EUserLockType.cs" />
     <Compile Include="Model\Enumerations\ESmsProviderType.cs" />
@@ -268,8 +269,6 @@
     <Compile Include="Provider\UserDao.cs" />
     <Compile Include="Provider\UserGroupDao.cs" />
     <Compile Include="Provider\UserLogDao.cs" />
-    <Compile Include="PermissionConfigManager.cs" />
-    <Compile Include="PermissionConfig.cs" />
     <Compile Include="Cryptography\DESEncryptor.cs" />
     <Compile Include="Cryptography\EncryptUtils.cs" />
     <Compile Include="Data\ADOHelper.cs" />
@@ -566,12 +565,8 @@
     <Compile Include="ThirdParty\AliDaYu\Util\TopUtils.cs" />
     <Compile Include="ThirdParty\AliDaYu\Util\WebUtils.cs" />
     <Compile Include="ThirdParty\AliDaYu\Util\XmlWriter.cs" />
-    <Compile Include="Permissions\AdministratorWithPermissions.cs" />
-    <Compile Include="Permissions\AdminManager.cs" />
-    <Compile Include="Permissions\PermissionManager.cs" />
     <Compile Include="DirectoryTreeItem.cs" />
     <Compile Include="UserGroupManager.cs" />
-    <Compile Include="Permissions\RoleManager.cs" />
     <Compile Include="UEditorUploaderForUser.cs" />
     <Compile Include="Model\AdministratorInfo.cs" />
     <Compile Include="Model\Enumerations\EPredefinedRole.cs" />

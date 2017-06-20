@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetWcmUrl(nameof(PageGovInteractListAll), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"siteId", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
             });
         }
@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 {
                     _pageUrl = PageUtils.GetWcmUrl(nameof(PageGovInteractListAll), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                        {"siteId", PublishmentSystemId.ToString()},
                         {"NodeID", nodeID.ToString()},
                         {"isTaxisDESC", ddlTaxis.SelectedValue},
                         {"state", ddlState.SelectedValue},

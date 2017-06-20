@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
@@ -114,7 +113,6 @@ namespace SiteServer.BackgroundPages.Sys
             var dirInfo = (DirectoryInfo)e.Item.DataItem;
 
             var ltlTemplateName = (Literal)e.Item.FindControl("ltlTemplateName");
-            var ltlTemplateType = (Literal)e.Item.FindControl("ltlTemplateType");
             var ltlDirectoryName = (Literal)e.Item.FindControl("ltlDirectoryName");
             var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");
             var ltlCreationDate = (Literal)e.Item.FindControl("ltlCreationDate");
@@ -126,8 +124,6 @@ namespace SiteServer.BackgroundPages.Sys
             if (string.IsNullOrEmpty(siteTemplateInfo?.SiteTemplateName)) return;
 
             ltlTemplateName.Text = siteTemplateInfo.SiteTemplateName;
-            var publishmentSystemType = EPublishmentSystemTypeUtils.GetEnumType(siteTemplateInfo.PublishmentSystemType);
-            ltlTemplateType.Text = EPublishmentSystemTypeUtils.GetHtml(publishmentSystemType);
             ltlDirectoryName.Text = dirInfo.Name;
             ltlDescription.Text = siteTemplateInfo.Description;
             if (!string.IsNullOrEmpty(siteTemplateInfo.PicFileName))

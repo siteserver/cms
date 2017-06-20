@@ -388,6 +388,7 @@ namespace SiteServer.CMS.StlParser.Model
                 }
                 else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(attr.Name, StlSqlContents.AttributeConnectionStringName))
                 {
+                    listInfo.ConnectionString = WebConfigUtils.GetConnectionStringByName(attr.Value);
                     if (string.IsNullOrEmpty(listInfo.ConnectionString))
                     {
                         listInfo.ConnectionString = WebConfigUtils.ConnectionString;

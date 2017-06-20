@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Permissions;
 using SiteServer.BackgroundPages.Sys;
+using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 
 namespace SiteServer.BackgroundPages
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages
             {
                 if (permissions.IsSystemAdministrator)  // 如果目前还没有创建站点并且当前登录管理员是系统管理员
                 {
-                    redirectUrl = PageAppAdd.GetRedirectUrl(); // 则直接跳到站点创建页面
+                    redirectUrl = PagePublishmentSystemAdd.GetRedirectUrl(); // 则直接跳到站点创建页面
                 }
             }
 

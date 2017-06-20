@@ -11,7 +11,7 @@ namespace SiteServer.BackgroundPages.Wcm
 	        return PageUtils.GetOpenWindowString("快速查看",
 	            PageUtils.GetWcmUrl(nameof(ModalGovPublicApplyView), new NameValueCollection
 	            {
-	                {"PublishmentSystemID", publishmentSystemId.ToString()},
+	                {"siteId", publishmentSystemId.ToString()},
 	                {"ApplyID", applyId.ToString()},
 	                {"ReturnUrl", string.Empty}
 	            }), 750, 600, true);

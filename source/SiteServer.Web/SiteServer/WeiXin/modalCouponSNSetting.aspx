@@ -1,4 +1,4 @@
-<%@ Page Language="C#" validateRequest="false" Inherits="SiteServer.BackgroundPages.WeiXin.ModalCouponSNSetting" Trace="false"%>
+<%@ Page Language="C#" validateRequest="false" Inherits="SiteServer.BackgroundPages.WeiXin.ModalCouponSnSetting" Trace="false"%>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
 <!DOCTYPE html>
 <html>
@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
+<asp:Button id="BtnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
 <bairong:alerts runat="server"></bairong:alerts>
   
   <link href="css/emotion.css" rel="stylesheet">
@@ -27,4 +27,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

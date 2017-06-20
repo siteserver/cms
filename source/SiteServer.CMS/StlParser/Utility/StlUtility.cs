@@ -203,11 +203,8 @@ namespace SiteServer.CMS.StlParser.Utility
                     {
                         fileTemplateId = pageInfo.TemplateInfo.TemplateId;
                     }
-                    var apiUrl = pageInfo.PublishmentSystemInfo.Additional.ApiUrl;
-                    if (pageInfo.PublishmentSystemInfo.Additional.IsMultiDeployment)
-                    {
-                        apiUrl = pageInfo.PublishmentSystemInfo.Additional.InnerApiUrl;
-                    }
+                    
+                    var apiUrl = PageUtility.GetApiUrl(pageInfo.PublishmentSystemInfo);
                     var ajaxUrl = ActionsTrigger.GetUrl(apiUrl, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, fileTemplateId, true);
                     pageInfo.AddPageEndScriptsIfNotExists("CreateDoubleClick", $@"
 <script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}';}}</script>");

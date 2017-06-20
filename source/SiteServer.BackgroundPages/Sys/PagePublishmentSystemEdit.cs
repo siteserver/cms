@@ -16,9 +16,6 @@ namespace SiteServer.BackgroundPages.Sys
 		public TextBox PublishmentSystemName;
         public DropDownList ParentPublishmentSystemID;
 		public DropDownList AuxiliaryTableForContent;
-        public PlaceHolder phWCMTables; 
-        public DropDownList AuxiliaryTableForGovPublic;
-        public DropDownList AuxiliaryTableForGovInteract;
         public DropDownList AuxiliaryTableForVote;
         public DropDownList AuxiliaryTableForJob;
         public TextBox Taxis;
@@ -90,25 +87,6 @@ namespace SiteServer.BackgroundPages.Sys
 					AuxiliaryTableForContent.Items.Add(li);
 				}
 
-                if (PublishmentSystemInfo.PublishmentSystemType == EPublishmentSystemType.Wcm)
-                {
-                    phWCMTables.Visible = true;
-
-                    tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.GovPublicContent);
-                    foreach (AuxiliaryTableInfo tableInfo in tableList)
-                    {
-                        var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
-                        AuxiliaryTableForGovPublic.Items.Add(li);
-                    }
-
-                    tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.GovInteractContent);
-                    foreach (AuxiliaryTableInfo tableInfo in tableList)
-                    {
-                        var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
-                        AuxiliaryTableForGovInteract.Items.Add(li);
-                    }
-                }
-
                 tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.VoteContent);
                 foreach (AuxiliaryTableInfo tableInfo in tableList)
                 {
@@ -155,28 +133,6 @@ namespace SiteServer.BackgroundPages.Sys
                 foreach (ListItem item in AuxiliaryTableForContent.Items)
                 {
                     if (item.Value.Equals(PublishmentSystemInfo.AuxiliaryTableForContent))
-                    {
-                        item.Selected = true;
-                    }
-                    else
-                    {
-                        item.Selected = false;
-                    }
-                }
-                foreach (ListItem item in AuxiliaryTableForGovPublic.Items)
-                {
-                    if (item.Value.Equals(PublishmentSystemInfo.AuxiliaryTableForGovPublic))
-                    {
-                        item.Selected = true;
-                    }
-                    else
-                    {
-                        item.Selected = false;
-                    }
-                }
-                foreach (ListItem item in AuxiliaryTableForGovInteract.Items)
-                {
-                    if (item.Value.Equals(PublishmentSystemInfo.AuxiliaryTableForGovInteract))
                     {
                         item.Selected = true;
                     }
@@ -271,16 +227,6 @@ namespace SiteServer.BackgroundPages.Sys
                 {
                     isTableChanged = true;
                     PublishmentSystemInfo.AuxiliaryTableForContent = AuxiliaryTableForContent.SelectedValue;
-                }
-                if (PublishmentSystemInfo.AuxiliaryTableForGovPublic != AuxiliaryTableForGovPublic.SelectedValue)
-                {
-                    isTableChanged = true;
-                    PublishmentSystemInfo.AuxiliaryTableForGovPublic = AuxiliaryTableForGovPublic.SelectedValue;
-                }
-                if (PublishmentSystemInfo.AuxiliaryTableForGovInteract != AuxiliaryTableForGovInteract.SelectedValue)
-                {
-                    isTableChanged = true;
-                    PublishmentSystemInfo.AuxiliaryTableForGovInteract = AuxiliaryTableForGovInteract.SelectedValue;
                 }
                 if (PublishmentSystemInfo.AuxiliaryTableForVote != AuxiliaryTableForVote.SelectedValue)
                 {

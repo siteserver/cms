@@ -9,7 +9,6 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
         AuthenticatedSubscribe,
         Service,
         AuthenticatedService
-
 	}
 
     public class EWxAccountTypeUtils

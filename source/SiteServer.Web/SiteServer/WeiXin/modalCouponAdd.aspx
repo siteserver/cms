@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
-        <asp:Button ID="btnSubmit" UseSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" Style="display: none" />
+        <asp:Button id="BtnSubmit" UseSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" Style="display: none" />
         <bairong:Alerts Text="添加成功后,点击优惠券明细. 可点击上传SN码生成（点击下载示例按要求上传）.也可点击添加,系统生成SN码." runat="server"></bairong:Alerts>
 
         <link href="css/emotion.css" rel="stylesheet">
@@ -54,4 +54,4 @@
     </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->
+

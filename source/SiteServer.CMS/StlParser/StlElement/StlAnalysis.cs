@@ -170,9 +170,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             var publishmentSystemInfo = pageInfo.PublishmentSystemInfo;
             if (publishmentSystemInfo == null) return string.Empty;
 
-            var html = string.Empty;
+            string html;
 
-            var eStyle = publishmentSystemInfo.Additional.TrackerStyle;
+            var eStyle = ETrackerStyle.Number;
             if (!string.IsNullOrEmpty(style))
             {
                 eStyle = ETrackerStyleUtils.GetEnumType(style);
@@ -242,24 +242,21 @@ namespace SiteServer.CMS.StlParser.StlElement
             accessNum = accessNum + addNum;
             if (accessNum == 0) accessNum = 1;
 
-            if (eStyle != ETrackerStyle.None)
+            if (eStyle == ETrackerStyle.Number)
             {
-                if (eStyle == ETrackerStyle.Number)
+                html = accessNum.ToString();
+            }
+            else
+            {
+                var numString = accessNum.ToString();
+                var htmlBuilder = new StringBuilder();
+                string imgFolder = $"{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Tracker.DirectoryName)}/{ETrackerStyleUtils.GetValue(eStyle)}";
+                foreach (var t in numString)
                 {
-                    html = accessNum.ToString();
+                    string imgHtml = $"<img src='{imgFolder}/{t}.gif' align=absmiddle border=0>";
+                    htmlBuilder.Append(imgHtml);
                 }
-                else
-                {
-                    var numString = accessNum.ToString();
-                    var htmlBuilder = new StringBuilder();
-                    string imgFolder = $"{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Tracker.DirectoryName)}/{ETrackerStyleUtils.GetValue(eStyle)}";
-                    foreach (var t in numString)
-                    {
-                        string imgHtml = $"<img src='{imgFolder}/{t}.gif' align=absmiddle border=0>";
-                        htmlBuilder.Append(imgHtml);
-                    }
-                    html = htmlBuilder.ToString();
-                }
+                html = htmlBuilder.ToString();
             }
 
             return html;

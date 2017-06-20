@@ -21,12 +21,12 @@ namespace SiteServer.BackgroundPages.Wcm
         private int _nodeId;
         private List<int> _idArrayList;
 
-	    public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
+	    public static string GetOpenWindowString(int siteId, int nodeId)
 	    {
 	        return PageUtils.GetOpenWindowStringWithCheckBoxValue("转办办件",
 	            PageUtils.GetWcmUrl(nameof(ModalGovInteractApplySwitchTo), new NameValueCollection
 	            {
-	                {"PublishmentSystemID", publishmentSystemId.ToString()},
+	                {"siteId", siteId.ToString()},
 	                {"NodeID", nodeId.ToString()}
 	            }), "IDCollection", "请选择需要转办的办件！", 500, 500);
 	    }
@@ -34,8 +34,6 @@ namespace SiteServer.BackgroundPages.Wcm
 	    public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
-
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
 
             _nodeId = TranslateUtils.ToInt(Request.QueryString["NodeID"]);
             _idArrayList = TranslateUtils.StringCollectionToIntList(Request.QueryString["IDCollection"]);

@@ -12,18 +12,16 @@ namespace SiteServer.BackgroundPages.Wcm
         public DropDownList ddlGovInteractNodeID;
         public RadioButtonList rblGovInteractApplyIsOpenWindow;
 
-        public static string GetRedirectUrl(int publishmentSystemId)
+        public static string GetRedirectUrl(int siteId)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovInteractConfiguration), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()}
+                {"siteId", siteId.ToString()}
             });
         }
 
 		public void Page_Load(object sender, EventArgs e)
 		{
-            PageUtils.CheckRequestParameter("PublishmentSystemID");
-
 			if (!IsPostBack)
             {
                 BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, AppManager.Wcm.LeftMenu.GovInteract.IdGovInteractConfiguration, "互动交流设置", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);

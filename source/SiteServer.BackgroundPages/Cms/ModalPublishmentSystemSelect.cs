@@ -33,7 +33,6 @@ namespace SiteServer.BackgroundPages.Cms
                     builder.Append($@"
 <span class=""icon-span"">
     <a href=""{loadingUrl}"" target=""_top"">
-      {EPublishmentSystemTypeUtils.GetIconHtml(publishmentSystemInfo.PublishmentSystemType, "icon-5")}
       <h5>
         {publishmentSystemInfo.PublishmentSystemName}
         <br>

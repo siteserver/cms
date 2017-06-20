@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
+<asp:Button id="BtnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
 <bairong:alerts runat="server"></bairong:alerts>
   <bairong:Code type="ajaxupload" runat="server" />
   <script type="text/javascript" src="../../sitefiles/bairong/scripts/swfUpload/swfupload.js"></script>
@@ -66,4 +66,3 @@
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

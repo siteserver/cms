@@ -98,14 +98,6 @@
             <span>设置浏览者最后一次浏览页面后多久视为离线</span>
           </td>
         </tr>
-        <tr>
-          <td>统计显示样式：</td>
-          <td>
-            <asp:DropDownList ID="TrackerStyle" runat="server"></asp:DropDownList>
-            <br>
-            <span>设置前台页面显示统计数据的样式</span>
-          </td>
-        </tr>
       </table>
   
       <hr />

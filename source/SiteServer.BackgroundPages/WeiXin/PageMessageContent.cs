@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             SpContents.SelectCommand = DataProviderWx.MessageContentDao.GetSelectString(PublishmentSystemId, _messageId);
             SpContents.SortField = MessageContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
-            RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             {

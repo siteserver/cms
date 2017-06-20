@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             //spContents.SelectCommand = BaiRongDataProvider.UserCreditsLogDao.GetSqlString(AppManager.WeiXin.AppID, theUserNameArrayList);
             SpContents.SortField = "AddDate";
             SpContents.SortMode = SortMode.DESC;
-            RptContents.ItemDataBound += new RepeaterItemEventHandler(rptContents_ItemDataBound);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
             if (!IsPostBack)
             { 

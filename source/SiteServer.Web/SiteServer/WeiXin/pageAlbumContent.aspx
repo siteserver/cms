@@ -81,11 +81,10 @@
   <!-- end -->
 
   <ul class="breadcrumb breadcrumb-button">
-    <asp:Button class="btn btn-success" id="btnAddAlbumContent" Text="新建相册" runat="server" />
+    <asp:Button class="btn btn-success" id="BtnAddAlbumContent" Text="新建相册" runat="server" />
    
   </ul>
 
 </form>
 </body>
 </html>
-<!-- check for 3.6 html permissions -->

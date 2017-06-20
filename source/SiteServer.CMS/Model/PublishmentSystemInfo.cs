@@ -12,7 +12,6 @@ namespace SiteServer.CMS.Model
 
         public const string PublishmentSystemId = "PublishmentSystemId";
         public const string PublishmentSystemName = "PublishmentSystemName";
-        public const string PublishmentSystemType = "PublishmentSystemType";
         public const string AuxiliaryTableForContent = "AuxiliaryTableForContent";
         public const string AuxiliaryTableForGovPublic = "AuxiliaryTableForGovPublic";
         public const string AuxiliaryTableForGovInteract = "AuxiliaryTableForGovInteract";
@@ -33,7 +32,6 @@ namespace SiteServer.CMS.Model
 	{
 		private int _publishmentSystemId;
 		private string _publishmentSystemName = string.Empty;
-        private EPublishmentSystemType _publishmentSystemType = EPublishmentSystemType.Cms;
 		private string _auxiliaryTableForContent = string.Empty;
         private string _auxiliaryTableForGovPublic = string.Empty;
         private string _auxiliaryTableForGovInteract = string.Empty;
@@ -53,11 +51,10 @@ namespace SiteServer.CMS.Model
 		{
 		}
 
-        public PublishmentSystemInfo(int publishmentSystemId, string publishmentSystemName, EPublishmentSystemType publishmentSystemType, string auxiliaryTableForContent, string auxiliaryTableForGovPublic, string auxiliaryTableForGovInteract, string auxiliaryTableForVote, string auxiliaryTableForJob, bool isCheckContentUseLevel, int checkContentLevel, string publishmentSystemDir, string publishmentSystemUrl, bool isHeadquarters, int parentPublishmentSystemId, int taxis, string settingsXml) 
+        public PublishmentSystemInfo(int publishmentSystemId, string publishmentSystemName, string auxiliaryTableForContent, string auxiliaryTableForGovPublic, string auxiliaryTableForGovInteract, string auxiliaryTableForVote, string auxiliaryTableForJob, bool isCheckContentUseLevel, int checkContentLevel, string publishmentSystemDir, string publishmentSystemUrl, bool isHeadquarters, int parentPublishmentSystemId, int taxis, string settingsXml) 
 		{
 			_publishmentSystemId = publishmentSystemId;
 			_publishmentSystemName = publishmentSystemName;
-            _publishmentSystemType = publishmentSystemType;
 			_auxiliaryTableForContent = auxiliaryTableForContent;
             _auxiliaryTableForGovPublic = auxiliaryTableForGovPublic;
             _auxiliaryTableForGovInteract = auxiliaryTableForGovInteract;
@@ -86,13 +83,6 @@ namespace SiteServer.CMS.Model
 			get{ return _publishmentSystemName; }
 			set{ _publishmentSystemName = value; }
 		}
-
-        [XmlIgnore]
-        public EPublishmentSystemType PublishmentSystemType
-        {
-            get { return _publishmentSystemType; }
-            set { _publishmentSystemType = value; }
-        }
 
 		[XmlIgnore]
 		public string AuxiliaryTableForContent

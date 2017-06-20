@@ -29,6 +29,8 @@ namespace SiteServer.BackgroundPages.Cms
         public PlaceHolder phIsCreateStaticContentByAddDate;
         public DateTimeTextBox tbCreateStaticContentAddDate;
 
+        public RadioButtonList IsCreateMultiThread; // 是否启用多线程生成页面
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
@@ -78,8 +80,12 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     tbCreateStaticContentAddDate.DateTime = PublishmentSystemInfo.Additional.CreateStaticContentAddDate;
                 }
+
+                EBooleanUtils.AddListItems(IsCreateMultiThread, "启用", "不启用");
+                ControlUtils.SelectListItemsIgnoreCase(IsCreateMultiThread, PublishmentSystemInfo.Additional.IsCreateMultiThread.ToString());
+
             }
-		}
+        }
 
         public void IsCreateStaticContentByAddDate_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -108,7 +114,9 @@ namespace SiteServer.BackgroundPages.Cms
                 if (PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate)
                 {
                     PublishmentSystemInfo.Additional.CreateStaticContentAddDate = tbCreateStaticContentAddDate.DateTime;
-                }
+                } 
+
+                PublishmentSystemInfo.Additional.IsCreateMultiThread = TranslateUtils.ToBool(IsCreateMultiThread.SelectedValue);
 
                 try
 				{

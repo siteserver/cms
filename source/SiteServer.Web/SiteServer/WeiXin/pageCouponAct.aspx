@@ -87,10 +87,10 @@
         <bairong:SqlPager ID="SpContents" runat="server" class="table table-pager" />
 
         <ul class="breadcrumb breadcrumb-button">
-            <asp:Button class="btn btn-success" ID="btnAdd" Text="添加活动" runat="server" />
-            <asp:Button class="btn btn-info" ID="btnCouponAdd" Text="添加优惠券" runat="server" />
-            <asp:Button class="btn btn-info" ID="btnCoupon" Text="管理优惠券" runat="server" />
-            <asp:Button class="btn" ID="btnDelete" Text="删除活动" runat="server" />
+            <asp:Button class="btn btn-success" id="BtnAdd" Text="添加活动" runat="server" />
+            <asp:Button class="btn btn-info" id="BtnCouponAdd" Text="添加优惠券" runat="server" />
+            <asp:Button class="btn btn-info" id="BtnCoupon" Text="管理优惠券" runat="server" />
+            <asp:Button class="btn" id="BtnDelete" Text="删除活动" runat="server" />
         </ul>
 
     </form>
