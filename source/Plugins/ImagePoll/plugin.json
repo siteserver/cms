@@ -1,21 +1,21 @@
 {
-  "id":  "image-poll",
+  "id": "image-poll",
   "name": "图片投票",
   "Description": "使用完整的图片投票解决方案来获得您需要的答案。",
   "Author": "SiteServer CMS",
   "Version": "1.0.0",
   "Website": "http://www.siteserver.cn",
-  "ExecuteFileName": "ImagePoll.dll",
+  "ExecuteFileName": "bin/ImagePoll.dll",
   "LogoUrl": "logo.png",
   "Permissions": {
-    "plugin_poll": "投票插件"
+    "image_poll": "图片投票"
   },
   "Menus": [
     {
       "topId": "Management",
       "parentId": "Function",
-      "Text": "图片投票",
-      "permissions": [ "plugin_poll" ],
+      "Text": "图片投票管理",
+      "permissions": [ "image_poll" ],
       "menus": [
         {
           "Text": "添加投票",
@@ -23,9 +23,15 @@
         },
         {
           "Text": "投票管理",
-          "href": "pageVote.aspx"
+          "href": "admin/manage.html"
         }
       ]
     }
+  ],
+  "include": [
+    "configuration.html",
+    "logo.png",
+    "bin/ImagePoll.dll",
+    "plugin.json"
   ]
 }

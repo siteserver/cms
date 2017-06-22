@@ -666,7 +666,7 @@ namespace BaiRong.Core.Provider
         protected List<string> GetAlterDropColumnSqls(string tableEnName, string attributeName)
         {
             var sqlList = new List<string>();
-            if (!WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType != EDatabaseType.MySql)
             {
                 var defaultConstraintName = BaiRongDataProvider.TableStructureDao.GetDefaultConstraintName(tableEnName, attributeName);
                 if (!string.IsNullOrEmpty(defaultConstraintName))

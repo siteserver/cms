@@ -3,6 +3,8 @@ using System.Web;
 using System.Xml;
 using BaiRong.Core.Data;
 using BaiRong.Core.Data.Helper;
+using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core
 {
@@ -14,17 +16,17 @@ namespace BaiRong.Core
 
         public static string PhysicalApplicationPath { get; }
         public static string ApplicationPath { get; }
-        public static bool IsMySql { get; private set; }
+        public static EDatabaseType DatabaseType { get; private set; }
         public static string ConnectionString { get; private set; }
 
-        private static AdoHelper _helper;
-        public static AdoHelper Helper
+        private static IDbHelper _helper;
+        public static IDbHelper Helper
         {
             get
             {
                 if (_helper != null) return _helper;
 
-                if (IsMySql)
+                if (DatabaseType == EDatabaseType.MySql)
                 {
                     _helper = new Data.MySql();
                 }
@@ -119,11 +121,11 @@ namespace BaiRong.Core
                 // ignored
             }
 
-            IsMySql = StringUtils.EqualsIgnoreCase(databaseType, "MySql");
+            DatabaseType = EDatabaseTypeUtils.GetEnumType(databaseType);
             ConnectionString = connectionString;
         }
 
-        public static void UpdateWebConfig(bool isProtectData, bool isMySql, string connectionString)
+        public static void UpdateWebConfig(bool isProtectData, EDatabaseType databaseType, string connectionString)
         {
             var configFilePath = PathUtils.MapPath("~/web.config");
 
@@ -154,7 +156,7 @@ namespace BaiRong.Core
                                 var attrValue = setting.Attributes["value"];
                                 if (attrValue != null)
                                 {
-                                    attrValue.Value = isMySql ? "MySql" : "SqlServer";
+                                    attrValue.Value = EDatabaseTypeUtils.GetValue(databaseType);
                                     if (isProtectData)
                                     {
                                         attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value);
@@ -191,7 +193,7 @@ namespace BaiRong.Core
                 writer.Close();
             }
 
-            IsMySql = isMySql;
+            DatabaseType = databaseType;
             ConnectionString = connectionString;
             _helper = null;
         }

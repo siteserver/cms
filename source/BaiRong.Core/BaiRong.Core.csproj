@@ -141,6 +141,7 @@
     <Compile Include="AuxiliaryTable\TableUtils.cs" />
     <Compile Include="AuxiliaryTable\TableStyleManager.cs" />
     <Compile Include="Collection\Pair.cs" />
+    <Compile Include="Model\Enumerations\EDatabaseType.cs" />
     <Compile Include="RoleManager.cs" />
     <Compile Include="SiteFilesAssets.cs" />
     <Compile Include="SiteServerAssets.cs" />
@@ -996,7 +997,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{8451ecdd-2ea4-4966-bb0a-7bbc40138e80}</Project>
+      <Name>SiteServer.Plugin</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

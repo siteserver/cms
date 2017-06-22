@@ -27,9 +27,14 @@ namespace Oss
             return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace(Path.DirectorySeparatorChar, '/'));
         }
 
-        public void Init(PluginInitContext context)
+        public void Initialize(PluginContext context)
         {
             _api = context.Api;
+        }
+
+        public void Dispose(PluginContext context)
+        {
+            
         }
 
         public void OnFileChanged(object sender, FileSystemEventArgs e)

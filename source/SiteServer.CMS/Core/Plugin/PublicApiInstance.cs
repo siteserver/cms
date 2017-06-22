@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using BaiRong.Core;
+using BaiRong.Core.Model.Enumerations;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core.Plugin
@@ -14,6 +13,12 @@ namespace SiteServer.CMS.Core.Plugin
         {
             _metadata = metadata;
         }
+
+        public string DatabaseType => EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType);
+
+        public string ConnectionString => WebConfigUtils.ConnectionString;
+
+        public IDbHelper DbHelper => WebConfigUtils.Helper;
 
         public bool SetOption(string option, string value)
         {
@@ -125,14 +130,11 @@ namespace SiteServer.CMS.Core.Plugin
             return PathUtility.GetPublishmentSystemPath(publishmentSystemInfo);
         }
 
-        public List<PluginPair> GetAllPlugins()
-        {
-            return PluginManager.AllPlugins.ToList();
-        }
-
         public void AddErrorLog(Exception ex)
         {
             LogUtils.AddErrorLog(ex, $"插件： {_metadata.Name}");
         }
+
+        
     }
 }

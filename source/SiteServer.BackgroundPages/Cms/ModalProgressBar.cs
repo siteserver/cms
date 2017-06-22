@@ -174,6 +174,15 @@ namespace SiteServer.BackgroundPages.Cms
                 }), 460, 360);
         }
 
+        public static string GetRedirectUrlStringWithPluginDownload(string downloadUrl)
+        {
+            return PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
+            {
+                {"PluginDownload", true.ToString()},
+                {"DownloadUrl", downloadUrl}
+            });
+        }
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
@@ -268,6 +277,15 @@ namespace SiteServer.BackgroundPages.Cms
                 var parameters = AjaxOtherService.GetSiteTemplateUnZipParameters(Body.GetQueryString("FileName"), userKeyPrefix);
                 RegisterScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateUnZipUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
+            }
+            //---------------------------------------------------------------------------------------//
+            else if (Body.IsQueryExists("PluginDownload"))
+            {
+                var userKeyPrefix = StringUtils.Guid();
+
+                var parameters = AjaxOtherService.GetPluginDownloadParameters(Body.GetQueryString("DownloadUrl"), userKeyPrefix);
+                RegisterScripts.Text =
+                    AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetPluginDownloadUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }
         }
     }

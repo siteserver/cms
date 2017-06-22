@@ -4,9 +4,14 @@ namespace GovInteract
 {
     public class Main : IPlugin
     {
-        public void Init(PluginInitContext context)
+        public void Initialize(PluginContext context)
         {
+            
+        }
 
+        public void Dispose(PluginContext context)
+        {
+            
         }
     }
 }

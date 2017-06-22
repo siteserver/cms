@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core.Plugin;
-using SiteServer.CMS.ImportExport;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Sys
@@ -36,11 +34,8 @@ namespace SiteServer.BackgroundPages.Sys
 
                 try
                 {
-                    //PluginManager.
-                    //SiteTemplateManager.Instance.DeleteSiteTemplate(siteTemplateDir);
-
-                    //Body.AddAdminLog("删除站点模板", $"站点模板:{siteTemplateDir}");
-
+                    var pluginPair = PluginManager.Delete(pluginId);
+                    Body.AddAdminLog("删除插件", $"插件:{pluginPair.Metadata.Name}");
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -50,15 +45,13 @@ namespace SiteServer.BackgroundPages.Sys
             }
             else if (Body.IsQueryExists("enable"))
             {
-                var fileName = Body.GetQueryString("FileName");
+                var pluginId = Body.GetQueryString("pluginId");
 
                 try
                 {
-                    SiteTemplateManager.Instance.DeleteZipSiteTemplate(fileName);
-
-                    Body.AddAdminLog("删除未解压站点模板", $"站点模板:{fileName}");
-
-                    SuccessDeleteMessage();
+                    var pluginPair = PluginManager.Enable(pluginId);
+                    Body.AddAdminLog("启用插件", $"插件:{pluginPair.Metadata.Name}");
+                    SuccessMessage("成功启用插件");
                 }
                 catch (Exception ex)
                 {
@@ -67,15 +60,13 @@ namespace SiteServer.BackgroundPages.Sys
             }
             else if (Body.IsQueryExists("disable"))
             {
-                var fileName = Body.GetQueryString("FileName");
+                var pluginId = Body.GetQueryString("pluginId");
 
                 try
                 {
-                    SiteTemplateManager.Instance.DeleteZipSiteTemplate(fileName);
-
-                    Body.AddAdminLog("删除未解压站点模板", $"站点模板:{fileName}");
-
-                    SuccessDeleteMessage();
+                    var pluginPair = PluginManager.Disable(pluginId);
+                    Body.AddAdminLog("禁用插件", $"插件:{pluginPair.Metadata.Name}");
+                    SuccessMessage("成功禁用插件");
                 }
                 catch (Exception ex)
                 {
@@ -90,7 +81,7 @@ namespace SiteServer.BackgroundPages.Sys
             BreadCrumbSys(AppManager.Sys.LeftMenu.Plugin, "插件管理", AppManager.Sys.Permission.SysPlugin);
 
             var list = new List<PluginPair>();
-            int[] arr = new[] {0, 0, 0, 0};
+            int[] arr = {0, 0, 0};
             foreach (var pluginPair in PluginManager.AllPlugins)
             {
                 arr[0]++;
@@ -130,15 +121,13 @@ namespace SiteServer.BackgroundPages.Sys
 <span class=""gray"">&nbsp;|&nbsp;</span>
 <a href=""{GetRedirectUrl(1)}"" {(_type == 1 ? activeStyle : string.Empty)}> 已启用 </a> <span class=""gray"">({arr[1]})</span>
 <span class=""gray"">&nbsp;|&nbsp;</span>
-<a href=""{GetRedirectUrl(2)}"" {(_type == 2 ? activeStyle : string.Empty)}> 已禁用 </a> <span class=""gray"">({arr[2]})</span>
-<span class=""gray"">&nbsp;|&nbsp;</span>
-<a href=""{GetRedirectUrl(3)}"" {(_type == 3 ? activeStyle : string.Empty)}> 有新版本 </a> <span class=""gray"">({arr[3]})</span>";
+<a href=""{GetRedirectUrl(2)}"" {(_type == 2 ? activeStyle : string.Empty)}> 已禁用 </a> <span class=""gray"">({arr[2]})</span>";
 
             DgPlugins.DataSource = list;
             DgPlugins.ItemDataBound += DgPlugins_ItemDataBound;
             DgPlugins.DataBind();
 
-            BtnImport.Attributes.Add("onclick", ModalUploadSiteTemplate.GetOpenWindowString());
+            BtnImport.Attributes.Add("onclick", ModalImportZip.GetOpenWindowString(ModalImportZip.TypePlugin));
         }
 
         private void DgPlugins_ItemDataBound(object sender, DataGridItemEventArgs e)

@@ -3,13 +3,13 @@
 
 <head>
     <meta charset="utf-8">
-    <link href="../../../siteserver/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="../../../siteserver/assets/css/core.css" rel="stylesheet" type="text/css" />
-    <link href="../../../siteserver/assets/css/components.css" rel="stylesheet" type="text/css" />
-    <link href="../../../siteserver/assets/css/icons.css" rel="stylesheet" type="text/css" />
-    <link href="../../../siteserver/assets/css/pages.css" rel="stylesheet" type="text/css" />
-    <link href="../../../siteserver/assets/css/menu.css" rel="stylesheet" type="text/css" />
-    <link href="../../../siteserver/assets/css/responsive.css" rel="stylesheet" type="text/css" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/core.css" rel="stylesheet" type="text/css" />
+    <link href="css/components.css" rel="stylesheet" type="text/css" />
+    <link href="css/icons.css" rel="stylesheet" type="text/css" />
+    <link href="css/pages.css" rel="stylesheet" type="text/css" />
+    <link href="css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="css/responsive.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -149,9 +149,9 @@
 
 </html>
 
-<script src="../../assets/components/vue-2.1.10.min.js"></script>
-<script src="../../assets/components/lodash-4.17.4.min.js"></script>
-<script src="../../assets/components/stlClient.js"></script>
+<script src="js/vue-2.1.10.min.js"></script>
+<script src="js/lodash-4.17.4.min.js"></script>
+<script src="js/client.js"></script>
 <script>
     function getQueryStringByName(name){
         var result = location.search.match(new RegExp("[\?\&]" + name+ "=([^\&]+)","i"));
@@ -172,7 +172,7 @@
         bucketPath: ''
     };
 
-    stlClient.get(apiUrl, null, function(err, res) {
+    client.get(apiUrl, null, function(err, res) {
         if (!err) {
             data.loading = false;
             data.isOss = res.isOss
@@ -191,7 +191,7 @@
             submit: function (event) {
                 if (!this.isOss || (this.accessKeyId && this.accessKeySecret && this.bucketName && this.bucketEndPoint)) {
                     this.loading = true;
-                    stlClient.post(apiUrl, {
+                    client.post(apiUrl, {
                         isOss: this.isOss,
                         accessKeyId: this.accessKeyId,
                         accessKeySecret: this.accessKeySecret,

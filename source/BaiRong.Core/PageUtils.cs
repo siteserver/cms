@@ -388,52 +388,61 @@ namespace BaiRong.Core
 
         public static string GetIpAddress()
         {
-            //取CDN用户真实IP的方法
-            //当用户使用代理时，取到的是代理IP
-            var result = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            if (!string.IsNullOrEmpty(result))
+            var result = string.Empty;
+
+            try
             {
-                //可能有代理
-                if (result.IndexOf(".", StringComparison.Ordinal) == -1)
-                    result = null;
-                else
+                //取CDN用户真实IP的方法
+                //当用户使用代理时，取到的是代理IP
+                result = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                if (!string.IsNullOrEmpty(result))
                 {
-                    if (result.IndexOf(",", StringComparison.Ordinal) != -1)
+                    //可能有代理
+                    if (result.IndexOf(".", StringComparison.Ordinal) == -1)
+                        result = null;
+                    else
                     {
-                        result = result.Replace("  ", "").Replace("'", "");
-                        var temparyip = result.Split(",;".ToCharArray());
-                        foreach (var t in temparyip)
+                        if (result.IndexOf(",", StringComparison.Ordinal) != -1)
                         {
-                            if (IsIp(t) && t.Substring(0, 3) != "10." && t.Substring(0, 7) != "192.168" && t.Substring(0, 7) != "172.16.")
+                            result = result.Replace("  ", "").Replace("'", "");
+                            var temparyip = result.Split(",;".ToCharArray());
+                            foreach (var t in temparyip)
                             {
-                                result = t;
+                                if (IsIpAddress(t) && t.Substring(0, 3) != "10." && t.Substring(0, 7) != "192.168" && t.Substring(0, 7) != "172.16.")
+                                {
+                                    result = t;
+                                }
                             }
+                            var str = result.Split(',');
+                            if (str.Length > 0)
+                                result = str[0].Trim();
                         }
-                        var str = result.Split(',');
-                        if (str.Length > 0)
-                            result = str[0].Trim();
+                        else if (IsIpAddress(result))
+                            return result;
                     }
-                    else if (IsIp(result))
-                        return result;
+                }
+
+                if (string.IsNullOrEmpty(result))
+                    result = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+                if (string.IsNullOrEmpty(result))
+                    result = HttpContext.Current.Request.UserHostAddress;
+                if (string.IsNullOrEmpty(result))
+                    result = "localhost";
+
+                if (result == "::1" || result == "127.0.0.1")
+                {
+                    result = "localhost";
                 }
             }
-
-            if (string.IsNullOrEmpty(result))
-                result = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
-            if (string.IsNullOrEmpty(result))
-                result = HttpContext.Current.Request.UserHostAddress;
-            if (string.IsNullOrEmpty(result))
-                result = "localhost";
-
-            if (result == "::1" || result == "127.0.0.1")
+            catch
             {
-                result = "localhost";
+                // ignored
             }
 
             return result;
         }
 
-        public static bool IsIp(string ip)
+        public static bool IsIpAddress(string ip)
         {
             return Regex.IsMatch(ip, @"^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$");
         }

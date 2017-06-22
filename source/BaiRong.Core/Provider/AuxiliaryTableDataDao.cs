@@ -36,7 +36,7 @@ namespace BaiRong.Core.Provider
 
             sqlBuilder.Append($@"CREATE TABLE {tableName} (");
             //添加默认字段
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 sqlBuilder.Append(@"
 ID INT AUTO_INCREMENT,
@@ -93,7 +93,7 @@ SettingsXML ntext NULL,
             
             if (tableType == EAuxiliaryTableType.VoteContent)
             {
-                if (WebConfigUtils.IsMySql)
+                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
                 {
                     sqlBuilder.Append($@"{VoteContentAttribute.IsImageVote} VARCHAR(18),").AppendLine();
                     sqlBuilder.Append($@"{VoteContentAttribute.IsSummary} VARCHAR(18),").AppendLine();
@@ -112,7 +112,7 @@ SettingsXML ntext NULL,
             }
             else if (tableType == EAuxiliaryTableType.GovPublicContent)
             {
-                if (WebConfigUtils.IsMySql)
+                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
                 {
                     sqlBuilder.Append($@"{GovPublicContentAttribute.DepartmentId} INT,").AppendLine();
                     sqlBuilder.Append($@"{GovPublicContentAttribute.Category1Id} INT,").AppendLine();
@@ -135,7 +135,7 @@ SettingsXML ntext NULL,
             }
             else if (tableType == EAuxiliaryTableType.GovInteractContent)
             {
-                if (WebConfigUtils.IsMySql)
+                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
                 {
                     sqlBuilder.Append($@"{GovInteractContentAttribute.DepartmentName} VARCHAR(255),").AppendLine();
                     sqlBuilder.Append($@"{GovInteractContentAttribute.QueryCode} VARCHAR(255),").AppendLine();
@@ -164,7 +164,7 @@ SettingsXML ntext NULL,
 ");
             }
             //添加主键及索引
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 sqlBuilder.Append(@"PRIMARY KEY (ID)");
             }

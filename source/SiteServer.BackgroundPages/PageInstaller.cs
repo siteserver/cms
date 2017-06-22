@@ -371,10 +371,10 @@ Disallow: /home/");
             try
             {
                 var isProtectData = TranslateUtils.ToBool(DdlIsProtectData.SelectedValue);
-                var isMySql = StringUtils.EqualsIgnoreCase(DdlSqlDatabaseType.SelectedValue, "MySql");
+                var databaseType = EDatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 var connectionString = GetConnectionString(true);
 
-                WebConfigUtils.UpdateWebConfig(isProtectData, isMySql, connectionString);
+                WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString);
 
                 returnValue = true;
             }

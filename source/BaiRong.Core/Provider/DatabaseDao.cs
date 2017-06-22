@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
+using BaiRong.Core.Model.Enumerations;
 using MySql.Data.MySqlClient;
 
 namespace BaiRong.Core.Provider
@@ -16,7 +17,7 @@ namespace BaiRong.Core.Provider
     {
         public virtual void DeleteDbLog()
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 ExecuteSql("PURGE MASTER LOGS BEFORE DATE_SUB( NOW( ), INTERVAL 3 DAY)");
                 return;
@@ -492,7 +493,7 @@ namespace BaiRong.Core.Provider
             orderByString2 = orderByString2.Replace(" ASC", " DESC");
             orderByString2 = orderByString2.Replace(" DESC2", " ASC");
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $@"
 SELECT * FROM (
@@ -514,15 +515,15 @@ SELECT * FROM (
 
         public void Install(StringBuilder errorBuilder)
         {
-            var sqlPath = PathUtils.GetInstallSqlFilePath(WebConfigUtils.IsMySql);
+            var sqlPath = PathUtils.GetInstallSqlFilePath(WebConfigUtils.DatabaseType);
             BaiRongDataProvider.DatabaseDao.ExecuteSqlInFile(sqlPath, errorBuilder);
             BaiRongDataProvider.TableCollectionDao.CreateAllAuxiliaryTableIfNotExists();
         }
 
-        public void Upgrade(bool isMySql, StringBuilder errorBuilder)
+        public void Upgrade(EDatabaseType databaseType, StringBuilder errorBuilder)
         {
-            var filePathUpgrade = PathUtils.GetUpgradeSqlFilePath(isMySql, false);
-            var filePathUpgradeTable = PathUtils.GetUpgradeSqlFilePath(isMySql, true);
+            var filePathUpgrade = PathUtils.GetUpgradeSqlFilePath(databaseType, false);
+            var filePathUpgradeTable = PathUtils.GetUpgradeSqlFilePath(databaseType, true);
 
             BaiRongDataProvider.DatabaseDao.ExecuteSqlInFile(filePathUpgrade, errorBuilder);
 

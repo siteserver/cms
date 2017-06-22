@@ -2,7 +2,6 @@
 using System.Web;
 using System.Text.RegularExpressions;
 using System;
-using System.Xml;
 using BaiRong.Core.Model.Enumerations;
 
 namespace BaiRong.Core
@@ -298,16 +297,14 @@ namespace BaiRong.Core
             return Combine(directoryPath, DirectoryUtils.SiteFiles.DirectoryName, "Configuration/Menus", Combine(paths));
         }
 
-        public static string GetUpgradeSqlFilePath(bool isMySql, bool isTable)
+        public static string GetUpgradeSqlFilePath(EDatabaseType databaseType, bool isTable)
         {
-            var relatedPath = isMySql ? "sql/mysql/" : "sql/sqlserver/";
-            relatedPath += isTable ? "upgrade_tables.sql" : "upgrade.sql";
-            return SiteServerAssets.GetPath(relatedPath);
+            return SiteServerAssets.GetPath($"sql/{EDatabaseTypeUtils.GetValue(databaseType).ToLower()}/{(isTable ? "upgrade_tables.sql" : "upgrade.sql")}");
         }
 
-        public static string GetInstallSqlFilePath(bool isMySql)
+        public static string GetInstallSqlFilePath(EDatabaseType databaseType)
         {
-            return SiteServerAssets.GetPath(isMySql ? "sql/mysql/install.sql" : "sql/sqlserver/install.sql");
+            return SiteServerAssets.GetPath($"sql/{EDatabaseTypeUtils.GetValue(databaseType).ToLower()}/install.sql");
         }
 
         public static string GetUserFilesPath(string userName, string relatedPath)

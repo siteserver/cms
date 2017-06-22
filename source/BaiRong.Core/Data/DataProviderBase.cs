@@ -13,17 +13,17 @@ namespace BaiRong.Core.Data
 
         protected IDbConnection GetConnection()
         {
-            return SqlUtils.GetIDbConnection(WebConfigUtils.IsMySql, ConnectionString);
+            return SqlUtils.GetIDbConnection(WebConfigUtils.DatabaseType, ConnectionString);
         }
 
         protected IDbConnection GetConnection(string connectionString)
         {
-            return SqlUtils.GetIDbConnection(WebConfigUtils.IsMySql, connectionString);
+            return SqlUtils.GetIDbConnection(WebConfigUtils.DatabaseType, connectionString);
         }
 
-        protected IDbConnection GetConnection(bool isMySql, string connectionString)
+        protected IDbConnection GetConnection(EDatabaseType databaseType, string connectionString)
         {
-            return SqlUtils.GetIDbConnection(isMySql, connectionString);
+            return SqlUtils.GetIDbConnection(databaseType, connectionString);
         }
 
         protected IDbDataParameter GetParameter(string parameterName, EDataType dataType, int value)

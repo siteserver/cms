@@ -31,6 +31,46 @@
 
 <body>
 <script type="text/javascript">
+    var IframeOnClick = {
+        resolution: 500,
+        iframes: [],
+        interval: null,
+        Iframe: function() {
+            this.element = arguments[0];
+            this.cb = arguments[1];
+            this.hasTracked = false;
+        },
+        track: function(element, cb) {
+            this.iframes.push(new this.Iframe(element, cb));
+            if (!this.interval) {
+                var _this = this;
+                this.interval = setInterval(function() { _this.checkClick(); }, this.resolution);
+            }
+        },
+        destory: function(element) {
+            for (var i in this.iframes) {
+                if (element == this.iframes[i].element) {
+                    this.iframes.pop(this.iframes[i]);
+                }
+            }
+        },
+        checkClick: function() {
+            if (document.activeElement) {
+                var activeElement = document.activeElement;
+                for (var i in this.iframes) {
+                    if (activeElement === this.iframes[i].element) { // user is in this Iframe
+                        if (this.iframes[i].hasTracked == false) {
+                            this.iframes[i].cb.apply(window, []);
+                            this.iframes[i].hasTracked = true;
+                        }
+                    } else {
+                        this.iframes[i].hasTracked = false;
+                    }
+                }
+            }
+        }
+    };
+
     $(function () {
         var create = $.connection.createHub;
         create.client.next = function(isWait) {
@@ -49,6 +89,10 @@
         });
 
         $('#right').height($(window).height() - 40);
+
+        IframeOnClick.track(document.getElementById('frmMain'), function() {
+            window.hideMenu();
+        });
     });
 
     function redirect(url) {
@@ -130,7 +174,7 @@
     <div class="container-fluid" id="content">
         <div class="right">
             <div class="main">
-                <iframe frameborder="0" id="right" name="right" src="pageRight.aspx"></iframe>
+                <iframe id="frmMain" frameborder="0" id="right" name="right" src="pageRight.aspx"></iframe>
             </div>
         </div>
 

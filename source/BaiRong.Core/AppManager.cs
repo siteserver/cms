@@ -824,9 +824,8 @@ namespace BaiRong.Core
             errorMessage = string.Empty;
             if (!string.IsNullOrEmpty(version) && BaiRongDataProvider.ConfigDao.GetDatabaseVersion() != version)
             {
-                var isMySql = WebConfigUtils.IsMySql;
                 var errorBuilder = new StringBuilder();
-                BaiRongDataProvider.DatabaseDao.Upgrade(isMySql, errorBuilder);
+                BaiRongDataProvider.DatabaseDao.Upgrade(WebConfigUtils.DatabaseType, errorBuilder);
 
                 //升级数据库
 

@@ -22,7 +22,7 @@ namespace BaiRong.Core.Provider
 
             var list = new List<string>();
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 var connection = new MySqlConnection(connectionString);
                 var command = new MySqlCommand("show databases", connection);
@@ -105,7 +105,7 @@ namespace BaiRong.Core.Provider
         {
             var exists = false;
             string sqlString;
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 sqlString = $@"show tables like ""{tableName}""";
             }
@@ -129,7 +129,7 @@ namespace BaiRong.Core.Provider
 
         public string GetTableId(string connectionString, string databaseName, string tableName)
         {
-            if (WebConfigUtils.IsMySql) return tableName;
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql) return tableName;
 
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -159,7 +159,7 @@ namespace BaiRong.Core.Provider
 
         public string GetTableName(string databaseName, string tableId)
         {
-            if (WebConfigUtils.IsMySql) return tableId;
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql) return tableId;
 
             var tableName = string.Empty;
             string cmd =
@@ -178,7 +178,7 @@ namespace BaiRong.Core.Provider
 
         public string GetTableName(string connectionString, string databaseName, string tableId)
         {
-            if (WebConfigUtils.IsMySql) return tableId;
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql) return tableId;
 
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -202,7 +202,7 @@ namespace BaiRong.Core.Provider
 
         public string GetDefaultConstraintName(string tableName, string columnName)
         {
-            if (!WebConfigUtils.IsMySql) return string.Empty;
+            if (WebConfigUtils.DatabaseType != EDatabaseType.MySql) return string.Empty;
 
             var defaultConstraintName = string.Empty;
             string sqlString =
@@ -282,7 +282,7 @@ namespace BaiRong.Core.Provider
             var list = new List<TableColumnInfo>();
             var isIdentityExist = false;
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 string sqlString = $"select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, COLUMN_KEY from information_schema.columns where table_schema = '{databaseName}' and table_name = '{tableName}' order by table_name,ordinal_position; ";
                 using (var rdr = ExecuteReader(connectionString, sqlString))
@@ -630,7 +630,7 @@ namespace BaiRong.Core.Provider
 
             var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $@"
 SELECT {columns} FROM (
@@ -663,7 +663,7 @@ FROM (SELECT TOP {totalNum} {columns}
             if (totalNum > 0)
             {
                 //TODO: 当queryString包含top 2语句时排序有问题
-                if (WebConfigUtils.IsMySql)
+                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
                 {
                     sqlString = $"SELECT * FROM ({queryString}) AS tmp {orderByString} LIMIT {totalNum}";
                 }
@@ -736,7 +736,7 @@ FROM (SELECT TOP {totalNum} {columns}
 
             var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $@"
 SELECT * FROM (

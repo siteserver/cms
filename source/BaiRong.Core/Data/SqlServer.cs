@@ -28,6 +28,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.OleDb;
 using System.Xml;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Data.Helper
 {
@@ -35,8 +36,8 @@ namespace BaiRong.Core.Data.Helper
 	/// The SqlServer class is intended to encapsulate high performance, scalable best practices for 
 	/// common uses of the SqlClient ADO.NET provider.  It is created using the abstract factory in AdoHelper.
 	/// </summary>
-	public class SqlServer : AdoHelper
-	{
+	public class SqlServer : AdoHelper, IDbHelper
+    {
 		/// <summary>
 		/// Create a SQL Helper.  Needs to be a default constructor so that the Factory can create it
 		/// </summary>

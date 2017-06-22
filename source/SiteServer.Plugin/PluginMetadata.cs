@@ -16,8 +16,10 @@ namespace SiteServer.Plugin
         public bool Disabled { get; set; }
         public string ExecuteFileName { get; set; }
         public string LogoUrl { get; set; }
+        public List<string> SupportedDatabases { get; set; }
         public Dictionary<string, string> Permissions { get; set; }
         public List<PluginMenu> Menus { get; set; }
+        public List<string> Include { get; set; }
 
         public override string ToString()
         {

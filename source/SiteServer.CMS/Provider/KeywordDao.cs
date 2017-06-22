@@ -161,7 +161,7 @@ namespace SiteServer.CMS.Provider
             //string sqlString =
             //    $"SELECT Keyword FROM siteserver_Keyword WHERE CHARINDEX(Keyword, '{PageUtils.FilterSql(content)}') > 0";
 
-            var inStr = WebConfigUtils.IsMySql ? $"INSTR('{PageUtils.FilterSql(content)}', Keyword) > 0" : $"CHARINDEX(Keyword, '{PageUtils.FilterSql(content)}') > 0";
+            var inStr = WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"INSTR('{PageUtils.FilterSql(content)}', Keyword) > 0" : $"CHARINDEX(Keyword, '{PageUtils.FilterSql(content)}') > 0";
             var sqlString = $"SELECT Keyword FROM siteserver_Keyword WHERE {inStr}";
             return BaiRongDataProvider.DatabaseDao.GetStringList(sqlString);
         }

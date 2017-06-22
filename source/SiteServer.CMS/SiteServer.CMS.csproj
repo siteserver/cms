@@ -212,12 +212,10 @@
     <Compile Include="Core\Permissions\PermissionConfig.cs" />
     <Compile Include="Core\Permissions\PermissionConfigManager.cs" />
     <Compile Include="Core\Permissions\PermissionManager.cs" />
+    <Compile Include="Core\Plugin\PluginUtils.cs" />
     <Compile Include="Model\InputInfoExtend.cs" />
     <Compile Include="Core\ContentUtility.cs" />
-    <Compile Include="Core\Plugin\PluginConfig.cs" />
-    <Compile Include="Core\Plugin\PluginInstaller.cs" />
     <Compile Include="Core\Plugin\PluginManager.cs" />
-    <Compile Include="Core\Plugin\PluginsLoader.cs" />
     <Compile Include="Core\Plugin\PublicApiInstance.cs" />
     <Compile Include="StlParser\Model\StlAttribute.cs" />
     <Compile Include="StlParser\StlElement\StlTemplate.cs" />
@@ -841,6 +839,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

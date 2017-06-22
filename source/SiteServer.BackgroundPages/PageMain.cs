@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Tabs;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Controls;
@@ -240,15 +239,20 @@ namespace SiteServer.BackgroundPages
 
                     if (_publishmentSystemInfo.Additional.IsMultiDeployment)
                     {
-                        builder.Append(
+                        if (!string.IsNullOrEmpty(_publishmentSystemInfo.Additional.OuterSiteUrl))
+                        {
+                            builder.Append(
                             $@"<li><a href=""{_publishmentSystemInfo.Additional.OuterSiteUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点外网地址</a></li>");
-                        builder.Append(
-                            $@"<li><a href=""{_publishmentSystemInfo.Additional.InnerSiteUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点内网地址</a></li>");
+                        }
+                        if (!string.IsNullOrEmpty(_publishmentSystemInfo.Additional.InnerSiteUrl))
+                        {
+                            builder.Append(
+                                $@"<li><a href=""{_publishmentSystemInfo.Additional.InnerSiteUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点内网地址</a></li>");
+                        }
                     }
                     else
                     {
                         var publishmentSystemUrl = PageUtility.GetPublishmentSystemUrl(_publishmentSystemInfo, string.Empty, true);
-
                         builder.Append(
                             $@"<li><a href=""{publishmentSystemUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点</a></li>");
                     }

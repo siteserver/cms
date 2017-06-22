@@ -157,18 +157,7 @@ namespace SiteServer.CMS.Core.Permissions
 		        }
 		    }
 
-		    foreach (var pluginPair in PluginManager.AllPlugins)
-		    {
-		        if (pluginPair.Metadata.Permissions == null || pluginPair.Metadata.Permissions.Count <= 0) continue;
-
-		        foreach (var permissionsKey in pluginPair.Metadata.Permissions.Keys)
-		        {
-		            var name = pluginPair.Metadata.Id + "_" + permissionsKey;
-		            var text = pluginPair.Metadata.Name + "->" + pluginPair.Metadata.Permissions[permissionsKey];
-
-                    WebsitePermissions.Add(new PermissionConfig(name, text));
-		        }
-		    }
+            WebsitePermissions.AddRange(PluginManager.GetAllPermissions());
 		}
 
         private static void GetPermissions(XmlNode node, List<PermissionConfig> list) 

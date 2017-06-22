@@ -671,7 +671,7 @@
     <Compile Include="Cms\ModalUploadImageSingleSystem.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalUploadSiteTemplate.cs">
+    <Compile Include="Sys\ModalImportZip.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalUploadVideo.cs">

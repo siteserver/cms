@@ -502,7 +502,7 @@ namespace BaiRong.Core.Model.Enumerations
 		    }
 		    if (dataType == EDataType.DateTime)
 		    {
-		        return WebConfigUtils.IsMySql ? "now()" : "getdate()";
+		        return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? "now()" : "getdate()";
 		    }
 
 		    return retval;

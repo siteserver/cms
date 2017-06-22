@@ -1,5 +1,6 @@
 ﻿using System;
 using BaiRong.Core;
+using CommandLine;
 
 namespace siteserver.commands
 {
@@ -9,7 +10,7 @@ namespace siteserver.commands
 
         public static void Start(string val)
         {
-            Console.WriteLine("Encoded String: {0}", TranslateUtils.EncryptStringBySecretKey(val));
+            Console.WriteLine("加密字符串: {0}", TranslateUtils.EncryptStringBySecretKey(val));
         }
     }
 }

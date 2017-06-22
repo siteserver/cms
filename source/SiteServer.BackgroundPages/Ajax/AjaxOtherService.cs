@@ -24,6 +24,7 @@ namespace SiteServer.BackgroundPages.Ajax
         private const string TypeSiteTemplateZip = "SiteTemplateZip";
         private const string TypeSiteTemplateUnZip = "SiteTemplateUnZip";
         private const string TypeGetLoadingChannels = "GetLoadingChannels";
+        private const string TypePluginDownload = "PluginDownload";
 
         public static string GetCountArrayUrl()
         {
@@ -41,13 +42,30 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
+        public static string GetPluginDownloadUrl()
+        {
+            return PageUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
+            {
+                {"type", TypePluginDownload }
+            });
+        }
+
         public static string GetSiteTemplateDownloadParameters(string downloadUrl, string directoryName, string userKeyPrefix)
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
-                {"downloadUrl", downloadUrl},
+                {"downloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)},
                 {"directoryName", directoryName},
                 {"userKeyPrefix", userKeyPrefix},
+            });
+        }
+
+        public static string GetPluginDownloadParameters(string downloadUrl, string userKeyPrefix)
+        {
+            return TranslateUtils.NameValueCollectionToString(new NameValueCollection
+            {
+                {"downloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)},
+                {"userKeyPrefix", userKeyPrefix}
             });
         }
 
@@ -109,6 +127,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var retval = new NameValueCollection();
             string retString = null;
             var body = new RequestBody();
+            if (!body.IsAdministratorLoggin) return;
 
             if (type == TypeGetCountArray)
             {
@@ -141,6 +160,12 @@ namespace SiteServer.BackgroundPages.Ajax
                 var loadingType = Request["loadingType"];
                 var additional = Request["additional"];
                 retString = GetLoadingChannels(publishmentSystemId, parentId, loadingType, additional, body);
+            }
+            else if (type == TypePluginDownload)
+            {
+                var userKeyPrefix = Request["userKeyPrefix"];
+                var downloadUrl = TranslateUtils.DecryptStringBySecretKey(Request["downloadUrl"]);
+                retval = PluginDownload(downloadUrl, userKeyPrefix);
             }
             //else if (type == "GetLoadingGovPublicCategories")
             //{
@@ -208,7 +233,7 @@ namespace SiteServer.BackgroundPages.Ajax
             try
             {
                 CacheUtils.Max(cacheCurrentCountKey, "1");
-                CacheUtils.Max(cacheMessageKey, "开始下载模板压缩包，可能需要10到30分钟，请耐心等待");
+                CacheUtils.Max(cacheMessageKey, "开始下载模板压缩包，可能需要几分钟，请耐心等待");
 
                 var filePath = PathUtility.GetSiteTemplatesPath(directoryName + ".zip");
                 FileUtils.DeleteFileIfExists(filePath);
@@ -227,6 +252,52 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Max(cacheMessageKey, string.Empty);
 
                 retval = AjaxManager.GetProgressTaskNameValueCollection("站点模板下载成功，请到站点模板管理中查看。", string.Empty);
+            }
+            catch (Exception ex)
+            {
+                retval = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
+                    $@"<br />下载失败！<br />{ex.Message}");
+            }
+
+            CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
+            CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
+            CacheUtils.Remove(cacheMessageKey);//取消存储消息
+
+            return retval;
+        }
+
+        public NameValueCollection PluginDownload(string downloadUrl, string userKeyPrefix)
+        {
+            var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
+            var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
+            var cacheMessageKey = userKeyPrefix + CacheMessage;
+
+            CacheUtils.Max(cacheTotalCountKey, "5");//存储需要的页面总数
+            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+
+            //返回“运行结果”和“错误信息”的字符串数组
+            NameValueCollection retval;
+
+            try
+            {
+                CacheUtils.Max(cacheCurrentCountKey, "1");
+                CacheUtils.Max(cacheMessageKey, "开始下载插件压缩包，可能需要几分钟，请耐心等待");
+
+                var fileName = PageUtils.GetFileNameFromUrl(downloadUrl);
+                var filePath = PathUtils.GetPluginsPath(fileName);
+                FileUtils.DeleteFileIfExists(filePath);
+                WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
+
+                CacheUtils.Max(cacheCurrentCountKey, "4");
+                CacheUtils.Max(cacheMessageKey, "插件压缩包下载成功，开始安装");
+
+                ZipUtils.UnpackFiles(filePath, PathUtils.GetPluginsPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
+
+                CacheUtils.Max(cacheCurrentCountKey, "5");
+                CacheUtils.Max(cacheMessageKey, string.Empty);
+
+                retval = AjaxManager.GetProgressTaskNameValueCollection("插件安装成功，请刷新页面查看。", string.Empty);
             }
             catch (Exception ex)
             {

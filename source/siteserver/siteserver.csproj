@@ -85,6 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="commands\Decode.cs" />
     <Compile Include="commands\Encode.cs" />
     <Compile Include="commands\Build.cs" />
     <Compile Include="commands\Test.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

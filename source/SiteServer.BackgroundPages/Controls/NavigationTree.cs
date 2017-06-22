@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web.Caching;
 using System.Web.UI;
 using BaiRong.Core;
 using BaiRong.Core.Tabs;
@@ -54,16 +53,15 @@ namespace SiteServer.BackgroundPages.Controls
             var directoryPath = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Configuration, "Menus");
             var filePath = PathUtils.Combine(directoryPath, $"{TopId}.config");
 
-            var tabs = CacheUtils.Get(filePath) as List<Tab>;
-            if (tabs != null) return tabs;
+            var tabs = new List<Tab>();
 
-            tabs = new List<Tab>();
-
-            var tabCollection = (TabCollection)Serializer.ConvertFileToObject(filePath, typeof(TabCollection));
-            
+            var tabCollection = TabCollection.GetTabs(filePath);
             if (tabCollection?.Tabs != null)
             {
-                tabs = tabCollection.Tabs.ToList();
+                foreach (var tabCollectionTab in tabCollection.Tabs)
+                {
+                    tabs.Add(tabCollectionTab.Clone());
+                }
             }
 
             var menus = PluginManager.GetAllMenus(TopId, PublishmentSystemId);
@@ -111,8 +109,6 @@ namespace SiteServer.BackgroundPages.Controls
                     }
                 }
             }
-
-            CacheUtils.Max(filePath, tabs, new CacheDependency(filePath));
 
             return tabs;
         }

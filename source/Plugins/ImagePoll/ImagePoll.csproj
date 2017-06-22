@@ -24,7 +24,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,6 +40,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
+    <Compile Include="Model\VoteInfo.cs" />
+    <Compile Include="Model\VoteItemInfo.cs" />
+    <Compile Include="Model\VoteLogInfo.cs" />
+    <Compile Include="Provider\VoteDAO.cs" />
+    <Compile Include="Provider\VoteItemDAO.cs" />
+    <Compile Include="Provider\VoteLogDAO.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SiteServer.Plugin\SiteServer.Plugin.csproj">
@@ -53,14 +59,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="configuration.html" />
     <Content Include="logo.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="sql\mysql\" />
+    <Folder Include="sql\sqlserver\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)\$(TargetFileName)" "$(ProjectDir)\$(TargetFileName)"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

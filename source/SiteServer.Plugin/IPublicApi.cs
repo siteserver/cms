@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace SiteServer.Plugin
 {
@@ -9,6 +7,12 @@ namespace SiteServer.Plugin
     /// </summary>
     public interface IPublicApi
     {
+        string DatabaseType { get; }
+
+        string ConnectionString { get; }
+
+        IDbHelper DbHelper { get; }
+
         /// <summary>
         /// Set a new option.
         /// </summary>
@@ -32,11 +36,5 @@ namespace SiteServer.Plugin
         string GetSiteDirectoryPath(int siteId);
 
         void AddErrorLog(Exception ex);
-
-        /// <summary>
-        /// Get all loaded plugins 
-        /// </summary>
-        /// <returns></returns>
-        List<PluginPair> GetAllPlugins();
     }
 }

@@ -104,7 +104,7 @@ namespace SiteServer.BackgroundPages.Sys
                 DgZipFiles.Visible = false;
             }
 
-            BtnImport.Attributes.Add("onclick", ModalUploadSiteTemplate.GetOpenWindowString());
+            BtnImport.Attributes.Add("onclick", ModalImportZip.GetOpenWindowString(ModalImportZip.TypeSiteTemplate));
         }
 
         private void DgDirectories_ItemDataBound(object sender, DataGridItemEventArgs e)
