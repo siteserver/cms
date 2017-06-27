@@ -52,6 +52,7 @@
     <Compile Include="IPlugin.cs" />
     <Compile Include="IRequestContext.cs" />
     <Compile Include="IPublicApi.cs" />
+    <Compile Include="PluginEnvironment.cs" />
     <Compile Include="PluginMenu.cs" />
     <Compile Include="PluginPair.cs" />
     <Compile Include="PluginContext.cs" />

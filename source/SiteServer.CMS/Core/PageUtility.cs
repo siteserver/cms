@@ -274,7 +274,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetSiteTemplatesUrl(string relatedUrl)
         {
-            return PageUtils.Combine(WebConfigUtils.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
+            return PageUtils.Combine(PageUtils.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
         }
 
         public static string GetSiteTemplateMetadataUrl(string siteTemplateUrl, string relatedUrl)
@@ -679,7 +679,7 @@ namespace SiteServer.CMS.Core
                     }
                     return GetPublishmentSystemUrl(publishmentSystemInfo, url.Substring(1), isFromBackground);
                 }
-                return PageUtils.ParseNavigationUrl(url, WebConfigUtils.ApplicationPath);
+                return PageUtils.ParseNavigationUrl(url, PageUtils.ApplicationPath);
             }
             return PageUtils.ParseNavigationUrl(url);
         }

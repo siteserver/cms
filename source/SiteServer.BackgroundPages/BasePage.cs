@@ -321,7 +321,7 @@ $('.operation-area').hide();
         public static string GetShowImageScript(string objString, string imageClientId, string publishmentSystemUrl)
         {
             return
-                $"showImage({objString}, '{imageClientId}', '{WebConfigUtils.ApplicationPath}', '{publishmentSystemUrl}')";
+                $"showImage({objString}, '{imageClientId}', '{PageUtils.ApplicationPath}', '{publishmentSystemUrl}')";
         }
 
         public static List<Analytics> ParseJsonStringToName(string json)

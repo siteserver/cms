@@ -1,7 +1,5 @@
-﻿using System;
-using System.Web;
+﻿using System.Web;
 using System.Xml;
-using BaiRong.Core.Data;
 using BaiRong.Core.Data.Helper;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.Plugin;
@@ -14,8 +12,11 @@ namespace BaiRong.Core
         private const string NameDatabaseType = "DatabaseType";
         private const string NameConnectionString = "ConnectionString";
 
-        public static string PhysicalApplicationPath { get; }
-        public static string ApplicationPath { get; }
+        /// <summary>
+        /// 获取当前正在执行的服务器应用程序的根目录的物理文件系统路径。
+        /// </summary>
+        public static string PhysicalApplicationPath { get; private set; }
+
         public static EDatabaseType DatabaseType { get; private set; }
         public static string ConnectionString { get; private set; }
 
@@ -38,27 +39,9 @@ namespace BaiRong.Core
             }
         }
 
-        static WebConfigUtils()
+        public static void Load(string physicalApplicationPath)
         {
-            string physicalApplicationPath;
-            var applicationPath = string.Empty;
-            if (HttpContext.Current != null)
-            {
-                physicalApplicationPath = HttpContext.Current.Request.PhysicalApplicationPath;
-                applicationPath = HttpContext.Current.Request.ApplicationPath;
-            }
-            else
-            {
-                physicalApplicationPath = Environment.CurrentDirectory;
-            }
-
-            if (string.IsNullOrEmpty(applicationPath))
-            {
-                applicationPath = "/";
-            }
-
             PhysicalApplicationPath = physicalApplicationPath;
-            ApplicationPath = applicationPath;
 
             var isProtectData = false;
             var databaseType = string.Empty;

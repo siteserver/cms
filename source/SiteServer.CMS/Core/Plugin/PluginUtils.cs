@@ -6,11 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using ICSharpCode.SharpZipLib.Zip;
 using Newtonsoft.Json;
 using SiteServer.CMS.Controllers;
 using SiteServer.Plugin;
@@ -85,62 +82,6 @@ namespace SiteServer.CMS.Core.Plugin
             return retval;
         }
 
-        /// <summary>
-        /// unzip 
-        /// </summary>
-        /// <param name="zipedFile">The ziped file.</param>
-        /// <param name="strDirectory">The STR directory.</param>
-        /// <param name="overWrite">overwirte</param>
-        internal static void UnZip(string zipedFile, string strDirectory, bool overWrite)
-        {
-            if (strDirectory == "")
-                strDirectory = Directory.GetCurrentDirectory();
-            if (!strDirectory.EndsWith("\\"))
-                strDirectory = strDirectory + "\\";
-
-            using (ZipInputStream s = new ZipInputStream(File.OpenRead(zipedFile)))
-            {
-                ZipEntry theEntry;
-
-                while ((theEntry = s.GetNextEntry()) != null)
-                {
-                    string directoryName = "";
-                    string pathToZip = "";
-                    pathToZip = theEntry.Name;
-
-                    if (pathToZip != "")
-                        directoryName = Path.GetDirectoryName(pathToZip) + "\\";
-
-                    string fileName = Path.GetFileName(pathToZip);
-
-                    Directory.CreateDirectory(strDirectory + directoryName);
-
-                    if (fileName != "")
-                    {
-                        if ((File.Exists(strDirectory + directoryName + fileName) && overWrite) || (!File.Exists(strDirectory + directoryName + fileName)))
-                        {
-                            using (FileStream streamWriter = File.Create(strDirectory + directoryName + fileName))
-                            {
-                                byte[] data = new byte[2048];
-                                while (true)
-                                {
-                                    int size = s.Read(data, 0, data.Length);
-
-                                    if (size > 0)
-                                        streamWriter.Write(data, 0, size);
-                                    else
-                                        break;
-                                }
-                                streamWriter.Close();
-                            }
-                        }
-                    }
-                }
-
-                s.Close();
-            }
-        }
-
         internal static string GetPermissionName(string pluginId, string permission)
         {
             return pluginId + "_" + permission;
@@ -173,7 +114,8 @@ namespace SiteServer.CMS.Core.Plugin
                 menu.Href = PageUtils.AddQueryString(menu.Href, new NameValueCollection
                 {
                     {"apiUrl", Plugins.GetUrl(apiUrl, pluginId, siteId)},
-                    {"siteId", siteId.ToString()}
+                    {"siteId", siteId.ToString()},
+                    {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
                 });
             }
             if (!string.IsNullOrEmpty(menu.IconUrl))
@@ -216,18 +158,21 @@ namespace SiteServer.CMS.Core.Plugin
             foreach (var pluginPair in PluginManager.AllPlugins)
             {
                 if (!PathUtils.IsEquals(pluginPair.Metadata.DirectoryPath, directoryPath)) continue;
-                RemovePlugin(pluginPair);
+                pluginPair.Plugin.Deactive(pluginPair.Context);
+                PluginManager.AllPlugins.Remove(pluginPair);
                 break;
             }
 
             Thread.Sleep(1000);
 
-            AddPlugin(directoryPath);
+            ActivePlugin(directoryPath);
         }
 
-        internal static void AddPlugin(string directoryPath)
+        internal static void ActivePlugin(string directoryPath)
         {
             var s = Stopwatch.StartNew();
+
+            if (directoryPath.IndexOf("image-poll") == -1) return;
 
             var metadata = GetMetadataFromJson(directoryPath);
             if (metadata == null)
@@ -244,10 +189,12 @@ namespace SiteServer.CMS.Core.Plugin
                 //assembly = Assembly.Load(AssemblyName.GetAssemblyName(metadata.ExecuteFilePath));
                 foreach (var filePath in DirectoryUtils.GetFilePaths(DirectoryUtils.GetDirectoryPath(metadata.ExecuteFilePath)))
                 {
-                    if (StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll"))
-                    {
-                        Assembly.Load(File.ReadAllBytes(filePath));
-                    }
+                    
+                    if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll")) continue;
+                    var fileName = PathUtils.GetFileName(filePath);
+                    if (StringUtils.EqualsIgnoreCase(fileName, PathUtils.GetFileName(metadata.ExecuteFilePath))) continue;
+                    if (FileUtils.IsFileExists(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", fileName))) continue;
+                    Assembly.Load(File.ReadAllBytes(filePath));
                 }
 
                 assembly = Assembly.Load(File.ReadAllBytes(metadata.ExecuteFilePath));
@@ -278,9 +225,10 @@ namespace SiteServer.CMS.Core.Plugin
                 return;
             }
 
+            var context = new PluginContext(PluginManager.Environment, metadata, new PublicApiInstance(metadata));
             try
             {
-                plugin.Initialize(new PluginContext(metadata, new PublicApiInstance(metadata)));
+                plugin.Active(context);
             }
             catch (Exception e)
             {
@@ -292,15 +240,9 @@ namespace SiteServer.CMS.Core.Plugin
 
             metadata.InitTime = milliseconds;
 
-            var pair = new PluginPair(metadata, plugin);
+            var pair = new PluginPair(context, plugin);
 
             PluginManager.AllPlugins.Add(pair);
-        }
-
-        private static void RemovePlugin(PluginPair pluginPair)
-        {
-            pluginPair.Plugin.Dispose(new PluginContext(pluginPair.Metadata, new PublicApiInstance(pluginPair.Metadata)));
-            PluginManager.AllPlugins.Remove(pluginPair);
         }
 
         internal static void OnDirectoryDeleted(object sender, FileSystemEventArgs e)
@@ -310,7 +252,9 @@ namespace SiteServer.CMS.Core.Plugin
             foreach (var pluginPair in PluginManager.AllPlugins)
             {
                 if (!PathUtils.IsEquals(pluginPair.Metadata.DirectoryPath, directoryPath)) continue;
-                RemovePlugin(pluginPair);
+                pluginPair.Plugin.Deactive(pluginPair.Context);
+                pluginPair.Plugin.Uninstall(pluginPair.Context);
+                PluginManager.AllPlugins.Remove(pluginPair);
                 break;
             }
 

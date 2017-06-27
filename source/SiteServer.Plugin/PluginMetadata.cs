@@ -19,7 +19,7 @@ namespace SiteServer.Plugin
         public List<string> SupportedDatabases { get; set; }
         public Dictionary<string, string> Permissions { get; set; }
         public List<PluginMenu> Menus { get; set; }
-        public List<string> Include { get; set; }
+        public List<string> Includes { get; set; }
 
         public override string ToString()
         {
@@ -34,7 +34,7 @@ namespace SiteServer.Plugin
             internal set
             {
                 _directoryPath = value;
-                ExecuteFilePath = Path.Combine(value, ExecuteFileName);
+                ExecuteFilePath = Path.Combine(value, ExecuteFileName.Replace("/", Path.DirectorySeparatorChar.ToString()));
             }
         }
 

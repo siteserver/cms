@@ -213,7 +213,7 @@ namespace BaiRong.Core.Model
         {
             name = name.ToLower();
             var v = GetExtendedAttribute(name);
-            return (string.IsNullOrEmpty(v)) ? defaultValue : v;
+            return string.IsNullOrEmpty(v) ? defaultValue : v;
         }
 
         public override object Copy()

@@ -3,15 +3,21 @@
     public interface IPlugin
     {
         /// <summary>
-        /// 初始化
+        /// 激活插件，执行初始化
         /// </summary>
         /// <param name="context"></param>
-        void Initialize(PluginContext context);
+        void Active(PluginContext context);
 
         /// <summary>
-        /// 执行与释放或重置非托管资源相关的应用程序定义的任务
+        /// 停止插件，执行与释放或重置非托管资源相关的应用程序定义的任务
         /// </summary>
         /// <param name="context"></param>
-        void Dispose(PluginContext context);
+        void Deactive(PluginContext context);
+
+        /// <summary>
+        /// 卸载插件
+        /// </summary>
+        /// <param name="context"></param>
+        void Uninstall(PluginContext context);
     }
 }

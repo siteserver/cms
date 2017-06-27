@@ -1,4 +1,5 @@
 ﻿using System;
+using BaiRong.Core;
 using CommandLine;
 using siteserver.commands;
 
@@ -9,6 +10,7 @@ namespace siteserver
         public static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
+            WebConfigUtils.Load(Environment.CurrentDirectory);
 
             if (!ServiceUtils.IsSiteServerDir)
             {

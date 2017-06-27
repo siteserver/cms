@@ -15,10 +15,6 @@ namespace SiteServer.Plugin
 
     public interface IFileSystemWatcher : IFeatures
     {
-        /// <summary>
-        /// Fired after file changed events
-        /// if you want to hook something when file changed, you should use this event
-        /// </summary>
-        void OnFileChanged(object sender, FileSystemEventArgs e);
+        void OnChanged(object sender, FileSystemEventArgs e);
     }
 }

@@ -350,11 +350,11 @@ namespace BaiRong.Core.Model.Enumerations
 			}
 			else if (type == ETaxisType.OrderByTaxis)
 			{
-				return "自定义排序（反方向）";
+				return "自定义排序（升序）";
 			}
 			else if (type == ETaxisType.OrderByTaxisDesc)
 			{
-				return "自定义排序";
+				return "自定义排序（降序）";
             }
             else if (type == ETaxisType.OrderByHits)
             {
@@ -469,24 +469,37 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static void AddListItems(ListControl listControl)
 		{
-			if (listControl != null)
-			{
-				listControl.Items.Add(GetListItem(ETaxisType.OrderById, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByIdDesc, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByNodeId, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByNodeIdDesc, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDate, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDateDesc, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDate, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDateDesc, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxis, false));
-                listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxisDesc, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByHits, false));
-                listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByDay, false));
-                listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByWeek, false));
-                listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByMonth, false));
-			}
+		    if (listControl == null) return;
+
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderById, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByIdDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByNodeId, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByNodeIdDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDate, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDateDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDate, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDateDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxis, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxisDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHits, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByDay, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByWeek, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByMonth, false));
 		}
 
-	}
+        public static void AddListItemsForChannelEdit(ListControl listControl)
+        {
+            if (listControl == null) return;
+
+            listControl.Items.Add(GetListItem(ETaxisType.OrderById, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByIdDesc, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDate, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDateDesc, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDate, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDateDesc, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxis, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxisDesc, false));
+        }
+
+    }
 }

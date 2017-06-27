@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using BaiRong.Core;
 using SiteServer.Plugin;
 using System.Threading;
-using BaiRong.Core.Model;
 using SiteServer.CMS.Core.Permissions;
 
 namespace SiteServer.CMS.Core.Plugin
@@ -16,37 +15,43 @@ namespace SiteServer.CMS.Core.Plugin
     /// </summary>
     public static class PluginManager
     {
-        /// <summary>
-        /// Directories that will hold SiteServer plugin directory
-        /// </summary>
+        public static PluginEnvironment Environment { get; private set; }
 
         public static List<PluginPair> AllPlugins { get; private set; }
 
         private static FileSystemWatcher _watcher;
 
-        public static void LoadPlugins()
+        public static void Load(PluginEnvironment environment)
         {
+            Environment = environment;
             AllPlugins = new List<PluginPair>();
 
-            var pluginsPath = PathUtils.GetPluginsPath();
-            if (!Directory.Exists(pluginsPath))
+            try
             {
-                Directory.CreateDirectory(pluginsPath);
+                var pluginsPath = PathUtils.GetPluginsPath();
+                if (!Directory.Exists(pluginsPath))
+                {
+                    Directory.CreateDirectory(pluginsPath);
+                }
+
+                Parallel.ForEach(DirectoryUtils.GetDirectoryPaths(pluginsPath), PluginUtils.ActivePlugin);
+
+                _watcher = new FileSystemWatcher
+                {
+                    Path = pluginsPath,
+                    NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
+                    IncludeSubdirectories = true
+                };
+                _watcher.Created += Watcher_EventHandler;
+                _watcher.Changed += Watcher_EventHandler;
+                _watcher.Deleted += Watcher_EventHandlerDelete;
+                _watcher.Renamed += Watcher_EventHandler;
+                _watcher.EnableRaisingEvents = true;
             }
-
-            Parallel.ForEach(DirectoryUtils.GetDirectoryPaths(pluginsPath), PluginUtils.AddPlugin);
-
-            _watcher = new FileSystemWatcher
+            catch (Exception ex)
             {
-                Path = pluginsPath,
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
-                IncludeSubdirectories = true
-            };
-            _watcher.Created += Watcher_EventHandler;
-            _watcher.Changed += Watcher_EventHandler;
-            _watcher.Deleted += Watcher_EventHandlerDelete;
-            _watcher.Renamed += Watcher_EventHandler;
-            _watcher.EnableRaisingEvents = true;
+                LogUtils.AddErrorLog(ex, "载入插件时报错");
+            }
         }
 
         private static void Watcher_EventHandler(object sender, FileSystemEventArgs e)
@@ -79,79 +84,84 @@ namespace SiteServer.CMS.Core.Plugin
             }
         }
 
-        public static void Install(string path)
-        {
-            if (File.Exists(path))
-            {
-                string tempFoler = Path.Combine(Path.GetTempPath(), "SiteServer\\plugins");
-                if (Directory.Exists(tempFoler))
-                {
-                    Directory.Delete(tempFoler, true);
-                }
-                PluginUtils.UnZip(path, tempFoler, true);
+        //public static void Install(string path)
+        //{
+        //    if (File.Exists(path))
+        //    {
+        //        string tempFoler = Path.Combine(Path.GetTempPath(), "SiteServer\\plugins");
+        //        if (Directory.Exists(tempFoler))
+        //        {
+        //            Directory.Delete(tempFoler, true);
+        //        }
+        //        PluginUtils.UnZip(path, tempFoler, true);
 
-                string iniPath = Path.Combine(tempFoler, "plugin.json");
-                if (!File.Exists(iniPath))
-                {
-                    //MessageBox.Show("Install failed: plugin config is missing");
-                    return;
-                }
+        //        string iniPath = Path.Combine(tempFoler, "plugin.json");
+        //        if (!File.Exists(iniPath))
+        //        {
+        //            //MessageBox.Show("Install failed: plugin config is missing");
+        //            return;
+        //        }
 
-                PluginMetadata plugin = PluginUtils.GetMetadataFromJson(tempFoler);
-                if (plugin == null || plugin.Name == null)
-                {
-                    //MessageBox.Show("Install failed: plugin config is invalid");
-                    return;
-                }
+        //        PluginMetadata plugin = PluginUtils.GetMetadataFromJson(tempFoler);
+        //        if (plugin == null || plugin.Name == null)
+        //        {
+        //            //MessageBox.Show("Install failed: plugin config is invalid");
+        //            return;
+        //        }
 
-                string pluginFolerPath = PathUtils.GetSiteFilesPath("Plugins");
+        //        string pluginFolerPath = PathUtils.GetSiteFilesPath("Plugins");
 
-                string newPluginName = plugin.Name
-                    .Replace("/", "_")
-                    .Replace("\\", "_")
-                    .Replace(":", "_")
-                    .Replace("<", "_")
-                    .Replace(">", "_")
-                    .Replace("?", "_")
-                    .Replace("*", "_")
-                    .Replace("|", "_")
-                    + "-" + Guid.NewGuid();
-                string newPluginPath = Path.Combine(pluginFolerPath, newPluginName);
-                string content = $"Do you want to install following plugin?{Environment.NewLine}{Environment.NewLine}" +
-                                 $"Name: {plugin.Name}{Environment.NewLine}" +
-                                 $"Version: {plugin.Version}{Environment.NewLine}" +
-                                 $"Author: {plugin.Author}";
-                PluginPair existingPlugin = PluginManager.GetPluginForId(plugin.Id);
+        //        string newPluginName = plugin.Name
+        //            .Replace("/", "_")
+        //            .Replace("\\", "_")
+        //            .Replace(":", "_")
+        //            .Replace("<", "_")
+        //            .Replace(">", "_")
+        //            .Replace("?", "_")
+        //            .Replace("*", "_")
+        //            .Replace("|", "_")
+        //            + "-" + Guid.NewGuid();
+        //        string newPluginPath = Path.Combine(pluginFolerPath, newPluginName);
+        //        string content = $"Do you want to install following plugin?{Environment.NewLine}{Environment.NewLine}" +
+        //                         $"Name: {plugin.Name}{Environment.NewLine}" +
+        //                         $"Version: {plugin.Version}{Environment.NewLine}" +
+        //                         $"Author: {plugin.Author}";
+        //        PluginPair existingPlugin = PluginManager.GetPluginForId(plugin.Id);
 
-                if (existingPlugin != null)
-                {
-                    content = $"Do you want to update following plugin?{Environment.NewLine}{Environment.NewLine}" +
-                              $"Name: {plugin.Name}{Environment.NewLine}" +
-                              $"Old Version: {existingPlugin.Metadata.Version}" +
-                              $"{Environment.NewLine}New Version: {plugin.Version}" +
-                              $"{Environment.NewLine}Author: {plugin.Author}";
-                }
+        //        if (existingPlugin != null)
+        //        {
+        //            content = $"Do you want to update following plugin?{Environment.NewLine}{Environment.NewLine}" +
+        //                      $"Name: {plugin.Name}{Environment.NewLine}" +
+        //                      $"Old Version: {existingPlugin.Metadata.Version}" +
+        //                      $"{Environment.NewLine}New Version: {plugin.Version}" +
+        //                      $"{Environment.NewLine}Author: {plugin.Author}";
+        //        }
 
-                if (existingPlugin != null && Directory.Exists(existingPlugin.Metadata.DirectoryPath))
-                {
-                    //when plugin is in use, we can't delete them. That's why we need to make plugin folder a random name
-                    File.Create(Path.Combine(existingPlugin.Metadata.DirectoryPath, "NeedDelete.txt")).Close();
-                }
+        //        if (existingPlugin != null && Directory.Exists(existingPlugin.Metadata.DirectoryPath))
+        //        {
+        //            //when plugin is in use, we can't delete them. That's why we need to make plugin folder a random name
+        //            File.Create(Path.Combine(existingPlugin.Metadata.DirectoryPath, "NeedDelete.txt")).Close();
+        //        }
 
-                PluginUtils.UnZip(path, newPluginPath, true);
-                Directory.Delete(tempFoler, true);
+        //        PluginUtils.UnZip(path, newPluginPath, true);
+        //        Directory.Delete(tempFoler, true);
 
-                //exsiting plugins may be has loaded by application,
-                //if we try to delelte those kind of plugins, we will get a  error that indicate the
-                //file is been used now.
-                //current solution is to restart SiteServer. Ugly.
-                //if (MainWindow.Initialized)
-                //{
-                //    Plugins.Initialize();
-                //}
-                //PluginManager.Api.RestarApp();
-            }
-        }
+        //        //exsiting plugins may be has loaded by application,
+        //        //if we try to delelte those kind of plugins, we will get a  error that indicate the
+        //        //file is been used now.
+        //        //current solution is to restart SiteServer. Ugly.
+        //        //if (MainWindow.Initialized)
+        //        //{
+        //        //    Plugins.Initialize();
+        //        //}
+        //        //PluginManager.Api.RestarApp();
+        //    }
+        //}
+
+        //public static void Uninstall()
+        //{
+
+        //}
 
         public static PluginPair Delete(string pluginId)
         {

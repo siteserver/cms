@@ -196,7 +196,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                url = WebConfigUtils.ApplicationPath;
+                url = PageUtils.ApplicationPath;
                 PageUtils.Redirect(url);
             }
         }

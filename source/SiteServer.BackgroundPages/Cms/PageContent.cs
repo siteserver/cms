@@ -55,9 +55,9 @@ namespace SiteServer.BackgroundPages.Cms
             var permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
 
             PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
-            var nodeID = Body.GetQueryInt("NodeID");
-            relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeID);
-            nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
+            var nodeId = Body.GetQueryInt("NodeID");
+            relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeId);
+            nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
             tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
             tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
             styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }).BeginInvoke(null, null);
             }
 
-            if (!HasChannelPermissions(nodeID, AppManager.Cms.Permission.Channel.ContentView, AppManager.Cms.Permission.Channel.ContentAdd, AppManager.Cms.Permission.Channel.ContentEdit, AppManager.Cms.Permission.Channel.ContentDelete, AppManager.Cms.Permission.Channel.ContentTranslate))
+            if (!HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentView, AppManager.Cms.Permission.Channel.ContentAdd, AppManager.Cms.Permission.Channel.ContentEdit, AppManager.Cms.Permission.Channel.ContentDelete, AppManager.Cms.Permission.Channel.ContentTranslate))
             {
                 if (!Body.IsAdministratorLoggin)
                 {
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, nodeID));
+            attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, nodeId));
 
             //this.attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(this.nodeInfo.Additional.ContentAttributesOfDisplay);
 
@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
             rptContents.ItemDataBound += rptContents_ItemDataBound;
             spContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
-            var administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdministratorName, PublishmentSystemId, nodeID)
+            var administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdministratorName, PublishmentSystemId, nodeId)
                     ? Body.AdministratorName
                     : string.Empty;
 
@@ -97,18 +97,19 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var owningNodeIdList = new List<int>
                 {
-                    nodeID
+                    nodeId
                 };
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableStyle, tableName, PublishmentSystemId, nodeID, permissions.IsSystemAdministrator, owningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), string.Empty, false, ETriState.All, false, false, false, administratorName);
+                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableStyle, tableName, PublishmentSystemId, nodeId, permissions.IsSystemAdministrator, owningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), string.Empty, false, ETriState.All, false, false, false, administratorName);
             }
             else
             {
-                spContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectCommend(tableName, nodeID, ETriState.All, administratorName);
+                spContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectCommend(tableName, nodeId, ETriState.All, administratorName);
             }
 
-            spContents.SortField = BaiRongDataProvider.ContentDao.GetSortFieldName();
-            spContents.SortMode = SortMode.DESC;
-            spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisType.OrderByTaxisDesc);
+            //spContents.SortField = BaiRongDataProvider.ContentDao.GetSortFieldName();
+            //spContents.SortMode = SortMode.DESC;
+            //spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisType.OrderByTaxisDesc);
+            spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType));
 
             //分页的时候，不去查询总条数，直接使用栏目的属性：ContentNum
             spContents.IsQueryTotalCount = false;
@@ -116,7 +117,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeID);
+                var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId);
                 BreadCrumbWithItemTitle(AppManager.Cms.LeftMenu.IdContent, "内容管理", nodeName, string.Empty);
 
                 ltlContentButtons.Text = WebUtils.GetContentCommands(Body.AdministratorName, PublishmentSystemInfo, nodeInfo, PageUrl, GetRedirectUrl(PublishmentSystemId, nodeInfo.NodeId), false);
@@ -163,11 +164,11 @@ $(document).ready(function() {
         {
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
             {
-                var ltlItemTitle = e.Item.FindControl("ltlItemTitle") as Literal;
-                var ltlColumnItemRows = e.Item.FindControl("ltlColumnItemRows") as Literal;
-                var ltlItemStatus = e.Item.FindControl("ltlItemStatus") as Literal;
-                var ltlItemEditUrl = e.Item.FindControl("ltlItemEditUrl") as Literal;
-                var ltlCommandItemRows = e.Item.FindControl("ltlCommandItemRows") as Literal;
+                var ltlItemTitle = (Literal)e.Item.FindControl("ltlItemTitle");
+                var ltlColumnItemRows = (Literal)e.Item.FindControl("ltlColumnItemRows");
+                var ltlItemStatus = (Literal)e.Item.FindControl("ltlItemStatus");
+                var ltlItemEditUrl = (Literal)e.Item.FindControl("ltlItemEditUrl");
+                var ltlCommandItemRows = (Literal)e.Item.FindControl("ltlCommandItemRows");
 
                 var contentInfo = new ContentInfo(e.Item.DataItem);
 

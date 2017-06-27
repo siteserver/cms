@@ -22,14 +22,5 @@ namespace siteserver
         }
 
         public static bool IsInitialized => BaiRongDataProvider.ConfigDao.IsInitialized();
-
-        public static void OnFileChanged(object sender, FileSystemEventArgs e)
-        {
-            foreach (var pluginPair in PluginManager.GetPluginsForInterface<IFileSystemWatcher>())
-            {
-                var watcher = (IFileSystemWatcher) pluginPair.Plugin;
-                watcher.OnFileChanged(sender, e);
-            }
-        }
     }
 }

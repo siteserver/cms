@@ -2,16 +2,19 @@
 {
     public class PluginContext
     {
-        public PluginContext(PluginMetadata metadata, IPublicApi api)
+        public PluginContext(PluginEnvironment environment, PluginMetadata metadata, IPublicApi api)
         {
+            Environment = environment;
             Metadata = metadata;
             Api = api;
         }
 
+        public PluginEnvironment Environment { get; }
+
         public PluginMetadata Metadata { get; }
 
         /// <summary>
-        /// Public APIs for plugin invocation
+        /// 公开的API调用
         /// </summary>
         public IPublicApi Api { get; }
     }

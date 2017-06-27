@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SiteServer.Plugin
 {
@@ -7,33 +8,25 @@ namespace SiteServer.Plugin
     /// </summary>
     public interface IPublicApi
     {
-        string DatabaseType { get; }
-
-        string ConnectionString { get; }
-
         IDbHelper DbHelper { get; }
 
-        /// <summary>
-        /// Set a new option.
-        /// </summary>
-        /// <param name="option"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        bool SetOption(string option, string value);
+        bool SetConfig(string name, object config);
 
-        string GetOption(string option);
+        T GetConfig<T>(string name);
 
-        bool RemoveOption(string option);
+        bool RemoveConfig(string name);
 
-        bool SetSiteOption(int siteId, string option, string value);
+        bool SetSiteConfig(int siteId, string name, object config);
 
-        string GetSiteOption(int siteId, string option);
+        T GetSiteConfig<T>(int siteId, string name);
 
-        bool RemoveSiteOption(int siteId, string option);
+        bool RemoveSiteConfig(int siteId, string name);
 
         int GetSiteIdByFilePath(string path);
 
         string GetSiteDirectoryPath(int siteId);
+
+        List<int> GetSiteIds();
 
         void AddErrorLog(Exception ex);
     }

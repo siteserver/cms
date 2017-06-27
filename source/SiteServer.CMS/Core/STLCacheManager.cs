@@ -44,7 +44,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                    firstContentId = BaiRongDataProvider.ContentDao.GetContentId(tableName, nodeInfo.NodeId, ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc));
+                    firstContentId = BaiRongDataProvider.ContentDao.GetContentId(tableName, nodeInfo.NodeId, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)));
                     hashtable[nodeInfo.NodeId] = firstContentId;
                 }
 

@@ -1,5 +1,6 @@
 ﻿using BaiRong.Core;
 using BaiRong.Core.Model;
+using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.Model
@@ -97,6 +98,12 @@ namespace SiteServer.CMS.Model
         {
             get { return GetBool("IsPreviewContents", false); }
             set { SetExtendedAttribute("IsPreviewContents", value.ToString()); }
+        }
+
+        public string DefaultTaxisType
+        {
+            get { return GetString("DefaultTaxisType", ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc)); }
+            set { SetExtendedAttribute("DefaultTaxisType", value); }
         }
 
         /****************内容签收设置********************/

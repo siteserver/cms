@@ -5,6 +5,12 @@
 <head>
 <meta charset="utf-8">
 <!--#include file="../inc/header.aspx"-->
+<script type="text/javascript">
+$(document).ready(function()
+{
+  loopRows(document.getElementById('contents'), function(cur){ cur.onclick = chkSelect; });
+});
+</script>
 </head>
 
 <body>
@@ -13,7 +19,7 @@
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />
 
-  <table class="table table-bordered table-hover">
+  <table id="contents" class="table table-bordered table-hover">
     <tr class="info thead">
       <asp:Literal ID="LtlColumnHeadRows" runat="server"></asp:Literal>
       <td class="center" style="width:80px;">添加时间</td>

@@ -414,7 +414,7 @@ namespace SiteServer.BackgroundPages.Sys
                 nodeInfo.NodeType = ENodeType.BackgroundPublishNode;
                 nodeInfo.ContentModelId = EContentModelTypeUtils.GetValue(EContentModelType.Content);
 
-                var publishmentSystemUrl = PageUtils.Combine(WebConfigUtils.ApplicationPath, publishmentSystemDir);
+                var publishmentSystemUrl = PageUtils.Combine(PageUtils.ApplicationPath, publishmentSystemDir);
 
                 var psInfo = BaseTable.GetDefaultPublishmentSystemInfo(PageUtils.FilterXss(PublishmentSystemName.Text), AuxiliaryTableForContent.SelectedValue, string.Empty, string.Empty, AuxiliaryTableForVote.SelectedValue, AuxiliaryTableForJob.SelectedValue, publishmentSystemDir, publishmentSystemUrl, parentPublishmentSystemId);
 

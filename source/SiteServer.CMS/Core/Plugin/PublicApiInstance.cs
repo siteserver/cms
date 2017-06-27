@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
+using Newtonsoft.Json;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core.Plugin
@@ -20,104 +22,10 @@ namespace SiteServer.CMS.Core.Plugin
 
         public IDbHelper DbHelper => WebConfigUtils.Helper;
 
-        public bool SetOption(string option, string value)
-        {
-            try
-            {
-                ConfigManager.SystemConfigInfo.SetExtendedAttribute(option, value);
-                BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
-            }
-            catch (Exception ex)
-            {
-                AddErrorLog(ex);
-                return false;
-            }
-            return true;
-        }
-
-        public string GetOption(string option)
-        {
-            try
-            {
-                return ConfigManager.SystemConfigInfo.GetExtendedAttribute(option);
-            }
-            catch (Exception ex)
-            {
-                AddErrorLog(ex);
-            }
-            return null;
-        }
-
-        public bool RemoveOption(string option)
-        {
-            try
-            {
-                ConfigManager.SystemConfigInfo.RemoveExtendedAttribute(option);
-                BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
-            }
-            catch (Exception ex)
-            {
-                AddErrorLog(ex);
-                return false;
-            }
-            return true;
-        }
-
-        public bool SetSiteOption(int siteId, string option, string value)
-        {
-            try
-            {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
-                if (publishmentSystemInfo == null) return false;
-
-                publishmentSystemInfo.Additional.SetExtendedAttribute(option, value);
-                DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-            }
-            catch (Exception ex)
-            {
-                AddErrorLog(ex);
-                return false;
-            }
-            return true;
-        }
-
-        public string GetSiteOption(int siteId, string option)
-        {
-            try
-            {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
-                return publishmentSystemInfo?.Additional.GetExtendedAttribute(option);
-            }
-            catch(Exception ex)
-            {
-                AddErrorLog(ex);
-            }
-            return null;
-        }
-
-        public bool RemoveSiteOption(int siteId, string option)
-        {
-            try
-            {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
-                if (publishmentSystemInfo == null) return false;
-                publishmentSystemInfo.Additional.RemoveExtendedAttribute(option);
-                DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-            }
-            catch (Exception ex)
-            {
-                AddErrorLog(ex);
-                return false;
-            }
-            return true;
-        }
-
         public int GetSiteIdByFilePath(string path)
         {
             var publishmentSystemInfo = PathUtility.GetPublishmentSystemInfo(path);
-            if (publishmentSystemInfo == null) return 0;
-
-            return publishmentSystemInfo.PublishmentSystemId;
+            return publishmentSystemInfo?.PublishmentSystemId ?? 0;
         }
 
         public string GetSiteDirectoryPath(int siteId)
@@ -125,9 +33,7 @@ namespace SiteServer.CMS.Core.Plugin
             if (siteId <= 0) return null;
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
-            if (publishmentSystemInfo == null) return null;
-
-            return PathUtility.GetPublishmentSystemPath(publishmentSystemInfo);
+            return publishmentSystemInfo == null ? null : PathUtility.GetPublishmentSystemPath(publishmentSystemInfo);
         }
 
         public void AddErrorLog(Exception ex)
@@ -135,6 +41,94 @@ namespace SiteServer.CMS.Core.Plugin
             LogUtils.AddErrorLog(ex, $"插件： {_metadata.Name}");
         }
 
-        
+        public List<int> GetSiteIds()
+        {
+            return PublishmentSystemManager.GetPublishmentSystemIdList();
+        }
+
+        public bool SetSiteConfig(int siteId, string name, object config)
+        {
+            if (string.IsNullOrEmpty(name)) return false;
+
+            try
+            {
+                if (config == null)
+                {
+                    DataProvider.PluginConfigDao.Delete(_metadata.Id, siteId, name);
+                }
+                else
+                {
+                    var settings = new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    };
+                    var json = JsonConvert.SerializeObject(config, Formatting.Indented, settings);
+                    if (DataProvider.PluginConfigDao.IsExists(_metadata.Id, siteId, name))
+                    {
+                        DataProvider.PluginConfigDao.Update(_metadata.Id, siteId, name, json);
+                    }
+                    else
+                    {
+                        DataProvider.PluginConfigDao.Insert(_metadata.Id, siteId, name, json);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AddErrorLog(ex);
+                return false;
+            }
+            return true;
+        }
+
+        public T GetSiteConfig<T>(int siteId, string name)
+        {
+            if (string.IsNullOrEmpty(name)) return default(T);
+
+            try
+            {
+                var value = DataProvider.PluginConfigDao.GetValue(_metadata.Id, siteId, name);
+                if (!string.IsNullOrEmpty(value))
+                {
+                    return JsonConvert.DeserializeObject<T>(value);
+                }
+            }
+            catch (Exception ex)
+            {
+                AddErrorLog(ex);
+            }
+            return default(T);
+        }
+
+        public bool RemoveSiteConfig(int siteId, string name)
+        {
+            if (string.IsNullOrEmpty(name)) return false;
+
+            try
+            {
+                DataProvider.PluginConfigDao.Delete(_metadata.Id, siteId, name);
+            }
+            catch (Exception ex)
+            {
+                AddErrorLog(ex);
+                return false;
+            }
+            return true;
+        }
+
+        public bool SetConfig(string name, object config)
+        {
+            return SetSiteConfig(0, name, config);
+        }
+
+        public T GetConfig<T>(string name)
+        {
+            return GetSiteConfig<T>(0, name);
+        }
+
+        public bool RemoveConfig(string name)
+        {
+            return RemoveSiteConfig(0, name);
+        }
     }
 }
