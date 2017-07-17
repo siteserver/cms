@@ -15,42 +15,36 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EMenuDisplayType type)
 		{
-			if (type == EMenuDisplayType.UseChildrenNodeToDisplay)
+		    if (type == EMenuDisplayType.UseChildrenNodeToDisplay)
 			{
 				return "UseChildrenNodeToDisplay";
 			}
-			else if (type == EMenuDisplayType.UseNodeGroupToDisplay)
-			{
-				return "UseNodeGroupToDisplay";
-			}
-			else if (type == EMenuDisplayType.Both)
-			{
-				return "Both";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EMenuDisplayType.UseNodeGroupToDisplay)
+		    {
+		        return "UseNodeGroupToDisplay";
+		    }
+		    if (type == EMenuDisplayType.Both)
+		    {
+		        return "Both";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EMenuDisplayType type)
 		{
-			if (type == EMenuDisplayType.UseChildrenNodeToDisplay)
+		    if (type == EMenuDisplayType.UseChildrenNodeToDisplay)
 			{
 				return "显示此栏目的子栏目";
 			}
-			else if (type == EMenuDisplayType.UseNodeGroupToDisplay)
-			{
-				return "显示属于栏目组中的栏目";
-			}
-			else if (type == EMenuDisplayType.Both)
-			{
-				return "显示同时满足以上两条件的栏目";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EMenuDisplayType.UseNodeGroupToDisplay)
+		    {
+		        return "显示属于栏目组中的栏目";
+		    }
+		    if (type == EMenuDisplayType.Both)
+		    {
+		        return "显示同时满足以上两条件的栏目";
+		    }
+		    throw new Exception();
 		}
 
 		public static EMenuDisplayType GetEnumType(string typeStr)

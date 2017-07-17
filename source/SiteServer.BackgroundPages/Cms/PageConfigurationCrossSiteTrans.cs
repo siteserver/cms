@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "跨站转发设置", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "跨站转发设置", AppManager.Permissions.WebSite.Configration);
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.ConfigurationCrossSiteTrans, null));
 

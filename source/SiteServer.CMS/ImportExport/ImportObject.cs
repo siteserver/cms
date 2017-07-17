@@ -633,16 +633,5 @@ namespace SiteServer.CMS.ImportExport
             return filePathArrayList;
         }
 
-        /// <summary>
-        /// 从指定的地址导入内容模型至站点中
-        /// </summary>
-        /// <param name="filePath">指定的导入地址</param>
-        /// <param name="overwrite">是否覆盖原有内容模型</param>
-        public void ImportContentModel(string filePath, bool overwrite)
-        {
-            var contentModelIe = new ContentModelIe(Fso.PublishmentSystemId, filePath);
-            contentModelIe.ImportContentModelInfo(overwrite);
-        }
-
     }
 }

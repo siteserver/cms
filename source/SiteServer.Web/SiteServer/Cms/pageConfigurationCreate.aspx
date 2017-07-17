@@ -47,13 +47,6 @@
                         <td><asp:RadioButtonList ID="IsCreateSearchDuplicate" RepeatDirection="Horizontal" class="noborder" runat="server"></asp:RadioButtonList></td>
                     </tr>
                     <tr>
-                        <td>是否将stl:include转换为SSI动态包含：</td>
-                        <td>
-                            <asp:RadioButtonList ID="IsCreateIncludeToSSI" RepeatDirection="Horizontal" class="noborder" runat="server"></asp:RadioButtonList>
-                            <span>需要IIS启用服务器端包含功能，同时需要将生成页面后缀设置为“.shtml”</span>
-                        </td>
-                    </tr>
-                    <tr>
                         <td>是否生成页面中包含JQuery脚本引用：</td>
                         <td><asp:RadioButtonList ID="IsCreateWithJQuery" RepeatDirection="Horizontal" class="noborder" runat="server"></asp:RadioButtonList></td>
                     </tr>

@@ -25,46 +25,43 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "1";
             }
-            else if (type == EAdvLevel.Level2)
+            if (type == EAdvLevel.Level2)
             {
                 return "2";
             }
-            else if (type == EAdvLevel.Level3)
+            if (type == EAdvLevel.Level3)
             {
                 return "3";
             }
-            else if (type == EAdvLevel.Level4)
+            if (type == EAdvLevel.Level4)
             {
                 return "4";
             }
-            else if (type == EAdvLevel.Level5)
+            if (type == EAdvLevel.Level5)
             {
                 return "5";
             }
-            else if (type == EAdvLevel.Level6)
+            if (type == EAdvLevel.Level6)
             {
                 return "6";
             }
-            else if (type == EAdvLevel.Level7)
+            if (type == EAdvLevel.Level7)
             {
                 return "7";
             }
-            else if (type == EAdvLevel.Level8)
+            if (type == EAdvLevel.Level8)
             {
                 return "8";
             }
-            else if (type == EAdvLevel.Level9)
+            if (type == EAdvLevel.Level9)
             {
                 return "9";
             }
-            else if (type == EAdvLevel.Level10)
+            if (type == EAdvLevel.Level10)
             {
                 return "10";
             }
-           else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EAdvLevel type)
@@ -72,47 +69,44 @@ namespace SiteServer.CMS.Model.Enumerations
             if (type == EAdvLevel.Level1)
             {
                 return "1级";
-            } 
-            else if (type == EAdvLevel.Level2)
+            }
+            if (type == EAdvLevel.Level2)
             {
                 return "2级";
             }
-            else if (type == EAdvLevel.Level3)
+            if (type == EAdvLevel.Level3)
             {
                 return "3级";
             }
-            else if (type == EAdvLevel.Level4)
+            if (type == EAdvLevel.Level4)
             {
                 return "4级";
             }
-            else if (type == EAdvLevel.Level5)
+            if (type == EAdvLevel.Level5)
             {
                 return "5级";
             }
-            else if (type == EAdvLevel.Level6)
+            if (type == EAdvLevel.Level6)
             {
                 return "6级";
             }
-            else if (type == EAdvLevel.Level7)
+            if (type == EAdvLevel.Level7)
             {
                 return "7级";
             }
-            else if (type == EAdvLevel.Level8)
+            if (type == EAdvLevel.Level8)
             {
                 return "8级";
             }
-            else if (type == EAdvLevel.Level9)
+            if (type == EAdvLevel.Level9)
             {
                 return "9级";
             }
-            else if (type == EAdvLevel.Level10)
+            if (type == EAdvLevel.Level10)
             {
                 return "10级";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EAdvLevel GetEnumType(string typeStr)

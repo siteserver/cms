@@ -1,11 +1,10 @@
-using System;
 using System.Collections;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Wcm.Provider
 {
@@ -39,16 +38,16 @@ namespace SiteServer.CMS.Wcm.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRuleName, EDataType.NVarChar, 255, ruleInfo.RuleName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, ruleInfo.PublishmentSystemID),
-                GetParameter(ParmIdentifierType, EDataType.VarChar, 50, EGovPublicIdentifierTypeUtils.GetValue(ruleInfo.IdentifierType)),
-                GetParameter(ParmMinLength, EDataType.Integer, ruleInfo.MinLength),
-                GetParameter(ParmSuffix, EDataType.VarChar, 50, ruleInfo.Suffix),
-                GetParameter(ParmFormatString, EDataType.VarChar, 50, ruleInfo.FormatString),
-                GetParameter(ParmAttributeName, EDataType.VarChar, 50, ruleInfo.AttributeName),
-                GetParameter(ParmSequence, EDataType.Integer, ruleInfo.Sequence),
-                GetParameter(ParmTaxis, EDataType.Integer, taxis),
-                GetParameter(ParmSettingsXml, EDataType.NText, ruleInfo.Additional.ToString())
+				GetParameter(ParmRuleName, DataType.NVarChar, 255, ruleInfo.RuleName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, ruleInfo.PublishmentSystemID),
+                GetParameter(ParmIdentifierType, DataType.VarChar, 50, EGovPublicIdentifierTypeUtils.GetValue(ruleInfo.IdentifierType)),
+                GetParameter(ParmMinLength, DataType.Integer, ruleInfo.MinLength),
+                GetParameter(ParmSuffix, DataType.VarChar, 50, ruleInfo.Suffix),
+                GetParameter(ParmFormatString, DataType.VarChar, 50, ruleInfo.FormatString),
+                GetParameter(ParmAttributeName, DataType.VarChar, 50, ruleInfo.AttributeName),
+                GetParameter(ParmSequence, DataType.Integer, ruleInfo.Sequence),
+                GetParameter(ParmTaxis, DataType.Integer, taxis),
+                GetParameter(ParmSettingsXml, DataType.NText, ruleInfo.Additional.ToString())
 			};
 
             ExecuteNonQuery(sqlInsert, parms);
@@ -58,15 +57,15 @@ namespace SiteServer.CMS.Wcm.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-                GetParameter(ParmRuleName, EDataType.NVarChar, 255, ruleInfo.RuleName),
-                GetParameter(ParmIdentifierType, EDataType.VarChar, 50, EGovPublicIdentifierTypeUtils.GetValue(ruleInfo.IdentifierType)),
-                GetParameter(ParmMinLength, EDataType.Integer, ruleInfo.MinLength),
-                GetParameter(ParmSuffix, EDataType.VarChar, 50, ruleInfo.Suffix),
-                GetParameter(ParmFormatString, EDataType.VarChar, 50, ruleInfo.FormatString),
-                GetParameter(ParmAttributeName, EDataType.VarChar, 50, ruleInfo.AttributeName),
-                GetParameter(ParmSequence, EDataType.Integer, ruleInfo.Sequence),
-                GetParameter(ParmSettingsXml, EDataType.NText, ruleInfo.Additional.ToString()),
-                GetParameter(ParmRuleId, EDataType.Integer, ruleInfo.RuleID)
+                GetParameter(ParmRuleName, DataType.NVarChar, 255, ruleInfo.RuleName),
+                GetParameter(ParmIdentifierType, DataType.VarChar, 50, EGovPublicIdentifierTypeUtils.GetValue(ruleInfo.IdentifierType)),
+                GetParameter(ParmMinLength, DataType.Integer, ruleInfo.MinLength),
+                GetParameter(ParmSuffix, DataType.VarChar, 50, ruleInfo.Suffix),
+                GetParameter(ParmFormatString, DataType.VarChar, 50, ruleInfo.FormatString),
+                GetParameter(ParmAttributeName, DataType.VarChar, 50, ruleInfo.AttributeName),
+                GetParameter(ParmSequence, DataType.Integer, ruleInfo.Sequence),
+                GetParameter(ParmSettingsXml, DataType.NText, ruleInfo.Additional.ToString()),
+                GetParameter(ParmRuleId, DataType.Integer, ruleInfo.RuleID)
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);
@@ -76,7 +75,7 @@ namespace SiteServer.CMS.Wcm.Provider
 		{
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRuleId, EDataType.Integer, ruleId)
+				GetParameter(ParmRuleId, DataType.Integer, ruleId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -96,7 +95,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRuleId, EDataType.Integer, ruleId)
+				GetParameter(ParmRuleId, DataType.Integer, ruleId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -118,7 +117,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAll, selectParms))

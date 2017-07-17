@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Data
 {
@@ -26,32 +27,32 @@ namespace BaiRong.Core.Data
             return SqlUtils.GetIDbConnection(databaseType, connectionString);
         }
 
-        protected IDbDataParameter GetParameter(string parameterName, EDataType dataType, int value)
+        protected IDbDataParameter GetParameter(string parameterName, DataType dataType, int value)
         {
             return GetParameterInner(parameterName, dataType, 0, value);
         }
 
-        protected IDbDataParameter GetParameter(string parameterName, EDataType dataType, DateTime value)
+        protected IDbDataParameter GetParameter(string parameterName, DataType dataType, DateTime value)
         {
             return GetParameterInner(parameterName, dataType, 0, value);
         }
 
-        protected IDbDataParameter GetParameter(string parameterName, EDataType dataType, string value)
+        protected IDbDataParameter GetParameter(string parameterName, DataType dataType, string value)
         {
             return GetParameterInner(parameterName, dataType, 0, value);
         }
 
-        protected IDbDataParameter GetParameter(string parameterName, EDataType dataType, int size, string value)
+        protected IDbDataParameter GetParameter(string parameterName, DataType dataType, int size, string value)
         {
             return GetParameterInner(parameterName, dataType, size, value);
         }
 
-        protected IDbDataParameter GetParameter(string parameterName, EDataType dataType, int size, decimal value)
+        protected IDbDataParameter GetParameter(string parameterName, DataType dataType, int size, decimal value)
         {
             return GetParameterInner(parameterName, dataType, size, value);
         }
 
-        protected List<IDataParameter> GetInParameterList(string parameterName, EDataType dataType, int dataLength, ICollection valueCollection, out string parameterNameList)
+        protected List<IDataParameter> GetInParameterList(string parameterName, DataType dataType, int dataLength, ICollection valueCollection, out string parameterNameList)
         {
             parameterNameList = string.Empty;
             if (valueCollection == null || valueCollection.Count <= 0) return new List<IDataParameter>();
@@ -69,7 +70,7 @@ namespace BaiRong.Core.Data
 
                 sbCondition.Append(parmName + ",");
 
-                parameterList.Add(dataType == EDataType.Integer
+                parameterList.Add(dataType == DataType.Integer
                     ? GetParameter(parmName, dataType, value)
                     : GetParameter(parmName, dataType, dataLength, value));
             }
@@ -79,7 +80,7 @@ namespace BaiRong.Core.Data
             return parameterList;
         }
 
-        private static IDbDataParameter GetParameterInner(string parameterName, EDataType dataType, int size, object value)
+        private static IDbDataParameter GetParameterInner(string parameterName, DataType dataType, int size, object value)
         {
             if (size == 0)
             {

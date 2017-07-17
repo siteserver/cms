@@ -25,123 +25,117 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(EInputValidateType type)
 		{
-            if (type == EInputValidateType.None)
+		    if (type == EInputValidateType.None)
 			{
                 return "None";
             }
-            else if (type == EInputValidateType.Chinese)
-            {
-                return "Chinese";
-            }
-            else if (type == EInputValidateType.English)
-			{
-                return "English";
-			}
-            else if (type == EInputValidateType.Email)
-			{
-                return "Email";
-            }
-            else if (type == EInputValidateType.Url)
-            {
-                return "Url";
-            }
-            else if (type == EInputValidateType.Phone)
-            {
-                return "Phone";
-            }
-            else if (type == EInputValidateType.Mobile)
-            {
-                return "Mobile";
-            }
-            else if (type == EInputValidateType.Integer)
-            {
-                return "Integer";
-            }
-            else if (type == EInputValidateType.Currency)
-            {
-                return "Currency";
-            }
-            else if (type == EInputValidateType.Zip)
-            {
-                return "Zip";
-            }
-            else if (type == EInputValidateType.IdCard)
-            {
-                return "IdCard";
-            }
-            else if (type == EInputValidateType.QQ)
-            {
-                return "QQ";
-            }
-            else if (type == EInputValidateType.Custom)
-            {
-                return "Custom";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EInputValidateType.Chinese)
+		    {
+		        return "Chinese";
+		    }
+		    if (type == EInputValidateType.English)
+		    {
+		        return "English";
+		    }
+		    if (type == EInputValidateType.Email)
+		    {
+		        return "Email";
+		    }
+		    if (type == EInputValidateType.Url)
+		    {
+		        return "Url";
+		    }
+		    if (type == EInputValidateType.Phone)
+		    {
+		        return "Phone";
+		    }
+		    if (type == EInputValidateType.Mobile)
+		    {
+		        return "Mobile";
+		    }
+		    if (type == EInputValidateType.Integer)
+		    {
+		        return "Integer";
+		    }
+		    if (type == EInputValidateType.Currency)
+		    {
+		        return "Currency";
+		    }
+		    if (type == EInputValidateType.Zip)
+		    {
+		        return "Zip";
+		    }
+		    if (type == EInputValidateType.IdCard)
+		    {
+		        return "IdCard";
+		    }
+		    if (type == EInputValidateType.QQ)
+		    {
+		        return "QQ";
+		    }
+		    if (type == EInputValidateType.Custom)
+		    {
+		        return "Custom";
+		    }
+		    throw new Exception();
 		}
 
         public static string GetText(EInputValidateType type)
-		{
+        {
             if (type == EInputValidateType.None)
             {
                 return "无";
             }
-            else if (type == EInputValidateType.Chinese)
+            if (type == EInputValidateType.Chinese)
             {
                 return "中文";
             }
-            else if (type == EInputValidateType.English)
+            if (type == EInputValidateType.English)
             {
                 return "英文";
             }
-            else if (type == EInputValidateType.Email)
+            if (type == EInputValidateType.Email)
             {
                 return "Email格式";
             }
-            else if (type == EInputValidateType.Url)
+            if (type == EInputValidateType.Url)
             {
                 return "网址格式";
             }
-            else if (type == EInputValidateType.Phone)
+            if (type == EInputValidateType.Phone)
             {
                 return "电话号码";
             }
-            else if (type == EInputValidateType.Mobile)
+            if (type == EInputValidateType.Mobile)
             {
                 return "手机号码";
             }
-            else if (type == EInputValidateType.Integer)
+            if (type == EInputValidateType.Integer)
             {
                 return "整数";
             }
-            else if (type == EInputValidateType.Currency)
+            if (type == EInputValidateType.Currency)
             {
                 return "货币格式";
             }
-            else if (type == EInputValidateType.Zip)
+            if (type == EInputValidateType.Zip)
             {
                 return "邮政编码";
             }
-            else if (type == EInputValidateType.IdCard)
+            if (type == EInputValidateType.IdCard)
             {
                 return "身份证号码";
             }
-            else if (type == EInputValidateType.QQ)
+            if (type == EInputValidateType.QQ)
             {
                 return "QQ号码";
             }
-            else if (type == EInputValidateType.Custom)
+            if (type == EInputValidateType.Custom)
             {
                 return "自定义正则表达式验证";
             }
-            else
-            {
-                throw new Exception();
-            }
-		}
+            throw new Exception();
+        }
 
         public static string GetValidateInfo(TableStyleInfo styleInfo)
         {

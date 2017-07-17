@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, AppManager.Cms.LeftMenu.Create.IdConfigurationCreate, "页面命名规则", AppManager.Cms.Permission.WebSite.Create);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "页面命名规则", AppManager.Permissions.WebSite.Create);
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.TemplateFilePathRule, _additional));
 

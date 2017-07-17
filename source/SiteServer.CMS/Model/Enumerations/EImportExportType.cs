@@ -20,26 +20,23 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EImportExportType type)
 		{
-			if (type == EImportExportType.Template)
+		    if (type == EImportExportType.Template)
 			{
 				return "Template";
 			}
-			else if (type == EImportExportType.DisplayMode)
-			{
-				return "DisplayMode";
-			}
-			else if (type == EImportExportType.MenuDisplay)
-			{
-				return "MenuDisplay";
-			}
-			else if (type == EImportExportType.Vote)
-			{
-				return "Vote";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EImportExportType.DisplayMode)
+		    {
+		        return "DisplayMode";
+		    }
+		    if (type == EImportExportType.MenuDisplay)
+		    {
+		        return "MenuDisplay";
+		    }
+		    if (type == EImportExportType.Vote)
+		    {
+		        return "Vote";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EImportExportType type)
@@ -48,22 +45,19 @@ namespace SiteServer.CMS.Model.Enumerations
 			{
 				return "网站模板";
 			}
-			else if (type == EImportExportType.DisplayMode)
-			{
-				return "列表显示方式";
-			}
-			else if (type == EImportExportType.MenuDisplay)
-			{
-				return "菜单显示方式";
-			}
-			if (type == EImportExportType.Vote)
+		    if (type == EImportExportType.DisplayMode)
+		    {
+		        return "列表显示方式";
+		    }
+		    if (type == EImportExportType.MenuDisplay)
+		    {
+		        return "菜单显示方式";
+		    }
+		    if (type == EImportExportType.Vote)
 			{
 				return "投票项数据";
 			}
-			else
-			{
-				throw new Exception();
-			}
+		    throw new Exception();
 		}
 
 		public static EImportExportType GetEnumType(string typeStr)

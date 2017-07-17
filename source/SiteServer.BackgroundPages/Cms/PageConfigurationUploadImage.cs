@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("PublishmentSystemID");
             if (IsPostBack) return;
 
-            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationUpload, "图片上传设置", AppManager.Cms.Permission.WebSite.Configration);
+            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "图片上传设置", AppManager.Permissions.WebSite.Configration);
 
             TbImageUploadDirectoryName.Text = PublishmentSystemInfo.Additional.ImageUploadDirectoryName;
 

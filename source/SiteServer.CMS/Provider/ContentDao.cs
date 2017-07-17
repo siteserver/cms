@@ -146,6 +146,36 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
+        public ContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId)
+        {
+            ContentInfo info = null;
+            if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
+            {
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
+                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
+
+                if (!string.IsNullOrEmpty(tableName))
+                {
+                    string sqlWhere = $"WHERE ID = {contentId}";
+                    var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+
+                    using (var rdr = ExecuteReader(sqlSelect))
+                    {
+                        if (rdr.Read())
+                        {
+                            info = ContentUtility.GetContentInfo(tableStyle);
+                            BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
+                        }
+                        rdr.Close();
+                    }
+                }
+            }
+
+            info?.AfterExecuteReader();
+            return info;
+        }
+
         public ContentInfo GetContentInfo(ETableStyle tableStyle, string tableName, int contentId)
         {
             ContentInfo info = null;
@@ -400,7 +430,7 @@ namespace SiteServer.CMS.Provider
                 publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             }
 
-            var channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(publishmentSystemId, publishmentSystemId, channelIndex, channelName);
+            var channelId = DataProvider.NodeDao.GetNodeIdByChannelIdOrChannelIndexOrChannelName(publishmentSystemId, publishmentSystemId, channelIndex, channelName);
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
 
             if (isAllSites)
@@ -567,7 +597,7 @@ namespace SiteServer.CMS.Provider
         public string GetSelectCommend(ETableStyle tableStyle, string tableName, int publishmentSystemId, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent)
         {
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo,
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount,
                 isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, nodeInfo.ContentModelId);
 
             var list = new List<int>();
@@ -592,7 +622,7 @@ namespace SiteServer.CMS.Provider
         public string GetSelectCommend(ETableStyle tableStyle, string tableName, int publishmentSystemId, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
         {
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, nodeInfo.ContentModelId);
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, nodeInfo.ContentModelId);
 
             var list = new List<int>();
             if (isSystemAdministrator)
@@ -703,7 +733,7 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, BaiRongDataProvider.ContentDao.StlColumns, sqlWhereString, orderByString);
             }
             return string.Empty;
         }
@@ -720,7 +750,7 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, $"{ContentAttribute.Id}, {ContentAttribute.NodeId}, {ContentAttribute.IsTop}", sqlWhereString, orderByString);
             }
             return string.Empty;
         }

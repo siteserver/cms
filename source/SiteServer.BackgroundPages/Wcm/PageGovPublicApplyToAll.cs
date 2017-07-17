@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicApply, "所有申请", AppManager.Wcm.Permission.WebSite.GovPublicApply);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, "所有申请", AppManager.Wcm.Permission.WebSite.GovPublicApply);
 
                 EBooleanUtils.AddListItems(ddlTaxis, "倒序", "正序");
                 if (Body.IsQueryExists("isTaxisDESC"))

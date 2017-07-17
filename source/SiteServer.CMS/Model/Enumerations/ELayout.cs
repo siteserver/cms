@@ -15,42 +15,36 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ELayout type)
 		{
-            if (type == ELayout.Table)
+		    if (type == ELayout.Table)
 			{
 				return "Table";
 			}
-			else if (type == ELayout.Flow)
-			{
-				return "Flow";
-			}
-			else if (type == ELayout.None)
-			{
-				return "None";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ELayout.Flow)
+		    {
+		        return "Flow";
+		    }
+		    if (type == ELayout.None)
+		    {
+		        return "None";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ELayout type)
 		{
-            if (type == ELayout.Table)
+		    if (type == ELayout.Table)
 			{
 				return "表格";
 			}
-			else if (type == ELayout.Flow)
-			{
-				return "流";
-			}
-			else if (type == ELayout.None)
-			{
-				return "无布局";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ELayout.Flow)
+		    {
+		        return "流";
+		    }
+		    if (type == ELayout.None)
+		    {
+		        return "无布局";
+		    }
+		    throw new Exception();
 		}
 
 		public static ELayout GetEnumType(string typeStr)

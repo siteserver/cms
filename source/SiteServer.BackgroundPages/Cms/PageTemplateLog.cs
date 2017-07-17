@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "修订历史", AppManager.Cms.Permission.WebSite.Template);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "修订历史", AppManager.Permissions.WebSite.Template);
 
                 btnCompare.Attributes.Add("onclick",
                     PageUtils.GetRedirectStringWithCheckBoxValue(

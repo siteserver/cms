@@ -136,7 +136,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             {
                 var pageTitle = _appointmentId > 0 ? "编辑微预约" : "添加微预约";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAppointment, pageTitle, AppManager.WeiXin.Permission.WebSite.Appointment);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdAppointment, pageTitle, AppManager.WeiXin.Permission.WebSite.Appointment);
                 LtlPageTitle.Text = pageTitle;
                   
                 LtlImageUrl.Text =

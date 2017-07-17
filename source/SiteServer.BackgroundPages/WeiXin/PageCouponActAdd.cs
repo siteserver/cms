@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             {
                 var pageTitle = _actId > 0 ? "编辑优惠劵活动" : "添加优惠劵活动";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdCoupon, pageTitle, AppManager.WeiXin.Permission.WebSite.Coupon);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdCoupon, pageTitle, AppManager.WeiXin.Permission.WebSite.Coupon);
                 LtlPageTitle.Text = pageTitle;
 
                 LtlImageUrl.Text =

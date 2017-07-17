@@ -39,6 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
         private NodeInfo _nodeInfo;
         private string _tableName;
         private bool _isGovPublic;
+        private ContentModelInfo _modelInfo;
         private readonly Hashtable _valueHashtable = new Hashtable();
 
         public static string GetRedirectUrl(int publishmentSystemId)
@@ -72,6 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
             _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, nodeId));
+            _modelInfo = ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId);
 
             if (!IsPostBack)
             {
@@ -144,7 +146,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var owningNodeId in ProductPermissionsManager.Current.OwningNodeIdList)
                     {
-                        if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, owningNodeId, AppManager.Cms.Permission.Channel.ContentCheck))
+                        if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, owningNodeId, AppManager.Permissions.Channel.ContentCheck))
                         {
                             owningNodeIdList.Add(owningNodeId);
                         }
@@ -162,11 +164,11 @@ namespace SiteServer.BackgroundPages.Cms
                 var showPopWinString = ModalContentCheck.GetOpenWindowStringForMultiChannels(PublishmentSystemId, PageUrl);
                 BtnCheck.Attributes.Add("onclick", showPopWinString);
 
-                LtlColumnHeadRows.Text = ContentUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                LtlCommandHeadRows.Text = ContentUtility.GetCommandHeadRowsHtml(Body.AdministratorName, _tableStyle, PublishmentSystemInfo, _nodeInfo);
+                LtlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
+                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _modelInfo);
             }
 
-            if (!HasChannelPermissions(PublishmentSystemId, AppManager.Cms.Permission.Channel.ContentDelete))
+            if (!HasChannelPermissions(PublishmentSystemId, AppManager.Permissions.Channel.ContentDelete))
             {
                 BtnDelete.Visible = false;
             }
@@ -205,7 +207,7 @@ namespace SiteServer.BackgroundPages.Cms
                     $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{showPopWinString}"">{LevelManager.GetCheckState(
                         PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Cms.Permission.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
                 {
                     ltlItemEditUrl.Text =
                         $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, nodeInfo, contentInfo.Id, PageUrl)}\">编辑</a>";
@@ -216,7 +218,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ltlColumnItemRows.Text = TextUtility.GetColumnItemRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _valueHashtable, _tableStyle, PublishmentSystemInfo, contentInfo);
 
-                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(_tableStyle, PublishmentSystemInfo, nodeInfo, contentInfo, PageUrl, Body.AdministratorName);
+                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _modelInfo, contentInfo, PageUrl, Body.AdministratorName);
             }
         }
 

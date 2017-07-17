@@ -17,14 +17,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Large";
             }
-            else if (type == EPhotoListType.Thumbnail)
+            if (type == EPhotoListType.Thumbnail)
             {
                 return "Thumbnail";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EPhotoListType type)
@@ -33,14 +30,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "大图浏览";
             }
-            else if (type == EPhotoListType.Thumbnail)
+            if (type == EPhotoListType.Thumbnail)
             {
                 return "小图浏览";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EPhotoListType GetEnumType(string typeStr)

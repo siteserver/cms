@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             { 
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdStore, "门店管理", AppManager.WeiXin.Permission.WebSite.Store);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdStore, "门店管理", AppManager.WeiXin.Permission.WebSite.Store);
                 SpContents.DataBind();
 
                 var urlAdd = PageStoreAdd.GetRedirectUrl(PublishmentSystemId, 0);

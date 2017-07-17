@@ -1,7 +1,10 @@
 using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using BaiRong.Core.Data;
 using BaiRong.Core.Model;
+using BaiRong.Core.Model.Attributes;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.Utility
@@ -39,50 +42,52 @@ namespace SiteServer.CMS.StlParser.Utility
 
 		private void TemplateControl_DataBinding(object sender, EventArgs e)
 		{
-			var noTagText = (Literal) sender;
-			var container = (DataListItem) noTagText.NamingContainer;
+			var literal = (Literal) sender;
+			var container = (DataListItem)literal.NamingContainer;
 
             var itemInfo = new DbItemInfo(container.DataItem, container.ItemIndex);
 
             if (_contextType == EContextType.Channel)
             {
-                _pageInfo.ChannelItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetChannelsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
+                var channelItem = new ChannelItemInfo(SqlUtils.EvalInt(container.DataItem, NodeAttribute.NodeId), container.ItemIndex);
+                _pageInfo.ChannelItems.Push(channelItem);
+                literal.Text = TemplateUtility.GetChannelsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.Content)
             {
-                _pageInfo.ContentItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetContentsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
+                var contentItem = new ContentItemInfo(SqlUtils.EvalInt(container.DataItem, ContentAttribute.NodeId), SqlUtils.EvalInt(container.DataItem, ContentAttribute.Id), container.ItemIndex);
+                _pageInfo.ContentItems.Push(contentItem);
+                literal.Text = TemplateUtility.GetContentsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.Comment)
             {
                 _pageInfo.CommentItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetCommentsTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
+                literal.Text = TemplateUtility.GetCommentsTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.InputContent)
             {
                 _pageInfo.InputItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetInputContentsTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
+                literal.Text = TemplateUtility.GetInputContentsTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.SqlContent)
             {
                 _pageInfo.SqlItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetSqlContentsTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
+                literal.Text = TemplateUtility.GetSqlContentsTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.Site)
             {
                 _pageInfo.SiteItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetSitesTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
+                literal.Text = TemplateUtility.GetSitesTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.Photo)
             {
                 _pageInfo.PhotoItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetPhotosTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
+                literal.Text = TemplateUtility.GetPhotosTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.Each)
             {
                 _pageInfo.EachItems.Push(itemInfo);
-                noTagText.Text = TemplateUtility.GetEachsTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
+                literal.Text = TemplateUtility.GetEachsTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
 
             if (_separatorRepeat > 1)
@@ -90,7 +95,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 _i++;
                 if (_i % _separatorRepeat == 0)
                 {
-                    noTagText.Text += _separatorRepeatTemplate;
+                    literal.Text += _separatorRepeatTemplate;
                 }
             }
 		}

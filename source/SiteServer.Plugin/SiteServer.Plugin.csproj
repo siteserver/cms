@@ -36,10 +36,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
@@ -47,13 +48,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Feature.cs" />
+    <Compile Include="DataType.cs" />
+    <Compile Include="Hooks\IPageAdmin.cs" />
+    <Compile Include="Hooks\IContentTable.cs" />
+    <Compile Include="InputType.cs" />
+    <Compile Include="Hooks\IHooks.cs" />
+    <Compile Include="Hooks\IMenu.cs" />
+    <Compile Include="Hooks\IContentExtra.cs" />
+    <Compile Include="Hooks\IFileSystemWatcher.cs" />
+    <Compile Include="Hooks\IRestful.cs" />
     <Compile Include="IDbHelper.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="IRequestContext.cs" />
     <Compile Include="IPublicApi.cs" />
     <Compile Include="PluginEnvironment.cs" />
+    <Compile Include="PluginContentLink.cs" />
     <Compile Include="PluginMenu.cs" />
+    <Compile Include="PluginConstants.cs" />
+    <Compile Include="PluginTableColumn.cs" />
     <Compile Include="PluginPair.cs" />
     <Compile Include="PluginContext.cs" />
     <Compile Include="PluginMetadata.cs" />
@@ -62,7 +74,9 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="README.md" />
+    <None Include="SiteServer.Plugin.nuspec" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

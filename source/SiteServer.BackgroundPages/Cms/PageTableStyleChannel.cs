@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if(!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationContentModel, "栏目字段管理", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "栏目字段管理", AppManager.Permissions.WebSite.Configration);
                 
                 //删除样式
                 if (Body.IsQueryExists("DeleteStyle"))
@@ -139,7 +139,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = EInputTypeUtils.GetText(EInputTypeUtils.GetEnumType(styleInfo.InputType));
+            ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
             ltlFieldType.Text = "虚拟字段";
 
             ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());

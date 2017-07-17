@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             {
                 var pageTitle = _view360Id > 0 ? "编辑360全景" : "添加360全景";
 
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdView360, pageTitle, AppManager.WeiXin.Permission.WebSite.View360);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdView360, pageTitle, AppManager.WeiXin.Permission.WebSite.View360);
                 LtlPageTitle.Text = pageTitle;
 
                 LtlImageUrl.Text =

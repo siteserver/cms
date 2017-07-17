@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdConference, "微会议（活动）", AppManager.WeiXin.Permission.WebSite.Conference);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdConference, "微会议（活动）", AppManager.WeiXin.Permission.WebSite.Conference);
                 SpContents.DataBind();
 
                 var urlAdd = PageConferenceAdd.GetRedirectUrl(PublishmentSystemId, 0);

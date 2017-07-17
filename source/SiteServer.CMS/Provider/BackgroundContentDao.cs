@@ -30,7 +30,7 @@ namespace SiteServer.CMS.Provider
                     var isContentCheck = false;
                     foreach (var theNodeId in owningNodeIdList)
                     {
-                        if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemId, theNodeId, AppManager.Cms.Permission.Channel.ContentCheck))
+                        if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemId, theNodeId, AppManager.Permissions.Channel.ContentCheck))
                         {
                             isContentCheck = true;
                         }
@@ -44,17 +44,7 @@ namespace SiteServer.CMS.Provider
                 int checkedLevel;
                 var isChecked = CheckManager.GetUserCheckLevel(administratorName, publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, out checkedLevel);
                 var checkLevelArrayList = LevelManager.LevelInt.GetCheckLevelArrayListOfNeedCheck(publishmentSystemInfo, isChecked, checkedLevel);
-                string sqlString;
-                if (isSystemAdministrator)
-                {
-                    sqlString =
-                        $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}))";
-                }
-                else
-                {
-                    sqlString =
-                        $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}))";
-                }
+                var sqlString = isSystemAdministrator ? $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}))" : $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}))";
 
                 var count = BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
                 if (count > 0)
@@ -100,45 +90,30 @@ namespace SiteServer.CMS.Provider
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetStlWhereString(PublishmentSystemInfo publishmentSystemInfo, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        public string GetStlWhereString(int publishmentSystemId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, bool isCreateSearchDuplicate)
         {
             var whereBuilder = new StringBuilder();
-            whereBuilder.Append($" AND PublishmentSystemID = {publishmentSystemInfo.PublishmentSystemId} ");
+            whereBuilder.Append($" AND PublishmentSystemID = {publishmentSystemId} ");
 
             if (isImageExists)
             {
-                if (isImage)
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.ImageUrl} <> '' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.ImageUrl} = '' ");
-                }
+                whereBuilder.Append(isImage
+                    ? $" AND {BackgroundContentAttribute.ImageUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.ImageUrl} = '' ");
             }
 
             if (isVideoExists)
             {
-                if (isVideo)
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.VideoUrl} <> '' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.VideoUrl} = '' ");
-                }
+                whereBuilder.Append(isVideo
+                    ? $" AND {BackgroundContentAttribute.VideoUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.VideoUrl} = '' ");
             }
 
             if (isFileExists)
             {
-                if (isFile)
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.FileUrl} <> '' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.FileUrl} = '' ");
-                }
+                whereBuilder.Append(isFile
+                    ? $" AND {BackgroundContentAttribute.FileUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.FileUrl} = '' ");
             }
 
             if (isTopExists)
@@ -212,7 +187,7 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(tags))
             {
                 var tagCollection = TagUtils.ParseTagsString(tags);
-                var contentIdArrayList = BaiRongDataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemInfo.PublishmentSystemId);
+                var contentIdArrayList = BaiRongDataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemId);
                 if (contentIdArrayList.Count > 0)
                 {
                     whereBuilder.Append(
@@ -222,10 +197,10 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(where))
             {
-                whereBuilder.Append($" AND ({@where}) ");
+                whereBuilder.Append($" AND ({where}) ");
             }
 
-            if (!publishmentSystemInfo.Additional.IsCreateSearchDuplicate)
+            if (!isCreateSearchDuplicate)
             {
                 var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(ID)", whereBuilder + " GROUP BY Title");
                 whereBuilder.Append($" AND ID IN ({sqlString}) ");
@@ -240,38 +215,23 @@ namespace SiteServer.CMS.Provider
 
             if (isImageExists)
             {
-                if (isImage)
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.ImageUrl} <> '' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.ImageUrl} = '' ");
-                }
+                whereBuilder.Append(isImage
+                    ? $" AND {BackgroundContentAttribute.ImageUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.ImageUrl} = '' ");
             }
 
             if (isVideoExists)
             {
-                if (isVideo)
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.VideoUrl} <> '' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.VideoUrl} = '' ");
-                }
+                whereBuilder.Append(isVideo
+                    ? $" AND {BackgroundContentAttribute.VideoUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.VideoUrl} = '' ");
             }
 
             if (isFileExists)
             {
-                if (isFile)
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.FileUrl} <> '' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.FileUrl} = '' ");
-                }
+                whereBuilder.Append(isFile
+                    ? $" AND {BackgroundContentAttribute.FileUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.FileUrl} = '' ");
             }
 
             if (isTopExists)

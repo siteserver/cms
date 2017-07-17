@@ -64,7 +64,6 @@ namespace BaiRong.Core
             public const string FileConfiguration = "Configuration.xml";
             public const string FileSeo = "Seo.xml";
             public const string FileStlTag = "StlTag.xml";
-            public const string FileContentModel = "ContentModel.xml";//自定义添加的内容模型
         }
 
         public static char DirectorySeparatorChar = Path.DirectorySeparatorChar;
@@ -378,7 +377,7 @@ namespace BaiRong.Core
             if (StringUtils.EqualsIgnoreCase(directoryName, AspnetClient.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, Bin.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, SiteFiles.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, FileConfigManager.Instance.AdminDirectoryName))
+                || StringUtils.EqualsIgnoreCase(directoryName, WebConfigUtils.AdminDirectory))
             {
                 return true;
             }
@@ -401,7 +400,7 @@ namespace BaiRong.Core
                 AspnetClient.DirectoryName.ToLower(),
                 Bin.DirectoryName.ToLower(),
                 SiteFiles.DirectoryName.ToLower(),
-                FileConfigManager.Instance.AdminDirectoryName.ToLower(),
+                WebConfigUtils.AdminDirectory.ToLower(),
                 SiteTemplates.SiteTemplateMetadata.ToLower()
             };
         }

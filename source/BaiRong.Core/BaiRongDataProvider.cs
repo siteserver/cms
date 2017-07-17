@@ -20,7 +20,6 @@ namespace BaiRong.Core
         private static DiggDao _diggDao;
         private static LogDao _logDao;
         private static ErrorLogDao _errorLogDao;
-        private static ContentModelDao _contentModelDao;
         private static ContentDao _contentDao;
         private static TagDao _tagDao;
         private static ContentCheckDao _contentCheckDao;
@@ -62,8 +61,6 @@ namespace BaiRong.Core
         public static LogDao LogDao => _logDao ?? (_logDao = new LogDao());
 
         public static ErrorLogDao ErrorLogDao => _errorLogDao ?? (_errorLogDao = new ErrorLogDao());
-
-        public static ContentModelDao ContentModelDao => _contentModelDao ?? (_contentModelDao = new ContentModelDao());
 
         public static ContentDao ContentDao => _contentDao ?? (_contentDao = new ContentDao());
 

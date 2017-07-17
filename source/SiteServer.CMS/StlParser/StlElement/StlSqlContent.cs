@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.UI;
 using System.Xml;
 using BaiRong.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
@@ -166,17 +167,17 @@ namespace SiteServer.CMS.StlParser.StlElement
 			        }
 			    }
 
-			    parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(contextInfo, connectionString, queryString, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
+			    parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, connectionString, queryString, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
 		}
 
-        private static string ParseImpl(ContextInfo contextInfo, string connectionString, string queryString, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string connectionString, string queryString, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
         {
             var parsedContent = string.Empty;
 
@@ -217,7 +218,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                     connectionString = WebConfigUtils.ConnectionString;
                 }
 
-                parsedContent = BaiRongDataProvider.DatabaseDao.GetString(connectionString, queryString);
+                //parsedContent = BaiRongDataProvider.DatabaseDao.GetString(connectionString, queryString);
+                parsedContent = Database.GetString(connectionString, queryString, pageInfo.Guid);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))

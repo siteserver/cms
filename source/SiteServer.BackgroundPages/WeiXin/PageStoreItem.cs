@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             { 
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdStore, "微门店信息管理", AppManager.WeiXin.Permission.WebSite.Store);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdStore, "微门店信息管理", AppManager.WeiXin.Permission.WebSite.Store);
                 SpContents.DataBind();
 
 

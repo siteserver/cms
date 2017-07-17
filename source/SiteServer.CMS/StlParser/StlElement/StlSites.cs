@@ -76,7 +76,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -119,7 +119,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Site, contextInfo);
                 }
 
-                rptContents.DataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since);
+                rptContents.DataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since, pageInfo.Guid);
                 rptContents.DataBind();
 
                 if (rptContents.Items.Count > 0)
@@ -151,7 +151,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Site, contextInfo);
                 }
 
-                pdlContents.DataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since);
+                pdlContents.DataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString, since, pageInfo.Guid);
                 pdlContents.DataBind();
 
                 if (pdlContents.Items.Count > 0)

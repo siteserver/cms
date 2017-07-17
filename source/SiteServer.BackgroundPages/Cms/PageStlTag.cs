@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
             {                
                 if (PublishmentSystemId != 0)
                 {
-                    BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "自定义模板语言", AppManager.Cms.Permission.WebSite.Template);
+                    BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "自定义模板语言", AppManager.Permissions.WebSite.Template);
                 }
 
                 dgContents.DataSource = DataProvider.StlTagDao.GetDataSource(PublishmentSystemId);

@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAlbum, "微相册", AppManager.WeiXin.Permission.WebSite.Album);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdAlbum, "微相册", AppManager.WeiXin.Permission.WebSite.Album);
                 SpContents.DataBind();
 
                 var urlAdd = PageAlbumAdd.GetRedirectUrl(PublishmentSystemId, 0);

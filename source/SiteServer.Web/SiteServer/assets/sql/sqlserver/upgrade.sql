@@ -122,3 +122,7 @@ CREATE TABLE siteserver_PluginConfig(
     CONSTRAINT PK_siteserver_PluginConfig PRIMARY KEY CLUSTERED (Id)
 )
 GO
+
+ALTER TABLE siteserver_CreateTask ADD
+    Guid           varchar(50)     NULL
+GO

@@ -4,7 +4,7 @@ using SiteServer.CMS.StlParser.StlElement;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
-    public class URLUtility
+    public class UrlUtility
     {
         public static string GetUrlInChannelPage(string type, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, int index, int currentPageIndex, int pageCount)
         {
@@ -34,7 +34,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, physicalPath);
         }
 
-        public static string GetUrlInContentPage(string type, PublishmentSystemInfo publishmentSystemInfo, int nodeID, int contentID, int index, int currentPageIndex, int pageCount)
+        public static string GetUrlInContentPage(string type, PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, int index, int currentPageIndex, int pageCount)
         {
             var pageIndex = 0;
             if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
@@ -58,43 +58,43 @@ namespace SiteServer.CMS.StlParser.Utility
                 pageIndex = index - 1;
             }
 
-            var physicalPath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, nodeID, contentID, pageIndex);
+            var physicalPath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, nodeId, contentId, pageIndex);
             return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, physicalPath);
         }
 
-        public static string GetClickStringInSearchPage(string type, string ajaxDivID, int index, int currentPageIndex, int pageCount)
+        public static string GetClickStringInSearchPage(string type, string ajaxDivId, int index, int currentPageIndex, int pageCount)
         {
             var clickString = string.Empty;
 
             if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
             {
-                clickString = $"stlRedirect{ajaxDivID}({1})";
+                clickString = $"stlRedirect{ajaxDivId}({1})";
             }
             else if (type.ToLower().Equals(StlPageItem.TypeLastPage.ToLower()))//末页
             {
-                clickString = $"stlRedirect{ajaxDivID}({pageCount})";
+                clickString = $"stlRedirect{ajaxDivId}({pageCount})";
             }
             else if (type.ToLower().Equals(StlPageItem.TypePreviousPage.ToLower()))//上一页
             {
-                clickString = $"stlRedirect{ajaxDivID}({currentPageIndex})";
+                clickString = $"stlRedirect{ajaxDivId}({currentPageIndex})";
             }
             else if (type.ToLower().Equals(StlPageItem.TypeNextPage.ToLower()))//下一页
             {
-                clickString = $"stlRedirect{ajaxDivID}({currentPageIndex + 2})";
+                clickString = $"stlRedirect{ajaxDivId}({currentPageIndex + 2})";
             }
             else if (type.ToLower().Equals(StlPageItem.TypePageNavigation.ToLower()))
             {
-                clickString = $"stlRedirect{ajaxDivID}({index})";
+                clickString = $"stlRedirect{ajaxDivId}({index})";
             }
             else if (type.ToLower().Equals(StlPageItem.TypePageSelect.ToLower()))
             {
-                clickString = $"stlJump{ajaxDivID}(this)";
+                clickString = $"stlJump{ajaxDivId}(this)";
             }
 
             return clickString;
         }
 
-        public static string GetJsMethodInDynamicPage(string type, PublishmentSystemInfo publishmentSystemInfo, int nodeID, int contentID, string pageUrl, int index, int currentPageIndex, int pageCount, bool isPageRefresh, string ajaxDivID)
+        public static string GetJsMethodInDynamicPage(string type, PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, string pageUrl, int index, int currentPageIndex, int pageCount, bool isPageRefresh, string ajaxDivId)
         {
             var jsMethod = string.Empty;
             var pageIndex = 0;
@@ -148,45 +148,37 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else
             {
-                if (!string.IsNullOrEmpty(ajaxDivID))
+                if (!string.IsNullOrEmpty(ajaxDivId))
                 {
                     if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivID}({1})";
+                        jsMethod = $"stlDynamic_{ajaxDivId}({1})";
                     }
                     else if (type.ToLower().Equals(StlPageItem.TypeLastPage.ToLower()))//末页
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivID}({pageCount})";
+                        jsMethod = $"stlDynamic_{ajaxDivId}({pageCount})";
                     }
                     else if (type.ToLower().Equals(StlPageItem.TypePreviousPage.ToLower()))//上一页
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivID}({currentPageIndex})";
+                        jsMethod = $"stlDynamic_{ajaxDivId}({currentPageIndex})";
                     }
                     else if (type.ToLower().Equals(StlPageItem.TypeNextPage.ToLower()))//下一页
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivID}({currentPageIndex + 2})";
+                        jsMethod = $"stlDynamic_{ajaxDivId}({currentPageIndex + 2})";
                     }
                     else if (type.ToLower().Equals(StlPageItem.TypePageNavigation.ToLower()))
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivID}({index})";
+                        jsMethod = $"stlDynamic_{ajaxDivId}({index})";
                     }
                     else if (type.ToLower().Equals(StlPageItem.TypePageSelect.ToLower()))
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivID}(this.options[this.selectedIndex].value)";
+                        jsMethod = $"stlDynamic_{ajaxDivId}(this.options[this.selectedIndex].value)";
                     }
                 }
                 else
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeID);
-                    var redirectUrl = string.Empty;
-                    if (contentID > 0)
-                    {
-                        redirectUrl = PathUtility.GetContentPageFilePath(publishmentSystemInfo, nodeInfo.NodeId, contentID, pageIndex);
-                    }
-                    else
-                    {
-                        redirectUrl = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, nodeInfo.NodeId, pageIndex);
-                    }
+                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
+                    var redirectUrl = contentId > 0 ? PathUtility.GetContentPageFilePath(publishmentSystemInfo, nodeInfo.NodeId, contentId, pageIndex) : PathUtility.GetChannelPageFilePath(publishmentSystemInfo, nodeInfo.NodeId, pageIndex);
                     redirectUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, redirectUrl);
                     jsMethod = $"window.location.href='{redirectUrl}';";
                 }

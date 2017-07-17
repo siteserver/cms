@@ -10,6 +10,7 @@ using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -270,7 +271,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter("@UserName", EDataType.NVarChar, 255,userName)
+				GetParameter("@UserName", DataType.NVarChar, 255,userName)
 			};
             using (var rdr = ExecuteReader(sqlString, selectParms))
             {

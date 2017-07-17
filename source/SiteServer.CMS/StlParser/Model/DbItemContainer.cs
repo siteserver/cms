@@ -2,15 +2,6 @@ namespace SiteServer.CMS.StlParser.Model
 {
     public class DbItemContainer
     {
-        private DbItemInfo channelItem;
-        private DbItemInfo contentItem;
-        private DbItemInfo commentItem;
-        private DbItemInfo inputItem;
-        private DbItemInfo sqlItem;
-        private DbItemInfo siteItem;
-        private DbItemInfo photoItem;
-        private DbItemInfo eachItem;
-
         private DbItemContainer() { }
 
         public static void PopChannelItem(PageInfo pageInfo)
@@ -74,53 +65,53 @@ namespace SiteServer.CMS.StlParser.Model
             var dbItemContainer = new DbItemContainer();
             if (pageInfo.ChannelItems.Count > 0)
             {
-                dbItemContainer.channelItem = (DbItemInfo)pageInfo.ChannelItems.Peek();
+                dbItemContainer.ChannelItem = pageInfo.ChannelItems.Peek();
             }
             if (pageInfo.ContentItems.Count > 0)
             {
-                dbItemContainer.contentItem = (DbItemInfo)pageInfo.ContentItems.Peek();
+                dbItemContainer.ContentItem = pageInfo.ContentItems.Peek();
             }
             if (pageInfo.CommentItems.Count > 0)
             {
-                dbItemContainer.commentItem = (DbItemInfo)pageInfo.CommentItems.Peek();
+                dbItemContainer.CommentItem = (DbItemInfo)pageInfo.CommentItems.Peek();
             }
             if (pageInfo.InputItems.Count > 0)
             {
-                dbItemContainer.inputItem = (DbItemInfo)pageInfo.InputItems.Peek();
+                dbItemContainer.InputItem = (DbItemInfo)pageInfo.InputItems.Peek();
             }
             if (pageInfo.SqlItems.Count > 0)
             {
-                dbItemContainer.sqlItem = (DbItemInfo)pageInfo.SqlItems.Peek();
+                dbItemContainer.SqlItem = (DbItemInfo)pageInfo.SqlItems.Peek();
             }
             if (pageInfo.SiteItems.Count > 0)
             {
-                dbItemContainer.siteItem = (DbItemInfo)pageInfo.SiteItems.Peek();
+                dbItemContainer.SiteItem = (DbItemInfo)pageInfo.SiteItems.Peek();
             }
             if (pageInfo.PhotoItems.Count > 0)
             {
-                dbItemContainer.photoItem = (DbItemInfo)pageInfo.PhotoItems.Peek();
+                dbItemContainer.PhotoItem = (DbItemInfo)pageInfo.PhotoItems.Peek();
             }
             if (pageInfo.EachItems.Count > 0)
             {
-                dbItemContainer.eachItem = (DbItemInfo)pageInfo.EachItems.Peek();
+                dbItemContainer.EachItem = (DbItemInfo)pageInfo.EachItems.Peek();
             }
             return dbItemContainer;
         }
 
-        public DbItemInfo ChannelItem => channelItem;
+        public ChannelItemInfo ChannelItem { get; private set; }
 
-        public DbItemInfo ContentItem => contentItem;
+        public ContentItemInfo ContentItem { get; private set; }
 
-        public DbItemInfo CommentItem => commentItem;
+        public DbItemInfo CommentItem { get; private set; }
 
-        public DbItemInfo InputItem => inputItem;
+        public DbItemInfo InputItem { get; private set; }
 
-        public DbItemInfo SqlItem => sqlItem;
+        public DbItemInfo SqlItem { get; private set; }
 
-        public DbItemInfo SiteItem => siteItem;
+        public DbItemInfo SiteItem { get; private set; }
 
-        public DbItemInfo PhotoItem => photoItem;
+        public DbItemInfo PhotoItem { get; private set; }
 
-        public DbItemInfo EachItem => eachItem;
+        public DbItemInfo EachItem { get; private set; }
     }
 }

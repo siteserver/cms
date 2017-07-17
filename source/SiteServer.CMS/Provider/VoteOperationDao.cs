@@ -1,8 +1,7 @@
-using System;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -29,12 +28,12 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemId, EDataType.Integer, operationInfo.PublishmentSystemID),
-                GetParameter(ParmNodeId, EDataType.Integer, operationInfo.NodeID),
-                GetParameter(ParmContentId, EDataType.Integer, operationInfo.ContentID),
-				GetParameter(ParmIpAddress, EDataType.VarChar, 50, operationInfo.IPAddress),
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, operationInfo.UserName),
-				GetParameter(ParmAddDate, EDataType.DateTime, operationInfo.AddDate)
+				GetParameter(ParmPublishmentsystemId, DataType.Integer, operationInfo.PublishmentSystemID),
+                GetParameter(ParmNodeId, DataType.Integer, operationInfo.NodeID),
+                GetParameter(ParmContentId, DataType.Integer, operationInfo.ContentID),
+				GetParameter(ParmIpAddress, DataType.VarChar, 50, operationInfo.IPAddress),
+                GetParameter(ParmUserName, DataType.NVarChar, 255, operationInfo.UserName),
+				GetParameter(ParmAddDate, DataType.DateTime, operationInfo.AddDate)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -46,9 +45,9 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentsystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmNodeId, DataType.Integer, nodeId),
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectCount, parms))
@@ -68,10 +67,10 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId),
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, userName)
+				GetParameter(ParmPublishmentsystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmNodeId, DataType.Integer, nodeId),
+                GetParameter(ParmContentId, DataType.Integer, contentId),
+                GetParameter(ParmUserName, DataType.NVarChar, 255, userName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectByUserName, parms))
@@ -94,10 +93,10 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId),
-                GetParameter(ParmIpAddress, EDataType.VarChar, 50, ipAddress)
+				GetParameter(ParmPublishmentsystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmNodeId, DataType.Integer, nodeId),
+                GetParameter(ParmContentId, DataType.Integer, contentId),
+                GetParameter(ParmIpAddress, DataType.VarChar, 50, ipAddress)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectByIpaddress, parms))
@@ -118,9 +117,9 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentsystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmNodeId, DataType.Integer, nodeId),
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 
 			var dataset = ExecuteDataset(SqlSelectAll, parms);

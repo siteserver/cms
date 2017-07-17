@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             {
                 var pageTitle = _lotteryId > 0 ? "编辑刮刮卡" : "添加刮刮卡";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdScratch, pageTitle, AppManager.WeiXin.Permission.WebSite.Scratch);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdScratch, pageTitle, AppManager.WeiXin.Permission.WebSite.Scratch);
 
                 LtlPageTitle.Text = pageTitle;
 

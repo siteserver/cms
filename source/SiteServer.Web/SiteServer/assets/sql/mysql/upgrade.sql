@@ -7,3 +7,7 @@ CREATE TABLE siteserver_PluginConfig(
     PRIMARY KEY (Id)
 )ENGINE=INNODB
 GO
+
+ALTER TABLE siteserver_CreateTask ADD
+    Guid           VARCHAR(50)
+GO

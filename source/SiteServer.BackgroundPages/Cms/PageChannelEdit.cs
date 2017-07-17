@@ -42,7 +42,6 @@ namespace SiteServer.BackgroundPages.Cms
         public Button BtnSubmit;
 
         private int _nodeId;
-        private string _returnUrl;
 
         public static string GetRedirectUrl(int publishmentSystemId, int nodeId, string returnUrl)
         {
@@ -85,11 +84,11 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ReturnUrl");
 
             _nodeId = Body.GetQueryInt("NodeID");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
             if (Body.GetQueryString("CanNotEdit") == null && Body.GetQueryString("UncheckedChannel") == null)
             {
-                if (!HasChannelPermissions(_nodeId, AppManager.Cms.Permission.Channel.ChannelEdit))
+                if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ChannelEdit))
                 {
                     PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
@@ -201,6 +200,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack && Page.IsValid)
             {
+                var guid = StringUtils.GetShortGuid();
                 NodeInfo nodeInfo;
                 try
                 {
@@ -322,15 +322,15 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                CreateManager.CreateChannel(PublishmentSystemId, nodeInfo.NodeId);
+                CreateManager.CreateChannel(PublishmentSystemId, nodeInfo.NodeId, guid);
 
                 Body.AddSiteLog(PublishmentSystemId, "修改栏目", $"栏目:{TbNodeName.Text}");
 
                 SuccessMessage("栏目修改成功！");
-                PageUtils.Redirect(_returnUrl);
+                PageUtils.Redirect(ReturnUrl);
             }
         }
 
-        public string ReturnUrl => _returnUrl;
+        public string ReturnUrl { get; private set; }
     }
 }

@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else
                     {
-                        var pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, NodeManager.GetNodeInfo(PublishmentSystemId, nodeId));
+                        var pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, NodeManager.GetNodeInfo(PublishmentSystemId, nodeId), StringUtils.GetShortGuid());
                         if (_isProtocol)
                         {
                             pageUrl = PageUtils.AddProtocolToUrl(pageUrl);

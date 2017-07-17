@@ -16,58 +16,52 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EGovInteractRemarkType type)
 		{
-            if (type == EGovInteractRemarkType.Accept)
+		    if (type == EGovInteractRemarkType.Accept)
 			{
                 return "Accept";
 			}
-            else if (type == EGovInteractRemarkType.SwitchTo)
-            {
-                return "SwitchTo";
-            }
-            else if (type == EGovInteractRemarkType.Translate)
-            {
-                return "Translate";
-            }
-            else if (type == EGovInteractRemarkType.Comment)
-            {
-                return "Comment";
-            }
-            else if (type == EGovInteractRemarkType.Redo)
-            {
-                return "Redo";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovInteractRemarkType.SwitchTo)
+		    {
+		        return "SwitchTo";
+		    }
+		    if (type == EGovInteractRemarkType.Translate)
+		    {
+		        return "Translate";
+		    }
+		    if (type == EGovInteractRemarkType.Comment)
+		    {
+		        return "Comment";
+		    }
+		    if (type == EGovInteractRemarkType.Redo)
+		    {
+		        return "Redo";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EGovInteractRemarkType type)
 		{
-            if (type == EGovInteractRemarkType.Accept)
+		    if (type == EGovInteractRemarkType.Accept)
 			{
                 return "受理";
 			}
-            else if (type == EGovInteractRemarkType.SwitchTo)
-            {
-                return "转办";
-            }
-            else if (type == EGovInteractRemarkType.Translate)
-            {
-                return "转移";
-            }
-            else if (type == EGovInteractRemarkType.Comment)
-            {
-                return "批示";
-            }
-            else if (type == EGovInteractRemarkType.Redo)
-            {
-                return "要求返工";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovInteractRemarkType.SwitchTo)
+		    {
+		        return "转办";
+		    }
+		    if (type == EGovInteractRemarkType.Translate)
+		    {
+		        return "转移";
+		    }
+		    if (type == EGovInteractRemarkType.Comment)
+		    {
+		        return "批示";
+		    }
+		    if (type == EGovInteractRemarkType.Redo)
+		    {
+		        return "要求返工";
+		    }
+		    throw new Exception();
 		}
 
 		public static EGovInteractRemarkType GetEnumType(string typeStr)

@@ -5,7 +5,6 @@ using System.Web.UI.WebControls;
 using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -115,7 +114,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -125,9 +124,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
-            channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+            channelId = Cache.Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, listInfo.ChannelIndex, listInfo.ChannelName, pageInfo.Guid);
 
-            return StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsNoDup, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+            return StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsNoDup, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others, pageInfo.Guid);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)

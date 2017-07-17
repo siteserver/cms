@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
                 var pageTitle = _albumId > 0 ? "编辑微相册" : "添加微相册";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAlbum, pageTitle, AppManager.WeiXin.Permission.WebSite.Album);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdAlbum, pageTitle, AppManager.WeiXin.Permission.WebSite.Album);
                 LtlPageTitle.Text = pageTitle;
 
                 LtlImageUrl.Text =

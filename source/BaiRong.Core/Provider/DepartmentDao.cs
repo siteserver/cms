@@ -3,7 +3,7 @@ using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -56,17 +56,17 @@ namespace BaiRong.Core.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmName, EDataType.NVarChar, 255, departmentInfo.DepartmentName),
-                GetParameter(ParmCode, EDataType.VarChar, 50, departmentInfo.Code),
-				GetParameter(ParmParentId, EDataType.Integer, departmentInfo.ParentId),
-				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, departmentInfo.ParentsPath),
-				GetParameter(ParmParentsCount, EDataType.Integer, departmentInfo.ParentsCount),
-				GetParameter(ParmChildrenCount, EDataType.Integer, 0),
-				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, true.ToString()),
-				GetParameter(ParmTaxis, EDataType.Integer, departmentInfo.Taxis),
-				GetParameter(ParmAddDate, EDataType.DateTime, departmentInfo.AddDate),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, departmentInfo.Summary),
-				GetParameter(ParmCountOfAdmin, EDataType.Integer, departmentInfo.CountOfAdmin)
+				GetParameter(ParmName, DataType.NVarChar, 255, departmentInfo.DepartmentName),
+                GetParameter(ParmCode, DataType.VarChar, 50, departmentInfo.Code),
+				GetParameter(ParmParentId, DataType.Integer, departmentInfo.ParentId),
+				GetParameter(ParmParentsPath, DataType.NVarChar, 255, departmentInfo.ParentsPath),
+				GetParameter(ParmParentsCount, DataType.Integer, departmentInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, DataType.Integer, 0),
+				GetParameter(ParmIsLastNode, DataType.VarChar, 18, true.ToString()),
+				GetParameter(ParmTaxis, DataType.Integer, departmentInfo.Taxis),
+				GetParameter(ParmAddDate, DataType.DateTime, departmentInfo.AddDate),
+				GetParameter(ParmSummary, DataType.NVarChar, 255, departmentInfo.Summary),
+				GetParameter(ParmCountOfAdmin, DataType.Integer, departmentInfo.CountOfAdmin)
 			};
 
             string sqlString =
@@ -125,9 +125,9 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmParentId, EDataType.Integer, departmentInfo.ParentId),
-				GetParameter(ParmId, EDataType.Integer, departmentInfo.DepartmentId),
-				GetParameter(ParmTaxis, EDataType.Integer, departmentInfo.Taxis),
+				GetParameter(ParmParentId, DataType.Integer, departmentInfo.ParentId),
+				GetParameter(ParmId, DataType.Integer, departmentInfo.DepartmentId),
+				GetParameter(ParmTaxis, DataType.Integer, departmentInfo.Taxis),
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -172,9 +172,9 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmParentId, EDataType.Integer, departmentInfo.ParentId),
-				GetParameter(ParmId, EDataType.Integer, departmentInfo.DepartmentId),
-				GetParameter(ParmTaxis, EDataType.Integer, departmentInfo.Taxis)
+				GetParameter(ParmParentId, DataType.Integer, departmentInfo.ParentId),
+				GetParameter(ParmId, DataType.Integer, departmentInfo.DepartmentId),
+				GetParameter(ParmTaxis, DataType.Integer, departmentInfo.Taxis)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -232,8 +232,8 @@ namespace BaiRong.Core.Provider
 
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter(ParmIsLastNode, EDataType.VarChar, 18, false.ToString()),
-				    GetParameter(ParmParentId, EDataType.Integer, parentId)
+				    GetParameter(ParmIsLastNode, DataType.VarChar, 18, false.ToString()),
+				    GetParameter(ParmParentId, DataType.Integer, parentId)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);
@@ -296,15 +296,15 @@ namespace BaiRong.Core.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmName, EDataType.NVarChar, 255, departmentInfo.DepartmentName),
-                GetParameter(ParmCode, EDataType.VarChar, 50, departmentInfo.Code),
-				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, departmentInfo.ParentsPath),
-				GetParameter(ParmParentsCount, EDataType.Integer, departmentInfo.ParentsCount),
-				GetParameter(ParmChildrenCount, EDataType.Integer, departmentInfo.ChildrenCount),
-				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, departmentInfo.IsLastNode.ToString()),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, departmentInfo.Summary),
-				GetParameter(ParmCountOfAdmin, EDataType.Integer, departmentInfo.CountOfAdmin),
-				GetParameter(ParmId, EDataType.Integer, departmentInfo.DepartmentId)
+				GetParameter(ParmName, DataType.NVarChar, 255, departmentInfo.DepartmentName),
+                GetParameter(ParmCode, DataType.VarChar, 50, departmentInfo.Code),
+				GetParameter(ParmParentsPath, DataType.NVarChar, 255, departmentInfo.ParentsPath),
+				GetParameter(ParmParentsCount, DataType.Integer, departmentInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, DataType.Integer, departmentInfo.ChildrenCount),
+				GetParameter(ParmIsLastNode, DataType.VarChar, 18, departmentInfo.IsLastNode.ToString()),
+				GetParameter(ParmSummary, DataType.NVarChar, 255, departmentInfo.Summary),
+				GetParameter(ParmCountOfAdmin, DataType.Integer, departmentInfo.CountOfAdmin),
+				GetParameter(ParmId, DataType.Integer, departmentInfo.DepartmentId)
 			};
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -391,7 +391,7 @@ namespace BaiRong.Core.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmId, EDataType.Integer, departmentId)
+				GetParameter(ParmId, DataType.Integer, departmentId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms)) 
@@ -429,7 +429,7 @@ namespace BaiRong.Core.Provider
 
 			var nodeParms = new IDataParameter[]
 			{
-				GetParameter(ParmParentId, EDataType.Integer, departmentId)
+				GetParameter(ParmParentId, DataType.Integer, departmentId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectCount, nodeParms))

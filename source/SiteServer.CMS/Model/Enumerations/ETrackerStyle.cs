@@ -20,50 +20,47 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ETrackerStyle type)
 		{
-			if (type == ETrackerStyle.Number)
+		    if (type == ETrackerStyle.Number)
 			{
 				return "Number";
 			}
-			else if (type == ETrackerStyle.Style1)
-			{
-				return "Style1";
-			}
-			else if (type == ETrackerStyle.Style2)
-			{
-				return "Style2";
-			}
-			else if (type == ETrackerStyle.Style3)
-			{
-				return "Style3";
-			}
-			else if (type == ETrackerStyle.Style4)
-			{
-				return "Style4";
-			}
-			else if (type == ETrackerStyle.Style5)
-			{
-				return "Style5";
-			}
-			else if (type == ETrackerStyle.Style6)
-			{
-				return "Style6";
-			}
-			else if (type == ETrackerStyle.Style7)
-			{
-				return "Style7";
-			}
-			else if (type == ETrackerStyle.Style8)
-			{
-				return "Style8";
-			}
-			else if (type == ETrackerStyle.Style9)
-			{
-				return "Style9";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETrackerStyle.Style1)
+		    {
+		        return "Style1";
+		    }
+		    if (type == ETrackerStyle.Style2)
+		    {
+		        return "Style2";
+		    }
+		    if (type == ETrackerStyle.Style3)
+		    {
+		        return "Style3";
+		    }
+		    if (type == ETrackerStyle.Style4)
+		    {
+		        return "Style4";
+		    }
+		    if (type == ETrackerStyle.Style5)
+		    {
+		        return "Style5";
+		    }
+		    if (type == ETrackerStyle.Style6)
+		    {
+		        return "Style6";
+		    }
+		    if (type == ETrackerStyle.Style7)
+		    {
+		        return "Style7";
+		    }
+		    if (type == ETrackerStyle.Style8)
+		    {
+		        return "Style8";
+		    }
+		    if (type == ETrackerStyle.Style9)
+		    {
+		        return "Style9";
+		    }
+		    throw new Exception();
 		}
 
         public static string GetText(ETrackerStyle type)
@@ -72,46 +69,43 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "显示数字";
             }
-            else if (type == ETrackerStyle.Style1)
+            if (type == ETrackerStyle.Style1)
             {
                 return "样式1";
             }
-            else if (type == ETrackerStyle.Style2)
+            if (type == ETrackerStyle.Style2)
             {
                 return "样式2";
             }
-            else if (type == ETrackerStyle.Style3)
+            if (type == ETrackerStyle.Style3)
             {
                 return "样式3";
             }
-            else if (type == ETrackerStyle.Style4)
+            if (type == ETrackerStyle.Style4)
             {
                 return "样式4";
             }
-            else if (type == ETrackerStyle.Style5)
+            if (type == ETrackerStyle.Style5)
             {
                 return "样式5";
             }
-            else if (type == ETrackerStyle.Style6)
+            if (type == ETrackerStyle.Style6)
             {
                 return "样式6";
             }
-            else if (type == ETrackerStyle.Style7)
+            if (type == ETrackerStyle.Style7)
             {
                 return "样式7";
             }
-            else if (type == ETrackerStyle.Style8)
+            if (type == ETrackerStyle.Style8)
             {
                 return "样式8";
             }
-            else if (type == ETrackerStyle.Style9)
+            if (type == ETrackerStyle.Style9)
             {
                 return "样式9";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
 		public static ETrackerStyle GetEnumType(string typeStr)

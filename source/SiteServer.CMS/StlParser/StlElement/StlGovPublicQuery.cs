@@ -56,7 +56,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;

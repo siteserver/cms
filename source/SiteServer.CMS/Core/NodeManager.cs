@@ -26,42 +26,34 @@ namespace SiteServer.CMS.Core
             CacheUtils.Remove(CacheKey);
         }
 
-        public static Hashtable GetNodeInfoHashtableByPublishmentSystemId(int publishmentSystemId)
+        public static Dictionary<int, NodeInfo> GetNodeInfoDictionaryByPublishmentSystemId(int publishmentSystemId)
         {
-            return GetNodeInfoHashtableByPublishmentSystemId(publishmentSystemId, false);
+            return GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId, false);
         }
 
-        public static Hashtable GetNodeInfoHashtableByPublishmentSystemId(int publishmentSystemId, bool flush)
+        public static Dictionary<int, NodeInfo> GetNodeInfoDictionaryByPublishmentSystemId(int publishmentSystemId, bool flush)
         {
             var ht = GetActiveHashtable();
 
-            Hashtable nodeInfoHashtable = null;
+            Dictionary<int, NodeInfo> dic = null;
 
             if (!flush)
             {
-                nodeInfoHashtable = ht[publishmentSystemId] as Hashtable;
+                dic = ht[publishmentSystemId] as Dictionary<int, NodeInfo>;
             }
 
-            if (nodeInfoHashtable == null)
-            {
-                nodeInfoHashtable = DataProvider.NodeDao.GetNodeInfoHashtableByPublishmentSystemId(publishmentSystemId);
+            if (dic != null) return dic;
 
-                if (nodeInfoHashtable != null)
-                {
-                    UpdateCache(ht, nodeInfoHashtable, publishmentSystemId);
-                }
-            }
-            return nodeInfoHashtable;
+            dic = DataProvider.NodeDao.GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId);
+            UpdateCache(ht, dic, publishmentSystemId);
+            return dic;
         }
 
         public static NodeInfo GetNodeInfo(int publishmentSystemId, int nodeId)
         {
             NodeInfo nodeInfo = null;
-            var hashtable = GetNodeInfoHashtableByPublishmentSystemId(publishmentSystemId);
-            if (hashtable != null)
-            {
-                nodeInfo = hashtable[nodeId] as NodeInfo;
-            }
+            var hashtable = GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId);
+            hashtable?.TryGetValue(nodeId, out nodeInfo);
             return nodeInfo;
         }
 
@@ -135,7 +127,7 @@ namespace SiteServer.CMS.Core
         public static string GetTableName(PublishmentSystemInfo publishmentSystemInfo, string contentModelId)
         {
             var modelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, contentModelId);
-            if (modelInfo != null && !string.IsNullOrEmpty(modelInfo.TableName))
+            if (!string.IsNullOrEmpty(modelInfo?.TableName))
             {
                 return modelInfo.TableName;
             }
@@ -188,20 +180,15 @@ namespace SiteServer.CMS.Core
             {
                 tableStyle = ETableStyle.JobContent;
             }
-            else if (EContentModelTypeUtils.Equals(EContentModelType.UserDefined, nodeInfo.ContentModelId))
-            {
-                tableStyle = ETableStyle.UserDefined;
-            }
             return tableStyle;
         }
 
         public static string GetNodeTreeLastImageHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
         {
-            var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
-
             var imageHtml = string.Empty;
             if (nodeInfo.NodeType == ENodeType.BackgroundPublishNode)
             {
+                var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
                 if (publishmentSystemInfo.IsHeadquarters == false)
                 {
                     imageHtml =
@@ -213,18 +200,6 @@ namespace SiteServer.CMS.Core
                     imageHtml =
                         $@"<img align=""absmiddle"" alt=""站点"" border=""0"" src=""{PageUtils.Combine(treeDirectoryUrl,
                             "siteHQ.gif")}"" />";
-                }
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(nodeInfo.ContentModelId)) return imageHtml;
-
-                var modelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
-                if (!string.IsNullOrEmpty(modelInfo.IconUrl))
-                {
-                    imageHtml +=
-                        $@"&nbsp;<img align=""absmiddle"" alt=""{modelInfo.ModelName}"" border=""0"" src=""{PageUtils
-                            .Combine(treeDirectoryUrl, modelInfo.IconUrl)}"" /></a>";
                 }
             }
             return imageHtml;
@@ -351,11 +326,11 @@ namespace SiteServer.CMS.Core
         }
 
 
-        private static void UpdateCache(IDictionary ht, Hashtable nodeInfoHashtable, int publishmentSystemId)
+        private static void UpdateCache(IDictionary ht, Dictionary<int, NodeInfo> dic, int publishmentSystemId)
         {
             lock (ht.SyncRoot)
             {
-                ht[publishmentSystemId] = nodeInfoHashtable;
+                ht[publishmentSystemId] = dic;
             }
         }
 

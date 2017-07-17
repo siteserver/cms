@@ -165,11 +165,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (contextType == EContextType.Channel)
                 {
                     nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId);
-                    pageUrl = URLUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, 0, currentPageIndex, pageCount);
+                    pageUrl = UrlUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, 0, currentPageIndex, pageCount);
                 }
                 else
                 {
-                    pageUrl = URLUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, 0, currentPageIndex, pageCount);
+                    pageUrl = UrlUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, 0, currentPageIndex, pageCount);
                 }
 
                 var isActive = false;
@@ -358,7 +358,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        pageUrl = contextType == EContextType.Channel ? URLUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount) : URLUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount);
+                        pageUrl = contextType == EContextType.Channel ? UrlUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount) : UrlUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount);
 
                         pageBuilder.Append(!string.IsNullOrEmpty(successTemplateString)
                             ? GetParsedContent(successTemplateString, pageUrl, listEllipsis, pageInfo)
@@ -369,7 +369,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            pageUrl = contextType == EContextType.Channel ? URLUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount) : URLUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount);
+                            pageUrl = contextType == EContextType.Channel ? UrlUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount) : UrlUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount);
 
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
@@ -408,7 +408,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        pageUrl = contextType == EContextType.Channel ? URLUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount) : URLUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount);
+                        pageUrl = contextType == EContextType.Channel ? UrlUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount) : UrlUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount);
 
                         pageBuilder.Append(!string.IsNullOrEmpty(successTemplateString)
                             ? GetParsedContent(successTemplateString, pageUrl, listEllipsis, pageInfo)
@@ -440,7 +440,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            pageUrl = contextType == EContextType.Channel ? URLUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount) : URLUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount);
+                            pageUrl = contextType == EContextType.Channel ? UrlUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, index, currentPageIndex, pageCount) : UrlUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, index, currentPageIndex, pageCount);
 
                             var listitem = new ListItem(index.ToString(), pageUrl);
                             selectControl.Items.Add(listitem);
@@ -462,7 +462,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return StlParserUtility.GetBackHtml(parsedContent, pageInfo);
@@ -489,11 +489,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (contextType == EContextType.Channel)
                 {
                     var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId);
-                    pageUrl = URLUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, 0, currentPageIndex, pageCount);
+                    pageUrl = UrlUtility.GetUrlInChannelPage(type, pageInfo.PublishmentSystemInfo, nodeInfo, 0, currentPageIndex, pageCount);
                 }
                 else
                 {
-                    pageUrl = URLUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, 0, currentPageIndex, pageCount);
+                    pageUrl = UrlUtility.GetUrlInContentPage(type, pageInfo.PublishmentSystemInfo, nodeId, contentId, 0, currentPageIndex, pageCount);
                 }
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
@@ -544,7 +544,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlEntity, ex);
             }
 
             return parsedContent;
@@ -658,7 +658,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                var clickString = URLUtility.GetClickStringInSearchPage(type, ajaxDivId, 0, currentPageIndex, pageCount);
+                var clickString = UrlUtility.GetClickStringInSearchPage(type, ajaxDivId, 0, currentPageIndex, pageCount);
 
                 var isActive = false;
                 var isAddSpan = false;
@@ -847,7 +847,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        clickString = URLUtility.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
+                        clickString = UrlUtility.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
@@ -866,7 +866,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            clickString = URLUtility.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
+                            clickString = UrlUtility.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
                                 string pageUrl = $"javascript:{clickString}";
@@ -903,7 +903,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        clickString = URLUtility.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
+                        clickString = UrlUtility.GetClickStringInSearchPage(type, ajaxDivId, index, currentPageIndex, pageCount);
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
@@ -959,7 +959,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -977,7 +977,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 var isHyperlink = false;
 
-                var clickString = URLUtility.GetClickStringInSearchPage(type, ajaxDivId, 0, currentPageIndex, pageCount);
+                var clickString = UrlUtility.GetClickStringInSearchPage(type, ajaxDivId, 0, currentPageIndex, pageCount);
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
                 {
@@ -1027,7 +1027,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlEntity, ex);
             }
 
             return parsedContent;
@@ -1144,7 +1144,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                var jsMethod = URLUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId);
+                var jsMethod = UrlUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId);
 
                 var isActive = false;
                 var isAddSpan = false;
@@ -1331,11 +1331,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        jsMethod = URLUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId);
+                        jsMethod = UrlUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId);
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
-                            parsedContent = GetParsedContent(successTemplateString, $"javascript:{jsMethod}", listEllipsis, pageInfo);
+                            pageBuilder = new StringBuilder(GetParsedContent(successTemplateString, $"javascript:{jsMethod}", listEllipsis, pageInfo));
                         }
                         else
                         {
@@ -1349,7 +1349,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            jsMethod = URLUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId);
+                            jsMethod = UrlUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId);
 
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
@@ -1387,11 +1387,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        jsMethod = URLUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId);
+                        jsMethod = UrlUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId);
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
-                            parsedContent = GetParsedContent(successTemplateString, $"javascript:{jsMethod}", Convert.ToString(currentPageIndex + 1), pageInfo);
+                            pageBuilder = new StringBuilder(GetParsedContent(successTemplateString, $"javascript:{jsMethod}", Convert.ToString(currentPageIndex + 1), pageInfo));
                         }
                         else
                         {
@@ -1437,7 +1437,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -1457,7 +1457,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 var isHyperlink = false;
 
-                var jsMethod = URLUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId);
+                var jsMethod = UrlUtility.GetJsMethodInDynamicPage(type, pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId);
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
                 {
@@ -1507,7 +1507,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlEntity, ex);
             }
 
             return parsedContent;

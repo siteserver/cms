@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationUpload, "附件上传设置", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "附件上传设置", AppManager.Permissions.WebSite.Configration);
 
                 tbFileUploadDirectoryName.Text = PublishmentSystemInfo.Additional.FileUploadDirectoryName;
 

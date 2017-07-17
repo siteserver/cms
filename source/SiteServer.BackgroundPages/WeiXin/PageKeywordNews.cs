@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, AppManager.WeiXin.LeftMenu.Function.IdImageReply, string.Empty, AppManager.WeiXin.Permission.WebSite.ImageReply);
+                BreadCrumb("", string.Empty, AppManager.WeiXin.Permission.WebSite.ImageReply);
                 if (Request.QueryString["SetTaxis"] != null)
                 {
                     var keywordId = TranslateUtils.ToInt(Request.QueryString["keywordID"]);

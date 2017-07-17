@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdConfiguration, "站点信息", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.IdConfiguration, "站点信息", AppManager.Permissions.WebSite.Configration);
 
                 PhDomain.Visible = true;
                 TbPublishmentSystemUrl.Text = PublishmentSystemInfo.PublishmentSystemUrl;

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.WeiXin.Model;
+using SiteServer.Plugin;
 using ECountType = SiteServer.CMS.WeiXin.Model.Enumerations.ECountType;
 using ECountTypeUtils = SiteServer.CMS.WeiXin.Model.Enumerations.ECountTypeUtils;
 
@@ -17,18 +17,18 @@ namespace SiteServer.CMS.WeiXin.Provider
 
         public int Insert(CountInfo countInfo)
         {
-            var countId = 0;
+            int countId;
 
             var sqlString = @"INSERT INTO wx_Count (PublishmentSystemID, CountYear, CountMonth, CountDay, CountType, Count) VALUES (@PublishmentSystemID, @CountYear, @CountMonth, @CountDay, @CountType, @Count)";
 
             var parms = new IDataParameter[]
 			{
-                GetParameter("@PublishmentSystemID", EDataType.Integer, countInfo.PublishmentSystemId),
-                GetParameter("@CountYear", EDataType.Integer, countInfo.CountYear),
-                GetParameter("@CountMonth", EDataType.Integer, 255, countInfo.CountMonth),
-                GetParameter("@CountDay", EDataType.Integer, 200, countInfo.CountDay),        
-                GetParameter("@CountType", EDataType.VarChar, 50, ECountTypeUtils.GetValue(countInfo.CountType)), 
-                GetParameter("@Count", EDataType.Integer, countInfo.Count),
+                GetParameter("@PublishmentSystemID", DataType.Integer, countInfo.PublishmentSystemId),
+                GetParameter("@CountYear", DataType.Integer, countInfo.CountYear),
+                GetParameter("@CountMonth", DataType.Integer, 255, countInfo.CountMonth),
+                GetParameter("@CountDay", DataType.Integer, 200, countInfo.CountDay),        
+                GetParameter("@CountType", DataType.VarChar, 50, ECountTypeUtils.GetValue(countInfo.CountType)), 
+                GetParameter("@Count", DataType.Integer, countInfo.Count),
 			};
 
             using (var conn = GetConnection())

@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAppointment, "微预约", AppManager.WeiXin.Permission.WebSite.Appointment);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdAppointment, "微预约", AppManager.WeiXin.Permission.WebSite.Appointment);
                 SpContents.DataBind();
 
                 var urlAddSingle = PageAppointmentSingleAdd.GetRedirectUrl(PublishmentSystemId, 0,0);

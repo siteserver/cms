@@ -30,7 +30,7 @@ using System.Data.OleDb;
 using System.Xml;
 using SiteServer.Plugin;
 
-namespace BaiRong.Core.Data.Helper
+namespace BaiRong.Core.Data
 {
 	/// <summary>
 	/// The SqlServer class is intended to encapsulate high performance, scalable best practices for 

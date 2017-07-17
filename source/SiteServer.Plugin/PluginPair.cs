@@ -10,7 +10,11 @@
 
         public PluginContext Context { get; }
 
-        public PluginMetadata Metadata => Context.Metadata;
+        public PluginMetadata Metadata
+        {
+            get { return Context.Metadata; }
+            set { Context.Metadata = value; }
+        }
 
         public IPlugin Plugin { get; }
     }

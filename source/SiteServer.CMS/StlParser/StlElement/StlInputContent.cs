@@ -8,8 +8,10 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -162,7 +164,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
@@ -189,7 +191,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var content = SqlUtils.EvalString(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.Reply);
                 parsedContent = content;
-                parsedContent = StringUtils.ParseString(EInputType.TextEditor, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                parsedContent = StringUtils.ParseString(InputType.TextEditor, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
             }
             else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex))
             {
@@ -198,7 +200,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             else
             {
                 var id = SqlUtils.EvalInt(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.Id);
-                var inputContentInfo = DataProvider.InputContentDao.GetContentInfo(id);
+                //var inputContentInfo = DataProvider.InputContentDao.GetContentInfo(id);
+                var inputContentInfo = InputContent.GetContentInfo(id, pageInfo.Guid);
                 if (inputContentInfo != null)
                 {
                     parsedContent = inputContentInfo.GetExtendedAttribute(type);
@@ -208,7 +211,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, type, RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, pageInfo.PublishmentSystemId, inputContentInfo.InputId));
                             parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.PublishmentSystemInfo, ETableStyle.InputContent, styleInfo, formatString, attributes, node.InnerXml, false);
-                            parsedContent = StringUtils.ParseString(EInputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                     }
                 }

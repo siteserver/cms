@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdCoupon, "优惠劵明细", AppManager.WeiXin.Permission.WebSite.Coupon);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdCoupon, "优惠劵明细", AppManager.WeiXin.Permission.WebSite.Coupon);
                 SpContents.DataBind();
 
                 BtnAdd.Attributes.Add("onclick", ModalCouponSnAdd.GetOpenWindowString(PublishmentSystemId, _couponId, 0));

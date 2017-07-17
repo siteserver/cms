@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.WeiXin.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
@@ -33,9 +33,9 @@ namespace SiteServer.CMS.WeiXin.Provider
             var taxis = GetMaxTaxis() + 1;
 			var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, groupInfo.PublishmentSystemId),
-                GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupInfo.GroupName),
-                GetParameter(ParmTaxis, EDataType.Integer, taxis)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, groupInfo.PublishmentSystemId),
+                GetParameter(ParmGroupName, DataType.NVarChar, 255, groupInfo.GroupName),
+                GetParameter(ParmTaxis, DataType.Integer, taxis)
 			};
 
             using (var conn = GetConnection())
@@ -63,10 +63,10 @@ namespace SiteServer.CMS.WeiXin.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, groupInfo.PublishmentSystemId),
-                GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupInfo.GroupName),
-                GetParameter(ParmTaxis, EDataType.Integer, groupInfo.Taxis),
-                GetParameter(ParmGroupId, EDataType.Integer, groupInfo.GroupId)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, groupInfo.PublishmentSystemId),
+                GetParameter(ParmGroupName, DataType.NVarChar, 255, groupInfo.GroupName),
+                GetParameter(ParmTaxis, DataType.Integer, groupInfo.Taxis),
+                GetParameter(ParmGroupId, DataType.Integer, groupInfo.GroupId)
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);
@@ -76,7 +76,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 		{
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupId, EDataType.Integer, groupId)
+				GetParameter(ParmGroupId, DataType.Integer, groupId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -88,7 +88,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupId, EDataType.Integer, groupId)
+				GetParameter(ParmGroupId, DataType.Integer, groupId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))

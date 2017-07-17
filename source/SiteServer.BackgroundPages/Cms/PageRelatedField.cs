@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationContentModel, "联动字段管理", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "联动字段管理", AppManager.Permissions.WebSite.Configration);
 
                 dgContents.DataSource = DataProvider.RelatedFieldDao.GetDataSource(PublishmentSystemId);
                 dgContents.ItemDataBound += dgContents_ItemDataBound;

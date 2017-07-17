@@ -19,82 +19,76 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EGovPublicApplyLogType type)
 		{
-            if (type == EGovPublicApplyLogType.New)
+		    if (type == EGovPublicApplyLogType.New)
 			{
                 return "New";
             }
-            else if (type == EGovPublicApplyLogType.Accept)
-            {
-                return "Accept";
-            }
-            else if (type == EGovPublicApplyLogType.Deny)
-			{
-                return "Deny";
-            }
-            else if (type == EGovPublicApplyLogType.SwitchTo)
-            {
-                return "SwitchTo";
-            }
-            else if (type == EGovPublicApplyLogType.Comment)
-            {
-                return "Comment";
-            }
-            else if (type == EGovPublicApplyLogType.Redo)
-            {
-                return "Redo";
-            }
-            else if (type == EGovPublicApplyLogType.Reply)
-            {
-                return "Reply";
-            }
-            else if (type == EGovPublicApplyLogType.Check)
-            {
-                return "Check";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovPublicApplyLogType.Accept)
+		    {
+		        return "Accept";
+		    }
+		    if (type == EGovPublicApplyLogType.Deny)
+		    {
+		        return "Deny";
+		    }
+		    if (type == EGovPublicApplyLogType.SwitchTo)
+		    {
+		        return "SwitchTo";
+		    }
+		    if (type == EGovPublicApplyLogType.Comment)
+		    {
+		        return "Comment";
+		    }
+		    if (type == EGovPublicApplyLogType.Redo)
+		    {
+		        return "Redo";
+		    }
+		    if (type == EGovPublicApplyLogType.Reply)
+		    {
+		        return "Reply";
+		    }
+		    if (type == EGovPublicApplyLogType.Check)
+		    {
+		        return "Check";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EGovPublicApplyLogType type)
 		{
-            if (type == EGovPublicApplyLogType.New)
+		    if (type == EGovPublicApplyLogType.New)
             {
                 return "前台网友提交申请";
             }
-            else if (type == EGovPublicApplyLogType.Accept)
-            {
-                return "受理申请";
-            }
-            else if (type == EGovPublicApplyLogType.Deny)
-            {
-                return "拒绝申请";
-            }
-            else if (type == EGovPublicApplyLogType.SwitchTo)
-            {
-                return "转办申请";
-            }
-            else if (type == EGovPublicApplyLogType.Comment)
-            {
-                return "批示申请";
-            }
-            else if (type == EGovPublicApplyLogType.Redo)
-            {
-                return "要求返工";
-            }
-            else if (type == EGovPublicApplyLogType.Reply)
-            {
-                return "回复申请";
-            }
-            else if (type == EGovPublicApplyLogType.Check)
-            {
-                return "审核申请 通过";
-            }
-            else
-            {
-                throw new Exception();
-            }
+		    if (type == EGovPublicApplyLogType.Accept)
+		    {
+		        return "受理申请";
+		    }
+		    if (type == EGovPublicApplyLogType.Deny)
+		    {
+		        return "拒绝申请";
+		    }
+		    if (type == EGovPublicApplyLogType.SwitchTo)
+		    {
+		        return "转办申请";
+		    }
+		    if (type == EGovPublicApplyLogType.Comment)
+		    {
+		        return "批示申请";
+		    }
+		    if (type == EGovPublicApplyLogType.Redo)
+		    {
+		        return "要求返工";
+		    }
+		    if (type == EGovPublicApplyLogType.Reply)
+		    {
+		        return "回复申请";
+		    }
+		    if (type == EGovPublicApplyLogType.Check)
+		    {
+		        return "审核申请 通过";
+		    }
+		    throw new Exception();
 		}
 
 		public static EGovPublicApplyLogType GetEnumType(string typeStr)

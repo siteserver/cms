@@ -5,6 +5,7 @@ using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -22,11 +23,11 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                    GetParameter(ParmUserName, EDataType.VarChar, 50, userLog.UserName),
-                    GetParameter(ParmIpAddress, EDataType.VarChar, 50, userLog.IpAddress),
-                    GetParameter(ParmAddDate, EDataType.DateTime, userLog.AddDate),
-                    GetParameter(ParmAction, EDataType.NVarChar, 255, userLog.Action),
-                    GetParameter(ParmSummary, EDataType.NVarChar, 255, userLog.Summary)
+                    GetParameter(ParmUserName, DataType.VarChar, 50, userLog.UserName),
+                    GetParameter(ParmIpAddress, DataType.VarChar, 50, userLog.IpAddress),
+                    GetParameter(ParmAddDate, DataType.DateTime, userLog.AddDate),
+                    GetParameter(ParmAction, DataType.NVarChar, 255, userLog.Action),
+                    GetParameter(ParmSummary, DataType.NVarChar, 255, userLog.Summary)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -162,7 +163,7 @@ WHERE t.rowNum > {counter})");
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmUserName, EDataType.VarChar, 50, userName)
+				GetParameter(ParmUserName, DataType.VarChar, 50, userName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -184,7 +185,7 @@ WHERE t.rowNum > {counter})");
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmUserName, EDataType.VarChar, 50, userName)
+				GetParameter(ParmUserName, DataType.VarChar, 50, userName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -216,8 +217,8 @@ WHERE t.rowNum > {counter})");
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmUserName, EDataType.VarChar, 50, userName),
-                GetParameter(ParmAction, EDataType.NVarChar, 255, action)
+                GetParameter(ParmUserName, DataType.VarChar, 50, userName),
+                GetParameter(ParmAction, DataType.NVarChar, 255, action)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using BaiRong.Core.IO.FileManagement;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport.Components;
@@ -372,7 +371,7 @@ namespace SiteServer.CMS.ImportExport
                 {
                     allNodeIdList.Add(nodeId);
                     var nodeInfo = NodeManager.GetNodeInfo(Fso.PublishmentSystemId, nodeId);
-                    var childNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo, EScopeType.Descendant, string.Empty, string.Empty);
+                    var childNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, EScopeType.Descendant, string.Empty, string.Empty);
                     allNodeIdList.AddRange(childNodeIdList);
                 }
             }
@@ -404,18 +403,6 @@ namespace SiteServer.CMS.ImportExport
                 DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             }
             return isExport;
-        }
-
-        public void ExportContentModel(string contentModelPath)
-        {
-            var list = BaiRongDataProvider.ContentModelDao.GetContentModelInfoList(Fso.PublishmentSystemId);
-            ExprotContentModel(contentModelPath, list);
-        }
-
-        public void ExprotContentModel(string filePath, List<ContentModelInfo> contentModelInfoList)
-        {
-            var contentModelIe = new ContentModelIe(Fso.PublishmentSystemId, filePath);
-            contentModelIe.ExportContentModel(contentModelInfoList);
         }
     }
 }

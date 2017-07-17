@@ -85,7 +85,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
@@ -103,7 +103,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                     relatedIdentity = contextInfo.ChannelId;
                 }
 
-                var counts = BaiRongDataProvider.DiggDao.GetCount(pageInfo.PublishmentSystemId, relatedIdentity);
+                //var counts = BaiRongDataProvider.DiggDao.GetCount(pageInfo.PublishmentSystemId, relatedIdentity);
+                var counts = Cache.Digg.GetCount(pageInfo.PublishmentSystemId, relatedIdentity, pageInfo.Guid);
                 var goodNum = counts[0];
                 var badNum = counts[1];
 

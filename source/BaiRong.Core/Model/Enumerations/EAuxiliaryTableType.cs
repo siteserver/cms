@@ -3,7 +3,6 @@ using System.Web.UI.WebControls;
 
 namespace BaiRong.Core.Model.Enumerations
 {
-	
 	public enum EAuxiliaryTableType
 	{
         BackgroundContent,	    //内容
@@ -11,73 +10,67 @@ namespace BaiRong.Core.Model.Enumerations
         GovInteractContent,     //互动交流
         VoteContent,            //投票
         JobContent,	            //招聘
-        UserDefined             //自定义
-	}
+        Custom                  //自定义
+    }
 
 	public class EAuxiliaryTableTypeUtils
 	{
 		public static string GetValue(EAuxiliaryTableType type)
 		{
-			if (type == EAuxiliaryTableType.BackgroundContent)
+		    if (type == EAuxiliaryTableType.BackgroundContent)
 			{
 				return "BackgroundContent";
             }
-            else if (type == EAuxiliaryTableType.GovPublicContent)
-            {
-                return "GovPublicContent";
-            }
-            else if (type == EAuxiliaryTableType.GovInteractContent)
-            {
-                return "GovInteractContent";
-            }
-            else if (type == EAuxiliaryTableType.VoteContent)
-            {
-                return "VoteContent";
-            }
-            else if (type == EAuxiliaryTableType.JobContent)
-            {
-                return "JobContent";
-            }
-            else if (type == EAuxiliaryTableType.UserDefined)
-            {
-                return "UserDefined";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EAuxiliaryTableType.GovPublicContent)
+		    {
+		        return "GovPublicContent";
+		    }
+		    if (type == EAuxiliaryTableType.GovInteractContent)
+		    {
+		        return "GovInteractContent";
+		    }
+		    if (type == EAuxiliaryTableType.VoteContent)
+		    {
+		        return "VoteContent";
+		    }
+		    if (type == EAuxiliaryTableType.JobContent)
+		    {
+		        return "JobContent";
+		    }
+		    if (type == EAuxiliaryTableType.Custom)
+		    {
+		        return "Custom";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EAuxiliaryTableType type)
 		{
-			if (type == EAuxiliaryTableType.BackgroundContent)
+		    if (type == EAuxiliaryTableType.BackgroundContent)
 			{
                 return "内容";
             }
-            else if (type == EAuxiliaryTableType.GovPublicContent)
-            {
-                return "信息公开";
-            }
-            else if (type == EAuxiliaryTableType.GovInteractContent)
-            {
-                return "互动交流";
-            }
-            else if (type == EAuxiliaryTableType.VoteContent)
-            {
-                return "投票";
-            }
-            else if (type == EAuxiliaryTableType.JobContent)
-            {
-                return "招聘";
-            }
-            else if (type == EAuxiliaryTableType.UserDefined)
-            {
-                return "自定义";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EAuxiliaryTableType.GovPublicContent)
+		    {
+		        return "信息公开";
+		    }
+		    if (type == EAuxiliaryTableType.GovInteractContent)
+		    {
+		        return "互动交流";
+		    }
+		    if (type == EAuxiliaryTableType.VoteContent)
+		    {
+		        return "投票";
+		    }
+		    if (type == EAuxiliaryTableType.JobContent)
+		    {
+		        return "招聘";
+		    }
+		    if (type == EAuxiliaryTableType.Custom)
+		    {
+		        return "自定义";
+		    }
+		    throw new Exception();
 		}
 
 		public static EAuxiliaryTableType GetEnumType(string typeStr)
@@ -104,9 +97,9 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 retval = EAuxiliaryTableType.JobContent;
             }
-            else if (Equals(EAuxiliaryTableType.UserDefined, typeStr))
+            else if (Equals(EAuxiliaryTableType.Custom, typeStr))
             {
-                retval = EAuxiliaryTableType.UserDefined;
+                retval = EAuxiliaryTableType.Custom;
             }
 
 			return retval;
@@ -143,21 +136,21 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return ETableStyle.GovPublicContent;
             }
-            else if (tableType == EAuxiliaryTableType.GovInteractContent)
+            if (tableType == EAuxiliaryTableType.GovInteractContent)
             {
                 return ETableStyle.GovInteractContent;
             }
-            else if (tableType == EAuxiliaryTableType.VoteContent)
+            if (tableType == EAuxiliaryTableType.VoteContent)
             {
                 return ETableStyle.VoteContent;
             }
-            else if (tableType == EAuxiliaryTableType.JobContent)
+            if (tableType == EAuxiliaryTableType.JobContent)
             {
                 return ETableStyle.JobContent;
             }
-            else if (tableType == EAuxiliaryTableType.UserDefined)
+            if (tableType == EAuxiliaryTableType.Custom)
             {
-                return ETableStyle.UserDefined;
+                return ETableStyle.Custom;
             }
             return ETableStyle.BackgroundContent;
         }
@@ -168,21 +161,21 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "model_WCM_GovPublic";
             }
-            else if (tableType == EAuxiliaryTableType.GovInteractContent)
+            if (tableType == EAuxiliaryTableType.GovInteractContent)
             {
                 return "model_WCM_GovInteract";
             }
-            else if (tableType == EAuxiliaryTableType.VoteContent)
+            if (tableType == EAuxiliaryTableType.VoteContent)
             {
                 return "model_Vote";
             }
-            else if (tableType == EAuxiliaryTableType.JobContent)
+            if (tableType == EAuxiliaryTableType.JobContent)
             {
                 return "model_Job";
             }
-            else if (tableType == EAuxiliaryTableType.UserDefined)
+            if (tableType == EAuxiliaryTableType.Custom)
             {
-                return "model_UserDefined";
+                return "model_Custom";
             }
             return "model_Content";
         }

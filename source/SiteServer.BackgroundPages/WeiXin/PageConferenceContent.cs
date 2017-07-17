@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             { 
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdConference, "申请查看", AppManager.WeiXin.Permission.WebSite.Conference);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdConference, "申请查看", AppManager.WeiXin.Permission.WebSite.Conference);
                 SpContents.DataBind();
 
                 var urlDelete = PageUtils.AddQueryString(GetRedirectUrl(PublishmentSystemId, _conferenceId, _returnUrl), "Delete", "True");

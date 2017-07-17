@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Wcm
 		{
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicApplyConfiguration, "依申请公开设置", AppManager.Wcm.Permission.WebSite.GovPublicApplyConfiguration);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, "依申请公开设置", AppManager.Wcm.Permission.WebSite.GovPublicApplyConfiguration);
 
                 tbGovPublicApplyDateLimit.Text = PublishmentSystemInfo.Additional.GovPublicApplyDateLimit.ToString();
                 rblGovPublicApplyAlertDateIsAfter.SelectedValue = (PublishmentSystemInfo.Additional.GovPublicApplyAlertDate > 0).ToString();

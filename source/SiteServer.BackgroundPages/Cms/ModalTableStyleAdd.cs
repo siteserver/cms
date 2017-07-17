@@ -12,6 +12,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -100,7 +101,7 @@ namespace SiteServer.BackgroundPages.Cms
                 DdlIsHorizontal.Items[0].Value = true.ToString();
                 DdlIsHorizontal.Items[1].Value = false.ToString();
 
-                EInputTypeUtils.AddListItems(DdlInputType);
+                InputTypeUtils.AddListItems(DdlInputType);
 
                 var arraylist = DataProvider.RelatedFieldDao.GetRelatedFieldInfoArrayList(PublishmentSystemId);
                 foreach (RelatedFieldInfo rfInfo in arraylist)
@@ -172,8 +173,8 @@ namespace SiteServer.BackgroundPages.Cms
                 TbAttributeName.Enabled = false;
             }
 
-            var inputType = EInputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
-            if (inputType == EInputType.CheckBox || inputType == EInputType.Radio || inputType == EInputType.SelectMultiple || inputType == EInputType.SelectOne)
+            var inputType = InputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
+            if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
                 TrItemsType.Visible = true;
                 var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
@@ -189,29 +190,29 @@ namespace SiteServer.BackgroundPages.Cms
                     PhItemCount.Visible = true;
                     TrItems.Visible = true;
                 }
-                if (inputType == EInputType.CheckBox || inputType == EInputType.Radio)
+                if (inputType == InputType.CheckBox || inputType == InputType.Radio)
                 {
                     TrRepeat.Visible = true;
                 }
             }
-            else if (inputType == EInputType.TextEditor)
+            else if (inputType == InputType.TextEditor)
             {
                 TrHeightAndWidth.Visible = true;
             }
-            else if (inputType == EInputType.TextArea)
+            else if (inputType == InputType.TextArea)
             {
                 TrHeightAndWidth.Visible = true;
             }
-            else if (inputType == EInputType.Text)
+            else if (inputType == InputType.Text)
             {
                 PhIsFormatString.Visible = true;
                 TrHeightAndWidth.Visible = true;
             }
-            else if (inputType == EInputType.Date || inputType == EInputType.DateTime)
+            else if (inputType == InputType.Date || inputType == InputType.DateTime)
             {
                 SpanDateTip.Visible = true;
             }
-            else if (inputType == EInputType.RelatedField)
+            else if (inputType == InputType.RelatedField)
             {
                 TrRelatedField.Visible = true;
             }
@@ -244,9 +245,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             bool isChanged;
 
-            var inputType = EInputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
+            var inputType = InputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
 
-            if (inputType == EInputType.Radio || inputType == EInputType.SelectMultiple || inputType == EInputType.SelectOne)
+            if (inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
                 var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
                 if (!isRapid)
@@ -279,7 +280,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-        private bool UpdateTableStyleInfo(EInputType inputType)
+        private bool UpdateTableStyleInfo(InputType inputType)
         {
             var isChanged = false;
             _styleInfo.AttributeName =TbAttributeName.Text;
@@ -287,7 +288,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.HelpText = TbHelpText.Text;
             _styleInfo.IsVisible = TranslateUtils.ToBool(RblIsVisible.SelectedValue);
             _styleInfo.IsSingleLine = TranslateUtils.ToBool(RblIsSingleLine.SelectedValue);
-            _styleInfo.InputType = EInputTypeUtils.GetValue(inputType);
+            _styleInfo.InputType = InputTypeUtils.GetValue(inputType);
             _styleInfo.DefaultValue = TbDefaultValue.Text;
             _styleInfo.IsHorizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
 
@@ -300,7 +301,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ArrayList styleItems = null;
 
-            if (inputType == EInputType.CheckBox || inputType == EInputType.Radio || inputType == EInputType.SelectMultiple || inputType == EInputType.SelectOne)
+            if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
                 styleItems = new ArrayList();
 
@@ -323,7 +324,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var itemValue = (TextBox)item.FindControl("ItemValue");
                         var isSelected = (CheckBox)item.FindControl("IsSelected");
 
-                        if ((inputType != EInputType.SelectMultiple && inputType != EInputType.CheckBox) && isHasSelected && isSelected.Checked)
+                        if ((inputType != InputType.SelectMultiple && inputType != InputType.CheckBox) && isHasSelected && isSelected.Checked)
                         {
                             FailMessage("操作失败，只能有一个初始化时选定项！");
                             return false;
@@ -350,7 +351,7 @@ namespace SiteServer.BackgroundPages.Cms
             return isChanged;
         }
 
-        private bool InsertTableStyleInfo(EInputType inputType)
+        private bool InsertTableStyleInfo(InputType inputType)
         {
             var isChanged = false;
 
@@ -372,7 +373,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.HelpText = TbHelpText.Text;
             _styleInfo.IsVisible = TranslateUtils.ToBool(RblIsVisible.SelectedValue);
             _styleInfo.IsSingleLine = TranslateUtils.ToBool(RblIsSingleLine.SelectedValue);
-            _styleInfo.InputType = EInputTypeUtils.GetValue(inputType);
+            _styleInfo.InputType = InputTypeUtils.GetValue(inputType);
             _styleInfo.DefaultValue = TbDefaultValue.Text;
             _styleInfo.IsHorizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
 
@@ -383,7 +384,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.Additional.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
             _styleInfo.Additional.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
 
-            if (inputType == EInputType.CheckBox || inputType == EInputType.Radio || inputType == EInputType.SelectMultiple || inputType == EInputType.SelectOne)
+            if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
                 _styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
@@ -406,7 +407,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var itemValue = (TextBox)item.FindControl("ItemValue");
                         var isSelected = (CheckBox)item.FindControl("IsSelected");
 
-                        if (inputType != EInputType.SelectMultiple && inputType != EInputType.CheckBox && isHasSelected && isSelected.Checked)
+                        if (inputType != InputType.SelectMultiple && inputType != InputType.CheckBox && isHasSelected && isSelected.Checked)
                         {
                             FailMessage("操作失败，只能有一个初始化时选定项！");
                             return false;

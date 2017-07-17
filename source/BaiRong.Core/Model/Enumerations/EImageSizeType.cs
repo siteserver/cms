@@ -19,58 +19,52 @@ namespace BaiRong.Model
 	{
 		public static string GetValue(EImageSizeType type)
 		{
-			if (type == EImageSizeType.Square)
+		    if (type == EImageSizeType.Square)
 			{
 				return "Square";
 			}
-			else if (type == EImageSizeType.Thumbnail)
-			{
-				return "Thumbnail";
-			}
-			else if (type == EImageSizeType.Small)
-			{
-				return "Small";
-			}
-			else if (type == EImageSizeType.Medium)
-			{
-				return "Medium";
-			}
-			else if (type == EImageSizeType.Original)
-			{
-				return "Original";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EImageSizeType.Thumbnail)
+		    {
+		        return "Thumbnail";
+		    }
+		    if (type == EImageSizeType.Small)
+		    {
+		        return "Small";
+		    }
+		    if (type == EImageSizeType.Medium)
+		    {
+		        return "Medium";
+		    }
+		    if (type == EImageSizeType.Original)
+		    {
+		        return "Original";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EImageSizeType type)
 		{
-			if (type == EImageSizeType.Square)
+		    if (type == EImageSizeType.Square)
 			{
 				return "矩形";
 			}
-			else if (type == EImageSizeType.Thumbnail)
-			{
-				return "小图";
-			}
-			else if (type == EImageSizeType.Small)
-			{
-				return "较小尺寸";
-			}
-			else if (type == EImageSizeType.Medium)
-			{
-				return "中等尺寸";
-			}
-			else if (type == EImageSizeType.Original)
-			{
-				return "原始尺寸";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EImageSizeType.Thumbnail)
+		    {
+		        return "小图";
+		    }
+		    if (type == EImageSizeType.Small)
+		    {
+		        return "较小尺寸";
+		    }
+		    if (type == EImageSizeType.Medium)
+		    {
+		        return "中等尺寸";
+		    }
+		    if (type == EImageSizeType.Original)
+		    {
+		        return "原始尺寸";
+		    }
+		    throw new Exception();
 		}
 
 		public static EImageSizeType GetEnumType(string typeStr)

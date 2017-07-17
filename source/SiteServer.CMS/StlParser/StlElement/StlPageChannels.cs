@@ -5,10 +5,10 @@ using System.Web.UI.WebControls;
 using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -20,6 +20,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public const string AttributePageNum = "pageNum";
 
+        private readonly string _stlPageChannelsElement;
         private readonly XmlNode _node;
         private readonly PageInfo _pageInfo;
         private readonly ContextInfo _contextInfo;
@@ -42,9 +43,10 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public StlPageChannels(string stlPageChannelsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
         {
+            _stlPageChannelsElement = stlPageChannelsElement;
             _pageInfo = pageInfo;
             _contextInfo = contextInfo;
-            var xmlDocument = StlParserUtility.GetXmlDocument(stlPageChannelsElement, isXmlContent);
+            var xmlDocument = StlParserUtility.GetXmlDocument(_stlPageChannelsElement, isXmlContent);
             _node = xmlDocument.DocumentElement;
             _node = _node?.FirstChild;
 
@@ -52,7 +54,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, _contextInfo.ChannelId, DisplayInfo.UpLevel, DisplayInfo.TopLevel);
 
-            channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, DisplayInfo.ChannelIndex, DisplayInfo.ChannelName);
+            channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, DisplayInfo.ChannelIndex, DisplayInfo.ChannelName, pageInfo.Guid);
 
             var isTotal = TranslateUtils.ToBool(DisplayInfo.Others.Get(AttributeIsTotal));
 
@@ -61,7 +63,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 DisplayInfo.Scope = EScopeType.Descendant;
             }
 
-            _dataSet = StlDataUtility.GetPageChannelsDataSet(pageInfo.PublishmentSystemId, channelId, DisplayInfo.GroupChannel, DisplayInfo.GroupChannelNot, DisplayInfo.IsImageExists, DisplayInfo.IsImage, DisplayInfo.StartNum, DisplayInfo.TotalNum, DisplayInfo.OrderByString, DisplayInfo.Scope, isTotal, DisplayInfo.Where);
+            _dataSet = StlDataUtility.GetPageChannelsDataSet(pageInfo.PublishmentSystemId, channelId, DisplayInfo.GroupChannel, DisplayInfo.GroupChannelNot, DisplayInfo.IsImageExists, DisplayInfo.IsImage, DisplayInfo.StartNum, DisplayInfo.TotalNum, DisplayInfo.OrderByString, DisplayInfo.Scope, isTotal, DisplayInfo.Where, pageInfo.Guid);
         }
 
 
@@ -183,7 +185,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, _stlPageChannelsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

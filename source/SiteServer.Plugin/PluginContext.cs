@@ -11,7 +11,7 @@
 
         public PluginEnvironment Environment { get; }
 
-        public PluginMetadata Metadata { get; }
+        public PluginMetadata Metadata { get; set; }
 
         /// <summary>
         /// 公开的API调用

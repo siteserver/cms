@@ -6,6 +6,7 @@ using BaiRong.Core;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -60,32 +61,32 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 		{
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmGatherFileRuleName, EDataType.NVarChar, 50, gatherFileRuleInfo.GatherRuleName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, gatherFileRuleInfo.PublishmentSystemId),
-				GetParameter(ParmGatherUrl, EDataType.NVarChar, 255, gatherFileRuleInfo.GatherUrl),
-				GetParameter(ParmCharset, EDataType.VarChar, 50, ECharsetUtils.GetValue(gatherFileRuleInfo.Charset)),
-                GetParameter(ParmLastGatherDate, EDataType.DateTime, gatherFileRuleInfo.LastGatherDate),
-                GetParameter(ParmIsToFile, EDataType.VarChar, 18, gatherFileRuleInfo.IsToFile.ToString()),
-                GetParameter(ParmFilePath, EDataType.NVarChar, 255, gatherFileRuleInfo.FilePath),
-                GetParameter(ParmIsSaveRelatedFiles, EDataType.VarChar, 18, gatherFileRuleInfo.IsSaveRelatedFiles.ToString()),
-                GetParameter(ParmIsRemoveScripts, EDataType.VarChar, 18, gatherFileRuleInfo.IsRemoveScripts.ToString()),
-                GetParameter(ParmStyleDirectoryPath, EDataType.NVarChar, 255, gatherFileRuleInfo.StyleDirectoryPath),
-                GetParameter(ParmScriptDirectoryPath, EDataType.NVarChar, 255, gatherFileRuleInfo.ScriptDirectoryPath),
-                GetParameter(ParmImageDirectoryPath, EDataType.NVarChar, 255, gatherFileRuleInfo.ImageDirectoryPath),
+				GetParameter(ParmGatherFileRuleName, DataType.NVarChar, 50, gatherFileRuleInfo.GatherRuleName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, gatherFileRuleInfo.PublishmentSystemId),
+				GetParameter(ParmGatherUrl, DataType.NVarChar, 255, gatherFileRuleInfo.GatherUrl),
+				GetParameter(ParmCharset, DataType.VarChar, 50, ECharsetUtils.GetValue(gatherFileRuleInfo.Charset)),
+                GetParameter(ParmLastGatherDate, DataType.DateTime, gatherFileRuleInfo.LastGatherDate),
+                GetParameter(ParmIsToFile, DataType.VarChar, 18, gatherFileRuleInfo.IsToFile.ToString()),
+                GetParameter(ParmFilePath, DataType.NVarChar, 255, gatherFileRuleInfo.FilePath),
+                GetParameter(ParmIsSaveRelatedFiles, DataType.VarChar, 18, gatherFileRuleInfo.IsSaveRelatedFiles.ToString()),
+                GetParameter(ParmIsRemoveScripts, DataType.VarChar, 18, gatherFileRuleInfo.IsRemoveScripts.ToString()),
+                GetParameter(ParmStyleDirectoryPath, DataType.NVarChar, 255, gatherFileRuleInfo.StyleDirectoryPath),
+                GetParameter(ParmScriptDirectoryPath, DataType.NVarChar, 255, gatherFileRuleInfo.ScriptDirectoryPath),
+                GetParameter(ParmImageDirectoryPath, DataType.NVarChar, 255, gatherFileRuleInfo.ImageDirectoryPath),
 
-                GetParameter(ParmNodeId, EDataType.Integer, gatherFileRuleInfo.NodeId),
-				GetParameter(ParmIsSaveImage, EDataType.VarChar, 18, gatherFileRuleInfo.IsSaveImage.ToString()),
-                GetParameter(ParmIsChecked, EDataType.VarChar, 18, gatherFileRuleInfo.IsChecked.ToString()),
-                GetParameter(ParmContentExclude, EDataType.NText, gatherFileRuleInfo.ContentExclude),
-				GetParameter(ParmContentHtmlClearCollection, EDataType.NVarChar, 255, gatherFileRuleInfo.ContentHtmlClearCollection),
-                GetParameter(ParmContentHtmlClearTagCollection, EDataType.NVarChar, 255, gatherFileRuleInfo.ContentHtmlClearTagCollection),
-				GetParameter(ParmContentTitleStart, EDataType.NText, gatherFileRuleInfo.ContentTitleStart),
-				GetParameter(ParmContentTitleEnd, EDataType.NText, gatherFileRuleInfo.ContentTitleEnd),
-				GetParameter(ParmContentContentStart, EDataType.NText, gatherFileRuleInfo.ContentContentStart),
-				GetParameter(ParmContentContentEnd, EDataType.NText, gatherFileRuleInfo.ContentContentEnd),
-                GetParameter(ParmContentAttributes, EDataType.NText, gatherFileRuleInfo.ContentAttributes),
-                GetParameter(ParmContentAttributesXml, EDataType.NText, gatherFileRuleInfo.ContentAttributesXml),
-                GetParameter(ParmIsAutoCreate, EDataType.VarChar, 18, gatherFileRuleInfo.IsAutoCreate.ToString())
+                GetParameter(ParmNodeId, DataType.Integer, gatherFileRuleInfo.NodeId),
+				GetParameter(ParmIsSaveImage, DataType.VarChar, 18, gatherFileRuleInfo.IsSaveImage.ToString()),
+                GetParameter(ParmIsChecked, DataType.VarChar, 18, gatherFileRuleInfo.IsChecked.ToString()),
+                GetParameter(ParmContentExclude, DataType.NText, gatherFileRuleInfo.ContentExclude),
+				GetParameter(ParmContentHtmlClearCollection, DataType.NVarChar, 255, gatherFileRuleInfo.ContentHtmlClearCollection),
+                GetParameter(ParmContentHtmlClearTagCollection, DataType.NVarChar, 255, gatherFileRuleInfo.ContentHtmlClearTagCollection),
+				GetParameter(ParmContentTitleStart, DataType.NText, gatherFileRuleInfo.ContentTitleStart),
+				GetParameter(ParmContentTitleEnd, DataType.NText, gatherFileRuleInfo.ContentTitleEnd),
+				GetParameter(ParmContentContentStart, DataType.NText, gatherFileRuleInfo.ContentContentStart),
+				GetParameter(ParmContentContentEnd, DataType.NText, gatherFileRuleInfo.ContentContentEnd),
+                GetParameter(ParmContentAttributes, DataType.NText, gatherFileRuleInfo.ContentAttributes),
+                GetParameter(ParmContentAttributesXml, DataType.NText, gatherFileRuleInfo.ContentAttributesXml),
+                GetParameter(ParmIsAutoCreate, DataType.VarChar, 18, gatherFileRuleInfo.IsAutoCreate.ToString())
             };
 
             ExecuteNonQuery(SqlInsertGatherFileRule, insertParms);
@@ -95,9 +96,9 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmLastGatherDate, EDataType.DateTime, DateTime.Now),
-				GetParameter(ParmGatherFileRuleName, EDataType.NVarChar, 50, gatherRuleName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmLastGatherDate, DataType.DateTime, DateTime.Now),
+				GetParameter(ParmGatherFileRuleName, DataType.NVarChar, 50, gatherRuleName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 							
 			ExecuteNonQuery(SqlUpdateLastGatherDate, parms);
@@ -108,32 +109,32 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmGatherUrl, EDataType.NVarChar, 255, gatherFileRuleInfo.GatherUrl),
-				GetParameter(ParmCharset, EDataType.VarChar, 50, ECharsetUtils.GetValue(gatherFileRuleInfo.Charset)),
-                GetParameter(ParmLastGatherDate, EDataType.DateTime, gatherFileRuleInfo.LastGatherDate),
-                GetParameter(ParmIsToFile, EDataType.VarChar, 18, gatherFileRuleInfo.IsToFile.ToString()),
-                GetParameter(ParmFilePath, EDataType.NVarChar, 255, gatherFileRuleInfo.FilePath),
-                GetParameter(ParmIsSaveRelatedFiles, EDataType.VarChar, 18, gatherFileRuleInfo.IsSaveRelatedFiles.ToString()),
-                GetParameter(ParmIsRemoveScripts, EDataType.VarChar, 18, gatherFileRuleInfo.IsRemoveScripts.ToString()),
-                GetParameter(ParmStyleDirectoryPath, EDataType.NVarChar, 255, gatherFileRuleInfo.StyleDirectoryPath),
-                GetParameter(ParmScriptDirectoryPath, EDataType.NVarChar, 255, gatherFileRuleInfo.ScriptDirectoryPath),
-                GetParameter(ParmImageDirectoryPath, EDataType.NVarChar, 255, gatherFileRuleInfo.ImageDirectoryPath),
+				GetParameter(ParmGatherUrl, DataType.NVarChar, 255, gatherFileRuleInfo.GatherUrl),
+				GetParameter(ParmCharset, DataType.VarChar, 50, ECharsetUtils.GetValue(gatherFileRuleInfo.Charset)),
+                GetParameter(ParmLastGatherDate, DataType.DateTime, gatherFileRuleInfo.LastGatherDate),
+                GetParameter(ParmIsToFile, DataType.VarChar, 18, gatherFileRuleInfo.IsToFile.ToString()),
+                GetParameter(ParmFilePath, DataType.NVarChar, 255, gatherFileRuleInfo.FilePath),
+                GetParameter(ParmIsSaveRelatedFiles, DataType.VarChar, 18, gatherFileRuleInfo.IsSaveRelatedFiles.ToString()),
+                GetParameter(ParmIsRemoveScripts, DataType.VarChar, 18, gatherFileRuleInfo.IsRemoveScripts.ToString()),
+                GetParameter(ParmStyleDirectoryPath, DataType.NVarChar, 255, gatherFileRuleInfo.StyleDirectoryPath),
+                GetParameter(ParmScriptDirectoryPath, DataType.NVarChar, 255, gatherFileRuleInfo.ScriptDirectoryPath),
+                GetParameter(ParmImageDirectoryPath, DataType.NVarChar, 255, gatherFileRuleInfo.ImageDirectoryPath),
 
-                GetParameter(ParmNodeId, EDataType.Integer, gatherFileRuleInfo.NodeId),
-				GetParameter(ParmIsSaveImage, EDataType.VarChar, 18, gatherFileRuleInfo.IsSaveImage.ToString()),
-                GetParameter(ParmIsChecked, EDataType.VarChar, 18, gatherFileRuleInfo.IsChecked.ToString()),
-                GetParameter(ParmContentExclude, EDataType.NText, gatherFileRuleInfo.ContentExclude),
-				GetParameter(ParmContentHtmlClearCollection, EDataType.NVarChar, 255, gatherFileRuleInfo.ContentHtmlClearCollection),
-                GetParameter(ParmContentHtmlClearTagCollection, EDataType.NVarChar, 255, gatherFileRuleInfo.ContentHtmlClearTagCollection),
-				GetParameter(ParmContentTitleStart, EDataType.NText, gatherFileRuleInfo.ContentTitleStart),
-				GetParameter(ParmContentTitleEnd, EDataType.NText, gatherFileRuleInfo.ContentTitleEnd),
-				GetParameter(ParmContentContentStart, EDataType.NText, gatherFileRuleInfo.ContentContentStart),
-				GetParameter(ParmContentContentEnd, EDataType.NText, gatherFileRuleInfo.ContentContentEnd),
-                GetParameter(ParmContentAttributes, EDataType.NText, gatherFileRuleInfo.ContentAttributes),
-                GetParameter(ParmContentAttributesXml, EDataType.NText, gatherFileRuleInfo.ContentAttributesXml),
-				GetParameter(ParmGatherFileRuleName, EDataType.NVarChar, 50, gatherFileRuleInfo.GatherRuleName),
-                GetParameter(ParmIsAutoCreate, EDataType.VarChar, 18, gatherFileRuleInfo.IsAutoCreate.ToString()),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, gatherFileRuleInfo.PublishmentSystemId)
+                GetParameter(ParmNodeId, DataType.Integer, gatherFileRuleInfo.NodeId),
+				GetParameter(ParmIsSaveImage, DataType.VarChar, 18, gatherFileRuleInfo.IsSaveImage.ToString()),
+                GetParameter(ParmIsChecked, DataType.VarChar, 18, gatherFileRuleInfo.IsChecked.ToString()),
+                GetParameter(ParmContentExclude, DataType.NText, gatherFileRuleInfo.ContentExclude),
+				GetParameter(ParmContentHtmlClearCollection, DataType.NVarChar, 255, gatherFileRuleInfo.ContentHtmlClearCollection),
+                GetParameter(ParmContentHtmlClearTagCollection, DataType.NVarChar, 255, gatherFileRuleInfo.ContentHtmlClearTagCollection),
+				GetParameter(ParmContentTitleStart, DataType.NText, gatherFileRuleInfo.ContentTitleStart),
+				GetParameter(ParmContentTitleEnd, DataType.NText, gatherFileRuleInfo.ContentTitleEnd),
+				GetParameter(ParmContentContentStart, DataType.NText, gatherFileRuleInfo.ContentContentStart),
+				GetParameter(ParmContentContentEnd, DataType.NText, gatherFileRuleInfo.ContentContentEnd),
+                GetParameter(ParmContentAttributes, DataType.NText, gatherFileRuleInfo.ContentAttributes),
+                GetParameter(ParmContentAttributesXml, DataType.NText, gatherFileRuleInfo.ContentAttributesXml),
+				GetParameter(ParmGatherFileRuleName, DataType.NVarChar, 50, gatherFileRuleInfo.GatherRuleName),
+                GetParameter(ParmIsAutoCreate, DataType.VarChar, 18, gatherFileRuleInfo.IsAutoCreate.ToString()),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, gatherFileRuleInfo.PublishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlUpdateGatherFileRule, updateParms);
@@ -143,8 +144,8 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGatherFileRuleName, EDataType.NVarChar, 50, gatherRuleName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmGatherFileRuleName, DataType.NVarChar, 50, gatherRuleName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 							
 			ExecuteNonQuery(SqlDeleteGatherFileRule, parms);
@@ -156,8 +157,8 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 			
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGatherFileRuleName, EDataType.NVarChar, 50, gatherRuleName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmGatherFileRuleName, DataType.NVarChar, 50, gatherRuleName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 			
 			using (var rdr = ExecuteReader(SqlSelectGatherFileRule, parms)) 
@@ -199,8 +200,8 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGatherFileRuleName, EDataType.NVarChar, 50, importGatherRuleName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmGatherFileRuleName, DataType.NVarChar, 50, importGatherRuleName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectGatherFileRule, parms))
@@ -219,7 +220,7 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
 			var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllGatherFileRuleByPsId, parms);
@@ -232,7 +233,7 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectAllGatherFileRuleByPsId, parms))
@@ -256,7 +257,7 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectGatherFileRuleNameByPsId, parms)) 

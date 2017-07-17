@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             {
                 var pageTitle = _searchId > 0 ? "编辑微搜索" : "添加微搜索";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdSearch, pageTitle, AppManager.WeiXin.Permission.WebSite.Search);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdSearch, pageTitle, AppManager.WeiXin.Permission.WebSite.Search);
                 LtlPageTitle.Text = pageTitle;
                
                 LtlImageUrl.Text =
@@ -168,7 +168,6 @@ itemController.openImageCssClassSelect = function(itemIndex){{
                             else
                             { 
                                 var nodeNames = NodeManager.GetNodeNameNavigation(PublishmentSystemId, searchNavigationInfo.ChannelId);
-                                var pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, NodeManager.GetNodeInfo(PublishmentSystemId, searchNavigationInfo.ChannelId));
                                 searchPageTitle = $@"栏目页：{nodeNames}";
                             }
                         }

@@ -5,6 +5,7 @@ using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -88,7 +89,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
@@ -104,19 +105,22 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contextInfo.ContentInfo == null)
                     {
-                        playUrl = BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, type);
+                        //playUrl = BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, type);
+                        playUrl = Content.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, type, pageInfo.Guid);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
                             {
-                                playUrl = BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.VideoUrl);
+                                //playUrl = BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.VideoUrl);
+                                playUrl = Content.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.VideoUrl, pageInfo.Guid);
                             }
                         }
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
                             {
-                                playUrl = BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
+                                //playUrl = BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
+                                playUrl = Content.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl, pageInfo.Guid);
                             }
                         }
                     }

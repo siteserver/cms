@@ -9,8 +9,6 @@ namespace BaiRong.Core
 
         public string AdminDirectoryName { get; } = "siteserver";
 
-        public bool IsValidateCode { get; } = true;
-
         public string SecretKey { get; } = "vEnfkn16t8aeaZKG3a4Gl9UUlzf4vgqU9xwh8ZV5";
 
         public static FileConfigManager Instance
@@ -52,12 +50,6 @@ namespace BaiRong.Core
             if (!string.IsNullOrEmpty(xmlAttribute?.Value))
             {
                 AdminDirectoryName = xmlAttribute.Value.ToLower();
-            }
-
-            xmlAttribute = attributeCollection["isValidateCode"];
-            if (!string.IsNullOrEmpty(xmlAttribute?.Value))
-            {
-                IsValidateCode = TranslateUtils.ToBool(xmlAttribute.Value);
             }
 
             xmlAttribute = attributeCollection["secretKey"];

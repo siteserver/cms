@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             {
                 var pageTitle = _conferenceId > 0 ? "编辑会议（活动）" : "添加会议（活动）";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdConference, pageTitle, AppManager.WeiXin.Permission.WebSite.Conference);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdConference, pageTitle, AppManager.WeiXin.Permission.WebSite.Conference);
                 LtlPageTitle.Text = pageTitle;
                 
                 LtlImageUrl.Text =

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -17,7 +17,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT Description FROM bairong_Roles WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -37,7 +37,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT CreatorUserName FROM bairong_Roles WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms)) 
@@ -83,7 +83,7 @@ namespace BaiRong.Core.Provider
                 var sqlString = "SELECT RoleName FROM bairong_Roles WHERE CreatorUserName = @CreatorUserName";
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter(ParmCreatorUsername, EDataType.NVarChar, 255, creatorUserName)
+				    GetParameter(ParmCreatorUsername, DataType.NVarChar, 255, creatorUserName)
 			    };
 
                 using (var rdr = ExecuteReader(sqlString, parms)) 
@@ -112,7 +112,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT RoleName FROM bairong_AdministratorsInRoles WHERE UserName = @UserName ORDER BY RoleName";
             var parms = new IDataParameter[]
 			{
-				GetParameter("@UserName", EDataType.NVarChar, 255, userName)
+				GetParameter("@UserName", DataType.NVarChar, 255, userName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -139,7 +139,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT UserName FROM bairong_AdministratorsInRoles WHERE RoleName = @RoleName ORDER BY userName";
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -167,8 +167,8 @@ namespace BaiRong.Core.Provider
             {
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter("@UserName", EDataType.NVarChar, 255, userName),
-                    GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
+				    GetParameter("@UserName", DataType.NVarChar, 255, userName),
+                    GetParameter("@RoleName", DataType.NVarChar, 255, roleName)
 			    };
                 ExecuteNonQuery(sqlString, parms);
             }
@@ -179,8 +179,8 @@ namespace BaiRong.Core.Provider
             var sqlString = "DELETE FROM bairong_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-				GetParameter("@UserName", EDataType.NVarChar, 255, userName),
-                GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
+				GetParameter("@UserName", DataType.NVarChar, 255, userName),
+                GetParameter("@RoleName", DataType.NVarChar, 255, roleName)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -192,9 +192,9 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName),
-                GetParameter(ParmCreatorUsername, EDataType.NVarChar, 255, creatorUserName),
-                GetParameter(ParmDescription, EDataType.NVarChar, 255, description)
+				GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName),
+                GetParameter(ParmCreatorUsername, DataType.NVarChar, 255, creatorUserName),
+                GetParameter(ParmDescription, DataType.NVarChar, 255, description)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -206,8 +206,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmDescription, EDataType.NVarChar, 255, description),
-                GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName)
+                GetParameter(ParmDescription, DataType.NVarChar, 255, description),
+                GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -223,7 +223,7 @@ namespace BaiRong.Core.Provider
 
                 var parms = new IDataParameter[]
 			    {
-                    GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName)
+                    GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);
@@ -242,7 +242,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT RoleName FROM bairong_Roles WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-                GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
+                GetParameter("@RoleName", DataType.NVarChar, 255, roleName)
 			};
             using (var rdr = ExecuteReader(sqlString, parms))
             {
@@ -266,7 +266,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
+                GetParameter("@RoleName", DataType.NVarChar, 255, roleName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -293,8 +293,8 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT * FROM bairong_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-                GetParameter("@UserName", EDataType.NVarChar, 255, userName),
-                GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
+                GetParameter("@UserName", DataType.NVarChar, 255, userName),
+                GetParameter("@RoleName", DataType.NVarChar, 255, roleName)
 			};
             using (var rdr = ExecuteReader(sqlString, parms))
             {
@@ -328,8 +328,8 @@ namespace BaiRong.Core.Provider
 
                 var parms = new IDataParameter[]
 			    {
-                    GetParameter("@UserName", EDataType.NVarChar, 255, userName),
-                    GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
+                    GetParameter("@UserName", DataType.NVarChar, 255, userName),
+                    GetParameter("@RoleName", DataType.NVarChar, 255, roleName)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);

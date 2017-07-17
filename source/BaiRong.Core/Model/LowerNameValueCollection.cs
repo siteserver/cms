@@ -26,9 +26,7 @@ namespace BaiRong.Core.Model
 
         public string Get(string name)
         {
-            if (string.IsNullOrEmpty(name)) return null;
-
-            return _nvcLower.Get(name.ToLower());
+            return string.IsNullOrEmpty(name) ? null : _nvcLower.Get(name.ToLower());
         }
 
         public void Remove(string name)

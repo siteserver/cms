@@ -466,7 +466,7 @@ namespace BaiRong.Core.Provider
             return GetIntResult(cmdText);
         }
 
-        public string GetPageSqlString(string sqlString, string orderByString, int recordCount, int itemsPerPage, int currentPageIndex)
+        public string GetStlPageSqlString(string sqlString, string orderByString, int recordCount, int itemsPerPage, int currentPageIndex)
         {
             var temp = sqlString.ToLower();
             var pos = temp.LastIndexOf("order by", StringComparison.Ordinal);

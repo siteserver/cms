@@ -17,14 +17,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "ShortTime";
             }
-            else if (type == ETimeFormatType.LongTime)
+            if (type == ETimeFormatType.LongTime)
             {
                 return "LongTime";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(ETimeFormatType type)
@@ -33,14 +30,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "8:09";
             }
-            else if (type == ETimeFormatType.LongTime)
+            if (type == ETimeFormatType.LongTime)
             {
                 return "8:09:24";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static ETimeFormatType GetEnumType(string typeStr)

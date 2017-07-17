@@ -7,15 +7,15 @@ namespace SiteServer.CMS.Provider
 {
     public class VoteContentDao : DataProviderBase
 	{
-        public VoteContentInfo GetContentInfo(PublishmentSystemInfo publishmentSystemInfo, int contentId)
+        public VoteContentInfo GetContentInfo(string tableName, int contentId)
         {
             VoteContentInfo info = null;
             if (contentId > 0)
             {
-                if (!string.IsNullOrEmpty(publishmentSystemInfo.AuxiliaryTableForVote))
+                if (!string.IsNullOrEmpty(tableName))
                 {
                     string sqlWhere = $"WHERE ID = {contentId}";
-                    var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(publishmentSystemInfo.AuxiliaryTableForVote, SqlUtils.Asterisk, sqlWhere);
+                    var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                     using (var rdr = ExecuteReader(sqlSelect))
                     {
@@ -29,7 +29,7 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            if (info != null) info.AfterExecuteReader();
+            info?.AfterExecuteReader();
             return info;
         }
 

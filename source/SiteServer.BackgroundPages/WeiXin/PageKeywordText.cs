@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             }
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, AppManager.WeiXin.LeftMenu.Function.IdTextReply, string.Empty, AppManager.WeiXin.Permission.WebSite.TextReply);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, string.Empty, AppManager.WeiXin.Permission.WebSite.TextReply);
 
                 if (Request.QueryString["SetTaxis"] != null)
                 {

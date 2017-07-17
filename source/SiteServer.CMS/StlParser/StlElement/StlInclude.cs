@@ -17,13 +17,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 		public const string ElementName = "stl:include";
 
 		public const string AttributeFile = "file";
-        public const string AttributeIsContext = "isContext";
         public const string AttributeIsDynamic = "isDynamic";
 
 	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
 	        {AttributeFile, "文件路径"},
-	        {AttributeIsContext, "是否STL解析与当前页面上下文相关"},
 	        {AttributeIsDynamic, "是否动态显示"}
 	    };
 
@@ -33,7 +31,6 @@ namespace SiteServer.CMS.StlParser.StlElement
 			try
 			{
                 var file = string.Empty;
-                var isContext = !pageInfo.PublishmentSystemInfo.Additional.IsCreateIncludeToSsi;
                 var isDynamic = false;
 
                 var ie = node.Attributes?.GetEnumerator();
@@ -48,10 +45,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                             file = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
                             file = PageUtility.AddVirtualToUrl(file);
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsContext))
-                        {
-                            isContext = TranslateUtils.ToBool(attr.Value);
-                        }
                         else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
                         {
                             isDynamic = TranslateUtils.ToBool(attr.Value);
@@ -59,48 +52,25 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, file, isContext);
+                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, file);
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
 		}
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string file, bool isContext)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string file)
         {
-            var parsedContent = string.Empty;
+            if (string.IsNullOrEmpty(file)) return string.Empty;
 
-            if (!string.IsNullOrEmpty(file))
-            {
-                if (!isContext)
-                {
-                    var fso = new FileSystemObject(pageInfo.PublishmentSystemId);
-                    var parsedFile = fso.CreateIncludeFile(file, false);
-
-                    if (pageInfo.PublishmentSystemInfo.Additional.IsCreateIncludeToSsi)
-                    {
-                        var pathDifference = PathUtils.GetPathDifference(PathUtils.MapPath("~/"), PathUtility.MapPath(pageInfo.PublishmentSystemInfo, parsedFile));
-                        var virtualUrl = pathDifference.Replace("\\", "/").Trim('/');
-                        parsedContent = $@"<!--#include virtual=""{virtualUrl}""-->";
-                    }
-                    else
-                    {
-                        var filePath = PathUtility.MapPath(pageInfo.PublishmentSystemInfo, parsedFile);
-                        parsedContent = FileUtils.ReadText(filePath, pageInfo.TemplateInfo.Charset);
-                    }
-                }
-                else
-                {
-                    var content = StlCacheManager.FileContent.GetIncludeContent(pageInfo.PublishmentSystemInfo, file, pageInfo.TemplateInfo.Charset);
-                    content = StlParserUtility.Amp(content);
-                    var contentBuilder = new StringBuilder(content);
-                    StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
-                    parsedContent = contentBuilder.ToString();
-                }
-            }
+            var content = TemplateManager.GetIncludeContent(pageInfo.PublishmentSystemInfo, file, pageInfo.TemplateInfo.Charset);
+            content = StlParserUtility.Amp(content);
+            var contentBuilder = new StringBuilder(content);
+            StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
+            var parsedContent = contentBuilder.ToString();
 
             return parsedContent;
         }

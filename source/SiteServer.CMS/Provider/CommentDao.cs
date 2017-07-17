@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -32,14 +31,14 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, commentInfo.PublishmentSystemId),
-                GetParameter(ParmNodeId, EDataType.Integer, commentInfo.NodeId),
-                GetParameter(ParmContentId, EDataType.Integer, commentInfo.ContentId),
-                GetParameter(ParmGoodCount, EDataType.Integer, commentInfo.GoodCount),
-                GetParameter(ParmUserName, EDataType.NVarChar, 50, commentInfo.UserName),
-                GetParameter(ParmIsChecked, EDataType.VarChar, 18, commentInfo.IsChecked.ToString()),
-                GetParameter(ParmAddDate, EDataType.DateTime, commentInfo.AddDate),
-				GetParameter(ParmContent, EDataType.NVarChar, 500, commentInfo.Content)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, commentInfo.PublishmentSystemId),
+                GetParameter(ParmNodeId, DataType.Integer, commentInfo.NodeId),
+                GetParameter(ParmContentId, DataType.Integer, commentInfo.ContentId),
+                GetParameter(ParmGoodCount, DataType.Integer, commentInfo.GoodCount),
+                GetParameter(ParmUserName, DataType.NVarChar, 50, commentInfo.UserName),
+                GetParameter(ParmIsChecked, DataType.VarChar, 18, commentInfo.IsChecked.ToString()),
+                GetParameter(ParmAddDate, DataType.DateTime, commentInfo.AddDate),
+				GetParameter(ParmContent, DataType.NVarChar, 500, commentInfo.Content)
 			};
 
             using (var conn = GetConnection())
@@ -75,7 +74,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmId, EDataType.Integer, commentId)
+                GetParameter(ParmId, DataType.Integer, commentId)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -158,10 +157,10 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId),
-                GetParameter(ParmIsChecked, EDataType.VarChar, 18, true.ToString())
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmNodeId, DataType.Integer, nodeId),
+                GetParameter(ParmContentId, DataType.Integer, contentId),
+                GetParameter(ParmIsChecked, DataType.VarChar, 18, true.ToString())
 			};
 
             var offsetWhereString = string.Empty;
@@ -256,9 +255,9 @@ namespace SiteServer.CMS.Provider
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public ArrayList GetContentIdArrayListByCount(int publishmentSystemId)
+        public List<int> GetContentIdListByCount(int publishmentSystemId)
         {
-            var list = new ArrayList();
+            var list = new List<int>();
 
             string sqlString = $@"
 SELECT ContentID, COUNT(ContentID) AS TotalNum FROM siteserver_Comment WHERE PublishmentSystemID = {publishmentSystemId} AND ContentID > 0 GROUP BY ContentID ORDER BY TotalNum DESC

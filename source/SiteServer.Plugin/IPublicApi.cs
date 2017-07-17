@@ -29,5 +29,11 @@ namespace SiteServer.Plugin
         List<int> GetSiteIds();
 
         void AddErrorLog(Exception ex);
+
+        void MoveFiles(int sourceSiteId, int targetSiteId, List<string> relatedUrls);
+
+        bool IsAuthorized();
+
+        bool IsSiteAuthorized(int siteId);
     }
 }

@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -29,13 +29,13 @@ namespace SiteServer.CMS.Provider
         {
             var insertParms = new IDataParameter[]
 		    {
-                GetParameter(ParmNodeId, EDataType.Integer, info.NodeId),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, info.PublishmentSystemId),
-			    GetParameter(ParmChannelTemplateId, EDataType.Integer, info.ChannelTemplateId),
-                GetParameter(ParmContentTemplateId, EDataType.Integer, info.ContentTemplateId),
-                GetParameter(ParmFilepath, EDataType.VarChar, 200, info.FilePath),
-                GetParameter(ParmChannelFilepathRule, EDataType.VarChar, 200, info.ChannelFilePathRule),
-                GetParameter(ParmContentFilepathRule, EDataType.VarChar, 200, info.ContentFilePathRule)
+                GetParameter(ParmNodeId, DataType.Integer, info.NodeId),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
+			    GetParameter(ParmChannelTemplateId, DataType.Integer, info.ChannelTemplateId),
+                GetParameter(ParmContentTemplateId, DataType.Integer, info.ContentTemplateId),
+                GetParameter(ParmFilepath, DataType.VarChar, 200, info.FilePath),
+                GetParameter(ParmChannelFilepathRule, DataType.VarChar, 200, info.ChannelFilePathRule),
+                GetParameter(ParmContentFilepathRule, DataType.VarChar, 200, info.ContentFilePathRule)
 		    };
 
             ExecuteNonQuery(SqlInsert, insertParms);
@@ -45,12 +45,12 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 		    {
-			    GetParameter(ParmChannelTemplateId, EDataType.Integer, info.ChannelTemplateId),
-                GetParameter(ParmContentTemplateId, EDataType.Integer, info.ContentTemplateId),
-                GetParameter(ParmFilepath, EDataType.VarChar, 200, info.FilePath),
-                GetParameter(ParmChannelFilepathRule, EDataType.VarChar, 200, info.ChannelFilePathRule),
-                GetParameter(ParmContentFilepathRule, EDataType.VarChar, 200, info.ContentFilePathRule),
-                GetParameter(ParmNodeId, EDataType.Integer, info.NodeId)
+			    GetParameter(ParmChannelTemplateId, DataType.Integer, info.ChannelTemplateId),
+                GetParameter(ParmContentTemplateId, DataType.Integer, info.ContentTemplateId),
+                GetParameter(ParmFilepath, DataType.VarChar, 200, info.FilePath),
+                GetParameter(ParmChannelFilepathRule, DataType.VarChar, 200, info.ChannelFilePathRule),
+                GetParameter(ParmContentFilepathRule, DataType.VarChar, 200, info.ContentFilePathRule),
+                GetParameter(ParmNodeId, DataType.Integer, info.NodeId)
 		    };
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -61,7 +61,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -73,7 +73,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))

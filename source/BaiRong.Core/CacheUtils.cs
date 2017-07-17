@@ -10,20 +10,11 @@ namespace BaiRong.Core
     {
         private CacheUtils() { }
 
-        //>> Based on Factor = 5 default value
-        public static readonly int DayFactor = 17280;
-        public static readonly int HourFactor = 720;
-        public static readonly int MinuteFactor = 12;
-        public static readonly double SecondFactor = 0.2;
+        public static readonly int DayFactor = 43200;
+        public static readonly int HourFactor = 3600;
+        public static readonly int MinuteFactor = 60;
 
         private static readonly Cache Cache;
-
-        private static int _factor = 5;
-
-        public static void ReSetFactor(int cacheFactor)
-        {
-            _factor = cacheFactor;
-        }
 
         /// <summary>
         /// Static initializer should ensure we only have to look up the current cache
@@ -116,7 +107,7 @@ namespace BaiRong.Core
         {
             if (obj != null)
             {
-                Cache.Add(key, obj, dep, DateTime.Now.AddSeconds(_factor * seconds), TimeSpan.Zero, priority, null);
+                Cache.Add(key, obj, dep, DateTime.Now.AddSeconds(seconds), TimeSpan.Zero, priority, null);
             }
 
         }
@@ -125,7 +116,7 @@ namespace BaiRong.Core
         {
             if (obj != null)
             {
-                Cache.Insert(key, obj, null, DateTime.Now.AddSeconds(_factor * secondFactor), TimeSpan.Zero);
+                Cache.Insert(key, obj, null, DateTime.Now.AddSeconds(secondFactor), TimeSpan.Zero);
             }
         }
 
@@ -136,14 +127,13 @@ namespace BaiRong.Core
         /// <param name="obj"></param>
         public static void Max(string key, object obj)
         {
-                Max(key, obj, null);
+            Max(key, obj, null);
         }
 
         public static void Max(string key, object obj, CacheDependency dep)
         {
             if (obj != null)
             {
-                //_cache.Add(key, obj, dep, DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.AboveNormal, null);
                 Cache.Insert(key, obj, dep, DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.AboveNormal, null);
             }
         }
@@ -153,18 +143,26 @@ namespace BaiRong.Core
             return Cache[key];
         }
 
+        public static int GetInt(string key, int notFound)
+        {
+            var retval = Get(key);
+            return (int?) retval ?? notFound;
+        }
+
+        public static DateTime GetDateTime(string key, DateTime notFound)
+        {
+            var retval = Get(key);
+            return (DateTime?)retval ?? notFound;
+        }
+
+        public static T Get<T>(string key) where T : class
+        {
+            return Cache[key] as T;
+        }
+
         public static string GetCacheKeyByUserName(string key, string userName)
         {
             return $"{key}_BY_USER_{userName}";
-        }
-
-        /// <summary>
-        /// Return int of seconds * SecondFactor
-        /// </summary>
-        public static int SecondFactorCalculate(int seconds)
-        {
-            // Insert method below takes integer seconds, so we have to round any fractional values
-            return Convert.ToInt32(Math.Round(seconds * SecondFactor));
         }
 
         /// <summary>

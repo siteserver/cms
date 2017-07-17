@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings(AppManager.Settings.LeftMenu.Utility, "加密字符串", AppManager.Settings.Permission.SettingsUtility);
+                BreadCrumbSettings("加密字符串", AppManager.Permissions.Settings.Utility);
             }
         }
 

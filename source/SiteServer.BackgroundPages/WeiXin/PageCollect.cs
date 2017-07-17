@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdCollect, "微征集管理", AppManager.WeiXin.Permission.WebSite.Collect);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdCollect, "微征集管理", AppManager.WeiXin.Permission.WebSite.Collect);
                 SpContents.DataBind();
 
                 var urlAdd = PageCollectAdd.GetRedirectUrl(PublishmentSystemId, 0);

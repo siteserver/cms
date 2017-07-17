@@ -6,6 +6,7 @@ using BaiRong.Core;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -70,39 +71,39 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
         {
             var insertParms = new IDataParameter[]
             {
-                GetParameter(ParmGatherRuleName, EDataType.NVarChar, 50, gatherRuleInfo.GatherRuleName),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, gatherRuleInfo.PublishmentSystemId),
-                GetParameter(ParmCookieString, EDataType.Text, gatherRuleInfo.CookieString),
-                GetParameter(ParmGatherUrlIsCollection, EDataType.VarChar, 18, gatherRuleInfo.GatherUrlIsCollection.ToString()),
-                GetParameter(ParmGatherUrlCollection, EDataType.Text, gatherRuleInfo.GatherUrlCollection),
-                GetParameter(ParmGatherUrlIsSerialize, EDataType.VarChar, 18, gatherRuleInfo.GatherUrlIsSerialize.ToString()),
-                GetParameter(ParmGatherUrlSerialize, EDataType.VarChar, 200, gatherRuleInfo.GatherUrlSerialize),
-                GetParameter(ParmGatherSerializeFrom, EDataType.Integer, gatherRuleInfo.SerializeFrom),
-                GetParameter(ParmGatherSerializeTo, EDataType.Integer, gatherRuleInfo.SerializeTo),
-                GetParameter(ParmGatherSerializeInternal, EDataType.Integer, gatherRuleInfo.SerializeInterval),
-                GetParameter(ParmGatherSerializeOrderByDesc, EDataType.VarChar, 18, gatherRuleInfo.SerializeIsOrderByDesc.ToString()),
-                GetParameter(ParmGatherSerializeIsAddZero, EDataType.VarChar, 18, gatherRuleInfo.SerializeIsAddZero.ToString()),
-                GetParameter(ParmNodeId, EDataType.Integer, gatherRuleInfo.NodeId),
-                GetParameter(ParmCharset, EDataType.VarChar, 50, ECharsetUtils.GetValue(gatherRuleInfo.Charset)),
-                GetParameter(ParmUrlInclude, EDataType.VarChar, 200, gatherRuleInfo.UrlInclude),
-                GetParameter(ParmTitleInclude, EDataType.NVarChar, 255, gatherRuleInfo.TitleInclude),
-                GetParameter(ParmContentExclude, EDataType.NText, gatherRuleInfo.ContentExclude),
-                GetParameter(ParmContentHtmlClearCollection, EDataType.NVarChar, 255, gatherRuleInfo.ContentHtmlClearCollection),
-                GetParameter(ParmContentHtmlClearTagCollection, EDataType.NVarChar, 255, gatherRuleInfo.ContentHtmlClearTagCollection),
-                GetParameter(ParmLastGatherDate, EDataType.DateTime, gatherRuleInfo.LastGatherDate),
-                GetParameter(ParmListAreaStart, EDataType.NText, gatherRuleInfo.ListAreaStart),
-                GetParameter(ParmListAreaEnd, EDataType.NText, gatherRuleInfo.ListAreaEnd),
-                GetParameter(ParmListContentChannelStart, EDataType.NText, gatherRuleInfo.ContentChannelStart),
-                GetParameter(ParmListContentChannelEnd, EDataType.NText, gatherRuleInfo.ContentChannelEnd),
-                GetParameter(ParmContentTitleStart, EDataType.NText, gatherRuleInfo.ContentTitleStart),
-                GetParameter(ParmContentTitleEnd, EDataType.NText, gatherRuleInfo.ContentTitleEnd),
-                GetParameter(ParmContentContentStart, EDataType.NText, gatherRuleInfo.ContentContentStart),
-                GetParameter(ParmContentContentEnd, EDataType.NText, gatherRuleInfo.ContentContentEnd),
-                GetParameter(ParmContentNextPageStart, EDataType.NText, gatherRuleInfo.ContentNextPageStart),
-                GetParameter(ParmContentNextPageEnd, EDataType.NText, gatherRuleInfo.ContentNextPageEnd),
-                GetParameter(ParmContentAttributes, EDataType.NText, gatherRuleInfo.ContentAttributes),
-                GetParameter(ParmContentAttributesXml, EDataType.NText, gatherRuleInfo.ContentAttributesXml),
-                GetParameter(ParmExtendValues, EDataType.NText, gatherRuleInfo.Additional.ToString())
+                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherRuleInfo.GatherRuleName),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, gatherRuleInfo.PublishmentSystemId),
+                GetParameter(ParmCookieString, DataType.Text, gatherRuleInfo.CookieString),
+                GetParameter(ParmGatherUrlIsCollection, DataType.VarChar, 18, gatherRuleInfo.GatherUrlIsCollection.ToString()),
+                GetParameter(ParmGatherUrlCollection, DataType.Text, gatherRuleInfo.GatherUrlCollection),
+                GetParameter(ParmGatherUrlIsSerialize, DataType.VarChar, 18, gatherRuleInfo.GatherUrlIsSerialize.ToString()),
+                GetParameter(ParmGatherUrlSerialize, DataType.VarChar, 200, gatherRuleInfo.GatherUrlSerialize),
+                GetParameter(ParmGatherSerializeFrom, DataType.Integer, gatherRuleInfo.SerializeFrom),
+                GetParameter(ParmGatherSerializeTo, DataType.Integer, gatherRuleInfo.SerializeTo),
+                GetParameter(ParmGatherSerializeInternal, DataType.Integer, gatherRuleInfo.SerializeInterval),
+                GetParameter(ParmGatherSerializeOrderByDesc, DataType.VarChar, 18, gatherRuleInfo.SerializeIsOrderByDesc.ToString()),
+                GetParameter(ParmGatherSerializeIsAddZero, DataType.VarChar, 18, gatherRuleInfo.SerializeIsAddZero.ToString()),
+                GetParameter(ParmNodeId, DataType.Integer, gatherRuleInfo.NodeId),
+                GetParameter(ParmCharset, DataType.VarChar, 50, ECharsetUtils.GetValue(gatherRuleInfo.Charset)),
+                GetParameter(ParmUrlInclude, DataType.VarChar, 200, gatherRuleInfo.UrlInclude),
+                GetParameter(ParmTitleInclude, DataType.NVarChar, 255, gatherRuleInfo.TitleInclude),
+                GetParameter(ParmContentExclude, DataType.NText, gatherRuleInfo.ContentExclude),
+                GetParameter(ParmContentHtmlClearCollection, DataType.NVarChar, 255, gatherRuleInfo.ContentHtmlClearCollection),
+                GetParameter(ParmContentHtmlClearTagCollection, DataType.NVarChar, 255, gatherRuleInfo.ContentHtmlClearTagCollection),
+                GetParameter(ParmLastGatherDate, DataType.DateTime, gatherRuleInfo.LastGatherDate),
+                GetParameter(ParmListAreaStart, DataType.NText, gatherRuleInfo.ListAreaStart),
+                GetParameter(ParmListAreaEnd, DataType.NText, gatherRuleInfo.ListAreaEnd),
+                GetParameter(ParmListContentChannelStart, DataType.NText, gatherRuleInfo.ContentChannelStart),
+                GetParameter(ParmListContentChannelEnd, DataType.NText, gatherRuleInfo.ContentChannelEnd),
+                GetParameter(ParmContentTitleStart, DataType.NText, gatherRuleInfo.ContentTitleStart),
+                GetParameter(ParmContentTitleEnd, DataType.NText, gatherRuleInfo.ContentTitleEnd),
+                GetParameter(ParmContentContentStart, DataType.NText, gatherRuleInfo.ContentContentStart),
+                GetParameter(ParmContentContentEnd, DataType.NText, gatherRuleInfo.ContentContentEnd),
+                GetParameter(ParmContentNextPageStart, DataType.NText, gatherRuleInfo.ContentNextPageStart),
+                GetParameter(ParmContentNextPageEnd, DataType.NText, gatherRuleInfo.ContentNextPageEnd),
+                GetParameter(ParmContentAttributes, DataType.NText, gatherRuleInfo.ContentAttributes),
+                GetParameter(ParmContentAttributesXml, DataType.NText, gatherRuleInfo.ContentAttributesXml),
+                GetParameter(ParmExtendValues, DataType.NText, gatherRuleInfo.Additional.ToString())
             };
 
             ExecuteNonQuery(SqlInsertGatherRule, insertParms);
@@ -112,9 +113,9 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
         {
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmLastGatherDate, EDataType.DateTime, DateTime.Now),
-                GetParameter(ParmGatherRuleName, EDataType.NVarChar, 50, gatherRuleName),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmLastGatherDate, DataType.DateTime, DateTime.Now),
+                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherRuleName),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
             ExecuteNonQuery(SqlUpdateLastGatherDate, parms);
@@ -125,39 +126,39 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
 
             var updateParms = new IDataParameter[]
             {
-                GetParameter(ParmCookieString, EDataType.Text, gatherRuleInfo.CookieString),
-                GetParameter(ParmGatherUrlIsCollection, EDataType.VarChar, 18, gatherRuleInfo.GatherUrlIsCollection.ToString()),
-                GetParameter(ParmGatherUrlCollection, EDataType.Text, gatherRuleInfo.GatherUrlCollection),
-                GetParameter(ParmGatherUrlIsSerialize, EDataType.VarChar, 18, gatherRuleInfo.GatherUrlIsSerialize.ToString()),
-                GetParameter(ParmGatherUrlSerialize, EDataType.VarChar, 200, gatherRuleInfo.GatherUrlSerialize),
-                GetParameter(ParmGatherSerializeFrom, EDataType.Integer, gatherRuleInfo.SerializeFrom),
-                GetParameter(ParmGatherSerializeTo, EDataType.Integer, gatherRuleInfo.SerializeTo),
-                GetParameter(ParmGatherSerializeInternal, EDataType.Integer, gatherRuleInfo.SerializeInterval),
-                GetParameter(ParmGatherSerializeOrderByDesc, EDataType.VarChar, 18, gatherRuleInfo.SerializeIsOrderByDesc.ToString()),
-                GetParameter(ParmGatherSerializeIsAddZero, EDataType.VarChar, 18, gatherRuleInfo.SerializeIsAddZero.ToString()),
-                GetParameter(ParmNodeId, EDataType.Integer, gatherRuleInfo.NodeId),
-                GetParameter(ParmCharset, EDataType.VarChar, 50, ECharsetUtils.GetValue(gatherRuleInfo.Charset)),
-                GetParameter(ParmUrlInclude, EDataType.VarChar, 200, gatherRuleInfo.UrlInclude),
-                GetParameter(ParmTitleInclude, EDataType.NVarChar, 255, gatherRuleInfo.TitleInclude),
-                GetParameter(ParmContentExclude, EDataType.NText, gatherRuleInfo.ContentExclude),
-                GetParameter(ParmContentHtmlClearCollection, EDataType.NVarChar, 255, gatherRuleInfo.ContentHtmlClearCollection),
-                GetParameter(ParmContentHtmlClearTagCollection, EDataType.NVarChar, 255, gatherRuleInfo.ContentHtmlClearTagCollection),
-                GetParameter(ParmLastGatherDate, EDataType.DateTime, gatherRuleInfo.LastGatherDate),
-                GetParameter(ParmListAreaStart, EDataType.NText, gatherRuleInfo.ListAreaStart),
-                GetParameter(ParmListAreaEnd, EDataType.NText, gatherRuleInfo.ListAreaEnd),
-                GetParameter(ParmListContentChannelStart, EDataType.NText, gatherRuleInfo.ContentChannelStart),
-                GetParameter(ParmListContentChannelEnd, EDataType.NText, gatherRuleInfo.ContentChannelEnd),
-                GetParameter(ParmContentTitleStart, EDataType.NText, gatherRuleInfo.ContentTitleStart),
-                GetParameter(ParmContentTitleEnd, EDataType.NText, gatherRuleInfo.ContentTitleEnd),
-                GetParameter(ParmContentContentStart, EDataType.NText, gatherRuleInfo.ContentContentStart),
-                GetParameter(ParmContentContentEnd, EDataType.NText, gatherRuleInfo.ContentContentEnd),
-                GetParameter(ParmContentNextPageStart, EDataType.NText, gatherRuleInfo.ContentNextPageStart),
-                GetParameter(ParmContentNextPageEnd, EDataType.NText, gatherRuleInfo.ContentNextPageEnd),
-                GetParameter(ParmContentAttributes, EDataType.NText, gatherRuleInfo.ContentAttributes),
-                GetParameter(ParmContentAttributesXml, EDataType.NText, gatherRuleInfo.ContentAttributesXml),
-                GetParameter(ParmExtendValues, EDataType.NText, gatherRuleInfo.Additional.ToString()),
-                GetParameter(ParmGatherRuleName, EDataType.NVarChar, 50, gatherRuleInfo.GatherRuleName),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, gatherRuleInfo.PublishmentSystemId)
+                GetParameter(ParmCookieString, DataType.Text, gatherRuleInfo.CookieString),
+                GetParameter(ParmGatherUrlIsCollection, DataType.VarChar, 18, gatherRuleInfo.GatherUrlIsCollection.ToString()),
+                GetParameter(ParmGatherUrlCollection, DataType.Text, gatherRuleInfo.GatherUrlCollection),
+                GetParameter(ParmGatherUrlIsSerialize, DataType.VarChar, 18, gatherRuleInfo.GatherUrlIsSerialize.ToString()),
+                GetParameter(ParmGatherUrlSerialize, DataType.VarChar, 200, gatherRuleInfo.GatherUrlSerialize),
+                GetParameter(ParmGatherSerializeFrom, DataType.Integer, gatherRuleInfo.SerializeFrom),
+                GetParameter(ParmGatherSerializeTo, DataType.Integer, gatherRuleInfo.SerializeTo),
+                GetParameter(ParmGatherSerializeInternal, DataType.Integer, gatherRuleInfo.SerializeInterval),
+                GetParameter(ParmGatherSerializeOrderByDesc, DataType.VarChar, 18, gatherRuleInfo.SerializeIsOrderByDesc.ToString()),
+                GetParameter(ParmGatherSerializeIsAddZero, DataType.VarChar, 18, gatherRuleInfo.SerializeIsAddZero.ToString()),
+                GetParameter(ParmNodeId, DataType.Integer, gatherRuleInfo.NodeId),
+                GetParameter(ParmCharset, DataType.VarChar, 50, ECharsetUtils.GetValue(gatherRuleInfo.Charset)),
+                GetParameter(ParmUrlInclude, DataType.VarChar, 200, gatherRuleInfo.UrlInclude),
+                GetParameter(ParmTitleInclude, DataType.NVarChar, 255, gatherRuleInfo.TitleInclude),
+                GetParameter(ParmContentExclude, DataType.NText, gatherRuleInfo.ContentExclude),
+                GetParameter(ParmContentHtmlClearCollection, DataType.NVarChar, 255, gatherRuleInfo.ContentHtmlClearCollection),
+                GetParameter(ParmContentHtmlClearTagCollection, DataType.NVarChar, 255, gatherRuleInfo.ContentHtmlClearTagCollection),
+                GetParameter(ParmLastGatherDate, DataType.DateTime, gatherRuleInfo.LastGatherDate),
+                GetParameter(ParmListAreaStart, DataType.NText, gatherRuleInfo.ListAreaStart),
+                GetParameter(ParmListAreaEnd, DataType.NText, gatherRuleInfo.ListAreaEnd),
+                GetParameter(ParmListContentChannelStart, DataType.NText, gatherRuleInfo.ContentChannelStart),
+                GetParameter(ParmListContentChannelEnd, DataType.NText, gatherRuleInfo.ContentChannelEnd),
+                GetParameter(ParmContentTitleStart, DataType.NText, gatherRuleInfo.ContentTitleStart),
+                GetParameter(ParmContentTitleEnd, DataType.NText, gatherRuleInfo.ContentTitleEnd),
+                GetParameter(ParmContentContentStart, DataType.NText, gatherRuleInfo.ContentContentStart),
+                GetParameter(ParmContentContentEnd, DataType.NText, gatherRuleInfo.ContentContentEnd),
+                GetParameter(ParmContentNextPageStart, DataType.NText, gatherRuleInfo.ContentNextPageStart),
+                GetParameter(ParmContentNextPageEnd, DataType.NText, gatherRuleInfo.ContentNextPageEnd),
+                GetParameter(ParmContentAttributes, DataType.NText, gatherRuleInfo.ContentAttributes),
+                GetParameter(ParmContentAttributesXml, DataType.NText, gatherRuleInfo.ContentAttributesXml),
+                GetParameter(ParmExtendValues, DataType.NText, gatherRuleInfo.Additional.ToString()),
+                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherRuleInfo.GatherRuleName),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, gatherRuleInfo.PublishmentSystemId)
             };
 
             ExecuteNonQuery(SqlUpdateGatherRule, updateParms);
@@ -168,8 +169,8 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
         {
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmGatherRuleName, EDataType.NVarChar, 50, gatherRuleName),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherRuleName),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
             ExecuteNonQuery(SqlDeleteGatherRule, parms);
@@ -181,8 +182,8 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmGatherRuleName, EDataType.NVarChar, 50, gatherRuleName),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherRuleName),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
             using (var rdr = ExecuteReader(SqlSelectGatherRule, parms))
@@ -224,8 +225,8 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmGatherRuleName, EDataType.NVarChar, 50, importGatherRuleName),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, importGatherRuleName),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
             using (var rdr = ExecuteReader(SqlSelectGatherRule, parms))
@@ -244,7 +245,7 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
         {
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllGatherRuleByPsId, parms);
@@ -257,7 +258,7 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
             using (var rdr = ExecuteReader(SqlSelectAllGatherRuleByPsId, parms))
@@ -280,7 +281,7 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
             using (var rdr = ExecuteReader(SqlSelectGatherRuleNameByPsId, parms))

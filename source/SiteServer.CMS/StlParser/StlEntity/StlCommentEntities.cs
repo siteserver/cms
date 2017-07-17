@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -40,7 +41,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
         {
             var parsedContent = string.Empty;
 
-            if (contextInfo.ItemContainer == null || contextInfo.ItemContainer.CommentItem == null) return string.Empty;
+            if (contextInfo.ItemContainer?.CommentItem == null) return string.Empty;
 
             try
             {
@@ -68,7 +69,8 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, DisplayName))
                 {
-                    parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : BaiRongDataProvider.UserDao.GetDisplayName(userName);
+                    //parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : BaiRongDataProvider.UserDao.GetDisplayName(userName);
+                    parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : User.GetDisplayName(userName, pageInfo.Guid);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, GoodCount))
                 {

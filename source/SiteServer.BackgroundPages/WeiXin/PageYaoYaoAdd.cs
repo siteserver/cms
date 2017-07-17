@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             {
                 var pageTitle = _lotteryId > 0 ? "编辑摇摇乐" : "添加摇摇乐";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdYaoYao, pageTitle, AppManager.WeiXin.Permission.WebSite.YaoYao);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdYaoYao, pageTitle, AppManager.WeiXin.Permission.WebSite.YaoYao);
                 LtlPageTitle.Text = pageTitle;
 
                 LtlImageUrl.Text =

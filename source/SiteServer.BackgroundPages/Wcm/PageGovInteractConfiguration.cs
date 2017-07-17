@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Wcm
 {
@@ -24,7 +25,7 @@ namespace SiteServer.BackgroundPages.Wcm
 		{
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, AppManager.Wcm.LeftMenu.GovInteract.IdGovInteractConfiguration, "互动交流设置", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, "互动交流设置", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);
 
                 AddListItemsForGovInteract(ddlGovInteractNodeID.Items);
                 ControlUtils.SelectListItems(ddlGovInteractNodeID, PublishmentSystemInfo.Additional.GovInteractNodeId.ToString());

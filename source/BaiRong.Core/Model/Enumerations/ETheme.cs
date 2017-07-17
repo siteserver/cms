@@ -15,35 +15,29 @@ namespace BaiRong.Model
 	{
 		public static string GetValue(ETheme type)
 		{
-            if (type == ETheme.Default)
+		    if (type == ETheme.Default)
 			{
                 return "Default";
 			}
-            else if (type == ETheme.Google)
-			{
-                return "Google";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETheme.Google)
+		    {
+		        return "Google";
+		    }
+		    throw new Exception();
 		}
 
         public static string GetText(ETheme type)
-		{
+        {
             if (type == ETheme.Default)
 			{
                 return "默认风格";
 			}
-            else if (type == ETheme.Google)
-			{
+            if (type == ETheme.Google)
+            {
                 return "Google风格";
-			}
-			else
-			{
-				throw new Exception();
-			}
-		}
+            }
+            throw new Exception();
+        }
 
 		public static ETheme GetEnumType(string typeStr)
 		{

@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAppointment, "查看预约", AppManager.WeiXin.Permission.WebSite.Appointment);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdAppointment, "查看预约", AppManager.WeiXin.Permission.WebSite.Appointment);
                 SpContents.DataBind();
 
                 BtnHandle.Attributes.Add("onclick", ModalAppointmentHandle.GetOpenWindowStringToMultiple(PublishmentSystemId));

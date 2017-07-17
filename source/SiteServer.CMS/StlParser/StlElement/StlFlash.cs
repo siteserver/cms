@@ -7,6 +7,7 @@ using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
@@ -146,7 +147,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
@@ -178,7 +179,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var nodeInfo = NodeManager.GetNodeInfo(contextInfo.PublishmentSystemInfo.PublishmentSystemId, contextInfo.ChannelId);
                         var tableName = NodeManager.GetTableName(contextInfo.PublishmentSystemInfo, nodeInfo);
 
-                        picUrl = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, type);
+                        //picUrl = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, type);
+                        picUrl = Content.GetValue(tableName, contentId, type, pageInfo.Guid);
                     }
                     else
                     {
@@ -189,7 +191,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-                    channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
+                    channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
                     var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
                     picUrl = channel.ImageUrl;

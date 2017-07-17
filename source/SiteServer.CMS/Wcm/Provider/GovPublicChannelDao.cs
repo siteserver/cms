@@ -1,7 +1,7 @@
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Wcm.Provider
 {
@@ -28,10 +28,10 @@ namespace SiteServer.CMS.Wcm.Provider
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmNodeId, EDataType.Integer, channelInfo.NodeID),
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, channelInfo.PublishmentSystemID),
-                GetParameter(ParmCode, EDataType.VarChar, 50, channelInfo.Code),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, channelInfo.Summary)
+                GetParameter(ParmNodeId, DataType.Integer, channelInfo.NodeID),
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, channelInfo.PublishmentSystemID),
+                GetParameter(ParmCode, DataType.VarChar, 50, channelInfo.Code),
+				GetParameter(ParmSummary, DataType.NVarChar, 255, channelInfo.Summary)
 			};
 
             ExecuteNonQuery(SqlInsert, parms);
@@ -41,9 +41,9 @@ namespace SiteServer.CMS.Wcm.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmCode, EDataType.VarChar, 50, channelInfo.Code),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, channelInfo.Summary),
-				GetParameter(ParmNodeId, EDataType.Integer, channelInfo.NodeID)
+				GetParameter(ParmCode, DataType.VarChar, 50, channelInfo.Code),
+				GetParameter(ParmSummary, DataType.NVarChar, 255, channelInfo.Summary),
+				GetParameter(ParmNodeId, DataType.Integer, channelInfo.NodeID)
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.Wcm.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -65,7 +65,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms)) 
@@ -86,7 +86,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectCode, parms))
@@ -106,7 +106,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
 			var nodeParms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectId, nodeParms))

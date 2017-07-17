@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdSearch, "微搜索", AppManager.WeiXin.Permission.WebSite.Search);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdSearch, "微搜索", AppManager.WeiXin.Permission.WebSite.Search);
                 SpContents.DataBind();
 
                 var urlAdd = PageSearchAdd.GetRedirectUrl(PublishmentSystemId, 0);

@@ -576,10 +576,15 @@ namespace SiteServer.CMS.StlParser.Utility
             return contextInfo.PageItemIndex + dbItemIndex + 1;
         }
 
-        public static string GetStlErrorMessage(string elementName, Exception ex)
+        public static string GetStlErrorMessage(string elementName, string stlContent, Exception ex)
         {
-            LogUtils.AddErrorLog(ex);
-            return $"<!-- {elementName} error: {ex.Message} -->";
+            LogUtils.AddErrorLog(ex, StringUtils.HtmlEncode(stlContent));
+            return $@"
+<!--
+{elementName}
+error: {ex.Message}
+stl: {stlContent}
+-->";
         }
 
         public static string GetAjaxDivId(int updaterId)

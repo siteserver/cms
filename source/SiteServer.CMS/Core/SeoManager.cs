@@ -1,9 +1,6 @@
-﻿using System;
-using System.Text;
-using System.Collections;
+﻿using System.Text;
 using System.Collections.Generic;
 using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Net;
 using SiteServer.CMS.Model;
@@ -183,323 +180,14 @@ namespace SiteServer.CMS.Core
             return codeBuilder.ToString();
         }
 
-        private const string siteMapGoogleHead = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<urlset
-      xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9""
-      xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""
-      xsi:schemaLocation=""
-            http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/09/sitemap.xsd"">";
-
-        private const string siteMapGoogleFoot = @"
-</urlset>";
-
-        private const string siteMapGoogleUrlFotmat = @"
-	<url>
-		<loc><![CDATA[{0}]]></loc>
-		<priority>{1}</priority>
-		<changefreq>{2}</changefreq>
-	</url>
-";
-
-        private const string siteMapGoogleUrlWithLastModifiedFotmat = @"
-	<url>
-		<loc><![CDATA[{0}]]></loc>
-		<priority>{1}</priority>
-		<changefreq>{2}</changefreq>
-		<lastmod>{3}</lastmod>
-	</url>
-";
-
-        public static void CreateSiteMapGoogle(PublishmentSystemInfo publishmentSystemInfo)
+        public static List<int>[] GetSeoMetaArrayLists(int publishmentSystemId)
         {
-            var totalNum = DataProvider.NodeDao.GetContentNumByPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
-
-            if (totalNum == 0 || totalNum <= publishmentSystemInfo.Additional.SiteMapGooglePageCount)
-            {
-                var siteMapBuilder = new StringBuilder();
-                siteMapBuilder.Append(siteMapGoogleHead);
-
-                var urlFormat = publishmentSystemInfo.Additional.SiteMapGoogleIsShowLastModified ? siteMapGoogleUrlWithLastModifiedFotmat : siteMapGoogleUrlFotmat;
-                var lastmode = DateUtils.GetDateString(DateTime.Now);
-                var urlArrayList = new ArrayList();
-                //首页
-                var publishmentSystemUrl = PageUtils.AddProtocolToUrl(publishmentSystemInfo.PublishmentSystemUrl.ToLower());
-                siteMapBuilder.AppendFormat(urlFormat, publishmentSystemUrl, "1.0", publishmentSystemInfo.Additional.SiteMapGoogleChangeFrequency, lastmode);
-
-                //栏目页
-                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
-                if (nodeIdList != null && nodeIdList.Count > 0)
-                {
-                    foreach (int nodeID in nodeIdList)
-                    {
-                        var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeID);
-                        var channelUrl = PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo));
-                        if (!string.IsNullOrEmpty(channelUrl))
-                        {
-                            if (urlArrayList.Contains(channelUrl.ToLower()))
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                urlArrayList.Add(channelUrl.ToLower());
-                            }
-                            if (channelUrl.ToLower().StartsWith(publishmentSystemUrl))
-                            {
-                                siteMapBuilder.AppendFormat(urlFormat, channelUrl, "0.8", publishmentSystemInfo.Additional.SiteMapGoogleChangeFrequency, lastmode);
-                            }
-                        }
-                    }
-                }
-
-                if (nodeIdList != null && nodeIdList.Count > 0)
-                {
-                    foreach (int nodeID in nodeIdList)
-                    {
-                        var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeID);
-                        var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-                        var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                        var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, nodeID, string.Empty);
-
-                        //内容页
-                        if (contentIdList != null && contentIdList.Count > 0)
-                        {
-                            foreach (var contentId in contentIdList)
-                            {
-                                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
-                                var contentUrl = PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo));
-                                if (!string.IsNullOrEmpty(contentUrl))
-                                {
-                                    if (urlArrayList.Contains(contentUrl.ToLower()))
-                                    {
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        urlArrayList.Add(contentUrl.ToLower());
-                                    }
-                                    if (contentUrl.ToLower().StartsWith(publishmentSystemUrl))
-                                    {
-                                        siteMapBuilder.AppendFormat(urlFormat, contentUrl, "0.5", publishmentSystemInfo.Additional.SiteMapGoogleChangeFrequency, lastmode);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                siteMapBuilder.Append(siteMapGoogleFoot);
-
-                var siteMapPath = PathUtility.MapPath(publishmentSystemInfo, publishmentSystemInfo.Additional.SiteMapGooglePath);
-                FileUtils.WriteText(siteMapPath, ECharset.utf_8, siteMapBuilder.ToString());
-            }
-            else
-            {
-                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
-                var nodeIDWithContentIDArrayList = new ArrayList();
-
-                if (nodeIdList != null && nodeIdList.Count > 0)
-                {
-                    foreach (int nodeID in nodeIdList)
-                    {
-                        var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeID);
-                        var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                        var idList = DataProvider.ContentDao.GetContentIdListChecked(tableName, nodeID, string.Empty);
-                        foreach (var contentId in idList)
-                        {
-                            nodeIDWithContentIDArrayList.Add($"{nodeID}_{contentId}");
-                        }
-                    }
-                }
-
-                var deci = (double)nodeIDWithContentIDArrayList.Count / publishmentSystemInfo.Additional.SiteMapGooglePageCount;
-                var count = Convert.ToInt32(Math.Ceiling(deci));
-                var siteMapIndexBuilder = new StringBuilder();
-
-                var siteMapGooglePath = publishmentSystemInfo.Additional.SiteMapGooglePath.ToLower();
-                var ext = PageUtils.GetExtensionFromUrl(siteMapGooglePath);
-
-                var urlFormat = publishmentSystemInfo.Additional.SiteMapGoogleIsShowLastModified ? siteMapGoogleUrlWithLastModifiedFotmat : siteMapGoogleUrlFotmat;
-                var lastmode = DateUtils.GetDateString(DateTime.Now);
-                var publishmentSystemUrl = PageUtils.AddProtocolToUrl(publishmentSystemInfo.PublishmentSystemUrl.ToLower());
-
-                for (var i = 1; i <= count; i++)
-                {
-                    var virtualPath = StringUtils.InsertBefore(ext, siteMapGooglePath, i.ToString());
-
-                    siteMapIndexBuilder.Append($@"
-  <sitemap>
-    <loc>{PageUtility.ParseNavigationUrl(publishmentSystemInfo, virtualPath)}</loc>
-    <lastmod>{DateUtils.GetDateString(DateTime.Now)}</lastmod>
-  </sitemap>
-");
-
-                    var siteMapBuilder = new StringBuilder();
-                    siteMapBuilder.Append(siteMapGoogleHead);
-                    var urlArrayList = new ArrayList();
-
-                    if (i == 1)
-                    {
-                        //首页
-                        siteMapBuilder.AppendFormat(urlFormat, publishmentSystemUrl, "1.0", publishmentSystemInfo.Additional.SiteMapGoogleChangeFrequency, lastmode);
-
-                        //栏目页
-                        if (nodeIdList != null && nodeIdList.Count > 0)
-                        {
-                            foreach (int nodeID in nodeIdList)
-                            {
-                                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeID);
-                                var channelUrl = PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo));
-                                if (!string.IsNullOrEmpty(channelUrl))
-                                {
-                                    if (urlArrayList.Contains(channelUrl.ToLower()))
-                                    {
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        urlArrayList.Add(channelUrl.ToLower());
-                                    }
-                                    if (channelUrl.ToLower().StartsWith(publishmentSystemUrl))
-                                    {
-                                        siteMapBuilder.AppendFormat(urlFormat, channelUrl, "0.8", publishmentSystemInfo.Additional.SiteMapGoogleChangeFrequency, lastmode);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    var pageCount = publishmentSystemInfo.Additional.SiteMapGooglePageCount;
-                    if (i == count)
-                    {
-                        pageCount = nodeIDWithContentIDArrayList.Count - (count - 1) * publishmentSystemInfo.Additional.SiteMapGooglePageCount;
-                    }
-                    var pageNodeIDWithContentIDArrayList = nodeIDWithContentIDArrayList.GetRange((i - 1) * publishmentSystemInfo.Additional.SiteMapGooglePageCount, pageCount);
-
-                    //内容页
-                    foreach (string nodeIDWithContentID in pageNodeIDWithContentIDArrayList)
-                    {
-                        var nodeID = TranslateUtils.ToInt(nodeIDWithContentID.Split('_')[0]);
-                        var contentID = TranslateUtils.ToInt(nodeIDWithContentID.Split('_')[1]);
-
-                        var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeID);
-                        var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-                        var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentID);
-
-                        var contentUrl = PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo));
-                        if (!string.IsNullOrEmpty(contentUrl))
-                        {
-                            if (urlArrayList.Contains(contentUrl.ToLower()))
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                urlArrayList.Add(contentUrl.ToLower());
-                            }
-                            if (contentUrl.ToLower().StartsWith(publishmentSystemUrl))
-                            {
-                                siteMapBuilder.AppendFormat(urlFormat, contentUrl, "0.5", publishmentSystemInfo.Additional.SiteMapGoogleChangeFrequency, lastmode);
-                            }
-                        }
-                    }
-
-                    siteMapBuilder.Append(siteMapGoogleFoot);
-
-                    var siteMapPagePath = PathUtility.MapPath(publishmentSystemInfo, virtualPath);
-                    FileUtils.WriteText(siteMapPagePath, ECharset.utf_8, siteMapBuilder.ToString());
-                }
-
-                string sitemapIndexString = $@"
-<?xml version=""1.0"" encoding=""UTF-8""?>
-<sitemapindex xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:schemaLocation=""http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd"">
-{siteMapIndexBuilder.ToString()}
-</sitemapindex>
-";
-
-                var siteMapPath = PathUtility.MapPath(publishmentSystemInfo, publishmentSystemInfo.Additional.SiteMapGooglePath);
-                FileUtils.WriteText(siteMapPath, ECharset.utf_8, sitemapIndexString);
-            }
-        }
-
-        public static void CreateSiteMapBaidu(PublishmentSystemInfo publishmentSystemInfo)
-        {
-            var publishmentSystemUrl = PageUtils.AddProtocolToUrl(publishmentSystemInfo.PublishmentSystemUrl.ToLower());
-
-            var siteMapBuilder = new StringBuilder();
-            siteMapBuilder.Append($@"<?xml version=""1.0"" encoding=""GB2312"" ?>
-<document>
-<webSite>{publishmentSystemUrl}</webSite>
-<webMaster>{publishmentSystemInfo.Additional.SiteMapBaiduWebMaster}</webMaster>
-<updatePeri>{publishmentSystemInfo.Additional.SiteMapBaiduUpdatePeri}</updatePeri>
-");
-
-            var urlArrayList = new ArrayList();
-
-            //内容页
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
-
-            if (nodeIdList != null && nodeIdList.Count > 0)
-            {
-                foreach (int nodeID in nodeIdList)
-                {
-                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeID);
-                    var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-                    var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                    var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, nodeID, string.Empty);
-
-                    if (contentIdList != null && contentIdList.Count > 0)
-                    {
-                        foreach (var contentId in contentIdList)
-                        {
-                            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
-                            var contentUrl = PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo));
-                            if (!string.IsNullOrEmpty(contentUrl))
-                            {
-                                if (urlArrayList.Contains(contentUrl.ToLower()))
-                                {
-                                    continue;
-                                }
-                                else
-                                {
-                                    urlArrayList.Add(contentUrl.ToLower());
-                                }
-                                if (contentUrl.ToLower().StartsWith(publishmentSystemUrl))
-                                {
-                                    siteMapBuilder.Append($@"
-<item>
-    <link><![CDATA[{contentUrl}]]></link>
-    <title><![CDATA[{contentInfo.Title}]]></title>
-    <text><![CDATA[{StringUtils.StripTags(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.Content))}]]></text>
-    <image><![CDATA[{PageUtility.ParseNavigationUrl(publishmentSystemInfo, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.ImageUrl))}]]></image>
-    <category><![CDATA[{NodeManager.GetNodeName(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId)}]]></category>
-    <pubDate>{DateUtils.GetDateAndTimeString(contentInfo.AddDate)}</pubDate>
-</item>
-");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            siteMapBuilder.Append(@"
-</document>");
-
-            var siteMapPath = PathUtility.MapPath(publishmentSystemInfo, publishmentSystemInfo.Additional.SiteMapBaiduPath);
-            FileUtils.WriteText(siteMapPath, ECharset.gb2312, siteMapBuilder.ToString());
-        }
-
-        public static List<int>[] GetSeoMetaArrayLists(int publishmentSystemID)
-        {
-            var cacheKey = GetCacheKey(publishmentSystemID);
-            lock (lockObject)
+            var cacheKey = GetCacheKey(publishmentSystemId);
+            lock (LockObject)
             {
                 if (CacheUtils.Get(cacheKey) == null)
                 {
-                    var lists = DataProvider.SeoMetaDao.GetSeoMetaLists(publishmentSystemID);
+                    var lists = DataProvider.SeoMetaDao.GetSeoMetaLists(publishmentSystemId);
                     CacheUtils.Insert(cacheKey, lists, 30);
                     return lists;
                 }
@@ -507,18 +195,18 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void RemoveCache(int publishmentSystemID)
+        public static void RemoveCache(int publishmentSystemId)
         {
-            var cacheKey = GetCacheKey(publishmentSystemID);
+            var cacheKey = GetCacheKey(publishmentSystemId);
             CacheUtils.Remove(cacheKey);
         }
 
-        private static string GetCacheKey(int publishmentSystemID)
+        private static string GetCacheKey(int publishmentSystemId)
         {
-            return cacheKeyPrefix + publishmentSystemID;
+            return CacheKeyPrefix + publishmentSystemId;
         }
 
-        private static readonly object lockObject = new object();
-        private const string cacheKeyPrefix = "SiteServer.CMS.Core.SeoMeta.";
+        private static readonly object LockObject = new object();
+        private const string CacheKeyPrefix = "SiteServer.CMS.Core.SeoMeta.";
     }
 }

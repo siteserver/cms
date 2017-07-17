@@ -68,7 +68,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -101,7 +101,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 rptContents.ItemTemplate = new RepeaterTemplate(listInfo.ItemTemplate, null, null, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
 
-                rptContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ItemContainer, listInfo.StartNum, listInfo.TotalNum, listInfo.IsRecommend, listInfo.OrderByString, listInfo.Where);
+                rptContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ItemContainer, listInfo.StartNum, listInfo.TotalNum, listInfo.IsRecommend, listInfo.OrderByString, listInfo.Where, pageInfo.Guid);
 
                 rptContents.DataBind();
 
@@ -134,7 +134,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, null, null, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
                 }
 
-                pdlContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ItemContainer, listInfo.StartNum, listInfo.TotalNum, listInfo.IsRecommend, listInfo.OrderByString, listInfo.Where);
+                pdlContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ItemContainer, listInfo.StartNum, listInfo.TotalNum, listInfo.IsRecommend, listInfo.OrderByString, listInfo.Where, pageInfo.Guid);
                 pdlContents.DataBind();
 
                 if (pdlContents.Items.Count > 0)

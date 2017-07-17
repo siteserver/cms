@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
+using System.Linq;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 
@@ -11,13 +10,15 @@ namespace SiteServer.CMS.Core.Create
     {
         void AddPendingTask(CreateTaskInfo task);
 
-        CreateTaskInfo GetLastPendingTask();
+        int GetPendingTaskCount(int publishmentSystemId);
 
-        List<CreateTaskInfo> GetLastPendingTasks(int topNum);
+        CreateTaskInfo GetLastPendingTask(int publishmentSystemId);
 
-        void RemovePendingAndAddSuccessLog(CreateTaskInfo taskInfo, string timeSpan);
+        void RemoveTask(int publishmentSystemId, CreateTaskInfo taskInfo);
 
-        void RemovePendingAndAddFailureLog(CreateTaskInfo taskInfo, Exception ex);
+        void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan);
+
+        void AddFailureLog(CreateTaskInfo taskInfo, Exception ex);
 
         void ClearAllTask();
 
@@ -36,33 +37,6 @@ namespace SiteServer.CMS.Core.Create
         public static ICreateTaskManager Instance => ServiceManager.IsServiceOnline()
             ? (ICreateTaskManager) CreateTaskManagerForDb
             : CreateTaskManagerForMomery;
-
-        internal static string GetTaskName(CreateTaskInfo taskInfo)
-        {
-            var name = string.Empty;
-            if (taskInfo.CreateType == ECreateType.Index)
-            {
-                name = "首页";
-            }
-            else if (taskInfo.CreateType == ECreateType.Channel)
-            {
-                name = NodeManager.GetNodeName(taskInfo.PublishmentSystemID, taskInfo.ChannelID);
-            }
-            else if (taskInfo.CreateType == ECreateType.AllContent)
-            {
-                var nodeInfo = NodeManager.GetNodeInfo(taskInfo.PublishmentSystemID, taskInfo.ChannelID);
-                name = $"{nodeInfo.NodeName}下所有内容页，共{nodeInfo.ContentNum}项";
-            }
-            else if (taskInfo.CreateType == ECreateType.Content)
-            {
-                name = BaiRongDataProvider.ContentDao.GetValue(NodeManager.GetTableName(PublishmentSystemManager.GetPublishmentSystemInfo(taskInfo.PublishmentSystemID), taskInfo.ChannelID), taskInfo.ContentID, ContentAttribute.Title);
-            }
-            else if (taskInfo.CreateType == ECreateType.File)
-            {
-                name = TemplateManager.GetTemplateName(taskInfo.PublishmentSystemID, taskInfo.TemplateID);
-            }
-            return name;
-        }
     }
 
     internal class CreateTaskManagerForMomery : ICreateTaskManager
@@ -99,7 +73,7 @@ namespace SiteServer.CMS.Core.Create
         /// <param name="task"></param>
         public void AddPendingTask(CreateTaskInfo task)
         {
-            var pendingTasks = GetPendingTasks(task.PublishmentSystemID); // 查找某站点所有任务
+            var pendingTasks = GetPendingTasks(task.PublishmentSystemId); // 查找某站点所有任务
             foreach (var taskInfo in pendingTasks)
             {
                 if (task.Equals(taskInfo))
@@ -110,59 +84,24 @@ namespace SiteServer.CMS.Core.Create
             pendingTasks.Add(task);
         }
 
-        public CreateTaskInfo GetLastPendingTask()
+        public int GetPendingTaskCount(int publishmentSystemId)
         {
-            foreach (var entry in PendingTaskDict)
-            {
-                var pendingTasks = entry.Value;
-                if (pendingTasks.Count > 0)
-                {
-                    return pendingTasks[pendingTasks.Count - 1];
-                }
-            }
-            return null;
+            var pendingTasks = GetPendingTasks(publishmentSystemId);
+            return pendingTasks.Count == 0 ? 0 : pendingTasks.Sum(taskInfo => taskInfo.PageCount);
         }
 
-        public List<CreateTaskInfo> GetLastPendingTasks(int topNum)
+        public CreateTaskInfo GetLastPendingTask(int publishmentSystemId)
         {
-            List<CreateTaskInfo> list = null;
+            var pendingTasks = GetPendingTasks(publishmentSystemId);
+            if (pendingTasks.Count <= 0) return null;
 
-            foreach (var entry in PendingTaskDict)
-            {
-                var pendingTasks = entry.Value;
-                if (pendingTasks.Count > 0)
-                {
-                    list = new List<CreateTaskInfo>();
-                    if (pendingTasks.Count >= topNum)
-                    {
-                        while (topNum > 0)
-                        {
-                            list.Add(pendingTasks[pendingTasks.Count - topNum]);
-                            topNum--;
-                        }
-                    }
-                    else
-                    {
-                        foreach (var taskInfo in pendingTasks)
-                        {
-                            list.Add(taskInfo);
-                        }
-                    } 
-
-                    return list;
-                }
-            }
-            return list;
+            return pendingTasks[0];
         }
 
-        public void RemovePendingAndAddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
+        public void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
         {
-            var pendingTasks = GetPendingTasks(taskInfo.PublishmentSystemID);
-            var taskLogs = GetTaskLogs(taskInfo.PublishmentSystemID);
-
-            pendingTasks.Remove(taskInfo);
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemID, CreateTaskManager.GetTaskName(taskInfo), timeSpan, true, string.Empty, DateTime.Now);
-
+            var taskLogs = GetTaskLogs(taskInfo.PublishmentSystemId);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.Name, timeSpan, true, string.Empty, DateTime.Now);
             if (taskLogs.Count > 20)
             {
                 taskLogs.RemoveAt(20);
@@ -170,13 +109,10 @@ namespace SiteServer.CMS.Core.Create
             taskLogs.Add(taskLog);
         }
 
-        public void RemovePendingAndAddFailureLog(CreateTaskInfo taskInfo, Exception ex)
+        public void AddFailureLog(CreateTaskInfo taskInfo, Exception ex)
         {
-            var pendingTasks = GetPendingTasks(taskInfo.PublishmentSystemID);
-            var taskLogs = GetTaskLogs(taskInfo.PublishmentSystemID);
-
-            pendingTasks.Remove(taskInfo);
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemID, CreateTaskManager.GetTaskName(taskInfo), string.Empty, false, ex.Message, DateTime.Now);
+            var taskLogs = GetTaskLogs(taskInfo.PublishmentSystemId);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.Name, string.Empty, false, ex.Message, DateTime.Now);
             if (taskLogs.Count > 20)
             {
                 taskLogs.RemoveAt(20);
@@ -197,6 +133,12 @@ namespace SiteServer.CMS.Core.Create
             PendingTaskDict[publishmentSystemId] = new List<CreateTaskInfo>();
         }
 
+        public void RemoveTask(int publishmentSystemId, CreateTaskInfo taskInfo)
+        {
+            var pendingTasks = GetPendingTasks(publishmentSystemId);
+            pendingTasks.Remove(taskInfo);
+        }
+
         public CreateTaskSummary GetTaskSummary(int publishmentSystemId)
         {
             var pendingTasks = GetPendingTasks(publishmentSystemId);
@@ -204,56 +146,49 @@ namespace SiteServer.CMS.Core.Create
 
             var list = new List<CreateTaskSummaryItem>();
 
-            var indexCount = 0;
             var channelsCount = 0;
             var contentsCount = 0;
             var filesCount = 0;
 
             foreach (var taskInfo in pendingTasks)
             {
-                if (taskInfo.CreateType == ECreateType.Index)
+                if (taskInfo.CreateType == ECreateType.Channel)
                 {
-                    indexCount++;
+                    channelsCount += taskInfo.PageCount;
                 }
-                else if (taskInfo.CreateType == ECreateType.Channel)
+                else if (taskInfo.CreateType == ECreateType.Content || taskInfo.CreateType == ECreateType.AllContent)
                 {
-                    channelsCount++;
-                }
-                else if (taskInfo.CreateType == ECreateType.Content)
-                {
-                    contentsCount++;
+                    contentsCount += taskInfo.PageCount;
                 }
                 else if (taskInfo.CreateType == ECreateType.File)
                 {
-                    filesCount++;
+                    filesCount += taskInfo.PageCount;
                 }
-                else if (taskInfo.CreateType == ECreateType.AllContent)
+            }
+            
+            CreateTaskSummaryItem current = null;
+            var count = pendingTasks.Count >= 11 ? 11 : pendingTasks.Count;
+            if (count > 0)
+            {
+                current = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(pendingTasks[0].CreateType), pendingTasks[0].Name, string.Empty, false, false, string.Empty);
+
+                for (var i = 1; i < count; i++)
                 {
-                    contentsCount++;
-                    //NodeInfo nodeInfo = NodeManager.GetNodeInfo(publishmentSystemID, taskInfo.ChannelID);
-                    //contentsCount += nodeInfo.ContentNum;
+                    var taskInfo = pendingTasks[i];
+                    var summaryItem = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(taskInfo.CreateType), taskInfo.Name, string.Empty, false, false, string.Empty);
+                    list.Add(summaryItem);
                 }
             }
 
-            var count = 0;
-            for (var i = pendingTasks.Count - 1; i >= 0; i--)
+            count = taskLogs.Count >= 20 ? 20 : taskLogs.Count;
+            for (var i = 1; i <= count; i++)
             {
-                if (count > 10) break;
-                var taskInfo = pendingTasks[i];
-                var summaryItem = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(taskInfo.CreateType), CreateTaskManager.GetTaskName(taskInfo), string.Empty, false, false, string.Empty);
-                list.Add(summaryItem);
-            }
-
-            count = 0;
-            for (var i = taskLogs.Count - 1; i >= 0; i--)
-            {
-                if (count > 20) break;
-                var logInfo = taskLogs[i];
+                var logInfo = taskLogs[taskLogs.Count - i];
                 var summaryItem = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(logInfo.CreateType), logInfo.TaskName, logInfo.TimeSpan, true, logInfo.IsSuccess, logInfo.ErrorMessage);
                 list.Add(summaryItem);
             }
 
-            var summary = new CreateTaskSummary(list, indexCount, channelsCount, contentsCount, filesCount);
+            var summary = new CreateTaskSummary(current, list, channelsCount, contentsCount, filesCount);
 
             return summary;
         }
@@ -269,27 +204,25 @@ namespace SiteServer.CMS.Core.Create
             }
         }
 
-        public CreateTaskInfo GetLastPendingTask()
+        public CreateTaskInfo GetLastPendingTask(int publishmentSystemId)
         {
             return DataProvider.CreateTaskDao.GetLastPendingTask();
         }
 
-        public List<CreateTaskInfo> GetLastPendingTasks(int topNum)
-        {
-            return DataProvider.CreateTaskDao.GetLastPendingTasks(topNum);
-        }
+        //public List<CreateTaskInfo> GetLastPendingTasks(int publishmentSystemId, int topNum)
+        //{
+        //    return DataProvider.CreateTaskDao.GetLastPendingTasks(topNum);
+        //}
 
-        public void RemovePendingAndAddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
+        public void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
         {
-            DataProvider.CreateTaskDao.Delete(taskInfo.ID);
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemID, CreateTaskManager.GetTaskName(taskInfo), timeSpan, true, string.Empty, DateTime.Now);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.Name, timeSpan, true, string.Empty, DateTime.Now);
             DataProvider.CreateTaskLogDao.Insert(taskLog);
         }
 
-        public void RemovePendingAndAddFailureLog(CreateTaskInfo taskInfo, Exception ex)
+        public void AddFailureLog(CreateTaskInfo taskInfo, Exception ex)
         {
-            DataProvider.CreateTaskDao.Delete(taskInfo.ID);
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemID, CreateTaskManager.GetTaskName(taskInfo), string.Empty, false, ex.Message, DateTime.Now);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.Name, string.Empty, false, ex.Message, DateTime.Now);
             DataProvider.CreateTaskLogDao.Insert(taskLog);
         }
 
@@ -305,20 +238,24 @@ namespace SiteServer.CMS.Core.Create
 
         public CreateTaskSummary GetTaskSummary(int publishmentSystemId)
         {
-            int indexCount;
             int channelsCount;
             int contentsCount;
             int filesCount;
-            DataProvider.CreateTaskDao.GetCount(publishmentSystemId, out indexCount, out channelsCount, out contentsCount, out filesCount);
+            DataProvider.CreateTaskDao.GetCount(publishmentSystemId, out channelsCount, out contentsCount, out filesCount);
             var pendingTasks = DataProvider.CreateTaskDao.GetList(publishmentSystemId, 10);
             var taskLogs = DataProvider.CreateTaskLogDao.GetList(publishmentSystemId, 20);
 
+            CreateTaskSummaryItem current = null;
             var list = new List<CreateTaskSummaryItem>();
 
             for (var i = pendingTasks.Count - 1; i >= 0; i--)
             {
+                if (i == 0)
+                {
+                    current = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(pendingTasks[0].CreateType), pendingTasks[0].Name, string.Empty, false, false, string.Empty);
+                }
                 var taskInfo = pendingTasks[i];
-                var summaryItem = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(taskInfo.CreateType), CreateTaskManager.GetTaskName(taskInfo), string.Empty, false, false, string.Empty);
+                var summaryItem = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(taskInfo.CreateType), taskInfo.Name, string.Empty, false, false, string.Empty);
                 list.Add(summaryItem);
             }
 
@@ -329,9 +266,19 @@ namespace SiteServer.CMS.Core.Create
                 list.Add(summaryItem);
             }
 
-            var summary = new CreateTaskSummary(list, indexCount, channelsCount, contentsCount, filesCount);
+            var summary = new CreateTaskSummary(current, list, channelsCount, contentsCount, filesCount);
 
             return summary;
+        }
+
+        public int GetPendingTaskCount(int publishmentSystemId)
+        {
+            return 0;
+        }
+
+        public void RemoveTask(int publishmentSystemId, CreateTaskInfo taskInfo)
+        {
+            DataProvider.CreateTaskDao.Delete(taskInfo.Id);
         }
     }
 }

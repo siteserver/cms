@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var nodeID in nodeIDList)
 				{
                     if (nodeID == PublishmentSystemId) continue;
-                    if (HasChannelPermissions(nodeID, AppManager.Cms.Permission.Channel.ChannelDelete))
+                    if (HasChannelPermissions(nodeID, AppManager.Permissions.Channel.ChannelDelete))
 					{
                         var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
                         var displayName = nodeInfo.NodeName;
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var nodeID in nodeIDList)
 					{
                         if (nodeID == PublishmentSystemId) continue;
-                        if (HasChannelPermissions(nodeID, AppManager.Cms.Permission.Channel.ChannelDelete))
+                        if (HasChannelPermissions(nodeID, AppManager.Permissions.Channel.ChannelDelete))
 						{
 							nodeIDArrayList.Add(nodeID);
 						}

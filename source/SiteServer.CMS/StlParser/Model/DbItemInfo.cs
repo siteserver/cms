@@ -2,23 +2,20 @@ namespace SiteServer.CMS.StlParser.Model
 {
 	public class DbItemInfo
 	{
-        private object dataItem;
-        private int itemIndex;
-
-        public DbItemInfo(object dataItem, int itemIndex)
+	    public DbItemInfo(object dataItem, int itemIndex)
 		{
-            this.dataItem = dataItem;
-            this.itemIndex = itemIndex;
+            DataItem = dataItem;
+            ItemIndex = itemIndex;
 		}
 
-        public object DataItem => dataItem;
+        public object DataItem { get; private set; }
 
-	    public int ItemIndex => itemIndex;
+	    public int ItemIndex { get; private set; }
 
 	    public void Reload(object theDataItem, int theItemIndex)
         {
-            dataItem = theDataItem;
-            itemIndex = theItemIndex;
+            DataItem = theDataItem;
+            ItemIndex = theItemIndex;
         }
 	}
 }

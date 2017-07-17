@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings(AppManager.Settings.LeftMenu.Config, "短信服务商设置", AppManager.Settings.Permission.SettingsConfig);
+            BreadCrumbSettings("短信服务商设置", AppManager.Permissions.Settings.Config);
 
             ESmsProviderTypeUtils.AddListItems(DdlProviderType);
             ControlUtils.SelectListItemsIgnoreCase(DdlProviderType, ESmsProviderTypeUtils.GetValue(ConfigManager.SystemConfigInfo.SmsProviderType));

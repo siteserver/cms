@@ -1,6 +1,5 @@
-﻿using System.Web;
-using System.Xml;
-using BaiRong.Core.Data.Helper;
+﻿using System.Xml;
+using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.Plugin;
 
@@ -11,6 +10,8 @@ namespace BaiRong.Core
         private const string NameIsProtectData = "IsProtectData";
         private const string NameDatabaseType = "DatabaseType";
         private const string NameConnectionString = "ConnectionString";
+        private const string NameAdminDirectory = "AdminDirectory";
+        private const string NameSecretKey = "SecretKey";
 
         /// <summary>
         /// 获取当前正在执行的服务器应用程序的根目录的物理文件系统路径。
@@ -19,6 +20,9 @@ namespace BaiRong.Core
 
         public static EDatabaseType DatabaseType { get; private set; }
         public static string ConnectionString { get; private set; }
+
+        public static string AdminDirectory { get; private set; }
+        public static string SecretKey { get; private set; }
 
         private static IDbHelper _helper;
         public static IDbHelper Helper
@@ -88,6 +92,22 @@ namespace BaiRong.Core
                                         connectionString = attrValue.Value;
                                     }
                                 }
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, NameAdminDirectory))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        AdminDirectory = attrValue.Value;
+                                    }
+                                }
+                                else if (StringUtils.EqualsIgnoreCase(attrKey.Value, NameSecretKey))
+                                {
+                                    var attrValue = setting.Attributes["value"];
+                                    if (attrValue != null)
+                                    {
+                                        SecretKey = attrValue.Value;
+                                    }
+                                }
                             }
                         }
                     }
@@ -106,9 +126,17 @@ namespace BaiRong.Core
 
             DatabaseType = EDatabaseTypeUtils.GetEnumType(databaseType);
             ConnectionString = connectionString;
+            if (string.IsNullOrEmpty(AdminDirectory))
+            {
+                AdminDirectory = "siteserver";
+            }
+            if (string.IsNullOrEmpty(SecretKey))
+            {
+                SecretKey = "vEnfkn16t8aeaZKG3a4Gl9UUlzf4vgqU9xwh8ZV5";
+            }
         }
 
-        public static void UpdateWebConfig(bool isProtectData, EDatabaseType databaseType, string connectionString)
+        public static void UpdateWebConfig(bool isProtectData, EDatabaseType databaseType, string connectionString, string adminDirectory, string secretKey)
         {
             var configFilePath = PathUtils.MapPath("~/web.config");
 
@@ -157,6 +185,24 @@ namespace BaiRong.Core
                                     {
                                         attrValue.Value = TranslateUtils.EncryptStringBySecretKey(attrValue.Value);
                                     }
+                                    dirty = true;
+                                }
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, NameAdminDirectory))
+                            {
+                                var attrValue = setting.Attributes["value"];
+                                if (attrValue != null)
+                                {
+                                    attrValue.Value = adminDirectory;
+                                    dirty = true;
+                                }
+                            }
+                            else if (StringUtils.EqualsIgnoreCase(attrKey.Value, NameAdminDirectory))
+                            {
+                                var attrValue = setting.Attributes["value"];
+                                if (attrValue != null)
+                                {
+                                    attrValue.Value = adminDirectory;
                                     dirty = true;
                                 }
                             }

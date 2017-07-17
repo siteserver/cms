@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
 
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdVote, "投票记录设置", AppManager.WeiXin.Permission.WebSite.Vote);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdVote, "投票记录设置", AppManager.WeiXin.Permission.WebSite.Vote);
                 var itemInfoList = DataProviderWx.VoteItemDao.GetVoteItemInfoList(_voteId);
                 _idTitleMap = new Dictionary<int, string>();
                 foreach (var itemInfo in itemInfoList)

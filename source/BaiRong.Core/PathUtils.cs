@@ -65,7 +65,7 @@ namespace BaiRong.Core
             return DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.AspnetClient.DirectoryName), path)
                    || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.Bin.DirectoryName), path)
                    || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName), path)
-                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, FileConfigManager.Instance.AdminDirectoryName), path)
+                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory), path)
                    || IsEquals(Combine(WebConfigUtils.PhysicalApplicationPath, "web.config"), path)
                    || IsEquals(Combine(WebConfigUtils.PhysicalApplicationPath, "Global.asax"), path);
         }
@@ -350,7 +350,7 @@ namespace BaiRong.Core
             return retval;
         }
 
-        public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, FileConfigManager.Instance.AdminDirectoryName);
+        public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory);
 
         public static string PhysicalSiteFilesPath => Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName);
     }

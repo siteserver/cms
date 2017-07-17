@@ -174,10 +174,10 @@ namespace SiteServer.CMS.Core
                 if (!string.IsNullOrEmpty(nodeInfo.Additional.TransNodeNames))
                 {
                     var nodeNameArrayList = TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.TransNodeNames);
-                    var dic = NodeManager.GetNodeInfoHashtableByPublishmentSystemId(psID);
+                    var dic = NodeManager.GetNodeInfoDictionaryByPublishmentSystemId(psID);
                     if (dic != null)
                     {
-                        foreach (string nodeName in nodeNameArrayList)
+                        foreach (var nodeName in nodeNameArrayList)
                         {
                             foreach (var theNodeId in dic.Keys)
                             {

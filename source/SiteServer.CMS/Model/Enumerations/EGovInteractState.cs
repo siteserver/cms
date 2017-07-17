@@ -17,66 +17,60 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EGovInteractState type)
 		{
-            if (type == EGovInteractState.New)
+		    if (type == EGovInteractState.New)
 			{
                 return "New";
 			}
-            else if (type == EGovInteractState.Denied)
-			{
-                return "Denied";
-            }
-            else if (type == EGovInteractState.Accepted)
-            {
-                return "Accepted";
-            }
-            else if (type == EGovInteractState.Redo)
-            {
-                return "Redo";
-            }
-            else if (type == EGovInteractState.Replied)
-            {
-                return "Replied";
-            }
-            else if (type == EGovInteractState.Checked)
-            {
-                return "Checked";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovInteractState.Denied)
+		    {
+		        return "Denied";
+		    }
+		    if (type == EGovInteractState.Accepted)
+		    {
+		        return "Accepted";
+		    }
+		    if (type == EGovInteractState.Redo)
+		    {
+		        return "Redo";
+		    }
+		    if (type == EGovInteractState.Replied)
+		    {
+		        return "Replied";
+		    }
+		    if (type == EGovInteractState.Checked)
+		    {
+		        return "Checked";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EGovInteractState type)
 		{
-            if (type == EGovInteractState.New)
+		    if (type == EGovInteractState.New)
 			{
                 return "新办件";
 			}
-            else if (type == EGovInteractState.Denied)
-			{
-                return "拒绝受理";
-            }
-            else if (type == EGovInteractState.Accepted)
-            {
-                return "已受理";
-            }
-            else if (type == EGovInteractState.Redo)
-            {
-                return "要求返工";
-            }
-            else if (type == EGovInteractState.Replied)
-            {
-                return "已办理";
-            }
-            else if (type == EGovInteractState.Checked)
-            {
-                return "处理完毕";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovInteractState.Denied)
+		    {
+		        return "拒绝受理";
+		    }
+		    if (type == EGovInteractState.Accepted)
+		    {
+		        return "已受理";
+		    }
+		    if (type == EGovInteractState.Redo)
+		    {
+		        return "要求返工";
+		    }
+		    if (type == EGovInteractState.Replied)
+		    {
+		        return "已办理";
+		    }
+		    if (type == EGovInteractState.Checked)
+		    {
+		        return "处理完毕";
+		    }
+		    throw new Exception();
 		}
 
         public static string GetFrontText(EGovInteractState type)
@@ -85,14 +79,11 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "拒绝受理";
             }
-            else if (type == EGovInteractState.Checked)
+            if (type == EGovInteractState.Checked)
             {
                 return "办理完毕";
             }
-            else
-            {
-                return "办理中";
-            }
+            return "办理中";
         }
 
 		public static EGovInteractState GetEnumType(string typeStr)

@@ -10,6 +10,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -104,7 +105,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var groupContent = string.Empty;
                 var groupContentNot = string.Empty;
                 var tags = string.Empty;
-                var orderByString = ETaxisTypeUtils.GetOrderByString(ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, string.Empty, null);
+                var orderByString = ETaxisTypeUtils.GetOrderByString(ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
                 var startNum = 1;
                 var totalNum = 0;
                 var isShowText = true;
@@ -170,7 +171,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeOrder))
                         {
-                            orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
+                            orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
                         }
                         else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeStartNum))
                         {
@@ -255,7 +256,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -265,9 +266,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            var channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
+            var channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName, pageInfo.Guid);
 
-            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null, pageInfo.Guid);
 
             if (dataSource != null)
             {

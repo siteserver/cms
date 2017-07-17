@@ -6,6 +6,7 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -32,9 +33,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmKeyword, EDataType.NVarChar,50, keywordInfo.Keyword),
-                GetParameter(ParmAlternative, EDataType.NVarChar,50, keywordInfo.Alternative),
-                GetParameter(ParmGrade, EDataType.NVarChar, 50, EKeywordGradeUtils.GetValue(keywordInfo.Grade))
+                GetParameter(ParmKeyword, DataType.NVarChar,50, keywordInfo.Keyword),
+                GetParameter(ParmAlternative, DataType.NVarChar,50, keywordInfo.Alternative),
+                GetParameter(ParmGrade, DataType.NVarChar, 50, EKeywordGradeUtils.GetValue(keywordInfo.Grade))
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -50,10 +51,10 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmKeyword, EDataType.NVarChar,50, keywordInfo.Keyword),
-                GetParameter(ParmAlternative, EDataType.NVarChar,50, keywordInfo.Alternative),
-                GetParameter(ParmGrade, EDataType.NVarChar, 50, EKeywordGradeUtils.GetValue(keywordInfo.Grade)),
-                GetParameter(ParmKeywordId, EDataType.Integer, keywordInfo.KeywordID)
+                GetParameter(ParmKeyword, DataType.NVarChar,50, keywordInfo.Keyword),
+                GetParameter(ParmAlternative, DataType.NVarChar,50, keywordInfo.Alternative),
+                GetParameter(ParmGrade, DataType.NVarChar, 50, EKeywordGradeUtils.GetValue(keywordInfo.Grade)),
+                GetParameter(ParmKeywordId, DataType.Integer, keywordInfo.KeywordID)
             };
             ExecuteNonQuery(SqlUpdate, parms);
         }
@@ -64,7 +65,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
+                GetParameter(ParmKeywordId, DataType.Integer, keywordId)
             };
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -83,7 +84,7 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
+                GetParameter(ParmKeywordId, DataType.Integer, keywordId)
             };
             ExecuteNonQuery(SqlDelete, parms);
         }
@@ -107,7 +108,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmKeyword, EDataType.NVarChar, 50, keyword)
+                GetParameter(ParmKeyword, DataType.NVarChar, 50, keyword)
             };
             using (var rdr = ExecuteReader(SqlSelectKeyword, parms))
             {

@@ -101,45 +101,46 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            if (Page.IsPostBack && Page.IsValid)
+            if (!Page.IsPostBack || !Page.IsValid) return;
+
+            var guid = StringUtils.GetShortGuid();
+
+            if (!string.IsNullOrEmpty(Request.Form["translateCollection"]))
             {
-                if (!string.IsNullOrEmpty(Request.Form["translateCollection"]))
+                try
                 {
-                    try
+                    var translateType = ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue);
+
+                    foreach (var nodeId in _idsDictionary.Keys)
                     {
-                        var translateType = ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue);
-
-                        foreach (var nodeId in _idsDictionary.Keys)
+                        var contentIdArrayList = _idsDictionary[nodeId];
+                        if (contentIdArrayList != null)
                         {
-                            var contentIdArrayList = _idsDictionary[nodeId];
-                            if (contentIdArrayList != null)
+                            contentIdArrayList.Reverse();
+                            if (contentIdArrayList.Count > 0)
                             {
-                                contentIdArrayList.Reverse();
-                                if (contentIdArrayList.Count > 0)
+                                foreach (var contentId in contentIdArrayList)
                                 {
-                                    foreach (var contentId in contentIdArrayList)
-                                    {
-                                        ContentUtility.Translate(PublishmentSystemInfo, nodeId, contentId, Request.Form["translateCollection"], translateType, Body.AdministratorName);
+                                    ContentUtility.Translate(PublishmentSystemInfo, nodeId, contentId, Request.Form["translateCollection"], translateType, Body.AdministratorName, guid);
 
-                                        Body.AddSiteLog(PublishmentSystemInfo.PublishmentSystemId, nodeId, contentId, "转移内容", string.Empty);
-                                    }
+                                    Body.AddSiteLog(PublishmentSystemInfo.PublishmentSystemId, nodeId, contentId, "转移内容", string.Empty);
                                 }
                             }
                         }
+                    }
 
-                        SuccessMessage("内容转移成功！");
-                        AddWaitAndRedirectScript(_returnUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        FailMessage(ex, "内容转移失败！");
-                        LogUtils.AddErrorLog(ex);
-                    }
+                    SuccessMessage("内容转移成功！");
+                    AddWaitAndRedirectScript(_returnUrl);
                 }
-                else
+                catch (Exception ex)
                 {
-                    FailMessage("请选择需要转移到的栏目！");
+                    FailMessage(ex, "内容转移失败！");
+                    LogUtils.AddErrorLog(ex);
                 }
+            }
+            else
+            {
+                FailMessage("请选择需要转移到的栏目！");
             }
         }
 

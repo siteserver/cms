@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdStore, "门店属性管理", AppManager.WeiXin.Permission.WebSite.Store);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdStore, "门店属性管理", AppManager.WeiXin.Permission.WebSite.Store);
                 RegisterClientScriptBlock("NodeTreeScript", CategoryTreeItem.GetScript(PublishmentSystemId, ECategoryLoadingType.Category, null));
 
                 if (_categoryId > 0)

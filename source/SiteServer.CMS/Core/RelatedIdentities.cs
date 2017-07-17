@@ -17,7 +17,7 @@ namespace SiteServer.CMS.Core
         {
             List<int> relatedIdentities;
 
-            if (tableStyle == ETableStyle.Channel || tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.UserDefined)
+            if (tableStyle == ETableStyle.Channel || tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.Custom)
             {
                 relatedIdentities = GetChannelRelatedIdentities(publishmentSystemId, relatedIdentity);
             }
@@ -63,7 +63,7 @@ namespace SiteServer.CMS.Core
         public static List<TableStyleInfo> GetTableStyleInfoList(PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, int relatedIdentity)
         {
             List<int> relatedIdentities;
-            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.Channel || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.UserDefined)
+            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.Channel || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.Custom)
             {
                 relatedIdentities = GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, relatedIdentity);
             }
@@ -81,7 +81,7 @@ namespace SiteServer.CMS.Core
         {
             var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
 
-            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.UserDefined)
+            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.Custom)
             {
                 tableName = NodeManager.GetTableName(publishmentSystemInfo, relatedIdentity);
             }

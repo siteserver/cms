@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
 			if(!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, AppManager.Wcm.LeftMenu.GovInteract.IdGovInteractAnalysis, "互动交流统计", AppManager.Wcm.Permission.WebSite.GovInteractAnalysis);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, "互动交流统计", AppManager.Wcm.Permission.WebSite.GovInteractAnalysis);
 
                 StartDate.Text = string.Empty;
                 EndDate.Now = true;

@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 {"Check", true.ToString()}
                             }), "IDsCollection", "IDsCollection", "请选择需要审核的评论！", "此操作将审核所选评论，确认吗？"));
 
-                if (HasChannelPermissions(PublishmentSystemId, AppManager.Cms.Permission.Channel.CommentDelete))
+                if (HasChannelPermissions(PublishmentSystemId, AppManager.Permissions.Channel.CommentDelete))
                 {
                     BtnDelete.Attributes.Add("onclick",
                         PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(

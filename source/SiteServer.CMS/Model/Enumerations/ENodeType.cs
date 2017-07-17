@@ -13,18 +13,15 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ENodeType type)
 		{
-			if (type == ENodeType.BackgroundPublishNode)
+		    if (type == ENodeType.BackgroundPublishNode)
 			{
 				return "BackgroundPublishNode";
 			}
-			else if (type == ENodeType.BackgroundNormalNode)
-			{
-				return "BackgroundNormalNode";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ENodeType.BackgroundNormalNode)
+		    {
+		        return "BackgroundNormalNode";
+		    }
+		    throw new Exception();
 		}
 
 		public static ENodeType GetEnumType(string typeStr)

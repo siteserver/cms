@@ -15,50 +15,44 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EPositionType type)
 		{
-            if (type == EPositionType.LeftTop)
+		    if (type == EPositionType.LeftTop)
 			{
                 return "LeftTop";
 			}
-            else if (type == EPositionType.LeftBottom)
-			{
-                return "LeftBottom";
-			}
-            else if (type == EPositionType.RightTop)
-			{
-                return "RightTop";
-            }
-            else if (type == EPositionType.RightBottom)
-            {
-                return "RightBottom";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EPositionType.LeftBottom)
+		    {
+		        return "LeftBottom";
+		    }
+		    if (type == EPositionType.RightTop)
+		    {
+		        return "RightTop";
+		    }
+		    if (type == EPositionType.RightBottom)
+		    {
+		        return "RightBottom";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EPositionType type)
 		{
-            if (type == EPositionType.LeftTop)
+		    if (type == EPositionType.LeftTop)
             {
                 return "左上";
             }
-            else if (type == EPositionType.LeftBottom)
-            {
-                return "左下";
-            }
-            else if (type == EPositionType.RightTop)
-            {
-                return "右上";
-            }
-            else if (type == EPositionType.RightBottom)
-            {
-                return "右下";
-            }
-            else
-            {
-                throw new Exception();
-            }
+		    if (type == EPositionType.LeftBottom)
+		    {
+		        return "左下";
+		    }
+		    if (type == EPositionType.RightTop)
+		    {
+		        return "右上";
+		    }
+		    if (type == EPositionType.RightBottom)
+		    {
+		        return "右下";
+		    }
+		    throw new Exception();
 		}
 
 		public static EPositionType GetEnumType(string typeStr)

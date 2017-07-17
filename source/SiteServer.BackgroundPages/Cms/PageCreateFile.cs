@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Service;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model.Enumerations;
@@ -23,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "生成文件页", AppManager.Cms.Permission.WebSite.Create);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "生成文件页", AppManager.Permissions.WebSite.Create);
 
                 var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListOfFile(PublishmentSystemId);
 
@@ -41,16 +42,28 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                var templateIdArrayList = new ArrayList();
+                var templateIdList = new List<int>();
                 foreach (ListItem item in FileCollectionToCreate.Items)
                 {
-                    if (item.Selected)
-                    {
-                        var templateId = int.Parse(item.Value);
-                        templateIdArrayList.Add(templateId);
-                    }
+                    if (!item.Selected) continue;
+
+                    var templateId = int.Parse(item.Value);
+                    templateIdList.Add(templateId);
                 }
-                ProcessCreateFile(templateIdArrayList);
+
+                if (templateIdList.Count == 0)
+                {
+                    FailMessage("请选择需要生成的文件页！");
+                    return;
+                }
+
+                var guid = StringUtils.GetShortGuid();
+                foreach (var templateId in templateIdList)
+                {
+                    CreateManager.CreateFile(PublishmentSystemId, templateId, guid);
+                }
+
+                PageCreateStatus.Redirect(PublishmentSystemId);
             }
         }
 
@@ -62,22 +75,5 @@ namespace SiteServer.BackgroundPages.Cms
                 PageUtils.RedirectToLoadingPage(url);
             }
         }
-
-        private void ProcessCreateFile(ICollection templateIdArrayList)
-        {
-            if (templateIdArrayList.Count == 0)
-            {
-                FailMessage("请选择需要生成的文件页！");
-                return;
-            }
-
-            foreach (int templateId in templateIdArrayList)
-            {
-                CreateManager.CreateFile(PublishmentSystemId, templateId);
-            }
-
-            PageCreateStatus.Redirect(PublishmentSystemId);
-        }
-
     }
 }

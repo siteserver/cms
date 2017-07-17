@@ -49,140 +49,93 @@ namespace BaiRong.Core
             return isNeedInstall;
         }
 
-        public const string IdManagement = "Management";
-        public const string IdSys = "Sys";
-        public const string IdAdmin = "Admin";
-        public const string IdUser = "User";
-        public const string IdAnalysis = "Analysis";
+        public const string IdSite = "Site";
+        public const string IdPlugins = "Plugins";
+        public const string IdUsers = "Users";
         public const string IdSettings = "Settings";
-        public const string IdService = "Service";
 
-        public class Sys
+        public class Permissions
         {
-            public class LeftMenu
+            public class Plugins
             {
-                public const string Site = "Site";
-                public const string Plugin = "Plugin";
-                public const string Auxiliary = "Auxiliary";
+                public const string Add = "plugins_add";
+                public const string Management = "plugins_management";
             }
 
-            public class Permission
+            public class Users
             {
-                public const string SysSite = "sys_site";
-                public const string SysPlugin = "sys_plugin";
-                public const string SysAuxiliary = "sys_auxiliary";
-            }
-        }
-
-        public class Admin
-        {
-            public class LeftMenu
-            {
-                public const string AdminManagement = "AdminManagement";
-                public const string AdminConfiguration = "AdminConfiguration";
+                public const string AdminManagement = "users_admin_management";
+                public const string AdminConfiguration = "users_admin_configuration";
+                public const string UserManagement = "users_user_management";
+                public const string UserConfiguration = "users_user_configuration";
             }
 
-            public class Permission
+            public class Settings
             {
-                public const string AdminManagement = "admin_management";
-                public const string AdminConfiguration = "admin_configuration";
-            }
-        }
-
-        public class User
-        {
-            public class LeftMenu
-            {
-                public const string UserManagement = "UserManagement";
-                public const string UserConfiguration = "UserConfiguration";
+                public const string SiteAdd = "settings_site_add";
+                public const string SiteManagement = "settings_site_management";
+                public const string Auxiliary = "settings_auxiliary";
+                public const string Config = "settings_config";
+                public const string Service = "settings_service";
+                public const string Chart = "settings_chart";
+                public const string Log = "settings_log";
+                public const string Utility = "settings_utility";
             }
 
-            public class Permission
+            public class WebSite
             {
-                public const string UserManagement = "user_management";
-                public const string UserConfiguration = "user_configuration";
-            }
-        }
+                private WebSite() { }
 
-        public class Analysis
-        {
-            public class LeftMenu
-            {
-                public const string Chart = "Chart";
-                public const string Log = "Log";
+                public const string ContentTrash = "cms_contentTrash";                  //内容回收站
+                public const string Template = "cms_template";                          //显示管理
+                public const string Configration = "cms_configration";                  //设置管理
+                public const string Create = "cms_create";                              //生成管理
             }
 
-            public class Permission
+            public class Channel
             {
-                public const string AnalysisChart = "analysis_chart";
-                public const string AnalysisLog = "analysis_log";
-            }
-        }
-
-        public class Settings
-        {
-            public class LeftMenu
-            {
-                public const string Config = "Config";
-                public const string Restriction = "Restriction";
-                public const string Utility = "Utility";
-            }
-
-            public class Permission
-            {
-                public const string SettingsConfig = "settings_config";
-                public const string SettingsRestriction = "settings_restriction";
-                public const string SettingsUtility = "settings_Utility";
-            }
-        }
-
-        public class Service
-        {
-            public class LeftMenu
-            {
-                public const string Status = "Status";
-                public const string Task = "Task";
-                public const string ServiceCreate = "ServiceCreate";
-            }
-
-            public class Permission
-            {
-                public const string ServiceStatus = "service_status";
-                public const string ServiceTask = "service_task";
-                public const string ServiceCreate = "service_create";
+                private Channel() { }
+                public const string ContentView = "cms_contentView";
+                public const string ContentAdd = "cms_contentAdd";
+                public const string ContentEdit = "cms_contentEdit";
+                public const string ContentDelete = "cms_contentDelete";
+                public const string ContentTranslate = "cms_contentTranslate";
+                public const string ContentArchive = "cms_contentArchive";
+                public const string ContentOrder = "cms_contentOrder";
+                public const string ChannelAdd = "cms_channelAdd";
+                public const string ChannelEdit = "cms_channelEdit";
+                public const string ChannelDelete = "cms_channelDelete";
+                public const string ChannelTranslate = "cms_channelTranslate";
+                public const string CommentCheck = "cms_commentCheck";
+                public const string CommentDelete = "cms_commentDelete";
+                public const string CreatePage = "cms_createPage";
+                public const string ContentCheck = "cms_contentCheck";
+                public const string ContentCheckLevel1 = "cms_contentCheckLevel1";
+                public const string ContentCheckLevel2 = "cms_contentCheckLevel2";
+                public const string ContentCheckLevel3 = "cms_contentCheckLevel3";
+                public const string ContentCheckLevel4 = "cms_contentCheckLevel4";
+                public const string ContentCheckLevel5 = "cms_contentCheckLevel5";
             }
         }
 
         public static string GetTopMenuName(string menuId)
         {
             var retval = string.Empty;
-            if (menuId == IdManagement)
+            if (menuId == IdSite)
             {
                 retval = "站点管理";
             }
-            else if (menuId == IdSys)
+            else if (menuId == IdPlugins)
             {
-                retval = "系统管理";
+                retval = "插件管理";
             }
-            else if (menuId == IdAdmin)
+            else if (menuId == IdUsers)
             {
-                retval = "管理员管理";
-            }
-            else if (menuId == IdUser)
-            {
-                retval = "用户管理";
-            }
-            else if (menuId == IdAnalysis)
-            {
-                retval = "统计分析";
+                retval = "人员管理";
             }
             else if (menuId == IdSettings)
             {
-                retval = "平台设置";
-            }
-            else if (menuId == IdService)
-            {
-                retval = "服务组件";
+                retval = "系统设置";
             }
             return retval;
         }
@@ -193,10 +146,6 @@ namespace BaiRong.Core
             if (menuId == Cms.LeftMenu.IdContent)
             {
                 retval = "信息管理";
-            }
-            else if (menuId == Cms.LeftMenu.IdFunction)
-            {
-                retval = "功能管理";
             }
             else if (menuId == Cms.LeftMenu.IdTemplate)
             {
@@ -218,165 +167,6 @@ namespace BaiRong.Core
             {
                 retval = "互动交流";
             }
-            else if (menuId == Service.LeftMenu.Status)
-            {
-                retval = "服务组件状态";
-            }
-            else if (menuId == Service.LeftMenu.Task)
-            {
-                retval = "定时任务管理";
-            }
-            else if (menuId == Service.LeftMenu.ServiceCreate)
-            {
-                retval = "服务生成管理";
-            }
-            else if (menuId == Settings.LeftMenu.Config)
-            {
-                retval = "平台设置";
-            }
-            else if (menuId == Settings.LeftMenu.Restriction)
-            {
-                retval = "后台访问限制";
-            }
-            else if (menuId == Settings.LeftMenu.Utility)
-            {
-                retval = "实用工具";
-            }
-            else if (menuId == Analysis.LeftMenu.Chart)
-            {
-                retval = "统计图表";
-            }
-            else if (menuId == Analysis.LeftMenu.Log)
-            {
-                retval = "运行日志";
-            }
-            else if (menuId == User.LeftMenu.UserManagement)
-            {
-                retval = "用户管理";
-            }
-            else if (menuId == User.LeftMenu.UserConfiguration)
-            {
-                retval = "设置管理";
-            }
-            else if (menuId == Admin.LeftMenu.AdminManagement)
-            {
-                retval = "管理员管理";
-            }
-            else if (menuId == Admin.LeftMenu.AdminConfiguration)
-            {
-                retval = "设置管理";
-            }
-            else if (menuId == Sys.LeftMenu.Site)
-            {
-                retval = "系统站点管理";
-            }
-            else if (menuId == Sys.LeftMenu.Plugin)
-            {
-                retval = "插件管理";
-            }
-            else if (menuId == Sys.LeftMenu.Auxiliary)
-            {
-                retval = "辅助表管理";
-            }
-            return retval;
-        }
-
-        public static string GetLeftSubMenuName(string menuId)
-        {
-            var retval = string.Empty;
-            //Function
-            if (menuId == Cms.LeftMenu.Function.IdSiteAnalysis)
-            {
-                retval = "站点数据统计";
-            }
-            else if (menuId == Cms.LeftMenu.Function.IdInput)
-            {
-                retval = "提交表单管理";
-            }
-            else if (menuId == Cms.LeftMenu.Function.IdGather)
-            {
-                retval = "信息采集管理";
-            }
-            else if (menuId == Cms.LeftMenu.Function.IdAdvertisement)
-            {
-                retval = "广告管理";
-            }
-            else if (menuId == Cms.LeftMenu.Function.IdResume)
-            {
-                retval = "简历管理";
-            }
-            else if (menuId == Cms.LeftMenu.Function.IdSeo)
-            {
-                retval = "搜索引擎优化";
-            }
-            else if (menuId == Cms.LeftMenu.Function.IdTracking)
-            {
-                retval = "流量统计管理";
-            }
-            else if (menuId == Cms.LeftMenu.Function.IdInnerLink)
-            {
-                retval = "站内链接管理";
-            }
-            else if (menuId == Cms.LeftMenu.Function.IdBackup)
-            {
-                retval = "数据备份恢复";
-            }
-            //Template
-            else if (menuId == Cms.LeftMenu.Template.IdTagStyle)
-            {
-                retval = "模板标签样式";
-            }
-            //Configuration
-            else if (menuId == Cms.LeftMenu.Configuration.IdConfigurationContentModel)
-            {
-                retval = "内容模型设置";
-            }
-            else if (menuId == Cms.LeftMenu.Configuration.IdConfigurationGroupAndTags)
-            {
-                retval = "组别及标签设置";
-            }
-            else if (menuId == Cms.LeftMenu.Configuration.IdConfigurationUpload)
-            {
-                retval = "上传设置";
-            }
-            else if (menuId == Cms.LeftMenu.Configuration.IdConfigurationTask)
-            {
-                retval = "定时任务管理";
-            }
-            //GovPublic
-            else if (menuId == Wcm.LeftMenu.GovPublic.IdGovPublicContent)
-            {
-                retval = "主动信息公开";
-            }
-            else if (menuId == Wcm.LeftMenu.GovPublic.IdGovPublicApply)
-            {
-                retval = "依申请公开";
-            }
-            else if (menuId == Wcm.LeftMenu.GovPublic.IdGovPublicContentConfiguration)
-            {
-                retval = "主动信息公开设置";
-            }
-            else if (menuId == Wcm.LeftMenu.GovPublic.IdGovPublicApplyConfiguration)
-            {
-                retval = "依申请公开设置";
-            }
-            else if (menuId == Wcm.LeftMenu.GovPublic.IdGovPublicAnalysis)
-            {
-                retval = "数据统计分析";
-            }
-            //GovInteract
-            else if (menuId == Wcm.LeftMenu.GovInteract.IdGovInteractConfiguration)
-            {
-                retval = "互动交流设置";
-            }
-            else if (menuId == Wcm.LeftMenu.GovInteract.IdGovInteractAnalysis)
-            {
-                retval = "数据统计分析";
-            }
-            else if (menuId == Cms.LeftMenu.Create.IdConfigurationCreate)
-            {
-                retval = "页面生成设置";
-            }
             return retval;
         }
 
@@ -387,91 +177,9 @@ namespace BaiRong.Core
             public class LeftMenu
             {
                 public const string IdContent = "Content";
-                public const string IdFunction = "Function";
                 public const string IdTemplate = "Template";
                 public const string IdConfigration = "Configration";
                 public const string IdCreate = "Create";
-
-                public class Function
-                {
-                    public const string IdSiteAnalysis = "SiteAnalysis";
-                    public const string IdInput = "Input";
-                    public const string IdGather = "Gather";
-                    public const string IdAdvertisement = "Advertisement";
-                    public const string IdResume = "Resume";
-                    public const string IdSeo = "SEO";
-                    public const string IdTracking = "Tracking";
-                    public const string IdInnerLink = "InnerLink";
-                    public const string IdBackup = "Backup";
-                }
-
-                public class Template
-                {
-                    public const string IdTagStyle = "TagStyle";     //模板标签样式
-                }
-
-                public class Configuration
-                {
-                    public const string IdConfigurationContentModel = "ConfigurationContentModel";          //内容模型设置
-                    public const string IdConfigurationGroupAndTags = "ConfigurationGroupAndTags";          //组别及标签设置
-                    public const string IdConfigurationUpload = "ConfigurationUpload";                      //上传设置
-                    public const string IdConfigurationTask = "ConfigurationTask";                          //定时任务管理
-                }
-
-                public class Create
-                {
-                    public const string IdConfigurationCreate = "ConfigurationCreate";                      //页面生成设置
-                }
-            }
-
-            public class Permission
-            {
-                public class WebSite
-                {
-                    private WebSite() { }
-
-                    public const string ContentTrash = "cms_contentTrash";                  //内容回收站
-
-                    public const string SiteAnalysis = "cms_siteAnalysis";                  //站点数据统计
-                    public const string Input = "cms_input";                                //提交表单管理
-                    public const string Gather = "cms_gather";                              //信息采集管理
-                    public const string Advertisement = "cms_advertisement";                //广告管理
-                    public const string Resume = "cms_resume";                              //在线招聘管理
-                    public const string Seo = "cms_seo";                                    //搜索引擎优化
-                    public const string Tracking = "cms_tracking";                          //流量统计管理
-                    public const string InnerLink = "cms_innerLink";                        //站内链接管理
-                    public const string Backup = "cms_backup";                              //数据备份恢复
-                    public const string Archive = "cms_archive";                            //归档内容管理
-
-                    public const string Template = "cms_template";                          //显示管理
-                    public const string Configration = "cms_configration";                  //设置管理
-                    public const string Create = "cms_create";                              //生成管理
-                }
-
-                public class Channel
-                {
-                    private Channel() { }
-                    public const string ContentView = "cms_contentView";
-                    public const string ContentAdd = "cms_contentAdd";
-                    public const string ContentEdit = "cms_contentEdit";
-                    public const string ContentDelete = "cms_contentDelete";
-                    public const string ContentTranslate = "cms_contentTranslate";
-                    public const string ContentArchive = "cms_contentArchive";
-                    public const string ContentOrder = "cms_contentOrder";
-                    public const string ChannelAdd = "cms_channelAdd";
-                    public const string ChannelEdit = "cms_channelEdit";
-                    public const string ChannelDelete = "cms_channelDelete";
-                    public const string ChannelTranslate = "cms_channelTranslate";
-                    public const string CommentCheck = "cms_commentCheck";
-                    public const string CommentDelete = "cms_commentDelete";
-                    public const string CreatePage = "cms_createPage";
-                    public const string ContentCheck = "cms_contentCheck";
-                    public const string ContentCheckLevel1 = "cms_contentCheckLevel1";
-                    public const string ContentCheckLevel2 = "cms_contentCheckLevel2";
-                    public const string ContentCheckLevel3 = "cms_contentCheckLevel3";
-                    public const string ContentCheckLevel4 = "cms_contentCheckLevel4";
-                    public const string ContentCheckLevel5 = "cms_contentCheckLevel5";
-                }
             }
         }
 
@@ -483,21 +191,6 @@ namespace BaiRong.Core
             {
                 public const string IdGovPublic = "GovPublic";
                 public const string IdGovInteract = "GovInteract";
-
-                public class GovPublic
-                {
-                    public const string IdGovPublicContent = "GovPublicContent";     //主动信息公开
-                    public const string IdGovPublicApply = "GovPublicApply";         //依申请公开
-                    public const string IdGovPublicContentConfiguration = "GovPublicContentConfiguration";         //主动信息公开设置
-                    public const string IdGovPublicApplyConfiguration = "GovPublicApplyConfiguration";         //依申请公开设置
-                    public const string IdGovPublicAnalysis = "GovPublicAnalysis";         //数据统计分析
-                }
-
-                public class GovInteract
-                {
-                    public const string IdGovInteractConfiguration = "GovInteractConfiguration";     //互动交流设置
-                    public const string IdGovInteractAnalysis = "GovInteractAnalysis";             //数据统计分析
-                }
             }
 
             public class Permission
@@ -613,19 +306,10 @@ namespace BaiRong.Core
             {
                 public const string IdAccounts = "Accounts";
 
-                public const string IdFunction = "Function";
                 public const string IdConfiguration = "Configuration";
 
                 public class Function
                 {
-                    //Accounts
-                    public const string IdInfo = "Info";
-                    public const string IdChart = "Chart";
-                    public const string IdMenu = "Menu";
-                    public const string IdTextReply = "TextReply";
-                    public const string IdImageReply = "ImageReply";
-                    public const string IdSetReply = "SetReply";
-
                     //Function
                     public const string IdCoupon = "Coupon";
                     public const string IdScratch = "Scratch";
@@ -654,10 +338,6 @@ namespace BaiRong.Core
                     {
                         retval = "公共账号";
                     }
-                    else if (menuId == IdFunction)
-                    {
-                        retval = "微功能";
-                    }
                     return retval;
                 }
 
@@ -665,32 +345,8 @@ namespace BaiRong.Core
                 {
                     string retval = string.Empty;
                     //Accounts
-                    if (menuId == Function.IdInfo)
-                    {
-                        retval = "账户信息";
-                    }
-                    else if (menuId == Function.IdChart)
-                    {
-                        retval = "运营图表";
-                    }
-                    else if (menuId == Function.IdMenu)
-                    {
-                        retval = "自定义菜单";
-                    }
-                    else if (menuId == Function.IdTextReply)
-                    {
-                        retval = "关键词文本回复";
-                    }
-                    else if (menuId == Function.IdImageReply)
-                    {
-                        retval = "关键词图文回复";
-                    }
-                    else if (menuId == Function.IdSetReply)
-                    {
-                        retval = "关键词回复设置";
-                    }
                     //Function
-                    else if (menuId == Function.IdCoupon)
+                    if (menuId == Function.IdCoupon)
                     {
                         retval = "优惠券";
                     }

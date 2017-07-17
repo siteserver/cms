@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
 
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdView360, "360全景", AppManager.WeiXin.Permission.WebSite.View360);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdView360, "360全景", AppManager.WeiXin.Permission.WebSite.View360);
                 SpContents.DataBind();
 
                 var urlAdd = PageView360Add.GetRedirectUrl(PublishmentSystemId, 0);

@@ -80,7 +80,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -101,7 +101,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (StringUtils.EqualsIgnoreCase(type, TypePhoto))
             {
                 contextType = EContextType.Photo;
-                dataSource = StlDataUtility.GetPhotosDataSource(pageInfo.PublishmentSystemInfo, contextInfo.ContentId, listInfo.StartNum, listInfo.TotalNum);
+                dataSource = StlDataUtility.GetPhotosDataSource(pageInfo.PublishmentSystemInfo, contextInfo.ContentId, listInfo.StartNum, listInfo.TotalNum, pageInfo.Guid);
             }
             else
             {

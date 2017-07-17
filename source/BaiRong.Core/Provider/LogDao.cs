@@ -5,6 +5,7 @@ using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -22,11 +23,11 @@ namespace BaiRong.Core.Provider
             
             var parms = new IDataParameter[]
             {
-                    GetParameter(ParmUserName, EDataType.VarChar, 50, log.UserName),
-                    GetParameter(ParmIpAddress, EDataType.VarChar, 50, log.IpAddress),
-                    GetParameter(ParmAddDate, EDataType.DateTime, log.AddDate),
-                    GetParameter(ParmAction, EDataType.NVarChar, 255, log.Action),
-                    GetParameter(ParmSummary, EDataType.NVarChar, 255, log.Summary)
+                    GetParameter(ParmUserName, DataType.VarChar, 50, log.UserName),
+                    GetParameter(ParmIpAddress, DataType.VarChar, 50, log.IpAddress),
+                    GetParameter(ParmAddDate, DataType.DateTime, log.AddDate),
+                    GetParameter(ParmAction, DataType.NVarChar, 255, log.Action),
+                    GetParameter(ParmSummary, DataType.NVarChar, 255, log.Summary)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -142,7 +143,7 @@ WHERE t.rowNum > {counter})");
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmUserName, EDataType.VarChar, 50, userName)
+				GetParameter(ParmUserName, DataType.VarChar, 50, userName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))

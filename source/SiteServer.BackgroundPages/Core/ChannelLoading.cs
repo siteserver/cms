@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Core
     {
         public static string GetChannelRowHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, bool enabled, ELoadingType loadingType, NameValueCollection additional, string administratorName)
         {
-            var nodeTreeItem = NodeTreeItem.CreateInstance(nodeInfo, enabled, administratorName);
+            var nodeTreeItem = NodeTreeItem.CreateInstance(publishmentSystemInfo, nodeInfo, enabled, administratorName);
             var title = nodeTreeItem.GetItemHtml(loadingType, PageChannel.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId), additional);
 
             var rowHtml = string.Empty;
@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Core
 
                 if (enabled)
                 {
-                    if (AdminUtility.HasChannelPermissions(administratorName, nodeInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Cms.Permission.Channel.ChannelEdit))
+                    if (AdminUtility.HasChannelPermissions(administratorName, nodeInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ChannelEdit))
                     {
                         var urlEdit = PageChannelEdit.GetRedirectUrl(nodeInfo.PublishmentSystemId, nodeInfo.NodeId, PageChannel.GetRedirectUrl(nodeInfo.PublishmentSystemId, nodeInfo.NodeId));
                         editUrl = $"<a href=\"{urlEdit}\">编辑</a>";
@@ -119,7 +119,7 @@ namespace SiteServer.BackgroundPages.Core
                     var showPopWinString = ModalTemplateFilePathRule.GetOpenWindowString(nodeInfo.PublishmentSystemId, nodeInfo.NodeId);
                     editLink = $"<a href=\"javascript:;\" onclick=\"{showPopWinString}\">更改</a>";
                 }
-                var filePath = PageUtility.GetInputChannelUrl(publishmentSystemInfo, nodeInfo);
+                var filePath = PageUtility.GetInputChannelUrl(publishmentSystemInfo, nodeInfo, StringUtils.GetShortGuid());
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">

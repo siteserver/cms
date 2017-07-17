@@ -20,12 +20,21 @@ namespace SiteServer.CMS.StlParser.Utility
 
         public static string GetContentsItemTemplateString(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
-            var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
-            var contentInfo = new BackgroundContentInfo(itemContainer.ContentItem.DataItem);
+            //var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
+            //var contentInfo = new BackgroundContentInfo(itemContainer.ContentItem.DataItem);
+
+            ContentItemInfo contentItemInfo = null;
+            if (pageInfo.ContentItems.Count > 0)
+            {
+                contentItemInfo = pageInfo.ContentItems.Peek();
+            }
+            if (contentItemInfo == null) return string.Empty;
+            var contentInfo = Cache.Content.GetContentInfo(pageInfo.PublishmentSystemId, contentItemInfo.ChannelId,
+                contentItemInfo.ContentId, pageInfo.Guid);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;
-            contextInfo.ItemContainer = itemContainer;
+            //contextInfo.ItemContainer = itemContainer;
             contextInfo.ContainerClientId = containerClientId;
             contextInfo.ChannelId = contentInfo.NodeId;
             contextInfo.ContentId = contentInfo.Id;
@@ -175,7 +184,7 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
-            var nodeId = SqlUtils.EvalInt(itemContainer.ChannelItem.DataItem, NodeAttribute.NodeId);
+            var nodeId = itemContainer.ChannelItem.ChannelId;
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;

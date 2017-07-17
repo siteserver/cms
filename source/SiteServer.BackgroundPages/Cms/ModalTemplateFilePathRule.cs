@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (string.IsNullOrEmpty(nodeInfo.FilePath))
                 {
-                    tbFilePath.Text = PageUtility.GetInputChannelUrl(PublishmentSystemInfo, nodeInfo);
+                    tbFilePath.Text = PageUtility.GetInputChannelUrl(PublishmentSystemInfo, nodeInfo, StringUtils.GetShortGuid());
                 }
                 else
                 {
@@ -84,6 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             var isSuccess = false;
+            var guid = StringUtils.GetShortGuid();
 
             try
             {
@@ -147,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                if (tbFilePath.Text != PageUtility.GetInputChannelUrl(PublishmentSystemInfo, nodeInfo))
+                if (tbFilePath.Text != PageUtility.GetInputChannelUrl(PublishmentSystemInfo, nodeInfo, StringUtils.GetShortGuid()))
                 {
                     nodeInfo.FilePath = tbFilePath.Text;
                 }
@@ -162,7 +163,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 DataProvider.NodeDao.UpdateNodeInfo(nodeInfo);
 
-                CreateManager.CreateChannel(PublishmentSystemId, _nodeId);
+                CreateManager.CreateChannel(PublishmentSystemId, _nodeId, guid);
 
                 Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "设置页面命名规则", $"栏目:{nodeInfo.NodeName}");
 

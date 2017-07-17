@@ -18,18 +18,15 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Public";
             }
-            else if (type == ESecurityType.Friends)
+            if (type == ESecurityType.Friends)
             {
                 return "Friends";
             }
-            else if (type == ESecurityType.SelfOnly)
+            if (type == ESecurityType.SelfOnly)
             {
                 return "SelfOnly";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(ESecurityType type)
@@ -38,18 +35,15 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "所有人";
             }
-            else if (type == ESecurityType.Friends)
+            if (type == ESecurityType.Friends)
             {
                 return "我的好友";
             }
-            else if (type == ESecurityType.SelfOnly)
+            if (type == ESecurityType.SelfOnly)
             {
                 return "只有我自己";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static ESecurityType GetEnumType(string typeStr)

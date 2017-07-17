@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             {
                 var pageTitle = _messageId > 0 ? "编辑微留言" : "添加微留言";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdMessage, pageTitle, AppManager.WeiXin.Permission.WebSite.Message);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdMessage, pageTitle, AppManager.WeiXin.Permission.WebSite.Message);
                 LtlPageTitle.Text = pageTitle;
 
                 LtlImageUrl.Text =

@@ -5,8 +5,9 @@ using System.Threading;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Plugin;
+using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Hooks;
 
 namespace siteserver.commands
 {
@@ -80,15 +81,15 @@ namespace siteserver.commands
 
             private static void Watcher_EventHandler(object sender, FileSystemEventArgs e)
             {
-                Console.WriteLine(e.FullPath);
+                //Console.WriteLine(e.FullPath);
                 if (PathUtils.IsSystemPath(e.FullPath)) return;
 
                 try
                 {
                     _watcher.EnableRaisingEvents = false;
-                    foreach (var pluginPair in PluginManager.GetPluginsForInterface<IFileSystemWatcher>())
+
+                    foreach (var watcher in PluginManager.GetHooks<IFileSystemWatcher>())
                     {
-                        var watcher = (IFileSystemWatcher)pluginPair.Plugin;
                         try
                         {
                             watcher.OnChanged(sender, e);

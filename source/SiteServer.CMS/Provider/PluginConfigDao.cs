@@ -1,6 +1,6 @@
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -17,10 +17,10 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPluginId, EDataType.NVarChar, 50, pluginId),
-                GetParameter(ParmSiteId, EDataType.Integer, siteId),
-                GetParameter(ParmConfigName, EDataType.NVarChar, 200, configName),
-                GetParameter(ParmConfigValue, EDataType.NText, configValue)
+                GetParameter(ParmPluginId, DataType.NVarChar, 50, pluginId),
+                GetParameter(ParmSiteId, DataType.Integer, siteId),
+                GetParameter(ParmConfigName, DataType.NVarChar, 200, configName),
+                GetParameter(ParmConfigValue, DataType.NText, configValue)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -32,9 +32,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmPluginId, EDataType.NVarChar, 50, pluginId),
-                GetParameter(ParmSiteId, EDataType.Integer, siteId),
-                GetParameter(ParmConfigName, EDataType.NVarChar, 200, configName)
+                GetParameter(ParmPluginId, DataType.NVarChar, 50, pluginId),
+                GetParameter(ParmSiteId, DataType.Integer, siteId),
+                GetParameter(ParmConfigName, DataType.NVarChar, 200, configName)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -46,7 +46,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmPluginId, EDataType.NVarChar, 50, pluginId)
+                GetParameter(ParmPluginId, DataType.NVarChar, 50, pluginId)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -58,7 +58,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmSiteId, EDataType.Integer, siteId)
+                GetParameter(ParmSiteId, DataType.Integer, siteId)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -70,10 +70,10 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmConfigValue, EDataType.NText, configValue),
-                GetParameter(ParmPluginId, EDataType.NVarChar, 50, pluginId),
-                GetParameter(ParmSiteId, EDataType.Integer, siteId),
-                GetParameter(ParmConfigName, EDataType.NVarChar, 200, configName)
+                GetParameter(ParmConfigValue, DataType.NText, configValue),
+                GetParameter(ParmPluginId, DataType.NVarChar, 50, pluginId),
+                GetParameter(ParmSiteId, DataType.Integer, siteId),
+                GetParameter(ParmConfigName, DataType.NVarChar, 200, configName)
             };
             ExecuteNonQuery(sqlString, parms);
         }
@@ -86,9 +86,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmPluginId, EDataType.NVarChar, 50, pluginId),
-                GetParameter(ParmSiteId, EDataType.Integer, siteId),
-                GetParameter(ParmConfigName, EDataType.NVarChar, 200, configName)
+                GetParameter(ParmPluginId, DataType.NVarChar, 50, pluginId),
+                GetParameter(ParmSiteId, DataType.Integer, siteId),
+                GetParameter(ParmConfigName, DataType.NVarChar, 200, configName)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -111,9 +111,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmPluginId, EDataType.NVarChar, 50, pluginId),
-                GetParameter(ParmSiteId, EDataType.Integer, siteId),
-                GetParameter(ParmConfigName, EDataType.NVarChar, 200, configName)
+                GetParameter(ParmPluginId, DataType.NVarChar, 50, pluginId),
+                GetParameter(ParmSiteId, DataType.Integer, siteId),
+                GetParameter(ParmConfigName, DataType.NVarChar, 200, configName)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))

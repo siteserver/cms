@@ -4,8 +4,8 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Admin;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.BackgroundPages.Users;
 
 namespace SiteServer.BackgroundPages.Ajax
 {

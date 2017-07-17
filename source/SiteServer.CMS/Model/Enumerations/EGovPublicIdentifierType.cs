@@ -15,50 +15,44 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EGovPublicIdentifierType type)
 		{
-            if (type == EGovPublicIdentifierType.Department)
+		    if (type == EGovPublicIdentifierType.Department)
 			{
                 return "Department";
 			}
-            else if (type == EGovPublicIdentifierType.Channel)
-			{
-                return "Channel";
-            }
-            else if (type == EGovPublicIdentifierType.Attribute)
-            {
-                return "Attribute";
-            }
-            else if (type == EGovPublicIdentifierType.Sequence)
-            {
-                return "Sequence";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovPublicIdentifierType.Channel)
+		    {
+		        return "Channel";
+		    }
+		    if (type == EGovPublicIdentifierType.Attribute)
+		    {
+		        return "Attribute";
+		    }
+		    if (type == EGovPublicIdentifierType.Sequence)
+		    {
+		        return "Sequence";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EGovPublicIdentifierType type)
 		{
-            if (type == EGovPublicIdentifierType.Department)
+		    if (type == EGovPublicIdentifierType.Department)
 			{
                 return "机构分类代码";
 			}
-            else if (type == EGovPublicIdentifierType.Channel)
-			{
-                return "主题分类代码";
-            }
-            else if (type == EGovPublicIdentifierType.Attribute)
-            {
-                return "字段值";
-            }
-            else if (type == EGovPublicIdentifierType.Sequence)
-            {
-                return "顺序号";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovPublicIdentifierType.Channel)
+		    {
+		        return "主题分类代码";
+		    }
+		    if (type == EGovPublicIdentifierType.Attribute)
+		    {
+		        return "字段值";
+		    }
+		    if (type == EGovPublicIdentifierType.Sequence)
+		    {
+		        return "顺序号";
+		    }
+		    throw new Exception();
 		}
 
 		public static EGovPublicIdentifierType GetEnumType(string typeStr)

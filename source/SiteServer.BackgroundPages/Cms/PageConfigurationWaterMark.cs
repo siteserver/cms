@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
          
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "图片水印设置", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "图片水印设置", AppManager.Permissions.WebSite.Configration);
 
 				EBooleanUtils.AddListItems(IsWaterMark);
 				ControlUtils.SelectListItemsIgnoreCase(IsWaterMark, PublishmentSystemInfo.Additional.IsWaterMark.ToString());

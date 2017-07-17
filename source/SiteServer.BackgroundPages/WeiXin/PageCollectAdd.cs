@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             {
                 var pageTitle = _collectId > 0 ? "编辑征集活动" : "添加征集活动";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdCollect, pageTitle, AppManager.WeiXin.Permission.WebSite.Collect);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdCollect, pageTitle, AppManager.WeiXin.Permission.WebSite.Collect);
                 LtlPageTitle.Text = pageTitle;
 
                 EBooleanUtils.AddListItems(DdlContentIsCheck, "需要审核", "无需审核");

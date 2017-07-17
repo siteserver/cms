@@ -17,11 +17,10 @@ namespace BaiRong.Core.Tabs
         private string _permissions;
         private bool _enable = true;
         private Tab[] _children;
-        private bool _keepQueryString;
         private bool _selected;
         private string _target;
         private string _iconUrl;
-        private string _addtionalString;
+        private string _iconClass;
 
         /// <summary>
         /// Property Text (string)
@@ -95,16 +94,6 @@ namespace BaiRong.Core.Tabs
         }
 
         /// <summary>
-        /// Property KeepQueryString (bool)
-        /// </summary>
-        [XmlAttribute("keepQueryString")]
-        public bool KeepQueryString
-        {
-            get { return _keepQueryString; }
-            set { _keepQueryString = value; }
-        }
-
-        /// <summary>
         /// Property Selected (bool)
         /// </summary>
         [XmlAttribute("selected")]
@@ -125,23 +114,13 @@ namespace BaiRong.Core.Tabs
         }
 
         /// <summary>
-        /// Property IconUrl (string)
+        /// Property IconClass (string)
         /// </summary>
-        [XmlAttribute("iconUrl")]
-        public string IconUrl
+        [XmlAttribute("iconClass")]
+        public string IconClass
         {
-            get { return _iconUrl; }
-            set { _iconUrl = value; }
-        }
-
-        /// <summary>
-        /// Property AddtionalString (string)
-        /// </summary>
-        [XmlAttribute("addtionalString")]
-        public string AddtionalString
-        {
-            get { return _addtionalString; }
-            set { _addtionalString = value; }
+            get { return _iconClass; }
+            set { _iconClass = value; }
         }
 
 

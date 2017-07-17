@@ -3,7 +3,7 @@ using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -24,14 +24,14 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, log.PublishmentSystemID),
-                GetParameter(ParmChannelid, EDataType.Integer, log.ChannelID),
-                GetParameter(ParmContentid, EDataType.Integer, log.ContentID),
-				GetParameter(ParmUserName, EDataType.VarChar, 50, log.UserName),
-				GetParameter(ParmIpAddress, EDataType.VarChar, 50, log.IPAddress),
-                GetParameter(ParmAddDate, EDataType.DateTime, log.AddDate),
-				GetParameter(ParmAction, EDataType.NVarChar, 255, log.Action),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, log.Summary)
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, log.PublishmentSystemID),
+                GetParameter(ParmChannelid, DataType.Integer, log.ChannelID),
+                GetParameter(ParmContentid, DataType.Integer, log.ContentID),
+				GetParameter(ParmUserName, DataType.VarChar, 50, log.UserName),
+				GetParameter(ParmIpAddress, DataType.VarChar, 50, log.IPAddress),
+                GetParameter(ParmAddDate, DataType.DateTime, log.AddDate),
+				GetParameter(ParmAction, DataType.NVarChar, 255, log.Action),
+				GetParameter(ParmSummary, DataType.NVarChar, 255, log.Summary)
 			};
 
             ExecuteNonQuery(sqlString, parms);

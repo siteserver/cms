@@ -3,6 +3,7 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Wcm
 {
@@ -15,7 +16,7 @@ namespace SiteServer.BackgroundPages.Wcm
 		{
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicContentConfiguration, "重新生成索引号", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, "重新生成索引号", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
 
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, PublishmentSystemInfo.Additional.GovPublicNodeId);
                 var listItem = new ListItem("└" + nodeInfo.NodeName, PublishmentSystemInfo.Additional.GovPublicNodeId.ToString());

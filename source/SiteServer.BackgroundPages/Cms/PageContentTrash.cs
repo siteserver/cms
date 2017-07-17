@@ -87,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if(!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "内容回收站", AppManager.Cms.Permission.WebSite.ContentTrash);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "内容回收站", AppManager.Permissions.WebSite.ContentTrash);
 
                 if (Body.IsQueryExists("IsDeleteAll"))
                 {
@@ -152,7 +152,7 @@ namespace SiteServer.BackgroundPages.Cms
                 spContents.DataBind();
 			}
 
-            if (!HasChannelPermissions(this._nodeId, AppManager.Cms.Permission.Channel.ContentDelete))
+            if (!HasChannelPermissions(this._nodeId, AppManager.Permissions.Channel.ContentDelete))
             {
                 Delete.Visible = false;
                 DeleteAll.Visible = false;
@@ -205,7 +205,7 @@ namespace SiteServer.BackgroundPages.Cms
         private string GetEditUrl(BackgroundContentInfo contentInfo)
         {
             var url = string.Empty;
-            if (HasChannelPermissions(contentInfo.NodeId, AppManager.Cms.Permission.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+            if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
             {
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, contentInfo.NodeId);
                 url =

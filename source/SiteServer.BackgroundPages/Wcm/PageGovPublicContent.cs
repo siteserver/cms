@@ -14,6 +14,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.User;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Wcm
 {
@@ -35,7 +36,6 @@ namespace SiteServer.BackgroundPages.Wcm
         private int _categoryId;
         private List<TableStyleInfo> _styleInfoList;
         private StringCollection _attributesOfDisplay;
-
         private readonly Hashtable _valueHashtable = new Hashtable();
 
         public static string GetRedirectUrl(int siteId, string classCode, int categoryId)
@@ -108,7 +108,7 @@ namespace SiteServer.BackgroundPages.Wcm
                     nodeName = DataProvider.GovPublicCategoryDao.GetCategoryName(_categoryId);
                 }
 
-                BreadCrumbWithItemTitle(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicContent, "信息管理", nodeName, AppManager.Wcm.Permission.WebSite.GovPublicContent);
+                BreadCrumbWithTitle(AppManager.Wcm.LeftMenu.IdGovPublic, "信息管理", nodeName, AppManager.Wcm.Permission.WebSite.GovPublicContent);
                 
                 spContents.DataBind();
 
@@ -144,7 +144,7 @@ $(document).ready(function() {
 ";
                 }
 
-                ltlColumnHeadRows.Text = ContentUtility.GetColumnHeadRowsHtml(_styleInfoList, _attributesOfDisplay, ETableStyle.GovPublicContent, PublishmentSystemInfo);
+                ltlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_styleInfoList, _attributesOfDisplay, ETableStyle.GovPublicContent, PublishmentSystemInfo);
 			}
 		}
 
@@ -166,7 +166,7 @@ $(document).ready(function() {
                     $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{showPopWinString}"">{LevelManager.GetCheckState(
                         PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Cms.Permission.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
                 {
                     ltlItemEditUrl.Text =
                         $"<a href=\"{PageGovPublicContentAdd.GetRedirectUrlOfEdit(PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, PageUrl)}\">编辑</a>";

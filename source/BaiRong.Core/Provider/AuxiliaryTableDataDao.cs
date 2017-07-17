@@ -5,6 +5,7 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -183,165 +184,178 @@ go");
             return sqlBuilder.ToString();
         }
 
+        public List<TableMetadataInfo> GetPluginTableMetadataInfoList(string pluginId, List<PluginTableColumn> tableColumns)
+        {
+            var list = new List<TableMetadataInfo>();
+
+            foreach (var tableColumn in tableColumns)
+            {
+                var metadataInfo = new TableMetadataInfo(0, pluginId, tableColumn.AttributeName, tableColumn.DataType, tableColumn.DataLength, 0, true);
+                list.Add(metadataInfo);
+            }
+
+            return list;
+        }
+
         public List<TableMetadataInfo> GetDefaultTableMetadataInfoList(string tableName, EAuxiliaryTableType tableType)
         {
             var arraylist = new List<TableMetadataInfo>();
             if (tableType == EAuxiliaryTableType.BackgroundContent)
             {
-                var metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.Title, EDataType.NVarChar, 255, 0, true);
+                var metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.Title, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.SubTitle, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.SubTitle, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.ImageUrl, EDataType.VarChar, 200, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.ImageUrl, DataType.VarChar, 200, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.VideoUrl, EDataType.VarChar, 200, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.VideoUrl, DataType.VarChar, 200, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.FileUrl, EDataType.VarChar, 200, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.FileUrl, DataType.VarChar, 200, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.LinkUrl, EDataType.NVarChar, 200, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.LinkUrl, DataType.NVarChar, 200, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Content, EDataType.NText, 16, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Content, DataType.NText, 16, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Summary, EDataType.NText, 16, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Summary, DataType.NText, 16, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Author, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Author, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Source, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Source, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.IsRecommend, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.IsRecommend, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.IsHot, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.IsHot, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.IsColor, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.IsColor, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.IsTop, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.IsTop, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.AddDate, EDataType.DateTime, 8, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.AddDate, DataType.DateTime, 8, 0, true);
                 arraylist.Add(metadataInfo);
             }
             else if (tableType == EAuxiliaryTableType.GovPublicContent)
             {
-                var metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.Title, EDataType.NVarChar, 255, 0, true);
+                var metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.Title, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.Identifier, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.Identifier, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.Description, EDataType.NText, 16, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.Description, DataType.NText, 16, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.PublishDate, EDataType.DateTime, 8, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.PublishDate, DataType.DateTime, 8, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.EffectDate, EDataType.DateTime, 8, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.EffectDate, DataType.DateTime, 8, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.IsAbolition, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.IsAbolition, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.AbolitionDate, EDataType.DateTime, 8, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.AbolitionDate, DataType.DateTime, 8, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.DocumentNo, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.DocumentNo, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.Publisher, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.Publisher, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.Keywords, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.Keywords, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.ImageUrl, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.ImageUrl, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.FileUrl, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.FileUrl, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.IsRecommend, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.IsRecommend, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.IsHot, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.IsHot, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.IsColor, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.IsColor, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.IsTop, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.IsTop, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.Content, EDataType.NText, 16, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovPublicContentAttribute.Content, DataType.NText, 16, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.AddDate, EDataType.DateTime, 8, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.AddDate, DataType.DateTime, 8, 0, true);
                 arraylist.Add(metadataInfo);
             }
             else if (tableType == EAuxiliaryTableType.GovInteractContent)
             {
-                var metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.RealName, EDataType.NVarChar, 255, 0, true);
+                var metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.RealName, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Organization, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Organization, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.CardType, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.CardType, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.CardNo, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.CardNo, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Phone, EDataType.VarChar, 50, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Phone, DataType.VarChar, 50, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.PostCode, EDataType.VarChar, 50, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.PostCode, DataType.VarChar, 50, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Address, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Address, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Email, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Email, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Fax, EDataType.VarChar, 50, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Fax, DataType.VarChar, 50, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.TypeId, EDataType.Integer, 38, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.TypeId, DataType.Integer, 38, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.IsPublic, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.IsPublic, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Title, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Title, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Content, EDataType.NText, 16, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.Content, DataType.NText, 16, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.FileUrl, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.FileUrl, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.DepartmentId, EDataType.Integer, 38, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, GovInteractContentAttribute.DepartmentId, DataType.Integer, 38, 0, true);
                 arraylist.Add(metadataInfo);
             }
             else if (tableType == EAuxiliaryTableType.VoteContent)
             {
-                var metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.Title, EDataType.NVarChar, 255, 0, true);
+                var metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.Title, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.SubTitle, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.SubTitle, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.MaxSelectNum, EDataType.Integer, 38, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.MaxSelectNum, DataType.Integer, 38, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.ImageUrl, EDataType.VarChar, 200, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.ImageUrl, DataType.VarChar, 200, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.Content, EDataType.NText, 16, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.Content, DataType.NText, 16, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.Summary, EDataType.NText, 16, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.Summary, DataType.NText, 16, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.AddDate, EDataType.DateTime, 8, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.AddDate, DataType.DateTime, 8, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.EndDate, EDataType.DateTime, 8, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.EndDate, DataType.DateTime, 8, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.IsVotedView, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.IsVotedView, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.HiddenContent, EDataType.NText, 16, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, VoteContentAttribute.HiddenContent, DataType.NText, 16, 0, true);
                 arraylist.Add(metadataInfo);
             }
             else if (tableType == EAuxiliaryTableType.JobContent)
             {
-                var metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.Title, EDataType.NVarChar, 255, 0, true);
+                var metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.Title, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.Department, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.Department, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.Location, EDataType.NVarChar, 255, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.Location, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.NumberOfPeople, EDataType.NVarChar, 50, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.NumberOfPeople, DataType.NVarChar, 50, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.Responsibility, EDataType.NText, 16, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.Responsibility, DataType.NText, 16, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.Requirement, EDataType.NText, 16, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.Requirement, DataType.NText, 16, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.IsUrgent, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, JobContentAttribute.IsUrgent, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.IsTop, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.IsTop, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.AddDate, EDataType.DateTime, 8, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.AddDate, DataType.DateTime, 8, 0, true);
                 arraylist.Add(metadataInfo);
             }
-            else if (tableType == EAuxiliaryTableType.UserDefined)
+            else if (tableType == EAuxiliaryTableType.Custom)
             {
-                var metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.Title, EDataType.NVarChar, 255, 0, true);
+                var metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.Title, DataType.NVarChar, 255, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.IsTop, EDataType.VarChar, 18, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.IsTop, DataType.VarChar, 18, 0, true);
                 arraylist.Add(metadataInfo);
-                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.AddDate, EDataType.DateTime, 8, 0, true);
+                metadataInfo = new TableMetadataInfo(0, tableName, ContentAttribute.AddDate, DataType.DateTime, 8, 0, true);
                 arraylist.Add(metadataInfo);
             }
             return arraylist;

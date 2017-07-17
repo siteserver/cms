@@ -6,7 +6,7 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.BackgroundPages.Sys;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationContentModel, "内容字段管理", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "内容字段管理", AppManager.Permissions.WebSite.Configration);
 
                 //删除样式
                 if (Body.IsQueryExists("DeleteStyle"))
@@ -165,7 +165,7 @@ namespace SiteServer.BackgroundPages.Cms
                     $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{styleInfo.AttributeName}</a>";
 
                 ltlDisplayName.Text = styleInfo.DisplayName;
-                ltlInputType.Text = EInputTypeUtils.GetText(EInputTypeUtils.GetEnumType(styleInfo.InputType));
+                ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
                 if (TableManager.IsAttributeNameExists(_tableStyle, _modelInfo.TableName, styleInfo.AttributeName))
                 {
                     ltlFieldType.Text =

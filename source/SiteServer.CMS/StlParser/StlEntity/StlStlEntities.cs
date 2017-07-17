@@ -3,6 +3,7 @@ using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -97,7 +98,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(ChannelUrl, attributeName))//栏目页地址
                 {
-                    parsedContent = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                    parsedContent = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId), pageInfo.Guid);
                 }
                 else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
                 {
@@ -157,8 +158,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     }
                     else
                     {
-                        var stlTagInfo = DataProvider.StlTagDao.GetStlTagInfo(pageInfo.PublishmentSystemId, attributeName) ??
-                                         DataProvider.StlTagDao.GetStlTagInfo(0, attributeName);
+                        //var stlTagInfo = DataProvider.StlTagDao.GetStlTagInfo(pageInfo.PublishmentSystemId, attributeName) ??
+                        //                 DataProvider.StlTagDao.GetStlTagInfo(0, attributeName);
+                        var stlTagInfo = StlTag.GetStlTagInfo(pageInfo.PublishmentSystemId, attributeName, pageInfo.Guid) ??
+                                         StlTag.GetStlTagInfo(0, attributeName, pageInfo.Guid);
                         if (!string.IsNullOrEmpty(stlTagInfo?.TagContent))
                         {
                             var innerBuilder = new StringBuilder(stlTagInfo.TagContent);

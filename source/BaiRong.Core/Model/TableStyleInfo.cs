@@ -34,7 +34,7 @@ namespace BaiRong.Core.Model
             _isVisible = true;
             _isVisibleInList = false;
             _isSingleLine = true;
-            _inputType = EInputTypeUtils.GetValue(EInputType.Text);
+            _inputType = InputTypeUtils.GetValue(SiteServer.Plugin.InputType.Text);
             _defaultValue = string.Empty;
             _isHorizontal = true;
             _extendValues = string.Empty;
@@ -241,15 +241,6 @@ namespace BaiRong.Core.Model
         {
             get { return GetExtendedAttribute("ErrorMessage"); }
             set { SetExtendedAttribute("ErrorMessage", value); }
-        }
-
-        /// <summary>
-        /// 是否启用统计
-        /// </summary>
-        public bool IsUseStatistics
-        {
-            get { return  GetBool("IsUseStatistics",false); }
-            set { SetExtendedAttribute("IsUseStatistics", value.ToString()); }
         }
 
         public override string ToString()

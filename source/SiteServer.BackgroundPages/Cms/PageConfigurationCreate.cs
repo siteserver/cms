@@ -19,7 +19,6 @@ namespace SiteServer.BackgroundPages.Cms
         public RadioButtonList IsCreateJsIgnoreError;
         public RadioButtonList IsCreateSearchDuplicate;
 
-        public RadioButtonList IsCreateIncludeToSSI;
         public RadioButtonList IsCreateWithJQuery;
 
         public RadioButtonList IsCreateDoubleClick;
@@ -39,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, AppManager.Cms.LeftMenu.Create.IdConfigurationCreate, "页面生成设置", AppManager.Cms.Permission.WebSite.Create);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "页面生成设置", AppManager.Permissions.WebSite.Create);
 
                 EBooleanUtils.AddListItems(IsCreateContentIfContentChanged, "生成", "不生成");
                 ControlUtils.SelectListItemsIgnoreCase(IsCreateContentIfContentChanged, PublishmentSystemInfo.Additional.IsCreateContentIfContentChanged.ToString());
@@ -64,9 +63,6 @@ namespace SiteServer.BackgroundPages.Cms
 
                 EBooleanUtils.AddListItems(IsCreateWithJQuery, "是", "否");
                 ControlUtils.SelectListItemsIgnoreCase(IsCreateWithJQuery, PublishmentSystemInfo.Additional.IsCreateWithJQuery.ToString());
-
-                EBooleanUtils.AddListItems(IsCreateIncludeToSSI, "是", "否");
-                ControlUtils.SelectListItemsIgnoreCase(IsCreateIncludeToSSI, PublishmentSystemInfo.Additional.IsCreateIncludeToSsi.ToString());
 
                 EBooleanUtils.AddListItems(IsCreateDoubleClick, "启用双击生成", "不启用");
                 ControlUtils.SelectListItemsIgnoreCase(IsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
@@ -104,7 +100,6 @@ namespace SiteServer.BackgroundPages.Cms
                 PublishmentSystemInfo.Additional.IsCreateBrowserNoCache = TranslateUtils.ToBool(IsCreateBrowserNoCache.SelectedValue);
                 PublishmentSystemInfo.Additional.IsCreateJsIgnoreError = TranslateUtils.ToBool(IsCreateJsIgnoreError.SelectedValue);
                 PublishmentSystemInfo.Additional.IsCreateSearchDuplicate = TranslateUtils.ToBool(IsCreateSearchDuplicate.SelectedValue);
-                PublishmentSystemInfo.Additional.IsCreateIncludeToSsi = TranslateUtils.ToBool(IsCreateIncludeToSSI.SelectedValue);
                 PublishmentSystemInfo.Additional.IsCreateWithJQuery = TranslateUtils.ToBool(IsCreateWithJQuery.SelectedValue);
 
                 PublishmentSystemInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(IsCreateDoubleClick.SelectedValue);

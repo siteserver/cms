@@ -2,9 +2,9 @@ using System.Collections;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -49,22 +49,22 @@ namespace SiteServer.CMS.Provider
 		{
 			var adParms = new IDataParameter[]
 			{
-				GetParameter(ParmAdmaterialName, EDataType.NVarChar, 50, adMaterialInfo.AdMaterialName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, adMaterialInfo.PublishmentSystemID),
-                GetParameter(ParmAdvertId,EDataType.Integer,adMaterialInfo.AdvID),
-				GetParameter(ParmAdmaterialType, EDataType.VarChar, 50, EAdvTypeUtils.GetValue(adMaterialInfo.AdMaterialType)),
-                GetParameter(ParmCode, EDataType.NText, adMaterialInfo.Code),
-                GetParameter(ParmTextWord, EDataType.NVarChar, 255, adMaterialInfo.TextWord),
-                GetParameter(ParmTextLink, EDataType.VarChar, 200, adMaterialInfo.TextLink),
-                GetParameter(ParmTextColor, EDataType.VarChar, 10, adMaterialInfo.TextColor),
-                GetParameter(ParmTextFontSize, EDataType.Integer, adMaterialInfo.TextFontSize),
-                GetParameter(ParmImageUrl, EDataType.VarChar, 200, adMaterialInfo.ImageUrl),
-                GetParameter(ParmImageLink, EDataType.VarChar, 200, adMaterialInfo.ImageLink),
-                GetParameter(ParmImageWidth, EDataType.Integer, adMaterialInfo.ImageWidth),
-                GetParameter(ParmImageHeight, EDataType.Integer, adMaterialInfo.ImageHeight),
-                GetParameter(ParmImageAlt, EDataType.NVarChar, 50, adMaterialInfo.ImageAlt),
-                GetParameter(ParmWeight , EDataType.Integer, adMaterialInfo.Weight ),
-                GetParameter(ParmIsEnabled, EDataType.VarChar, 18, adMaterialInfo.IsEnabled.ToString())
+				GetParameter(ParmAdmaterialName, DataType.NVarChar, 50, adMaterialInfo.AdMaterialName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, adMaterialInfo.PublishmentSystemID),
+                GetParameter(ParmAdvertId,DataType.Integer,adMaterialInfo.AdvID),
+				GetParameter(ParmAdmaterialType, DataType.VarChar, 50, EAdvTypeUtils.GetValue(adMaterialInfo.AdMaterialType)),
+                GetParameter(ParmCode, DataType.NText, adMaterialInfo.Code),
+                GetParameter(ParmTextWord, DataType.NVarChar, 255, adMaterialInfo.TextWord),
+                GetParameter(ParmTextLink, DataType.VarChar, 200, adMaterialInfo.TextLink),
+                GetParameter(ParmTextColor, DataType.VarChar, 10, adMaterialInfo.TextColor),
+                GetParameter(ParmTextFontSize, DataType.Integer, adMaterialInfo.TextFontSize),
+                GetParameter(ParmImageUrl, DataType.VarChar, 200, adMaterialInfo.ImageUrl),
+                GetParameter(ParmImageLink, DataType.VarChar, 200, adMaterialInfo.ImageLink),
+                GetParameter(ParmImageWidth, DataType.Integer, adMaterialInfo.ImageWidth),
+                GetParameter(ParmImageHeight, DataType.Integer, adMaterialInfo.ImageHeight),
+                GetParameter(ParmImageAlt, DataType.NVarChar, 50, adMaterialInfo.ImageAlt),
+                GetParameter(ParmWeight , DataType.Integer, adMaterialInfo.Weight ),
+                GetParameter(ParmIsEnabled, DataType.VarChar, 18, adMaterialInfo.IsEnabled.ToString())
 			 
 			};
 
@@ -75,23 +75,23 @@ namespace SiteServer.CMS.Provider
 		{
 			var adParms = new IDataParameter[]
 			{
-                GetParameter(ParmAdvertId,EDataType.Integer,adMaterialInfo.AdvID),
-				GetParameter(ParmAdmaterialName, EDataType.NVarChar, 50, adMaterialInfo.AdMaterialName),
-				GetParameter(ParmAdmaterialType, EDataType.VarChar, 50, EAdvTypeUtils.GetValue(adMaterialInfo.AdMaterialType)),
-                GetParameter(ParmCode, EDataType.NText, adMaterialInfo.Code),
-                GetParameter(ParmTextWord, EDataType.NVarChar, 255, adMaterialInfo.TextWord),
-                GetParameter(ParmTextLink, EDataType.VarChar, 200, adMaterialInfo.TextLink),
-                GetParameter(ParmTextColor, EDataType.VarChar, 10, adMaterialInfo.TextColor),
-                GetParameter(ParmTextFontSize, EDataType.Integer, adMaterialInfo.TextFontSize),
-                GetParameter(ParmImageUrl, EDataType.VarChar, 200, adMaterialInfo.ImageUrl),
-                GetParameter(ParmImageLink, EDataType.VarChar, 200, adMaterialInfo.ImageLink),
-                GetParameter(ParmImageWidth, EDataType.Integer, adMaterialInfo.ImageWidth),
-                GetParameter(ParmImageHeight, EDataType.Integer, adMaterialInfo.ImageHeight),
-                GetParameter(ParmImageAlt, EDataType.NVarChar, 50, adMaterialInfo.ImageAlt),
-                GetParameter(ParmWeight , EDataType.Integer, adMaterialInfo.Weight ),
-                GetParameter(ParmIsEnabled, EDataType.VarChar, 18, adMaterialInfo.IsEnabled.ToString()),
-                GetParameter(ParmAdmaterialId, EDataType.Integer, adMaterialInfo.AdMaterialID),
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, adMaterialInfo.PublishmentSystemID),
+                GetParameter(ParmAdvertId,DataType.Integer,adMaterialInfo.AdvID),
+				GetParameter(ParmAdmaterialName, DataType.NVarChar, 50, adMaterialInfo.AdMaterialName),
+				GetParameter(ParmAdmaterialType, DataType.VarChar, 50, EAdvTypeUtils.GetValue(adMaterialInfo.AdMaterialType)),
+                GetParameter(ParmCode, DataType.NText, adMaterialInfo.Code),
+                GetParameter(ParmTextWord, DataType.NVarChar, 255, adMaterialInfo.TextWord),
+                GetParameter(ParmTextLink, DataType.VarChar, 200, adMaterialInfo.TextLink),
+                GetParameter(ParmTextColor, DataType.VarChar, 10, adMaterialInfo.TextColor),
+                GetParameter(ParmTextFontSize, DataType.Integer, adMaterialInfo.TextFontSize),
+                GetParameter(ParmImageUrl, DataType.VarChar, 200, adMaterialInfo.ImageUrl),
+                GetParameter(ParmImageLink, DataType.VarChar, 200, adMaterialInfo.ImageLink),
+                GetParameter(ParmImageWidth, DataType.Integer, adMaterialInfo.ImageWidth),
+                GetParameter(ParmImageHeight, DataType.Integer, adMaterialInfo.ImageHeight),
+                GetParameter(ParmImageAlt, DataType.NVarChar, 50, adMaterialInfo.ImageAlt),
+                GetParameter(ParmWeight , DataType.Integer, adMaterialInfo.Weight ),
+                GetParameter(ParmIsEnabled, DataType.VarChar, 18, adMaterialInfo.IsEnabled.ToString()),
+                GetParameter(ParmAdmaterialId, DataType.Integer, adMaterialInfo.AdMaterialID),
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, adMaterialInfo.PublishmentSystemID),
 			};
 
             ExecuteNonQuery(SqlUpdateAdmaterial, adParms);
@@ -101,8 +101,8 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdmaterialId, EDataType.Integer, adMaterialId),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmAdmaterialId, DataType.Integer, adMaterialId),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlDeleteAdmaterial, parms);
@@ -126,8 +126,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdmaterialId, EDataType.Integer, adMaterialD),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmAdmaterialId, DataType.Integer, adMaterialD),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAdmaterial, parms)) 
@@ -149,8 +149,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdmaterialName, EDataType.NVarChar, 50, adMaterialName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmAdmaterialName, DataType.NVarChar, 50, adMaterialName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAdmaterialName, parms)) 
@@ -169,8 +169,8 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-                 GetParameter(ParmAdvertId,EDataType.Integer,advertId),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+                 GetParameter(ParmAdvertId,DataType.Integer,advertId),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllAdmaterial, parms);
@@ -181,8 +181,8 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdmaterialType, EDataType.VarChar, 50, EAdvTypeUtils.GetValue(adType)),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmAdmaterialType, DataType.VarChar, 50, EAdvTypeUtils.GetValue(adType)),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
 			var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllAdmaterialByType, parms);
@@ -232,8 +232,8 @@ namespace SiteServer.CMS.Provider
             var arraylist = new ArrayList();
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmAdvertId,EDataType.Integer,advertId),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmAdvertId,DataType.Integer,advertId),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllAdmaterialByAdverid, parms))

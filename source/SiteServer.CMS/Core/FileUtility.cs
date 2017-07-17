@@ -48,7 +48,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        private static void MoveFile(PublishmentSystemInfo sourcePublishmentSystemInfo, PublishmentSystemInfo destPublishmentSystemInfo, string relatedUrl)
+        public static void MoveFile(PublishmentSystemInfo sourcePublishmentSystemInfo, PublishmentSystemInfo destPublishmentSystemInfo, string relatedUrl)
         {
             if (!string.IsNullOrEmpty(relatedUrl))
             {

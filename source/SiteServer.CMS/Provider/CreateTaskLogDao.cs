@@ -6,6 +6,7 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -27,13 +28,13 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmCreateType, EDataType.NVarChar, 50, ECreateTypeUtils.GetValue(log.CreateType)),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, log.PublishmentSystemID),
-                GetParameter(ParmTaskName, EDataType.NVarChar, 50, log.TaskName),
-                GetParameter(ParmTimeSpan, EDataType.NVarChar, 50, log.TimeSpan),
-                GetParameter(ParmIsSuccess, EDataType.VarChar, 18, log.IsSuccess.ToString()),
-                GetParameter(ParmErrorMessage, EDataType.NVarChar, 255, log.ErrorMessage),
-                GetParameter(ParmAddDate, EDataType.DateTime, log.AddDate)
+                GetParameter(ParmCreateType, DataType.NVarChar, 50, ECreateTypeUtils.GetValue(log.CreateType)),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, log.PublishmentSystemID),
+                GetParameter(ParmTaskName, DataType.NVarChar, 50, log.TaskName),
+                GetParameter(ParmTimeSpan, DataType.NVarChar, 50, log.TimeSpan),
+                GetParameter(ParmIsSuccess, DataType.VarChar, 18, log.IsSuccess.ToString()),
+                GetParameter(ParmErrorMessage, DataType.NVarChar, 255, log.ErrorMessage),
+                GetParameter(ParmAddDate, DataType.DateTime, log.AddDate)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -74,7 +75,7 @@ namespace SiteServer.CMS.Provider
 
                 var parms = new IDataParameter[]
                 {
-                    GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                    GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
                 };
 
                 using (var rdr = ExecuteReader(sqlString, parms))

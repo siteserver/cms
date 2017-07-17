@@ -19,66 +19,60 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ESearchEngineType type)
 		{
-			if (type == ESearchEngineType.Baidu)
+		    if (type == ESearchEngineType.Baidu)
 			{
 				return "Baidu";
 			}
-			else if (type == ESearchEngineType.Google)
-			{
-				return "Google";
-			}
-			else if (type == ESearchEngineType.Google_CN)
-			{
-				return "Google_CN";
-			}
-			else if (type == ESearchEngineType.Live)
-			{
-				return "Live";
-			}
-			else if (type == ESearchEngineType.Sogou)
-			{
-				return "Sogou";
-			}
-			else if (type == ESearchEngineType.Yahoo)
-			{
-				return "Yahoo";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ESearchEngineType.Google)
+		    {
+		        return "Google";
+		    }
+		    if (type == ESearchEngineType.Google_CN)
+		    {
+		        return "Google_CN";
+		    }
+		    if (type == ESearchEngineType.Live)
+		    {
+		        return "Live";
+		    }
+		    if (type == ESearchEngineType.Sogou)
+		    {
+		        return "Sogou";
+		    }
+		    if (type == ESearchEngineType.Yahoo)
+		    {
+		        return "Yahoo";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ESearchEngineType type)
 		{
-			if (type == ESearchEngineType.Baidu)
+		    if (type == ESearchEngineType.Baidu)
 			{
 				return "百度";
 			}
-			else if (type == ESearchEngineType.Google_CN)
-			{
-				return "Google(简体中文)";
-			}
-			else if (type == ESearchEngineType.Google)
-			{
-				return "Google(全部语言)";
-			}
-			else if (type == ESearchEngineType.Yahoo)
-			{
-				return "Yahoo";
-			}
-			else if (type == ESearchEngineType.Live)
-			{
-				return "Live 搜索";
-			}
-			else if (type == ESearchEngineType.Sogou)
-			{
-				return "搜狗";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ESearchEngineType.Google_CN)
+		    {
+		        return "Google(简体中文)";
+		    }
+		    if (type == ESearchEngineType.Google)
+		    {
+		        return "Google(全部语言)";
+		    }
+		    if (type == ESearchEngineType.Yahoo)
+		    {
+		        return "Yahoo";
+		    }
+		    if (type == ESearchEngineType.Live)
+		    {
+		        return "Live 搜索";
+		    }
+		    if (type == ESearchEngineType.Sogou)
+		    {
+		        return "搜狗";
+		    }
+		    throw new Exception();
 		}
 
 		public static ESearchEngineType GetEnumType(string typeStr)

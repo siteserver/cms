@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -164,17 +165,17 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(contextInfo, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
+                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
 		}
 
-        private static string ParseImpl(ContextInfo contextInfo, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)
         {
             var parsedContent = string.Empty;
 
@@ -198,7 +199,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeDisplayName))
             {
-                parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : BaiRongDataProvider.UserDao.GetDisplayName(userName);
+                //parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : BaiRongDataProvider.UserDao.GetDisplayName(userName);
+                parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : User.GetDisplayName(userName, pageInfo.Guid);
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeGoodCount))
             {

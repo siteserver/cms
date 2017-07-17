@@ -17,66 +17,60 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ECrossSiteTransType type)
 		{
-            if (type == ECrossSiteTransType.None)
+		    if (type == ECrossSiteTransType.None)
             {
                 return "None";
             }
-            else if (type == ECrossSiteTransType.SelfSite)
-            {
-                return "SelfSite";
-            }
-            else if (type == ECrossSiteTransType.SpecifiedSite)
-            {
-                return "SpecifiedSite";
-            }
-            else if (type == ECrossSiteTransType.ParentSite)
-            {
-                return "ParentSite";
-            }
-            else if (type == ECrossSiteTransType.AllParentSite)
-			{
-                return "AllParentSite";
-            }
-            else if (type == ECrossSiteTransType.AllSite)
-            {
-                return "AllSite";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ECrossSiteTransType.SelfSite)
+		    {
+		        return "SelfSite";
+		    }
+		    if (type == ECrossSiteTransType.SpecifiedSite)
+		    {
+		        return "SpecifiedSite";
+		    }
+		    if (type == ECrossSiteTransType.ParentSite)
+		    {
+		        return "ParentSite";
+		    }
+		    if (type == ECrossSiteTransType.AllParentSite)
+		    {
+		        return "AllParentSite";
+		    }
+		    if (type == ECrossSiteTransType.AllSite)
+		    {
+		        return "AllSite";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ECrossSiteTransType type)
 		{
-            if (type == ECrossSiteTransType.None)
+		    if (type == ECrossSiteTransType.None)
             {
                 return "不转发";
             }
-            else if (type == ECrossSiteTransType.SelfSite)
-            {
-                return "可向本站转发";
-            }
-            else if (type == ECrossSiteTransType.SpecifiedSite)
-            {
-                return "可向指定站点转发";
-            }
-            else if (type == ECrossSiteTransType.ParentSite)
-            {
-                return "可向上一级站点转发";
-            }
-            else if (type == ECrossSiteTransType.AllParentSite)
-			{
-                return "可向所有上级站点转发";
-            }
-            else if (type == ECrossSiteTransType.AllSite)
-            {
-                return "可向所有站点转发";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ECrossSiteTransType.SelfSite)
+		    {
+		        return "可向本站转发";
+		    }
+		    if (type == ECrossSiteTransType.SpecifiedSite)
+		    {
+		        return "可向指定站点转发";
+		    }
+		    if (type == ECrossSiteTransType.ParentSite)
+		    {
+		        return "可向上一级站点转发";
+		    }
+		    if (type == ECrossSiteTransType.AllParentSite)
+		    {
+		        return "可向所有上级站点转发";
+		    }
+		    if (type == ECrossSiteTransType.AllSite)
+		    {
+		        return "可向所有站点转发";
+		    }
+		    throw new Exception();
 		}
 
 		public static ECrossSiteTransType GetEnumType(string typeStr)

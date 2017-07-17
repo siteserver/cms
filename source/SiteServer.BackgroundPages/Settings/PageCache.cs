@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings(AppManager.Settings.LeftMenu.Utility, "系统缓存", AppManager.Settings.Permission.SettingsUtility);
+                BreadCrumbSettings("系统缓存", AppManager.Permissions.Settings.Utility);
 
                 CacheCount = CacheUtils.GetCacheCount() + DbCacheManager.GetCount();
                 CacheSize = 100 - CacheUtils.GetCacheEnabledPercent();

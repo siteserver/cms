@@ -10,6 +10,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -142,7 +143,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeOrder))
                         {
-                            orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
+                            orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
                         }
                         else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsTop))
                         {
@@ -171,7 +172,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -193,7 +194,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var scopeType = !string.IsNullOrEmpty(scopeTypeString) ? EScopeTypeUtils.GetEnumType(scopeTypeString) : EScopeType.All;
 
-            var channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
+            var channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName, pageInfo.Guid);
 
             var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
             if (string.IsNullOrEmpty(channel.Title))
@@ -205,9 +206,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 channel.Description = nodeInfo.Content;
                 channel.Description = string.IsNullOrEmpty(channel.Description) ? nodeInfo.NodeName : StringUtils.MaxLengthText(channel.Description, 200);
             }
-            channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo)));
+            channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo, pageInfo.Guid)));
 
-            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
+            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null, pageInfo.Guid);
 
             if (dataSource != null)
             {

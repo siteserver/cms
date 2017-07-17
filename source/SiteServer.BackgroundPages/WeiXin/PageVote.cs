@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdVote, "微投票", AppManager.WeiXin.Permission.WebSite.Vote);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdVote, "微投票", AppManager.WeiXin.Permission.WebSite.Vote);
                 SpContents.DataBind();
 
                 var urlAdd = PageVoteAdd.GetRedirectUrl(PublishmentSystemId, 0);

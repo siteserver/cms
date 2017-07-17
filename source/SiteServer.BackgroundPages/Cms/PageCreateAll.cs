@@ -1,6 +1,6 @@
 ﻿using System;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Service;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core.Create;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                CreateManager.CreateAll(PublishmentSystemId);
+                CreateManager.CreateAll(PublishmentSystemId, StringUtils.GetShortGuid());
                 PageCreateStatus.Redirect(PublishmentSystemId);
             }
         }

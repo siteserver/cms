@@ -15,50 +15,44 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EGovInteractLimitType type)
 		{
-            if (type == EGovInteractLimitType.Normal)
+		    if (type == EGovInteractLimitType.Normal)
 			{
                 return "Normal";
 			}
-            else if (type == EGovInteractLimitType.Alert)
-			{
-                return "Alert";
-            }
-            else if (type == EGovInteractLimitType.Yellow)
-            {
-                return "Yellow";
-            }
-            else if (type == EGovInteractLimitType.Red)
-            {
-                return "Red";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovInteractLimitType.Alert)
+		    {
+		        return "Alert";
+		    }
+		    if (type == EGovInteractLimitType.Yellow)
+		    {
+		        return "Yellow";
+		    }
+		    if (type == EGovInteractLimitType.Red)
+		    {
+		        return "Red";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EGovInteractLimitType type)
 		{
-            if (type == EGovInteractLimitType.Normal)
+		    if (type == EGovInteractLimitType.Normal)
 			{
                 return "未超期";
 			}
-            else if (type == EGovInteractLimitType.Alert)
-			{
-                return "预警";
-            }
-            else if (type == EGovInteractLimitType.Yellow)
-            {
-                return "黄牌";
-            }
-            else if (type == EGovInteractLimitType.Red)
-            {
-                return "红牌";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovInteractLimitType.Alert)
+		    {
+		        return "预警";
+		    }
+		    if (type == EGovInteractLimitType.Yellow)
+		    {
+		        return "黄牌";
+		    }
+		    if (type == EGovInteractLimitType.Red)
+		    {
+		        return "红牌";
+		    }
+		    throw new Exception();
 		}
 
 		public static EGovInteractLimitType GetEnumType(string typeStr)

@@ -8,6 +8,7 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.WeiXin.Data;
 using SiteServer.CMS.WeiXin.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
@@ -96,14 +97,14 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             var insertParms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishimentsystemid, EDataType.Integer, categoryInfo.PublishmentSystemId),
-				GetParameter(ParmName, EDataType.NVarChar, 255, categoryInfo.CategoryName),
-				GetParameter(ParmParentId, EDataType.Integer, categoryInfo.ParentId),
-				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, categoryInfo.ParentsPath),
-				GetParameter(ParmParentsCount, EDataType.Integer, categoryInfo.ParentsCount),
-				GetParameter(ParmChildrenCount, EDataType.Integer, 0),
-				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, true.ToString()),
-				GetParameter(ParmTaxis, EDataType.Integer, categoryInfo.Taxis),
+                GetParameter(ParmPublishimentsystemid, DataType.Integer, categoryInfo.PublishmentSystemId),
+				GetParameter(ParmName, DataType.NVarChar, 255, categoryInfo.CategoryName),
+				GetParameter(ParmParentId, DataType.Integer, categoryInfo.ParentId),
+				GetParameter(ParmParentsPath, DataType.NVarChar, 255, categoryInfo.ParentsPath),
+				GetParameter(ParmParentsCount, DataType.Integer, categoryInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, DataType.Integer, 0),
+				GetParameter(ParmIsLastNode, DataType.VarChar, 18, true.ToString()),
+				GetParameter(ParmTaxis, DataType.Integer, categoryInfo.Taxis),
 			};
 
             string sqlString = $"UPDATE wx_StoreCategory SET Taxis = Taxis + 1 WHERE (Taxis >= {categoryInfo.Taxis})";
@@ -277,10 +278,10 @@ ORDER BY Taxis DESC";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishimentsystemid, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmParentId, EDataType.Integer, categoryInfo.ParentId),
-				GetParameter(ParmId, EDataType.Integer, categoryInfo.Id),
-				GetParameter(ParmTaxis, EDataType.Integer, categoryInfo.Taxis),
+				GetParameter(ParmPublishimentsystemid, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmParentId, DataType.Integer, categoryInfo.ParentId),
+				GetParameter(ParmId, DataType.Integer, categoryInfo.Id),
+				GetParameter(ParmTaxis, DataType.Integer, categoryInfo.Taxis),
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -322,10 +323,10 @@ ORDER BY Taxis";
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishimentsystemid, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmParentId, EDataType.Integer, categoryInfo.ParentId),
-				GetParameter(ParmId, EDataType.Integer, categoryInfo.Id),
-				GetParameter(ParmTaxis, EDataType.Integer, categoryInfo.Taxis)
+                GetParameter(ParmPublishimentsystemid, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmParentId, DataType.Integer, categoryInfo.ParentId),
+				GetParameter(ParmId, DataType.Integer, categoryInfo.Id),
+				GetParameter(ParmTaxis, DataType.Integer, categoryInfo.Taxis)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -376,9 +377,9 @@ ORDER BY Taxis";
 
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter(ParmIsLastNode, EDataType.VarChar, 18, false.ToString()),
-                    GetParameter(ParmPublishimentsystemid, EDataType.Integer, publishmentSystemId),
-				    GetParameter(ParmParentId, EDataType.Integer, parentId)
+				    GetParameter(ParmIsLastNode, DataType.VarChar, 18, false.ToString()),
+                    GetParameter(ParmPublishimentsystemid, DataType.Integer, publishmentSystemId),
+				    GetParameter(ParmParentId, DataType.Integer, parentId)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);
@@ -416,7 +417,7 @@ ORDER BY Taxis";
 
             var nodeParms = new IDataParameter[]
 			{
-				GetParameter(ParmId, EDataType.Integer, id)
+				GetParameter(ParmId, DataType.Integer, id)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectParentId, nodeParms))
@@ -479,13 +480,13 @@ ORDER BY Taxis";
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmName, EDataType.NVarChar, 255, categoryInfo.CategoryName),
-				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, categoryInfo.ParentsPath),
-				GetParameter(ParmParentsCount, EDataType.Integer, categoryInfo.ParentsCount),
-				GetParameter(ParmChildrenCount, EDataType.Integer, categoryInfo.ChildCount),
-				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, categoryInfo.IsLastNode.ToString()),
+				GetParameter(ParmName, DataType.NVarChar, 255, categoryInfo.CategoryName),
+				GetParameter(ParmParentsPath, DataType.NVarChar, 255, categoryInfo.ParentsPath),
+				GetParameter(ParmParentsCount, DataType.Integer, categoryInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, DataType.Integer, categoryInfo.ChildCount),
+				GetParameter(ParmIsLastNode, DataType.VarChar, 18, categoryInfo.IsLastNode.ToString()),
 
-				GetParameter(ParmId, EDataType.Integer, categoryInfo.Id)
+				GetParameter(ParmId, DataType.Integer, categoryInfo.Id)
 			};
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -518,7 +519,7 @@ ORDER BY Taxis";
                 string sqlString =
                     $"DELETE FROM wx_StoreCategory WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
-                var deletedNum = 0;
+                int deletedNum;
 
                 using (var conn = GetConnection())
                 {
@@ -556,7 +557,7 @@ ORDER BY Taxis";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmId, EDataType.Integer, categoryId)
+				GetParameter(ParmId, DataType.Integer, categoryId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -576,7 +577,7 @@ ORDER BY Taxis";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishimentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishimentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAll, parms))
@@ -598,8 +599,8 @@ ORDER BY Taxis";
 
             var nodeParms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishimentsystemid, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmParentId, EDataType.Integer, id)
+                GetParameter(ParmPublishimentsystemid, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmParentId, DataType.Integer, id)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectCount, nodeParms))

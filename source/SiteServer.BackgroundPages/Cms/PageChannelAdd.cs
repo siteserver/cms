@@ -44,7 +44,6 @@ namespace SiteServer.BackgroundPages.Cms
         public Button UploadImage;
 
         private int _nodeId;
-        private string _returnUrl;
 
         public static string GetRedirectUrl(int publishmentSystemId, int nodeId, string returnUrl)
         {
@@ -62,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ReturnUrl");
             _nodeId = Body.GetQueryInt("NodeID");
-            _returnUrl = StringUtils.ValueFromUrl(PageUtils.FilterSqlAndXss(Body.GetQueryString("ReturnUrl")));
+            ReturnUrl = StringUtils.ValueFromUrl(PageUtils.FilterSqlAndXss(Body.GetQueryString("ReturnUrl")));
             //if (!base.HasChannelPermissions(this.nodeID, AppManager.CMS.Permission.Channel.ChannelAdd))
             //{
             //    PageUtils.RedirectToErrorPage("您没有添加栏目的权限！");
@@ -172,6 +171,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack && Page.IsValid)
             {
+                var guid = StringUtils.GetShortGuid();
                 int insertNodeId;
                 try
                 {
@@ -288,15 +288,15 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                CreateManager.CreateChannel(PublishmentSystemId, insertNodeId);
+                CreateManager.CreateChannel(PublishmentSystemId, insertNodeId, guid);
 
                 Body.AddSiteLog(PublishmentSystemId, "添加栏目", $"栏目:{NodeName.Text}");
 
                 SuccessMessage("栏目添加成功！");
-                AddWaitAndRedirectScript(_returnUrl);
+                AddWaitAndRedirectScript(ReturnUrl);
             }
         }
 
-        public string ReturnUrl => _returnUrl;
+        public string ReturnUrl { get; private set; }
     }
 }

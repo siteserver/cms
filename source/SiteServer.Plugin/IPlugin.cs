@@ -13,11 +13,5 @@
         /// </summary>
         /// <param name="context"></param>
         void Deactive(PluginContext context);
-
-        /// <summary>
-        /// 卸载插件
-        /// </summary>
-        /// <param name="context"></param>
-        void Uninstall(PluginContext context);
     }
 }

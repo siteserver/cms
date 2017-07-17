@@ -3,10 +3,9 @@ using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Wcm.Provider
 {
@@ -28,15 +27,15 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, logInfo.PublishmentSystemID),
-                GetParameter(ParmNodeId, EDataType.Integer, logInfo.NodeID),
-                GetParameter(ParmContentId, EDataType.Integer, logInfo.ContentID),
-                GetParameter(ParmDepartmentId, EDataType.Integer, logInfo.DepartmentID),
-				GetParameter(ParmUserName, EDataType.VarChar, 50, logInfo.UserName),
-                GetParameter(ParmLogType, EDataType.VarChar, 50, EGovInteractLogTypeUtils.GetValue(logInfo.LogType)),
-				GetParameter(ParmIpAddress, EDataType.VarChar, 50, logInfo.IPAddress),
-                GetParameter(ParmAddDate, EDataType.DateTime, logInfo.AddDate),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, logInfo.Summary)
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, logInfo.PublishmentSystemID),
+                GetParameter(ParmNodeId, DataType.Integer, logInfo.NodeID),
+                GetParameter(ParmContentId, DataType.Integer, logInfo.ContentID),
+                GetParameter(ParmDepartmentId, DataType.Integer, logInfo.DepartmentID),
+				GetParameter(ParmUserName, DataType.VarChar, 50, logInfo.UserName),
+                GetParameter(ParmLogType, DataType.VarChar, 50, EGovInteractLogTypeUtils.GetValue(logInfo.LogType)),
+				GetParameter(ParmIpAddress, DataType.VarChar, 50, logInfo.IPAddress),
+                GetParameter(ParmAddDate, DataType.DateTime, logInfo.AddDate),
+				GetParameter(ParmSummary, DataType.NVarChar, 255, logInfo.Summary)
 			};
 
             ExecuteNonQuery(sqlString, parms);

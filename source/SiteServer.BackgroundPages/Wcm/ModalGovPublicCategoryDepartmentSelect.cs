@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Admin;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.BackgroundPages.Users;
 using SiteServer.CMS.Wcm.GovPublic;
 
 namespace SiteServer.BackgroundPages.Wcm

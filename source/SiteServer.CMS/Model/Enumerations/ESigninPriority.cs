@@ -18,18 +18,15 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "1";
             }
-            else if (type == ESigninPriority.Normal)
+            if (type == ESigninPriority.Normal)
             {
                 return "2";
             }
-            else if (type == ESigninPriority.High)
+            if (type == ESigninPriority.High)
             {
                 return "3";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(ESigninPriority type)
@@ -38,18 +35,15 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "低";
             }
-            else if (type == ESigninPriority.Normal)
+            if (type == ESigninPriority.Normal)
             {
                 return "普通";
             }
-            else if (type == ESigninPriority.High)
+            if (type == ESigninPriority.High)
             {
                 return "高";
             }
-            else
-            {
-                throw new Exception();
-             }
+            throw new Exception();
         }
 
         public static ESigninPriority GetEnumType(string typeStr)

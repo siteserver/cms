@@ -21,12 +21,6 @@ namespace BaiRong.Core.Model
             set { SetExtendedAttribute("Cipherkey", value); }
         }
 
-        public ERestrictionType RestrictionType
-        {
-            get { return ERestrictionTypeUtils.GetEnumType(GetString("RestrictionType", string.Empty)); }
-            set { SetExtendedAttribute("RestrictionType", ERestrictionTypeUtils.GetValue(value)); }
-        }
-
         public bool IsLogAdmin
         {
             get { return GetBool("IsLogAdmin", true); }

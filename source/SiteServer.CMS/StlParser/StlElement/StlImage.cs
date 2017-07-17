@@ -6,6 +6,7 @@ using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
@@ -149,7 +150,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
@@ -188,13 +189,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                         if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0)
                         {
                             var targetNodeId = contentInfo.SourceId;
-                            var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
+                            //var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
+                            var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId, pageInfo.Guid);
                             var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
                             var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
 
                             var tableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeInfo);
                             var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
-                            var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
+                            //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
+                            var targetContentInfo = Content.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId, pageInfo.Guid);
                             if (targetContentInfo != null && targetContentInfo.NodeId > 0)
                             {
                                 contentInfo = targetContentInfo;
@@ -204,7 +207,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo == null)
                     {
-                        contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId);
+                        //contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId);
+                        contentInfo = Content.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, pageInfo.Guid);
                     }
 
                     if (contentInfo != null)
@@ -237,7 +241,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-                    channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
+                    channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
 
                     var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 

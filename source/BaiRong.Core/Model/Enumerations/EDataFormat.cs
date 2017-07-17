@@ -13,43 +13,37 @@ namespace BaiRong.Core.Model.Enumerations
     public class EDataFormatUtils
 	{
         public static string GetValue(EDataFormat type)
-		{
-			if (type == EDataFormat.String)
+        {
+            if (type == EDataFormat.String)
 			{
                 return "String";
 			}
-			else if (type == EDataFormat.Json)
-			{
+            if (type == EDataFormat.Json)
+            {
                 return "Json";
-			}
-			else if (type == EDataFormat.Xml)
-			{
+            }
+            if (type == EDataFormat.Xml)
+            {
                 return "Xml";
-			}
-			else
-			{
-				throw new Exception();
-			}
-		}
+            }
+            throw new Exception();
+        }
 
 		public static string GetText(EDataFormat type)
 		{
-			if (type == EDataFormat.String)
+		    if (type == EDataFormat.String)
 			{
 				return "默认";
 			}
-			else if (type == EDataFormat.Json)
-			{
-				return "Json";
-			}
-			else if (type == EDataFormat.Xml)
-			{
-				return "Xml";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EDataFormat.Json)
+		    {
+		        return "Json";
+		    }
+		    if (type == EDataFormat.Xml)
+		    {
+		        return "Xml";
+		    }
+		    throw new Exception();
 		}
 
 		public static EDataFormat GetEnumType(string typeStr)

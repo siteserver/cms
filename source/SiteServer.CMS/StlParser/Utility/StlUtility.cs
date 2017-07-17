@@ -12,6 +12,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.StlEntity;
+using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
@@ -38,7 +39,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.ChannelTemplate)
             {
-                currentUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId));
+                currentUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId), pageInfo.Guid);
             }
             else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.FileTemplate)
             {
@@ -239,23 +240,23 @@ namespace SiteServer.CMS.StlParser.Utility
                 int seoMetaId;
                 if (pageInfo.PageContentId != 0)
                 {
-                    seoMetaId = DataProvider.SeoMetaDao.GetSeoMetaIdByNodeId(pageInfo.PageNodeId, false);
+                    seoMetaId = SeoMeta.GetSeoMetaIdByNodeId(pageInfo.PageNodeId, false, pageInfo.Guid);
                     if (seoMetaId == 0)
                     {
-                        seoMetaId = DataProvider.SeoMetaDao.GetDefaultSeoMetaId(pageInfo.PublishmentSystemId);
+                        seoMetaId = SeoMeta.GetDefaultSeoMetaId(pageInfo.PublishmentSystemId, pageInfo.Guid);
                     }
                 }
                 else
                 {
-                    seoMetaId = DataProvider.SeoMetaDao.GetSeoMetaIdByNodeId(pageInfo.PageNodeId, true);
+                    seoMetaId = SeoMeta.GetSeoMetaIdByNodeId(pageInfo.PageNodeId, true, pageInfo.Guid);
                     if (seoMetaId == 0)
                     {
-                        seoMetaId = DataProvider.SeoMetaDao.GetDefaultSeoMetaId(pageInfo.PublishmentSystemId);
+                        seoMetaId = SeoMeta.GetDefaultSeoMetaId(pageInfo.PublishmentSystemId, pageInfo.Guid);
                     }
                 }
                 if (seoMetaId != 0)
                 {
-                    var seoMetaInfo = DataProvider.SeoMetaDao.GetSeoMetaInfo(seoMetaId);
+                    var seoMetaInfo = SeoMeta.GetSeoMetaInfo(seoMetaId, pageInfo.Guid);
                     var seoMetaInfoFromTemplate = SeoManager.GetSeoMetaInfo(contentBuilder.ToString());
                     if (!string.IsNullOrEmpty(seoMetaInfoFromTemplate.PageTitle)) seoMetaInfo.PageTitle = string.Empty;
                     if (!string.IsNullOrEmpty(seoMetaInfoFromTemplate.Keywords)) seoMetaInfo.Keywords = string.Empty;
@@ -283,90 +284,89 @@ namespace SiteServer.CMS.StlParser.Utility
 
         private static void AddAdvertisementsToContent(PageInfo pageInfo)
         {
-            if (IsAdvertisementExists(pageInfo))
+            if (!IsAdvertisementExists(pageInfo)) return;
+
+            var advertisementNameList = Advertisement.GetAdvertisementNameList(pageInfo.PublishmentSystemId, pageInfo.Guid);
+
+            foreach (var advertisementName in advertisementNameList)
             {
-                var advertisementNameArrayList = DataProvider.AdvertisementDao.GetAdvertisementNameArrayList(pageInfo.PublishmentSystemId);
-
-                foreach (string advertisementName in advertisementNameArrayList)
+                var adInfo = Advertisement.GetAdvertisementInfo(advertisementName, pageInfo.PublishmentSystemId, pageInfo.Guid);
+                if (adInfo.IsDateLimited)
                 {
-                    var adInfo = DataProvider.AdvertisementDao.GetAdvertisementInfo(advertisementName, pageInfo.PublishmentSystemId);
-                    if (adInfo.IsDateLimited)
+                    if (DateTime.Now < adInfo.StartDate || DateTime.Now > adInfo.EndDate)
                     {
-                        if (DateTime.Now < adInfo.StartDate || DateTime.Now > adInfo.EndDate)
+                        continue;
+                    }
+                }
+                var isToDo = false;
+                if (pageInfo.TemplateInfo.TemplateType == ETemplateType.IndexPageTemplate || pageInfo.TemplateInfo.TemplateType == ETemplateType.ChannelTemplate)
+                {
+                    if (!string.IsNullOrEmpty(adInfo.NodeIDCollectionToChannel))
+                    {
+                        var nodeIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIDCollectionToChannel);
+                        if (nodeIdArrayList.Contains(pageInfo.PageNodeId))
                         {
-                            continue;
+                            isToDo = true;
                         }
                     }
-                    var isToDo = false;
-                    if (pageInfo.TemplateInfo.TemplateType == ETemplateType.IndexPageTemplate || pageInfo.TemplateInfo.TemplateType == ETemplateType.ChannelTemplate)
+                }
+                else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.ContentTemplate)
+                {
+                    if (!string.IsNullOrEmpty(adInfo.NodeIDCollectionToContent))
                     {
-                        if (!string.IsNullOrEmpty(adInfo.NodeIDCollectionToChannel))
+                        var nodeIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIDCollectionToContent);
+                        if (nodeIdArrayList.Contains(pageInfo.PageContentId))
                         {
-                            var nodeIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIDCollectionToChannel);
-                            if (nodeIdArrayList.Contains(pageInfo.PageNodeId))
-                            {
-                                isToDo = true;
-                            }
+                            isToDo = true;
                         }
                     }
-                    else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.ContentTemplate)
+                }
+                else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.FileTemplate)
+                {
+                    if (!string.IsNullOrEmpty(adInfo.FileTemplateIDCollection))
                     {
-                        if (!string.IsNullOrEmpty(adInfo.NodeIDCollectionToContent))
+                        var fileTemplateIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.FileTemplateIDCollection);
+                        if (fileTemplateIdArrayList.Contains(pageInfo.TemplateInfo.TemplateId))
                         {
-                            var nodeIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIDCollectionToContent);
-                            if (nodeIdArrayList.Contains(pageInfo.PageContentId))
-                            {
-                                isToDo = true;
-                            }
+                            isToDo = true;
                         }
                     }
-                    else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.FileTemplate)
+                }
+
+                if (isToDo)
+                {
+                    var scripts = string.Empty;
+                    if (adInfo.AdvertisementType == EAdvertisementType.FloatImage)
                     {
-                        if (!string.IsNullOrEmpty(adInfo.FileTemplateIDCollection))
-                        {
-                            var fileTemplateIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.FileTemplateIDCollection);
-                            if (fileTemplateIdArrayList.Contains(pageInfo.TemplateInfo.TemplateId))
-                            {
-                                isToDo = true;
-                            }
-                        }
+                        pageInfo.AddPageScriptsIfNotExists(PageInfo.JsStaticAdFloating);
+
+                        var floatScript = new FloatingScript(pageInfo.PublishmentSystemInfo, pageInfo.UniqueId, adInfo);
+                        scripts = floatScript.GetScript();
+                    }
+                    else if (adInfo.AdvertisementType == EAdvertisementType.ScreenDown)
+                    {
+                        pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+
+                        var screenDownScript = new ScreenDownScript(pageInfo.PublishmentSystemInfo, pageInfo.UniqueId, adInfo);
+                        scripts = screenDownScript.GetScript();
+                    }
+                    else if (adInfo.AdvertisementType == EAdvertisementType.OpenWindow)
+                    {
+                        var openWindowScript = new OpenWindowScript(pageInfo.PublishmentSystemInfo, pageInfo.UniqueId, adInfo);
+                        scripts = openWindowScript.GetScript();
                     }
 
-                    if (isToDo)
-                    {
-                        var scripts = string.Empty;
-                        if (adInfo.AdvertisementType == EAdvertisementType.FloatImage)
-                        {
-                            pageInfo.AddPageScriptsIfNotExists(PageInfo.JsStaticAdFloating);
-
-                            var floatScript = new FloatingScript(pageInfo.PublishmentSystemInfo, pageInfo.UniqueId, adInfo);
-                            scripts = floatScript.GetScript();
-                        }
-                        else if (adInfo.AdvertisementType == EAdvertisementType.ScreenDown)
-                        {
-                            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
-
-                            var screenDownScript = new ScreenDownScript(pageInfo.PublishmentSystemInfo, pageInfo.UniqueId, adInfo);
-                            scripts = screenDownScript.GetScript();
-                        }
-                        else if (adInfo.AdvertisementType == EAdvertisementType.OpenWindow)
-                        {
-                            var openWindowScript = new OpenWindowScript(pageInfo.PublishmentSystemInfo, pageInfo.UniqueId, adInfo);
-                            scripts = openWindowScript.GetScript();
-                        }
-
-                        pageInfo.AddPageEndScriptsIfNotExists(EAdvertisementTypeUtils.GetValue(adInfo.AdvertisementType) + "_" + adInfo.AdvertisementName, scripts);
-                    }
+                    pageInfo.AddPageEndScriptsIfNotExists(EAdvertisementTypeUtils.GetValue(adInfo.AdvertisementType) + "_" + adInfo.AdvertisementName, scripts);
                 }
             }
         }
 
-        public static string ParseDynamicContent(int publishmentSystemId, int channelId, int contentId, int templateId, bool isPageRefresh, string templateContent, string pageUrl, int pageIndex, string ajaxDivId, NameValueCollection queryString, UserInfo userInfo)
+        public static string ParseDynamicContent(int publishmentSystemId, int channelId, int contentId, int templateId, bool isPageRefresh, string templateContent, string pageUrl, int pageIndex, string ajaxDivId, NameValueCollection queryString, string guid, UserInfo userInfo)
         {
             var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemId, templateId);
             //TemplateManager.GetTemplateInfo(publishmentSystemID, channelID, templateType);
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, templateInfo, userInfo);
+            var pageInfo = new PageInfo(guid, channelId, contentId, publishmentSystemInfo, templateInfo, userInfo);
             pageInfo.SetUniqueId(1000);
             var contextInfo = new ContextInfo(pageInfo);
 

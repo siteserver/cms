@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -34,16 +34,16 @@ namespace BaiRong.Core.Provider
 
 			var parms = new IDataParameter[]
 			{
-                GetParameter(ParmTableName, EDataType.VarChar, 50, checkInfo.TableName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, checkInfo.PublishmentSystemId),
-                GetParameter(ParmNodeid, EDataType.Integer, checkInfo.NodeId),
-                GetParameter(ParmContentid, EDataType.Integer, checkInfo.ContentId),
-                GetParameter(ParmIsAdmin, EDataType.VarChar, 18, checkInfo.IsAdmin.ToString()),
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, checkInfo.UserName),
-                GetParameter(ParmIsChecked, EDataType.VarChar, 18, checkInfo.IsChecked.ToString()),
-                GetParameter(ParmCheckedLevel, EDataType.Integer, checkInfo.CheckedLevel),
-                GetParameter(ParmCheckDate, EDataType.DateTime, checkInfo.CheckDate),
-                GetParameter(ParmReasons, EDataType.NVarChar, 255, checkInfo.Reasons),
+                GetParameter(ParmTableName, DataType.VarChar, 50, checkInfo.TableName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, checkInfo.PublishmentSystemId),
+                GetParameter(ParmNodeid, DataType.Integer, checkInfo.NodeId),
+                GetParameter(ParmContentid, DataType.Integer, checkInfo.ContentId),
+                GetParameter(ParmIsAdmin, DataType.VarChar, 18, checkInfo.IsAdmin.ToString()),
+                GetParameter(ParmUserName, DataType.NVarChar, 255, checkInfo.UserName),
+                GetParameter(ParmIsChecked, DataType.VarChar, 18, checkInfo.IsChecked.ToString()),
+                GetParameter(ParmCheckedLevel, DataType.Integer, checkInfo.CheckedLevel),
+                GetParameter(ParmCheckDate, DataType.DateTime, checkInfo.CheckDate),
+                GetParameter(ParmReasons, DataType.NVarChar, 255, checkInfo.Reasons),
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -53,7 +53,7 @@ namespace BaiRong.Core.Provider
 		{
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmCheckid, EDataType.Integer, checkId)
+				GetParameter(ParmCheckid, DataType.Integer, checkId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -65,7 +65,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmCheckid, EDataType.Integer, checkId)
+				GetParameter(ParmCheckid, DataType.Integer, checkId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms)) 
@@ -90,8 +90,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableName, EDataType.VarChar, 50, tableName),
-                GetParameter(ParmContentid, EDataType.Integer, contentId)
+				GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
+                GetParameter(ParmContentid, DataType.Integer, contentId)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -113,8 +113,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableName, EDataType.VarChar, 50, tableName),
-                GetParameter(ParmContentid, EDataType.Integer, contentId)
+				GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
+                GetParameter(ParmContentid, DataType.Integer, contentId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAll, parms)) 

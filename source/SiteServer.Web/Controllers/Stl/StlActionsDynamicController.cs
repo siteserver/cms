@@ -53,7 +53,7 @@ namespace SiteServer.API.Controllers.Stl
 
                 return Ok(new
                 {
-                    Html = StlUtility.ParseDynamicContent(publishmentSystemId, channelId, contentId, pageTemplateId, isPageRefresh, templateContent, pageUrl, pageIndex, ajaxDivId, queryString, body.UserInfo)
+                    Html = StlUtility.ParseDynamicContent(publishmentSystemId, channelId, contentId, pageTemplateId, isPageRefresh, templateContent, pageUrl, pageIndex, ajaxDivId, queryString, StringUtils.GetShortGuid(), body.UserInfo)
                 });
             }
             catch(Exception ex)

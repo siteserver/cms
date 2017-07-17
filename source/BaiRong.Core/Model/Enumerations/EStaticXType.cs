@@ -20,22 +20,19 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Hour";
             }
-            else if (type == EStatictisXType.Day)
+            if (type == EStatictisXType.Day)
             {
                 return "Day";
             }
-            else if (type == EStatictisXType.Month)
+            if (type == EStatictisXType.Month)
             {
                 return "Month";
             }
-            else if (type == EStatictisXType.Year)
+            if (type == EStatictisXType.Year)
             {
                 return "Year";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EStatictisXType type)
@@ -44,22 +41,19 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "时";
             }
-            else if (type == EStatictisXType.Day)
+            if (type == EStatictisXType.Day)
             {
                 return "日";
             }
-            else if (type == EStatictisXType.Month)
+            if (type == EStatictisXType.Month)
             {
                 return "月";
             }
-            else if (type == EStatictisXType.Year)
+            if (type == EStatictisXType.Year)
             {
                 return "年";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EStatictisXType GetEnumType(string typeStr)

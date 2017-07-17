@@ -237,7 +237,7 @@ namespace SiteServer.BackgroundPages.Ajax
                     SiteTemplateManager.Instance.ImportSiteTemplateToEmptyPublishmentSystem(publishmentSystemId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
                 }
 
-                CreateManager.CreateAll(publishmentSystemId);
+                CreateManager.CreateAll(publishmentSystemId, userKeyPrefix);
 
                 CacheUtils.Max(cacheCurrentCountKey, "3");//存储当前的页面总数
                 CacheUtils.Max(cacheMessageKey, "创建成功！");//存储消息

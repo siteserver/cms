@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "包含文件管理", AppManager.Cms.Permission.WebSite.Template);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "包含文件管理", AppManager.Permissions.WebSite.Template);
 
 				if (Body.IsQueryExists("Delete"))
 				{

@@ -23,7 +23,7 @@
       <td width="50">&nbsp;</td>
       <td width="20"></td>
     </tr>
-    <asp:Repeater ID="rptContents" runat="server">
+    <asp:Repeater ID="RptContents" runat="server">
       <itemtemplate>
           <asp:Literal id="ltlHtml" runat="server" />
       </itemtemplate>
@@ -31,26 +31,26 @@
   </table>
 
   <ul class="breadcrumb breadcrumb-button">
-    <asp:PlaceHolder id="PlaceHolder_AddChannel" runat="server">
-      <asp:Button class="btn btn-success" id="AddChannel1" Text="快速添加" runat="server" />
-      <asp:Button class="btn" id="AddChannel2" Text="添加栏目" runat="server" />
+    <asp:PlaceHolder id="PhAddChannel" runat="server">
+      <asp:Button class="btn btn-success" id="BtnAddChannel1" Text="快速添加" runat="server" />
+      <asp:Button class="btn" id="BtnAddChannel2" Text="添加栏目" runat="server" />
     </asp:PlaceHolder>
-    <asp:PlaceHolder id="PlaceHolder_ChannelEdit" runat="server">
-      <asp:Button class="btn" id="AddToGroup" Text="设置栏目组" runat="server" />
-      <asp:Button class="btn" id="SelectEditColumns" Text="编辑项" runat="server" />
+    <asp:PlaceHolder id="PhChannelEdit" runat="server">
+      <asp:Button class="btn" id="BtnAddToGroup" Text="设置栏目组" runat="server" />
+      <asp:Button class="btn" id="BtnSelectEditColumns" Text="编辑项" runat="server" />
     </asp:PlaceHolder>
-    <asp:PlaceHolder id="PlaceHolder_Translate" runat="server">
-      <asp:Button class="btn" id="Translate" Text="转 移" runat="server" />
+    <asp:PlaceHolder id="PhTranslate" runat="server">
+      <asp:Button class="btn" id="BtnTranslate" Text="转 移" runat="server" />
     </asp:PlaceHolder>
-    <asp:PlaceHolder id="PlaceHolder_Import" runat="server">
-      <asp:Button class="btn" id="Import" Text="导 入" runat="server" />
+    <asp:PlaceHolder id="PhImport" runat="server">
+      <asp:Button class="btn" id="BtnImport" Text="导 入" runat="server" />
     </asp:PlaceHolder>
-    <asp:Button class="btn" id="Export" Text="导 出" runat="server" />
-    <asp:PlaceHolder id="PlaceHolder_Delete" runat="server">
-      <asp:Button class="btn" id="Delete" Text="删 除" runat="server" />
+    <asp:Button class="btn" id="BtnExport" Text="导 出" runat="server" />
+    <asp:PlaceHolder id="PhDelete" runat="server">
+      <asp:Button class="btn" id="BtnDelete" Text="删 除" runat="server" />
     </asp:PlaceHolder>
-    <asp:PlaceHolder id="PlaceHolder_Create" runat="server">
-      <asp:Button class="btn" id="Create" Text="生 成" runat="server" />
+    <asp:PlaceHolder id="PhCreate" runat="server">
+      <asp:Button class="btn" id="BtnCreate" Text="生 成" runat="server" />
     </asp:PlaceHolder>
   </ul>
 

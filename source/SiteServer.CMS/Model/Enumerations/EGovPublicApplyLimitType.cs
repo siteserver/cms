@@ -15,50 +15,44 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EGovPublicApplyLimitType type)
 		{
-            if (type == EGovPublicApplyLimitType.Normal)
+		    if (type == EGovPublicApplyLimitType.Normal)
 			{
                 return "Normal";
 			}
-            else if (type == EGovPublicApplyLimitType.Alert)
-			{
-                return "Alert";
-            }
-            else if (type == EGovPublicApplyLimitType.Yellow)
-            {
-                return "Yellow";
-            }
-            else if (type == EGovPublicApplyLimitType.Red)
-            {
-                return "Red";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovPublicApplyLimitType.Alert)
+		    {
+		        return "Alert";
+		    }
+		    if (type == EGovPublicApplyLimitType.Yellow)
+		    {
+		        return "Yellow";
+		    }
+		    if (type == EGovPublicApplyLimitType.Red)
+		    {
+		        return "Red";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EGovPublicApplyLimitType type)
 		{
-            if (type == EGovPublicApplyLimitType.Normal)
+		    if (type == EGovPublicApplyLimitType.Normal)
 			{
                 return "未超期";
 			}
-            else if (type == EGovPublicApplyLimitType.Alert)
-			{
-                return "预警";
-            }
-            else if (type == EGovPublicApplyLimitType.Yellow)
-            {
-                return "黄牌";
-            }
-            else if (type == EGovPublicApplyLimitType.Red)
-            {
-                return "红牌";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovPublicApplyLimitType.Alert)
+		    {
+		        return "预警";
+		    }
+		    if (type == EGovPublicApplyLimitType.Yellow)
+		    {
+		        return "黄牌";
+		    }
+		    if (type == EGovPublicApplyLimitType.Red)
+		    {
+		        return "红牌";
+		    }
+		    throw new Exception();
 		}
 
 		public static EGovPublicApplyLimitType GetEnumType(string typeStr)

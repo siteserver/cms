@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages
             try
             {
                 var visualInfo = VisualInfo.GetInstance();
-
+                var guid = StringUtils.GetShortGuid();
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(visualInfo.PublishmentSystemID);
 
                 var templateInfo = TemplateManager.GetTemplateInfo(visualInfo.PublishmentSystemID, visualInfo.ChannelID, visualInfo.TemplateType);
@@ -55,11 +55,10 @@ namespace SiteServer.BackgroundPages
                     templateInfo = TemplateManager.GetTemplateInfo(visualInfo.PublishmentSystemID, visualInfo.FileTemplateID);
                 }
 
-                var pageInfo = new PageInfo(visualInfo.ChannelID, visualInfo.ContentID, publishmentSystemInfo, templateInfo, null);
+                var pageInfo = new PageInfo(guid, visualInfo.ChannelID, visualInfo.ContentID, publishmentSystemInfo, templateInfo, null);
                 var contextInfo = new ContextInfo(pageInfo);
 
-                StringBuilder contentBuilder = null;
-                contentBuilder = new StringBuilder(StlCacheManager.FileContent.GetTemplateContent(publishmentSystemInfo, templateInfo));
+                var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, templateInfo));
                 //需要完善，考虑单页模板、内容正文、翻页及外部链接
 
                 if (visualInfo.TemplateType == ETemplateType.IndexPageTemplate)             //首页
@@ -70,8 +69,8 @@ namespace SiteServer.BackgroundPages
                 else if (visualInfo.TemplateType == ETemplateType.FileTemplate)           //单页
                 {
                     var fileTemplateInfo = TemplateManager.GetTemplateInfo(visualInfo.PublishmentSystemID, visualInfo.FileTemplateID);
-                    var filePageInfo = new PageInfo(visualInfo.ChannelID, visualInfo.ContentID, publishmentSystemInfo, fileTemplateInfo, null);
-                    var fileContentBuilder = new StringBuilder(StlCacheManager.FileContent.GetTemplateContent(publishmentSystemInfo, fileTemplateInfo));
+                    var filePageInfo = new PageInfo(guid, visualInfo.ChannelID, visualInfo.ContentID, publishmentSystemInfo, fileTemplateInfo, null);
+                    var fileContentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, fileTemplateInfo));
                     WriteResponse(fileContentBuilder, publishmentSystemInfo, filePageInfo, contextInfo, visualInfo);
                     return;
                 }
@@ -113,9 +112,9 @@ namespace SiteServer.BackgroundPages
                         {
                             for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                             {
-                                var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
-                                var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder);
-                                var length = (index == -1) ? contentAttributeHtml.Length : index;
+                                var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                                var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
+                                var length = index == -1 ? contentAttributeHtml.Length : index;
 
                                 if (currentPageIndex == visualInfo.PageIndex)
                                 {
@@ -144,14 +143,14 @@ namespace SiteServer.BackgroundPages
                         var stlPageContentsElementReplaceString = stlElement;
 
                         var pageContentsElementParser = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                         {
                             if (currentPageIndex == visualInfo.PageIndex)
                             {
-                                var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                                var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                                 var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, false);
                                 var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageContentsElementReplaceString, pageHtml));
 
@@ -169,14 +168,14 @@ namespace SiteServer.BackgroundPages
                         var stlPageChannelsElementReplaceString = stlElement;
 
                         var pageChannelsElementParser = new StlPageChannels(stlPageChannelsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                         {
                             if (currentPageIndex == visualInfo.PageIndex)
                             {
-                                var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                                var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                                 var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
                                 var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageChannelsElementReplaceString, pageHtml));
 
@@ -194,14 +193,14 @@ namespace SiteServer.BackgroundPages
                         var stlPageSqlContentsElementReplaceString = stlElement;
 
                         var pageSqlContentsElementParser = new StlPageSqlContents(stlPageSqlContentsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                         {
                             if (currentPageIndex == visualInfo.PageIndex)
                             {
-                                var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                                var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                                 var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
                                 var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageSqlContentsElementReplaceString, pageHtml));
 
@@ -228,8 +227,6 @@ namespace SiteServer.BackgroundPages
                         return;
                     }
 
-                    var filePath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, pageInfo.PageNodeId, pageInfo.PageContentId, 0);
-
                     var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
 
                     //如果标签中存在Content
@@ -254,12 +251,12 @@ namespace SiteServer.BackgroundPages
                         {
                             for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                             {
-                                var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder);
-                                var length = (index == -1) ? contentAttributeHtml.Length : index;
+                                var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
+                                var length = index == -1 ? contentAttributeHtml.Length : index;
 
                                 if (currentPageIndex == visualInfo.PageIndex)
                                 {
-                                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                                    var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                                     var pagedContentAttributeHtml = contentAttributeHtml.Substring(0, length);
                                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlContentElement, pagedContentAttributeHtml));
                                     StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList, visualInfo.ChannelID, visualInfo.ContentID, currentPageIndex, pageCount);
@@ -285,14 +282,14 @@ namespace SiteServer.BackgroundPages
                         var stlPageContentsElementReplaceString = stlElement;
 
                         var pageContentsElementParser = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                         {
                             if (currentPageIndex == visualInfo.PageIndex)
                             {
-                                var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                                var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                                 var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, false);
                                 var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageContentsElementReplaceString, pageHtml));
 
@@ -310,14 +307,14 @@ namespace SiteServer.BackgroundPages
                         var stlPageChannelsElementReplaceString = stlElement;
 
                         var pageChannelsElementParser = new StlPageChannels(stlPageChannelsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                         {
                             if (currentPageIndex == visualInfo.PageIndex)
                             {
-                                var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                                var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                                 var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
                                 var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageChannelsElementReplaceString, pageHtml));
 
@@ -335,14 +332,14 @@ namespace SiteServer.BackgroundPages
                         var stlPageSqlContentsElementReplaceString = stlElement;
 
                         var pageSqlContentsElementParser = new StlPageSqlContents(stlPageSqlContentsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                         {
                             if (currentPageIndex == visualInfo.PageIndex)
                             {
-                                var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                                var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                                 var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
                                 var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageSqlContentsElementReplaceString, pageHtml));
 

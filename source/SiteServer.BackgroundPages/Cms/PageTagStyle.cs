@@ -6,6 +6,7 @@ using BaiRong.Core.Data;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.CMS.Wcm.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
 			if(!IsPostBack)
             {
                 var tagTitle = TagStyleUtility.GetTagStyleTitle(_elementName);
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, AppManager.Cms.LeftMenu.Template.IdTagStyle, tagTitle + "样式", AppManager.Cms.Permission.WebSite.Template);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, tagTitle + "样式", AppManager.Permissions.WebSite.Template);
 
                 if (Request.QueryString["Delete"] != null)
                 {

@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings(AppManager.Settings.LeftMenu.Utility, "查看机器参数", AppManager.Settings.Permission.SettingsUtility);
+                BreadCrumbSettings("查看机器参数", AppManager.Permissions.Settings.Utility);
             }
         }
 

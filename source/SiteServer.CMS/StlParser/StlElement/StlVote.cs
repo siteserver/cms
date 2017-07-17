@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.CMS.StlTemplates;
@@ -55,7 +55,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -77,7 +77,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             var contentInfo = contextInfo.ContentInfo as VoteContentInfo;
             if (contentInfo == null && contextInfo.ContentId > 0)
             {
-                contentInfo = DataProvider.VoteContentDao.GetContentInfo(pageInfo.PublishmentSystemInfo, contextInfo.ContentId);
+                //contentInfo = DataProvider.VoteContentDao.GetContentInfo(pageInfo.PublishmentSystemInfo.AuxiliaryTableForVote, contextInfo.ContentId);
+                contentInfo = VoteContent.GetContentInfo(pageInfo.PublishmentSystemInfo.AuxiliaryTableForVote, contextInfo.ContentId, pageInfo.Guid);
             }
 
             if (contentInfo != null)

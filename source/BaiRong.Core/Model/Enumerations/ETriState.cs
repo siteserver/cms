@@ -14,22 +14,19 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(ETriState type)
 		{
-            if (type == ETriState.All)
+		    if (type == ETriState.All)
 			{
                 return "All";
 			}
-            else if (type == ETriState.True)
-			{
-                return "True";
-            }
-            else if (type == ETriState.False)
-            {
-                return "False";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETriState.True)
+		    {
+		        return "True";
+		    }
+		    if (type == ETriState.False)
+		    {
+		        return "False";
+		    }
+		    throw new Exception();
 		}
 
         public static string GetText(ETriState type, string allText, string trueText, string falseText)
@@ -38,14 +35,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return allText;
             }
-            else if (type == ETriState.False)
+            if (type == ETriState.False)
             {
                 return falseText;
             }
-            else
-            {
-                return trueText;
-            }
+            return trueText;
         }
 
 		public static ETriState GetEnumType(string typeStr)

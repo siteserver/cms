@@ -7,6 +7,7 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.WeiXin.Model;
 using SiteServer.CMS.WeiXin.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
@@ -43,15 +44,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             var taxis = GetMaxTaxis(menuInfo.ParentId) + 1;
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, menuInfo.PublishmentSystemId),
-                GetParameter(ParmMenuName, EDataType.NVarChar, 50, menuInfo.MenuName),
-                GetParameter(ParmMenuType, EDataType.VarChar, 50, EMenuTypeUtils.GetValue(menuInfo.MenuType)),
-                GetParameter(ParmKeyword, EDataType.NVarChar, 50, menuInfo.Keyword),
-                GetParameter(ParmUrl, EDataType.VarChar, 200, menuInfo.Url),
-                GetParameter(ParmChannelId, EDataType.Integer, menuInfo.ChannelId),
-                GetParameter(ParmContentId, EDataType.Integer, menuInfo.ContentId),
-                GetParameter(ParmParentId, EDataType.Integer, menuInfo.ParentId),
-                GetParameter(ParmTaxis, EDataType.Integer, taxis)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, menuInfo.PublishmentSystemId),
+                GetParameter(ParmMenuName, DataType.NVarChar, 50, menuInfo.MenuName),
+                GetParameter(ParmMenuType, DataType.VarChar, 50, EMenuTypeUtils.GetValue(menuInfo.MenuType)),
+                GetParameter(ParmKeyword, DataType.NVarChar, 50, menuInfo.Keyword),
+                GetParameter(ParmUrl, DataType.VarChar, 200, menuInfo.Url),
+                GetParameter(ParmChannelId, DataType.Integer, menuInfo.ChannelId),
+                GetParameter(ParmContentId, DataType.Integer, menuInfo.ContentId),
+                GetParameter(ParmParentId, DataType.Integer, menuInfo.ParentId),
+                GetParameter(ParmTaxis, DataType.Integer, taxis)
 			};
 
             using (var conn = GetConnection())
@@ -79,16 +80,16 @@ namespace SiteServer.CMS.WeiXin.Provider
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, menuInfo.PublishmentSystemId),
-                GetParameter(ParmMenuName, EDataType.NVarChar, 50, menuInfo.MenuName),
-                GetParameter(ParmMenuType, EDataType.VarChar, 50, EMenuTypeUtils.GetValue(menuInfo.MenuType)),
-                GetParameter(ParmKeyword, EDataType.NVarChar, 50, menuInfo.Keyword),
-                GetParameter(ParmUrl, EDataType.VarChar, 200, menuInfo.Url),
-                GetParameter(ParmChannelId, EDataType.Integer, menuInfo.ChannelId),
-                GetParameter(ParmContentId, EDataType.Integer, menuInfo.ContentId),
-                GetParameter(ParmParentId, EDataType.Integer, menuInfo.ParentId),
-                GetParameter(ParmTaxis, EDataType.Integer, menuInfo.Taxis),
-                GetParameter(ParmMenuId, EDataType.Integer, menuInfo.MenuId)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, menuInfo.PublishmentSystemId),
+                GetParameter(ParmMenuName, DataType.NVarChar, 50, menuInfo.MenuName),
+                GetParameter(ParmMenuType, DataType.VarChar, 50, EMenuTypeUtils.GetValue(menuInfo.MenuType)),
+                GetParameter(ParmKeyword, DataType.NVarChar, 50, menuInfo.Keyword),
+                GetParameter(ParmUrl, DataType.VarChar, 200, menuInfo.Url),
+                GetParameter(ParmChannelId, DataType.Integer, menuInfo.ChannelId),
+                GetParameter(ParmContentId, DataType.Integer, menuInfo.ContentId),
+                GetParameter(ParmParentId, DataType.Integer, menuInfo.ParentId),
+                GetParameter(ParmTaxis, DataType.Integer, menuInfo.Taxis),
+                GetParameter(ParmMenuId, DataType.Integer, menuInfo.MenuId)
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);
@@ -98,7 +99,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmMenuId, EDataType.Integer, menuId)
+				GetParameter(ParmMenuId, DataType.Integer, menuId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -110,7 +111,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmMenuId, EDataType.Integer, menuId)
+				GetParameter(ParmMenuId, DataType.Integer, menuId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -129,8 +130,8 @@ namespace SiteServer.CMS.WeiXin.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmParentId, EDataType.Integer, parentId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmParentId, DataType.Integer, parentId)
 			};
 
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAll, parms);
@@ -149,8 +150,8 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmParentId, EDataType.Integer, parentId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmParentId, DataType.Integer, parentId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAll, parms))
@@ -262,8 +263,8 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmParentId, EDataType.Integer, 0)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmParentId, DataType.Integer, 0)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllby, parms))

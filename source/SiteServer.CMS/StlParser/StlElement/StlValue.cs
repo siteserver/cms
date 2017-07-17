@@ -7,8 +7,10 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -159,7 +161,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
@@ -205,8 +207,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (pageInfo.PublishmentSystemInfo.Additional.Attributes.Get(type) == null)
                 {
-                    var stlTagInfo = DataProvider.StlTagDao.GetStlTagInfo(pageInfo.PublishmentSystemId, type) ??
-                                     DataProvider.StlTagDao.GetStlTagInfo(0, type);
+                    //var stlTagInfo = DataProvider.StlTagDao.GetStlTagInfo(pageInfo.PublishmentSystemId, type) ??
+                    //                 DataProvider.StlTagDao.GetStlTagInfo(0, type);
+                    var stlTagInfo = StlTag.GetStlTagInfo(pageInfo.PublishmentSystemId, type, pageInfo.Guid) ??
+                                     StlTag.GetStlTagInfo(0, type, pageInfo.Guid);
                     if (!string.IsNullOrEmpty(stlTagInfo?.TagContent))
                     {
                         var innerBuilder = new StringBuilder(stlTagInfo.TagContent);
@@ -221,14 +225,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, type, RelatedIdentities.GetRelatedIdentities(ETableStyle.Site, pageInfo.PublishmentSystemId, pageInfo.PublishmentSystemId));
 
-                        if (isClearTags && EInputTypeUtils.EqualsAny(styleInfo.InputType, EInputType.Image, EInputType.File))
+                        if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                         {
                             parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent);
                         }
                         else
                         {
                             parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.PublishmentSystemInfo, ETableStyle.Site, styleInfo, formatString, attributes, node.InnerXml, false);
-                            parsedContent = StringUtils.ParseString(EInputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                     }
                 }

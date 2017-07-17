@@ -66,23 +66,23 @@ namespace SiteServer.BackgroundPages.WeiXin
             {
                 if (_lotteryType == ELotteryType.Scratch)
                 {
-                    BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdScratch, lotteryName, AppManager.WeiXin.Permission.WebSite.Scratch);
+                    BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdScratch, lotteryName, AppManager.WeiXin.Permission.WebSite.Scratch);
                 }
                 else if (_lotteryType == ELotteryType.BigWheel)
                 {
-                    BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdBigWheel, lotteryName, AppManager.WeiXin.Permission.WebSite.BigWheel);
+                    BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdBigWheel, lotteryName, AppManager.WeiXin.Permission.WebSite.BigWheel);
                 }
                 else if (_lotteryType == ELotteryType.GoldEgg)
                 {
-                    BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdGoldEgg, lotteryName, AppManager.WeiXin.Permission.WebSite.GoldEgg);
+                    BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdGoldEgg, lotteryName, AppManager.WeiXin.Permission.WebSite.GoldEgg);
                 }
                 else if (_lotteryType == ELotteryType.Flap)
                 {
-                    BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdFlap, lotteryName, AppManager.WeiXin.Permission.WebSite.Flap);
+                    BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdFlap, lotteryName, AppManager.WeiXin.Permission.WebSite.Flap);
                 }
                 else if (_lotteryType == ELotteryType.YaoYao)
                 {
-                    BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdYaoYao, lotteryName, AppManager.WeiXin.Permission.WebSite.YaoYao);
+                    BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdYaoYao, lotteryName, AppManager.WeiXin.Permission.WebSite.YaoYao);
                 }               
 
                 SpContents.DataBind();

@@ -4,6 +4,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
 
 namespace SiteServer.CMS.Wcm.GovInteract

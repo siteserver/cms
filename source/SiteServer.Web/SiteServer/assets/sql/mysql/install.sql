@@ -535,6 +535,7 @@ CREATE TABLE siteserver_CreateTask(
     ChannelId              INT,
     ContentId              INT,
     TemplateId             INT,
+    Guid                   VARCHAR(50),
     PRIMARY KEY (Id)
 )ENGINE=INNODB
 GO

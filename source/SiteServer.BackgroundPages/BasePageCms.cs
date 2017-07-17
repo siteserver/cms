@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages
             {
                 if (_publishmentSystemId == -1)
                 {
-                    _publishmentSystemId = Body.GetQueryInt("PublishmentSystemID");
+                    _publishmentSystemId = Body.GetQueryInt("publishmentSystemId");
                 }
                 return _publishmentSystemId;
             }
@@ -58,19 +58,12 @@ namespace SiteServer.BackgroundPages
 	        }
 	    }
 
-	    public void BreadCrumbWithItemTitle(string leftMenuId, string pageTitle, string itemTitle, string permission)
-        {
-            BreadCrumbWithItemTitle(leftMenuId, string.Empty, pageTitle, itemTitle, permission);
-        }
-
-        public void BreadCrumbWithItemTitle(string leftMenuId, string leftSubMenuId, string pageTitle, string itemTitle, string permission)
+        public void BreadCrumb(string leftMenuId, string pageTitle, string permission)
         {
             if (LtlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                var leftSubTitle = AppManager.GetLeftSubMenuName(leftSubMenuId);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdManagement, string.Empty, leftMenuId, leftTitle, leftSubMenuId, leftSubTitle, pageUrl, pageTitle, itemTitle);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSite, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
@@ -79,14 +72,18 @@ namespace SiteServer.BackgroundPages
             }
         }
 
-        public override void BreadCrumb(string leftMenuId, string pageTitle, string permission)
+        public void BreadCrumbWithTitle(string leftMenuId, string pageTitle, string itemTitle, string permission)
         {
-            BreadCrumbWithItemTitle(leftMenuId, pageTitle, string.Empty, permission);
-        }
+            if (LtlBreadCrumb != null)
+            {
+                var pageUrl = PathUtils.GetFileName(Request.FilePath);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSite, pageUrl, pageTitle, itemTitle);
+            }
 
-        public void BreadCrumb(string leftMenuId, string leftSubMenuId, string pageTitle, string permission)
-        {
-            BreadCrumbWithItemTitle(leftMenuId, leftSubMenuId, pageTitle, string.Empty, permission);
+            if (!string.IsNullOrEmpty(permission))
+            {
+                AdminUtility.VerifyWebsitePermissions(Body.AdministratorName, PublishmentSystemId, permission);
+            }
         }
 
         private NameValueCollection _attributes;

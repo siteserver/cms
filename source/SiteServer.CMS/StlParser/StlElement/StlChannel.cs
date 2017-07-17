@@ -8,6 +8,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
@@ -199,7 +200,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -211,7 +212,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
+            channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
             var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
             if (!string.IsNullOrEmpty(formatString))
@@ -337,7 +338,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (type.ToLower().Equals(NodeAttribute.CountOfImageContents.ToLower()))
                 {
-                    var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId);
+                    //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId);
+                    var count = Content.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId, pageInfo.Guid);
                     parsedContent = count.ToString();
                 }
                 else if (type.ToLower().Equals(NodeAttribute.Keywords.ToLower()))
@@ -360,7 +362,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
                             parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.PublishmentSystemInfo, ETableStyle.Channel, styleInfo, formatString, attributes, node.InnerXml, false);
-                            parsedContent = StringUtils.ParseString(EInputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                     }
                 }

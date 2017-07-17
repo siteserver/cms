@@ -19,18 +19,15 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "FloatImage";
             }
-            else if (type == EAdvertisementType.ScreenDown)
+            if (type == EAdvertisementType.ScreenDown)
             {
                 return "ScreenDown";
             }
-            else if (type == EAdvertisementType.OpenWindow)
+            if (type == EAdvertisementType.OpenWindow)
             {
                 return "OpenWindow";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EAdvertisementType type)
@@ -39,18 +36,15 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "漂浮广告";
             }
-            else if (type == EAdvertisementType.ScreenDown)
+            if (type == EAdvertisementType.ScreenDown)
             {
                 return "全屏下推";
             }
-            else if (type == EAdvertisementType.OpenWindow)
+            if (type == EAdvertisementType.OpenWindow)
             {
                 return "弹出窗口";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EAdvertisementType GetEnumType(string typeStr)

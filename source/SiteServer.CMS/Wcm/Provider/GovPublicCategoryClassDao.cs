@@ -6,6 +6,7 @@ using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Wcm.Provider
 {
@@ -76,14 +77,14 @@ namespace SiteServer.CMS.Wcm.Provider
             var taxis = GetMaxTaxis(categoryClassInfo.PublishmentSystemID) + 1;
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmClassCode, EDataType.NVarChar, 50, categoryClassInfo.ClassCode),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, categoryClassInfo.PublishmentSystemID),
-                GetParameter(ParmClassName, EDataType.NVarChar, 255, categoryClassInfo.ClassName),
-                GetParameter(ParmIsSystem, EDataType.VarChar, 18, categoryClassInfo.IsSystem.ToString()),
-                GetParameter(ParmIsEnabled, EDataType.VarChar, 18, categoryClassInfo.IsEnabled.ToString()),
-                GetParameter(ParmContentAttributeName, EDataType.VarChar, 50, categoryClassInfo.ContentAttributeName),
-                GetParameter(ParmTaxis, EDataType.Integer, taxis),
-                GetParameter(ParmDescription, EDataType.NVarChar, 255, categoryClassInfo.Description)
+				GetParameter(ParmClassCode, DataType.NVarChar, 50, categoryClassInfo.ClassCode),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, categoryClassInfo.PublishmentSystemID),
+                GetParameter(ParmClassName, DataType.NVarChar, 255, categoryClassInfo.ClassName),
+                GetParameter(ParmIsSystem, DataType.VarChar, 18, categoryClassInfo.IsSystem.ToString()),
+                GetParameter(ParmIsEnabled, DataType.VarChar, 18, categoryClassInfo.IsEnabled.ToString()),
+                GetParameter(ParmContentAttributeName, DataType.VarChar, 50, categoryClassInfo.ContentAttributeName),
+                GetParameter(ParmTaxis, DataType.Integer, taxis),
+                GetParameter(ParmDescription, DataType.NVarChar, 255, categoryClassInfo.Description)
 			};
 
             ExecuteNonQuery(SqlInsert, parms);
@@ -93,11 +94,11 @@ namespace SiteServer.CMS.Wcm.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-                GetParameter(ParmClassName, EDataType.NVarChar, 255, categoryClassInfo.ClassName),
-                GetParameter(ParmIsEnabled, EDataType.VarChar, 18, categoryClassInfo.IsEnabled.ToString()),
-                GetParameter(ParmDescription, EDataType.NVarChar, 255, categoryClassInfo.Description),
-                GetParameter(ParmClassCode, EDataType.NVarChar, 50, categoryClassInfo.ClassCode),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, categoryClassInfo.PublishmentSystemID),
+                GetParameter(ParmClassName, DataType.NVarChar, 255, categoryClassInfo.ClassName),
+                GetParameter(ParmIsEnabled, DataType.VarChar, 18, categoryClassInfo.IsEnabled.ToString()),
+                GetParameter(ParmDescription, DataType.NVarChar, 255, categoryClassInfo.Description),
+                GetParameter(ParmClassCode, DataType.NVarChar, 50, categoryClassInfo.ClassCode),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, categoryClassInfo.PublishmentSystemID),
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);
@@ -107,8 +108,8 @@ namespace SiteServer.CMS.Wcm.Provider
 		{
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmClassCode, EDataType.NVarChar, 50, classCode),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmClassCode, DataType.NVarChar, 50, classCode),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -120,8 +121,8 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmClassCode, EDataType.NVarChar, 50, classCode),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmClassCode, DataType.NVarChar, 50, classCode),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -162,8 +163,8 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmClassCode, EDataType.NVarChar, 50, classCode),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmClassCode, DataType.NVarChar, 50, classCode),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -182,7 +183,7 @@ namespace SiteServer.CMS.Wcm.Provider
 		{
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAll, parms);
 			return enumerable;
@@ -202,7 +203,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAll, selectParms))
@@ -241,7 +242,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectClassCode, selectParms))
@@ -262,7 +263,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectClassName, selectParms))
