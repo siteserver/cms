@@ -48,7 +48,7 @@ namespace SiteServer.CMS.Plugin
             return PublishmentSystemManager.GetPublishmentSystemIdList();
         }
 
-        public bool SetSiteConfig(int siteId, string name, object config)
+        public bool SetConfig(int siteId, string name, object config)
         {
             if (string.IsNullOrEmpty(name)) return false;
 
@@ -83,7 +83,7 @@ namespace SiteServer.CMS.Plugin
             return true;
         }
 
-        public T GetSiteConfig<T>(int siteId, string name)
+        public T GetConfig<T>(int siteId, string name)
         {
             if (string.IsNullOrEmpty(name)) return default(T);
 
@@ -102,7 +102,7 @@ namespace SiteServer.CMS.Plugin
             return default(T);
         }
 
-        public bool RemoveSiteConfig(int siteId, string name)
+        public bool RemoveConfig(int siteId, string name)
         {
             if (string.IsNullOrEmpty(name)) return false;
 
@@ -118,19 +118,19 @@ namespace SiteServer.CMS.Plugin
             return true;
         }
 
-        public bool SetConfig(string name, object config)
+        public bool SetGlobalConfig(string name, object config)
         {
-            return SetSiteConfig(0, name, config);
+            return SetConfig(0, name, config);
         }
 
-        public T GetConfig<T>(string name)
+        public T GetGlobalConfig<T>(string name)
         {
-            return GetSiteConfig<T>(0, name);
+            return GetConfig<T>(0, name);
         }
 
-        public bool RemoveConfig(string name)
+        public bool RemoveGlobalConfig(string name)
         {
-            return RemoveSiteConfig(0, name);
+            return RemoveConfig(0, name);
         }
 
         public void MoveFiles(int sourceSiteId, int targetSiteId, List<string> relatedUrls)

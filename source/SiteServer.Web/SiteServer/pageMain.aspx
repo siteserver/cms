@@ -91,16 +91,20 @@
     $('#right').src = url;
   }
 
+  var waiting = 3000;
+
   $(document).ready(function ($) {
     var create = $.connection.createHub;
     create.client.next = function (total) {
       $('#progress').html(total);
       if (total) {
+        waiting = 3000;
         create.server.execute(<%=PublishmentSystemId%>);
       } else {
         setTimeout(function () {
+          if (waiting < 9000) waiting += 1000;
           create.server.execute(<%=PublishmentSystemId%>);
-        }, 3000);
+        }, waiting);
       }
     };
     $.connection.hub.start().done(function () {
