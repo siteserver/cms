@@ -379,7 +379,31 @@ namespace SiteServer.CMS.ImportExport
             foreach (int nodeId in allNodeIdList)
             {
                 siteContentIe.Export(Fso.PublishmentSystemId, nodeId, true);
-            }
+            } 
+             
+            var imageUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, this.Fso.PublishmentSystemInfo.Additional.ImageUploadDirectoryName);
+            DirectoryUtils.DeleteDirectoryIfExists(imageUploadDirectoryPath);
+            DirectoryUtils.Copy(PathUtils.Combine(this.Fso.PublishmentSystemPath, this.Fso.PublishmentSystemInfo.Additional.ImageUploadDirectoryName), imageUploadDirectoryPath);
+
+            var videoUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, this.Fso.PublishmentSystemInfo.Additional.VideoUploadDirectoryName);
+            DirectoryUtils.DeleteDirectoryIfExists(videoUploadDirectoryPath);
+            DirectoryUtils.Copy(PathUtils.Combine(this.Fso.PublishmentSystemPath, this.Fso.PublishmentSystemInfo.Additional.VideoUploadDirectoryName), videoUploadDirectoryPath);
+
+            var fileUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, this.Fso.PublishmentSystemInfo.Additional.FileUploadDirectoryName);
+            DirectoryUtils.DeleteDirectoryIfExists(fileUploadDirectoryPath);
+            DirectoryUtils.Copy(PathUtils.Combine(this.Fso.PublishmentSystemPath, this.Fso.PublishmentSystemInfo.Additional.FileUploadDirectoryName), fileUploadDirectoryPath);
+
+            Atom.Core.AtomFeed feed = AtomUtility.GetEmptyFeed();  
+            var entry = AtomUtility.GetEmptyEntry();  
+            AtomUtility.AddDcElement(entry.AdditionalElements, "ImageUploadDirectoryName", this.Fso.PublishmentSystemInfo.Additional.ImageUploadDirectoryName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, "VideoUploadDirectoryName", this.Fso.PublishmentSystemInfo.Additional.VideoUploadDirectoryName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, "FileUploadDirectoryName", this.Fso.PublishmentSystemInfo.Additional.FileUploadDirectoryName);
+
+            feed.Entries.Add(entry);
+            var UploadFolderPath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName); 
+            DirectoryUtils.CreateDirectoryIfNotExists(UploadFolderPath);
+            var UploadFilePath = PathUtils.Combine(UploadFolderPath, BackupUtility.UploadFileName); 
+            feed.Save(UploadFilePath);
 
             ZipUtils.PackFiles(filePath, siteContentDirectoryPath);
 

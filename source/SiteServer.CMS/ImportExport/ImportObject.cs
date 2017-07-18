@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using Atom.Core;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using BaiRong.Core.Model.Enumerations;
@@ -256,6 +257,34 @@ namespace SiteServer.CMS.ImportExport
             ImportChannelsAndContentsFromZip(parentId, siteContentDirectoryPath, isOverride);
 
             DataProvider.NodeDao.UpdateContentNum(Fso.PublishmentSystemInfo);
+
+            string filePath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName, BackupUtility.UploadFileName);
+            var UploadFolderPath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName);
+            var UploadFilePath = PathUtils.Combine(UploadFolderPath, BackupUtility.UploadFileName);
+            if (!FileUtils.IsFileExists(UploadFilePath))
+            {
+                return;
+            }
+            var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(UploadFilePath));
+            if (feed != null)
+            {
+                AtomEntry entry = feed.Entries[0];
+                string imageUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ImageUploadDirectoryName");
+                if(imageUploadDirectoryPath != null)
+                {
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, imageUploadDirectoryPath), PathUtils.Combine(Fso.PublishmentSystemPath, Fso.PublishmentSystemInfo.Additional.ImageUploadDirectoryName), isOverride); 
+                }
+                string videoUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "VideoUploadDirectoryName");
+                if (videoUploadDirectoryPath != null)
+                {
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, videoUploadDirectoryPath), PathUtils.Combine(Fso.PublishmentSystemPath, Fso.PublishmentSystemInfo.Additional.VideoUploadDirectoryName), isOverride);
+                }
+                string fileUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "FileUploadDirectoryName");
+                if (fileUploadDirectoryPath != null)
+                {
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, fileUploadDirectoryPath), PathUtils.Combine(Fso.PublishmentSystemPath, Fso.PublishmentSystemInfo.Additional.FileUploadDirectoryName), isOverride);
+                }
+            }
         }
 
         public void ImportChannelsAndContentsFromZip(int parentId, string siteContentDirectoryPath, bool isOverride)
