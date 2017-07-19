@@ -12,7 +12,7 @@ namespace SiteServer.CMS.ImportExport
         public const string CacheTotalCount = "_TotalCount";
         public const string CacheCurrentCount = "_CurrentCount";
         public const string CacheMessage = "_Message";
-        public const string UploadFolderName = "upload"; //用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
+        public const string UploadFolderName = "upload"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
         public const string UploadFileName = "upload.xml"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件名
 
         public static void BackupTemplates(int publishmentSystemId, string filePath)
