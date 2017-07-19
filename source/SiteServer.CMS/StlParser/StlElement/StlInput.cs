@@ -13,6 +13,8 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using SiteServer.CMS.Controllers.Stl;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Cache;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -50,10 +52,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                var inputId = DataProvider.InputDao.GetInputIdAsPossible(inputName, pageInfo.PublishmentSystemId);
+                //var inputId = DataProvider.InputDao.GetInputIdAsPossible(inputName, pageInfo.PublishmentSystemId);
+                var inputId = Input.GetInputIdAsPossible(inputName, pageInfo.PublishmentSystemId, pageInfo.Guid);
                 if (inputId <= 0) return string.Empty;
 
-                var inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
+                //var inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
+                var inputInfo = Input.GetInputInfo(inputId, pageInfo.Guid);
                 var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, pageInfo.PublishmentSystemId, inputInfo.InputId);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, relatedIdentities);
                 var pageScripts = new NameValueCollection();
@@ -67,26 +71,26 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (string.IsNullOrEmpty(template))
                 {
-                    template = attributesHtml + StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Input.TemplatePath);
+                    template = attributesHtml + TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.TemplatePath);
                 }
                 if (string.IsNullOrEmpty(loading))
                 {
-                    loading = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Input.LoadingPath);
+                    loading = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.LoadingPath);
                 }
                 if (string.IsNullOrEmpty(yes))
                 {
-                    yes = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Input.YesPath);
+                    yes = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.YesPath);
                 }
                 if (string.IsNullOrEmpty(no))
                 {
-                    no = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Input.NoPath);
+                    no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.NoPath);
                 }
 
                 parsedContent = ParseImpl(pageInfo, contextInfo, inputInfo, pageScripts, styleInfoList, template, loading, yes, no);
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -171,10 +175,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, relatedIdentities);
             var attributesHtml = GetAttributesHtml(pageScripts, publishmentSystemInfo, styleInfoList);
 
-            var template = attributesHtml + StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Input.TemplatePath);
-            var loading = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Input.LoadingPath);
-            var yes = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Input.YesPath);
-            var no = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Input.NoPath);
+            var template = attributesHtml + TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.TemplatePath);
+            var loading = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.LoadingPath);
+            var yes = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.YesPath);
+            var no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.NoPath);
 
             return $@"
 <stl:input inputName=""{inputInfo.InputName}"">
@@ -222,7 +226,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static string GetValidateHtmlString(TableStyleInfo styleInfo, out string validateAttributes)
         {
             validateAttributes = string.Empty;
-            if (!styleInfo.Additional.IsValidate || EInputTypeUtils.Equals(styleInfo.InputType, EInputType.TextEditor)) return string.Empty;
+            if (!styleInfo.Additional.IsValidate || InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor)) return string.Empty;
 
             var builder = new StringBuilder();
             validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);

@@ -3,6 +3,7 @@ using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
 using BaiRong.Core.Diagnostics;
+using BaiRong.Core.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -14,7 +15,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings(AppManager.Settings.LeftMenu.Utility, "查看机器参数", AppManager.Settings.Permission.SettingsUtility);
+                BreadCrumbSettings("查看机器参数", AppManager.Permissions.Settings.Utility);
             }
         }
 
@@ -47,7 +48,7 @@ namespace SiteServer.BackgroundPages.Settings
                 $"<tr><td>最近升级时间：</td><td>{DateUtils.GetDateAndTimeString(ConfigManager.Instance.UpdateDate)}</td></tr>");
 
             builder.Append(
-                $"<tr><td>数据库类型：</td><td>{(WebConfigUtils.IsMySql ? "MySql" : "SqlServer")}</td></tr>");
+                $"<tr><td>数据库类型：</td><td>{EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType)}</td></tr>");
 
             builder.Append(
                 $"<tr><td>数据库名称：</td><td>{SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.ConnectionString)}</td></tr>");

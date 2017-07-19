@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
             channelControl = (ChannelAuxiliaryControl)FindControl("ControlForAuxiliary");
             if (!IsPostBack)
             {
-                if (!HasChannelPermissions(_nodeId, AppManager.Cms.Permission.Channel.ChannelEdit))
+                if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ChannelEdit))
                 {
                     PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
@@ -280,6 +280,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack && Page.IsValid)
             {
+                var guid = StringUtils.GetShortGuid();
                 var isChanged = false;
 
                 try
@@ -410,7 +411,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (isChanged)
                 {
-                    CreateManager.CreateChannel(PublishmentSystemId, _nodeId);
+                    CreateManager.CreateChannel(PublishmentSystemId, _nodeId, guid);
 
                     if (string.IsNullOrEmpty(_returnUrl))
                     {

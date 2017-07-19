@@ -3,7 +3,7 @@ using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -51,14 +51,14 @@ namespace BaiRong.Core.Provider
             var sqlInsert = "INSERT INTO bairong_Area (AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin) VALUES (@AreaName, @ParentID, @ParentsPath, @ParentsCount, @ChildrenCount, @IsLastNode, @Taxis, @CountOfAdmin)";
 
             IDataParameter[] insertParms = {
-				GetParameter(ParmName, EDataType.NVarChar, 255, areaInfo.AreaName),
-				GetParameter(ParmParentId, EDataType.Integer, areaInfo.ParentId),
-				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, areaInfo.ParentsPath),
-				GetParameter(ParmParentsCount, EDataType.Integer, areaInfo.ParentsCount),
-				GetParameter(ParmChildrenCount, EDataType.Integer, 0),
-				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, true.ToString()),
-				GetParameter(ParmTaxis, EDataType.Integer, areaInfo.Taxis),
-				GetParameter(ParmCountOfAdmin, EDataType.Integer, areaInfo.CountOfAdmin)
+				GetParameter(ParmName, DataType.NVarChar, 255, areaInfo.AreaName),
+				GetParameter(ParmParentId, DataType.Integer, areaInfo.ParentId),
+				GetParameter(ParmParentsPath, DataType.NVarChar, 255, areaInfo.ParentsPath),
+				GetParameter(ParmParentsCount, DataType.Integer, areaInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, DataType.Integer, 0),
+				GetParameter(ParmIsLastNode, DataType.VarChar, 18, true.ToString()),
+				GetParameter(ParmTaxis, DataType.Integer, areaInfo.Taxis),
+				GetParameter(ParmCountOfAdmin, DataType.Integer, areaInfo.CountOfAdmin)
 			};
 
             string sqlString = $"UPDATE bairong_Area SET {SqlUtils.GetAddOne("Taxis")} WHERE (Taxis >= {areaInfo.Taxis})";
@@ -114,9 +114,9 @@ namespace BaiRong.Core.Provider
                 "WHERE (ParentID = @ParentID) AND (AreaID <> @AreaID) AND (Taxis < @Taxis) ORDER BY Taxis DESC", 1);
 
             IDataParameter[] parms = {
-				GetParameter(ParmParentId, EDataType.Integer, areaInfo.ParentId),
-				GetParameter(ParmId, EDataType.Integer, areaInfo.AreaId),
-				GetParameter(ParmTaxis, EDataType.Integer, areaInfo.Taxis),
+				GetParameter(ParmParentId, DataType.Integer, areaInfo.ParentId),
+				GetParameter(ParmId, DataType.Integer, areaInfo.AreaId),
+				GetParameter(ParmTaxis, DataType.Integer, areaInfo.Taxis),
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -160,9 +160,9 @@ namespace BaiRong.Core.Provider
                 "WHERE (ParentID = @ParentID) AND (AreaID <> @AreaID) AND (Taxis > @Taxis) ORDER BY Taxis", 1);
 
             IDataParameter[] parms = {
-				GetParameter(ParmParentId, EDataType.Integer, areaInfo.ParentId),
-				GetParameter(ParmId, EDataType.Integer, areaInfo.AreaId),
-				GetParameter(ParmTaxis, EDataType.Integer, areaInfo.Taxis)
+				GetParameter(ParmParentId, DataType.Integer, areaInfo.ParentId),
+				GetParameter(ParmId, DataType.Integer, areaInfo.AreaId),
+				GetParameter(ParmTaxis, DataType.Integer, areaInfo.Taxis)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -219,8 +219,8 @@ namespace BaiRong.Core.Provider
                 var sqlString = "UPDATE bairong_Area SET IsLastNode = @IsLastNode WHERE ParentID = @ParentID";
 
                 IDataParameter[] parms = {
-				    GetParameter(ParmIsLastNode, EDataType.VarChar, 18, false.ToString()),
-				    GetParameter(ParmParentId, EDataType.Integer, parentId)
+				    GetParameter(ParmIsLastNode, DataType.VarChar, 18, false.ToString()),
+				    GetParameter(ParmParentId, DataType.Integer, parentId)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);
@@ -281,13 +281,13 @@ namespace BaiRong.Core.Provider
         public void Update(AreaInfo areaInfo)
         {
             IDataParameter[] updateParms = {
-				GetParameter(ParmName, EDataType.NVarChar, 255, areaInfo.AreaName),
-				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, areaInfo.ParentsPath),
-				GetParameter(ParmParentsCount, EDataType.Integer, areaInfo.ParentsCount),
-				GetParameter(ParmChildrenCount, EDataType.Integer, areaInfo.ChildrenCount),
-				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, areaInfo.IsLastNode.ToString()),
-				GetParameter(ParmCountOfAdmin, EDataType.Integer, areaInfo.CountOfAdmin),
-				GetParameter(ParmId, EDataType.Integer, areaInfo.AreaId)
+				GetParameter(ParmName, DataType.NVarChar, 255, areaInfo.AreaName),
+				GetParameter(ParmParentsPath, DataType.NVarChar, 255, areaInfo.ParentsPath),
+				GetParameter(ParmParentsCount, DataType.Integer, areaInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, DataType.Integer, areaInfo.ChildrenCount),
+				GetParameter(ParmIsLastNode, DataType.VarChar, 18, areaInfo.IsLastNode.ToString()),
+				GetParameter(ParmCountOfAdmin, DataType.Integer, areaInfo.CountOfAdmin),
+				GetParameter(ParmId, DataType.Integer, areaInfo.AreaId)
 			};
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -373,7 +373,7 @@ namespace BaiRong.Core.Provider
             AreaInfo areaInfo = null;
 
             IDataParameter[] parms = {
-				GetParameter(ParmId, EDataType.Integer, areaId)
+				GetParameter(ParmId, DataType.Integer, areaId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -410,7 +410,7 @@ namespace BaiRong.Core.Provider
             var nodeCount = 0;
 
             IDataParameter[] nodeParms = {
-				GetParameter(ParmParentId, EDataType.Integer, areaId)
+				GetParameter(ParmParentId, DataType.Integer, areaId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectCount, nodeParms))

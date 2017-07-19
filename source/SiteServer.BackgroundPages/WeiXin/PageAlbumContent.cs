@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
 			if (!IsPostBack)
             { 
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAlbum, "相册管理", AppManager.WeiXin.Permission.WebSite.Album);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdAlbum, "相册管理", AppManager.WeiXin.Permission.WebSite.Album);
                 RptParentAlbumContents.DataSource = DataProviderWx.AlbumContentDao.GetDataSource(PublishmentSystemId, AlbumId);
                 RptParentAlbumContents.ItemDataBound += rptParentContents_ItemDataBound;
                 RptParentAlbumContents.DataBind();

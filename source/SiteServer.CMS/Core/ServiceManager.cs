@@ -49,7 +49,7 @@ namespace SiteServer.CMS.Core
 
         public static List<TaskInfo> GetAllTaskInfoList()
         {
-            if (CacheManager.GetCache(CacheKeyAllTaskInfoList) != null)
+            if (CacheManager.IsCache(CacheKeyAllTaskInfoList))
             {
                 return CacheManager.GetCache(CacheKeyAllTaskInfoList) as List<TaskInfo>;
             }
@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Core
 
         public static bool IsPendingCreateTask()
         {
-            if (CacheManager.GetCache(CacheKeyIsPendingCreate) != null)
+            if (CacheManager.IsCache(CacheKeyIsPendingCreate))
             {
                 return (bool)CacheManager.GetCache(CacheKeyIsPendingCreate);
             }
@@ -71,18 +71,24 @@ namespace SiteServer.CMS.Core
 
         public static void ClearStatusCache()
         {
+            if (!CacheManager.IsCache(CacheKeyStatus)) return;
+
             CacheManager.RemoveCache(CacheKeyStatus);
             CacheManager.UpdateTemporaryCacheFile(CacheFileNameStatus);
         }
 
         public static void ClearTaskCache()
         {
+            if (!CacheManager.IsCache(CacheKeyAllTaskInfoList)) return;
+
             CacheManager.RemoveCache(CacheKeyAllTaskInfoList);
             CacheManager.UpdateTemporaryCacheFile(CacheFileNameTaskCache);
         }
 
         public static void ClearIsPendingCreateCache()
         {
+            if (!CacheManager.IsCache(CacheKeyIsPendingCreate)) return;
+
             CacheManager.RemoveCache(CacheKeyIsPendingCreate);
             CacheManager.UpdateTemporaryCacheFile(CacheFileNameIsPendingCreate);
         }

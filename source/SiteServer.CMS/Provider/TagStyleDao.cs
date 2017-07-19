@@ -1,11 +1,10 @@
 using System;
 using System.Collections;
 using System.Data;
-using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -43,16 +42,16 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmStyleName, EDataType.NVarChar, 50, tagStyleInfo.StyleName),
-                GetParameter(ParmElementName, EDataType.VarChar, 50, tagStyleInfo.ElementName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, tagStyleInfo.PublishmentSystemID),
-                GetParameter(ParmIstemplate, EDataType.VarChar, 18, tagStyleInfo.IsTemplate.ToString()),
-                GetParameter(ParmStyleTemplate, EDataType.NText, tagStyleInfo.StyleTemplate),
-                GetParameter(ParmScriptTemplate, EDataType.NText, tagStyleInfo.ScriptTemplate),
-                GetParameter(ParmContentTemplate, EDataType.NText, tagStyleInfo.ContentTemplate),
-                GetParameter(ParmSuccessTemplate, EDataType.NText, tagStyleInfo.SuccessTemplate),
-                GetParameter(ParmFailureTemplate, EDataType.NText, tagStyleInfo.FailureTemplate),
-                GetParameter(ParmSettingsXml, EDataType.NText, tagStyleInfo.SettingsXML)
+				GetParameter(ParmStyleName, DataType.NVarChar, 50, tagStyleInfo.StyleName),
+                GetParameter(ParmElementName, DataType.VarChar, 50, tagStyleInfo.ElementName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, tagStyleInfo.PublishmentSystemID),
+                GetParameter(ParmIstemplate, DataType.VarChar, 18, tagStyleInfo.IsTemplate.ToString()),
+                GetParameter(ParmStyleTemplate, DataType.NText, tagStyleInfo.StyleTemplate),
+                GetParameter(ParmScriptTemplate, DataType.NText, tagStyleInfo.ScriptTemplate),
+                GetParameter(ParmContentTemplate, DataType.NText, tagStyleInfo.ContentTemplate),
+                GetParameter(ParmSuccessTemplate, DataType.NText, tagStyleInfo.SuccessTemplate),
+                GetParameter(ParmFailureTemplate, DataType.NText, tagStyleInfo.FailureTemplate),
+                GetParameter(ParmSettingsXml, DataType.NText, tagStyleInfo.SettingsXML)
 			};
 
             using (var conn = GetConnection())
@@ -80,15 +79,15 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmStyleName, EDataType.NVarChar, 50, tagStyleInfo.StyleName),
-                GetParameter(ParmIstemplate, EDataType.VarChar, 18, tagStyleInfo.IsTemplate.ToString()),
-                GetParameter(ParmStyleTemplate, EDataType.NText, tagStyleInfo.StyleTemplate),
-                GetParameter(ParmScriptTemplate, EDataType.NText, tagStyleInfo.ScriptTemplate),
-                GetParameter(ParmContentTemplate, EDataType.NText, tagStyleInfo.ContentTemplate),
-                GetParameter(ParmSuccessTemplate, EDataType.NText, tagStyleInfo.SuccessTemplate),
-                GetParameter(ParmFailureTemplate, EDataType.NText, tagStyleInfo.FailureTemplate),
-                GetParameter(ParmSettingsXml, EDataType.NText, tagStyleInfo.SettingsXML),
-				GetParameter(ParmStyleId, EDataType.Integer, tagStyleInfo.StyleID)
+				GetParameter(ParmStyleName, DataType.NVarChar, 50, tagStyleInfo.StyleName),
+                GetParameter(ParmIstemplate, DataType.VarChar, 18, tagStyleInfo.IsTemplate.ToString()),
+                GetParameter(ParmStyleTemplate, DataType.NText, tagStyleInfo.StyleTemplate),
+                GetParameter(ParmScriptTemplate, DataType.NText, tagStyleInfo.ScriptTemplate),
+                GetParameter(ParmContentTemplate, DataType.NText, tagStyleInfo.ContentTemplate),
+                GetParameter(ParmSuccessTemplate, DataType.NText, tagStyleInfo.SuccessTemplate),
+                GetParameter(ParmFailureTemplate, DataType.NText, tagStyleInfo.FailureTemplate),
+                GetParameter(ParmSettingsXml, DataType.NText, tagStyleInfo.SettingsXML),
+				GetParameter(ParmStyleId, DataType.Integer, tagStyleInfo.StyleID)
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);
@@ -100,7 +99,7 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmStyleId, EDataType.Integer, styleId)
+				GetParameter(ParmStyleId, DataType.Integer, styleId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -112,7 +111,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmStyleId, EDataType.Integer, styleId)
+				GetParameter(ParmStyleId, DataType.Integer, styleId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -136,9 +135,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmElementName, EDataType.VarChar, 50, elementName),
-                GetParameter(ParmStyleName, EDataType.NVarChar, 50, styleName)
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmElementName, DataType.VarChar, 50, elementName),
+                GetParameter(ParmStyleName, DataType.NVarChar, 50, styleName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -160,7 +159,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAll, parms))
@@ -181,8 +180,8 @@ namespace SiteServer.CMS.Provider
 		{
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmElementName, EDataType.VarChar, 50, elementName)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmElementName, DataType.VarChar, 50, elementName)
 			};
             return (IEnumerable)ExecuteReader(SqlSelectAllByElementName, parms);
 		}
@@ -193,8 +192,8 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmElementName, EDataType.VarChar, 50, elementName)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmElementName, DataType.VarChar, 50, elementName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectStyleName, parms)) 

@@ -174,6 +174,15 @@ namespace SiteServer.BackgroundPages.Cms
                 }), 460, 360);
         }
 
+        public static string GetRedirectUrlStringWithPluginDownload(string downloadUrl)
+        {
+            return PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
+            {
+                {"PluginDownload", true.ToString()},
+                {"DownloadUrl", downloadUrl}
+            });
+        }
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
@@ -207,9 +216,10 @@ namespace SiteServer.BackgroundPages.Cms
             //----------------------------------------------------------------------------------------//
             else if (Body.IsQueryExists("CreateChannelsOneByOne") && Body.IsQueryExists("ChannelIDCollection"))
             {
+                var guid = StringUtils.Guid();
                 foreach (var channelId in TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection")))
                 {
-                    CreateManager.CreateChannel(PublishmentSystemId, channelId);
+                    CreateManager.CreateChannel(PublishmentSystemId, channelId, guid);
                 }
 
                 PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString("已成功将栏目放入生成队列"));
@@ -217,28 +227,31 @@ namespace SiteServer.BackgroundPages.Cms
             else if (Body.IsQueryExists("CreateContentsOneByOne") && Body.IsQueryExists("NodeID") &&
                      Body.IsQueryExists("ContentIDCollection"))
             {
+                var guid = StringUtils.Guid();
                 foreach (var contentId in TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection")))
                 {
                     CreateManager.CreateContent(PublishmentSystemId, Body.GetQueryInt("NodeID"),
-                        contentId);
+                        contentId, guid);
                 }
 
                 PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString("已成功将内容放入生成队列"));
             }
             else if (Body.IsQueryExists("CreateByTemplate") && Body.IsQueryExists("templateID"))
             {
-                CreateManager.CreateFile(PublishmentSystemId, Body.GetQueryInt("templateID"));
+                var guid = StringUtils.Guid();
+                CreateManager.CreateFile(PublishmentSystemId, Body.GetQueryInt("templateID"), guid);
 
                 PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString("已成功将文件放入生成队列"));
             }
             else if (Body.IsQueryExists("CreateByIDsCollection") && Body.IsQueryExists("IDsCollection"))
             {
+                var guid = StringUtils.Guid();
                 foreach (var nodeIdContentId in
                     TranslateUtils.StringCollectionToStringCollection(Body.GetQueryString("IDsCollection")))
                 {
                     var pair = nodeIdContentId.Split('_');
                     CreateManager.CreateContent(PublishmentSystemId, TranslateUtils.ToInt(pair[0]),
-                        TranslateUtils.ToInt(pair[1]));
+                        TranslateUtils.ToInt(pair[1]), guid);
                 }
 
                 PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString("已成功将文件放入生成队列"));
@@ -268,6 +281,15 @@ namespace SiteServer.BackgroundPages.Cms
                 var parameters = AjaxOtherService.GetSiteTemplateUnZipParameters(Body.GetQueryString("FileName"), userKeyPrefix);
                 RegisterScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateUnZipUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
+            }
+            //---------------------------------------------------------------------------------------//
+            else if (Body.IsQueryExists("PluginDownload"))
+            {
+                var userKeyPrefix = StringUtils.Guid();
+
+                var parameters = AjaxOtherService.GetPluginDownloadParameters(Body.GetQueryString("DownloadUrl"), userKeyPrefix);
+                RegisterScripts.Text =
+                    AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetPluginDownloadUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }
         }
     }

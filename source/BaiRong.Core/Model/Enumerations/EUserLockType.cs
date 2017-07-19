@@ -16,24 +16,20 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Forever";
             }
-            else if (type == EUserLockType.Hours)
+            if (type == EUserLockType.Hours)
             {
                 return "Hours";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EUserLockType GetEnumType(string typeStr)
         {
             if (Equals(typeStr, EUserLockType.Forever))
                 return EUserLockType.Forever;
-            else if (Equals(typeStr, EUserLockType.Hours))
+            if (Equals(typeStr, EUserLockType.Hours))
                 return EUserLockType.Hours;
-            else
-                return EUserLockType.Forever;
+            return EUserLockType.Forever;
         }
 
         public static bool Equals(string typeStr, EUserLockType type)

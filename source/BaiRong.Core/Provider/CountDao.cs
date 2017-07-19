@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -24,10 +25,10 @@ namespace BaiRong.Core.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedTableName, EDataType.NVarChar, 255, relatedTableName),
-				GetParameter(ParmRelatedIdentity, EDataType.NVarChar, 255, relatedIdentity),
-				GetParameter(ParmCountType, EDataType.VarChar, 50, ECountTypeUtils.GetValue(countType)),
-				GetParameter(ParmCountNum, EDataType.Integer, countNum)
+				GetParameter(ParmRelatedTableName, DataType.NVarChar, 255, relatedTableName),
+				GetParameter(ParmRelatedIdentity, DataType.NVarChar, 255, relatedIdentity),
+				GetParameter(ParmCountType, DataType.VarChar, 50, ECountTypeUtils.GetValue(countType)),
+				GetParameter(ParmCountNum, DataType.Integer, countNum)
 			};
 
             ExecuteNonQuery(sqlString, insertParms);
@@ -39,9 +40,9 @@ namespace BaiRong.Core.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedTableName, EDataType.NVarChar, 255, relatedTableName),
-				GetParameter(ParmRelatedIdentity, EDataType.NVarChar, 255, relatedIdentity),
-				GetParameter(ParmCountType, EDataType.VarChar, 50, ECountTypeUtils.GetValue(countType)),
+				GetParameter(ParmRelatedTableName, DataType.NVarChar, 255, relatedTableName),
+				GetParameter(ParmRelatedIdentity, DataType.NVarChar, 255, relatedIdentity),
+				GetParameter(ParmCountType, DataType.VarChar, 50, ECountTypeUtils.GetValue(countType)),
 			};
 
             ExecuteNonQuery(sqlString, insertParms);
@@ -51,7 +52,7 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedTableName, EDataType.NVarChar, 255, relatedTableName)
+				GetParameter(ParmRelatedTableName, DataType.NVarChar, 255, relatedTableName)
 			};
 
             ExecuteNonQuery(SqlDeleteByRelatedTableName, parms);
@@ -61,8 +62,8 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedTableName, EDataType.NVarChar, 255, relatedTableName),
-				GetParameter(ParmRelatedIdentity, EDataType.NVarChar, 255, relatedIdentity),
+				GetParameter(ParmRelatedTableName, DataType.NVarChar, 255, relatedTableName),
+				GetParameter(ParmRelatedIdentity, DataType.NVarChar, 255, relatedIdentity),
 			};
 
             ExecuteNonQuery(SqlDeleteByIdentity, parms);
@@ -83,9 +84,9 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedTableName, EDataType.NVarChar, 255, relatedTableName),
-				GetParameter(ParmRelatedIdentity, EDataType.NVarChar, 255, relatedIdentity),
-				GetParameter(ParmCountType, EDataType.VarChar, 50, ECountTypeUtils.GetValue(countType))
+				GetParameter(ParmRelatedTableName, DataType.NVarChar, 255, relatedTableName),
+				GetParameter(ParmRelatedIdentity, DataType.NVarChar, 255, relatedIdentity),
+				GetParameter(ParmCountType, DataType.VarChar, 50, ECountTypeUtils.GetValue(countType))
 			};
 
             using (var rdr = ExecuteReader(SqlSelectCountNum, parms))

@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "内容管理设置", AppManager.Cms.Permission.WebSite.Configration);
+            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "内容管理设置", AppManager.Permissions.WebSite.Configration);
 
             EBooleanUtils.AddListItems(DdlIsGroupContent, "使用内容组", "不使用内容组");
             ControlUtils.SelectListItemsIgnoreCase(DdlIsGroupContent, PublishmentSystemInfo.Additional.IsGroupContent.ToString());

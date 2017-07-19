@@ -1,7 +1,10 @@
 using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using BaiRong.Core.Data;
 using BaiRong.Core.Model;
+using BaiRong.Core.Model.Attributes;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.Utility
@@ -46,12 +49,14 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (_contextType == EContextType.Channel)
             {
-                _pageInfo.ChannelItems.Push(itemInfo);
+                var channelItemInfo = new ChannelItemInfo(SqlUtils.EvalInt(container.DataItem, NodeAttribute.NodeId), container.ItemIndex);
+                _pageInfo.ChannelItems.Push(channelItemInfo);
                 literal.Text = TemplateUtility.GetChannelsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.Content)
             {
-                _pageInfo.ContentItems.Push(itemInfo);
+                var contentItemInfo = new ContentItemInfo(SqlUtils.EvalInt(container.DataItem, ContentAttribute.NodeId), SqlUtils.EvalInt(container.DataItem, ContentAttribute.Id), container.ItemIndex);
+                _pageInfo.ContentItems.Push(contentItemInfo);
                 literal.Text = TemplateUtility.GetContentsItemTemplateString(_templateString, _selectedItems, _selectedValues, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
             else if (_contextType == EContextType.Comment)

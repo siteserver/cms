@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "评论管理设置", AppManager.Cms.Permission.WebSite.Configration);
+            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "评论管理设置", AppManager.Permissions.WebSite.Configration);
 
             ControlUtils.SelectListItemsIgnoreCase(RblIsCommentable, PublishmentSystemInfo.Additional.IsCommentable.ToString());
             ControlUtils.SelectListItemsIgnoreCase(RblIsCheckComments, PublishmentSystemInfo.Additional.IsCheckComments.ToString());

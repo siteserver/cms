@@ -15,50 +15,44 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EGovPublicApplyRemarkType type)
 		{
-            if (type == EGovPublicApplyRemarkType.Accept)
+		    if (type == EGovPublicApplyRemarkType.Accept)
 			{
                 return "Accept";
 			}
-            else if (type == EGovPublicApplyRemarkType.SwitchTo)
-            {
-                return "SwitchTo";
-            }
-            else if (type == EGovPublicApplyRemarkType.Comment)
-            {
-                return "Comment";
-            }
-            else if (type == EGovPublicApplyRemarkType.Redo)
-            {
-                return "Redo";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovPublicApplyRemarkType.SwitchTo)
+		    {
+		        return "SwitchTo";
+		    }
+		    if (type == EGovPublicApplyRemarkType.Comment)
+		    {
+		        return "Comment";
+		    }
+		    if (type == EGovPublicApplyRemarkType.Redo)
+		    {
+		        return "Redo";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EGovPublicApplyRemarkType type)
 		{
-            if (type == EGovPublicApplyRemarkType.Accept)
+		    if (type == EGovPublicApplyRemarkType.Accept)
 			{
                 return "受理";
 			}
-            else if (type == EGovPublicApplyRemarkType.SwitchTo)
-            {
-                return "转办";
-            }
-            else if (type == EGovPublicApplyRemarkType.Comment)
-            {
-                return "批示";
-            }
-            else if (type == EGovPublicApplyRemarkType.Redo)
-            {
-                return "要求返工";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovPublicApplyRemarkType.SwitchTo)
+		    {
+		        return "转办";
+		    }
+		    if (type == EGovPublicApplyRemarkType.Comment)
+		    {
+		        return "批示";
+		    }
+		    if (type == EGovPublicApplyRemarkType.Redo)
+		    {
+		        return "要求返工";
+		    }
+		    throw new Exception();
 		}
 
 		public static EGovPublicApplyRemarkType GetEnumType(string typeStr)

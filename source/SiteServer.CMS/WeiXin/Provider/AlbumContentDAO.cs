@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.WeiXin.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
@@ -182,8 +182,8 @@ namespace SiteServer.CMS.WeiXin.Provider
             
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmAlbumId,EDataType.Integer,albumId)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmAlbumId,DataType.Integer,albumId)
 			};
 
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAll, parms);
@@ -195,9 +195,9 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmAlbumId,EDataType.Integer,albumId),
-                GetParameter(ParmParentId,EDataType.Integer,parentId)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmAlbumId,DataType.Integer,albumId),
+                GetParameter(ParmParentId,DataType.Integer,parentId)
 			};
 
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllByParentid, parms);

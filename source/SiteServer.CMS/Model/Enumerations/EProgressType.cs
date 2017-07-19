@@ -16,14 +16,11 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "CreateChannels";
             }
-            else if (type == EProgressType.CreateContents)
+            if (type == EProgressType.CreateContents)
             {
                 return "CreateContents";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EProgressType GetEnumType(string typeStr)

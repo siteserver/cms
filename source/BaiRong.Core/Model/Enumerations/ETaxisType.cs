@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using BaiRong.Core.Data;
 
 namespace BaiRong.Core.Model.Enumerations
 {
@@ -31,82 +32,79 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(ETaxisType type)
 		{
-			if (type == ETaxisType.OrderById)
+		    if (type == ETaxisType.OrderById)
 			{
 				return "OrderByID";
 			}
-			else if (type == ETaxisType.OrderByIdDesc)
-			{
-				return "OrderByIDDesc";
-			}
-			else if (type == ETaxisType.OrderByNodeId)
-			{
-				return "OrderByNodeID";
-			}
-			else if (type == ETaxisType.OrderByNodeIdDesc)
-			{
-				return "OrderByNodeIDDesc";
-			}
-			else if (type == ETaxisType.OrderByAddDate)
-			{
-				return "OrderByAddDate";
-			}
-			else if (type == ETaxisType.OrderByAddDateDesc)
-			{
-				return "OrderByAddDateDesc";
-			}
-			else if (type == ETaxisType.OrderByLastEditDate)
-			{
-				return "OrderByLastEditDate";
-			}
-			else if (type == ETaxisType.OrderByLastEditDateDesc)
-			{
-				return "OrderByLastEditDateDesc";
-			}
-			else if (type == ETaxisType.OrderByTaxis)
-			{
-				return "OrderByTaxis";
-			}
-			else if (type == ETaxisType.OrderByTaxisDesc)
-			{
-				return "OrderByTaxisDesc";
-            }
-            else if (type == ETaxisType.OrderByHits)
-            {
-                return "OrderByHits";
-            }
-            else if (type == ETaxisType.OrderByHitsByDay)
-            {
-                return "OrderByHitsByDay";
-            }
-            else if (type == ETaxisType.OrderByHitsByWeek)
-            {
-                return "OrderByHitsByWeek";
-            }
-            else if (type == ETaxisType.OrderByHitsByMonth)
-            {
-                return "OrderByHitsByMonth";
-            }
-            else if (type == ETaxisType.OrderByStars)
-            {
-                return "OrderByStars";
-            }
-            else if (type == ETaxisType.OrderByDigg)
-            {
-                return "OrderByDigg";
-            }
-            else if (type == ETaxisType.OrderByComments)
-            {
-                return "OrderByComments";
-            }
-            else if (type == ETaxisType.OrderByRandom)
-            {
-                return "OrderByRandom";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETaxisType.OrderByIdDesc)
+		    {
+		        return "OrderByIDDesc";
+		    }
+		    if (type == ETaxisType.OrderByNodeId)
+		    {
+		        return "OrderByNodeId";
+		    }
+		    if (type == ETaxisType.OrderByNodeIdDesc)
+		    {
+		        return "OrderByNodeIdDesc";
+		    }
+		    if (type == ETaxisType.OrderByAddDate)
+		    {
+		        return "OrderByAddDate";
+		    }
+		    if (type == ETaxisType.OrderByAddDateDesc)
+		    {
+		        return "OrderByAddDateDesc";
+		    }
+		    if (type == ETaxisType.OrderByLastEditDate)
+		    {
+		        return "OrderByLastEditDate";
+		    }
+		    if (type == ETaxisType.OrderByLastEditDateDesc)
+		    {
+		        return "OrderByLastEditDateDesc";
+		    }
+		    if (type == ETaxisType.OrderByTaxis)
+		    {
+		        return "OrderByTaxis";
+		    }
+		    if (type == ETaxisType.OrderByTaxisDesc)
+		    {
+		        return "OrderByTaxisDesc";
+		    }
+		    if (type == ETaxisType.OrderByHits)
+		    {
+		        return "OrderByHits";
+		    }
+		    if (type == ETaxisType.OrderByHitsByDay)
+		    {
+		        return "OrderByHitsByDay";
+		    }
+		    if (type == ETaxisType.OrderByHitsByWeek)
+		    {
+		        return "OrderByHitsByWeek";
+		    }
+		    if (type == ETaxisType.OrderByHitsByMonth)
+		    {
+		        return "OrderByHitsByMonth";
+		    }
+		    if (type == ETaxisType.OrderByStars)
+		    {
+		        return "OrderByStars";
+		    }
+		    if (type == ETaxisType.OrderByDigg)
+		    {
+		        return "OrderByDigg";
+		    }
+		    if (type == ETaxisType.OrderByComments)
+		    {
+		        return "OrderByComments";
+		    }
+		    if (type == ETaxisType.OrderByRandom)
+		    {
+		        return "OrderByRandom";
+		    }
+		    throw new Exception();
 		}
 
         public static string GetContentOrderByString(ETaxisType taxisType)
@@ -129,7 +127,7 @@ namespace BaiRong.Core.Model.Enumerations
             return GetOrderByString(tableStyle, taxisType, string.Empty, null);
         }
 
-        public static string GetOrderByString(ETableStyle tableStyle, ETaxisType taxisType, string orderByString, ArrayList orderedContentIdArrayList)
+        public static string GetOrderByString(ETableStyle tableStyle, ETaxisType taxisType, string orderByString, List<int> orderedContentIdList)
         {
             if (!string.IsNullOrEmpty(orderByString))
             {
@@ -137,10 +135,7 @@ namespace BaiRong.Core.Model.Enumerations
                 {
                     return orderByString;
                 }
-                else
-                {
-                    return "ORDER BY " + orderByString;
-                }
+                return "ORDER BY " + orderByString;
             }
 
             var retval = string.Empty;
@@ -148,19 +143,19 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 if (taxisType == ETaxisType.OrderById)
                 {
-                    retval = "ORDER BY NodeID ASC";
+                    retval = "ORDER BY NodeId ASC";
                 }
                 else if (taxisType == ETaxisType.OrderByIdDesc)
                 {
-                    retval = "ORDER BY NodeID DESC";
+                    retval = "ORDER BY NodeId DESC";
                 }
                 else if (taxisType == ETaxisType.OrderByNodeId)
                 {
-                    retval = "ORDER BY NodeID ASC";
+                    retval = "ORDER BY NodeId ASC";
                 }
                 else if (taxisType == ETaxisType.OrderByNodeIdDesc)
                 {
-                    retval = "ORDER BY NodeID DESC";
+                    retval = "ORDER BY NodeId DESC";
                 }
                 else if (taxisType == ETaxisType.OrderByAddDate)
                 {
@@ -188,11 +183,11 @@ namespace BaiRong.Core.Model.Enumerations
                 }
                 else if (taxisType == ETaxisType.OrderByHits)
                 {
-                    if (orderedContentIdArrayList != null && orderedContentIdArrayList.Count > 0)
+                    if (orderedContentIdList != null && orderedContentIdList.Count > 0)
                     {
-                        orderedContentIdArrayList.Reverse();
+                        orderedContentIdList.Reverse();
                         retval =
-                            $"ORDER BY CHARINDEX(CONVERT(VARCHAR,NodeID), '{TranslateUtils.ObjectCollectionToString(orderedContentIdArrayList)}') DESC, Taxis ASC";
+                            $"ORDER BY CHARINDEX(CONVERT(VARCHAR,NodeId), '{TranslateUtils.ObjectCollectionToString(orderedContentIdList)}') DESC, Taxis ASC";
                     }
                     else
                     {
@@ -201,7 +196,7 @@ namespace BaiRong.Core.Model.Enumerations
                 }
                 else if (taxisType == ETaxisType.OrderByRandom)
                 {
-                    retval = "ORDER BY NEWID() DESC";
+                    retval = SqlUtils.GetOrderByRandom();
                 }
             }
             else if (ETableStyleUtils.IsContent(tableStyle))
@@ -216,11 +211,11 @@ namespace BaiRong.Core.Model.Enumerations
                 }
                 else if (taxisType == ETaxisType.OrderByNodeId)
                 {
-                    retval = "ORDER BY IsTop DESC, NodeID ASC, ID DESC";
+                    retval = "ORDER BY IsTop DESC, NodeId ASC, ID DESC";
                 }
                 else if (taxisType == ETaxisType.OrderByNodeIdDesc)
                 {
-                    retval = "ORDER BY IsTop DESC, NodeID DESC, ID DESC";
+                    retval = "ORDER BY IsTop DESC, NodeId DESC, ID DESC";
                 }
                 else if (taxisType == ETaxisType.OrderByAddDate)
                 {
@@ -264,11 +259,11 @@ namespace BaiRong.Core.Model.Enumerations
                 }
                 else if (taxisType == ETaxisType.OrderByStars || taxisType == ETaxisType.OrderByDigg || taxisType == ETaxisType.OrderByComments)
                 {
-                    if (orderedContentIdArrayList != null && orderedContentIdArrayList.Count > 0)
+                    if (orderedContentIdList != null && orderedContentIdList.Count > 0)
                     {
-                        orderedContentIdArrayList.Reverse();
+                        orderedContentIdList.Reverse();
                         retval =
-                            $"ORDER BY CHARINDEX(CONVERT(VARCHAR,ID), '{TranslateUtils.ObjectCollectionToString(orderedContentIdArrayList)}') DESC, IsTop DESC, Taxis DESC, ID DESC";
+                            $"ORDER BY CHARINDEX(CONVERT(VARCHAR,ID), '{TranslateUtils.ObjectCollectionToString(orderedContentIdList)}') DESC, IsTop DESC, Taxis DESC, ID DESC";
                     }
                     else
                     {
@@ -277,7 +272,7 @@ namespace BaiRong.Core.Model.Enumerations
                 }
                 else if (taxisType == ETaxisType.OrderByRandom)
                 {
-                    retval = "ORDER BY NEWID() DESC";
+                    retval = SqlUtils.GetOrderByRandom();
                 }
             }
             else if (tableStyle == ETableStyle.InputContent)
@@ -308,7 +303,7 @@ namespace BaiRong.Core.Model.Enumerations
                 }
                 else if (taxisType == ETaxisType.OrderByRandom)
                 {
-                    retval = "ORDER BY NEWID() DESC";
+                    retval = SqlUtils.GetOrderByRandom();
                 }
             }
             return retval;
@@ -316,66 +311,63 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static string GetText(ETaxisType type)
 		{
-			if (type == ETaxisType.OrderById)
+		    if (type == ETaxisType.OrderById)
 			{
 				return "内容ID（升序）";
 			}
-			else if (type == ETaxisType.OrderByIdDesc)
-			{
-				return "内容ID（降序）";
-			}
-			else if (type == ETaxisType.OrderByNodeId)
-			{
-				return "栏目ID（升序）";
-			}
-			else if (type == ETaxisType.OrderByNodeIdDesc)
-			{
-				return "栏目ID（降序）";
-			}
-			else if (type == ETaxisType.OrderByAddDate)
-			{
-				return "添加时间（升序）";
-			}
-			else if (type == ETaxisType.OrderByAddDateDesc)
-			{
-				return "添加时间（降序）";
-			}
-			else if (type == ETaxisType.OrderByLastEditDate)
-			{
-				return "更新时间（升序）";
-			}
-			else if (type == ETaxisType.OrderByLastEditDateDesc)
-			{
-				return "更新时间（降序）";
-			}
-			else if (type == ETaxisType.OrderByTaxis)
-			{
-				return "自定义排序（反方向）";
-			}
-			else if (type == ETaxisType.OrderByTaxisDesc)
-			{
-				return "自定义排序";
-            }
-            else if (type == ETaxisType.OrderByHits)
-            {
-                return "点击量排序";
-            }
-            else if (type == ETaxisType.OrderByHitsByDay)
-            {
-                return "日点击量排序";
-            }
-            else if (type == ETaxisType.OrderByHitsByWeek)
-            {
-                return "周点击量排序";
-            }
-            else if (type == ETaxisType.OrderByHitsByMonth)
-            {
-                return "月点击量排序";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETaxisType.OrderByIdDesc)
+		    {
+		        return "内容ID（降序）";
+		    }
+		    if (type == ETaxisType.OrderByNodeId)
+		    {
+		        return "栏目ID（升序）";
+		    }
+		    if (type == ETaxisType.OrderByNodeIdDesc)
+		    {
+		        return "栏目ID（降序）";
+		    }
+		    if (type == ETaxisType.OrderByAddDate)
+		    {
+		        return "添加时间（升序）";
+		    }
+		    if (type == ETaxisType.OrderByAddDateDesc)
+		    {
+		        return "添加时间（降序）";
+		    }
+		    if (type == ETaxisType.OrderByLastEditDate)
+		    {
+		        return "更新时间（升序）";
+		    }
+		    if (type == ETaxisType.OrderByLastEditDateDesc)
+		    {
+		        return "更新时间（降序）";
+		    }
+		    if (type == ETaxisType.OrderByTaxis)
+		    {
+		        return "自定义排序（升序）";
+		    }
+		    if (type == ETaxisType.OrderByTaxisDesc)
+		    {
+		        return "自定义排序（降序）";
+		    }
+		    if (type == ETaxisType.OrderByHits)
+		    {
+		        return "点击量排序";
+		    }
+		    if (type == ETaxisType.OrderByHitsByDay)
+		    {
+		        return "日点击量排序";
+		    }
+		    if (type == ETaxisType.OrderByHitsByWeek)
+		    {
+		        return "周点击量排序";
+		    }
+		    if (type == ETaxisType.OrderByHitsByMonth)
+		    {
+		        return "月点击量排序";
+		    }
+		    throw new Exception();
 		}
 
 		public static ETaxisType GetEnumType(string typeStr)
@@ -469,24 +461,37 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static void AddListItems(ListControl listControl)
 		{
-			if (listControl != null)
-			{
-				listControl.Items.Add(GetListItem(ETaxisType.OrderById, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByIdDesc, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByNodeId, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByNodeIdDesc, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDate, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDateDesc, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDate, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDateDesc, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxis, false));
-                listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxisDesc, false));
-				listControl.Items.Add(GetListItem(ETaxisType.OrderByHits, false));
-                listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByDay, false));
-                listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByWeek, false));
-                listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByMonth, false));
-			}
+		    if (listControl == null) return;
+
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderById, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByIdDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByNodeId, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByNodeIdDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDate, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDateDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDate, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDateDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxis, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxisDesc, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHits, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByDay, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByWeek, false));
+		    listControl.Items.Add(GetListItem(ETaxisType.OrderByHitsByMonth, false));
 		}
 
-	}
+        public static void AddListItemsForChannelEdit(ListControl listControl)
+        {
+            if (listControl == null) return;
+
+            listControl.Items.Add(GetListItem(ETaxisType.OrderById, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByIdDesc, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDate, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByAddDateDesc, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDate, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByLastEditDateDesc, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxis, false));
+            listControl.Items.Add(GetListItem(ETaxisType.OrderByTaxisDesc, false));
+        }
+
+    }
 }

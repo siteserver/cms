@@ -1,11 +1,10 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -27,10 +26,10 @@ namespace SiteServer.CMS.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, contentGroup.ContentGroupName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, contentGroup.PublishmentSystemId),
-                GetParameter(ParmTaxis, EDataType.Integer, contentGroup.Taxis),
-				GetParameter(ParmDescription, EDataType.NText, contentGroup.Description)
+				GetParameter(ParmGroupName, DataType.NVarChar, 255, contentGroup.ContentGroupName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, contentGroup.PublishmentSystemId),
+                GetParameter(ParmTaxis, DataType.Integer, contentGroup.Taxis),
+				GetParameter(ParmDescription, DataType.NText, contentGroup.Description)
 			};
 
             ExecuteNonQuery(SqlInsertContentgroup, insertParms);
@@ -40,9 +39,9 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmDescription, EDataType.NText, contentGroup.Description),
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, contentGroup.ContentGroupName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, contentGroup.PublishmentSystemId)
+				GetParameter(ParmDescription, DataType.NText, contentGroup.Description),
+				GetParameter(ParmGroupName, DataType.NVarChar, 255, contentGroup.ContentGroupName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, contentGroup.PublishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlUpdateContentgroup, updateParms);
@@ -52,8 +51,8 @@ namespace SiteServer.CMS.Provider
         {
             var contentGroupParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlDeleteContentgroup, contentGroupParms);
@@ -68,7 +67,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName)			 
 			};
 
             using (var rdr = ExecuteReader(sqlString, selectParms))
@@ -93,7 +92,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName)			 
 			};
 
             using (var rdr = ExecuteReader(sqlString, selectParms))
@@ -160,7 +159,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName)			 
 			};
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString, selectParms);
@@ -172,7 +171,7 @@ namespace SiteServer.CMS.Provider
                 $"UPDATE siteserver_ContentGroup SET Taxis = {taxis} WHERE (ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId})";
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName)			 
 			};
             ExecuteNonQuery(sqlString, updateParms);
         }
@@ -203,7 +202,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName)			 
 			};
             var higherGroupName = string.Empty;
             var higherTaxis = 0;
@@ -241,7 +240,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName)			 
 			};
             var lowerGroupName = string.Empty;
             var lowerTaxis = 0;

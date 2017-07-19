@@ -10,7 +10,6 @@ namespace SiteServer.BackgroundPages
         public Literal LtlMessage;
         public TextBox TbAccount;
         public TextBox TbPassword;
-        public PlaceHolder PhValidateCode;
         public TextBox TbValidateCode;
         public Literal LtlValidateCodeImage;
         public CheckBox CbRememberMe;
@@ -35,27 +34,11 @@ namespace SiteServer.BackgroundPages
                 {
                     LtlMessage.Text = GetMessageHtml(Body.GetQueryString("error"));
                 }
-                // 判断是否满足系统的黑白名单限制要求，即查看后台是否启用了黑白名单功能，如果启用了判断一下现在访问的IP是否允许访问
-                if (RestrictionManager.IsVisitAllowed(ConfigManager.SystemConfigInfo.RestrictionType, ConfigManager.Instance.RestrictionBlackList, ConfigManager.Instance.RestrictionWhiteList))
-                {
-                    PageUtils.DetermineRedirectToInstaller(); // 判断是否需要安装，如果需要则转到安装页面。
 
-                    if (FileConfigManager.Instance.IsValidateCode) // 根据配置判断是否需要启用验证码
-                    {
-                        LtlValidateCodeImage.Text =
-                            $@"<a href=""javascript:;"" onclick=""$('#imgVerify').attr('src', $('#imgVerify').attr('src') + '&' + new Date().getTime())""><img id=""imgVerify"" name=""imgVerify"" src=""{PageValidateCode.GetRedirectUrl(_vcManager.GetCookieName())}"" align=""absmiddle"" /></a>";
-                    }
-                    else // IP被限制了，不允许访问后台
-                    {
-                        PhValidateCode.Visible = false;
-                    }
-                }
-                else
-                {
-                    Page.Response.Write("<h1>此页面禁止访问.</h1>");
-                    Page.Response.Write($"<p>IP地址：{PageUtils.GetIpAddress()}<br />需要访问此页面请与网站管理员联系开通相关权限.</p>");
-                    Page.Response.End();
-                }
+                PageUtils.DetermineRedirectToInstaller(); // 判断是否需要安装，如果需要则转到安装页面。
+
+                LtlValidateCodeImage.Text =
+                        $@"<a href=""javascript:;"" onclick=""$('#imgVerify').attr('src', $('#imgVerify').attr('src') + '&' + new Date().getTime())""><img id=""imgVerify"" name=""imgVerify"" src=""{PageValidateCode.GetRedirectUrl(_vcManager.GetCookieName())}"" align=""absmiddle"" /></a>";
             }
             catch
             {
@@ -80,16 +63,13 @@ namespace SiteServer.BackgroundPages
             var account = TbAccount.Text;
             var password = TbPassword.Text;
 
-            if (FileConfigManager.Instance.IsValidateCode) // 根据配置判断是否需要启用验证码
+            if (!_vcManager.IsCodeValid(TbValidateCode.Text)) // 检测验证码是否正确
             {
-                if (!_vcManager.IsCodeValid(TbValidateCode.Text)) // 检测验证码是否正确
-                {
-                    LtlMessage.Text = GetMessageHtml("验证码不正确，请重新输入！");
-                    return;
-                }
+                LtlMessage.Text = GetMessageHtml("验证码不正确，请重新输入！");
+                return;
             }
 
-		    string userName;
+            string userName;
             string errorMessage;
             if (!BaiRongDataProvider.AdministratorDao.ValidateAccount(account, password, out userName, out errorMessage)) // 检测密码是否正确
             {

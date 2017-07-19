@@ -4,6 +4,7 @@ using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -109,7 +110,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
@@ -128,28 +129,31 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (string.IsNullOrEmpty(type) || StringUtils.EqualsIgnoreCase(type, TypeContents))
             {
                 var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
+                channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
 
                 var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
-                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo, scope, string.Empty, string.Empty);
+                //var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
+                var nodeIdList = Node.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty, pageInfo.Guid);
                 foreach (var nodeId in nodeIdList)
                 {
                     var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeId);
-                    count += DataProvider.ContentDao.GetCountOfContentAdd(tableName, pageInfo.PublishmentSystemId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
+                    //count += DataProvider.ContentDao.GetCountOfContentAdd(tableName, pageInfo.PublishmentSystemId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
+                    count += Content.GetCountOfContentAdd(tableName, pageInfo.PublishmentSystemId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, pageInfo.Guid);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))
             {
                 var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
+                channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
 
                 var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
                 count = nodeInfo.ChildrenCount;
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeComments))
             {
-                count = DataProvider.CommentDao.GetCountChecked(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId);
+                //count = DataProvider.CommentDao.GetCountChecked(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId);
+                count = Comment.GetCountChecked(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.Guid);
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeDownloads))
             {

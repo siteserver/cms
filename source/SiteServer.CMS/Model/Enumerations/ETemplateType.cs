@@ -15,50 +15,44 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ETemplateType type)
 		{
-			if (type == ETemplateType.IndexPageTemplate)
+		    if (type == ETemplateType.IndexPageTemplate)
 			{
 				return "IndexPageTemplate";
 			}
-			else if (type == ETemplateType.ChannelTemplate)
-			{
-				return "ChannelTemplate";
-			}
-			else if (type == ETemplateType.ContentTemplate)
-			{
-				return "ContentTemplate";
-			}
-			else if (type == ETemplateType.FileTemplate)
-			{
-				return "FileTemplate";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETemplateType.ChannelTemplate)
+		    {
+		        return "ChannelTemplate";
+		    }
+		    if (type == ETemplateType.ContentTemplate)
+		    {
+		        return "ContentTemplate";
+		    }
+		    if (type == ETemplateType.FileTemplate)
+		    {
+		        return "FileTemplate";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ETemplateType type)
 		{
-			if (type == ETemplateType.ChannelTemplate)
+		    if (type == ETemplateType.ChannelTemplate)
 			{
 				return "栏目模板";
 			}
-			else if (type == ETemplateType.IndexPageTemplate)
-			{
-				return "首页模板";
-			}
-			else if (type == ETemplateType.ContentTemplate)
-			{
-				return "内容模板";
-			}
-			else if (type == ETemplateType.FileTemplate)
-			{
-                return "单页模板";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETemplateType.IndexPageTemplate)
+		    {
+		        return "首页模板";
+		    }
+		    if (type == ETemplateType.ContentTemplate)
+		    {
+		        return "内容模板";
+		    }
+		    if (type == ETemplateType.FileTemplate)
+		    {
+		        return "单页模板";
+		    }
+		    throw new Exception();
 		}
 
 		public static ETemplateType GetEnumType(string typeStr)

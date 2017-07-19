@@ -1,6 +1,6 @@
 ﻿using System;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Service;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core.Create;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                CreateManager.CreateIndex(PublishmentSystemId); // 创建任务
+                CreateManager.CreateChannel(PublishmentSystemId, PublishmentSystemId, StringUtils.GetShortGuid()); // 创建任务
                 PageCreateStatus.Redirect(PublishmentSystemId); // 转到查询任务进度页面
             }
         }

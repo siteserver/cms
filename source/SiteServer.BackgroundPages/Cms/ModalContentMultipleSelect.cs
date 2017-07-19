@@ -15,6 +15,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {

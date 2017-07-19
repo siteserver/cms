@@ -20,14 +20,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "ManualPush";
             }
-            else if (type == ESubscribePushType.TimedPush)
+            if (type == ESubscribePushType.TimedPush)
             {
                 return "TimedPush";
-            } 
-            else
-            {
-                throw new Exception();
             }
+            throw new Exception();
         }
 
         public static string GetText(ESubscribePushType type)
@@ -36,14 +33,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "手动推送";
             }
-            else if (type == ESubscribePushType.TimedPush)
+            if (type == ESubscribePushType.TimedPush)
             {
                 return "定时推送";
-            } 
-            else
-            {
-                throw new Exception();
             }
+            throw new Exception();
         }
 
         public static ESubscribePushType GetEnumType(string typeStr)

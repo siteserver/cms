@@ -18,18 +18,15 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "None";
             }
-            else if (type == EUserPasswordRestriction.LetterAndDigit)
+            if (type == EUserPasswordRestriction.LetterAndDigit)
             {
                 return "LetterAndDigit";
             }
-            else if (type == EUserPasswordRestriction.LetterAndDigitAndSymbol)
+            if (type == EUserPasswordRestriction.LetterAndDigitAndSymbol)
             {
                 return "LetterAndDigitAndSymbol";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EUserPasswordRestriction type)
@@ -38,18 +35,15 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "不限制";
             }
-            else if (type == EUserPasswordRestriction.LetterAndDigit)
+            if (type == EUserPasswordRestriction.LetterAndDigit)
             {
                 return "字母和数字组合";
             }
-            else if (type == EUserPasswordRestriction.LetterAndDigitAndSymbol)
+            if (type == EUserPasswordRestriction.LetterAndDigitAndSymbol)
             {
                 return "字母、数字以及符号组合";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EUserPasswordRestriction GetEnumType(string typeStr)

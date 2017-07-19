@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
 
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, AppManager.WeiXin.LeftMenu.Function.IdMenu, string.Empty, AppManager.WeiXin.Permission.WebSite.Menu);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, string.Empty, AppManager.WeiXin.Permission.WebSite.Menu);
                 var accountInfo = WeiXinManager.GetAccountInfo(PublishmentSystemId);
                 if (EWxAccountTypeUtils.Equals(accountInfo.AccountType, EWxAccountType.Subscribe))
                 {
@@ -162,6 +162,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 {
                     var isSync = false;
                     var errorMessage = string.Empty;
+                    var guid = StringUtils.GetShortGuid();
 
                     var accountInfo = WeiXinManager.GetAccountInfo(PublishmentSystemId);
 
@@ -210,7 +211,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                                             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, subMenuInfo.ChannelId);
                                             if (nodeInfo != null)
                                             {
-                                                pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo);
+                                                pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo, guid);
                                             }
                                         }
 
@@ -272,7 +273,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                                         var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, menuInfo.ChannelId);
                                         if (nodeInfo != null)
                                         {
-                                            pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo);
+                                            pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo, guid);
                                         }
                                     }
 

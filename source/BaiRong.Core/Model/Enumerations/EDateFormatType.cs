@@ -19,22 +19,19 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Month";
             }
-            else if (type == EDateFormatType.Day)
+            if (type == EDateFormatType.Day)
             {
                 return "Day";
             }
-            else if (type == EDateFormatType.Year)
+            if (type == EDateFormatType.Year)
             {
                 return "Year";
             }
-            else if (type == EDateFormatType.Chinese)
+            if (type == EDateFormatType.Chinese)
             {
                 return "Chinese";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EDateFormatType type)
@@ -43,22 +40,19 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "6月18日";
             }
-            else if (type == EDateFormatType.Day)
+            if (type == EDateFormatType.Day)
             {
                 return "2006-6-18";
             }
-            else if (type == EDateFormatType.Year)
+            if (type == EDateFormatType.Year)
             {
                 return "2006年6月";
             }
-            else if (type == EDateFormatType.Chinese)
+            if (type == EDateFormatType.Chinese)
             {
                 return "2006年6月18日";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EDateFormatType GetEnumType(string typeStr)

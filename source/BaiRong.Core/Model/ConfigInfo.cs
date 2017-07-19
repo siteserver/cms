@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Specialized;
 
 namespace BaiRong.Core.Model
 {
@@ -9,19 +8,15 @@ namespace BaiRong.Core.Model
 		{
             IsInitialized = false;
             DatabaseVersion = string.Empty;
-            RestrictionBlackList = new StringCollection();
-            RestrictionWhiteList = new StringCollection();
             UpdateDate = DateTime.Now;
             UserConfig = string.Empty;
             SystemConfig = string.Empty;
 		}
 
-        public ConfigInfo(bool isInitialized, string databaseVersion, StringCollection restrictionBlackList, StringCollection restrictionWhiteList, DateTime updateDate, string userConfig, string systemConfig) 
+        public ConfigInfo(bool isInitialized, string databaseVersion, DateTime updateDate, string userConfig, string systemConfig) 
 		{
             IsInitialized = isInitialized;
             DatabaseVersion = databaseVersion;
-            RestrictionBlackList = restrictionBlackList;
-            RestrictionWhiteList = restrictionWhiteList;
             UpdateDate = updateDate;
             UserConfig = userConfig;
             SystemConfig = systemConfig;
@@ -30,10 +25,6 @@ namespace BaiRong.Core.Model
         public bool IsInitialized { get; set; }
 
 	    public string DatabaseVersion { get; set; }
-
-	    public StringCollection RestrictionBlackList { get; set; }
-
-	    public StringCollection RestrictionWhiteList { get; set; }
 
 	    public DateTime UpdateDate { get; set; }
 

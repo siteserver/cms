@@ -60,7 +60,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			AtomUtility.AddDcElement(entry.AdditionalElements, "TableMetadataID", metaInfo.TableMetadataId.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, "AuxiliaryTableENName", metaInfo.AuxiliaryTableEnName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, "AttributeName", metaInfo.AttributeName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, "DataType", EDataTypeUtils.GetValue(metaInfo.DataType));
+			AtomUtility.AddDcElement(entry.AdditionalElements, "DataType", DataTypeUtils.GetValue(metaInfo.DataType));
 			AtomUtility.AddDcElement(entry.AdditionalElements, "DataLength", metaInfo.DataLength.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, "Taxis", metaInfo.Taxis.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "IsSystem", metaInfo.IsSystem.ToString());
@@ -153,7 +153,7 @@ namespace SiteServer.CMS.ImportExport.Components
                                 AuxiliaryTableEnName = tableNameToInsert,
                                 AttributeName =
                                     AtomUtility.GetDcElementContent(entry.AdditionalElements, "AttributeName"),
-                                DataType = EDataTypeUtils.GetEnumType(
+                                DataType = DataTypeUtils.GetEnumType(
                                     AtomUtility.GetDcElementContent(entry.AdditionalElements, "DataType")),
                                 DataLength = TranslateUtils.ToInt(
                                     AtomUtility.GetDcElementContent(entry.AdditionalElements, "DataLength")),

@@ -28,6 +28,7 @@ using System.Data.Common;
 using System.Reflection;
 using System.Xml;
 using System.Diagnostics;
+using BaiRong.Core.Model.Enumerations;
 
 namespace BaiRong.Core.Data
 {
@@ -430,7 +431,7 @@ namespace BaiRong.Core.Data
 		{
 			if( command == null ) throw new ArgumentNullException( "command" );
 			if( commandText == null || commandText.Length == 0 ) throw new ArgumentNullException( "commandText" );
-		    if (WebConfigUtils.IsMySql)
+		    if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
 		    {
 		        commandText = commandText.Replace("[", string.Empty).Replace("]", string.Empty);
 		    }

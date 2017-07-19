@@ -12,7 +12,6 @@ namespace SiteServer.BackgroundPages
 
         protected PlaceHolder PhStepAccount;
         protected TextBox TbAccount;
-        protected PlaceHolder PhValidateCode;
         protected TextBox TbValidateCode;
         protected Literal LtlValidateCodeImage;
 
@@ -45,15 +44,8 @@ namespace SiteServer.BackgroundPages
                 PageUtils.RedirectToErrorPage("短信验证码发送功能未开启或配置不正确，找回密码功能无法使用，如需使用请与管理员联系！");
             }
 
-            if (FileConfigManager.Instance.IsValidateCode)
-            {
-                LtlValidateCodeImage.Text =
+            LtlValidateCodeImage.Text =
                     $@"<img id=""imgVerify"" name=""imgVerify"" src=""{PageValidateCode.GetRedirectUrl(_vcManager.GetCookieName())}"" align=""absmiddle"" />";
-            }
-            else
-            {
-                PhValidateCode.Visible = false;
-            }
 
             LtlPageTitle.Text = "找回密码";
         }
@@ -62,13 +54,10 @@ namespace SiteServer.BackgroundPages
         {
             var account = TbAccount.Text;
 
-            if (FileConfigManager.Instance.IsValidateCode)
+            if (!_vcManager.IsCodeValid(TbValidateCode.Text))
             {
-                if (!_vcManager.IsCodeValid(TbValidateCode.Text))
-                {
-                    LtlMessage.Text = GetMessageHtml("验证码不正确，请重新输入！", true);
-                    return;
-                }
+                LtlMessage.Text = GetMessageHtml("验证码不正确，请重新输入！", true);
+                return;
             }
 
             string userName = null;

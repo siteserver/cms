@@ -4,7 +4,7 @@ using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -24,10 +24,10 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, tagInfo.PublishmentSystemId),
-				GetParameter(ParmContentIdCollection, EDataType.NVarChar, 255, tagInfo.ContentIdCollection),
-                GetParameter(ParmTag, EDataType.NVarChar, 255, tagInfo.Tag),
-                GetParameter(ParmUseNum, EDataType.Integer, tagInfo.UseNum)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, tagInfo.PublishmentSystemId),
+				GetParameter(ParmContentIdCollection, DataType.NVarChar, 255, tagInfo.ContentIdCollection),
+                GetParameter(ParmTag, DataType.NVarChar, 255, tagInfo.Tag),
+                GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum)
 			};
 
             using (var conn = GetConnection())
@@ -57,9 +57,9 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmContentIdCollection, EDataType.NVarChar, 255, tagInfo.ContentIdCollection),
-                GetParameter(ParmUseNum, EDataType.Integer, tagInfo.UseNum),
-                GetParameter(ParmTagId, EDataType.Integer, tagInfo.TagId)
+				GetParameter(ParmContentIdCollection, DataType.NVarChar, 255, tagInfo.ContentIdCollection),
+                GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum),
+                GetParameter(ParmTagId, DataType.Integer, tagInfo.TagId)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -73,8 +73,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmTag, EDataType.NVarChar, 255, tag)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmTag, DataType.NVarChar, 255, tag)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -235,14 +235,14 @@ namespace BaiRong.Core.Provider
             if (tagCollection.Count > 0)
             {
                 string parameterNameList;
-                var parameterList = GetInParameterList(ParmTag, EDataType.NVarChar, 255, tagCollection, out parameterNameList);
+                var parameterList = GetInParameterList(ParmTag, DataType.NVarChar, 255, tagCollection, out parameterNameList);
 
                 string sqlString =
                     $"SELECT ContentIDCollection FROM bairong_Tags WHERE Tag IN ({parameterNameList}) AND PublishmentSystemID = @PublishmentSystemID";
 
                 var paramList = new List<IDataParameter>();
                 paramList.AddRange(parameterList);
-                paramList.Add(GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId));
+                paramList.Add(GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId));
 
                 using (var rdr = ExecuteReader(sqlString, paramList.ToArray()))
                 {

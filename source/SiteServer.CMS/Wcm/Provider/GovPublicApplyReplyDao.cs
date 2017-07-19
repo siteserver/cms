@@ -1,7 +1,7 @@
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Wcm.Provider
 {
@@ -26,13 +26,13 @@ namespace SiteServer.CMS.Wcm.Provider
             
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, replyInfo.PublishmentSystemID),
-                GetParameter(ParmApplyId, EDataType.Integer, replyInfo.ApplyID),
-                GetParameter(ParmReply, EDataType.NText, replyInfo.Reply),
-                GetParameter(ParmFileUrl, EDataType.NVarChar, 255, replyInfo.FileUrl),
-                GetParameter(ParmDepartmentId, EDataType.Integer, replyInfo.DepartmentID),
-				GetParameter(ParmUserName, EDataType.VarChar, 50, replyInfo.UserName),
-                GetParameter(ParmAddDate, EDataType.DateTime, replyInfo.AddDate)
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, replyInfo.PublishmentSystemID),
+                GetParameter(ParmApplyId, DataType.Integer, replyInfo.ApplyID),
+                GetParameter(ParmReply, DataType.NText, replyInfo.Reply),
+                GetParameter(ParmFileUrl, DataType.NVarChar, 255, replyInfo.FileUrl),
+                GetParameter(ParmDepartmentId, DataType.Integer, replyInfo.DepartmentID),
+				GetParameter(ParmUserName, DataType.VarChar, 50, replyInfo.UserName),
+                GetParameter(ParmAddDate, DataType.DateTime, replyInfo.AddDate)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -56,7 +56,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmReplyId, EDataType.Integer, replayId)
+				GetParameter(ParmReplyId, DataType.Integer, replayId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -78,7 +78,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmApplyId, EDataType.Integer, applyId)
+				GetParameter(ParmApplyId, DataType.Integer, applyId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectByApplyId, parms))

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using System.Xml;
 using BaiRong.Core;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -73,7 +73,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -84,7 +84,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             var parsedContent = string.Empty;
 
             contextInfo.TitleWordNum = 0;
-            var inputId = DataProvider.InputDao.GetInputIdAsPossible(listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId);
+            //var inputId = DataProvider.InputDao.GetInputIdAsPossible(listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId);
+            var inputId = Input.GetInputIdAsPossible(listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId, pageInfo.Guid);
 
             if (listInfo.Layout == ELayout.None)
             {
@@ -112,7 +113,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, null, null, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.InputContent, contextInfo);
                 }
 
-                rptContents.DataSource = StlDataUtility.GetInputContentsDataSource(pageInfo.PublishmentSystemId, inputId, listInfo);
+                rptContents.DataSource = StlDataUtility.GetInputContentsDataSource(pageInfo.PublishmentSystemId, inputId, listInfo, pageInfo.Guid);
                 rptContents.DataBind();
 
                 if (rptContents.Items.Count > 0)
@@ -144,7 +145,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, null, null, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.InputContent, contextInfo);
                 }
 
-                pdlContents.DataSource = StlDataUtility.GetInputContentsDataSource(pageInfo.PublishmentSystemId, inputId, listInfo);
+                pdlContents.DataSource = StlDataUtility.GetInputContentsDataSource(pageInfo.PublishmentSystemId, inputId, listInfo, pageInfo.Guid);
                 pdlContents.DataBind();
 
                 if (pdlContents.Items.Count > 0)

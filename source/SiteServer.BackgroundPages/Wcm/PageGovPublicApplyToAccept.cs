@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicApply, "待受理申请", AppManager.Wcm.Permission.WebSite.GovPublicApply);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, "待受理申请", AppManager.Wcm.Permission.WebSite.GovPublicApply);
             }
         }
 

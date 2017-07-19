@@ -5,6 +5,7 @@ using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -48,7 +49,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
@@ -59,10 +60,13 @@ namespace SiteServer.CMS.StlParser.StlElement
             pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
             pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcSwfObject);
 
+            //var contentInfo = contextInfo.ContentInfo ??
+            //                  DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId);
             var contentInfo = contextInfo.ContentInfo ??
-                              DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId);
+                              Content.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId, pageInfo.Guid);
 
-            var photoInfoList = DataProvider.PhotoDao.GetPhotoInfoList(pageInfo.PublishmentSystemId, contextInfo.ContentId);
+            //var photoInfoList = DataProvider.PhotoDao.GetPhotoInfoList(pageInfo.PublishmentSystemId, contextInfo.ContentId);
+            var photoInfoList = Photo.GetPhotoInfoList(pageInfo.PublishmentSystemId, contextInfo.ContentId, pageInfo.Guid);
 
             var builder = new StringBuilder();
 
@@ -100,17 +104,20 @@ var slide_data = {
     ],
 ");
 
-            var siblingContentId = BaiRongDataProvider.ContentDao.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, true);
+            //var siblingContentId = BaiRongDataProvider.ContentDao.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, true);
+            var siblingContentId = Content.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, true, pageInfo.Guid);
 
             if (siblingContentId > 0)
             {
                 var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contentInfo.NodeId);
                 var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
-                var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
+                //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
+                var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId, pageInfo.Guid);
                 var title = siblingContentInfo.Title;
                 var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo);
-                var photoInfo = DataProvider.PhotoDao.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
+                //var photoInfo = DataProvider.PhotoDao.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
+                var photoInfo = Photo.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId, pageInfo.Guid);
                 var previewUrl = photoInfo != null ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl) : SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FileS);
                 builder.Append($@"
     ""next_album"":{{""title"":""{StringUtils.ToJsString(title)}"",""url"":""{StringUtils.ToJsString(url)}"",""previewUrl"":""{StringUtils.ToJsString(previewUrl)}""}},
@@ -123,18 +130,21 @@ var slide_data = {
 ");
             }
 
-            siblingContentId = BaiRongDataProvider.ContentDao.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, false);
+            //siblingContentId = BaiRongDataProvider.ContentDao.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, false);
+            siblingContentId = Content.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, false, pageInfo.Guid);
 
             if (siblingContentId > 0)
             {
                 var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contentInfo.NodeId);
                 var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
-                var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
+                //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
+                var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId, pageInfo.Guid);
                 var title = siblingContentInfo.Title;
                 var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo);
 
-                var photoInfo = DataProvider.PhotoDao.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
+                //var photoInfo = DataProvider.PhotoDao.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
+                var photoInfo = Photo.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId, pageInfo.Guid);
                 var previewUrl = photoInfo != null ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl) : SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FileS);
                 builder.Append($@"
     ""prev_album"":{{""title"":""{StringUtils.ToJsString(title)}"",""url"":""{StringUtils.ToJsString(url)}"",""previewUrl"":""{StringUtils
@@ -159,7 +169,7 @@ var slide_data = {
 <script src=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Slide.Js)}"" type=""text/javascript"" charset=""gb2312""></script>
 ");
 
-            builder.Append(StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.GetPath(SiteFilesAssets.Slide.Template), ECharset.utf_8));
+            builder.Append(TemplateManager.GetContentByFilePath(SiteFilesAssets.GetPath(SiteFilesAssets.Slide.Template)));
 
             return builder.ToString();
         }

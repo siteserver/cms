@@ -7,6 +7,7 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using MySql.Data.MySqlClient;
 
 namespace BaiRong.Core.Provider
 {
@@ -80,21 +81,7 @@ namespace BaiRong.Core.Provider
         public bool UpdateTaxisToUp(string tableName, int nodeId, int contentId, bool isTop)
         {
             //Get Higher Taxis and ID
-            string sqlString;
-            if (isTop)
-            {
-                //sqlString =
-                //    $"SELECT TOP 1 ID, Taxis FROM {tableName} WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis >= {TaxisIstopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis";
-                sqlString = SqlUtils.GetTopSqlString(tableName, "ID, Taxis",
-                    $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis", 1);
-            }
-            else
-            {
-                //sqlString =
-                //    $"SELECT TOP 1 ID, Taxis FROM {tableName} WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis < {TaxisIstopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis";
-                sqlString = SqlUtils.GetTopSqlString(tableName, "ID, Taxis",
-                    $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis", 1);
-            }
+            var sqlString = SqlUtils.GetTopSqlString(tableName, "ID, Taxis", isTop ? $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis" : $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis", 1);
             var higherId = 0;
             var higherTaxis = 0;
 
@@ -125,21 +112,7 @@ namespace BaiRong.Core.Provider
         public bool UpdateTaxisToDown(string tableName, int nodeId, int contentId, bool isTop)
         {
             //Get Lower Taxis and ID
-            string sqlString;
-            if (isTop)
-            {
-                //sqlString =
-                //    $"SELECT TOP 1 ID, Taxis FROM {tableName} WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis DESC";
-                sqlString = SqlUtils.GetTopSqlString(tableName, "ID, Taxis",
-                    $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis DESC", 1);
-            }
-            else
-            {
-                //sqlString =
-                //    $"SELECT TOP 1 ID, Taxis FROM {tableName} WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis DESC";
-                sqlString = SqlUtils.GetTopSqlString(tableName, "ID, Taxis",
-                    $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis DESC", 1);
-            }
+            var sqlString = SqlUtils.GetTopSqlString(tableName, "ID, Taxis", isTop ? $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis DESC" : $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE ID = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND NodeID = {nodeId}) ORDER BY Taxis DESC", 1);
             var lowerId = 0;
             var lowerTaxis = 0;
 
@@ -438,29 +411,11 @@ namespace BaiRong.Core.Provider
             string sqlString;
             if (string.IsNullOrEmpty(userName))
             {
-                if (nodeIdList.Count == 1)
-                {
-                    sqlString =
-                        $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')";
-                }
-                else
-                {
-                    sqlString =
-                        $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')";
-                }
+                sqlString = nodeIdList.Count == 1 ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')" : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')";
             }
             else
             {
-                if (nodeIdList.Count == 1)
-                {
-                    sqlString =
-                        $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')";
-                }
-                else
-                {
-                    sqlString =
-                        $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')";
-                }
+                sqlString = nodeIdList.Count == 1 ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')" : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')";
             }
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
@@ -471,29 +426,11 @@ namespace BaiRong.Core.Provider
             string sqlString;
             if (string.IsNullOrEmpty(userName))
             {
-                if (nodeIdList.Count == 1)
-                {
-                    sqlString =
-                        $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)";
-                }
-                else
-                {
-                    sqlString =
-                        $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)";
-                }
+                sqlString = nodeIdList.Count == 1 ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)" : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)";
             }
             else
             {
-                if (nodeIdList.Count == 1)
-                {
-                    sqlString =
-                        $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
-                }
-                else
-                {
-                    sqlString =
-                        $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
-                }
+                sqlString = nodeIdList.Count == 1 ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')" : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
             }
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
@@ -534,15 +471,9 @@ namespace BaiRong.Core.Provider
                 }
             }
 
-            if (nodeIdList.Count == 1)
-            {
-                whereString.Append($"PublishmentSystemID = {publishmentSystemId} AND (NodeID = {nodeIdList[0]}) ");
-            }
-            else
-            {
-                whereString.Append(
-                    $"PublishmentSystemID = {publishmentSystemId} AND (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
-            }
+            whereString.Append(nodeIdList.Count == 1
+                ? $"PublishmentSystemID = {publishmentSystemId} AND (NodeID = {nodeIdList[0]}) "
+                : $"PublishmentSystemID = {publishmentSystemId} AND (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
 
             if (StringUtils.EqualsIgnoreCase(searchType, ContentAttribute.IsTop) || StringUtils.EqualsIgnoreCase(searchType, BackgroundContentAttribute.IsRecommend) || StringUtils.EqualsIgnoreCase(searchType, BackgroundContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(searchType, BackgroundContentAttribute.IsHot))
             {
@@ -613,16 +544,10 @@ namespace BaiRong.Core.Provider
 
             var whereString = new StringBuilder("WHERE ");
 
-            if (nodeIdList.Count == 1)
-            {
-                whereString.Append(
-                    $"PublishmentSystemID = {publishmentSystemId} AND (NodeID = {nodeIdList[0]}) AND ({where}) ");
-            }
-            else
-            {
-                whereString.Append(
-                    $"PublishmentSystemID = {publishmentSystemId} AND (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) AND ({where}) ");
-            }
+            whereString.Append(
+                nodeIdList.Count == 1
+                    ? $"PublishmentSystemID = {publishmentSystemId} AND (NodeID = {nodeIdList[0]}) AND ({where}) "
+                    : $"PublishmentSystemID = {publishmentSystemId} AND (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) AND ({where}) ");
 
             if (checkedState == ETriState.True)
             {
@@ -691,15 +616,9 @@ namespace BaiRong.Core.Provider
 
             var whereString = new StringBuilder();
 
-            if (nodeIdList.Count == 1)
-            {
-                whereString.Append($"WHERE (NodeID = {nodeIdList[0]}) ");
-            }
-            else
-            {
-                whereString.Append(
-                    $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
-            }
+            whereString.Append(nodeIdList.Count == 1
+                ? $"WHERE (NodeID = {nodeIdList[0]}) "
+                : $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
 
             if (checkedState == ETriState.True)
             {
@@ -853,33 +772,11 @@ namespace BaiRong.Core.Provider
 
             if (totalNum > 0)
             {
-                if (nodeIdList.Count == 1)
-                {
-                    //sqlString =
-                    //    $"SELECT TOP {totalNum} ID FROM {tableName} WHERE (NodeID = {nodeIdList[0]} AND IsChecked = '{true}' {whereString}) {orderByString}";
-                    sqlString = SqlUtils.GetTopSqlString(tableName, "ID",
-                        $"WHERE (NodeID = {nodeIdList[0]} AND IsChecked = '{true}' {whereString}) {orderByString}", totalNum);
-                }
-                else
-                {
-                    //sqlString =
-                    //    $"SELECT TOP {totalNum} ID FROM {tableName} WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString}) {orderByString}";
-                    sqlString = SqlUtils.GetTopSqlString(tableName, "ID",
-                        $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString}) {orderByString}", totalNum);
-                }
+                sqlString = SqlUtils.GetTopSqlString(tableName, "ID", nodeIdList.Count == 1 ? $"WHERE (NodeID = {nodeIdList[0]} AND IsChecked = '{true}' {whereString}) {orderByString}" : $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString}) {orderByString}", totalNum);
             }
             else
             {
-                if (nodeIdList.Count == 1)
-                {
-                    sqlString =
-                        $"SELECT ID FROM {tableName} WHERE (NodeID = {nodeIdList[0]} AND IsChecked = '{true}' {whereString}) {orderByString}";
-                }
-                else
-                {
-                    sqlString =
-                        $"SELECT ID FROM {tableName} WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString}) {orderByString}";
-                }
+                sqlString = nodeIdList.Count == 1 ? $"SELECT ID FROM {tableName} WHERE (NodeID = {nodeIdList[0]} AND IsChecked = '{true}' {whereString}) {orderByString}" : $"SELECT ID FROM {tableName} WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString}) {orderByString}";
             }
 
             using (var rdr = ExecuteReader(sqlString))
@@ -986,21 +883,7 @@ namespace BaiRong.Core.Provider
         public int GetContentId(string tableName, int nodeId, int taxis, bool isNextContent)
         {
             var contentId = 0;
-            string sqlString;
-            if (isNextContent)
-            {
-                //sqlString =
-                //    $"SELECT TOP 1 ID FROM {tableName} WHERE (NodeID = {nodeId} AND Taxis < {taxis} AND IsChecked = 'True') ORDER BY Taxis DESC";
-                sqlString = SqlUtils.GetTopSqlString(tableName, "ID",
-                    $"WHERE (NodeID = {nodeId} AND Taxis < {taxis} AND IsChecked = 'True') ORDER BY Taxis DESC", 1);
-            }
-            else
-            {
-                //sqlString =
-                //    $"SELECT TOP 1 ID FROM {tableName} WHERE (NodeID = {nodeId} AND Taxis > {taxis} AND IsChecked = 'True') ORDER BY Taxis";
-                sqlString = SqlUtils.GetTopSqlString(tableName, "ID",
-                    $"WHERE (NodeID = {nodeId} AND Taxis > {taxis} AND IsChecked = 'True') ORDER BY Taxis", 1);
-            }
+            var sqlString = SqlUtils.GetTopSqlString(tableName, "ID", isNextContent ? $"WHERE (NodeID = {nodeId} AND Taxis < {taxis} AND IsChecked = 'True') ORDER BY Taxis DESC" : $"WHERE (NodeID = {nodeId} AND Taxis > {taxis} AND IsChecked = 'True') ORDER BY Taxis", 1);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -1200,16 +1083,7 @@ group by tmp.userName";
             }
             else
             {
-                if (owningNodeIdList.Count == 1)
-                {
-                    whereString =
-                        $"WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {owningNodeIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}) ";
-                }
-                else
-                {
-                    whereString =
-                        $"WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}) ";
-                }
+                whereString = owningNodeIdList.Count == 1 ? $"WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {owningNodeIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}) " : $"WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}) ";
             }
 
             return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
@@ -1221,17 +1095,7 @@ group by tmp.userName";
             {
                 return null;
             }
-            string sqlWhereString;
-            if (nodeIdList.Count == 1)
-            {
-                sqlWhereString =
-                    $"WHERE (NodeID = {nodeIdList[0]} AND IsChecked = '{true}' {whereString})";
-            }
-            else
-            {
-                sqlWhereString =
-                    $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})";
-            }
+            var sqlWhereString = nodeIdList.Count == 1 ? $"WHERE (NodeID = {nodeIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})";
 
             if (isNoDup)
             {
@@ -1358,14 +1222,7 @@ group by tmp.userName";
                 }
             }
 
-            if (startNum <= 1)
-            {
-                return GetDataSourceByContentNumAndWhereString(tableName, totalNum, sqlWhereString, orderByString);
-            }
-            else
-            {
-                return GetDataSourceByStartNum(tableName, startNum, totalNum, sqlWhereString, orderByString);
-            }
+            return startNum <= 1 ? GetStlDataSourceByContentNumAndWhereString(tableName, totalNum, sqlWhereString, orderByString) : GetStlDataSourceByStartNum(tableName, startNum, totalNum, sqlWhereString, orderByString);
         }
 
         public int GetStlCountChecked(string tableName, List<int> nodeIdList, string whereString)
@@ -1374,44 +1231,36 @@ group by tmp.userName";
             {
                 return 0;
             }
-            string sqlWhereString;
-            if (nodeIdList.Count == 1)
-            {
-                sqlWhereString =
-                    $"WHERE (NodeID ={nodeIdList[0]} AND IsChecked = '{true}' {whereString})";
-            }
-            else
-            {
-                sqlWhereString =
-                    $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})";
-            }
+            var sqlWhereString = nodeIdList.Count == 1 ? $"WHERE (NodeID ={nodeIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})";
 
             string sqlString = $"SELECT COUNT(*) FROM {tableName} {sqlWhereString}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private IEnumerable GetDataSourceByContentNumAndWhereString(string tableName, int totalNum, string whereString, string orderByString)
+        private IEnumerable GetStlDataSourceByContentNumAndWhereString(string tableName, int totalNum, string whereString, string orderByString)
         {
             IEnumerable enumerable = null;
             if (!string.IsNullOrEmpty(tableName))
             {
-                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, totalNum, SqlUtils.Asterisk, whereString, orderByString);
+                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, totalNum, StlColumns, whereString, orderByString);
                 enumerable = (IEnumerable)ExecuteReader(sqlSelect);
             }
             return enumerable;
         }
 
-        private IEnumerable GetDataSourceByStartNum(string tableName, int startNum, int totalNum, string whereString, string orderByString)
+        private IEnumerable GetStlDataSourceByStartNum(string tableName, int startNum, int totalNum, string whereString, string orderByString)
         {
             IEnumerable enumerable = null;
             if (!string.IsNullOrEmpty(tableName))
             {
-                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, whereString, orderByString);
+                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, StlColumns, whereString, orderByString);
                 enumerable = (IEnumerable)ExecuteReader(sqlSelect);
             }
             return enumerable;
         }
+
+        public string StlColumns => $"{ContentAttribute.Id}, {ContentAttribute.NodeId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
 
         public string GetStlWhereString(int publishmentSystemId, string group, string groupNot, string tags, bool isTopExists, bool isTop, string where)
         {

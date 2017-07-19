@@ -10,7 +10,7 @@ namespace BaiRong.Core.Model.Enumerations
         GovInteractContent,	    //互动交流
         VoteContent,	        //投票
         JobContent,	            //招聘
-        UserDefined,            //自定义
+        Custom,                 //自定义
         Channel,			    //栏目
         InputContent,           //提交表单
         Site,                   //站点
@@ -24,42 +24,39 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "BackgroundContent";
             }
-            else if (type == ETableStyle.GovPublicContent)
+            if (type == ETableStyle.GovPublicContent)
             {
                 return "GovPublicContent";
             }
-            else if (type == ETableStyle.GovInteractContent)
+            if (type == ETableStyle.GovInteractContent)
             {
                 return "GovInteractContent";
             }
-            else if (type == ETableStyle.VoteContent)
+            if (type == ETableStyle.VoteContent)
             {
                 return "VoteContent";
             }
-            else if (type == ETableStyle.JobContent)
+            if (type == ETableStyle.JobContent)
             {
                 return "JobContent";
             }
-            else if (type == ETableStyle.UserDefined)
+            if (type == ETableStyle.Custom)
             {
-                return "UserDefined";
+                return "Custom";
             }
-            else if (type == ETableStyle.Channel)
+            if (type == ETableStyle.Channel)
             {
                 return "Channel";
             }
-            else if (type == ETableStyle.InputContent)
+            if (type == ETableStyle.InputContent)
             {
                 return "InputContent";
             }
-            else if (type == ETableStyle.Site)
+            if (type == ETableStyle.Site)
             {
                 return "Site";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(ETableStyle type)
@@ -68,42 +65,39 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "内容";
             }
-            else if (type == ETableStyle.GovPublicContent)
+            if (type == ETableStyle.GovPublicContent)
             {
                 return "信息公开";
             }
-            else if (type == ETableStyle.GovInteractContent)
+            if (type == ETableStyle.GovInteractContent)
             {
                 return "互动交流";
             }
-            else if (type == ETableStyle.VoteContent)
+            if (type == ETableStyle.VoteContent)
             {
                 return "投票";
             }
-            else if (type == ETableStyle.JobContent)
+            if (type == ETableStyle.JobContent)
             {
                 return "招聘";
             }
-            else if (type == ETableStyle.UserDefined)
+            if (type == ETableStyle.Custom)
             {
                 return "自定义";
             }
-            else if (type == ETableStyle.Channel)
+            if (type == ETableStyle.Channel)
             {
                 return "栏目";
             }
-            else if (type == ETableStyle.InputContent)
+            if (type == ETableStyle.InputContent)
             {
                 return "提交表单";
             }
-            else if (type == ETableStyle.Site)
+            if (type == ETableStyle.Site)
             {
                 return "站点";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static ETableStyle GetEnumType(string typeStr)
@@ -130,9 +124,9 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 retval = ETableStyle.JobContent;
             }
-            else if (Equals(ETableStyle.UserDefined, typeStr))
+            else if (Equals(ETableStyle.Custom, typeStr))
             {
-                retval = ETableStyle.UserDefined;
+                retval = ETableStyle.Custom;
             }
             else if (Equals(ETableStyle.Channel, typeStr))
             {
@@ -176,7 +170,7 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static bool IsNodeRelated(ETableStyle tableStyle)
         {
-            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.UserDefined || tableStyle == ETableStyle.Channel)
+            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.Custom || tableStyle == ETableStyle.Channel)
             {
                 return true;
             }
@@ -185,7 +179,7 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static bool IsContent(ETableStyle tableStyle)
         {
-            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.UserDefined)
+            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.Custom)
             {
                 return true;
             }
@@ -198,21 +192,21 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return EAuxiliaryTableType.GovPublicContent;
             }
-            else if (tableStyle == ETableStyle.GovInteractContent)
+            if (tableStyle == ETableStyle.GovInteractContent)
             {
                 return EAuxiliaryTableType.GovInteractContent;
             }
-            else if (tableStyle == ETableStyle.VoteContent)
+            if (tableStyle == ETableStyle.VoteContent)
             {
                 return EAuxiliaryTableType.VoteContent;
             }
-            else if (tableStyle == ETableStyle.JobContent)
+            if (tableStyle == ETableStyle.JobContent)
             {
                 return EAuxiliaryTableType.JobContent;
             }
-            else if (tableStyle == ETableStyle.UserDefined)
+            if (tableStyle == ETableStyle.Custom)
             {
-                return EAuxiliaryTableType.UserDefined;
+                return EAuxiliaryTableType.Custom;
             }
             return EAuxiliaryTableType.BackgroundContent;
         }
@@ -223,21 +217,21 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return ETableStyle.GovPublicContent;
             }
-            else if (tableType == EAuxiliaryTableType.GovInteractContent)
+            if (tableType == EAuxiliaryTableType.GovInteractContent)
             {
                 return ETableStyle.GovInteractContent;
             }
-            else if (tableType == EAuxiliaryTableType.VoteContent)
+            if (tableType == EAuxiliaryTableType.VoteContent)
             {
                 return ETableStyle.VoteContent;
             }
-            else if (tableType == EAuxiliaryTableType.JobContent)
+            if (tableType == EAuxiliaryTableType.JobContent)
             {
                 return ETableStyle.JobContent;
             }
-            else if (tableType == EAuxiliaryTableType.UserDefined)
+            if (tableType == EAuxiliaryTableType.Custom)
             {
-                return ETableStyle.UserDefined;
+                return ETableStyle.Custom;
             }
             return ETableStyle.BackgroundContent;
         }

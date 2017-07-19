@@ -74,7 +74,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             {
                 var pageTitle = _voteId > 0 ? "编辑投票活动" : "添加投票活动";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdVote, pageTitle, AppManager.WeiXin.Permission.WebSite.Vote);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdVote, pageTitle, AppManager.WeiXin.Permission.WebSite.Vote);
                 LtlPageTitle.Text = pageTitle;
 
                 var listItem = new ListItem("文字类型投票", "false");

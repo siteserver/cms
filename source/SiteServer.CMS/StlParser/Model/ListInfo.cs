@@ -232,15 +232,15 @@ namespace SiteServer.CMS.StlParser.Model
                 {
                     if (contextType == EContextType.Content)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
+                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
                     }
                     else if (contextType == EContextType.Channel)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.Channel, ETaxisType.OrderByTaxis);
+                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.Channel, ETaxisType.OrderByTaxis, pageInfo.Guid);
                     }
                     else if (contextType == EContextType.InputContent)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc);
+                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
                     }
                     else
                     {
@@ -388,6 +388,7 @@ namespace SiteServer.CMS.StlParser.Model
                 }
                 else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(attr.Name, StlSqlContents.AttributeConnectionStringName))
                 {
+                    listInfo.ConnectionString = WebConfigUtils.GetConnectionStringByName(attr.Value);
                     if (string.IsNullOrEmpty(listInfo.ConnectionString))
                     {
                         listInfo.ConnectionString = WebConfigUtils.ConnectionString;
@@ -449,7 +450,7 @@ namespace SiteServer.CMS.StlParser.Model
                     }
                     if (_contextType == EContextType.InputContent)
                     {
-                        return ETaxisTypeUtils.GetOrderByString(ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc, string.Empty, null);
+                        return ETaxisTypeUtils.GetOrderByString(ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc);
                     }
                 }
                 return _orderByString;

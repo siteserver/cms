@@ -9,6 +9,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -56,25 +57,25 @@ namespace SiteServer.CMS.Provider
             var taxis = GetMaxTaxis() + 1;
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemId, EDataType.Integer, info.PublishmentSystemId),
-				GetParameter(ParmPublishmentsystemName, EDataType.NVarChar, 50, info.PublishmentSystemName),
-				GetParameter(ParmAuxiliaryTableForContent, EDataType.VarChar, 50, info.AuxiliaryTableForContent),
-                GetParameter(ParmAuxiliaryTableForGovpublic, EDataType.VarChar, 50, info.AuxiliaryTableForGovPublic),
-                GetParameter(ParmAuxiliaryTableForGovinteract, EDataType.VarChar, 50, info.AuxiliaryTableForGovInteract),
-                GetParameter(ParmAuxiliaryTableForVote, EDataType.VarChar, 50, info.AuxiliaryTableForVote),
-                GetParameter(ParmAuxiliaryTableForJob, EDataType.VarChar, 50, info.AuxiliaryTableForJob),
-				GetParameter(ParmIsCheckContentUseLevel, EDataType.VarChar, 18, info.IsCheckContentUseLevel.ToString()),
-				GetParameter(ParmCheckContentLevel, EDataType.Integer, info.CheckContentLevel),
-				GetParameter(ParmPublishmentsystemDir, EDataType.VarChar, 50, info.PublishmentSystemDir),
-				GetParameter(ParmPublishmentsystemUrl, EDataType.VarChar, 200, info.PublishmentSystemUrl),
-				GetParameter(ParmIsHeadquarters, EDataType.VarChar, 18, info.IsHeadquarters.ToString()),
-                GetParameter(ParmParentPublishmentsystemid, EDataType.Integer, info.ParentPublishmentSystemId),
-                GetParameter(ParmTaxis, EDataType.Integer, taxis),
-				GetParameter(ParmSettingsXml, EDataType.NText, info.Additional.ToString())
+				GetParameter(ParmPublishmentsystemId, DataType.Integer, info.PublishmentSystemId),
+				GetParameter(ParmPublishmentsystemName, DataType.NVarChar, 50, info.PublishmentSystemName),
+				GetParameter(ParmAuxiliaryTableForContent, DataType.VarChar, 50, info.AuxiliaryTableForContent),
+                GetParameter(ParmAuxiliaryTableForGovpublic, DataType.VarChar, 50, info.AuxiliaryTableForGovPublic),
+                GetParameter(ParmAuxiliaryTableForGovinteract, DataType.VarChar, 50, info.AuxiliaryTableForGovInteract),
+                GetParameter(ParmAuxiliaryTableForVote, DataType.VarChar, 50, info.AuxiliaryTableForVote),
+                GetParameter(ParmAuxiliaryTableForJob, DataType.VarChar, 50, info.AuxiliaryTableForJob),
+				GetParameter(ParmIsCheckContentUseLevel, DataType.VarChar, 18, info.IsCheckContentUseLevel.ToString()),
+				GetParameter(ParmCheckContentLevel, DataType.Integer, info.CheckContentLevel),
+				GetParameter(ParmPublishmentsystemDir, DataType.VarChar, 50, info.PublishmentSystemDir),
+				GetParameter(ParmPublishmentsystemUrl, DataType.VarChar, 200, info.PublishmentSystemUrl),
+				GetParameter(ParmIsHeadquarters, DataType.VarChar, 18, info.IsHeadquarters.ToString()),
+                GetParameter(ParmParentPublishmentsystemid, DataType.Integer, info.ParentPublishmentSystemId),
+                GetParameter(ParmTaxis, DataType.Integer, taxis),
+				GetParameter(ParmSettingsXml, DataType.NText, info.Additional.ToString())
 			};
 
             ExecuteNonQuery(trans, SqlInsertPublishmentSystem, insertParms);
-            PublishmentSystemManager.ClearCache(true);
+            PublishmentSystemManager.ClearCache();
         }
 
         public void Delete(int publishmentSystemId)
@@ -91,7 +92,7 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery($"DELETE FROM siteserver_PublishmentSystem WHERE PublishmentSystemID  = {publishmentSystemId}");
 
-            PublishmentSystemManager.ClearCache(true);
+            PublishmentSystemManager.ClearCache();
             NodeManager.RemoveCache(publishmentSystemId);
             ProductPermissionsManager.Current.ClearCache();
         }
@@ -101,21 +102,21 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemName, EDataType.NVarChar, 50, info.PublishmentSystemName),
-				GetParameter(ParmAuxiliaryTableForContent, EDataType.VarChar, 50, info.AuxiliaryTableForContent),
-                GetParameter(ParmAuxiliaryTableForGovpublic, EDataType.VarChar, 50, info.AuxiliaryTableForGovPublic),
-                GetParameter(ParmAuxiliaryTableForGovinteract, EDataType.VarChar, 50, info.AuxiliaryTableForGovInteract),
-                GetParameter(ParmAuxiliaryTableForVote, EDataType.VarChar, 50, info.AuxiliaryTableForVote),
-                GetParameter(ParmAuxiliaryTableForJob, EDataType.VarChar, 50, info.AuxiliaryTableForJob),
-				GetParameter(ParmIsCheckContentUseLevel, EDataType.VarChar, 18, info.IsCheckContentUseLevel.ToString()),
-				GetParameter(ParmCheckContentLevel, EDataType.Integer, info.CheckContentLevel),
-				GetParameter(ParmPublishmentsystemDir, EDataType.VarChar, 50, info.PublishmentSystemDir),
-				GetParameter(ParmPublishmentsystemUrl, EDataType.VarChar, 200, info.PublishmentSystemUrl),
-				GetParameter(ParmIsHeadquarters, EDataType.VarChar, 18, info.IsHeadquarters.ToString()),
-                GetParameter(ParmParentPublishmentsystemid, EDataType.Integer, info.ParentPublishmentSystemId),
-                GetParameter(ParmTaxis, EDataType.Integer, info.Taxis),
-				GetParameter(ParmSettingsXml, EDataType.NText, info.Additional.ToString()),
-				GetParameter(ParmPublishmentsystemId, EDataType.Integer, info.PublishmentSystemId)
+				GetParameter(ParmPublishmentsystemName, DataType.NVarChar, 50, info.PublishmentSystemName),
+				GetParameter(ParmAuxiliaryTableForContent, DataType.VarChar, 50, info.AuxiliaryTableForContent),
+                GetParameter(ParmAuxiliaryTableForGovpublic, DataType.VarChar, 50, info.AuxiliaryTableForGovPublic),
+                GetParameter(ParmAuxiliaryTableForGovinteract, DataType.VarChar, 50, info.AuxiliaryTableForGovInteract),
+                GetParameter(ParmAuxiliaryTableForVote, DataType.VarChar, 50, info.AuxiliaryTableForVote),
+                GetParameter(ParmAuxiliaryTableForJob, DataType.VarChar, 50, info.AuxiliaryTableForJob),
+				GetParameter(ParmIsCheckContentUseLevel, DataType.VarChar, 18, info.IsCheckContentUseLevel.ToString()),
+				GetParameter(ParmCheckContentLevel, DataType.Integer, info.CheckContentLevel),
+				GetParameter(ParmPublishmentsystemDir, DataType.VarChar, 50, info.PublishmentSystemDir),
+				GetParameter(ParmPublishmentsystemUrl, DataType.VarChar, 200, info.PublishmentSystemUrl),
+				GetParameter(ParmIsHeadquarters, DataType.VarChar, 18, info.IsHeadquarters.ToString()),
+                GetParameter(ParmParentPublishmentsystemid, DataType.Integer, info.ParentPublishmentSystemId),
+                GetParameter(ParmTaxis, DataType.Integer, info.Taxis),
+				GetParameter(ParmSettingsXml, DataType.NText, info.Additional.ToString()),
+				GetParameter(ParmPublishmentsystemId, DataType.Integer, info.PublishmentSystemId)
 			};
 
             if (info.IsHeadquarters)
@@ -124,7 +125,7 @@ namespace SiteServer.CMS.Provider
             }
 
             ExecuteNonQuery(SqlUpdatePublishmentSystem, updateParms);
-            PublishmentSystemManager.ClearCache(true);
+            PublishmentSystemManager.ClearCache();
         }
 
         public void UpdateParentPublishmentSystemIdToZero(int parentPublishmentSystemId)
@@ -132,7 +133,7 @@ namespace SiteServer.CMS.Provider
             var sqlString = "UPDATE siteserver_PublishmentSystem SET ParentPublishmentSystemID = 0 WHERE ParentPublishmentSystemID = " + parentPublishmentSystemId;
 
             ExecuteNonQuery(sqlString);
-            PublishmentSystemManager.ClearCache(true);
+            PublishmentSystemManager.ClearCache();
         }
 
         public List<string> GetLowerPublishmentSystemDirListThatNotIsHeadquarters()
@@ -141,7 +142,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmIsHeadquarters, EDataType.VarChar, 18, false.ToString())
+				GetParameter(ParmIsHeadquarters, DataType.VarChar, 18, false.ToString())
 			};
 
             using (var rdr = ExecuteReader(SqlSelectPublishmentsystemDirByIsHeadquarters, parms))
@@ -161,7 +162,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmParentPublishmentsystemid, EDataType.Integer, parentPublishmentSystemId)
+				GetParameter(ParmParentPublishmentsystemid, DataType.Integer, parentPublishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectPublishmentsystemIdByParent, parms))
@@ -179,11 +180,11 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmIsHeadquarters, EDataType.VarChar, 18, false.ToString())
+				GetParameter(ParmIsHeadquarters, DataType.VarChar, 18, false.ToString())
 			};
 
             ExecuteNonQuery(SqlUpdateAllIsHeadquarters, updateParms);
-            PublishmentSystemManager.ClearCache(true);
+            PublishmentSystemManager.ClearCache();
         }
 
         public List<KeyValuePair<int, PublishmentSystemInfo>> GetPublishmentSystemInfoKeyValuePairList()
@@ -285,7 +286,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmIsHeadquarters, EDataType.VarChar, 18, true.ToString())
+				GetParameter(ParmIsHeadquarters, DataType.VarChar, 18, true.ToString())
 			};
 
             using (var rdr = ExecuteReader(SqlSelectPublishmentsystemIdByIsHeadquarters, parms))
@@ -305,7 +306,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemDir, EDataType.VarChar, 50, publishmentSystemDir)
+				GetParameter(ParmPublishmentsystemDir, DataType.VarChar, 50, publishmentSystemDir)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectPublishmentsystemIdByPublishmentsystemDir, parms))

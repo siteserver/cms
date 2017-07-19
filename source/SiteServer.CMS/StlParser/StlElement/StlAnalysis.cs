@@ -5,6 +5,7 @@ using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
@@ -135,7 +136,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -143,7 +144,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, bool isGetUrlFromAttribute, string channelIndex, string channelName , string type, string scope, bool isAverage, string style, int addNum, string since)
         {
-            var channelId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
+            var channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName, pageInfo.Guid);
 
             var contentId = 0;
             //判断是否链接地址由标签属性获得
@@ -170,9 +171,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             var publishmentSystemInfo = pageInfo.PublishmentSystemInfo;
             if (publishmentSystemInfo == null) return string.Empty;
 
-            var html = string.Empty;
+            string html;
 
-            var eStyle = publishmentSystemInfo.Additional.TrackerStyle;
+            var eStyle = ETrackerStyle.Number;
             if (!string.IsNullOrEmpty(style))
             {
                 eStyle = ETrackerStyleUtils.GetEnumType(style);
@@ -194,11 +195,13 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(scope, ScopePage))
                 {
-                    accessNum = eTemplateType != ETemplateType.FileTemplate ? DataProvider.TrackingDao.GetTotalAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate) : DataProvider.TrackingDao.GetTotalAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
+                    //accessNum = eTemplateType != ETemplateType.FileTemplate ? DataProvider.TrackingDao.GetTotalAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate) : DataProvider.TrackingDao.GetTotalAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
+                    accessNum = eTemplateType != ETemplateType.FileTemplate ? Tracking.GetTotalAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate, pageInfo.Guid) : Tracking.GetTotalAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate, pageInfo.Guid);
                 }
                 else
                 {
-                    accessNum = DataProvider.TrackingDao.GetTotalAccessNum(pageInfo.PublishmentSystemId, sinceDate);
+                    //accessNum = DataProvider.TrackingDao.GetTotalAccessNum(pageInfo.PublishmentSystemId, sinceDate);
+                    accessNum = Tracking.GetTotalAccessNum(pageInfo.PublishmentSystemId, sinceDate, pageInfo.Guid);
                     accessNum = accessNum + publishmentSystemInfo.Additional.TrackerPageView;
                 }
                 if (isAverage)
@@ -209,7 +212,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         timeSpan = new TimeSpan(DateTime.Now.Ticks - sinceDate.Ticks);
                     }
-                    var trackerDays = (timeSpan.Days == 0) ? 1 : timeSpan.Days;//总统计天数
+                    var trackerDays = timeSpan.Days == 0 ? 1 : timeSpan.Days;//总统计天数
                     trackerDays = trackerDays + publishmentSystemInfo.Additional.TrackerDays;
                     accessNum = Convert.ToInt32(Math.Round(Convert.ToDouble(accessNum / trackerDays)));
                 }
@@ -218,48 +221,48 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(scope, ScopePage))
                 {
-                    accessNum = eTemplateType != ETemplateType.FileTemplate ? DataProvider.TrackingDao.GetTotalUniqueAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate) : DataProvider.TrackingDao.GetTotalUniqueAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
+                    //accessNum = eTemplateType != ETemplateType.FileTemplate ? DataProvider.TrackingDao.GetTotalUniqueAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate) : DataProvider.TrackingDao.GetTotalUniqueAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
+                    accessNum = eTemplateType != ETemplateType.FileTemplate ? Tracking.GetTotalUniqueAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate, pageInfo.Guid) : Tracking.GetTotalUniqueAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate, pageInfo.Guid);
                 }
                 else
                 {
-                    accessNum = DataProvider.TrackingDao.GetTotalUniqueAccessNum(pageInfo.PublishmentSystemId, sinceDate);
+                    //accessNum = DataProvider.TrackingDao.GetTotalUniqueAccessNum(pageInfo.PublishmentSystemId, sinceDate);
+                    accessNum = Tracking.GetTotalUniqueAccessNum(pageInfo.PublishmentSystemId, sinceDate, pageInfo.Guid);
                     accessNum = accessNum + publishmentSystemInfo.Additional.TrackerUniqueVisitor;
                 }
                 if (isAverage)
                 {
                     var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, pageInfo.PublishmentSystemId);
                     var timeSpan = new TimeSpan(DateTime.Now.Ticks - nodeInfo.AddDate.Ticks);
-                    var trackerDays = (timeSpan.Days == 0) ? 1 : timeSpan.Days;//总统计天数
+                    var trackerDays = timeSpan.Days == 0 ? 1 : timeSpan.Days;//总统计天数
                     trackerDays = trackerDays + publishmentSystemInfo.Additional.TrackerDays;
                     accessNum = Convert.ToInt32(Math.Round(Convert.ToDouble(accessNum / trackerDays)));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeCurrentVisitor))
             {
-                accessNum = DataProvider.TrackingDao.GetCurrentVisitorNum(pageInfo.PublishmentSystemId, publishmentSystemInfo.Additional.TrackerCurrentMinute);
+                //accessNum = DataProvider.TrackingDao.GetCurrentVisitorNum(pageInfo.PublishmentSystemId, publishmentSystemInfo.Additional.TrackerCurrentMinute);
+                accessNum = Tracking.GetCurrentVisitorNum(pageInfo.PublishmentSystemId, publishmentSystemInfo.Additional.TrackerCurrentMinute, pageInfo.Guid);
             }
 
             accessNum = accessNum + addNum;
             if (accessNum == 0) accessNum = 1;
 
-            if (eStyle != ETrackerStyle.None)
+            if (eStyle == ETrackerStyle.Number)
             {
-                if (eStyle == ETrackerStyle.Number)
+                html = accessNum.ToString();
+            }
+            else
+            {
+                var numString = accessNum.ToString();
+                var htmlBuilder = new StringBuilder();
+                string imgFolder = $"{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Tracker.DirectoryName)}/{ETrackerStyleUtils.GetValue(eStyle)}";
+                foreach (var t in numString)
                 {
-                    html = accessNum.ToString();
+                    string imgHtml = $"<img src='{imgFolder}/{t}.gif' align=absmiddle border=0>";
+                    htmlBuilder.Append(imgHtml);
                 }
-                else
-                {
-                    var numString = accessNum.ToString();
-                    var htmlBuilder = new StringBuilder();
-                    string imgFolder = $"{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Tracker.DirectoryName)}/{ETrackerStyleUtils.GetValue(eStyle)}";
-                    foreach (var t in numString)
-                    {
-                        string imgHtml = $"<img src='{imgFolder}/{t}.gif' align=absmiddle border=0>";
-                        htmlBuilder.Append(imgHtml);
-                    }
-                    html = htmlBuilder.ToString();
-                }
+                html = htmlBuilder.ToString();
             }
 
             return html;

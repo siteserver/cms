@@ -2,7 +2,6 @@
 using BaiRong.Core;
 using SiteServer.CMS.Model;
 using System.Collections.Specialized;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Wcm;
@@ -15,30 +14,32 @@ namespace SiteServer.BackgroundPages.Core
     public class NodeTreeItem
     {
         private readonly string _iconFolderUrl;
-        private readonly string _iconOpenedFolderUrl;
         private readonly string _iconEmptyUrl;
         private readonly string _iconMinusUrl;
         private readonly string _iconPlusUrl;
 
-        private bool _enabled = true;
-        private NodeInfo _nodeInfo;
-        private string _administratorName;
+        private readonly PublishmentSystemInfo _publishmentSystemInfo;
+        private readonly NodeInfo _nodeInfo;
+        private readonly bool _enabled;
+        private readonly string _administratorName;
 
-        public static NodeTreeItem CreateInstance(NodeInfo nodeInfo, bool enabled, string administratorName)
+        public static NodeTreeItem CreateInstance(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, bool enabled, string administratorName)
         {
-            return new NodeTreeItem
-            {
-                _enabled = enabled,
-                _nodeInfo = nodeInfo,
-                _administratorName = administratorName
-            };
+            return new NodeTreeItem(publishmentSystemInfo, nodeInfo, enabled, administratorName);
         }
 
-        private NodeTreeItem()
+        private NodeTreeItem(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, bool enabled, string administratorName)
         {
+            _publishmentSystemInfo = publishmentSystemInfo;
+            _nodeInfo = nodeInfo;
+            _enabled = enabled;
+            _administratorName = administratorName;
+
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
-            _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
-            _iconOpenedFolderUrl = PageUtils.Combine(treeDirectoryUrl, "openedfolder.gif");
+
+            var modelInfo = ContentModelManager.GetContentModelInfo(_publishmentSystemInfo, nodeInfo.ContentModelId);
+            _iconFolderUrl = !string.IsNullOrEmpty(modelInfo.IconUrl) ? modelInfo.IconUrl : PageUtils.Combine(treeDirectoryUrl, "folder.gif");
+            
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
             _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
@@ -63,16 +64,12 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_nodeInfo.ChildrenCount > 0)
             {
-                if (_nodeInfo.PublishmentSystemId == _nodeInfo.NodeId)
-                {
-                    htmlBuilder.Append(
-                        $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_nodeInfo.NodeId}"" src=""{_iconMinusUrl}"" />");
-                }
-                else
-                {
-                    htmlBuilder.Append(
-                        $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_nodeInfo.NodeId}"" src=""{_iconPlusUrl}"" />");
-                }
+                htmlBuilder.Append(
+                    _nodeInfo.PublishmentSystemId == _nodeInfo.NodeId
+                        ? $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""false"" isOpen=""true"" id=""{_nodeInfo
+                            .NodeId}"" src=""{_iconMinusUrl}"" />"
+                        : $@"<img align=""absmiddle"" style=""cursor:pointer"" onClick=""displayChildren(this);"" isAjax=""true"" isOpen=""false"" id=""{_nodeInfo
+                            .NodeId}"" src=""{_iconPlusUrl}"" />");
             }
             else
             {
@@ -81,15 +78,10 @@ namespace SiteServer.BackgroundPages.Core
 
             if (!string.IsNullOrEmpty(_iconFolderUrl))
             {
-                if (_nodeInfo.NodeId > 0)
-                {
-                    htmlBuilder.Append(
-                        $@"<a href=""{PageActions.GetRedirectUrl(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId)}"" target=""_blank"" title=""浏览页面""><img align=""absmiddle"" border=""0"" src=""{_iconFolderUrl}"" /></a>");
-                }
-                else
-                {
-                    htmlBuilder.Append($@"<img align=""absmiddle"" src=""{_iconFolderUrl}"" />");
-                }
+                htmlBuilder.Append(
+                    _nodeInfo.NodeId > 0
+                        ? $@"<a href=""{PageActions.GetRedirectUrl(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId)}"" target=""_blank"" title=""浏览页面""><img align=""absmiddle"" border=""0"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" /></a>"
+                        : $@"<img align=""absmiddle"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" />");
             }
 
             htmlBuilder.Append("&nbsp;");
@@ -124,14 +116,10 @@ namespace SiteServer.BackgroundPages.Core
                 }
                 else if (loadingType == ELoadingType.GovPublicChannelAdd)
                 {
-                    if (EContentModelTypeUtils.Equals(_nodeInfo.ContentModelId, EContentModelType.GovPublic))
-                    {
-                        htmlBuilder.Append($@"<a href=""{ModalGovPublicCategoryChannelSelect.GetRedirectUrl(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId)}"">{_nodeInfo.NodeName}</a>");
-                    }
-                    else
-                    {
-                        htmlBuilder.Append(_nodeInfo.NodeName);
-                    }
+                    htmlBuilder.Append(EContentModelTypeUtils.Equals(_nodeInfo.ContentModelId, EContentModelType.GovPublic)
+                        ? $@"<a href=""{ModalGovPublicCategoryChannelSelect.GetRedirectUrl(
+                            _nodeInfo.PublishmentSystemId, _nodeInfo.NodeId)}"">{_nodeInfo.NodeName}</a>"
+                        : _nodeInfo.NodeName);
                 }
                 else if (loadingType == ELoadingType.GovPublicChannelTree)
                 {
@@ -142,7 +130,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
                 else
                 {
-                    if (AdminUtility.HasChannelPermissions(_administratorName, _nodeInfo.PublishmentSystemId, _nodeInfo.NodeId, AppManager.Cms.Permission.Channel.ChannelEdit))
+                    if (AdminUtility.HasChannelPermissions(_administratorName, _nodeInfo.PublishmentSystemId, _nodeInfo.NodeId, AppManager.Permissions.Channel.ChannelEdit))
                     {
                         var onClickUrl = ModalChannelEdit.GetOpenWindowString(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId, returnUrl);
                         htmlBuilder.Append(
@@ -162,11 +150,9 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_nodeInfo.PublishmentSystemId != 0)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(_nodeInfo.PublishmentSystemId);
-
                 htmlBuilder.Append("&nbsp;");
 
-                htmlBuilder.Append(NodeManager.GetNodeTreeLastImageHtml(publishmentSystemInfo, _nodeInfo));
+                htmlBuilder.Append(NodeManager.GetNodeTreeLastImageHtml(_publishmentSystemInfo, _nodeInfo));
 
                 if (_nodeInfo.ContentNum >= 0)
                 {
@@ -332,13 +318,10 @@ paths = paths.substring(paths.indexOf(',') + 1);
 </script>
 ";
 
-            var item = new NodeTreeItem();
-            script = script.Replace("{iconEmptyUrl}", item._iconEmptyUrl);
-            script = script.Replace("{iconFolderUrl}", item._iconFolderUrl);
-            script = script.Replace("{iconMinusUrl}", item._iconMinusUrl);
-            script = script.Replace("{iconOpenedFolderUrl}", item._iconOpenedFolderUrl);
-            script = script.Replace("{iconPlusUrl}", item._iconPlusUrl);
-
+            var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
+            script = script.Replace("{iconEmptyUrl}", PageUtils.Combine(treeDirectoryUrl, "empty.gif"));
+            script = script.Replace("{iconMinusUrl}", PageUtils.Combine(treeDirectoryUrl, "minus.png"));
+            script = script.Replace("{iconPlusUrl}", PageUtils.Combine(treeDirectoryUrl, "plus.png"));
             script = script.Replace("{iconLoadingUrl}", SiteServerAssets.GetIconUrl("loading.gif"));
             return script;
         }

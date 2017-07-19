@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
                 var pageTitle = _storeId > 0 ? "编辑微门店" : "添加微门店";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdStore, pageTitle, AppManager.WeiXin.Permission.WebSite.Store);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdStore, pageTitle, AppManager.WeiXin.Permission.WebSite.Store);
                 LtlPageTitle.Text = pageTitle;
 
                 LtlImageUrl.Text =

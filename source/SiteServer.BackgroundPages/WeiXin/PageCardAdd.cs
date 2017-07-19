@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
                 var pageTitle = _cardId > 0 ? "编辑会员卡" : "添加会员卡";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdCard, pageTitle, AppManager.WeiXin.Permission.WebSite.Card);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdCard, pageTitle, AppManager.WeiXin.Permission.WebSite.Card);
                 LtlPageTitle.Text = pageTitle;
 
                 LtlImageUrl.Text =

@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -38,13 +38,13 @@ namespace SiteServer.CMS.Provider
 						{
 							var insertItemParms = new IDataParameter[]
 							{
-								GetParameter(ParmPublishmentsystemId, EDataType.Integer, optionInfo.PublishmentSystemID),
-                                GetParameter(ParmNodeId, EDataType.Integer, optionInfo.NodeID),
-                                GetParameter(ParmContentId, EDataType.Integer, optionInfo.ContentID),
-								GetParameter(ParmTitle, EDataType.NVarChar, 255, optionInfo.Title),
-								GetParameter(ParmImageUrl, EDataType.VarChar, 200, optionInfo.ImageUrl),
-								GetParameter(ParmNavigationUrl, EDataType.VarChar, 200, optionInfo.NavigationUrl),
-								GetParameter(ParmVoteNum, EDataType.Integer, optionInfo.VoteNum)
+								GetParameter(ParmPublishmentsystemId, DataType.Integer, optionInfo.PublishmentSystemID),
+                                GetParameter(ParmNodeId, DataType.Integer, optionInfo.NodeID),
+                                GetParameter(ParmContentId, DataType.Integer, optionInfo.ContentID),
+								GetParameter(ParmTitle, DataType.NVarChar, 255, optionInfo.Title),
+								GetParameter(ParmImageUrl, DataType.VarChar, 200, optionInfo.ImageUrl),
+								GetParameter(ParmNavigationUrl, DataType.VarChar, 200, optionInfo.NavigationUrl),
+								GetParameter(ParmVoteNum, DataType.Integer, optionInfo.VoteNum)
 							};
 
                             ExecuteNonQuery(trans, sqlString, insertItemParms);
@@ -67,7 +67,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmOptionId, EDataType.Integer, optionId)
+				GetParameter(ParmOptionId, DataType.Integer, optionId)
 			};
             ExecuteNonQuery(sqlString, parms);
 		}
@@ -76,9 +76,9 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentsystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmNodeId, DataType.Integer, nodeId),
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 
             ExecuteNonQuery(SqlDeleteAll, parms);
@@ -90,9 +90,9 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentsystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmNodeId, DataType.Integer, nodeId),
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 			
 			using (var rdr = ExecuteReader(SqlSelectAll, parms)) 
@@ -130,9 +130,9 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentsystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmNodeId, DataType.Integer, nodeId),
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectVoteNum, parms))

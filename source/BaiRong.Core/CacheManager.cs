@@ -33,6 +33,11 @@ namespace BaiRong.Core
             return Cache.Get(cacheKey);
         }
 
+        public static bool IsCache(string cacheKey)
+        {
+            return Cache.Get(cacheKey) != null;
+        }
+
         public static void SetCache(string cacheKey, object obj)
         {
             Cache.Insert(cacheKey, obj, null, DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.AboveNormal, null);

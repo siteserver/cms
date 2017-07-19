@@ -13,18 +13,15 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(ECountType type)
 		{
-			if (type == ECountType.View)
+		    if (type == ECountType.View)
 			{
 				return "View";
 			}
-			else if (type == ECountType.Download)
-			{
-				return "Download";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ECountType.Download)
+		    {
+		        return "Download";
+		    }
+		    throw new Exception();
 		}
 
 		public static ECountType GetEnumType(string typeStr)

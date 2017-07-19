@@ -81,6 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
+            var guid = StringUtils.GetShortGuid();
             bool isChanged;
             var parentNodeId = TranslateUtils.ToInt(Request.Form["nodeID"]);
             if (parentNodeId == 0)
@@ -159,7 +160,7 @@ namespace SiteServer.BackgroundPages.Cms
                             var insertedNodeId = DataProvider.NodeDao.InsertNodeInfo(PublishmentSystemId, parentId, nodeName, nodeIndex, contentModelId, channelTemplateId, contentTemplateId);
                             insertedNodeIdHashtable[count + 1] = insertedNodeId;
 
-                            CreateManager.CreateChannel(PublishmentSystemId, insertedNodeId);
+                            CreateManager.CreateChannel(PublishmentSystemId, insertedNodeId, guid);
                         }
                     }
                 }

@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using BaiRong.Core;
+﻿using BaiRong.Core;
 using SiteServer.CMS.Core.Security;
 using System.Collections.Generic;
 using BaiRong.Core.Tabs;
-using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Wcm;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Wcm.GovInteract;
@@ -12,56 +10,11 @@ namespace SiteServer.BackgroundPages.Core
 {
     public class NodeNaviTabManager
     {
-        public static bool IsValid(Tab tab, ArrayList permissionArrayList)
-        {
-            if (StringUtils.StartsWithIgnoreCase(tab.Id, AppManager.Cms.LeftMenu.Function.IdInput))
-            {
-                return ProductPermissionsManager.Current.IsSystemAdministrator || IsValid(tab, permissionArrayList);
-            }
-            return IsValid(tab, permissionArrayList);
-        }
-
         public static TabCollection GetTabCollection(Tab parent, int publishmentSystemId)
         {
             TabCollection tabCollection;
-            if (StringUtils.EqualsIgnoreCase(parent.Id, AppManager.Cms.LeftMenu.Function.IdInput))
-            {
-                Tab[] tabs;
-                var inputNameList = DataProvider.InputDao.GetInputNameList(publishmentSystemId);
-                if (inputNameList.Count > 0)
-                {
-                    var tabList = new List<Tab>();
-                    foreach (var inputName in inputNameList)
-                    {
-                        var tab = new Tab
-                        {
-                            Text = inputName,
-                            Id = AppManager.Cms.LeftMenu.Function.IdInput + "_" + inputName,
-                            Href = PageInputContent.GetRedirectUrl(publishmentSystemId, inputName),
-                            KeepQueryString = false,
-                            Target = "right"
-                        };
 
-                        tabList.Add(tab);
-                    }
-
-                    var k = 0;
-                    tabs = new Tab[tabList.Count];
-                    for (; k < tabList.Count; k++)
-                    {
-                        tabs[k] = tabList[k];
-                    }
-
-                    parent.Children = tabs;
-                }
-                else
-                {
-                    tabs = parent.Children;
-                }
-
-                tabCollection = new TabCollection(tabs);
-            }
-            else if (StringUtils.EqualsIgnoreCase(parent.Id, AppManager.Wcm.LeftMenu.IdGovInteract))
+            if (StringUtils.EqualsIgnoreCase(parent.Id, AppManager.Wcm.LeftMenu.IdGovInteract))
             {
                 Tab[] tabs;
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
@@ -97,7 +50,6 @@ namespace SiteServer.BackgroundPages.Core
                                 {
                                     Text = "待受理办件",
                                     Href = PageGovInteractListAccept.GetRedirectUrl(nodeInfo.PublishmentSystemId, nodeInfo.NodeId),
-                                    KeepQueryString = false,
                                     Target = "right"
                                 });
                             }
@@ -107,7 +59,6 @@ namespace SiteServer.BackgroundPages.Core
                                 {
                                     Text = "待办理办件",
                                     Href = PageGovInteractListReply.GetRedirectUrl(nodeInfo.PublishmentSystemId, nodeInfo.NodeId),
-                                    KeepQueryString = false,
                                     Target = "right"
                                 });
                             }
@@ -117,7 +68,6 @@ namespace SiteServer.BackgroundPages.Core
                                 {
                                     Text = "待审核办件",
                                     Href = PageGovInteractListCheck.GetRedirectUrl(nodeInfo.PublishmentSystemId, nodeInfo.NodeId),
-                                    KeepQueryString = false,
                                     Target = "right"
                                 });
                             }
@@ -127,7 +77,6 @@ namespace SiteServer.BackgroundPages.Core
                                 {
                                     Text = "所有办件",
                                     Href = PageGovInteractListAll.GetRedirectUrl(nodeInfo.PublishmentSystemId, nodeInfo.NodeId),
-                                    KeepQueryString = false,
                                     Target = "right"
                                 });
                             }
@@ -138,7 +87,6 @@ namespace SiteServer.BackgroundPages.Core
                                 {
                                     Text = "新增办件",
                                     Href = WebUtils.GetContentAddAddUrl(publishmentSystemId, nodeInfo, redirectUrl),
-                                    KeepQueryString = false,
                                     Target = "right"
                                 };
                                 childList.Add(child);

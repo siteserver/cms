@@ -17,14 +17,11 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "Hold";
             }
-            else if (type == EAdvLevelType.Standard)
+            if (type == EAdvLevelType.Standard)
             {
                 return "Standard";
             }
-           else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EAdvLevelType type)
@@ -33,14 +30,11 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "独占";
             }
-            else if (type == EAdvLevelType.Standard)
+            if (type == EAdvLevelType.Standard)
             {
                 return "标准";
             }
-           else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EAdvLevelType GetEnumType(string typeStr)

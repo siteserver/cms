@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -48,21 +47,21 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmTaskName, EDataType.NVarChar, 50, info.TaskName),
-                GetParameter(ParmIsSystemTask, EDataType.VarChar, 18, info.IsSystemTask.ToString()),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, info.PublishmentSystemID),
-                GetParameter(ParmServiceType, EDataType.VarChar, 50, EServiceTypeUtils.GetValue(info.ServiceType)),
-				GetParameter(ParmServiceParameters, EDataType.NText, info.ServiceParameters),
-				GetParameter(ParmFrequencyType, EDataType.VarChar, 50, EFrequencyTypeUtils.GetValue(info.FrequencyType)),
-				GetParameter(ParmPeriodIntervalMinute, EDataType.Integer, info.PeriodIntervalMinute),
-                GetParameter(ParmStartDay, EDataType.Integer, info.StartDay),
-                GetParameter(ParmStartWeekday, EDataType.Integer, info.StartWeekday),
-                GetParameter(ParmStartHour, EDataType.Integer, info.StartHour),
-                GetParameter(ParmIsEnabled, EDataType.VarChar, 18, info.IsEnabled.ToString()),
-                GetParameter(ParmAddDate, EDataType.DateTime, info.AddDate),
-                GetParameter(ParmLastExecuteDate, EDataType.DateTime, info.LastExecuteDate),
-                GetParameter(ParmDescription, EDataType.NVarChar, 255, info.Description),
-                GetParameter(ParmOnlyOnceDate,EDataType.DateTime,info.OnlyOnceDate)
+                GetParameter(ParmTaskName, DataType.NVarChar, 50, info.TaskName),
+                GetParameter(ParmIsSystemTask, DataType.VarChar, 18, info.IsSystemTask.ToString()),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemID),
+                GetParameter(ParmServiceType, DataType.VarChar, 50, EServiceTypeUtils.GetValue(info.ServiceType)),
+				GetParameter(ParmServiceParameters, DataType.NText, info.ServiceParameters),
+				GetParameter(ParmFrequencyType, DataType.VarChar, 50, EFrequencyTypeUtils.GetValue(info.FrequencyType)),
+				GetParameter(ParmPeriodIntervalMinute, DataType.Integer, info.PeriodIntervalMinute),
+                GetParameter(ParmStartDay, DataType.Integer, info.StartDay),
+                GetParameter(ParmStartWeekday, DataType.Integer, info.StartWeekday),
+                GetParameter(ParmStartHour, DataType.Integer, info.StartHour),
+                GetParameter(ParmIsEnabled, DataType.VarChar, 18, info.IsEnabled.ToString()),
+                GetParameter(ParmAddDate, DataType.DateTime, info.AddDate),
+                GetParameter(ParmLastExecuteDate, DataType.DateTime, info.LastExecuteDate),
+                GetParameter(ParmDescription, DataType.NVarChar, 255, info.Description),
+                GetParameter(ParmOnlyOnceDate,DataType.DateTime,info.OnlyOnceDate)
 			};
 
             using (var conn = GetConnection())
@@ -91,22 +90,22 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-                GetParameter(ParmTaskName, EDataType.NVarChar, 50, info.TaskName),
-                GetParameter(ParmIsSystemTask, EDataType.VarChar, 18, info.IsSystemTask.ToString()),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, info.PublishmentSystemID),
-                GetParameter(ParmServiceType, EDataType.VarChar, 50, EServiceTypeUtils.GetValue(info.ServiceType)),
-				GetParameter(ParmServiceParameters, EDataType.NText, info.ServiceParameters),
-				GetParameter(ParmFrequencyType, EDataType.VarChar, 50, EFrequencyTypeUtils.GetValue(info.FrequencyType)),
-				GetParameter(ParmPeriodIntervalMinute, EDataType.Integer, info.PeriodIntervalMinute),
-                GetParameter(ParmStartDay, EDataType.Integer, info.StartDay),
-                GetParameter(ParmStartWeekday, EDataType.Integer, info.StartWeekday),
-                GetParameter(ParmStartHour, EDataType.Integer, info.StartHour),
-                GetParameter(ParmIsEnabled, EDataType.VarChar, 18, info.IsEnabled.ToString()),
-                GetParameter(ParmAddDate, EDataType.DateTime, info.AddDate),
-                GetParameter(ParmLastExecuteDate, EDataType.DateTime, info.LastExecuteDate),
-                GetParameter(ParmDescription, EDataType.NVarChar, 255, info.Description),
-                GetParameter(ParmTaskId, EDataType.Integer, info.TaskID),
-                GetParameter(ParmOnlyOnceDate,EDataType.DateTime,info.OnlyOnceDate)
+                GetParameter(ParmTaskName, DataType.NVarChar, 50, info.TaskName),
+                GetParameter(ParmIsSystemTask, DataType.VarChar, 18, info.IsSystemTask.ToString()),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemID),
+                GetParameter(ParmServiceType, DataType.VarChar, 50, EServiceTypeUtils.GetValue(info.ServiceType)),
+				GetParameter(ParmServiceParameters, DataType.NText, info.ServiceParameters),
+				GetParameter(ParmFrequencyType, DataType.VarChar, 50, EFrequencyTypeUtils.GetValue(info.FrequencyType)),
+				GetParameter(ParmPeriodIntervalMinute, DataType.Integer, info.PeriodIntervalMinute),
+                GetParameter(ParmStartDay, DataType.Integer, info.StartDay),
+                GetParameter(ParmStartWeekday, DataType.Integer, info.StartWeekday),
+                GetParameter(ParmStartHour, DataType.Integer, info.StartHour),
+                GetParameter(ParmIsEnabled, DataType.VarChar, 18, info.IsEnabled.ToString()),
+                GetParameter(ParmAddDate, DataType.DateTime, info.AddDate),
+                GetParameter(ParmLastExecuteDate, DataType.DateTime, info.LastExecuteDate),
+                GetParameter(ParmDescription, DataType.NVarChar, 255, info.Description),
+                GetParameter(ParmTaskId, DataType.Integer, info.TaskID),
+                GetParameter(ParmOnlyOnceDate,DataType.DateTime,info.OnlyOnceDate)
 			};
 
             ExecuteNonQuery(SqlUpdateTask, updateParms);
@@ -117,8 +116,8 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-                GetParameter(ParmIsEnabled, EDataType.VarChar, 18, isEnabled.ToString()),
-                GetParameter(ParmTaskId, EDataType.Integer, taskId)
+                GetParameter(ParmIsEnabled, DataType.VarChar, 18, isEnabled.ToString()),
+                GetParameter(ParmTaskId, DataType.Integer, taskId)
 			};
 
             ExecuteNonQuery(SqlUpdateTaskState, updateParms);
@@ -129,8 +128,8 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-                GetParameter(ParmLastExecuteDate, EDataType.DateTime, DateTime.Now),
-                GetParameter(ParmTaskId, EDataType.Integer, taskId)
+                GetParameter(ParmLastExecuteDate, DataType.DateTime, DateTime.Now),
+                GetParameter(ParmTaskId, DataType.Integer, taskId)
 			};
 
             ExecuteNonQuery(SqlUpdateTaskLastExecuteDate, updateParms);
@@ -141,7 +140,7 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTaskId, EDataType.Integer, taskId)
+				GetParameter(ParmTaskId, DataType.Integer, taskId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -154,7 +153,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTaskId, EDataType.Integer, taskId)
+				GetParameter(ParmTaskId, DataType.Integer, taskId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectById, parms))
@@ -178,7 +177,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmServiceType, EDataType.VarChar, 50, EServiceTypeUtils.GetValue(serviceType))
+                GetParameter(ParmServiceType, DataType.VarChar, 50, EServiceTypeUtils.GetValue(serviceType))
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -219,7 +218,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmServiceType, EDataType.VarChar, 50, EServiceTypeUtils.GetValue(serviceType))
+                GetParameter(ParmServiceType, DataType.VarChar, 50, EServiceTypeUtils.GetValue(serviceType))
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -243,8 +242,8 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmServiceType, EDataType.VarChar, 50, EServiceTypeUtils.GetValue(serviceType)),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmServiceType, DataType.VarChar, 50, EServiceTypeUtils.GetValue(serviceType)),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -285,7 +284,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTaskName, EDataType.NVarChar, 50, taskName)
+				GetParameter(ParmTaskName, DataType.NVarChar, 50, taskName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectByName, parms))
@@ -308,9 +307,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmIsSystemTask, EDataType.VarChar, 18, true.ToString()),
-                GetParameter(ParmServiceType, EDataType.VarChar, 50, EServiceTypeUtils.GetValue(serviceType))
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmIsSystemTask, DataType.VarChar, 18, true.ToString()),
+                GetParameter(ParmServiceType, DataType.VarChar, 50, EServiceTypeUtils.GetValue(serviceType))
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -331,9 +330,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmIsSystemTask, EDataType.VarChar, 18, true.ToString()),
-                GetParameter(ParmServiceType, EDataType.VarChar, 50, EServiceTypeUtils.GetValue(serviceType))
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmIsSystemTask, DataType.VarChar, 18, true.ToString()),
+                GetParameter(ParmServiceType, DataType.VarChar, 50, EServiceTypeUtils.GetValue(serviceType))
 			};
 
             ExecuteNonQuery(sqlString, parms);

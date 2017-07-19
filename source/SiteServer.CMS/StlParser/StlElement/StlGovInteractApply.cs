@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
@@ -78,7 +79,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -95,11 +96,12 @@ namespace SiteServer.CMS.StlParser.StlElement
             var nodeId = channelId;
             if (!string.IsNullOrEmpty(interactName))
             {
-                nodeId = DataProvider.GovInteractChannelDao.GetNodeIdByInteractName(pageInfo.PublishmentSystemId, interactName);
+                //nodeId = DataProvider.GovInteractChannelDao.GetNodeIdByInteractName(pageInfo.PublishmentSystemId, interactName);
+                nodeId = GovInteractChannel.GetNodeIdByInteractName(pageInfo.PublishmentSystemId, interactName, pageInfo.Guid);
             }
             if (nodeId == 0)
             {
-                nodeId = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, pageInfo.PublishmentSystemId, channelIndex, channelName);
+                nodeId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, pageInfo.PublishmentSystemId, channelIndex, channelName, pageInfo.Guid);
             }
             var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId);
             if (nodeInfo == null || !EContentModelTypeUtils.Equals(nodeInfo.ContentModelId, EContentModelType.GovInteract))
@@ -108,7 +110,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             if (nodeInfo != null)
             {
-                var applyStyleId = DataProvider.GovInteractChannelDao.GetApplyStyleId(nodeInfo.PublishmentSystemId, nodeInfo.NodeId);
+                //var applyStyleId = DataProvider.GovInteractChannelDao.GetApplyStyleId(nodeInfo.PublishmentSystemId, nodeInfo.NodeId);
+                var applyStyleId = GovInteractChannel.GetApplyStyleId(nodeInfo.PublishmentSystemId, nodeInfo.NodeId, pageInfo.Guid);
 
                 var styleInfo = TagStyleManager.GetTagStyleInfo(applyStyleId) ?? new TagStyleInfo();
                 var applyInfo = new TagStyleGovInteractApplyInfo(styleInfo.SettingsXML);

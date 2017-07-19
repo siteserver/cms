@@ -2,7 +2,7 @@ using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.BackgroundPages.Sys;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.WeiXin.Manager;
 
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                     ltlPublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
                     ltlAddDate.Text = DateUtils.GetDateString(NodeManager.GetAddDate(publishmentSystemId, publishmentSystemId));
 
-                    var manageUrl = PageMain.GetRedirectUrl(publishmentSystemId, string.Empty);
+                    var manageUrl = PageMain.GetRedirectUrl(publishmentSystemId);
                     ltlManage.Text = $@"<a href=""{manageUrl}"" target=""top"">管理</a>";
 
                     var bindingUrl = PageAccountBinding.GetRedirectUrl(publishmentSystemId, GetRedirectUrl());

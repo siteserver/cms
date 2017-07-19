@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicContentConfiguration, "索引号生成规则", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, "索引号生成规则", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
 
                 ltlPreview.Text = GovPublicManager.GetPreviewIdentifier(PublishmentSystemId);
 

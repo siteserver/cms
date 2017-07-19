@@ -90,7 +90,7 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 return JobContentAttribute.ExcludeAttributes;
             }
-            if (tableStyle == ETableStyle.UserDefined)
+            if (tableStyle == ETableStyle.Custom)
             {
                 return ContentAttribute.ExcludeAttributes;
             }
@@ -172,7 +172,7 @@ namespace BaiRong.Core.AuxiliaryTable
             var metadataInfo = GetTableMetadataInfo(tableName, attributeName);
             if (metadataInfo != null)
             {
-                return EDataTypeUtils.GetTextByAuxiliaryTable(metadataInfo.DataType, metadataInfo.DataLength);
+                return DataTypeUtils.GetTextByAuxiliaryTable(metadataInfo.DataType, metadataInfo.DataLength);
             }
             return string.Empty;
         }
@@ -224,7 +224,7 @@ namespace BaiRong.Core.AuxiliaryTable
                      * DBDefaultValue
                      * */
                     string serialize =
-                        $"AttributeName:{metadataInfo.AttributeName};DataType:{EDataTypeUtils.GetValue(metadataInfo.DataType)};DataLength={metadataInfo.DataLength}";
+                        $"AttributeName:{metadataInfo.AttributeName};DataType:{DataTypeUtils.GetValue(metadataInfo.DataType)};DataLength={metadataInfo.DataLength}";
                     sortedlist.Add(metadataInfo.AttributeName, serialize);
                 }
             }

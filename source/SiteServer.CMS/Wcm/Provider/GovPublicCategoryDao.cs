@@ -1,11 +1,10 @@
-using System;
 using System.Collections;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Wcm.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Wcm.Provider
 {
@@ -62,19 +61,19 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var insertParms = new IDataParameter[]
 			{
-                GetParameter(ParmClassCode, EDataType.NVarChar, 50, categoryInfo.ClassCode),
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, categoryInfo.PublishmentSystemID),
-				GetParameter(ParmCategoryName, EDataType.NVarChar, 255, categoryInfo.CategoryName),
-                GetParameter(ParmCategoryCode, EDataType.VarChar, 50, categoryInfo.CategoryCode),
-				GetParameter(ParmParentId, EDataType.Integer, categoryInfo.ParentID),
-				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, categoryInfo.ParentsPath),
-				GetParameter(ParmParentsCount, EDataType.Integer, categoryInfo.ParentsCount),
-				GetParameter(ParmChildrenCount, EDataType.Integer, 0),
-				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, true.ToString()),
-				GetParameter(ParmTaxis, EDataType.Integer, categoryInfo.Taxis),
-				GetParameter(ParmAddDate, EDataType.DateTime, categoryInfo.AddDate),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, categoryInfo.Summary),
-				GetParameter(ParmContentNum, EDataType.Integer, categoryInfo.ContentNum)
+                GetParameter(ParmClassCode, DataType.NVarChar, 50, categoryInfo.ClassCode),
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, categoryInfo.PublishmentSystemID),
+				GetParameter(ParmCategoryName, DataType.NVarChar, 255, categoryInfo.CategoryName),
+                GetParameter(ParmCategoryCode, DataType.VarChar, 50, categoryInfo.CategoryCode),
+				GetParameter(ParmParentId, DataType.Integer, categoryInfo.ParentID),
+				GetParameter(ParmParentsPath, DataType.NVarChar, 255, categoryInfo.ParentsPath),
+				GetParameter(ParmParentsCount, DataType.Integer, categoryInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, DataType.Integer, 0),
+				GetParameter(ParmIsLastNode, DataType.VarChar, 18, true.ToString()),
+				GetParameter(ParmTaxis, DataType.Integer, categoryInfo.Taxis),
+				GetParameter(ParmAddDate, DataType.DateTime, categoryInfo.AddDate),
+				GetParameter(ParmSummary, DataType.NVarChar, 255, categoryInfo.Summary),
+				GetParameter(ParmContentNum, DataType.Integer, categoryInfo.ContentNum)
 			};
 
             string sqlString =
@@ -267,15 +266,15 @@ namespace SiteServer.CMS.Wcm.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmCategoryName, EDataType.NVarChar, 255, categoryInfo.CategoryName),
-                GetParameter(ParmCategoryCode, EDataType.VarChar, 50, categoryInfo.CategoryCode),
-				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, categoryInfo.ParentsPath),
-				GetParameter(ParmParentsCount, EDataType.Integer, categoryInfo.ParentsCount),
-				GetParameter(ParmChildrenCount, EDataType.Integer, categoryInfo.ChildrenCount),
-				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, categoryInfo.IsLastNode.ToString()),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, categoryInfo.Summary),
-				GetParameter(ParmContentNum, EDataType.Integer, categoryInfo.ContentNum),
-				GetParameter(ParmCategoryId, EDataType.Integer, categoryInfo.CategoryID)
+				GetParameter(ParmCategoryName, DataType.NVarChar, 255, categoryInfo.CategoryName),
+                GetParameter(ParmCategoryCode, DataType.VarChar, 50, categoryInfo.CategoryCode),
+				GetParameter(ParmParentsPath, DataType.NVarChar, 255, categoryInfo.ParentsPath),
+				GetParameter(ParmParentsCount, DataType.Integer, categoryInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, DataType.Integer, categoryInfo.ChildrenCount),
+				GetParameter(ParmIsLastNode, DataType.VarChar, 18, categoryInfo.IsLastNode.ToString()),
+				GetParameter(ParmSummary, DataType.NVarChar, 255, categoryInfo.Summary),
+				GetParameter(ParmContentNum, DataType.Integer, categoryInfo.ContentNum),
+				GetParameter(ParmCategoryId, DataType.Integer, categoryInfo.CategoryID)
 			};
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -354,7 +353,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmCategoryId, EDataType.Integer, categoryId)
+				GetParameter(ParmCategoryId, DataType.Integer, categoryId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms)) 
@@ -375,7 +374,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmCategoryId, EDataType.Integer, categoryId)
+				GetParameter(ParmCategoryId, DataType.Integer, categoryId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectName, parms))
@@ -395,7 +394,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
 			var nodeParms = new IDataParameter[]
 			{
-				GetParameter(ParmParentId, EDataType.Integer, categoryId)
+				GetParameter(ParmParentId, DataType.Integer, categoryId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectCount, nodeParms))
@@ -415,7 +414,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
 			var nodeParms = new IDataParameter[]
 			{
-				GetParameter(ParmCategoryId, EDataType.Integer, categoryId)
+				GetParameter(ParmCategoryId, DataType.Integer, categoryId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectId, nodeParms))

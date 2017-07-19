@@ -49,7 +49,16 @@ namespace SiteServer.BackgroundPages.Cms
         private StringCollection _attributesOfDisplay;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _tableStyleInfoList;
+        private ContentModelInfo _modelInfo;
         private readonly Hashtable _valueHashtable = new Hashtable();
+
+        public static string GetRedirectUrl(int publishmentSystemId)
+        {
+            return PageUtils.GetCmsUrl(nameof(PageContentSearch), new NameValueCollection
+            {
+                {"publishmentSystemId", publishmentSystemId.ToString()}
+            });
+        }
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -82,6 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, _nodeId));
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, tableName, _relatedIdentities);
+            _modelInfo = ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId);
 
             spContents.ControlToPaginate = rptContents;
             if (string.IsNullOrEmpty(Body.GetQueryString("NodeID")))
@@ -157,7 +167,7 @@ namespace SiteServer.BackgroundPages.Cms
                 showPopWinString = ModalSelectColumns.GetOpenWindowStringToContent(PublishmentSystemId, _nodeId, true);
                 SelectButton.Attributes.Add("onclick", showPopWinString);
 
-                if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, PublishmentSystemId, AppManager.Cms.Permission.Channel.ContentCheck))
+                if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, PublishmentSystemId, AppManager.Permissions.Channel.ContentCheck))
                 {
                     showPopWinString = ModalContentCheck.GetOpenWindowStringForMultiChannels(PublishmentSystemId, PageUrl);
                     Check.Attributes.Add("onclick", showPopWinString);
@@ -167,12 +177,12 @@ namespace SiteServer.BackgroundPages.Cms
                     CheckPlaceHolder.Visible = false;
                 }
 
-                ltlColumnHeadRows.Text = ContentUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                ltlCommandHeadRows.Text = ContentUtility.GetCommandHeadRowsHtml(Body.AdministratorName, _tableStyle, PublishmentSystemInfo, _nodeInfo);
+                ltlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
+                ltlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _modelInfo);
             }
 
-            if (!HasChannelPermissions(_nodeId, AppManager.Cms.Permission.Channel.ContentAdd)) AddContent.Visible = false;
-            if (!HasChannelPermissions(_nodeId, AppManager.Cms.Permission.Channel.ContentTranslate))
+            if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ContentAdd)) AddContent.Visible = false;
+            if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ContentTranslate))
             {
                 Translate.Visible = false;
             }
@@ -181,7 +191,7 @@ namespace SiteServer.BackgroundPages.Cms
                 Translate.Attributes.Add("onclick", PageContentTranslate.GetRedirectClickStringForMultiChannels(PublishmentSystemId, PageUrl));
             }
 
-            if (!HasChannelPermissions(_nodeId, AppManager.Cms.Permission.Channel.ContentDelete))
+            if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ContentDelete))
             {
                 Delete.Visible = false;
             }
@@ -226,7 +236,7 @@ namespace SiteServer.BackgroundPages.Cms
                             PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
                 }
 
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Cms.Permission.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
                 {
                     if (ltlItemEditUrl != null)
                     {
@@ -242,7 +252,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (ltlCommandItemRows != null)
                 {
-                    ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(_tableStyle, PublishmentSystemInfo, nodeInfo, contentInfo, PageUrl, Body.AdministratorName);
+                    ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _modelInfo, contentInfo, PageUrl, Body.AdministratorName);
                 }
 
                 if (ltlSelect != null)

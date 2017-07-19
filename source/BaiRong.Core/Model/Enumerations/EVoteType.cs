@@ -15,34 +15,28 @@ namespace BaiRong.Model
 	{
 		public static string GetValue(EVoteType type)
 		{
-			if (type == EVoteType.RadioVote)
+		    if (type == EVoteType.RadioVote)
 			{
 				return "RadioVote";
 			}
-			else if (type == EVoteType.CheckBoxVote)
-			{
-				return "CheckBoxVote";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EVoteType.CheckBoxVote)
+		    {
+		        return "CheckBoxVote";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EVoteType type)
 		{
-			if (type == EVoteType.CheckBoxVote)
+		    if (type == EVoteType.CheckBoxVote)
 			{
 				return "复选";
 			}
-			else if (type == EVoteType.RadioVote)
-			{
-				return "单选";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EVoteType.RadioVote)
+		    {
+		        return "单选";
+		    }
+		    throw new Exception();
 		}
 
 		public static EVoteType GetEnumType(string typeStr)

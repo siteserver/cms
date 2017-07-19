@@ -5,6 +5,7 @@ using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
 
 namespace SiteServer.BackgroundPages.Wcm

@@ -6,6 +6,7 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -79,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ControlUtils.SelectListItems(IsRequired, _styleInfo.Additional.IsRequired.ToString());
 
-                if (EInputTypeUtils.EqualsAny(_styleInfo.InputType, EInputType.Text, EInputType.TextArea))
+                if (InputTypeUtils.EqualsAny(_styleInfo.InputType, InputType.Text, InputType.TextArea))
                 {
                     phNum.Visible = true;
                 }
@@ -151,7 +152,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (_tableStyleId == 0)//数据库中没有此项的表样式，但是有父项的表样式
                 {
-                    var relatedIdentity = (int)_relatedIdentities[0];
+                    var relatedIdentity = _relatedIdentities[0];
                     _styleInfo.RelatedIdentity = relatedIdentity;
                     _styleInfo.TableStyleId = TableStyleManager.Insert(_styleInfo, _tableStyle);
                 }

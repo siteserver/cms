@@ -61,17 +61,15 @@
                                 ErrorMessage=" *" ForeColor="red"
                                 Display="Dynamic" />
                         </li>
-                        <asp:PlaceHolder ID="PhValidateCode" runat="server">
-                            <li><span class="yun_s1">验证码：</span>
-                                <asp:TextBox class="yun_int1 yun_int2" ID="TbValidateCode" runat="server" />
-                                <asp:Literal ID="LtlValidateCodeImage" runat="server"></asp:Literal>
-                                <asp:RequiredFieldValidator
-                                    ControlToValidate="TbValidateCode"
-                                    ErrorMessage=" *" ForeColor="red"
-                                    Display="Dynamic"
-                                    runat="server" />
-                            </li>
-                        </asp:PlaceHolder>
+                        <li><span class="yun_s1">验证码：</span>
+                            <asp:TextBox class="yun_int1 yun_int2" ID="TbValidateCode" runat="server" />
+                            <asp:Literal ID="LtlValidateCodeImage" runat="server"></asp:Literal>
+                            <asp:RequiredFieldValidator
+                                ControlToValidate="TbValidateCode"
+                                ErrorMessage=" *" ForeColor="red"
+                                Display="Dynamic"
+                                runat="server" />
+                        </li>
                         <li><span class="yun_s1">&nbsp;</span>
                             <label class="checkbox">
                                 <asp:CheckBox ID="CbRememberMe" Checked="true" runat="server"></asp:CheckBox>

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -27,7 +25,7 @@ namespace siteserver
 
                 while (true)
                 {
-                    var taskInfo = CreateTaskManager.Instance.GetLastPendingTask();
+                    var taskInfo = CreateTaskManager.Instance.GetLastPendingTask(0);
                     if (taskInfo == null)
                     {
                         ServiceManager.ClearIsPendingCreateCache();
@@ -37,20 +35,22 @@ namespace siteserver
                     try
                     {
                         var start = DateTime.Now;
-                        var fso = new FileSystemObject(taskInfo.PublishmentSystemID);
-                        fso.Execute(taskInfo);
+                        var fso = new FileSystemObject(taskInfo.PublishmentSystemId);
+                        fso.Execute(taskInfo.CreateType, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Guid);
                         var timeSpan = DateUtils.GetRelatedDateTimeString(start);
-                        CreateTaskManager.Instance.RemovePendingAndAddSuccessLog(taskInfo, timeSpan);
+                        CreateTaskManager.Instance.AddSuccessLog(taskInfo, timeSpan);
                     }
                     catch (Exception ex)
                     {
-                        CreateTaskManager.Instance.RemovePendingAndAddFailureLog(taskInfo, ex);
+                        CreateTaskManager.Instance.AddFailureLog(taskInfo, ex);
                     }
+
+                    CreateTaskManager.Instance.RemoveTask(taskInfo.PublishmentSystemId, taskInfo);
                 }
             }
             catch (Exception ex)
             {
-                LogUtils.AddAdminLog(string.Empty, "服务组件生成失败", ex.ToString());
+                LogUtils.AddErrorLog(ex, "服务组件生成失败");
             }
 
             return false;

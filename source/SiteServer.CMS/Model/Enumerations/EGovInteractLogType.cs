@@ -20,90 +20,84 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EGovInteractLogType type)
 		{
-            if (type == EGovInteractLogType.New)
+		    if (type == EGovInteractLogType.New)
 			{
                 return "New";
             }
-            else if (type == EGovInteractLogType.Accept)
-            {
-                return "Accept";
-            }
-            else if (type == EGovInteractLogType.Deny)
-			{
-                return "Deny";
-            }
-            else if (type == EGovInteractLogType.SwitchTo)
-            {
-                return "SwitchTo";
-            }
-            else if (type == EGovInteractLogType.Translate)
-            {
-                return "Translate";
-            }
-            else if (type == EGovInteractLogType.Comment)
-            {
-                return "Comment";
-            }
-            else if (type == EGovInteractLogType.Redo)
-            {
-                return "Redo";
-            }
-            else if (type == EGovInteractLogType.Reply)
-            {
-                return "Reply";
-            }
-            else if (type == EGovInteractLogType.Check)
-            {
-                return "Check";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovInteractLogType.Accept)
+		    {
+		        return "Accept";
+		    }
+		    if (type == EGovInteractLogType.Deny)
+		    {
+		        return "Deny";
+		    }
+		    if (type == EGovInteractLogType.SwitchTo)
+		    {
+		        return "SwitchTo";
+		    }
+		    if (type == EGovInteractLogType.Translate)
+		    {
+		        return "Translate";
+		    }
+		    if (type == EGovInteractLogType.Comment)
+		    {
+		        return "Comment";
+		    }
+		    if (type == EGovInteractLogType.Redo)
+		    {
+		        return "Redo";
+		    }
+		    if (type == EGovInteractLogType.Reply)
+		    {
+		        return "Reply";
+		    }
+		    if (type == EGovInteractLogType.Check)
+		    {
+		        return "Check";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EGovInteractLogType type)
 		{
-            if (type == EGovInteractLogType.New)
+		    if (type == EGovInteractLogType.New)
             {
                 return "前台网友提交办件";
             }
-            else if (type == EGovInteractLogType.Accept)
-            {
-                return "受理办件";
-            }
-            else if (type == EGovInteractLogType.Deny)
-            {
-                return "拒绝办件";
-            }
-            else if (type == EGovInteractLogType.SwitchTo)
-            {
-                return "转办办件";
-            }
-            else if (type == EGovInteractLogType.Translate)
-            {
-                return "转移办件";
-            }
-            else if (type == EGovInteractLogType.Comment)
-            {
-                return "批示办件";
-            }
-            else if (type == EGovInteractLogType.Redo)
-            {
-                return "要求返工";
-            }
-            else if (type == EGovInteractLogType.Reply)
-            {
-                return "回复办件";
-            }
-            else if (type == EGovInteractLogType.Check)
-            {
-                return "审核通过办件";
-            }
-            else
-            {
-                throw new Exception();
-            }
+		    if (type == EGovInteractLogType.Accept)
+		    {
+		        return "受理办件";
+		    }
+		    if (type == EGovInteractLogType.Deny)
+		    {
+		        return "拒绝办件";
+		    }
+		    if (type == EGovInteractLogType.SwitchTo)
+		    {
+		        return "转办办件";
+		    }
+		    if (type == EGovInteractLogType.Translate)
+		    {
+		        return "转移办件";
+		    }
+		    if (type == EGovInteractLogType.Comment)
+		    {
+		        return "批示办件";
+		    }
+		    if (type == EGovInteractLogType.Redo)
+		    {
+		        return "要求返工";
+		    }
+		    if (type == EGovInteractLogType.Reply)
+		    {
+		        return "回复办件";
+		    }
+		    if (type == EGovInteractLogType.Check)
+		    {
+		        return "审核通过办件";
+		    }
+		    throw new Exception();
 		}
 
 		public static EGovInteractLogType GetEnumType(string typeStr)

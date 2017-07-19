@@ -29,7 +29,7 @@ namespace SiteServer.API.Controllers.Stl
 
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, pageNodeId);
                 var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemId, templateId);
-                var pageInfo = new PageInfo(nodeInfo.NodeId, 0, publishmentSystemInfo, templateInfo, body.UserInfo);
+                var pageInfo = new PageInfo(StringUtils.GetShortGuid(), nodeInfo.NodeId, 0, publishmentSystemInfo, templateInfo, body.UserInfo);
                 var contextInfo = new ContextInfo(pageInfo);
 
                 var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, false);

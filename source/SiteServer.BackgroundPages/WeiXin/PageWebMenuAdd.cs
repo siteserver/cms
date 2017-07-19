@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 else if (menuInfo.ChannelId > 0)
                 {
                     var nodeNames = NodeManager.GetNodeNameNavigation(PublishmentSystemId, menuInfo.ChannelId);
-                    var pageUrl = PageUtilityWX.GetChannelUrl(PublishmentSystemInfo, NodeManager.GetNodeInfo(PublishmentSystemId, menuInfo.ChannelId));
+                    var pageUrl = PageUtilityWX.GetChannelUrl(PublishmentSystemInfo, NodeManager.GetNodeInfo(PublishmentSystemId, menuInfo.ChannelId), StringUtils.GetShortGuid());
                     return $"selectChannel('{nodeNames}', '{menuInfo.ChannelId}', '{pageUrl}');";
                 }
             }

@@ -176,7 +176,7 @@ namespace SiteServer.CMS.Core
 
             try
             {
-                var userToken = JsonWebToken.DecodeToObject<UserToken>(tokenStr, FileConfigManager.Instance.SecretKey);
+                var userToken = JsonWebToken.DecodeToObject<UserToken>(tokenStr, WebConfigUtils.SecretKey);
 
                 if (userToken.AddDate.AddDays(AccessTokenExpireDays) > DateTime.Now)
                 {
@@ -196,7 +196,7 @@ namespace SiteServer.CMS.Core
 
             try
             {
-                var userToken = JsonWebToken.DecodeToObject<AdministratorToken>(tokenStr, FileConfigManager.Instance.SecretKey);
+                var userToken = JsonWebToken.DecodeToObject<AdministratorToken>(tokenStr, WebConfigUtils.SecretKey);
 
                 if (userToken.AddDate.AddDays(AccessTokenExpireDays) > DateTime.Now)
                 {
@@ -220,7 +220,7 @@ namespace SiteServer.CMS.Core
                 AddDate = DateTime.Now
             };
 
-            return JsonWebToken.Encode(userToken, FileConfigManager.Instance.SecretKey, JwtHashAlgorithm.HS256);
+            return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
         }
 
         public static string GetAdministratorTokenStr(string administratorName)
@@ -233,7 +233,7 @@ namespace SiteServer.CMS.Core
                 AddDate = DateTime.Now
             };
 
-            return JsonWebToken.Encode(administratorToken, FileConfigManager.Instance.SecretKey, JwtHashAlgorithm.HS256);
+            return JsonWebToken.Encode(administratorToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
         }
 
         public static string CurrentUserName

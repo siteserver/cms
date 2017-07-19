@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Wcm
                     return;
                 }
 
-                if (!HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentAdd))
+                if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentAdd))
                 {
                     if (!Body.IsAdministratorLoggin)
                     {
@@ -125,7 +125,7 @@ namespace SiteServer.BackgroundPages.Wcm
             else
             {
                 contentInfo = DataProvider.GovPublicContentDao.GetContentInfo(PublishmentSystemInfo, _contentId);
-                if (!HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentEdit))
+                if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentEdit))
                 {
                     if (!Body.IsAdministratorLoggin)
                     {
@@ -144,7 +144,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 var departmentName = string.Empty;
 
                 var pageTitle = _contentId == 0 ? "添加信息" : "修改信息";
-                BreadCrumbWithItemTitle(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicContent, pageTitle, nodeNames, AppManager.Wcm.Permission.WebSite.GovPublicContent);
+                BreadCrumbWithTitle(AppManager.Wcm.LeftMenu.IdGovPublic, pageTitle, nodeNames, AppManager.Wcm.Permission.WebSite.GovPublicContent);
 
                 ltlPageTitle.Text = pageTitle;
                 ltlPageTitle.Text += $@"
@@ -157,7 +157,7 @@ var previewUrl = '{PagePreview.GetRedirectUrl(PublishmentSystemId, _nodeInfo.Nod
                 ControlUtils.SelectListItemsIgnoreCase(rblIsAbolition, false.ToString());
 
                 //转移
-                if (_tableStyle == ETableStyle.BackgroundContent && AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, _nodeInfo.NodeId, AppManager.Cms.Permission.Channel.ContentTranslate))
+                if (_tableStyle == ETableStyle.BackgroundContent && AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, _nodeInfo.NodeId, AppManager.Permissions.Channel.ContentTranslate))
                 {
                     phTranslate.Visible = PublishmentSystemInfo.Additional.IsTranslate;
                     divTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
@@ -397,7 +397,7 @@ $('#Tags').keyup(function (e) {
 
                 ltlCategoryScript.Text = categoryBuilder.ToString();
 
-                if (HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentCheck))
+                if (HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentCheck))
                 {
                     phStatus.Visible = true;
 
@@ -441,6 +441,8 @@ $('#Tags').keyup(function (e) {
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
+
+            var guid = StringUtils.GetShortGuid();
 
             var categoryChannelId = TranslateUtils.ToInt(Request["categoryChannelID"]);
             var categoryDepartmentId = TranslateUtils.ToInt(Request["categoryDepartmentID"]);
@@ -519,7 +521,7 @@ $('#Tags').keyup(function (e) {
 
                     if (contentInfo.IsChecked)
                     {
-                        CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id);
+                        CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, guid);
                     }
 
                     contentInfo.Id = contentId;
@@ -534,7 +536,7 @@ $('#Tags').keyup(function (e) {
                 Body.AddSiteLog(PublishmentSystemId, categoryChannelId, contentInfo.Id, "添加内容",
                     $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
 
-                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue), Body.AdministratorName);
+                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue), Body.AdministratorName, guid);
 
                 PageUtils.Redirect(PageGovPublicContentAddAfter.GetRedirectUrl(PublishmentSystemId, categoryChannelId, contentInfo.Id, Request.QueryString["ReturnUrl"]));
             }
@@ -608,7 +610,7 @@ $('#Tags').keyup(function (e) {
                         TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, PublishmentSystemId, _contentId);
                     }
 
-                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue), Body.AdministratorName);
+                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue), Body.AdministratorName, guid);
 
                     //更新分类内容数
                     foreach (GovPublicCategoryClassInfo categoryClassInfo in categoryClassInfoArrayList)
@@ -644,7 +646,7 @@ $('#Tags').keyup(function (e) {
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, categoryChannelId, _contentId);
+                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, categoryChannelId, _contentId, guid);
                 }
 
                 Body.AddSiteLog(PublishmentSystemId, categoryChannelId, _contentId, "修改内容",

@@ -352,12 +352,12 @@ namespace SiteServer.CMS.ImportExport.Components
             var channelTemplateName = AtomUtility.GetDcElementContent(additionalElements, ChannelTemplateName);
             if (!string.IsNullOrEmpty(channelTemplateName))
             {
-                nodeInfo.ChannelTemplateId = TemplateManager.GetTemplateIDByTemplateName(_publishmentSystemInfo.PublishmentSystemId, ETemplateType.ChannelTemplate, channelTemplateName);
+                nodeInfo.ChannelTemplateId = TemplateManager.GetTemplateIdByTemplateName(_publishmentSystemInfo.PublishmentSystemId, ETemplateType.ChannelTemplate, channelTemplateName);
             }
             var contentTemplateName = AtomUtility.GetDcElementContent(additionalElements, ContentTemplateName);
             if (!string.IsNullOrEmpty(contentTemplateName))
             {
-                nodeInfo.ContentTemplateId = TemplateManager.GetTemplateIDByTemplateName(_publishmentSystemInfo.PublishmentSystemId, ETemplateType.ContentTemplate, contentTemplateName);
+                nodeInfo.ContentTemplateId = TemplateManager.GetTemplateIdByTemplateName(_publishmentSystemInfo.PublishmentSystemId, ETemplateType.ContentTemplate, contentTemplateName);
             }
 
             nodeInfo.Keywords = AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.Keywords);

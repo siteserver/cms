@@ -3,10 +3,12 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web;
 using System.Web.UI;
+using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -89,7 +91,7 @@ namespace SiteServer.BackgroundPages.Controls
                             builder.Append("<tr>");
                         }
 
-                        if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.TextEditor))
+                        if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
                         {
                             var commands = WebUtils.GetTextEditorCommands(_publishmentSystemInfo, styleInfo.AttributeName);
                             builder.Append(

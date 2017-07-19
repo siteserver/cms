@@ -1,7 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Sys;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.WeiXin.IO;
 using SiteServer.CMS.WeiXin.Manager;
 
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, AppManager.WeiXin.LeftMenu.Function.IdInfo, string.Empty, AppManager.WeiXin.Permission.WebSite.Info);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, string.Empty, AppManager.WeiXin.Permission.WebSite.Info);
                 LtlWelcome.Text = "欢迎使用 SiteServer CMS 微信站点";
 
                 var bindingUrl = PageAccountBinding.GetRedirectUrl(PublishmentSystemId, GetRedirectUrl(PublishmentSystemId));

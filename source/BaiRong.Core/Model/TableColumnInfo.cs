@@ -1,4 +1,4 @@
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Model
 {
@@ -9,7 +9,7 @@ namespace BaiRong.Core.Model
 			DatabaseName = string.Empty;
 			TableId = string.Empty;
 			ColumnName = string.Empty;
-			DataType = EDataType.Unknown;
+			DataType = DataType.NVarChar;
 			Length = 0;
 			Precision = 0;
 			Scale = 0;
@@ -18,7 +18,7 @@ namespace BaiRong.Core.Model
 			IsIdentity = false;
 		}
 
-		public TableColumnInfo(string databaseName, string tableId, string columnName, EDataType dataType, int length, int precision, int scale, bool isPrimaryKey, bool isNullable, bool isIdentity) 
+		public TableColumnInfo(string databaseName, string tableId, string columnName, DataType dataType, int length, int precision, int scale, bool isPrimaryKey, bool isNullable, bool isIdentity) 
 		{
 			DatabaseName = databaseName;
 			TableId = tableId;
@@ -38,7 +38,7 @@ namespace BaiRong.Core.Model
 
 	    public string ColumnName { get; set; }
 
-	    public EDataType DataType { get; set; }
+	    public DataType DataType { get; set; }
 
 	    public int Length { get; set; }
 

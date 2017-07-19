@@ -74,7 +74,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 var pageTitle = _keywordId == 0 ? "添加关键词图文回复" : "修改关键词图文回复";
                 LtlPageTitle.Text = pageTitle;
 
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, AppManager.WeiXin.LeftMenu.Function.IdImageReply, pageTitle, AppManager.WeiXin.Permission.WebSite.ImageReply);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, pageTitle, AppManager.WeiXin.Permission.WebSite.ImageReply);
                 PhSingle.Visible = _isSingle;
                 PhMultiple.Visible = !_isSingle;
 

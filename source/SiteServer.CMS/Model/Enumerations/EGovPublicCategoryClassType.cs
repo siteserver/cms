@@ -15,58 +15,52 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EGovPublicCategoryClassType type)
 		{
-            if (type == EGovPublicCategoryClassType.Channel)
+		    if (type == EGovPublicCategoryClassType.Channel)
 			{
                 return "Channel";
 			}
-            else if (type == EGovPublicCategoryClassType.Form)
-			{
-                return "Form";
-            }
-            else if (type == EGovPublicCategoryClassType.Department)
-            {
-                return "Department";
-            }
-            else if (type == EGovPublicCategoryClassType.Service)
-            {
-                return "Service";
-            }
-            else if (type == EGovPublicCategoryClassType.UserDefined)
-            {
-                return "UserDefined";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovPublicCategoryClassType.Form)
+		    {
+		        return "Form";
+		    }
+		    if (type == EGovPublicCategoryClassType.Department)
+		    {
+		        return "Department";
+		    }
+		    if (type == EGovPublicCategoryClassType.Service)
+		    {
+		        return "Service";
+		    }
+		    if (type == EGovPublicCategoryClassType.UserDefined)
+		    {
+		        return "UserDefined";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EGovPublicCategoryClassType type)
 		{
-            if (type == EGovPublicCategoryClassType.Channel)
+		    if (type == EGovPublicCategoryClassType.Channel)
 			{
                 return "主题";
 			}
-            else if (type == EGovPublicCategoryClassType.Form)
-			{
-                return "体裁";
-            }
-            else if (type == EGovPublicCategoryClassType.Department)
-            {
-                return "机构";
-            }
-            else if (type == EGovPublicCategoryClassType.Service)
-            {
-                return "服务对象";
-            }
-            else if (type == EGovPublicCategoryClassType.UserDefined)
-            {
-                return "自定义";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGovPublicCategoryClassType.Form)
+		    {
+		        return "体裁";
+		    }
+		    if (type == EGovPublicCategoryClassType.Department)
+		    {
+		        return "机构";
+		    }
+		    if (type == EGovPublicCategoryClassType.Service)
+		    {
+		        return "服务对象";
+		    }
+		    if (type == EGovPublicCategoryClassType.UserDefined)
+		    {
+		        return "自定义";
+		    }
+		    throw new Exception();
 		}
 
 		public static EGovPublicCategoryClassType GetEnumType(string typeStr)

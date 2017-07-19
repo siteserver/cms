@@ -2,7 +2,7 @@ using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.User;
+using SiteServer.BackgroundPages.Users;
 using SiteServer.CMS.WeiXin.Data;
 using SiteServer.CMS.WeiXin.Model;
 
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
                 var pageTitle = "领取会员卡";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdCard, pageTitle, AppManager.WeiXin.Permission.WebSite.Card);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdCard, pageTitle, AppManager.WeiXin.Permission.WebSite.Card);
                 LtlPageTitle.Text = pageTitle;
 
                 if (_cardId > 0)

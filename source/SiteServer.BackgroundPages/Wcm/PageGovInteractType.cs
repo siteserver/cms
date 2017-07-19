@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, AppManager.Wcm.LeftMenu.GovInteract.IdGovInteractConfiguration, "办件类型管理", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, "办件类型管理", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);
 
                 dgContents.DataSource = DataProvider.GovInteractTypeDao.GetDataSource(_nodeId);
                 dgContents.ItemDataBound += dgContents_ItemDataBound;

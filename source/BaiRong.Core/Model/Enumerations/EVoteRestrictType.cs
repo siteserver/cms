@@ -17,50 +17,44 @@ namespace BaiRong.Model
 	{
 		public static string GetValue(EVoteRestrictType type)
 		{
-			if (type == EVoteRestrictType.NoRestrict)
+		    if (type == EVoteRestrictType.NoRestrict)
 			{
 				return "NoRestrict";
 			}
-			else if (type == EVoteRestrictType.RestrictOneDay)
-			{
-				return "RestrictOneDay";
-			}
-			else if (type == EVoteRestrictType.RestrictOnlyOnce)
-			{
-				return "RestrictOnlyOnce";
-            }
-            else if (type == EVoteRestrictType.RestrictUser)
-            {
-                return "RestrictUser";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EVoteRestrictType.RestrictOneDay)
+		    {
+		        return "RestrictOneDay";
+		    }
+		    if (type == EVoteRestrictType.RestrictOnlyOnce)
+		    {
+		        return "RestrictOnlyOnce";
+		    }
+		    if (type == EVoteRestrictType.RestrictUser)
+		    {
+		        return "RestrictUser";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EVoteRestrictType type)
 		{
-			if (type == EVoteRestrictType.NoRestrict)
+		    if (type == EVoteRestrictType.NoRestrict)
 			{
 				return "允许重复投票";
 			}
-			else if (type == EVoteRestrictType.RestrictOneDay)
-			{
-				return "一天内禁止重复投票";
-			}
-			else if (type == EVoteRestrictType.RestrictOnlyOnce)
-			{
-				return "每台机只能投一票";
-            }
-            else if (type == EVoteRestrictType.RestrictUser)
-            {
-                return "每用户只能投一票";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EVoteRestrictType.RestrictOneDay)
+		    {
+		        return "一天内禁止重复投票";
+		    }
+		    if (type == EVoteRestrictType.RestrictOnlyOnce)
+		    {
+		        return "每台机只能投一票";
+		    }
+		    if (type == EVoteRestrictType.RestrictUser)
+		    {
+		        return "每用户只能投一票";
+		    }
+		    throw new Exception();
 		}
 
 		public static EVoteRestrictType GetEnumType(string typeStr)

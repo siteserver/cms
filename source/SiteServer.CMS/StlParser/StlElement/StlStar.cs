@@ -4,10 +4,11 @@ using System.Globalization;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
-using SiteServer.CMS.Controllers.Stl;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using Star = SiteServer.CMS.Controllers.Stl.Star;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -93,7 +94,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
@@ -104,15 +105,18 @@ namespace SiteServer.CMS.StlParser.StlElement
             var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
             var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
             var contentId = ContentUtility.GetRealContentId(tableStyle, tableName, contextInfo.ContentId);
-            var channelId = BaiRongDataProvider.ContentDao.GetNodeId(tableName, contextInfo.ContentId);
+            //var channelId = BaiRongDataProvider.ContentDao.GetNodeId(tableName, contextInfo.ContentId);
+            var channelId = Content.GetNodeId(tableName, contextInfo.ContentId, pageInfo.Guid);
 
             if (isTextOnly)
             {
-                var counts = DataProvider.StarDao.GetCount(pageInfo.PublishmentSystemId, channelId, contentId);
+                //var counts = DataProvider.StarDao.GetCount(pageInfo.PublishmentSystemId, channelId, contentId);
+                var counts = Cache.Star.GetCount(pageInfo.PublishmentSystemId, channelId, contentId, pageInfo.Guid);
                 var totalCount = counts[0];
                 var totalPoint = counts[1];
 
-                var totalCountAndPointAverage = DataProvider.StarSettingDao.GetTotalCountAndPointAverage(pageInfo.PublishmentSystemId, contentId);
+                //var totalCountAndPointAverage = DataProvider.StarSettingDao.GetTotalCountAndPointAverage(pageInfo.PublishmentSystemId, contentId);
+                var totalCountAndPointAverage = StarSetting.GetTotalCountAndPointAverage(pageInfo.PublishmentSystemId, contentId, pageInfo.Guid);
                 var settingTotalCount = (int)totalCountAndPointAverage[0];
                 var settingPointAverage = (decimal)totalCountAndPointAverage[1];
                 if (settingTotalCount > 0 || settingPointAverage > 0)

@@ -15,42 +15,36 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(EVoteItemType type)
 		{
-			if (type == EVoteItemType.Text)
+		    if (type == EVoteItemType.Text)
 			{
 				return "Text";
 			}
-			else if (type == EVoteItemType.Image)
-			{
-				return "Image";
-			}
-			else if (type == EVoteItemType.TextAndImage)
-			{
-				return "TextAndImage";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EVoteItemType.Image)
+		    {
+		        return "Image";
+		    }
+		    if (type == EVoteItemType.TextAndImage)
+		    {
+		        return "TextAndImage";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EVoteItemType type)
 		{
-			if (type == EVoteItemType.Text)
+		    if (type == EVoteItemType.Text)
 			{
 				return "文字型投票";
 			}
-			else if (type == EVoteItemType.Image)
-			{
-				return "图片型投票";
-			}
-			else if (type == EVoteItemType.TextAndImage)
-			{
-				return "图文混合型投票";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EVoteItemType.Image)
+		    {
+		        return "图片型投票";
+		    }
+		    if (type == EVoteItemType.TextAndImage)
+		    {
+		        return "图文混合型投票";
+		    }
+		    throw new Exception();
 		}
 
 		public static EVoteItemType GetEnumType(string typeStr)

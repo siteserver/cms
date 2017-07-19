@@ -5,9 +5,9 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
@@ -183,7 +183,7 @@ namespace SiteServer.CMS.Core
 
         public static ETableStyle GetTableStyle(PublishmentSystemInfo publishmentSystemInfo, string tableName)
         {
-            var tableStyle = ETableStyle.UserDefined;
+            var tableStyle = ETableStyle.Custom;
 
             if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForContent))
             {
@@ -316,7 +316,7 @@ namespace SiteServer.CMS.Core
             return parentPublishmentSystemId;
         }
 
-        public static void ClearCache(bool isAddAjaxUrl)
+        public static void ClearCache()
         {
             CacheUtils.Remove(CacheKey);
             CacheManager.UpdateTemporaryCacheFile(CacheFileName);

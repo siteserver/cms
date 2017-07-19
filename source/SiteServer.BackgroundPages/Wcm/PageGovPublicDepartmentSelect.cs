@@ -101,7 +101,7 @@ namespace SiteServer.BackgroundPages.Wcm
 		{
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicContentConfiguration, "可选择部门设置", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, "可选择部门设置", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
 
                 ltlDepartmentTree.Text = GetDepartmentTreeHtml();
 			}

@@ -13,18 +13,15 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ETrackerType type)
 		{
-            if (type == ETrackerType.Site)
+		    if (type == ETrackerType.Site)
 			{
                 return "Site";
 			}
-            else if (type == ETrackerType.Page)
-			{
-                return "Page";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETrackerType.Page)
+		    {
+		        return "Page";
+		    }
+		    throw new Exception();
 		}
 
 		public static ETrackerType GetEnumType(string typeStr)

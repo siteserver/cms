@@ -104,7 +104,7 @@ namespace SiteServer.BackgroundPages.Cms
 			if (!IsPostBack)
 			{
                 var pageTitle = Body.GetQueryInt("TemplateID") > 0 ? "编辑模板" : "添加模板";
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, pageTitle, AppManager.Cms.Permission.WebSite.Template);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, pageTitle, AppManager.Permissions.WebSite.Template);
 
                 ltlPageTitle.Text = pageTitle;
 
@@ -120,7 +120,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
 					if (templateInfo != null)
 					{
-                        Content.Text = StlCacheManager.FileContent.GetTemplateContent(PublishmentSystemInfo, templateInfo);
+                        Content.Text = TemplateManager.GetTemplateContent(PublishmentSystemInfo, templateInfo);
 
                         if (_isCopy)
                         {
@@ -314,15 +314,16 @@ namespace SiteServer.BackgroundPages.Cms
 
         private void CreatePages(TemplateInfo templateInfo)
         {
+            var guid = StringUtils.GetShortGuid();
             if (templateInfo.TemplateType == ETemplateType.FileTemplate)
             {
-                CreateManager.CreateFile(PublishmentSystemId, templateInfo.TemplateId);
+                CreateManager.CreateFile(PublishmentSystemId, templateInfo.TemplateId, guid);
             }
             else if (templateInfo.TemplateType == ETemplateType.IndexPageTemplate)
             {
                 if (templateInfo.IsDefault)
                 {
-                    CreateManager.CreateIndex(PublishmentSystemId);
+                    CreateManager.CreateChannel(PublishmentSystemId, PublishmentSystemId, guid);
                 }
             }
         }

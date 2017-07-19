@@ -2,8 +2,8 @@
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -22,12 +22,12 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmTemplateId, EDataType.Integer, logInfo.TemplateId),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, logInfo.PublishmentSystemId),
-                GetParameter(ParmAddDate, EDataType.DateTime, logInfo.AddDate),
-                GetParameter(ParmAddUserName, EDataType.NVarChar, 255, logInfo.AddUserName),
-                GetParameter(ParmContentLength, EDataType.Integer, logInfo.ContentLength),
-				GetParameter(ParmTemplateContent, EDataType.NText, logInfo.TemplateContent)
+                GetParameter(ParmTemplateId, DataType.Integer, logInfo.TemplateId),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, logInfo.PublishmentSystemId),
+                GetParameter(ParmAddDate, DataType.DateTime, logInfo.AddDate),
+                GetParameter(ParmAddUserName, DataType.NVarChar, 255, logInfo.AddUserName),
+                GetParameter(ParmContentLength, DataType.Integer, logInfo.ContentLength),
+				GetParameter(ParmTemplateContent, DataType.NText, logInfo.TemplateContent)
 			};
 
             ExecuteNonQuery(sqlString, parms);

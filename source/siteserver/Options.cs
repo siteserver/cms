@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
+using BaiRong.Core;
 using CommandLine;
+using CommandLine.Text;
 
 namespace siteserver
 {
@@ -17,7 +20,8 @@ namespace siteserver
 
     internal class TestSubOptions
     {
-        // Remainder omitted
+        [Option('a', "all", HelpText = "Tell the command to automatically stage files.")]
+        public bool All { get; set; }
     }
 
     internal class EncodeSubOptions
@@ -26,35 +30,48 @@ namespace siteserver
         public string String { get; set; }
     }
 
+    internal class DecodeSubOptions
+    {
+        [Option('s', "string", Required = true, HelpText = "Input string to be processed.")]
+        public string String { get; set; }
+    }
+
     internal class Options
     {
-        [Option('i', "input", Required = true, HelpText = "Input file to read.")]
-        public string InputFile { get; set; }
+        [Option]
+        public bool Verbose { get; set; } // --verbose
 
-        [Option('v', null, HelpText = "Print details during execution.")]
-        public bool Verbose { get; set; }
+        [Option('q')]
+        public bool Quiet { get; set; }   // -q
 
         [HelpOption]
         public string GetUsage()
         {
-            // this without using CommandLine.Text
-            //  or using HelpText.AutoBuild
-            var usage = new StringBuilder();
-            usage.AppendLine("Quickstart Application 1.0");
-            usage.AppendLine("Read user manual for usage instructions...");
-            return usage.ToString();
+            var help = new HelpText
+            {
+                Heading = new HeadingInfo("SiteServer 命令行", "V" + AppManager.Version),
+                Copyright = new CopyrightInfo("北京百容千域软件技术开发有限责任公司", DateTime.Now.Year),
+                AdditionalNewLineAfterOption = true,
+                AddDashesToOption = true
+            };
+            help.AddPreOptionsLine("用法: siteserver <command> <options>");
+            help.AddOptions(this);
+            return help;
         }
 
-        [VerbOption("build", HelpText = "Record changes to the repository.")]
+        [VerbOption("build", HelpText = "生成站点")]
         public BuildSubOptions BuildVerb { get; set; }
 
-        [VerbOption("run", HelpText = "Update remote refs along with associated objects.")]
+        [VerbOption("run", HelpText = "运行任务")]
         public RunSubOptions WatchVerb { get; set; }
 
-        [VerbOption("test", HelpText = "Update remote refs along with associated objects.")]
+        [VerbOption("test", HelpText = "测试")]
         public TestSubOptions TestVerb { get; set; }
 
-        [VerbOption("encode", HelpText = "Update remote refs along with associated objects.")]
+        [VerbOption("encode", HelpText = "加密字符串")]
         public EncodeSubOptions EncodeVerb { get; set; }
+
+        [VerbOption("decode", HelpText = "解密字符串")]
+        public DecodeSubOptions DecodeVerb { get; set; }
     }
 }

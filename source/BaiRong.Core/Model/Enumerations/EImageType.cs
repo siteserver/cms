@@ -16,34 +16,31 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(EImageType type)
 		{
-			if (type == EImageType.Jpg)
+		    if (type == EImageType.Jpg)
 			{
 				return "jpg";
 			}
-			else if (type == EImageType.Jpeg)
-			{
-				return "jpeg";
-			}
-			else if (type == EImageType.Gif)
-			{
-				return "gif";
-			}
-			else if (type == EImageType.Png)
-			{
-				return "png";
-			}
-			else if (type == EImageType.Bmp)
-			{
-				return "bmp";
-			}
-			else if (type == EImageType.Unknown)
-			{
-				return "unknown";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EImageType.Jpeg)
+		    {
+		        return "jpeg";
+		    }
+		    if (type == EImageType.Gif)
+		    {
+		        return "gif";
+		    }
+		    if (type == EImageType.Png)
+		    {
+		        return "png";
+		    }
+		    if (type == EImageType.Bmp)
+		    {
+		        return "bmp";
+		    }
+		    if (type == EImageType.Unknown)
+		    {
+		        return "unknown";
+		    }
+		    throw new Exception();
 		}
 
 		public static EImageType GetEnumType(string typeStr)

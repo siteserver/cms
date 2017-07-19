@@ -136,7 +136,7 @@ namespace SiteServer.CMS.Core.Security
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsConsoleAdministrator || permissions.IsSystemAdministrator)
                 return false;
-            if (HasChannelPermissions(administratorName, publishmentSystemId, nodeId, AppManager.Cms.Permission.Channel.ContentCheck))
+            if (HasChannelPermissions(administratorName, publishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentCheck))
                 return false;
             return ConfigManager.SystemConfigInfo.IsViewContentOnlySelf;
         }

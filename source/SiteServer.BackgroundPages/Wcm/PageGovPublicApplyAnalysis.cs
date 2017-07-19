@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Wcm
 		{
 			if(!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicAnalysis, "依申请公开统计", AppManager.Wcm.Permission.WebSite.GovPublicAnalysis);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, "依申请公开统计", AppManager.Wcm.Permission.WebSite.GovPublicAnalysis);
 
                 StartDate.Text = string.Empty;
                 EndDate.Now = true;

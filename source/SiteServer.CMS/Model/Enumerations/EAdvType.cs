@@ -20,26 +20,23 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "JsCode";
             }
-            else if (type == EAdvType.HtmlCode)
+            if (type == EAdvType.HtmlCode)
             {
                 return "HtmlCode";
             }
-            else if (type == EAdvType.Text)
+            if (type == EAdvType.Text)
             {
                 return "Text";
             }
-            else if (type == EAdvType.Image)
+            if (type == EAdvType.Image)
             {
                 return "Image";
             }
-            else if (type == EAdvType.Flash)
+            if (type == EAdvType.Flash)
             {
                 return "Flash";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EAdvType type)
@@ -51,22 +48,19 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "HTML代码";
             }
-            else if (type == EAdvType.Text)
+            if (type == EAdvType.Text)
             {
                 return "文字";
             }
-            else if (type == EAdvType.Image)
+            if (type == EAdvType.Image)
             {
                 return "图片";
             }
-            else if (type == EAdvType.Flash)
+            if (type == EAdvType.Flash)
             {
                 return "Flash";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EAdvType GetEnumType(string typeStr)

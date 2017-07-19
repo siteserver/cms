@@ -158,15 +158,15 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (string.IsNullOrEmpty(loading))
                 {
-                    loading = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
+                    loading = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
                 }
                 if (string.IsNullOrEmpty(yes))
                 {
-                    yes = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
+                    yes = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
                 }
                 if (string.IsNullOrEmpty(no))
                 {
-                    no = StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
+                    no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
                 }
 
                 pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
@@ -266,7 +266,7 @@ function stlJump{ajaxDivId}(selObj)
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;

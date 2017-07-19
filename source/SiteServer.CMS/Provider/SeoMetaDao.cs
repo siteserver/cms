@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -79,22 +79,22 @@ namespace SiteServer.CMS.Provider
 
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, info.PublishmentSystemId),
-				GetParameter(ParmSeoMetaName, EDataType.VarChar, 50, info.SeoMetaName),
-				GetParameter(ParmIsDefault, EDataType.VarChar, 18, info.IsDefault.ToString()),
-				GetParameter(ParmPageTitle, EDataType.NVarChar, 80, info.PageTitle),
-				GetParameter(ParmKeywords, EDataType.NVarChar, 100, info.Keywords),
-				GetParameter(ParmDescription, EDataType.NVarChar, 200, info.Description),
-				GetParameter(ParmCopyright, EDataType.NVarChar, 255, info.Copyright),
-				GetParameter(ParmAuthor, EDataType.NVarChar, 50, info.Author),
-				GetParameter(ParmEmail, EDataType.NVarChar, 50, info.Email),
-				GetParameter(ParmLanguage, EDataType.VarChar, 50, info.Language),
-				GetParameter(ParmCharset, EDataType.VarChar, 50, info.Charset),
-				GetParameter(ParmDistribution, EDataType.VarChar, 50, info.Distribution),
-				GetParameter(ParmRating, EDataType.VarChar, 50, info.Rating),
-				GetParameter(ParmRobots, EDataType.VarChar, 50, info.Robots),
-				GetParameter(ParmRevisitAfter, EDataType.VarChar, 50, info.RevisitAfter),
-				GetParameter(ParmExpires, EDataType.VarChar, 50, info.Expires)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
+				GetParameter(ParmSeoMetaName, DataType.VarChar, 50, info.SeoMetaName),
+				GetParameter(ParmIsDefault, DataType.VarChar, 18, info.IsDefault.ToString()),
+				GetParameter(ParmPageTitle, DataType.NVarChar, 80, info.PageTitle),
+				GetParameter(ParmKeywords, DataType.NVarChar, 100, info.Keywords),
+				GetParameter(ParmDescription, DataType.NVarChar, 200, info.Description),
+				GetParameter(ParmCopyright, DataType.NVarChar, 255, info.Copyright),
+				GetParameter(ParmAuthor, DataType.NVarChar, 50, info.Author),
+				GetParameter(ParmEmail, DataType.NVarChar, 50, info.Email),
+				GetParameter(ParmLanguage, DataType.VarChar, 50, info.Language),
+				GetParameter(ParmCharset, DataType.VarChar, 50, info.Charset),
+				GetParameter(ParmDistribution, DataType.VarChar, 50, info.Distribution),
+				GetParameter(ParmRating, DataType.VarChar, 50, info.Rating),
+				GetParameter(ParmRobots, DataType.VarChar, 50, info.Robots),
+				GetParameter(ParmRevisitAfter, DataType.VarChar, 50, info.RevisitAfter),
+				GetParameter(ParmExpires, DataType.VarChar, 50, info.Expires)
 			};
 
             ExecuteNonQuery(sqlString, insertParms);
@@ -109,22 +109,22 @@ namespace SiteServer.CMS.Provider
 
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmSeoMetaName, EDataType.VarChar, 50, info.SeoMetaName),
-				GetParameter(ParmIsDefault, EDataType.VarChar, 18, info.IsDefault.ToString()),
-				GetParameter(ParmPageTitle, EDataType.NVarChar, 80, info.PageTitle),
-				GetParameter(ParmKeywords, EDataType.NVarChar, 100, info.Keywords),
-				GetParameter(ParmDescription, EDataType.NVarChar, 200, info.Description),
-				GetParameter(ParmCopyright, EDataType.NVarChar, 255, info.Copyright),
-				GetParameter(ParmAuthor, EDataType.NVarChar, 50, info.Author),
-				GetParameter(ParmEmail, EDataType.NVarChar, 50, info.Email),
-				GetParameter(ParmLanguage, EDataType.VarChar, 50, info.Language),
-				GetParameter(ParmCharset, EDataType.VarChar, 50, info.Charset),
-				GetParameter(ParmDistribution, EDataType.VarChar, 50, info.Distribution),
-				GetParameter(ParmRating, EDataType.VarChar, 50, info.Rating),
-				GetParameter(ParmRobots, EDataType.VarChar, 50, info.Robots),
-				GetParameter(ParmRevisitAfter, EDataType.VarChar, 50, info.RevisitAfter),
-				GetParameter(ParmExpires, EDataType.VarChar, 50, info.Expires),
-				GetParameter(ParmSeoMetaId, EDataType.Integer, info.SeoMetaId)
+				GetParameter(ParmSeoMetaName, DataType.VarChar, 50, info.SeoMetaName),
+				GetParameter(ParmIsDefault, DataType.VarChar, 18, info.IsDefault.ToString()),
+				GetParameter(ParmPageTitle, DataType.NVarChar, 80, info.PageTitle),
+				GetParameter(ParmKeywords, DataType.NVarChar, 100, info.Keywords),
+				GetParameter(ParmDescription, DataType.NVarChar, 200, info.Description),
+				GetParameter(ParmCopyright, DataType.NVarChar, 255, info.Copyright),
+				GetParameter(ParmAuthor, DataType.NVarChar, 50, info.Author),
+				GetParameter(ParmEmail, DataType.NVarChar, 50, info.Email),
+				GetParameter(ParmLanguage, DataType.VarChar, 50, info.Language),
+				GetParameter(ParmCharset, DataType.VarChar, 50, info.Charset),
+				GetParameter(ParmDistribution, DataType.VarChar, 50, info.Distribution),
+				GetParameter(ParmRating, DataType.VarChar, 50, info.Rating),
+				GetParameter(ParmRobots, DataType.VarChar, 50, info.Robots),
+				GetParameter(ParmRevisitAfter, DataType.VarChar, 50, info.RevisitAfter),
+				GetParameter(ParmExpires, DataType.VarChar, 50, info.Expires),
+				GetParameter(ParmSeoMetaId, DataType.Integer, info.SeoMetaId)
 			};
 							
 			ExecuteNonQuery(SqlUpdateSeoMeta, updateParms);
@@ -134,8 +134,8 @@ namespace SiteServer.CMS.Provider
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmIsDefault, EDataType.VarChar, 18, false.ToString()),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmIsDefault, DataType.VarChar, 18, false.ToString()),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
 			ExecuteNonQuery(SqlUpdateAllIsDefault, updateParms);
@@ -147,8 +147,8 @@ namespace SiteServer.CMS.Provider
 
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmIsDefault, EDataType.VarChar, 18, defaultValue.ToString()),
-				GetParameter(ParmSeoMetaId, EDataType.Integer, seoMetaId)
+				GetParameter(ParmIsDefault, DataType.VarChar, 18, defaultValue.ToString()),
+				GetParameter(ParmSeoMetaId, DataType.Integer, seoMetaId)
 			};
 							
 			ExecuteNonQuery(SqlUpdateIsDefault, updateParms);
@@ -158,7 +158,7 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmSeoMetaId, EDataType.Integer, seoMetaId)
+				GetParameter(ParmSeoMetaId, DataType.Integer, seoMetaId)
 			};
 							
 			ExecuteNonQuery(SqlDeleteSeoMeta, parms);
@@ -170,7 +170,7 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmSeoMetaId, EDataType.Integer, seoMetaId)
+				GetParameter(ParmSeoMetaId, DataType.Integer, seoMetaId)
 			};
 			
 			using (var rdr = ExecuteReader(SqlSelectSeoMeta, parms)) 
@@ -192,8 +192,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmSeoMetaName, EDataType.VarChar, 50, seoMetaName)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmSeoMetaName, DataType.VarChar, 50, seoMetaName)
 			};
 			
 			using (var rdr = ExecuteReader(SqlSelectSeoMetaBySeoMetaName, parms))
@@ -235,8 +235,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmSeoMetaName, EDataType.VarChar, 50, importSeoMetaName)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmSeoMetaName, DataType.VarChar, 50, importSeoMetaName)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectSeoMetaBySeoMetaName, parms))
@@ -257,7 +257,7 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectSeoMetaCount, parms)) 
@@ -278,8 +278,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmIsDefault, EDataType.VarChar, 18, true.ToString())
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmIsDefault, DataType.VarChar, 18, true.ToString())
 			};
 			
 			using (var rdr = ExecuteReader(SqlSelectDefaultSeoMeta, parms)) 
@@ -301,8 +301,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmIsDefault, EDataType.VarChar, 18, true.ToString())
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmIsDefault, DataType.VarChar, 18, true.ToString())
 			};
 
             using (var rdr = ExecuteReader(SqlSelectDefaultSeoMetaId, parms))
@@ -321,7 +321,7 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
 			var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllSeoMeta, parms);
@@ -334,7 +334,7 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectAllSeoMetaByPublishmentSystemId, parms))
@@ -356,7 +356,7 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmSeoMetaId, EDataType.Integer, seoMetaId)
+				GetParameter(ParmSeoMetaId, DataType.Integer, seoMetaId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectSeoMetaName, parms)) 
@@ -377,8 +377,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmSeoMetaName, EDataType.VarChar, 50, seoMetaName)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmSeoMetaName, DataType.VarChar, 50, seoMetaName)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectSeoMetaIdBySeoMetaName, parms)) 
@@ -399,7 +399,7 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectSeoMetaNames, parms)) 
@@ -425,10 +425,10 @@ namespace SiteServer.CMS.Provider
 
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-				GetParameter(ParmIsChannel, EDataType.VarChar, 18, isChannel.ToString()),
-				GetParameter(ParmSeoMetaId, EDataType.Integer, seoMetaId),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
+				GetParameter(ParmNodeId, DataType.Integer, nodeId),
+				GetParameter(ParmIsChannel, DataType.VarChar, 18, isChannel.ToString()),
+				GetParameter(ParmSeoMetaId, DataType.Integer, seoMetaId),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
 			};
 							
 			ExecuteNonQuery(SqlInsertMatch, insertParms);
@@ -439,8 +439,8 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-				GetParameter(ParmIsChannel, EDataType.VarChar, 18, isChannel.ToString()),
+				GetParameter(ParmNodeId, DataType.Integer, nodeId),
+				GetParameter(ParmIsChannel, DataType.VarChar, 18, isChannel.ToString()),
 			};
 							
 			ExecuteNonQuery(SqlDeleteMatchByNodeId, parms);
@@ -454,8 +454,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId),
-				GetParameter(ParmIsChannel, EDataType.VarChar, 18, isChannel.ToString())
+				GetParameter(ParmNodeId, DataType.Integer, nodeId),
+				GetParameter(ParmIsChannel, DataType.VarChar, 18, isChannel.ToString())
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectSeoMetaIdByNodeId, parms))

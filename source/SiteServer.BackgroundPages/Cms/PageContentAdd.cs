@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                if (!HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentAdd))
+                if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentAdd))
                 {
                     if (!Body.IsAdministratorLoggin)
                     {
@@ -109,7 +109,7 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentId);
-                if (!HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentEdit))
+                if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentEdit))
                 {
                     if (!Body.IsAdministratorLoggin)
                     {
@@ -124,10 +124,8 @@ namespace SiteServer.BackgroundPages.Cms
             if (!IsPostBack)
             {
                 var nodeNames = NodeManager.GetNodeNameNavigation(PublishmentSystemId, _nodeInfo.NodeId);
-                var pageTitle = (contentId == 0) ?
-                    $"添加{ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId).ModelName}"
-                    : $"编辑{ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId).ModelName}";
-                BreadCrumbWithItemTitle(AppManager.Cms.LeftMenu.IdContent, pageTitle, nodeNames, string.Empty);
+                var pageTitle = contentId == 0 ? "添加内容" : "编辑内容";
+                BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdContent, pageTitle, nodeNames, string.Empty);
 
                 LtlPageTitle.Text = pageTitle;
                 LtlPageTitle.Text += $@"
@@ -137,7 +135,7 @@ var previewUrl = '{PagePreview.GetRedirectUrl(PublishmentSystemId, _nodeInfo.Nod
 ";
 
                 //转移
-                if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, _nodeInfo.NodeId, AppManager.Cms.Permission.Channel.ContentTranslate))
+                if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, _nodeInfo.NodeId, AppManager.Permissions.Channel.ContentTranslate))
                 {
                     PhTranslate.Visible = PublishmentSystemInfo.Additional.IsTranslate;
                     DivTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
@@ -288,7 +286,7 @@ $('#TbTags').keyup(function (e) {
                     TbTags.Text = contentInfo?.Tags;
                 }
 
-                if (HasChannelPermissions(nodeId, AppManager.Cms.Permission.Channel.ContentCheck))
+                if (HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentCheck))
                 {
                     PhStatus.Visible = true;
                     int checkedLevel;
@@ -321,7 +319,7 @@ $('#TbTags').keyup(function (e) {
             DataBind();
         }
 
-        private int SaveContentInfo(bool isPreview, out string errorMessage)
+        private int SaveContentInfo(bool isPreview, string guid, out string errorMessage)
         {
             int savedContentId;
             errorMessage = string.Empty;
@@ -400,18 +398,15 @@ $('#TbTags').keyup(function (e) {
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id);
+                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, guid);
                 }
 
                 Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, "添加内容",
                     $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
 
-                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName);
+                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName, guid);
 
-                PageUtils.Redirect(EContentModelTypeUtils.Equals(_nodeInfo.ContentModelId, EContentModelType.Photo)
-                    ? PageContentPhotoUpload.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
-                        Body.GetQueryString("ReturnUrl"))
-                    : PageContentAddAfter.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
+                PageUtils.Redirect(PageContentAddAfter.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
                         ReturnUrl));
             }
             else
@@ -455,75 +450,69 @@ $('#TbTags').keyup(function (e) {
                         TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, PublishmentSystemId, contentId);
                     }
 
-                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName);
-
-                    if (EContentModelTypeUtils.Equals(_nodeInfo.ContentModelId, EContentModelType.Photo))
-                    {
-                        PageUtils.Redirect(PageContentPhotoUpload.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, Body.GetQueryString("ReturnUrl")));
-                    }
+                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName, guid);
 
                     //更新引用该内容的信息
                     //如果不是异步自动保存，那么需要将引用此内容的content修改
                     var sourceContentIdList = new List<int>
-                        {
-                            contentInfo.Id
-                        };
+                    {
+                        contentInfo.Id
+                    };
                     var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent, EAuxiliaryTableType.JobContent, EAuxiliaryTableType.VoteContent);
                     foreach (var table in tableList)
                     {
                         var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, sourceContentIdList);
-                        foreach (int targetContentId in targetContentIdList)
+                        foreach (var targetContentId in targetContentIdList)
                         {
                             var targetContentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyleUtils.GetEnumType(table.AuxiliaryTableType.ToString()), table.TableEnName, targetContentId);
-                            if (targetContentInfo != null && targetContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType) == ETranslateContentType.ReferenceContent.ToString())
-                            {
-                                contentInfo.Id = targetContentId;
-                                contentInfo.PublishmentSystemId = targetContentInfo.PublishmentSystemId;
-                                contentInfo.NodeId = targetContentInfo.NodeId;
-                                contentInfo.SourceId = targetContentInfo.SourceId;
-                                contentInfo.ReferenceId = targetContentInfo.ReferenceId;
-                                contentInfo.Taxis = targetContentInfo.Taxis;
-                                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, targetContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType));
-                                BaiRongDataProvider.ContentDao.Update(table.TableEnName, contentInfo);
+                            if (targetContentInfo == null || targetContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString()) continue;
 
-                                //资源：图片，文件，视频
-                                var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetContentInfo.PublishmentSystemId);
-                                var bgContentInfo = contentInfo as BackgroundContentInfo;
-                                var bgTargetContentInfo = targetContentInfo as BackgroundContentInfo;
-                                if (bgTargetContentInfo != null && bgContentInfo != null)
+                            contentInfo.Id = targetContentId;
+                            contentInfo.PublishmentSystemId = targetContentInfo.PublishmentSystemId;
+                            contentInfo.NodeId = targetContentInfo.NodeId;
+                            contentInfo.SourceId = targetContentInfo.SourceId;
+                            contentInfo.ReferenceId = targetContentInfo.ReferenceId;
+                            contentInfo.Taxis = targetContentInfo.Taxis;
+                            contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, targetContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType));
+                            BaiRongDataProvider.ContentDao.Update(table.TableEnName, contentInfo);
+
+                            //资源：图片，文件，视频
+                            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetContentInfo.PublishmentSystemId);
+                            var bgContentInfo = contentInfo as BackgroundContentInfo;
+                            var bgTargetContentInfo = targetContentInfo as BackgroundContentInfo;
+                            if (bgTargetContentInfo != null && bgContentInfo != null)
+                            {
+                                if (bgContentInfo.ImageUrl != bgTargetContentInfo.ImageUrl)
                                 {
-                                    if (bgContentInfo.ImageUrl != bgTargetContentInfo.ImageUrl)
+                                    //修改图片
+                                    var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.ImageUrl);
+                                    CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl);
+                                }
+                                else if (bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)) != bgTargetContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)))
+                                {
+                                    var sourceImageUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
+
+                                    foreach (string imageUrl in sourceImageUrls)
                                     {
-                                        //修改图片
-                                        var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.ImageUrl);
+                                        var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, imageUrl);
                                         CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl);
                                     }
-                                    else if (bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)) != bgTargetContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)))
-                                    {
-                                        var sourceImageUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
+                                }
+                                if (bgContentInfo.FileUrl != bgTargetContentInfo.FileUrl)
+                                {
+                                    //修改附件
+                                    var sourceFileUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.FileUrl);
+                                    CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl);
 
-                                        foreach (string imageUrl in sourceImageUrls)
-                                        {
-                                            var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, imageUrl);
-                                            CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl);
-                                        }
-                                    }
-                                    if (bgContentInfo.FileUrl != bgTargetContentInfo.FileUrl)
+                                }
+                                else if (bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)) != bgTargetContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)))
+                                {
+                                    var sourceFileUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
+
+                                    foreach (var fileUrl in sourceFileUrls)
                                     {
-                                        //修改附件
-                                        var sourceFileUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.FileUrl);
+                                        var sourceFileUrl = PathUtility.MapPath(PublishmentSystemInfo, fileUrl);
                                         CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl);
-
-                                    }
-                                    else if (bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)) != bgTargetContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)))
-                                    {
-                                        var sourceFileUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
-
-                                        foreach (string fileUrl in sourceFileUrls)
-                                        {
-                                            var sourceFileUrl = PathUtility.MapPath(PublishmentSystemInfo, fileUrl);
-                                            CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl);
-                                        }
                                     }
                                 }
                             }
@@ -539,7 +528,7 @@ $('#TbTags').keyup(function (e) {
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentId);
+                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentId, guid);
                 }
 
                 Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentId, "修改内容",
@@ -556,14 +545,16 @@ $('#TbTags').keyup(function (e) {
         {
             if (Page.IsPostBack && Page.IsValid)
             {
+                var guid = StringUtils.GetShortGuid();
                 string errorMessage;
-                var savedContentId = SaveContentInfo(false, out errorMessage);
+                var savedContentId = SaveContentInfo(false, guid, out errorMessage);
                 if (savedContentId == 0)
                 {
                     FailMessage(errorMessage);
                 }
             }
         }
+
         private void CopyReferenceFiles(PublishmentSystemInfo targetPublishmentSystemInfo, string sourceUrl)
         {
             var targetUrl = StringUtils.ReplaceFirst(PublishmentSystemInfo.PublishmentSystemDir, sourceUrl, targetPublishmentSystemInfo.PublishmentSystemDir);

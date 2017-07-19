@@ -17,14 +17,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "LastMonth";
             }
-            else if (type == EMonth.MonthAgo)
+            if (type == EMonth.MonthAgo)
             {
                 return "MonthAgo";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         //public static string GetText(EMonth type,  string trueText, string falseText)

@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Stl
 
             try
             {
-                var contentInfo = DataProvider.VoteContentDao.GetContentInfo(publishmentSystemInfo, contentId);
+                var contentInfo = DataProvider.VoteContentDao.GetContentInfo(publishmentSystemInfo.AuxiliaryTableForVote, contentId);
                 if ((contentInfo.EndDate - DateTime.Now).Seconds <= 0)
                 {
                     throw new Exception("对不起，投票已经结束");

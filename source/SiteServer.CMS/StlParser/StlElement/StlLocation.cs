@@ -84,7 +84,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 			
 			return parsedContent;
@@ -150,7 +150,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo);
+                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo, pageInfo.Guid);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
@@ -173,7 +173,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo);
+                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo, pageInfo.Guid);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;

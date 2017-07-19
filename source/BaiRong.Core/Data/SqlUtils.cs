@@ -9,6 +9,7 @@ using System.Web.UI;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using MySql.Data.MySqlClient;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Data
 {
@@ -18,18 +19,18 @@ namespace BaiRong.Core.Data
 
         public static IDbConnection GetIDbConnection()
         {
-            return GetIDbConnection(WebConfigUtils.IsMySql, WebConfigUtils.ConnectionString);
+            return GetIDbConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
         }
 
-        public static IDbConnection GetIDbConnection(bool isMySql, string connectionString)
+        public static IDbConnection GetIDbConnection(EDatabaseType databaseType, string connectionString)
         {
-            IDbConnection conn;
+            IDbConnection conn = null;
 
-            if (isMySql)
+            if (databaseType == EDatabaseType.MySql)
             {
                 conn = new MySqlConnection(connectionString);
             }
-            else
+            else if (databaseType == EDatabaseType.SqlServer)
             {
                 conn = new SqlConnection(connectionString);
             }
@@ -39,13 +40,13 @@ namespace BaiRong.Core.Data
 
         public static IDbCommand GetIDbCommand()
         {
-            IDbCommand command;
+            IDbCommand command = null;
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 command = new MySqlCommand();
             }
-            else
+            else if (WebConfigUtils.DatabaseType == EDatabaseType.SqlServer)
             {
                 command = new SqlCommand();
             }
@@ -55,13 +56,13 @@ namespace BaiRong.Core.Data
 
         public static IDbDataAdapter GetIDbDataAdapter(string text, string connectionString)
         {
-            IDbDataAdapter adapter;
+            IDbDataAdapter adapter = null;
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 adapter = new MySqlDataAdapter(text, connectionString);
             }
-            else
+            else if (WebConfigUtils.DatabaseType == EDatabaseType.SqlServer)
             {
                 adapter = new SqlDataAdapter(text, connectionString);
             }
@@ -71,13 +72,13 @@ namespace BaiRong.Core.Data
 
         public static IDbDataAdapter GetIDbDataAdapter()
         {
-            IDbDataAdapter adapter;
+            IDbDataAdapter adapter = null;
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 adapter = new MySqlDataAdapter();
             }
-            else
+            else if (WebConfigUtils.DatabaseType == EDatabaseType.SqlServer)
             {
                 adapter = new SqlDataAdapter();
             }
@@ -87,43 +88,43 @@ namespace BaiRong.Core.Data
 
         public static void FillDataAdapterWithDataTable(IDbDataAdapter adapter, DataTable table)
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 ((MySqlDataAdapter)adapter).Fill(table);
             }
-            else
+            else if (WebConfigUtils.DatabaseType == EDatabaseType.SqlServer)
             {
                 ((SqlDataAdapter)adapter).Fill(table);
             }
         }
 
-        public static IDbDataParameter GetIDbDataParameter(string parameterName, EDataType dataType, int size)
+        public static IDbDataParameter GetIDbDataParameter(string parameterName, DataType dataType, int size)
         {
-            IDbDataParameter parameter;
+            IDbDataParameter parameter = null;
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
-                parameter = new MySqlParameter(parameterName, EDataTypeUtils.ToMySqlDbType(dataType), size);
+                parameter = new MySqlParameter(parameterName, DataTypeUtils.ToMySqlDbType(dataType), size);
             }
-            else
+            else if (WebConfigUtils.DatabaseType == EDatabaseType.SqlServer)
             {
-                parameter = new SqlParameter(parameterName, EDataTypeUtils.ToSqlDbType(dataType), size);
+                parameter = new SqlParameter(parameterName, DataTypeUtils.ToSqlDbType(dataType), size);
             }
 
             return parameter;
         }
 
-        public static IDbDataParameter GetIDbDataParameter(string parameterName, EDataType dataType)
+        public static IDbDataParameter GetIDbDataParameter(string parameterName, DataType dataType)
         {
-            IDbDataParameter parameter;
+            IDbDataParameter parameter = null;
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
-                parameter = new MySqlParameter(parameterName, EDataTypeUtils.ToMySqlDbType(dataType));
+                parameter = new MySqlParameter(parameterName, DataTypeUtils.ToMySqlDbType(dataType));
             }
-            else
+            else if (WebConfigUtils.DatabaseType == EDatabaseType.SqlServer)
             {
-                parameter = new SqlParameter(parameterName, EDataTypeUtils.ToSqlDbType(dataType));
+                parameter = new SqlParameter(parameterName, DataTypeUtils.ToSqlDbType(dataType));
             }
 
             return parameter;
@@ -194,29 +195,29 @@ namespace BaiRong.Core.Data
 
         public static string GetInStr(string columnName, string inStr)
         {
-            return WebConfigUtils.IsMySql ? $"INSTR({columnName}, '{inStr}') > 0" : $"CHARINDEX('{inStr}', {columnName}) > 0";
+            return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"INSTR({columnName}, '{inStr}') > 0" : $"CHARINDEX('{inStr}', {columnName}) > 0";
         }
 
         public static string GetNotInStr(string columnName, string inStr)
         {
-            return WebConfigUtils.IsMySql ? $"INSTR({columnName}, '{inStr}') = 0" : $"CHARINDEX('{inStr}', {columnName}) = 0";
+            return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"INSTR({columnName}, '{inStr}') = 0" : $"CHARINDEX('{inStr}', {columnName}) = 0";
         }
 
         public static string GetNotNullAndEmpty(string columnName)
         {
-            return WebConfigUtils.IsMySql ? $"LENGTH(IFNULL({columnName},'')) > 0" : $"DATALENGTH({columnName}) > 0";
+            return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"LENGTH(IFNULL({columnName},'')) > 0" : $"DATALENGTH({columnName}) > 0";
         }
 
         public static string GetNullOrEmpty(string columnName)
         {
-            return WebConfigUtils.IsMySql ? $"LENGTH(IFNULL({columnName},'')) = 0" : $"DATALENGTH({columnName}) = 0";
+            return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"LENGTH(IFNULL({columnName},'')) = 0" : $"DATALENGTH({columnName}) = 0";
         }
 
         public static string GetTopSqlString(string tableName, string columns, string whereAndOrder, int topN)
         {
             if (topN > 0)
             {
-                return WebConfigUtils.IsMySql ? $"SELECT {columns} FROM {tableName} {whereAndOrder} LIMIT {topN}" : $"SELECT TOP {topN} {columns} FROM {tableName} {whereAndOrder}";
+                return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"SELECT {columns} FROM {tableName} {whereAndOrder} LIMIT {topN}" : $"SELECT TOP {topN} {columns} FROM {tableName} {whereAndOrder}";
             }
             return $"SELECT {columns} FROM {tableName} {whereAndOrder}";
         }
@@ -225,7 +226,7 @@ namespace BaiRong.Core.Data
         {
             if (topN > 0)
             {
-                return WebConfigUtils.IsMySql ? $"SELECT DISTINCT {columns} FROM {tableName} {whereAndOrder} LIMIT {topN}" : $"SELECT DISTINCT TOP {topN} {columns} FROM {tableName} {whereAndOrder}";
+                return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"SELECT DISTINCT {columns} FROM {tableName} {whereAndOrder} LIMIT {topN}" : $"SELECT DISTINCT TOP {topN} {columns} FROM {tableName} {whereAndOrder}";
             }
             return $"SELECT DISTINCT {columns} FROM {tableName} {whereAndOrder}";
         }
@@ -242,15 +243,15 @@ namespace BaiRong.Core.Data
                 $"SELECT {builder} FROM ({GetTopSqlString(tableName, columns, whereAndOrder, topN)}) AS T";
         }
 
-        public static string GetColumnSqlString(EDataType dataType, string attributeName, int length)
+        public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
         {
-            return WebConfigUtils.IsMySql ? GetMySqlColumnSqlString(dataType, attributeName, length) : GetSqlServerColumnSqlString(dataType, attributeName, length);
+            return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? GetMySqlColumnSqlString(dataType, attributeName, length) : GetSqlServerColumnSqlString(dataType, attributeName, length);
         }
 
-        public static string GetMySqlColumnSqlString(EDataType dataType, string attributeName, int length)
+        public static string GetMySqlColumnSqlString(DataType dataType, string attributeName, int length)
         {
             string retval;
-            var sqlDbType = EDataTypeUtils.ToSqlDbType(dataType);
+            var sqlDbType = DataTypeUtils.ToSqlDbType(dataType);
             switch (sqlDbType)
             {
                 case SqlDbType.Char:
@@ -290,10 +291,10 @@ namespace BaiRong.Core.Data
             return retval;
         }
 
-        public static string GetSqlServerColumnSqlString(EDataType dataType, string attributeName, int length)
+        public static string GetSqlServerColumnSqlString(DataType dataType, string attributeName, int length)
         {
             var retval = string.Empty;
-            var sqlDbType = EDataTypeUtils.ToSqlDbType(dataType);
+            var sqlDbType = DataTypeUtils.ToSqlDbType(dataType);
             switch (sqlDbType)
             {
                 case SqlDbType.BigInt:
@@ -369,46 +370,46 @@ namespace BaiRong.Core.Data
 
         public static string GetDefaultDateString()
         {
-            return EDataTypeUtils.GetDefaultString(EDataType.DateTime);
+            return DataTypeUtils.GetDefaultString(DataType.DateTime);
         }
 
-        public static string Parse(EDataType dataType, string valueStr, int length)
+        public static string Parse(DataType dataType, string valueStr, int length)
         {
             string retval;
 
             switch (dataType)
             {
-                case EDataType.Bit:
+                case DataType.Bit:
                     retval = ParseToIntString(valueStr);
                     break;
-                case EDataType.Char:
+                case DataType.Char:
                     retval = ParseToSqlStringWithQuote(valueStr, length);
                     break;
-                case EDataType.DateTime:
+                case DataType.DateTime:
                     retval = ParseToDateTimeString(valueStr);
                     break;
-                case EDataType.Decimal:
+                case DataType.Decimal:
                     retval = ParseToDoubleString(valueStr);
                     break;
-                case EDataType.Float:
+                case DataType.Float:
                     retval = ParseToDoubleString(valueStr);
                     break;
-                case EDataType.Integer:
+                case DataType.Integer:
                     retval = ParseToIntString(valueStr);
                     break;
-                case EDataType.NChar:
+                case DataType.NChar:
                     retval = ParseToSqlStringWithNAndQuote(valueStr, length);
                     break;
-                case EDataType.NText:
+                case DataType.NText:
                     retval = ParseToSqlStringWithNAndQuote(valueStr);
                     break;
-                case EDataType.NVarChar:
+                case DataType.NVarChar:
                     retval = ParseToSqlStringWithNAndQuote(valueStr, length);
                     break;
-                case EDataType.Text:
+                case DataType.Text:
                     retval = ParseToSqlStringWithQuote(valueStr);
                     break;
-                case EDataType.VarChar:
+                case DataType.VarChar:
                     retval = ParseToSqlStringWithQuote(valueStr, length);
                     break;
                 default:
@@ -542,7 +543,7 @@ namespace BaiRong.Core.Data
 
         private static string GetDateDiffLessThan(string fieldName, string fieldValue, string unit)
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $"TIMESTAMPDIFF({unit}, {fieldName}, now()) < {fieldValue}";
             }
@@ -576,7 +577,7 @@ namespace BaiRong.Core.Data
 
         private static string GetDateDiffGreatThan(string fieldName, string fieldValue, string unit)
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $"TIMESTAMPDIFF({unit}, {fieldName}, now()) > {fieldValue}";
             }
@@ -585,7 +586,7 @@ namespace BaiRong.Core.Data
 
         public static string GetDatePartYear(string fieldName)
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $"DATE_FORMAT({fieldName}, '%Y')";
             }
@@ -594,7 +595,7 @@ namespace BaiRong.Core.Data
 
         public static string GetDatePartMonth(string fieldName)
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $"DATE_FORMAT({fieldName}, '%c')";
             }
@@ -603,7 +604,7 @@ namespace BaiRong.Core.Data
 
         public static string GetDatePartDay(string fieldName)
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $"DATE_FORMAT({fieldName}, '%e')";
             }
@@ -612,7 +613,7 @@ namespace BaiRong.Core.Data
 
         public static string GetDatePartHour(string fieldName)
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $"DATE_FORMAT({fieldName}, '%k')";
             }
@@ -621,7 +622,7 @@ namespace BaiRong.Core.Data
 
         public static string GetDatePartDayOfYear(string fieldName)
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $"DATE_FORMAT({fieldName}, '%j')";
             }
@@ -635,7 +636,7 @@ namespace BaiRong.Core.Data
 
         public static string GetAddNum(string fieldName, int addNum)
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $"{fieldName} = IFNULL({fieldName}, 0) + {addNum}";
             }
@@ -644,11 +645,20 @@ namespace BaiRong.Core.Data
 
         public static string GetMinusNum(string fieldName, int minusNum)
         {
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $"{fieldName} = IFNULL({fieldName}, 0) - {minusNum}";
             }
             return $"{fieldName} = ISNULL({fieldName}, 0) - {minusNum}";
+        }
+
+        public static string GetOrderByRandom()
+        {
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+            {
+                return "ORDER BY RAND()";
+            }
+            return "ORDER BY NEWID() DESC";
         }
 
         public static int GetMaxLengthForNVarChar()

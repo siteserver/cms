@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace SiteServer.Plugin
 {
@@ -9,34 +8,32 @@ namespace SiteServer.Plugin
     /// </summary>
     public interface IPublicApi
     {
-        /// <summary>
-        /// Set a new option.
-        /// </summary>
-        /// <param name="option"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        bool SetOption(string option, string value);
+        IDbHelper DbHelper { get; }
 
-        string GetOption(string option);
+        bool SetGlobalConfig(string name, object config);
 
-        bool RemoveOption(string option);
+        T GetGlobalConfig<T>(string name);
 
-        bool SetSiteOption(int siteId, string option, string value);
+        bool RemoveGlobalConfig(string name);
 
-        string GetSiteOption(int siteId, string option);
+        bool SetConfig(int siteId, string name, object config);
 
-        bool RemoveSiteOption(int siteId, string option);
+        T GetConfig<T>(int siteId, string name);
+
+        bool RemoveConfig(int siteId, string name);
 
         int GetSiteIdByFilePath(string path);
 
         string GetSiteDirectoryPath(int siteId);
 
+        List<int> GetSiteIds();
+
         void AddErrorLog(Exception ex);
 
-        /// <summary>
-        /// Get all loaded plugins 
-        /// </summary>
-        /// <returns></returns>
-        List<PluginPair> GetAllPlugins();
+        void MoveFiles(int sourceSiteId, int targetSiteId, List<string> relatedUrls);
+
+        bool IsAuthorized();
+
+        bool IsSiteAuthorized(int siteId);
     }
 }

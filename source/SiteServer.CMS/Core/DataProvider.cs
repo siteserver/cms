@@ -184,5 +184,8 @@ namespace SiteServer.CMS.Core
 
         private static KeywordDao _keywordDao;
         public static KeywordDao KeywordDao => _keywordDao ?? (_keywordDao = new KeywordDao());
+
+        private static PluginConfigDao _pluginConfigDao;
+        public static PluginConfigDao PluginConfigDao => _pluginConfigDao ?? (_pluginConfigDao = new PluginConfigDao());
     }
 }

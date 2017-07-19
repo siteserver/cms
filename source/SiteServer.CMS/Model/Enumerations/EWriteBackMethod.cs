@@ -17,50 +17,44 @@ namespace SiteServer.CMS.Model
 	{
 		public static string GetValue(EWriteBackMethod type)
 		{
-			if (type == EWriteBackMethod.None)
+		    if (type == EWriteBackMethod.None)
 			{
 				return "None";
 			}
-			else if (type == EWriteBackMethod.ByWriteBackField)
-			{
-				return "ByWriteBackField";
-			}
-			else if (type == EWriteBackMethod.ByEmail)
-			{
-				return "ByEmail";
-			}
-			else if (type == EWriteBackMethod.All)
-			{
-				return "All";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EWriteBackMethod.ByWriteBackField)
+		    {
+		        return "ByWriteBackField";
+		    }
+		    if (type == EWriteBackMethod.ByEmail)
+		    {
+		        return "ByEmail";
+		    }
+		    if (type == EWriteBackMethod.All)
+		    {
+		        return "All";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EWriteBackMethod type)
 		{
-			if (type == EWriteBackMethod.None)
+		    if (type == EWriteBackMethod.None)
 			{
 				return "不回复信息";
 			}
-			else if (type == EWriteBackMethod.ByWriteBackField)
-			{
-				return "直接回复信息";
-			}
-			else if (type == EWriteBackMethod.ByEmail)
-			{
-				return "通过邮件回复信息";
-			}
-			else if (type == EWriteBackMethod.All)
-			{
-				return "同时使用两种回复方式";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EWriteBackMethod.ByWriteBackField)
+		    {
+		        return "直接回复信息";
+		    }
+		    if (type == EWriteBackMethod.ByEmail)
+		    {
+		        return "通过邮件回复信息";
+		    }
+		    if (type == EWriteBackMethod.All)
+		    {
+		        return "同时使用两种回复方式";
+		    }
+		    throw new Exception();
 		}
 
 		public static EWriteBackMethod GetEnumType(string typeStr)

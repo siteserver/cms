@@ -1,6 +1,5 @@
 using System.Web.UI;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlControls
@@ -73,7 +72,7 @@ namespace SiteServer.CMS.StlControls
 <link href=""{SiteFilesAssets.CommentInput.GetStyleUrl(ApiUrl)}"" rel=""stylesheet"" type=""text/css"" />
 <script src=""{SiteFilesAssets.CommentInput.GetScriptUrl(ApiUrl)}"" language=""javascript""></script>
 <div id=""stlCommentContainer"" class=""stlCommentContainer"">
-    {StlCacheManager.FileContent.GetContentByFilePath(SiteFilesAssets.CommentInput.CommentsTemplatePath, ECharset.utf_8)}
+    {TemplateManager.GetContentByFilePath(SiteFilesAssets.CommentInput.CommentsTemplatePath)}
 </div>
 <script>
     loadComments('{HomeUrl}', '{ApiGetUrl}', '{ApiActionsAddUrl}', '{ApiActionsGoodUrl}', '{ApiActionsDeleteUrl}', '{ApiActionsLogoutUrl}', {PageNum}, {IsDelete.ToString().ToLower()});

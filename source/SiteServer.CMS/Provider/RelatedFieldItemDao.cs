@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -28,11 +28,11 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmRelatedFieldId, EDataType.Integer, info.RelatedFieldID),
-                GetParameter(ParmItemName, EDataType.NVarChar, 255, info.ItemName),
-                GetParameter(ParmItemValue, EDataType.NVarChar, 255, info.ItemValue),
-				GetParameter(ParmParentId, EDataType.Integer, info.ParentID),
-                GetParameter(ParmTaxis, EDataType.Integer, info.Taxis)
+                GetParameter(ParmRelatedFieldId, DataType.Integer, info.RelatedFieldID),
+                GetParameter(ParmItemName, DataType.NVarChar, 255, info.ItemName),
+                GetParameter(ParmItemValue, DataType.NVarChar, 255, info.ItemValue),
+				GetParameter(ParmParentId, DataType.Integer, info.ParentID),
+                GetParameter(ParmTaxis, DataType.Integer, info.Taxis)
 			};
 
             using (var conn = GetConnection())
@@ -62,9 +62,9 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmItemName, EDataType.NVarChar, 255, info.ItemName),
-                GetParameter(ParmItemValue, EDataType.NVarChar, 255, info.ItemValue),
-				GetParameter(ParmId, EDataType.Integer, info.ID)
+				GetParameter(ParmItemName, DataType.NVarChar, 255, info.ItemName),
+                GetParameter(ParmItemValue, DataType.NVarChar, 255, info.ItemValue),
+				GetParameter(ParmId, DataType.Integer, info.ID)
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);

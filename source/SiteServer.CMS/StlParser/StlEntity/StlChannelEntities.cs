@@ -5,6 +5,7 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -61,7 +62,8 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 var channelId = contextInfo.ChannelId;
                 if (!string.IsNullOrEmpty(channelIndex))
                 {
-                    channelId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                    //channelId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                    channelId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex, pageInfo.Guid);
                     if (channelId == 0)
                     {
                         channelId = contextInfo.ChannelId;
@@ -117,7 +119,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(NavigationUrl, attributeName))//栏目链接地址
                 {
-                    parsedContent = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo);
+                    parsedContent = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo, pageInfo.Guid);
                 }
                 else if (StringUtils.EqualsIgnoreCase(ImageUrl, attributeName))//栏目图片地址
                 {
@@ -140,7 +142,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 {
                     parsedContent = nodeInfo.NodeGroupNameCollection;
                 }
-                else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer != null && contextInfo.ItemContainer.ChannelItem != null)
+                else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ChannelItem != null)
                 {
                     parsedContent = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ChannelItem.ItemIndex, attributeName, contextInfo).ToString();
                 }

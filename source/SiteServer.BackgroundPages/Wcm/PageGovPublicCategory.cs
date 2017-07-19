@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
             if (!IsPostBack)
             {
-                BreadCrumbWithItemTitle(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicContentConfiguration, "分类法管理", ClassName + "分类", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
+                BreadCrumbWithTitle(AppManager.Wcm.LeftMenu.IdGovPublic, "分类法管理", ClassName + "分类", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", GovPublicCategoryTreeItem.GetScript(_categoryClassInfo.ClassCode, PublishmentSystemId, EGovPublicCategoryLoadingType.List, null));
 

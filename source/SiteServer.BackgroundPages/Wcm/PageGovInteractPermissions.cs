@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, AppManager.Wcm.LeftMenu.GovInteract.IdGovInteractConfiguration, "负责人员设置", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, "负责人员设置", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);
 
                 var channelInfo = DataProvider.GovInteractChannelDao.GetChannelInfo(PublishmentSystemId, _nodeId);
                 var departmentIdList = GovInteractManager.GetFirstDepartmentIdList(channelInfo);

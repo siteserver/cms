@@ -4,8 +4,8 @@ using System.Data;
 using System.Web.UI.WebControls;
 using System.Xml;
 using BaiRong.Core;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -18,6 +18,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public const string AttributePageNum = "pageNum";
 
+        private readonly string _stlPageInputContentsElement;
         private readonly XmlNode _node;
         private readonly ListInfo _listInfo;
         private readonly PageInfo _pageInfo;
@@ -41,17 +42,19 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public StlPageInputContents(string stlPageInputContentsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
         {
+            _stlPageInputContentsElement = stlPageInputContentsElement;
             _pageInfo = pageInfo;
             _contextInfo = contextInfo;
-            var xmlDocument = StlParserUtility.GetXmlDocument(stlPageInputContentsElement, isXmlContent);
+            var xmlDocument = StlParserUtility.GetXmlDocument(_stlPageInputContentsElement, isXmlContent);
             _node = xmlDocument.DocumentElement;
             _node = _node?.FirstChild;
 
-            _listInfo = ListInfo.GetListInfoByXmlNode(_node, pageInfo, _contextInfo, EContextType.InputContent);
+            _listInfo = ListInfo.GetListInfoByXmlNode(_node, _pageInfo, _contextInfo, EContextType.InputContent);
 
-            var inputId = DataProvider.InputDao.GetInputIdAsPossible(_listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId);
+            //var inputId = DataProvider.InputDao.GetInputIdAsPossible(_listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId);
+            var inputId = Input.GetInputIdAsPossible(_listInfo.Others.Get(AttributeInputName), _pageInfo.PublishmentSystemId, _pageInfo.Guid);
 
-            _dataSet = StlDataUtility.GetPageInputContentsDataSet(pageInfo.PublishmentSystemId, inputId, _listInfo);
+            _dataSet = StlDataUtility.GetPageInputContentsDataSet(_pageInfo.PublishmentSystemId, inputId, _listInfo, _pageInfo.Guid);
         }
 
 
@@ -172,7 +175,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, _stlPageInputContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

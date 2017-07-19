@@ -35,7 +35,7 @@
     </tr>
     <tr>
       <td><bairong:help HelpText="在表单界面中此字段的表单提交类型。" Text="表单提交类型：" runat="server" ></bairong:help></td>
-      <td colspan="3"><asp:DropDownList ID="InputType" OnSelectedIndexChanged="ReFresh" AutoPostBack="true" runat="server"></asp:DropDownList></td>
+      <td colspan="3"><asp:DropDownList ID="DdlInputType" OnSelectedIndexChanged="ReFresh" AutoPostBack="true" runat="server"></asp:DropDownList></td>
     </tr>
     <tr id="RowHeightAndWidth" runat="server">
       <td><bairong:help HelpText="显示宽度" Text="显示宽度：" runat="server" ></bairong:help></td>

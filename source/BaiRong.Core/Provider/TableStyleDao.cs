@@ -6,6 +6,7 @@ using BaiRong.Core.Collection;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -86,19 +87,19 @@ namespace BaiRong.Core.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedIdentity, EDataType.Integer, styleInfo.RelatedIdentity),
-                GetParameter(ParmTableName, EDataType.VarChar, 50, styleInfo.TableName),
-				GetParameter(ParmAttributeName, EDataType.VarChar, 50, styleInfo.AttributeName),
-                GetParameter(ParmTaxis, EDataType.Integer, styleInfo.Taxis),
-                GetParameter(ParmDisplayName, EDataType.NVarChar, 255, styleInfo.DisplayName),
-                GetParameter(ParmHelpText, EDataType.VarChar, 255, styleInfo.HelpText),
-                GetParameter(ParmIsVisible, EDataType.VarChar, 18, styleInfo.IsVisible.ToString()),
-                GetParameter(ParmIsVisibleInList, EDataType.VarChar, 18, styleInfo.IsVisibleInList.ToString()),
-                GetParameter(ParmIsSingleLine, EDataType.VarChar, 18, styleInfo.IsSingleLine.ToString()),
-				GetParameter(ParmInputType, EDataType.VarChar, 50, styleInfo.InputType),
-                GetParameter(ParmDefaultValue, EDataType.VarChar, 255, styleInfo.DefaultValue),
-                GetParameter(ParmIsHorizontal, EDataType.VarChar, 18, styleInfo.IsHorizontal.ToString()),
-                GetParameter(ParmExtendValues, EDataType.NText, styleInfo.Additional.ToString())
+				GetParameter(ParmRelatedIdentity, DataType.Integer, styleInfo.RelatedIdentity),
+                GetParameter(ParmTableName, DataType.VarChar, 50, styleInfo.TableName),
+				GetParameter(ParmAttributeName, DataType.VarChar, 50, styleInfo.AttributeName),
+                GetParameter(ParmTaxis, DataType.Integer, styleInfo.Taxis),
+                GetParameter(ParmDisplayName, DataType.NVarChar, 255, styleInfo.DisplayName),
+                GetParameter(ParmHelpText, DataType.VarChar, 255, styleInfo.HelpText),
+                GetParameter(ParmIsVisible, DataType.VarChar, 18, styleInfo.IsVisible.ToString()),
+                GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, styleInfo.IsVisibleInList.ToString()),
+                GetParameter(ParmIsSingleLine, DataType.VarChar, 18, styleInfo.IsSingleLine.ToString()),
+				GetParameter(ParmInputType, DataType.VarChar, 50, styleInfo.InputType),
+                GetParameter(ParmDefaultValue, DataType.VarChar, 255, styleInfo.DefaultValue),
+                GetParameter(ParmIsHorizontal, DataType.VarChar, 18, styleInfo.IsHorizontal.ToString()),
+                GetParameter(ParmExtendValues, DataType.NText, styleInfo.Additional.ToString())
 			};
 
             var sqlInsertTableStyle = GetInsertTableStyleSqlString();
@@ -119,10 +120,10 @@ namespace BaiRong.Core.Provider
                             {
                                 var insertItemParms = new IDataParameter[]
 							    {
-								    GetParameter(ParmTableStyleId, EDataType.Integer, tableStyleId),
-								    GetParameter(ParmItemTitle, EDataType.NVarChar, 255, itemInfo.ItemTitle),
-								    GetParameter(ParmItemValue, EDataType.VarChar, 255, itemInfo.ItemValue),
-								    GetParameter(ParmIsSelected, EDataType.VarChar, 18, itemInfo.IsSelected.ToString())
+								    GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId),
+								    GetParameter(ParmItemTitle, DataType.NVarChar, 255, itemInfo.ItemTitle),
+								    GetParameter(ParmItemValue, DataType.VarChar, 255, itemInfo.ItemValue),
+								    GetParameter(ParmIsSelected, DataType.VarChar, 18, itemInfo.IsSelected.ToString())
 							    };
 
                                 ExecuteNonQuery(trans, sqlInsertStyleItem, insertItemParms);
@@ -160,19 +161,19 @@ namespace BaiRong.Core.Provider
 
             var insertParms = new IDataParameter[]
 		    {
-                GetParameter(ParmRelatedIdentity, EDataType.Integer, styleInfo.RelatedIdentity),
-                GetParameter(ParmTableName, EDataType.VarChar, 50, styleInfo.TableName),
-			    GetParameter(ParmAttributeName, EDataType.VarChar, 50, styleInfo.AttributeName),
-                GetParameter(ParmTaxis, EDataType.Integer, styleInfo.Taxis),
-                GetParameter(ParmDisplayName, EDataType.NVarChar, 255, styleInfo.DisplayName),
-                GetParameter(ParmHelpText, EDataType.VarChar, 255, styleInfo.HelpText),
-                GetParameter(ParmIsVisible, EDataType.VarChar, 18, styleInfo.IsVisible.ToString()),
-                GetParameter(ParmIsVisibleInList, EDataType.VarChar, 18, styleInfo.IsVisibleInList.ToString()),
-                GetParameter(ParmIsSingleLine, EDataType.VarChar, 18, styleInfo.IsSingleLine.ToString()),
-			    GetParameter(ParmInputType, EDataType.VarChar, 50, styleInfo.InputType),
-                GetParameter(ParmDefaultValue, EDataType.VarChar, 255, styleInfo.DefaultValue),
-                GetParameter(ParmIsHorizontal, EDataType.VarChar, 18, styleInfo.IsHorizontal.ToString()),
-                GetParameter(ParmExtendValues, EDataType.NText, styleInfo.Additional.ToString())
+                GetParameter(ParmRelatedIdentity, DataType.Integer, styleInfo.RelatedIdentity),
+                GetParameter(ParmTableName, DataType.VarChar, 50, styleInfo.TableName),
+			    GetParameter(ParmAttributeName, DataType.VarChar, 50, styleInfo.AttributeName),
+                GetParameter(ParmTaxis, DataType.Integer, styleInfo.Taxis),
+                GetParameter(ParmDisplayName, DataType.NVarChar, 255, styleInfo.DisplayName),
+                GetParameter(ParmHelpText, DataType.VarChar, 255, styleInfo.HelpText),
+                GetParameter(ParmIsVisible, DataType.VarChar, 18, styleInfo.IsVisible.ToString()),
+                GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, styleInfo.IsVisibleInList.ToString()),
+                GetParameter(ParmIsSingleLine, DataType.VarChar, 18, styleInfo.IsSingleLine.ToString()),
+			    GetParameter(ParmInputType, DataType.VarChar, 50, styleInfo.InputType),
+                GetParameter(ParmDefaultValue, DataType.VarChar, 255, styleInfo.DefaultValue),
+                GetParameter(ParmIsHorizontal, DataType.VarChar, 18, styleInfo.IsHorizontal.ToString()),
+                GetParameter(ParmExtendValues, DataType.NText, styleInfo.Additional.ToString())
 		    };
 
             var sqlInsertTableStyle = GetInsertTableStyleSqlString();
@@ -190,10 +191,10 @@ namespace BaiRong.Core.Provider
                 {
                     var insertItemParms = new IDataParameter[]
 				    {
-					    GetParameter(ParmTableStyleId, EDataType.Integer, tableStyleId),
-					    GetParameter(ParmItemTitle, EDataType.NVarChar, 255, itemInfo.ItemTitle),
-					    GetParameter(ParmItemValue, EDataType.VarChar, 255, itemInfo.ItemValue),
-					    GetParameter(ParmIsSelected, EDataType.VarChar, 18, itemInfo.IsSelected.ToString())
+					    GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId),
+					    GetParameter(ParmItemTitle, DataType.NVarChar, 255, itemInfo.ItemTitle),
+					    GetParameter(ParmItemValue, DataType.VarChar, 255, itemInfo.ItemValue),
+					    GetParameter(ParmIsSelected, DataType.VarChar, 18, itemInfo.IsSelected.ToString())
 				    };
 
                     ExecuteNonQuery(trans, sqlInsertStyleItem, insertItemParms);
@@ -218,10 +219,10 @@ namespace BaiRong.Core.Provider
                         {
                             var insertItemParms = new IDataParameter[]
 							{
-								GetParameter(ParmTableStyleId, EDataType.Integer, itemInfo.TableStyleId),
-								GetParameter(ParmItemTitle, EDataType.NVarChar, 255, itemInfo.ItemTitle),
-								GetParameter(ParmItemValue, EDataType.VarChar, 255, itemInfo.ItemValue),
-								GetParameter(ParmIsSelected, EDataType.VarChar, 18, itemInfo.IsSelected.ToString())
+								GetParameter(ParmTableStyleId, DataType.Integer, itemInfo.TableStyleId),
+								GetParameter(ParmItemTitle, DataType.NVarChar, 255, itemInfo.ItemTitle),
+								GetParameter(ParmItemValue, DataType.VarChar, 255, itemInfo.ItemValue),
+								GetParameter(ParmIsSelected, DataType.VarChar, 18, itemInfo.IsSelected.ToString())
 							};
 
                             ExecuteNonQuery(trans, sqlInsertStyleItem, insertItemParms);
@@ -243,7 +244,7 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableStyleId, EDataType.Integer, tableStyleId)
+				GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId)
 			};
 
             ExecuteNonQuery(SqlDeleteStyleItems, parms);
@@ -255,7 +256,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableStyleId, EDataType.Integer, tableStyleId)
+				GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllStyleItem, parms))
@@ -275,18 +276,18 @@ namespace BaiRong.Core.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmAttributeName, EDataType.VarChar, 50, info.AttributeName),
-                GetParameter(ParmTaxis, EDataType.Integer, info.Taxis),
-                GetParameter(ParmDisplayName, EDataType.NVarChar, 255, info.DisplayName),
-                GetParameter(ParmHelpText, EDataType.VarChar, 255, info.HelpText),
-                GetParameter(ParmIsVisible, EDataType.VarChar, 18, info.IsVisible.ToString()),
-	            GetParameter(ParmIsVisibleInList, EDataType.VarChar, 18, info.IsVisibleInList.ToString()),
-                GetParameter(ParmIsSingleLine, EDataType.VarChar, 18, info.IsSingleLine.ToString()),
-				GetParameter(ParmInputType, EDataType.VarChar, 50, info.InputType),
-                GetParameter(ParmDefaultValue, EDataType.VarChar, 255, info.DefaultValue),
-                GetParameter(ParmIsHorizontal, EDataType.VarChar, 18, info.IsHorizontal.ToString()),
-                GetParameter(ParmExtendValues, EDataType.NText, info.Additional.ToString()),
-                GetParameter(ParmTableStyleId, EDataType.Integer, info.TableStyleId)
+				GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
+                GetParameter(ParmTaxis, DataType.Integer, info.Taxis),
+                GetParameter(ParmDisplayName, DataType.NVarChar, 255, info.DisplayName),
+                GetParameter(ParmHelpText, DataType.VarChar, 255, info.HelpText),
+                GetParameter(ParmIsVisible, DataType.VarChar, 18, info.IsVisible.ToString()),
+	            GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, info.IsVisibleInList.ToString()),
+                GetParameter(ParmIsSingleLine, DataType.VarChar, 18, info.IsSingleLine.ToString()),
+				GetParameter(ParmInputType, DataType.VarChar, 50, info.InputType),
+                GetParameter(ParmDefaultValue, DataType.VarChar, 255, info.DefaultValue),
+                GetParameter(ParmIsHorizontal, DataType.VarChar, 18, info.IsHorizontal.ToString()),
+                GetParameter(ParmExtendValues, DataType.NText, info.Additional.ToString()),
+                GetParameter(ParmTableStyleId, DataType.Integer, info.TableStyleId)
 			};
 
             ExecuteNonQuery(SqlUpdateTableStyle, updateParms);
@@ -296,9 +297,9 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmRelatedIdentity, EDataType.Integer, relatedIdentity),
-                GetParameter(ParmTableName, EDataType.VarChar, 50, tableName),
-                GetParameter(ParmAttributeName, EDataType.VarChar, 50, attributeName)
+                GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity),
+                GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
+                GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
             };
 
             ExecuteNonQuery(SqlDeleteTableStyle, parms);
@@ -342,9 +343,9 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmRelatedIdentity, EDataType.Integer, relatedIdentity),
-                GetParameter(ParmTableName, EDataType.VarChar, 50, tableName),
-				GetParameter(ParmAttributeName, EDataType.VarChar, 50, attributeName)
+                GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity),
+                GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
+				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableStyle, parms))
@@ -365,7 +366,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmTableStyleId, EDataType.Integer, tableStyleId)
+                GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableStyleByTableStyleId, parms))
@@ -386,9 +387,9 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmRelatedIdentity, EDataType.Integer, relatedIdentity),
-                GetParameter(ParmTableName, EDataType.VarChar, 50, tableName),
-				GetParameter(ParmAttributeName, EDataType.VarChar, 50, attributeName)
+                GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity),
+                GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
+				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableStyle, parms))
@@ -454,8 +455,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableName, EDataType.VarChar, 50, tableName),
-                GetParameter(ParmAttributeName, EDataType.VarChar, 50, attributeName)
+				GetParameter(ParmTableName, DataType.VarChar, 50, tableName),
+                GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableStyles, parms))
@@ -463,7 +464,7 @@ namespace BaiRong.Core.Provider
                 while (rdr.Read())
                 {
                     var styleInfo = GetTableStyleInfoByReader(rdr);
-                    if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.CheckBox) || EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Radio) || EInputTypeUtils.Equals(styleInfo.InputType, EInputType.SelectMultiple) || EInputTypeUtils.Equals(styleInfo.InputType, EInputType.SelectOne))
+                    if (InputTypeUtils.Equals(styleInfo.InputType, InputType.CheckBox) || InputTypeUtils.Equals(styleInfo.InputType, InputType.Radio) || InputTypeUtils.Equals(styleInfo.InputType, InputType.SelectMultiple) || InputTypeUtils.Equals(styleInfo.InputType, InputType.SelectOne))
                     {
                         var styleItems = GetStyleItemInfoList(styleInfo.TableStyleId);
                         if (styleItems != null && styleItems.Count > 0)
@@ -509,9 +510,9 @@ namespace BaiRong.Core.Provider
 
                 var parms = new IDataParameter[]
 			    {
-                    GetParameter(ParmRelatedIdentity, EDataType.Integer, styleInfo.RelatedIdentity),
-                    GetParameter(ParmTableName, EDataType.VarChar, 50, styleInfo.TableName),
-				    GetParameter(ParmTableStyleId, EDataType.Integer, tableStyleId)
+                    GetParameter(ParmRelatedIdentity, DataType.Integer, styleInfo.RelatedIdentity),
+                    GetParameter(ParmTableName, DataType.VarChar, 50, styleInfo.TableName),
+				    GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId)
 			    };
 
                 using (var rdr = ExecuteReader(sqlString, parms))
@@ -544,9 +545,9 @@ namespace BaiRong.Core.Provider
 
                 var parms = new IDataParameter[]
 			    {
-                    GetParameter(ParmRelatedIdentity, EDataType.Integer, styleInfo.RelatedIdentity),
-                    GetParameter(ParmTableName, EDataType.VarChar, 50, styleInfo.TableName),
-				    GetParameter(ParmTableStyleId, EDataType.Integer, tableStyleId)
+                    GetParameter(ParmRelatedIdentity, DataType.Integer, styleInfo.RelatedIdentity),
+                    GetParameter(ParmTableName, DataType.VarChar, 50, styleInfo.TableName),
+				    GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId)
 			    };
 
                 using (var rdr = ExecuteReader(sqlString, parms))
@@ -571,8 +572,8 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTaxis, EDataType.Integer, taxis),
-				GetParameter(ParmTableStyleId, EDataType.Integer, tableStyleId)
+				GetParameter(ParmTaxis, DataType.Integer, taxis),
+				GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId)
 			};
 
             ExecuteNonQuery(SqlUpdateTableStyleTaxis, parms);

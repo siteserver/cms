@@ -4,7 +4,7 @@ using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -21,10 +21,10 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmAddDate, EDataType.DateTime, logInfo.AddDate),
-                GetParameter(ParmMessage, EDataType.NVarChar, 255, logInfo.Message),
-                GetParameter(ParmStacktrace, EDataType.NText, logInfo.Stacktrace),
-                GetParameter(ParmSummary, EDataType.NText, logInfo.Summary)
+                GetParameter(ParmAddDate, DataType.DateTime, logInfo.AddDate),
+                GetParameter(ParmMessage, DataType.NVarChar, 255, logInfo.Message),
+                GetParameter(ParmStacktrace, DataType.NText, logInfo.Stacktrace),
+                GetParameter(ParmSummary, DataType.NText, logInfo.Summary)
             };
 
             ExecuteNonQuery(sqlString, parms);

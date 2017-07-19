@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationGroupAndTags, "查看内容组", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "查看内容组", AppManager.Permissions.WebSite.Configration);
                 ltlContentGroupName.Text = "内容组：" + Body.GetQueryString("ContentGroupName");
                 spContents.DataBind();
             }
@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ltlItemAddDate.Text = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
                 ltlItemStatus.Text = LevelManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
 
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Cms.Permission.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
                 {
                     //编辑
                     ltlItemEditUrl.Text =

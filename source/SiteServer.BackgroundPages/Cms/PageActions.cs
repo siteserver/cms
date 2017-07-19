@@ -119,7 +119,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var publishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(channelId);
                     var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
                     var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                    url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true);
+                    url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true, StringUtils.GetShortGuid());
                     if (!url.Equals(PageUtils.UnclickedUrl))
                     {
                         PageUtils.Redirect(url);
@@ -149,7 +149,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
                         var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                        url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
+                        url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, StringUtils.GetShortGuid());
                         if (!url.Equals(PageUtils.UnclickedUrl))
                         {
                             PageUtils.Redirect(url);
@@ -196,7 +196,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                url = WebConfigUtils.ApplicationPath;
+                url = PageUtils.ApplicationPath;
                 PageUtils.Redirect(url);
             }
         }

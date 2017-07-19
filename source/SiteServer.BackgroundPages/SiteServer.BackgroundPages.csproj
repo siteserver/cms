@@ -133,58 +133,61 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Admin\PageRoleAdd.cs">
+    <Compile Include="Plugins\PageView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\PagePermissionAdd.cs">
+    <Compile Include="Users\PageRoleAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\ModalAdminPassword.cs">
+    <Compile Include="Users\PagePermissionAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\ModalAdminSelect.cs">
+    <Compile Include="Users\ModalAdminPassword.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\ModalAdminView.cs">
+    <Compile Include="Users\ModalAdminSelect.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\PageAdministrator.cs">
+    <Compile Include="Users\ModalAdminView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\PageAdministratorAdd.cs">
+    <Compile Include="Users\PageAdministrator.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\PageConfigurationAdministrator.cs">
+    <Compile Include="Users\PageAdministratorAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\PageRole.cs">
+    <Compile Include="Users\PageConfigurationAdministrator.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\ModalPermissionsSet.cs">
+    <Compile Include="Users\PageRole.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\ModalAreaAdd.cs">
+    <Compile Include="Users\ModalPermissionsSet.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\ModalDepartmentAdd.cs">
+    <Compile Include="Users\ModalAreaAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\ModalDepartmentSelect.cs">
+    <Compile Include="Users\ModalDepartmentAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\PageArea.cs">
+    <Compile Include="Users\ModalDepartmentSelect.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\PageDepartment.cs">
+    <Compile Include="Users\PageArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\PageDepartmentTree.cs">
+    <Compile Include="Users\PageDepartment.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Users\PageDepartmentTree.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Ajax\AjaxUploadService.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageLogUser.cs">
+    <Compile Include="Settings\PageLogUser.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageComments.cs">
@@ -196,7 +199,7 @@
     <Compile Include="Cms\PageConfigurationComment.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageResumeView.cs">
+    <Compile Include="Plugins\PageResumeView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\UEditor.cs" />
@@ -245,25 +248,25 @@
     <Compile Include="Cms\PageActions.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\ModalExportMessage.cs">
+    <Compile Include="Settings\ModalExportMessage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\ModalTableStyleAdd.cs">
+    <Compile Include="Settings\ModalTableStyleAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\ModalTableStyleImport.cs">
+    <Compile Include="Settings\ModalTableStyleImport.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\ModalTableStylesAdd.cs">
+    <Compile Include="Settings\ModalTableStylesAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\ModalTableStyleValidateAdd.cs">
+    <Compile Include="Settings\ModalTableStyleValidateAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PagePlugin.cs">
+    <Compile Include="Plugins\PageManagement.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PageTableStyle.cs">
+    <Compile Include="Settings\PageTableStyle.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Wcm\BasePageGovInteract.cs">
@@ -482,7 +485,7 @@
     <Compile Include="Cms\ModalAddToGroup.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalAdMaterialAdd.cs">
+    <Compile Include="Plugins\ModalAdMaterialAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalChannelAdd.cs">
@@ -519,9 +522,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalContentGroupAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalContentModelAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalContentMultipleSelect.cs">
@@ -563,34 +563,34 @@
     <Compile Include="Cms\ModalFileView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalGatherDatabaseSet.cs">
+    <Compile Include="Plugins\ModalGatherDatabaseSet.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalGatherFileSet.cs">
+    <Compile Include="Plugins\ModalGatherFileSet.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalGatherSet.cs">
+    <Compile Include="Plugins\ModalGatherSet.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalGatherTest.cs">
+    <Compile Include="Plugins\ModalGatherTest.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalInnerLinkAdd.cs">
+    <Compile Include="Plugins\ModalInnerLinkAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalInputAdd.cs">
+    <Compile Include="Plugins\ModalInputAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalInputContentAdd.cs">
+    <Compile Include="Plugins\ModalInputContentAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalInputContentReply.cs">
+    <Compile Include="Plugins\ModalInputContentReply.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalInputContentTaxis.cs">
+    <Compile Include="Plugins\ModalInputContentTaxis.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalInputContentView.cs">
+    <Compile Include="Plugins\ModalInputContentView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalMessage.cs">
@@ -623,10 +623,10 @@
     <Compile Include="Cms\ModalSelectVideo.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalSeoMetaAdd.cs">
+    <Compile Include="Plugins\ModalSeoMetaAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalSeoMetaView.cs">
+    <Compile Include="Plugins\ModalSeoMetaView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalStlTagAdd.cs">
@@ -656,7 +656,7 @@
     <Compile Include="Cms\ModalTipMessage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalTrackerIPView.cs">
+    <Compile Include="Plugins\ModalTrackerIpView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalUploadFile.cs">
@@ -671,7 +671,7 @@
     <Compile Include="Cms\ModalUploadImageSingleSystem.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalUploadSiteTemplate.cs">
+    <Compile Include="Settings\ModalImportZip.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalUploadVideo.cs">
@@ -680,25 +680,25 @@
     <Compile Include="Cms\ModalUploadWord.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageAdArea.cs">
+    <Compile Include="Plugins\PageAdArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageAdAreaAdd.cs">
+    <Compile Include="Plugins\PageAdAreaAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageAdMaterial.cs">
+    <Compile Include="Plugins\PageAdMaterial.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageAdv.cs">
+    <Compile Include="Plugins\PageAdv.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageAdvAdd.cs">
+    <Compile Include="Plugins\PageAdvAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageAdvertisement.cs">
+    <Compile Include="Plugins\PageAdvertisement.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageAdvertisementAdd.cs">
+    <Compile Include="Plugins\PageAdvertisementAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageChannel.cs">
@@ -731,7 +731,7 @@
     <Compile Include="Cms\PageConfigurationCrossSiteTrans.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageConfigurationInnerLink.cs">
+    <Compile Include="Plugins\PageConfigurationInnerLink.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageConfigurationSite.cs">
@@ -761,7 +761,7 @@
     <Compile Include="Cms\PageContentAddAfter.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageContentArchive.cs">
+    <Compile Include="Plugins\PageContentArchive.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageContentChannel.cs">
@@ -776,10 +776,7 @@
     <Compile Include="Cms\PageContentGroup.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageContentModel.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageContentPhotoUpload.cs">
+    <Compile Include="Plugins\PageContentPhotoUpload.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageContentSearch.cs">
@@ -803,34 +800,34 @@
     <Compile Include="Cms\PageFileManagement.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageGatherDatabaseRule.cs">
+    <Compile Include="Plugins\PageGatherDatabaseRule.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageGatherDatabaseRuleAdd.cs">
+    <Compile Include="Plugins\PageGatherDatabaseRuleAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageGatherFileRule.cs">
+    <Compile Include="Plugins\PageGatherFileRule.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageGatherFileRuleAdd.cs">
+    <Compile Include="Plugins\PageGatherFileRuleAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageGatherRule.cs">
+    <Compile Include="Plugins\PageGatherRule.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageGatherRuleAdd.cs">
+    <Compile Include="Plugins\PageGatherRuleAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageInitialization.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageInnerLink.cs">
+    <Compile Include="Plugins\PageInnerLink.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageInput.cs">
+    <Compile Include="Plugins\PageInput.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageInputContent.cs">
+    <Compile Include="Plugins\PageInputContent.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageMain.cs">
@@ -848,22 +845,16 @@
     <Compile Include="Cms\PageRelatedFieldMain.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageResumeContent.cs">
+    <Compile Include="Plugins\PageResumeContent.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageRight.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageSeoMetaList.cs">
+    <Compile Include="Plugins\PageSeoMetaList.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageSeoMetaMatch.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageSeoSiteMapBaidu.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageSeoSiteMapGoogle.cs">
+    <Compile Include="Plugins\PageSeoMetaMatch.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTableStyle.cs">
@@ -878,49 +869,49 @@
     <Compile Include="Cms\PageTask.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTracker.cs">
+    <Compile Include="Plugins\PageTracker.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerBrowser.cs">
+    <Compile Include="Plugins\PageTrackerBrowser.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerChannelAnalysis.cs">
+    <Compile Include="Plugins\PageTrackerChannelAnalysis.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerContentAnalysis.cs">
+    <Compile Include="Plugins\PageTrackerContentAnalysis.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerContentRank.cs">
+    <Compile Include="Plugins\PageTrackerContentRank.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerCurrentVisitors.cs">
+    <Compile Include="Plugins\PageTrackerCurrentVisitors.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerDay.cs">
+    <Compile Include="Plugins\PageTrackerDay.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerEdit.cs">
+    <Compile Include="Plugins\PageTrackerEdit.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerHour.cs">
+    <Compile Include="Plugins\PageTrackerHour.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerMonth.cs">
+    <Compile Include="Plugins\PageTrackerMonth.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerOS.cs">
+    <Compile Include="Plugins\PageTrackerOS.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerPageUrl.cs">
+    <Compile Include="Plugins\PageTrackerPageUrl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerReferrer.cs">
+    <Compile Include="Plugins\PageTrackerReferrer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTrackerYear.cs">
+    <Compile Include="Plugins\PageTrackerYear.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageVoteContentAdd.cs">
+    <Compile Include="Plugins\PageVoteContentAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Ajax\AjaxBackupService.cs">
@@ -947,7 +938,7 @@
     <Compile Include="Cms\ModalImport.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalInputContentImport.cs">
+    <Compile Include="Plugins\ModalInputContentImport.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalProgressBar.cs">
@@ -977,10 +968,10 @@
     <Compile Include="Cms\ModalTemplateView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageBackup.cs">
+    <Compile Include="Plugins\PageBackup.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageBackupRecovery.cs">
+    <Compile Include="Plugins\PageBackupRecovery.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageCreateAll.cs">
@@ -998,7 +989,7 @@
     <Compile Include="Cms\PageCreateIndex.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageInputPreview.cs">
+    <Compile Include="Plugins\PageInputPreview.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageProgressBar.cs">
@@ -1082,31 +1073,31 @@
     <Compile Include="Ajax\AjaxSystemService.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageAnalysisAdminWork.cs">
+    <Compile Include="Settings\PageAnalysisAdminWork.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageAnalysisContentHits.cs">
+    <Compile Include="Settings\PageAnalysisContentHits.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageAnalysisContentDownloads.cs">
+    <Compile Include="Settings\PageAnalysisContentDownloads.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageAnalysisAdminLogin.cs">
+    <Compile Include="Settings\PageAnalysisAdminLogin.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageAnalysisUser.cs">
+    <Compile Include="Settings\PageAnalysisUser.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageLogSite.cs">
+    <Compile Include="Settings\PageLogSite.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageLogConfiguration.cs">
+    <Compile Include="Settings\PageLogConfiguration.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageLogError.cs">
+    <Compile Include="Settings\PageLogError.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageLogAdmin.cs">
+    <Compile Include="Settings\PageLogAdmin.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageDefault.cs">
@@ -1130,46 +1121,37 @@
     <Compile Include="PageLogout.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Platform\PageTextEditorUpload.cs">
+    <Compile Include="PageTextEditorUpload.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageUpgrade.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Platform\PageUserPassword.cs">
+    <Compile Include="PageUserPassword.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Platform\PageUserProfile.cs">
+    <Compile Include="PageUserProfile.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageValidateCode.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Service\PageCreateStatus.cs">
+    <Compile Include="Settings\PageCreateStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Service\PageCreateTaskLog.cs">
+    <Compile Include="Settings\PageCreateTaskLog.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Service\PageStatus.cs">
+    <Compile Include="Settings\PageStatus.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Service\PageTask.cs">
+    <Compile Include="Settings\PageTask.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Service\PageTaskLog.cs">
+    <Compile Include="Settings\PageTaskLog.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSmsProvider.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalRestrictionAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageRestrictionList.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageRestrictionOptions.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageCache.cs">
@@ -1193,112 +1175,112 @@
     <Compile Include="Settings\ModalKeywordImport.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\ModalChangePublishmentSystemUrl.cs">
+    <Compile Include="Settings\ModalChangePublishmentSystemUrl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\ModalChangePublishmentSystemType.cs">
+    <Compile Include="Settings\ModalChangePublishmentSystemType.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PageAuxiliaryTable.cs">
+    <Compile Include="Settings\PageAuxiliaryTable.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PageAuxiliaryTableAdd.cs">
+    <Compile Include="Settings\PageAuxiliaryTableAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PageTableMetadata.cs">
+    <Compile Include="Settings\PageTableMetadata.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageKeyword.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageAnalysisSite.cs">
+    <Compile Include="Settings\PageAnalysisSite.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageAnalysisSiteDownload.cs">
+    <Compile Include="Settings\PageAnalysisSiteDownload.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Analysis\PageAnalysisSiteHits.cs">
+    <Compile Include="Settings\PageAnalysisSiteHits.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PagePublishmentSystem.cs">
+    <Compile Include="Settings\PagePublishmentSystem.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PagePublishmentSystemAdd.cs">
+    <Compile Include="Settings\PagePublishmentSystemAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PagePublishmentSystemDelete.cs">
+    <Compile Include="Settings\PagePublishmentSystemDelete.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PagePublishmentSystemEdit.cs">
+    <Compile Include="Settings\PagePublishmentSystemEdit.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PagePublishmentSystemReplace.cs">
+    <Compile Include="Settings\PagePublishmentSystemReplace.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PagePublishmentSystemUrl.cs">
+    <Compile Include="Settings\PagePublishmentSystemUrl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PageSiteTemplate.cs">
+    <Compile Include="Settings\PageSiteTemplate.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PageSiteTemplateOnline.cs">
+    <Compile Include="Settings\PageSiteTemplateOnline.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\PageSiteTemplateSave.cs">
+    <Compile Include="Settings\PageSiteTemplateSave.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\ModalTableMetadataAdd.cs">
+    <Compile Include="Settings\ModalTableMetadataAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\ModalTableMetadataAddBatch.cs">
+    <Compile Include="Settings\ModalTableMetadataAddBatch.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sys\ModalMetadataView.cs">
+    <Compile Include="Settings\ModalMetadataView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\PageUserConfigDisplay.cs">
+    <Compile Include="Users\PageUserConfigDisplay.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\PageUserConfigLogin.cs">
+    <Compile Include="Users\PageUserConfigLogin.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\PageUserConfigRegister.cs">
+    <Compile Include="Users\PageUserConfigRegister.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\PageUserConfigWriting.cs">
+    <Compile Include="Users\PageUserConfigWriting.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\ModalAddToUserGroup.cs">
+    <Compile Include="Users\ModalAddToUserGroup.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\ModalUserExport.cs">
+    <Compile Include="Users\ModalUserExport.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\ModalUserGroupAdd.cs">
+    <Compile Include="Users\ModalUserGroupAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\ModalUserImport.cs">
+    <Compile Include="Users\ModalUserImport.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\ModalUserPassword.cs">
+    <Compile Include="Users\ModalUserPassword.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\ModalUserSelect.cs">
+    <Compile Include="Users\ModalUserSelect.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\ModalUserView.cs">
+    <Compile Include="Users\ModalUserView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\PageUser.cs">
+    <Compile Include="Users\PageUser.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\PageUserAdd.cs">
+    <Compile Include="Users\PageUserAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\PageUserCheck.cs">
+    <Compile Include="Users\PageUserCheck.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="User\PageUserGroup.cs">
+    <Compile Include="Users\PageUserGroup.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="WeiXin\AjaxUpload.cs">

@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "模板管理", AppManager.Cms.Permission.WebSite.Template);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "模板管理", AppManager.Permissions.WebSite.Template);
 
 				DdlTemplateType.Items.Add(new ListItem("<所有类型>", string.Empty));
                 ETemplateTypeUtils.AddListItems(DdlTemplateType);

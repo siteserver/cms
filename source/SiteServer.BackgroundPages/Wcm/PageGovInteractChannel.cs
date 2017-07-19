@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, AppManager.Wcm.LeftMenu.GovInteract.IdGovInteractConfiguration, "互动交流分类", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, "互动交流分类", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);
 
                 if (PublishmentSystemInfo.Additional.GovInteractNodeId == 0)
                 {

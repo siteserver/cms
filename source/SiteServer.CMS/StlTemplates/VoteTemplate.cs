@@ -17,9 +17,9 @@ namespace SiteServer.CMS.StlTemplates
 
         public VoteTemplate(PublishmentSystemInfo publishmentSystemInfo, int nodeId, VoteContentInfo contentInfo)
         {
-            this._publishmentSystemInfo = publishmentSystemInfo;
-            this._nodeId = nodeId;
-            this._contentInfo = contentInfo;
+            _publishmentSystemInfo = publishmentSystemInfo;
+            _nodeId = nodeId;
+            _contentInfo = contentInfo;
         }
 
         public string GetTemplate(string inputTemplateString)
@@ -156,14 +156,7 @@ function getTimeDetail_[contentID](allSeconds, timeCounter) {
             script = script.Replace("[isCore]", "false");
             script = script.Replace("[serviceUrl]", serviceUrl);
             script = script.Replace("[contentID]", _contentInfo.Id.ToString());
-            if (_contentInfo.MaxSelectNum == 1)
-            {
-                script = script.Replace("[inputType]", "radio");
-            }
-            else
-            {
-                script = script.Replace("[inputType]", "checkbox");
-            }
+            script = script.Replace("[inputType]", _contentInfo.MaxSelectNum == 1 ? "radio" : "checkbox");
 
             script = script.Replace("[maxSelectNum]", _contentInfo.MaxSelectNum.ToString());
             script = script.Replace("[actionUrl]", ActionsVoteAdd.GetUrl(_publishmentSystemInfo.Additional.ApiUrl, _publishmentSystemInfo.PublishmentSystemId, _nodeId, _contentInfo.Id));
@@ -176,14 +169,7 @@ function getTimeDetail_[contentID](allSeconds, timeCounter) {
             var content = FileUtils.ReadText(SiteFilesAssets.GetPath("vote/inputTemplate.html"), ECharset.utf_8);
 
             content = content.Replace("[contentID]", _contentInfo.Id.ToString());
-            if (_contentInfo.MaxSelectNum == 1)
-            {
-                content = content.Replace("[inputType]", "radio");
-            }
-            else
-            {
-                content = content.Replace("[inputType]", "checkbox");
-            }
+            content = content.Replace("[inputType]", _contentInfo.MaxSelectNum == 1 ? "radio" : "checkbox");
 
             return content;
         }
@@ -195,21 +181,21 @@ function getTimeDetail_[contentID](allSeconds, timeCounter) {
             return retval.Replace("[contentID]", contentId.ToString());
         }
 
-        public static string GetJsonString(PublishmentSystemInfo publishmentSystemInfo, int nodeID, int contentID, bool isSuccess, string message)
+        public static string GetJsonString(PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, bool isSuccess, string message)
         {
-            var data = new JsonData();
+            var data = new JsonData
+            {
+                ["isSuccess"] = isSuccess.ToString().ToLower(),
+                ["message"] = message,
+                ["isOver"] = ""
+            };
 
-            data["isSuccess"] = isSuccess.ToString().ToLower();
-            data["message"] = message;
-            data["isOver"] = "";
-
-            var contentInfo = DataProvider.VoteContentDao.GetContentInfo(publishmentSystemInfo, contentID);
+            var contentInfo = DataProvider.VoteContentDao.GetContentInfo(publishmentSystemInfo.AuxiliaryTableForVote, contentId);
 
             data["title"] = contentInfo.Title;
 
-            var limitDate = "30天";
             var ts = contentInfo.EndDate - DateTime.Now;
-            limitDate = $"{ts.Days}天{ts.Hours}小时{ts.Minutes}分钟";
+            string limitDate = $"{ts.Days}天{ts.Hours}小时{ts.Minutes}分钟";
 
             if ((contentInfo.EndDate - DateTime.Now).TotalSeconds <= 0)
             {
@@ -227,16 +213,18 @@ function getTimeDetail_[contentID](allSeconds, timeCounter) {
             var table = new JsonData();
 
             var voteOptionInfoArrayList = DataProvider.VoteOptionDao.GetVoteOptionInfoArrayList(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id);
-            var optionBuilder = new StringBuilder();
+            
             var itemIndex = 1;
             var totalVoteNum = 0;
             foreach (VoteOptionInfo optionInfo in voteOptionInfoArrayList)
             {
-                var option = new JsonData();
-                option["itemIndex"] = itemIndex++;
-                option["optionID"] = optionInfo.OptionID;
-                option["title"] = optionInfo.Title;
-                option["voteNum"] = optionInfo.VoteNum;
+                var option = new JsonData
+                {
+                    ["itemIndex"] = itemIndex++,
+                    ["optionID"] = optionInfo.OptionID,
+                    ["title"] = optionInfo.Title,
+                    ["voteNum"] = optionInfo.VoteNum
+                };
 
                 table.Add(option);
 
@@ -248,7 +236,7 @@ function getTimeDetail_[contentID](allSeconds, timeCounter) {
             if (totalVoteNum == 0) totalVoteNum = 1;
             data["totalVoteNum"] = totalVoteNum.ToString();
 
-            data["totalOperation"] = DataProvider.VoteOperationDao.GetCount(publishmentSystemInfo.PublishmentSystemId, nodeID, contentID);
+            data["totalOperation"] = DataProvider.VoteOperationDao.GetCount(publishmentSystemInfo.PublishmentSystemId, nodeId, contentId);
 
             return data.ToJson();
         }

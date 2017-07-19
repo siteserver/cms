@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Wcm
 		{
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, AppManager.Wcm.LeftMenu.GovInteract.IdGovInteractConfiguration, "办件预警设置", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovInteract, "办件预警设置", AppManager.Wcm.Permission.WebSite.GovInteractConfiguration);
 
                 tbGovInteractApplyDateLimit.Text = PublishmentSystemInfo.Additional.GovInteractApplyDateLimit.ToString();
                 rblGovInteractApplyAlertDateIsAfter.SelectedValue = (PublishmentSystemInfo.Additional.GovInteractApplyAlertDate > 0).ToString();

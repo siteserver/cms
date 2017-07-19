@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Wcm.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Wcm.Provider
 {
@@ -31,9 +30,9 @@ namespace SiteServer.CMS.Wcm.Provider
             }
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmUsername, EDataType.NVarChar, 50, permissionsInfo.UserName),
-				GetParameter(ParmNodeId, EDataType.Integer, permissionsInfo.NodeID),
-                GetParameter(ParmPermissions, EDataType.Text, permissionsInfo.Permissions)
+				GetParameter(ParmUsername, DataType.NVarChar, 50, permissionsInfo.UserName),
+				GetParameter(ParmNodeId, DataType.Integer, permissionsInfo.NodeID),
+                GetParameter(ParmPermissions, DataType.Text, permissionsInfo.Permissions)
 			};
 
             ExecuteNonQuery(SqlInsert, parms);
@@ -43,8 +42,8 @@ namespace SiteServer.CMS.Wcm.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmUsername, EDataType.NVarChar, 50, userName),
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmUsername, DataType.NVarChar, 50, userName),
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
 			ExecuteNonQuery(SqlDelete, parms);
@@ -54,9 +53,9 @@ namespace SiteServer.CMS.Wcm.Provider
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPermissions, EDataType.Text, permissionsInfo.Permissions),
-                GetParameter(ParmUsername, EDataType.NVarChar, 50, permissionsInfo.UserName),
-				GetParameter(ParmNodeId, EDataType.Integer, permissionsInfo.NodeID)
+                GetParameter(ParmPermissions, DataType.Text, permissionsInfo.Permissions),
+                GetParameter(ParmUsername, DataType.NVarChar, 50, permissionsInfo.UserName),
+				GetParameter(ParmNodeId, DataType.Integer, permissionsInfo.NodeID)
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);
@@ -68,8 +67,8 @@ namespace SiteServer.CMS.Wcm.Provider
 
 			var parms = new IDataParameter[]
 			{
-                GetParameter(ParmUsername, EDataType.NVarChar, 50, userName),
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+                GetParameter(ParmUsername, DataType.NVarChar, 50, userName),
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -91,7 +90,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmUsername, EDataType.NVarChar, 50, userName)
+                GetParameter(ParmUsername, DataType.NVarChar, 50, userName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAll, parms))

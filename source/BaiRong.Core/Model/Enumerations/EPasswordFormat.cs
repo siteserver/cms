@@ -18,18 +18,15 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Clear";
             }
-            else if (type == EPasswordFormat.Hashed)
+            if (type == EPasswordFormat.Hashed)
             {
                 return "Hashed";
             }
-            else if (type == EPasswordFormat.Encrypted)
+            if (type == EPasswordFormat.Encrypted)
             {
                 return "Encrypted";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EPasswordFormat type)
@@ -38,18 +35,15 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "不加密";
             }
-            else if (type == EPasswordFormat.Hashed)
+            if (type == EPasswordFormat.Hashed)
             {
                 return "不可逆方式加密";
             }
-            else if (type == EPasswordFormat.Encrypted)
+            if (type == EPasswordFormat.Encrypted)
             {
                 return "可逆方式加密";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EPasswordFormat GetEnumType(string typeStr)

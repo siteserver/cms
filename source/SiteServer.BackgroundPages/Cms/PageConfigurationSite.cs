@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "站点配置管理", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "站点配置管理", AppManager.Permissions.WebSite.Configration);
 
                 TbPublishmentSystemUrl.Text = PublishmentSystemInfo.PublishmentSystemUrl;
                 TbHomeUrl.Text = PublishmentSystemInfo.Additional.HomeUrl;
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Cms
 		        {
 		            if (templateInfo.Charset == charset) continue;
 
-		            var templateContent = StlCacheManager.FileContent.GetTemplateContent(PublishmentSystemInfo, templateInfo);
+		            var templateContent = TemplateManager.GetTemplateContent(PublishmentSystemInfo, templateInfo);
 		            templateInfo.Charset = charset;
 		            DataProvider.TemplateDao.Update(PublishmentSystemInfo, templateInfo, templateContent, Body.AdministratorName);
 		        }

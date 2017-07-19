@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.CMS.Core
 {
@@ -14,38 +13,31 @@ namespace SiteServer.CMS.Core
 
         public static ContentModelInfo GetContentModelInfo(PublishmentSystemInfo publishmentSystemInfo, string contentModelId)
         {
-            ContentModelInfo retval = null;
             var list = GetContentModelInfoList(publishmentSystemInfo);
             foreach (var modelInfo in list)
             {
                 if (modelInfo.ModelId == contentModelId)
                 {
-                    retval = modelInfo;
-                    break;
+                    return modelInfo;
                 }
             }
-            if (retval == null)
-            {
-                retval = EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForContent, EContentModelType.Content);
-            }
-            return retval;
+            return EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.AuxiliaryTableForContent, EContentModelType.Content);
         }
 
         public static List<ContentModelInfo> GetContentModelInfoList(PublishmentSystemInfo publishmentSystemInfo)
         {
             var list = new List<ContentModelInfo>
             {
-                EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForContent,
-                    EContentModelType.Content),
-                EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForContent,
-                    EContentModelType.Photo)
+                EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.AuxiliaryTableForContent, EContentModelType.Content),
+                EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.AuxiliaryTableForVote, EContentModelType.Vote),
+                EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.AuxiliaryTableForJob, EContentModelType.Job)
             };
 
-            list.Add(EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForVote, EContentModelType.Vote));
-
-            list.Add(EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForJob, EContentModelType.Job));
-
-            list.AddRange(ContentModelUtils.GetContentModelInfoList(publishmentSystemInfo.PublishmentSystemId));
+            var contentModels = PluginManager.GetAllContentModels(publishmentSystemInfo);
+            if (contentModels != null)
+            {
+                list.AddRange(contentModels);
+            }
 
             return list;
         }

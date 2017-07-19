@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Service;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model.Enumerations;
@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "生成栏目页", AppManager.Cms.Permission.WebSite.Create);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "生成栏目页", AppManager.Permissions.WebSite.Create);
 
                 var listitem = new ListItem("所有选中的栏目", "All");
                 ChooseScope.Items.Add(listitem);
@@ -42,78 +42,73 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void CreateNodeButton_OnClick(object sender, EventArgs e)
         {
-            if (Page.IsPostBack && Page.IsValid)
+            if (!Page.IsPostBack || !Page.IsValid) return;
+
+            var guid = StringUtils.GetShortGuid();
+
+            var nodeIdList = new List<int>();
+            var selectedNodeIdArrayList = ControlUtils.GetSelectedListControlValueArrayList(NodeIDCollectionToCreate);
+
+            var tableName = PublishmentSystemInfo.AuxiliaryTableForContent;
+
+            if (ChooseScope.SelectedValue == "Month")
             {
-                var nodeIdArrayList = new List<int>();
-                var selectedNodeIdArrayList = ControlUtils.GetSelectedListControlValueArrayList(NodeIDCollectionToCreate);
-
-                var tableName = PublishmentSystemInfo.AuxiliaryTableForContent;
-
-                if (ChooseScope.SelectedValue == "Month")
+                var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 720);
+                foreach (var nodeId in lastEditList)
                 {
-                    var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 720);
-                    foreach (var nodeId in lastEditList)
+                    if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
                     {
-                        if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
-                        {
-                            nodeIdArrayList.Add(nodeId);
-                        }
+                        nodeIdList.Add(nodeId);
                     }
                 }
-                else if (ChooseScope.SelectedValue == "Day")
-                {
-                    var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 24);
-                    foreach (var nodeId in lastEditList)
-                    {
-                        if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
-                        {
-                            nodeIdArrayList.Add(nodeId);
-                        }
-                    }
-                }
-                else if (ChooseScope.SelectedValue == "2Hour")
-                {
-                    var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 2);
-                    foreach (var nodeId in lastEditList)
-                    {
-                        if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
-                        {
-                            nodeIdArrayList.Add(nodeId);
-                        }
-                    }
-                }
-                else
-                {
-                    nodeIdArrayList = TranslateUtils.StringCollectionToIntList(TranslateUtils.ObjectCollectionToString(selectedNodeIdArrayList));
-                }
-                ProcessCreateChannel(nodeIdArrayList);
             }
-        }
-
-        public void DeleteAllNodeButton_OnClick(object sender, EventArgs e)
-        {
-            if (Page.IsPostBack && Page.IsValid)
+            else if (ChooseScope.SelectedValue == "Day")
             {
-                var url = PageProgressBar.GetDeleteAllPageUrl(PublishmentSystemId, ETemplateType.ChannelTemplate);
-                PageUtils.RedirectToLoadingPage(url);
+                var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 24);
+                foreach (var nodeId in lastEditList)
+                {
+                    if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
+                    {
+                        nodeIdList.Add(nodeId);
+                    }
+                }
             }
-        }
+            else if (ChooseScope.SelectedValue == "2Hour")
+            {
+                var lastEditList = BaiRongDataProvider.ContentDao.GetNodeIdListCheckedByLastEditDateHour(tableName, PublishmentSystemId, 2);
+                foreach (var nodeId in lastEditList)
+                {
+                    if (selectedNodeIdArrayList.Contains(nodeId.ToString()))
+                    {
+                        nodeIdList.Add(nodeId);
+                    }
+                }
+            }
+            else
+            {
+                nodeIdList = TranslateUtils.StringCollectionToIntList(TranslateUtils.ObjectCollectionToString(selectedNodeIdArrayList));
+            }
 
-        private void ProcessCreateChannel(ICollection nodeIdArrayList)
-        {
-            if (nodeIdArrayList.Count == 0)
+            if (nodeIdList.Count == 0)
             {
                 FailMessage("请首先选中希望生成页面的栏目！");
                 return;
             }
 
-            foreach (int nodeId in nodeIdArrayList)
+            foreach (var nodeId in nodeIdList)
             {
-                CreateManager.CreateChannel(PublishmentSystemId, nodeId);
+                CreateManager.CreateChannel(PublishmentSystemId, nodeId, guid);
             }
 
             PageCreateStatus.Redirect(PublishmentSystemId);
         }
 
+        public void DeleteAllNodeButton_OnClick(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack || !Page.IsValid) return;
+
+            var url = PageProgressBar.GetDeleteAllPageUrl(PublishmentSystemId, ETemplateType.ChannelTemplate);
+            PageUtils.RedirectToLoadingPage(url);
+        }
     }
 }

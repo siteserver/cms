@@ -82,9 +82,8 @@
     <Reference Include="NetDimension.Weibo">
       <HintPath>..\ref\NetDimension.Weibo.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="QQLoginAouth2">
       <HintPath>..\ref\QQLoginAouth2.dll</HintPath>
@@ -165,7 +164,9 @@
     <Compile Include="Controllers\Files\ActionsUploadAvatarResize.cs" />
     <Compile Include="Controllers\Files\ActionsUploadSiteFiles.cs" />
     <Compile Include="Controllers\Files\UEditor.cs" />
-    <Compile Include="Controllers\Plugins.cs" />
+    <Compile Include="Controllers\Plugins\NameAndId.cs" />
+    <Compile Include="Controllers\Plugins\Name.cs" />
+    <Compile Include="Controllers\Plugins\Root.cs" />
     <Compile Include="Controllers\Stl\ActionsRelatedField.cs" />
     <Compile Include="Controllers\Stl\ActionsUpload.cs" />
     <Compile Include="Controllers\Stl\ActionsLoadingChannels.cs" />
@@ -212,15 +213,48 @@
     <Compile Include="Core\Permissions\PermissionConfig.cs" />
     <Compile Include="Core\Permissions\PermissionConfigManager.cs" />
     <Compile Include="Core\Permissions\PermissionManager.cs" />
+    <Compile Include="Plugin\PluginCache.cs" />
+    <Compile Include="Plugin\AllPlugins.cs" />
+    <Compile Include="Plugin\PluginUtils.cs" />
+    <Compile Include="Core\TabManager.cs" />
+    <Compile Include="Model\ContentModelInfo.cs" />
+    <Compile Include="Model\Enumerations\EContentModelType.cs" />
     <Compile Include="Model\InputInfoExtend.cs" />
     <Compile Include="Core\ContentUtility.cs" />
-    <Compile Include="Core\Plugin\PluginConfig.cs" />
-    <Compile Include="Core\Plugin\PluginInstaller.cs" />
-    <Compile Include="Core\Plugin\PluginManager.cs" />
-    <Compile Include="Core\Plugin\PluginsLoader.cs" />
-    <Compile Include="Core\Plugin\PublicApiInstance.cs" />
+    <Compile Include="Plugin\PluginManager.cs" />
+    <Compile Include="Plugin\PublicApiInstance.cs" />
+    <Compile Include="Provider\PluginConfigDao.cs" />
+    <Compile Include="StlParser\Cache\Advertisement.cs" />
+    <Compile Include="StlParser\Cache\SeoMeta.cs" />
+    <Compile Include="StlParser\Cache\TableStructure.cs" />
+    <Compile Include="StlParser\Cache\ParsedContent.cs" />
+    <Compile Include="StlParser\Cache\Tag.cs" />
+    <Compile Include="StlParser\Cache\VoteContent.cs" />
+    <Compile Include="StlParser\Cache\StlTag.cs" />
+    <Compile Include="StlParser\Cache\StarSetting.cs" />
+    <Compile Include="StlParser\Cache\Star.cs" />
+    <Compile Include="StlParser\Cache\Database.cs" />
+    <Compile Include="StlParser\Cache\Photo.cs" />
+    <Compile Include="StlParser\Cache\MenuDisplay.cs" />
+    <Compile Include="StlParser\Cache\InputContent.cs" />
+    <Compile Include="StlParser\Cache\Input.cs" />
+    <Compile Include="StlParser\Cache\Digg.cs" />
+    <Compile Include="StlParser\Cache\Comment.cs" />
+    <Compile Include="StlParser\Cache\GovInteractChannel.cs" />
+    <Compile Include="StlParser\Cache\GovInteractReply.cs" />
+    <Compile Include="StlParser\Cache\InnerLink.cs" />
+    <Compile Include="StlParser\Cache\PublishmentSystem.cs" />
+    <Compile Include="StlParser\Cache\Tracking.cs" />
+    <Compile Include="StlParser\Cache\AdArea.cs" />
+    <Compile Include="StlParser\Cache\User.cs" />
+    <Compile Include="StlParser\Cache\Administrator.cs" />
+    <Compile Include="StlParser\Cache\Node.cs" />
+    <Compile Include="StlParser\Cache\Content.cs" />
+    <Compile Include="StlParser\Model\ChannelItemInfo.cs" />
+    <Compile Include="StlParser\Model\ContentItemInfo.cs" />
     <Compile Include="StlParser\Model\StlAttribute.cs" />
     <Compile Include="StlParser\StlElement\StlTemplate.cs" />
+    <Compile Include="StlParser\Cache\Utils.cs" />
     <Compile Include="StlParser\Utility\StlInnerUtility.cs" />
     <Compile Include="Wcm\GovInteract\GovInteractApplyManager.cs" />
     <Compile Include="Wcm\GovInteract\GovInteractManager.cs" />
@@ -261,7 +295,6 @@
     <Compile Include="ImportExport\Components\AdvIe.cs" />
     <Compile Include="ImportExport\Components\AuxiliaryTableIe.cs" />
     <Compile Include="ImportExport\Components\ConfigurationIe.cs" />
-    <Compile Include="ImportExport\Components\ContentModelIe.cs" />
     <Compile Include="ImportExport\Components\GatherRuleIe.cs" />
     <Compile Include="ImportExport\Components\InputIe.cs" />
     <Compile Include="ImportExport\Components\MenuDisplayIe.cs" />
@@ -443,9 +476,9 @@
     <Compile Include="StlParser\Utility\StlScriptUtility.cs" />
     <Compile Include="StlParser\Utility\StlTemplateManager.cs" />
     <Compile Include="StlParser\Utility\StlUtility.cs" />
-    <Compile Include="StlParser\Utility\TagStyleUtility.cs" />
+    <Compile Include="Wcm\Core\TagStyleUtility.cs" />
     <Compile Include="StlParser\Utility\TemplateUtility.cs" />
-    <Compile Include="StlParser\Utility\URLUtility.cs" />
+    <Compile Include="StlParser\Utility\UrlUtility.cs" />
     <Compile Include="Provider\AdAreaDao.cs" />
     <Compile Include="Provider\AdMaterialDao.cs" />
     <Compile Include="Provider\AdvDao.cs" />
@@ -470,7 +503,6 @@
     <Compile Include="Provider\VoteOptionDao.cs" />
     <Compile Include="Core\ArchiveManager.cs" />
     <Compile Include="Core\Converter.cs" />
-    <Compile Include="Core\STLCacheManager.cs" />
     <Compile Include="Core\CrossSiteTransUtility.cs" />
     <Compile Include="Core\GatherUtility.cs" />
     <Compile Include="Core\User\LevelManager.cs" />
@@ -500,7 +532,6 @@
     <Compile Include="Model\AdvertisementInfo.cs" />
     <Compile Include="Model\AdvertisementOpenWindowInfo.cs" />
     <Compile Include="Model\AdvertisementScreenDownInfo.cs" />
-    <Compile Include="Model\JobContentInfo.cs" />
     <Compile Include="Model\Enumerations\EAccessControlEntry.cs" />
     <Compile Include="Model\Enumerations\EAdvertisementType.cs" />
     <Compile Include="Model\Enumerations\EChangedType.cs" />
@@ -841,6 +872,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

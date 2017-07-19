@@ -18,18 +18,15 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "Equality";
             }
-            else if (type == EAdvRotateType.HandWeight)
+            if (type == EAdvRotateType.HandWeight)
             {
                 return "HandWeight";
             }
-            else if (type == EAdvRotateType.SlideRotate)
+            if (type == EAdvRotateType.SlideRotate)
             {
                 return "SlideRotate";
             }
-           else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EAdvRotateType type)
@@ -37,19 +34,16 @@ namespace SiteServer.CMS.Model.Enumerations
             if (type == EAdvRotateType.Equality)
             {
                 return "均匀";
-            } 
-            else if (type == EAdvRotateType.HandWeight)
+            }
+            if (type == EAdvRotateType.HandWeight)
             {
                 return "手动权重";
             }
-            else if (type == EAdvRotateType.SlideRotate)
+            if (type == EAdvRotateType.SlideRotate)
             {
                 return "幻灯片轮换";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EAdvRotateType GetEnumType(string typeStr)

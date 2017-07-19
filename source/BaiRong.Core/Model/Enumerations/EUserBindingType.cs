@@ -12,34 +12,28 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(EUserBindingType type)
 		{
-            if (type == EUserBindingType.Weibo)
+		    if (type == EUserBindingType.Weibo)
 			{
                 return "Weibo";
 			}
-            else if (type == EUserBindingType.QQ)
-			{
-                return "QQ";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EUserBindingType.QQ)
+		    {
+		        return "QQ";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EUserBindingType type)
 		{
-            if (type == EUserBindingType.Weibo)
+		    if (type == EUserBindingType.Weibo)
 			{
 				return "新浪微博";
 			}
-            else if (type == EUserBindingType.QQ)
-			{
-                return "QQ";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EUserBindingType.QQ)
+		    {
+		        return "QQ";
+		    }
+		    throw new Exception();
 		}
 
 		public static bool Equals(EUserBindingType type, string typeStr)

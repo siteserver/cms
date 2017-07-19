@@ -18,18 +18,15 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "Normal";
             }
-            else if (type == EKeywordGrade.Sensitive)
+            if (type == EKeywordGrade.Sensitive)
             {
                 return "Sensitive";
             }
-            else if (type == EKeywordGrade.Dangerous)
+            if (type == EKeywordGrade.Dangerous)
             {
                 return "Dangerous";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EKeywordGrade type)
@@ -38,18 +35,15 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "一般";
             }
-            else if (type == EKeywordGrade.Sensitive)
+            if (type == EKeywordGrade.Sensitive)
             {
                 return "比较敏感";
             }
-            else if (type == EKeywordGrade.Dangerous)
+            if (type == EKeywordGrade.Dangerous)
             {
                 return "危险";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EKeywordGrade GetEnumType(string typeStr)

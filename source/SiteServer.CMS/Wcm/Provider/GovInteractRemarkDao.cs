@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Wcm.Provider
 {
@@ -30,14 +29,14 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, remarkInfo.PublishmentSystemID),
-                GetParameter(ParmNodeId, EDataType.Integer, remarkInfo.NodeID),
-                GetParameter(ParmContentId, EDataType.Integer, remarkInfo.ContentID),
-                GetParameter(ParmRemarkType, EDataType.VarChar, 50, EGovInteractRemarkTypeUtils.GetValue(remarkInfo.RemarkType)),
-                GetParameter(ParmRemark, EDataType.NVarChar, 255, remarkInfo.Remark),
-                GetParameter(ParmDepartmentId, EDataType.Integer, remarkInfo.DepartmentID),
-				GetParameter(ParmUserName, EDataType.VarChar, 50, remarkInfo.UserName),
-                GetParameter(ParmAddDate, EDataType.DateTime, remarkInfo.AddDate)
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, remarkInfo.PublishmentSystemID),
+                GetParameter(ParmNodeId, DataType.Integer, remarkInfo.NodeID),
+                GetParameter(ParmContentId, DataType.Integer, remarkInfo.ContentID),
+                GetParameter(ParmRemarkType, DataType.VarChar, 50, EGovInteractRemarkTypeUtils.GetValue(remarkInfo.RemarkType)),
+                GetParameter(ParmRemark, DataType.NVarChar, 255, remarkInfo.Remark),
+                GetParameter(ParmDepartmentId, DataType.Integer, remarkInfo.DepartmentID),
+				GetParameter(ParmUserName, DataType.VarChar, 50, remarkInfo.UserName),
+                GetParameter(ParmAddDate, DataType.DateTime, remarkInfo.AddDate)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -55,7 +54,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRemarkId, EDataType.Integer, remarkId)
+				GetParameter(ParmRemarkId, DataType.Integer, remarkId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -77,8 +76,8 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAll, parms))

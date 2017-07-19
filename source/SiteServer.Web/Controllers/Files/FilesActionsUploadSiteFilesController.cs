@@ -5,9 +5,9 @@ using System.Text;
 using System.Web;
 using System.Web.Http;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Files;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.Files
 {
@@ -20,7 +20,7 @@ namespace SiteServer.API.Controllers.Files
             var body = new RequestBody();
 
             var siteId = TranslateUtils.ToInt(body.GetQueryString("siteId"));
-            var uploadType = EInputTypeUtils.GetEnumType(body.GetQueryString("uploadType"));
+            var uploadType = InputTypeUtils.GetEnumType(body.GetQueryString("uploadType"));
 
             var errorMessage = string.Empty;
             var fileUrls = new List<string>();
@@ -40,7 +40,7 @@ namespace SiteServer.API.Controllers.Files
                             var localFileName = PathUtility.GetUploadFileName(publishmentSystemInfo, filePath);
                             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
-                            if (uploadType == EInputType.Image)
+                            if (uploadType == InputType.Image)
                             {
                                 if (!PathUtility.IsImageExtenstionAllowed(publishmentSystemInfo, fileExtName))
                                 {
@@ -58,7 +58,7 @@ namespace SiteServer.API.Controllers.Files
                                 var imageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath);
                                 fileUrls.Add(imageUrl);
                             }
-                            else if (uploadType == EInputType.Video)
+                            else if (uploadType == InputType.Video)
                             {
                                 if (!PathUtility.IsVideoExtenstionAllowed(publishmentSystemInfo, fileExtName))
                                 {
@@ -74,7 +74,7 @@ namespace SiteServer.API.Controllers.Files
                                 var videoUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath);
                                 fileUrls.Add(videoUrl);
                             }
-                            else if (uploadType == EInputType.File)
+                            else if (uploadType == InputType.File)
                             {
                                 if (!PathUtility.IsFileExtenstionAllowed(publishmentSystemInfo, fileExtName))
                                 {

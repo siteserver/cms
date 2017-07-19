@@ -137,6 +137,9 @@ namespace SiteServer.CMS.StlParser.Parser
         internal static string ParseStlElement(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)
         {
             string parsedContent = null;
+            //var parsedContent = StlCacheManager.ParsedContent.GetParsedContent(stlElement, pageInfo, contextInfo);
+            //if (parsedContent != null) return parsedContent;
+
             var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, contextInfo.IsInnerElement);
             XmlNode node = xmlDocument.DocumentElement;
             if (node != null)
@@ -168,10 +171,15 @@ namespace SiteServer.CMS.StlParser.Parser
 
             if (parsedContent == null)
             {
-                return stlElement;
+                parsedContent = stlElement;
+            }
+            else
+            {
+                parsedContent = contextInfo.IsInnerElement ? parsedContent : StlParserUtility.GetBackHtml(parsedContent, pageInfo);
             }
 
-            return contextInfo.IsInnerElement ? parsedContent : StlParserUtility.GetBackHtml(parsedContent, pageInfo);
+            //StlCacheManager.ParsedContent.SetParsedContent(stlElement, pageInfo, contextInfo, parsedContent);
+            return parsedContent;
         }
     }
 }

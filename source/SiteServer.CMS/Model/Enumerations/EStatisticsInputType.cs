@@ -22,22 +22,19 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "Text";
             }
-            else if (type == EStatisticsInputType.CheckBox)
+            if (type == EStatisticsInputType.CheckBox)
             {
                 return "CheckBox";
             }
-            else if (type == EStatisticsInputType.Radio)
+            if (type == EStatisticsInputType.Radio)
             {
                 return "Radio";
             }
-            else if (type == EStatisticsInputType.SelectOne)
+            if (type == EStatisticsInputType.SelectOne)
             {
                 return "SelectOne";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EStatisticsInputType type)
@@ -50,18 +47,15 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "复选列表(checkbox)";
             }
-            else if (type == EStatisticsInputType.Radio)
+            if (type == EStatisticsInputType.Radio)
             {
                 return "单选列表(radio)";
             }
-            else if (type == EStatisticsInputType.SelectOne)
+            if (type == EStatisticsInputType.SelectOne)
             {
                 return "下拉列表(select单选)";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EStatisticsInputType GetEnumType(string typeStr)

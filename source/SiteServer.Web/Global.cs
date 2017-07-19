@@ -1,11 +1,17 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.Routing;
+using BaiRong.Core;
+using BaiRong.Core.Model;
+using BaiRong.Core.Model.Enumerations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using SiteServer.CMS.Core.Plugin;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin;
 
 namespace SiteServer.API
 {
@@ -45,13 +51,9 @@ namespace SiteServer.API
 
             configuration.EnsureInitialized();
 
-            PluginManager.LoadPlugins();
-
-            //var list = PluginManager.GetPluginInfoList();
-            //foreach (var pluginInfo in list)
-            //{
-            //    pluginInfo.Instance.Initialize();
-            //}
+            WebConfigUtils.Load(HostingEnvironment.ApplicationPhysicalPath);
+            PluginManager.Load(new PluginEnvironment(EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType), WebConfigUtils.ConnectionString,
+                WebConfigUtils.PhysicalApplicationPath, false));
         }
 
 

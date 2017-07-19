@@ -3,6 +3,7 @@ using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Stl;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser;
 
 namespace SiteServer.API.Controllers.Stl
@@ -21,7 +22,8 @@ namespace SiteServer.API.Controllers.Stl
 
             try
             {
-                
+                var guid = StringUtils.GetShortGuid();
+
                 var channelId = body.GetQueryInt("channelId");
                 if (channelId == 0)
                 {
@@ -35,21 +37,22 @@ namespace SiteServer.API.Controllers.Stl
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
                 var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+
                 if (fileTemplateId != 0)
                 {
-                    fso.CreateFile(fileTemplateId);
+                    fso.Execute(ECreateType.File, 0, 0, fileTemplateId, guid);
                 }
                 else if (contentId != 0)
                 {
-                    fso.CreateContent(tableStyle, tableName, channelId, contentId);
+                    fso.Execute(ECreateType.Content, channelId, contentId, 0, guid);
                 }
                 else if (channelId != 0)
                 {
-                    fso.CreateChannel(channelId);
+                    fso.Execute(ECreateType.Channel, channelId, 0, 0, guid);
                 }
                 else if (publishmentSystemId != 0)
                 {
-                    fso.CreateChannel(publishmentSystemId);
+                    fso.Execute(ECreateType.Channel, publishmentSystemId, 0, 0, guid);
                 }
 
                 if (isRedirect)
@@ -66,7 +69,7 @@ namespace SiteServer.API.Controllers.Stl
                     }
                     else if (channelId != 0)
                     {
-                        redirectUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true);
+                        redirectUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true, StringUtils.GetShortGuid());
                     }
                     else if (publishmentSystemId != 0)
                     {

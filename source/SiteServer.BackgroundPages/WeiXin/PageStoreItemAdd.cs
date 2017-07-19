@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
                 var pageTitle = _storeItemId > 0 ? "编辑微门店信息" : "添加微门店信息";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdStore, pageTitle, AppManager.WeiXin.Permission.WebSite.Store);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdStore, pageTitle, AppManager.WeiXin.Permission.WebSite.Store);
                 LtlPageTitle.Text = pageTitle;
                 LtlImageUrl.Text =
                     $@"<img id=""preview_imageUrl"" src=""{StoreManager.GetImageUrl(PublishmentSystemInfo, string.Empty)}"" width=""200"" height=""200"" align=""middle"" />";

@@ -13,35 +13,29 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		private static string GetValue(EBoolean type)
 		{
-			if (type == EBoolean.True)
+		    if (type == EBoolean.True)
 			{
 				return "True";
 			}
-			else if (type == EBoolean.False)
-			{
-				return "False";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EBoolean.False)
+		    {
+		        return "False";
+		    }
+		    throw new Exception();
 		}
 
         private static string GetText(EBoolean type)
-		{
-			if (type == EBoolean.True)
+        {
+            if (type == EBoolean.True)
 			{
 				return "是";
 			}
-			else if (type == EBoolean.False)
-			{
-				return "否";
-			}
-			else
-			{
-				throw new Exception();
-			}
-		}
+            if (type == EBoolean.False)
+            {
+                return "否";
+            }
+            throw new Exception();
+        }
 
 		public static EBoolean GetEnumType(string typeStr)
 		{

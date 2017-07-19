@@ -16,58 +16,52 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(EScopeType type)
 		{
-			if (type == EScopeType.Self)
+		    if (type == EScopeType.Self)
 			{
 				return "Self";
 			}
-			else if (type == EScopeType.Children)
-			{
-				return "Children";
-			}
-			else if (type == EScopeType.SelfAndChildren)
-			{
-				return "SelfAndChildren";
-			}
-			else if (type == EScopeType.Descendant)
-			{
-				return "Descendant";
-			}
-            else if (type == EScopeType.All)
-			{
-                return "All";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EScopeType.Children)
+		    {
+		        return "Children";
+		    }
+		    if (type == EScopeType.SelfAndChildren)
+		    {
+		        return "SelfAndChildren";
+		    }
+		    if (type == EScopeType.Descendant)
+		    {
+		        return "Descendant";
+		    }
+		    if (type == EScopeType.All)
+		    {
+		        return "All";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EScopeType type)
 		{
-			if (type == EScopeType.Children)
+		    if (type == EScopeType.Children)
 			{
 				return "子栏目";
 			}
-			else if (type == EScopeType.Descendant)
-			{
-				return "所有子栏目";
-			}
-			else if (type == EScopeType.Self)
-			{
-				return "本级栏目";
-			}
-			else if (type == EScopeType.SelfAndChildren)
-			{
-				return "本级栏目及子栏目";
-			}
-			else if (type == EScopeType.All)
-			{
-				return "全部";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EScopeType.Descendant)
+		    {
+		        return "所有子栏目";
+		    }
+		    if (type == EScopeType.Self)
+		    {
+		        return "本级栏目";
+		    }
+		    if (type == EScopeType.SelfAndChildren)
+		    {
+		        return "本级栏目及子栏目";
+		    }
+		    if (type == EScopeType.All)
+		    {
+		        return "全部";
+		    }
+		    throw new Exception();
 		}
 
 		public static EScopeType GetEnumType(string typeStr)

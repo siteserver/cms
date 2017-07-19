@@ -1,4 +1,5 @@
 ﻿using System;
+using BaiRong.Core;
 using CommandLine;
 using siteserver.commands;
 
@@ -8,6 +9,9 @@ namespace siteserver
     {
         public static void Main(string[] args)
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            WebConfigUtils.Load(Environment.CurrentDirectory);
+
             if (!ServiceUtils.IsSiteServerDir)
             {
                 Console.WriteLine("当前文件夹不是正确的SiteServer系统根目录");
@@ -30,6 +34,7 @@ namespace siteserver
             else
             {
                 var options = new Options();
+
                 if (!Parser.Default.ParseArguments(args, options,
                     (verb, subOptions) =>
                     {
@@ -50,14 +55,24 @@ namespace siteserver
             }
             else if (invokedVerb == Test.CommandName)
             {
-                Test.Start();
+                var subOptions = (TestSubOptions)invokedVerbInstance;
+                var isAll = subOptions != null && subOptions.All;
+                Test.Start(isAll);
             }
             else if (invokedVerb == Encode.CommandName)
             {
-                var subOptions = invokedVerbInstance as EncodeSubOptions;
+                var subOptions = (EncodeSubOptions)invokedVerbInstance;
                 if (subOptions != null)
                 {
                     Encode.Start(subOptions.String);
+                }
+            }
+            else if (invokedVerb == Decode.CommandName)
+            {
+                var subOptions = (DecodeSubOptions)invokedVerbInstance;
+                if (subOptions != null)
+                {
+                    Decode.Start(subOptions.String);
                 }
             }
             else if (invokedVerb == Run.CommandName)

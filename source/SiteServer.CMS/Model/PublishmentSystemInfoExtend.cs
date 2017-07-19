@@ -3,7 +3,6 @@ using System.Globalization;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.Model
 {
@@ -318,12 +317,6 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("IsCreateWithJQuery", value.ToString()); }
         }
 
-        public bool IsCreateIncludeToSsi
-        {
-            get { return GetBool("IsCreateIncludeToSsi", false); }
-            set { SetExtendedAttribute("IsCreateIncludeToSsi", value.ToString()); }
-        }
-
         public bool IsCreateDoubleClick
         {
             get { return GetBool("IsCreateDoubleClick", false); }
@@ -352,50 +345,6 @@ namespace SiteServer.CMS.Model
         {
             get { return GetBool("IsCreateMultiThread", false); }
             set { SetExtendedAttribute("IsCreateMultiThread", value.ToString()); }
-        }
-
-        /****************站点地图设置********************/
-
-        public string SiteMapGooglePath
-        {
-            get { return GetString("SiteMapGooglePath", "@/sitemap.xml"); }
-            set { SetExtendedAttribute("SiteMapGooglePath", value); }
-        }
-
-        public string SiteMapGoogleChangeFrequency
-        {
-            get { return GetString("SiteMapGoogleChangeFrequency", "daily"); }
-            set { SetExtendedAttribute("SiteMapGoogleChangeFrequency", value); }
-        }
-
-        public bool SiteMapGoogleIsShowLastModified
-        {
-            get { return GetBool("SiteMapGoogleIsShowLastModified", false); }
-            set { SetExtendedAttribute("SiteMapGoogleIsShowLastModified", value.ToString()); }
-        }
-
-        public int SiteMapGooglePageCount
-        {
-            get { return GetInt("SiteMapGooglePageCount", 10000); }
-            set { SetExtendedAttribute("SiteMapGooglePageCount", value.ToString()); }
-        }
-
-        public string SiteMapBaiduPath
-        {
-            get { return GetString("SiteMapBaiduPath", "@/baidunews.xml"); }
-            set { SetExtendedAttribute("SiteMapBaiduPath", value); }
-        }
-
-        public string SiteMapBaiduWebMaster
-        {
-            get { return GetString("SiteMapBaiduWebMaster", string.Empty); }
-            set { SetExtendedAttribute("SiteMapBaiduWebMaster", value); }
-        }
-
-        public string SiteMapBaiduUpdatePeri
-        {
-            get { return GetString("SiteMapBaiduUpdatePeri", "15"); }
-            set { SetExtendedAttribute("SiteMapBaiduUpdatePeri", value); }
         }
 
         /****************流量统计设置********************/
@@ -428,12 +377,6 @@ namespace SiteServer.CMS.Model
         {
             get { return GetInt("TrackerCurrentMinute", 30); }
             set { SetExtendedAttribute("TrackerCurrentMinute", value.ToString()); }
-        }
-
-        public ETrackerStyle TrackerStyle
-        {
-            get { return ETrackerStyleUtils.GetEnumType(GetString("TrackerStyle", ETrackerStyleUtils.GetValue(ETrackerStyle.Style1))); }
-            set { SetExtendedAttribute("TrackerStyle", ETrackerStyleUtils.GetValue(value)); }
         }
 
         /****************显示项设置********************/

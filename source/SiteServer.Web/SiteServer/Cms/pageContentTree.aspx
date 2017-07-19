@@ -7,7 +7,7 @@
 <!--#include file="../inc/header.aspx"-->
 </head>
 
-<body>
+<body style="margin: 0">
 <!--#include file="../inc/openWindow.html"-->
 <form runat="server">
 	<table class="table noborder table-condensed table-hover">

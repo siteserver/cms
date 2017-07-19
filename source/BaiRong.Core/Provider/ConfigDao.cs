@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Specialized;
 using System.Data;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -11,20 +11,18 @@ namespace BaiRong.Core.Provider
 	{
         public string TableName => "bairong_Config";
 
-        private const string SqlInsertConfig = "INSERT INTO bairong_Config (IsInitialized, DatabaseVersion, RestrictionBlackList, RestrictionWhiteList, UpdateDate, UserConfig, SystemConfig) VALUES (@IsInitialized, @DatabaseVersion, @RestrictionBlackList, @RestrictionWhiteList, @UpdateDate, @UserConfig, @SystemConfig)";
+        private const string SqlInsertConfig = "INSERT INTO bairong_Config (IsInitialized, DatabaseVersion, UpdateDate, UserConfig, SystemConfig) VALUES (@IsInitialized, @DatabaseVersion, @UpdateDate, @UserConfig, @SystemConfig)";
 
-        private const string SqlSelectConfig = "SELECT IsInitialized, DatabaseVersion, RestrictionBlackList, RestrictionWhiteList, UpdateDate, UserConfig, SystemConfig FROM bairong_Config";
+        private const string SqlSelectConfig = "SELECT IsInitialized, DatabaseVersion, UpdateDate, UserConfig, SystemConfig FROM bairong_Config";
 
         private const string SqlSelectIsInitialized = "SELECT IsInitialized FROM bairong_Config";
 
 		private const string SqlSelectDatabaseVersion = "SELECT DatabaseVersion FROM bairong_Config";
 
-        private const string SqlUpdateConfig = "UPDATE bairong_Config SET IsInitialized = @IsInitialized, DatabaseVersion = @DatabaseVersion, RestrictionBlackList = @RestrictionBlackList, RestrictionWhiteList = @RestrictionWhiteList, UpdateDate = @UpdateDate, UserConfig = @UserConfig, SystemConfig = @SystemConfig";
+        private const string SqlUpdateConfig = "UPDATE bairong_Config SET IsInitialized = @IsInitialized, DatabaseVersion = @DatabaseVersion, UpdateDate = @UpdateDate, UserConfig = @UserConfig, SystemConfig = @SystemConfig";
 
 		private const string ParmIsInitialized = "@IsInitialized";
 		private const string ParmDatabaseVersion = "@DatabaseVersion";
-        private const string ParmRestrictionBlackList = "@RestrictionBlackList";
-        private const string ParmRestrictionWhiteList = "@RestrictionWhiteList";
         private const string ParmUpdateDate = "@UpdateDate";
 		private const string ParmUserConfig = "@UserConfig";
         private const string ParmSystemConfig = "@SystemConfig";
@@ -33,13 +31,11 @@ namespace BaiRong.Core.Provider
 		{
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmIsInitialized, EDataType.VarChar, 18, info.IsInitialized.ToString()),
-				GetParameter(ParmDatabaseVersion, EDataType.VarChar, 50, info.DatabaseVersion),
-                GetParameter(ParmRestrictionBlackList, EDataType.NVarChar, 255, TranslateUtils.ObjectCollectionToString(info.RestrictionBlackList)),
-                GetParameter(ParmRestrictionWhiteList, EDataType.NVarChar, 255, TranslateUtils.ObjectCollectionToString(info.RestrictionWhiteList)),
-                GetParameter(ParmUpdateDate, EDataType.DateTime, info.UpdateDate),
-				GetParameter(ParmUserConfig, EDataType.NText, info.UserConfigInfo.ToString()),
-                GetParameter(ParmSystemConfig, EDataType.NText, info.SystemConfigInfo.ToString())
+				GetParameter(ParmIsInitialized, DataType.VarChar, 18, info.IsInitialized.ToString()),
+				GetParameter(ParmDatabaseVersion, DataType.VarChar, 50, info.DatabaseVersion),
+                GetParameter(ParmUpdateDate, DataType.DateTime, info.UpdateDate),
+				GetParameter(ParmUserConfig, DataType.NText, info.UserConfigInfo.ToString()),
+                GetParameter(ParmSystemConfig, DataType.NText, info.SystemConfigInfo.ToString())
             };
 
             ExecuteNonQuery(SqlInsertConfig, insertParms);
@@ -50,13 +46,11 @@ namespace BaiRong.Core.Provider
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmIsInitialized, EDataType.VarChar, 18, info.IsInitialized.ToString()),
-				GetParameter(ParmDatabaseVersion, EDataType.VarChar, 50, info.DatabaseVersion),
-                GetParameter(ParmRestrictionBlackList, EDataType.NVarChar, 255, TranslateUtils.ObjectCollectionToString(info.RestrictionBlackList)),
-                GetParameter(ParmRestrictionWhiteList, EDataType.NVarChar, 255, TranslateUtils.ObjectCollectionToString(info.RestrictionWhiteList)),
-                GetParameter(ParmUpdateDate, EDataType.DateTime, info.UpdateDate),
-                GetParameter(ParmUserConfig, EDataType.NText, info.UserConfigInfo.ToString()),
-                GetParameter(ParmSystemConfig, EDataType.NText, info.SystemConfigInfo.ToString())
+				GetParameter(ParmIsInitialized, DataType.VarChar, 18, info.IsInitialized.ToString()),
+				GetParameter(ParmDatabaseVersion, DataType.VarChar, 50, info.DatabaseVersion),
+                GetParameter(ParmUpdateDate, DataType.DateTime, info.UpdateDate),
+                GetParameter(ParmUserConfig, DataType.NText, info.UserConfigInfo.ToString()),
+                GetParameter(ParmSystemConfig, DataType.NText, info.SystemConfigInfo.ToString())
             };
 
             ExecuteNonQuery(SqlUpdateConfig, updateParms);
@@ -121,10 +115,7 @@ namespace BaiRong.Core.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new ConfigInfo(GetBool(rdr, i++), GetString(rdr, i++),
-                        TranslateUtils.StringCollectionToStringCollection(GetString(rdr, i++)),
-                        TranslateUtils.StringCollectionToStringCollection(GetString(rdr, i++)), GetDateTime(rdr, i++),
-                        GetString(rdr, i++), GetString(rdr, i));
+                    info = new ConfigInfo(GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
                 }
                 rdr.Close();
             }
@@ -153,7 +144,7 @@ namespace BaiRong.Core.Provider
 
         public void InitializeConfig()
         {
-            var configInfo = new ConfigInfo(true, AppManager.Version, new StringCollection(), new StringCollection(), DateTime.Now, string.Empty, string.Empty);
+            var configInfo = new ConfigInfo(true, AppManager.Version, DateTime.Now, string.Empty, string.Empty);
             Insert(configInfo);
         }
 

@@ -171,13 +171,13 @@ namespace SiteServer.CMS.ImportExport.Components
                 var isVisible = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisible"));
                 var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisibleInList"));
                 var isSingleLine = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsSingleLine"));
-                var inputType = EInputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
+                var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
                 var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DefaultValue");
                 var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsHorizontal"));
                 //SettingsXML
                 var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, "ExtendValues");
 
-                var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, isSingleLine, EInputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
+                var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, isSingleLine, InputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
 
                 var styleItems = new List<TableStyleItemInfo>();
                 foreach (AtomEntry entry in feed.Entries)
@@ -248,7 +248,7 @@ namespace SiteServer.CMS.ImportExport.Components
                         var isVisible = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisible"));
                         var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisibleInList"));
                         var isSingleLine = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsSingleLine"));
-                        var inputType = EInputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
+                        var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
                         var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DefaultValue");
                         var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsHorizontal"));
                         var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, "ExtendValues");
@@ -275,7 +275,7 @@ namespace SiteServer.CMS.ImportExport.Components
                         if (relatedIdentity <= 0 ||
                             TableStyleManager.IsExists(relatedIdentity, tableName, attributeName)) continue;
 
-                        var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, isSingleLine, EInputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
+                        var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, isSingleLine, InputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
 
                         var styleItems = new List<TableStyleItemInfo>();
                         foreach (AtomEntry entry in feed.Entries)

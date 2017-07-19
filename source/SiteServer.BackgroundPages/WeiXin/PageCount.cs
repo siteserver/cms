@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
         public void Page_Load(object sender, EventArgs e)
         {
-            BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, AppManager.WeiXin.LeftMenu.Function.IdChart, string.Empty, AppManager.WeiXin.Permission.WebSite.Chart);
+            BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, string.Empty, AppManager.WeiXin.Permission.WebSite.Chart);
 
             var categories = new StringBuilder();
             var data = new StringBuilder();

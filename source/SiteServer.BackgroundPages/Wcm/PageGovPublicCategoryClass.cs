@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using SiteServer.BackgroundPages.Admin;
+using SiteServer.BackgroundPages.Users;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
 
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicContentConfiguration, "分类法管理", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, "分类法管理", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
 
                 BindGrid();
 

@@ -114,7 +114,7 @@ namespace SiteServer.CMS.Core.Permissions
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 
-        private static bool HasAdministratorPermissions(string administratorName, params string[] permissionArray)
+        public static bool HasAdministratorPermissions(string administratorName, params string[] permissionArray)
         {
             var permissions = GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)

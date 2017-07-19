@@ -17,42 +17,36 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ETranslateType type)
 		{
-			if (type == ETranslateType.Content)
+		    if (type == ETranslateType.Content)
 			{
 				return "Content";
 			}
-			else if (type == ETranslateType.Channel)
-			{
-				return "Channel";
-			}
-			else if (type == ETranslateType.All)
-			{
-				return "All";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETranslateType.Channel)
+		    {
+		        return "Channel";
+		    }
+		    if (type == ETranslateType.All)
+		    {
+		        return "All";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ETranslateType type)
 		{
-			if (type == ETranslateType.Content)
+		    if (type == ETranslateType.Content)
 			{
 				return "仅转移内容";
 			}
-			else if (type == ETranslateType.Channel)
-			{
-				return "仅转移栏目";
-			}
-			else if (type == ETranslateType.All)
-			{
-				return "转移栏目及内容";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETranslateType.Channel)
+		    {
+		        return "仅转移栏目";
+		    }
+		    if (type == ETranslateType.All)
+		    {
+		        return "转移栏目及内容";
+		    }
+		    throw new Exception();
 		}
 
 		public static ETranslateType GetEnumType(string typeStr)

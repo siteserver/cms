@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
                 var pageTitle = _lotteryId > 0 ? "编辑大转盘" : "添加大转盘";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdBigWheel, pageTitle, AppManager.WeiXin.Permission.WebSite.BigWheel);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdBigWheel, pageTitle, AppManager.WeiXin.Permission.WebSite.BigWheel);
 
                 LtlPageTitle.Text = pageTitle;
 

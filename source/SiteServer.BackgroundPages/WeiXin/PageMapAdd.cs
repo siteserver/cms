@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
                 var pageTitle = _mapId > 0 ? "编辑微导航" : "添加微导航";
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdMap, pageTitle, AppManager.WeiXin.Permission.WebSite.Map);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdMap, pageTitle, AppManager.WeiXin.Permission.WebSite.Map);
                 LtlPageTitle.Text = pageTitle;
 
                 LtlImageUrl.Text =

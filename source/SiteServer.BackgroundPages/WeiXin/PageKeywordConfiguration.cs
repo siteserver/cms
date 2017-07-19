@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, AppManager.WeiXin.LeftMenu.Function.IdSetReply, string.Empty, AppManager.WeiXin.Permission.WebSite.SetReply);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.IdAccounts, string.Empty, AppManager.WeiXin.Permission.WebSite.SetReply);
 
                 var accountInfo = WeiXinManager.GetAccountInfo(PublishmentSystemId);
 

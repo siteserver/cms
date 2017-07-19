@@ -69,8 +69,6 @@ namespace SiteServer.CMS.ImportExport
             exportObject.ExportInput(inputDirectoryPath);
             var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             exportObject.ExportConfiguration(configurationFilePath);
-            var contentModelFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileContentModel);
-            exportObject.ExportContentModel(contentModelFilePath);
             exportObject.ExportMetadata(publishmentSystemInfo.PublishmentSystemName, publishmentSystemInfo.PublishmentSystemUrl, string.Empty, string.Empty, metadataPath);
 
             ZipUtils.PackFiles(filePath, siteTemplatePath);
@@ -154,10 +152,6 @@ namespace SiteServer.CMS.ImportExport
             //导入站点设置
             var configurationFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             importObject.ImportConfiguration(configurationFilePath);
-
-            //导入内容模型
-            var contentModelFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileContentModel);
-            importObject.ImportContentModel(contentModelFilePath, true);
 
             //导入栏目及内容
             var siteContentDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.SiteContent);

@@ -3,6 +3,7 @@ using System.Data;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model.Enumerations;
 
 namespace SiteServer.API.Core
 {
@@ -36,7 +37,7 @@ namespace SiteServer.API.Core
                 orderByString2 = orderByString2.Replace(" ASC", " DESC");
                 orderByString2 = orderByString2.Replace(" DESC2", " ASC");
 
-                if (WebConfigUtils.IsMySql)
+                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
                 {
                     return $@"
 SELECT * FROM (
@@ -52,7 +53,7 @@ SELECT * FROM (
     ) AS t1 {orderByString2}
 ) AS t2 {OrderByString}";
             }
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $@"
 SELECT * FROM (
@@ -230,7 +231,7 @@ SELECT * FROM (
 
             var cmdText = GetQueryPageCommandText(recsToRetrieve);
 
-            var conn = SqlUtils.GetIDbConnection(WebConfigUtils.IsMySql, WebConfigUtils.ConnectionString);
+            var conn = SqlUtils.GetIDbConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
             var cmd = SqlUtils.GetIDbCommand();
             cmd.Connection = conn;
             cmd.CommandText = cmdText;

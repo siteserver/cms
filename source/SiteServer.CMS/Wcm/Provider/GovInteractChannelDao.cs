@@ -1,12 +1,13 @@
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.Wcm.GovInteract;
 using SiteServer.CMS.Wcm.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Wcm.Provider
 {
@@ -36,12 +37,12 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmNodeId, EDataType.Integer, channelInfo.NodeID),
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, channelInfo.PublishmentSystemID),
-                GetParameter(ParmApplyStyleId, EDataType.Integer, channelInfo.ApplyStyleID),
-                GetParameter(ParmQueryStyleId, EDataType.Integer, channelInfo.QueryStyleID),
-                GetParameter(ParmDepartmentidCollection, EDataType.NVarChar, 255, channelInfo.DepartmentIDCollection),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, channelInfo.Summary)
+                GetParameter(ParmNodeId, DataType.Integer, channelInfo.NodeID),
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, channelInfo.PublishmentSystemID),
+                GetParameter(ParmApplyStyleId, DataType.Integer, channelInfo.ApplyStyleID),
+                GetParameter(ParmQueryStyleId, DataType.Integer, channelInfo.QueryStyleID),
+                GetParameter(ParmDepartmentidCollection, DataType.NVarChar, 255, channelInfo.DepartmentIDCollection),
+				GetParameter(ParmSummary, DataType.NVarChar, 255, channelInfo.Summary)
 			};
 
             ExecuteNonQuery(SqlInsert, parms);
@@ -53,9 +54,9 @@ namespace SiteServer.CMS.Wcm.Provider
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmDepartmentidCollection, EDataType.NVarChar, 255, channelInfo.DepartmentIDCollection),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, channelInfo.Summary),
-				GetParameter(ParmNodeId, EDataType.Integer, channelInfo.NodeID)
+                GetParameter(ParmDepartmentidCollection, DataType.NVarChar, 255, channelInfo.DepartmentIDCollection),
+				GetParameter(ParmSummary, DataType.NVarChar, 255, channelInfo.Summary),
+				GetParameter(ParmNodeId, DataType.Integer, channelInfo.NodeID)
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);
@@ -65,7 +66,7 @@ namespace SiteServer.CMS.Wcm.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -77,7 +78,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))
@@ -152,7 +153,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter("@NodeName", EDataType.NVarChar,255, interactName)
+				GetParameter("@NodeName", DataType.NVarChar,255, interactName)
 			};
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString, selectParms);
@@ -176,7 +177,7 @@ namespace SiteServer.CMS.Wcm.Provider
 
             var nodeParms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectId, nodeParms))

@@ -8,6 +8,7 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using MySql.Data.MySqlClient;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -22,7 +23,7 @@ namespace BaiRong.Core.Provider
 
             var list = new List<string>();
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 var connection = new MySqlConnection(connectionString);
                 var command = new MySqlCommand("show databases", connection);
@@ -103,25 +104,46 @@ namespace BaiRong.Core.Provider
 
         public bool IsTableExists(string tableName)
         {
-            var exists = false;
-            string sqlString;
-            if (WebConfigUtils.IsMySql)
-            {
-                sqlString = $@"show tables like ""{tableName}""";
-            }
-            else
-            {
-                sqlString =
-                $"select * from dbo.sysobjects where id = object_id(N'{tableName}') and OBJECTPROPERTY(id, N'IsUserTable') = 1";
-            }
+            //var exists = false;
+            //string sqlString;
+            //if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+            //{
+            //    sqlString = $@"show tables like ""{tableName}""";
+            //}
+            //else
+            //{
+            //    sqlString =
+            //    $"select * from dbo.sysobjects where id = object_id(N'{tableName}') and OBJECTPROPERTY(id, N'IsUserTable') = 1";
+            //}
 
-            using (var rdr = ExecuteReader(sqlString))
+            //using (var rdr = ExecuteReader(sqlString))
+            //{
+            //    if (rdr.Read())
+            //    {
+            //        exists = true;
+            //    }
+            //    rdr.Close();
+            //}
+
+            bool exists;
+
+            try
             {
-                if (rdr.Read())
+                // ANSI SQL way.  Works in PostgreSQL, MSSQL, MySQL.  
+                exists = (int)ExecuteScalar($"select case when exists((select * from information_schema.tables where table_name = '{tableName}')) then 1 else 0 end") == 1;
+            }
+            catch
+            {
+                try
                 {
+                    // Other RDBMS.  Graceful degradation
                     exists = true;
+                    ExecuteNonQuery($"select 1 from {tableName} where 1 = 0");
                 }
-                rdr.Close();
+                catch
+                {
+                    exists = false;
+                }
             }
 
             return exists;
@@ -129,7 +151,7 @@ namespace BaiRong.Core.Provider
 
         public string GetTableId(string connectionString, string databaseName, string tableName)
         {
-            if (WebConfigUtils.IsMySql) return tableName;
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql) return tableName;
 
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -159,7 +181,7 @@ namespace BaiRong.Core.Provider
 
         public string GetTableName(string databaseName, string tableId)
         {
-            if (WebConfigUtils.IsMySql) return tableId;
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql) return tableId;
 
             var tableName = string.Empty;
             string cmd =
@@ -178,7 +200,7 @@ namespace BaiRong.Core.Provider
 
         public string GetTableName(string connectionString, string databaseName, string tableId)
         {
-            if (WebConfigUtils.IsMySql) return tableId;
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql) return tableId;
 
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -202,7 +224,7 @@ namespace BaiRong.Core.Provider
 
         public string GetDefaultConstraintName(string tableName, string columnName)
         {
-            if (!WebConfigUtils.IsMySql) return string.Empty;
+            if (WebConfigUtils.DatabaseType != EDatabaseType.MySql) return string.Empty;
 
             var defaultConstraintName = string.Empty;
             string sqlString =
@@ -282,7 +304,7 @@ namespace BaiRong.Core.Provider
             var list = new List<TableColumnInfo>();
             var isIdentityExist = false;
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 string sqlString = $"select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, COLUMN_KEY from information_schema.columns where table_schema = '{databaseName}' and table_name = '{tableName}' order by table_name,ordinal_position; ";
                 using (var rdr = ExecuteReader(connectionString, sqlString))
@@ -291,8 +313,8 @@ namespace BaiRong.Core.Provider
                     {
                         var columnName = Convert.ToString(rdr.GetValue(0));
                         var isNullable = Convert.ToString(rdr.GetValue(1)) == "YES";
-                        var dataType = EDataTypeUtils.FromMySql(Convert.ToString(rdr.GetValue(2)));
-                        var length = rdr.IsDBNull(3) || dataType == EDataType.NText || dataType == EDataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(3));
+                        var dataType = DataTypeUtils.FromMySql(Convert.ToString(rdr.GetValue(2)));
+                        var length = rdr.IsDBNull(3) || dataType == DataType.NText || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(3));
                         var precision = rdr.IsDBNull(4) ? 0 : Convert.ToInt32(rdr.GetValue(4));
                         var scale = rdr.IsDBNull(5) ? 0 : Convert.ToInt32(rdr.GetValue(5));
                         var isPrimaryKey = Convert.ToString(rdr.GetValue(6)) == "PRI";
@@ -319,7 +341,7 @@ namespace BaiRong.Core.Provider
                         {
                             continue;
                         }
-                        var dataType = EDataTypeUtils.FromSqlServer(Convert.ToString(rdr.GetValue(1)));
+                        var dataType = DataTypeUtils.FromSqlServer(Convert.ToString(rdr.GetValue(1)));
                         var length = GetDataLength(dataType, Convert.ToInt32(rdr.GetValue(2)));
                         var precision = Convert.ToInt32(rdr.GetValue(3));
                         var scale = Convert.ToInt32(rdr.GetValue(4));
@@ -371,9 +393,9 @@ namespace BaiRong.Core.Provider
         }
 
         //lengthFromDb:数据库元数据查询获取的长度
-        protected int GetDataLength(EDataType dataType, int lengthFromDb)
+        protected int GetDataLength(DataType dataType, int lengthFromDb)
         {
-            if (dataType == EDataType.NChar || dataType == EDataType.NVarChar)
+            if (dataType == DataType.NChar || dataType == DataType.NVarChar)
             {
                 return Convert.ToInt32(lengthFromDb / 2);
             }
@@ -421,11 +443,11 @@ namespace BaiRong.Core.Provider
                             columnNameList.Add(tableColumnInfo.ColumnName);
                             var valueStr = string.Empty;
 
-                            if (tableColumnInfo.DataType == EDataType.DateTime)
+                            if (tableColumnInfo.DataType == DataType.DateTime)
                             {
                                 parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToDateTime(valueStr)));
                             }
-                            else if (tableColumnInfo.DataType == EDataType.Integer)
+                            else if (tableColumnInfo.DataType == DataType.Integer)
                             {
                                 parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToIntWithNagetive(valueStr)));
                             }
@@ -440,11 +462,11 @@ namespace BaiRong.Core.Provider
                         columnNameList.Add(tableColumnInfo.ColumnName);
                         var valueStr = attributes[tableColumnInfo.ColumnName];
 
-                        if (tableColumnInfo.DataType == EDataType.DateTime)
+                        if (tableColumnInfo.DataType == DataType.DateTime)
                         {
                             parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToDateTime(valueStr)));
                         }
-                        else if (tableColumnInfo.DataType == EDataType.Integer)
+                        else if (tableColumnInfo.DataType == DataType.Integer)
                         {
                             parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToIntWithNagetive(valueStr)));
                         }
@@ -498,11 +520,11 @@ namespace BaiRong.Core.Provider
                         {
                             setList.Add($"{tableColumnInfo.ColumnName} = {"@" + tableColumnInfo.ColumnName}");
 
-                            if (tableColumnInfo.DataType == EDataType.DateTime)
+                            if (tableColumnInfo.DataType == DataType.DateTime)
                             {
                                 parmsList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToDateTime(valueStr)));
                             }
-                            else if (tableColumnInfo.DataType == EDataType.Integer)
+                            else if (tableColumnInfo.DataType == DataType.Integer)
                             {
                                 parmsList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToInt(valueStr)));
                             }
@@ -630,7 +652,7 @@ namespace BaiRong.Core.Provider
 
             var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $@"
 SELECT {columns} FROM (
@@ -640,9 +662,7 @@ SELECT {columns} FROM (
 ) AS tmp {orderByString}
 ";
             }
-            else
-            {
-                return $@"
+            return $@"
 SELECT {columns}
 FROM (SELECT TOP {totalNum} {columns}
         FROM (SELECT TOP {topNum} {columns}
@@ -650,7 +670,6 @@ FROM (SELECT TOP {totalNum} {columns}
         {orderByStringOpposite}) tmp
 {orderByString}
 ";
-            }
         }
 
         public string GetSelectSqlStringByQueryString(string connectionString, string queryString, int totalNum, string orderByString)
@@ -663,25 +682,11 @@ FROM (SELECT TOP {totalNum} {columns}
             if (totalNum > 0)
             {
                 //TODO: 当queryString包含top 2语句时排序有问题
-                if (WebConfigUtils.IsMySql)
-                {
-                    sqlString = $"SELECT * FROM ({queryString}) AS tmp {orderByString} LIMIT {totalNum}";
-                }
-                else
-                {
-                    sqlString = $"SELECT TOP {totalNum} * FROM ({queryString}) tmp {orderByString}";
-                }
+                sqlString = WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"SELECT * FROM ({queryString}) AS tmp {orderByString} LIMIT {totalNum}" : $"SELECT TOP {totalNum} * FROM ({queryString}) tmp {orderByString}";
             }
             else
             {
-                if (string.IsNullOrEmpty(orderByString))
-                {
-                    sqlString = queryString;
-                }
-                else
-                {
-                    sqlString = $"SELECT * FROM ({queryString}) tmp {orderByString}";
-                }
+                sqlString = string.IsNullOrEmpty(orderByString) ? queryString : $"SELECT * FROM ({queryString}) tmp {orderByString}";
             }
             return sqlString;
         }
@@ -736,7 +741,7 @@ FROM (SELECT TOP {totalNum} {columns}
 
             var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
 
-            if (WebConfigUtils.IsMySql)
+            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
                 return $@"
 SELECT * FROM (

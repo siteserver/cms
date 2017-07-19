@@ -8,6 +8,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -35,23 +36,23 @@ namespace SiteServer.CMS.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, trackingInfo.PublishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(trackingInfo.TrackerType)),
-				GetParameter(ParmLastAccessDateTime, EDataType.DateTime, trackingInfo.LastAccessDateTime),
-				GetParameter(ParmPageUrl, EDataType.VarChar, 200, trackingInfo.PageUrl),
-                GetParameter(ParmPageNodeId, EDataType.Integer, trackingInfo.PageNodeId),
-                GetParameter(ParmPageContentId, EDataType.Integer, trackingInfo.PageContentId),
-				GetParameter(ParmReferrer, EDataType.VarChar, 200, trackingInfo.Referrer),
-				GetParameter(ParmIpAddress, EDataType.VarChar, 200, trackingInfo.IpAddress),
-				GetParameter(ParmOperatingSystem, EDataType.VarChar, 200, trackingInfo.OperatingSystem),
-				GetParameter(ParmBrowser, EDataType.VarChar, 200, trackingInfo.Browser),
-				GetParameter(ParmAccessDateTime, EDataType.DateTime, trackingInfo.AccessDateTime)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, trackingInfo.PublishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(trackingInfo.TrackerType)),
+				GetParameter(ParmLastAccessDateTime, DataType.DateTime, trackingInfo.LastAccessDateTime),
+				GetParameter(ParmPageUrl, DataType.VarChar, 200, trackingInfo.PageUrl),
+                GetParameter(ParmPageNodeId, DataType.Integer, trackingInfo.PageNodeId),
+                GetParameter(ParmPageContentId, DataType.Integer, trackingInfo.PageContentId),
+				GetParameter(ParmReferrer, DataType.VarChar, 200, trackingInfo.Referrer),
+				GetParameter(ParmIpAddress, DataType.VarChar, 200, trackingInfo.IpAddress),
+				GetParameter(ParmOperatingSystem, DataType.VarChar, 200, trackingInfo.OperatingSystem),
+				GetParameter(ParmBrowser, DataType.VarChar, 200, trackingInfo.Browser),
+				GetParameter(ParmAccessDateTime, DataType.DateTime, trackingInfo.AccessDateTime)
 			};
 
             ExecuteNonQuery(sqlString, insertParms);
         }
 
-        public virtual DataSet GetDataSource(int publishmentSystemId, int trackingCurrentMinute)
+        public DataSet GetDataSource(int publishmentSystemId, int trackingCurrentMinute)
         {
             string sqlSelectTrackerAnalysis = $@"
 SELECT TrackingID, PublishmentSystemID, TrackerType, LastAccessDateTime, PageUrl, PageNodeID, PageContentID, Referrer, IPAddress, OperatingSystem, Browser, AccessDateTime
@@ -60,13 +61,13 @@ WHERE (PublishmentSystemID = @PublishmentSystemID) AND (AccessDateTime BETWEEN '
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             return ExecuteDataset(sqlSelectTrackerAnalysis, parms);
         }
 
-        public virtual int GetCurrentVisitorNum(int publishmentSystemId, int trackingCurrentMinute)
+        public int GetCurrentVisitorNum(int publishmentSystemId, int trackingCurrentMinute)
         {
             var currentVisitorNum = 0;
 
@@ -78,9 +79,9 @@ WHERE (TrackerType = @TrackerType) AND
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site)),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmConstTrackingCurrentMinute, EDataType.Integer, trackingCurrentMinute)
+                GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site)),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmConstTrackingCurrentMinute, DataType.Integer, trackingCurrentMinute)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectCurrentVisitorNum, parms))
@@ -95,21 +96,11 @@ WHERE (TrackerType = @TrackerType) AND
         }
 
         //总访问量
-        public virtual int GetTotalAccessNum(int publishmentSystemId, DateTime sinceDate)
+        public int GetTotalAccessNum(int publishmentSystemId, DateTime sinceDate)
         {
             var totalAccessNum = 0;
 
-            string sqlString;
-            if (sinceDate == DateUtils.SqlMinValue)
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId})";
-            }
-            else
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
-            }
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId})" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -123,21 +114,11 @@ WHERE (TrackerType = @TrackerType) AND
         }
 
         //获取特定页面的总访问量
-        public virtual int GetTotalUniqueAccessNumByPageInfo(int publishmentSystemId, int nodeId, int contentId, DateTime sinceDate)
+        public int GetTotalUniqueAccessNumByPageInfo(int publishmentSystemId, int nodeId, int contentId, DateTime sinceDate)
         {
             var totalUniqueAccessNum = 0;
 
-            string sqlString;
-            if (sinceDate == DateUtils.SqlMinValue)
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageNodeID = {nodeId}) AND (PageContentID = {contentId})";
-            }
-            else
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageNodeID = {nodeId}) AND (PageContentID = {contentId}) AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
-            }
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageNodeID = {nodeId}) AND (PageContentID = {contentId})" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageNodeID = {nodeId}) AND (PageContentID = {contentId}) AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -151,21 +132,11 @@ WHERE (TrackerType = @TrackerType) AND
         }
 
         //获取特定页面的总访问量
-        public virtual int GetTotalUniqueAccessNumByPageUrl(int publishmentSystemId, string pageUrl, DateTime sinceDate)
+        public int GetTotalUniqueAccessNumByPageUrl(int publishmentSystemId, string pageUrl, DateTime sinceDate)
         {
             var totalUniqueAccessNum = 0;
 
-            string sqlString;
-            if (sinceDate == DateUtils.SqlMinValue)
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageUrl = '{pageUrl}')";
-            }
-            else
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageUrl = '{pageUrl}') AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
-            }
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageUrl = '{pageUrl}')" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageUrl = '{pageUrl}') AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -179,21 +150,11 @@ WHERE (TrackerType = @TrackerType) AND
         }
 
         //总唯一访问量
-        public virtual int GetTotalUniqueAccessNum(int publishmentSystemId, DateTime sinceDate)
+        public int GetTotalUniqueAccessNum(int publishmentSystemId, DateTime sinceDate)
         {
             var totalUniqueAccessNum = 0;
 
-            string sqlString;
-            if (sinceDate == DateUtils.SqlMinValue)
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}')";
-            }
-            else
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
-            }
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}')" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -207,21 +168,11 @@ WHERE (TrackerType = @TrackerType) AND
         }
 
         //获取特定页面的总访问量
-        public virtual int GetTotalAccessNumByPageUrl(int publishmentSystemId, string pageUrl, DateTime sinceDate)
+        public int GetTotalAccessNumByPageUrl(int publishmentSystemId, string pageUrl, DateTime sinceDate)
         {
             var totalAccessNum = 0;
 
-            string sqlString;
-            if (sinceDate == DateUtils.SqlMinValue)
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (PageUrl = '{pageUrl}')";
-            }
-            else
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (PageUrl = '{pageUrl}') AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
-            }
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (PageUrl = '{pageUrl}')" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (PageUrl = '{pageUrl}') AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -235,21 +186,11 @@ WHERE (TrackerType = @TrackerType) AND
         }
 
         //获取特定页面的总访问量
-        public virtual int GetTotalAccessNumByPageInfo(int publishmentSystemId, int nodeId, int contentId, DateTime sinceDate)
+        public int GetTotalAccessNumByPageInfo(int publishmentSystemId, int nodeId, int contentId, DateTime sinceDate)
         {
             var totalAccessNum = 0;
 
-            string sqlString;
-            if (sinceDate == DateUtils.SqlMinValue)
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Page)}'";
-            }
-            else
-            {
-                sqlString =
-                    $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Page)}' AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
-            }
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Page)}'" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Page)}' AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -262,7 +203,7 @@ WHERE (TrackerType = @TrackerType) AND
             return totalAccessNum;
         }
 
-        public virtual int GetMaxAccessNumOfDay(int publishmentSystemId, out string maxAccessDay)
+        public int GetMaxAccessNumOfDay(int publishmentSystemId, out string maxAccessDay)
         {
             var maxAccessNumOfDay = 0;
             maxAccessDay = string.Empty;
@@ -278,7 +219,7 @@ SELECT MAX(AccessNum) AS MaxAccessNum, AccessYear, AccessMonth, AccessDay FROM (
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectMaxAccessNumOfDay, parms))
@@ -296,7 +237,7 @@ SELECT MAX(AccessNum) AS MaxAccessNum, AccessYear, AccessMonth, AccessDay FROM (
             return maxAccessNumOfDay;
         }
 
-        public virtual int GetMaxAccessNumOfMonth(int publishmentSystemId)
+        public int GetMaxAccessNumOfMonth(int publishmentSystemId)
         {
             var maxAccessNumOfMonth = 0;
 
@@ -311,7 +252,7 @@ SELECT MAX(Expr1) AS Expr1 FROM (
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectMaxAccessNumOfMonth, parms))
@@ -325,7 +266,7 @@ SELECT MAX(Expr1) AS Expr1 FROM (
             return maxAccessNumOfMonth;
         }
 
-        public virtual int GetMaxUniqueAccessNumOfDay(int publishmentSystemId)
+        public int GetMaxUniqueAccessNumOfDay(int publishmentSystemId)
         {
             var maxUniqueAccessNumOfDay = 0;
 
@@ -340,8 +281,8 @@ SELECT MAX(Expr1) AS Expr1 FROM (
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectMaxUniqueAccessNumOfDay, parms))
@@ -355,7 +296,7 @@ SELECT MAX(Expr1) AS Expr1 FROM (
             return maxUniqueAccessNumOfDay;
         }
 
-        public virtual int GetMaxUniqueAccessNumOfMonth(int publishmentSystemId)
+        public int GetMaxUniqueAccessNumOfMonth(int publishmentSystemId)
         {
             var maxUniqueAccessNumOfMonth = 0;
 
@@ -370,8 +311,8 @@ SELECT MAX(Expr1) AS Expr1 FROM (
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectMaxUniqueAccessNumOfMonth, parms))
@@ -385,7 +326,7 @@ SELECT MAX(Expr1) AS Expr1 FROM (
             return maxUniqueAccessNumOfMonth;
         }
 
-        public virtual ArrayList GetContentIpAddressArrayList(int publishmentSystemId, int nodeId, int contentId, DateTime begin, DateTime end)
+        public ArrayList GetContentIpAddressArrayList(int publishmentSystemId, int nodeId, int contentId, DateTime begin, DateTime end)
         {
             var arraylist = new ArrayList();
 
@@ -419,7 +360,7 @@ WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND
             return arraylist;
         }
 
-        public virtual ArrayList GetTrackingInfoArrayList(int publishmentSystemId, int nodeId, int contentId, DateTime begin, DateTime end)
+        public ArrayList GetTrackingInfoArrayList(int publishmentSystemId, int nodeId, int contentId, DateTime begin, DateTime end)
         {
             var arraylist = new ArrayList();
 
@@ -458,7 +399,7 @@ WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID IN ({Translate
             return arraylist;
         }
 
-        public virtual Hashtable GetTrackingHourHashtable(int publishmentSystemId)
+        public Hashtable GetTrackingHourHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -471,7 +412,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth, AccessDay, AccessHour FRO
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectTrackingHour, parms))
@@ -492,7 +433,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth, AccessDay, AccessHour FRO
             return hashtable;
         }
 
-        public virtual Hashtable GetUniqueTrackingHourHashtable(int publishmentSystemId)
+        public Hashtable GetUniqueTrackingHourHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -505,8 +446,8 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth, AccessDay, AccessHour FRO
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectUniqueTrackingHour, parms))
@@ -527,7 +468,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth, AccessDay, AccessHour FRO
             return hashtable;
         }
 
-        public virtual Hashtable GetTrackingDayHashtable(int publishmentSystemId)
+        public Hashtable GetTrackingDayHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -540,7 +481,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth, AccessDay FROM (
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectTrackingDay, parms))
@@ -560,7 +501,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth, AccessDay FROM (
             return hashtable;
         }
 
-        public virtual Hashtable GetUniqueTrackingDayHashtable(int publishmentSystemId)
+        public Hashtable GetUniqueTrackingDayHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -573,8 +514,8 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth, AccessDay FROM (
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectUniqueTrackingDay, parms))
@@ -594,7 +535,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth, AccessDay FROM (
             return hashtable;
         }
 
-        public virtual Hashtable GetTrackingMonthHashtable(int publishmentSystemId)
+        public Hashtable GetTrackingMonthHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -607,7 +548,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth FROM (
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectTrackingMonth, parms))
@@ -626,7 +567,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth FROM (
             return hashtable;
         }
 
-        public virtual Hashtable GetUniqueTrackingMonthHashtable(int publishmentSystemId)
+        public Hashtable GetUniqueTrackingMonthHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -639,8 +580,8 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth FROM (
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectUniqueTrackingMonth, parms))
@@ -659,7 +600,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear, AccessMonth FROM (
             return hashtable;
         }
 
-        public virtual Hashtable GetTrackingYearHashtable(int publishmentSystemId)
+        public Hashtable GetTrackingYearHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -672,7 +613,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear FROM (
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectTrackingYear, parms))
@@ -690,7 +631,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear FROM (
             return hashtable;
         }
 
-        public virtual Hashtable GetUniqueTrackingYearHashtable(int publishmentSystemId)
+        public Hashtable GetUniqueTrackingYearHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -703,8 +644,8 @@ SELECT COUNT(*) AS AccessNum, AccessYear FROM (
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectUniqueTrackingYear, parms))
@@ -722,7 +663,7 @@ SELECT COUNT(*) AS AccessNum, AccessYear FROM (
             return hashtable;
         }
 
-        public virtual List<KeyValuePair<string, int>> GetPageUrlAccessPairList(int publishmentSystemId)
+        public List<KeyValuePair<string, int>> GetPageUrlAccessPairList(int publishmentSystemId)
         {
             var pairList = new List<KeyValuePair<string, int>>();
 
@@ -735,7 +676,7 @@ GROUP BY PageUrl ORDER BY AccessNum DESC
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectPageUrlAccessNum, parms))
@@ -768,8 +709,8 @@ GROUP BY PageUrl
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectPageUrlUniqueAccessNum, parms))
@@ -786,7 +727,7 @@ GROUP BY PageUrl
             return hashtable;
         }
 
-        public virtual Hashtable GetPageUrlTodayAccessNumHashtable(int publishmentSystemId)
+        public Hashtable GetPageUrlTodayAccessNumHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -803,7 +744,7 @@ GROUP BY PageUrl
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectPageUrlTodayAccessNum, parms))
@@ -820,7 +761,7 @@ GROUP BY PageUrl
             return hashtable;
         }
 
-        public virtual Hashtable GetPageUrlTodayUniqueAccessNumHashtable(int publishmentSystemId)
+        public Hashtable GetPageUrlTodayUniqueAccessNumHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -837,8 +778,8 @@ GROUP BY PageUrl
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectPageUrlTodayUniqueAccessNum, parms))
@@ -855,7 +796,7 @@ GROUP BY PageUrl
             return hashtable;
         }
 
-        public virtual Hashtable GetReferrerAccessNumHashtable(int publishmentSystemId)
+        public Hashtable GetReferrerAccessNumHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -868,7 +809,7 @@ GROUP BY Referrer ORDER BY AccessNum DESC
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectReferrerAccessNum, parms))
@@ -904,8 +845,8 @@ GROUP BY Referrer
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectReferrerUniqueAccessNum, parms))
@@ -927,7 +868,7 @@ GROUP BY Referrer
             return hashtable;
         }
 
-        public virtual Hashtable GetReferrerTodayAccessNumHashtable(int publishmentSystemId)
+        public Hashtable GetReferrerTodayAccessNumHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -944,7 +885,7 @@ GROUP BY Referrer
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectReferrerTodayAccessNum, parms))
@@ -966,7 +907,7 @@ GROUP BY Referrer
             return hashtable;
         }
 
-        public virtual Hashtable GetReferrerTodayUniqueAccessNumHashtable(int publishmentSystemId)
+        public Hashtable GetReferrerTodayUniqueAccessNumHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -983,8 +924,8 @@ GROUP BY Referrer
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectReferrerTodayUniqueAccessNum, parms))
@@ -1020,7 +961,7 @@ GROUP BY OperatingSystem
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectOsAccessNum, parms))
@@ -1051,8 +992,8 @@ GROUP BY OperatingSystem
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectOsUniqueAccessNum, parms))
@@ -1069,7 +1010,7 @@ GROUP BY OperatingSystem
             return hashtable;
         }
 
-        public virtual Hashtable GetOsTodayAccessNumHashtable(int publishmentSystemId)
+        public Hashtable GetOsTodayAccessNumHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -1086,7 +1027,7 @@ GROUP BY OperatingSystem
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectOsTodayAccessNum, parms))
@@ -1103,7 +1044,7 @@ GROUP BY OperatingSystem
             return hashtable;
         }
 
-        public virtual Hashtable GetOsTodayUniqueAccessNumHashtable(int publishmentSystemId)
+        public Hashtable GetOsTodayUniqueAccessNumHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -1120,8 +1061,8 @@ GROUP BY OperatingSystem
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectOsTodayUniqueAccessNum, parms))
@@ -1151,7 +1092,7 @@ GROUP BY Browser
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectBrowserAccessNum, parms))
@@ -1182,8 +1123,8 @@ GROUP BY Browser
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectBrowserUniqueAccessNum, parms))
@@ -1200,7 +1141,7 @@ GROUP BY Browser
             return hashtable;
         }
 
-        public virtual Hashtable GetBrowserTodayAccessNumHashtable(int publishmentSystemId)
+        public Hashtable GetBrowserTodayAccessNumHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -1217,7 +1158,7 @@ GROUP BY Browser
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectBrowserTodayAccessNum, parms))
@@ -1234,7 +1175,7 @@ GROUP BY Browser
             return hashtable;
         }
 
-        public virtual Hashtable GetBrowserTodayUniqueAccessNumHashtable(int publishmentSystemId)
+        public Hashtable GetBrowserTodayUniqueAccessNumHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -1251,8 +1192,8 @@ GROUP BY Browser
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Site))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectBrowserTodayUniqueAccessNum, parms))
@@ -1270,7 +1211,7 @@ GROUP BY Browser
         }
 
 
-        public virtual Hashtable GetChannelAccessNumHashtable(int publishmentSystemId, DateTime begin, DateTime end)
+        public Hashtable GetChannelAccessNumHashtable(int publishmentSystemId, DateTime begin, DateTime end)
         {
             var hashtable = new Hashtable();
 
@@ -1284,7 +1225,7 @@ GROUP BY PageNodeID
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectBrowserAccessNum, parms))
@@ -1302,7 +1243,7 @@ GROUP BY PageNodeID
             return hashtable;
         }
 
-        public virtual Hashtable GetChannelContentAccessNumHashtable(int publishmentSystemId, DateTime begin, DateTime end)
+        public Hashtable GetChannelContentAccessNumHashtable(int publishmentSystemId, DateTime begin, DateTime end)
         {
             var hashtable = new Hashtable();
 
@@ -1317,7 +1258,7 @@ GROUP BY PageNodeID
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectBrowserAccessNum, parms))
@@ -1335,7 +1276,7 @@ GROUP BY PageNodeID
             return hashtable;
         }
 
-        public virtual Hashtable GetContentAccessNumHashtable(int publishmentSystemId, int nodeId, DateTime begin, DateTime end)
+        public Hashtable GetContentAccessNumHashtable(int publishmentSystemId, int nodeId, DateTime begin, DateTime end)
         {
             var hashtable = new Hashtable();
 
@@ -1349,8 +1290,8 @@ GROUP BY PageContentID
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmPageNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmPageNodeId, DataType.Integer, nodeId)
 			};
 
             using (var rdr = ExecuteReader(sqlSelectBrowserAccessNum, parms))
@@ -1368,7 +1309,7 @@ GROUP BY PageContentID
             return hashtable;
         }
 
-        public virtual List<KeyValuePair<int, int>> GetContentAccessNumPairList(int publishmentSystemId)
+        public List<KeyValuePair<int, int>> GetContentAccessNumPairList(int publishmentSystemId)
         {
             var pairList = new List<KeyValuePair<int, int>>();
 
@@ -1381,8 +1322,8 @@ GROUP BY PageContentID ORDER BY AccessNum DESC
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Page))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Page))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectPageUrlAccessNum, parms))
@@ -1401,7 +1342,7 @@ GROUP BY PageContentID ORDER BY AccessNum DESC
             return pairList;
         }
 
-        public virtual Hashtable GetTodayContentAccessNumHashtable(int publishmentSystemId)
+        public Hashtable GetTodayContentAccessNumHashtable(int publishmentSystemId)
         {
             var hashtable = new Hashtable();
 
@@ -1418,8 +1359,8 @@ GROUP BY PageContentID
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Page))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Page))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectPageUrlTodayAccessNum, parms))
@@ -1436,21 +1377,21 @@ GROUP BY PageContentID
             return hashtable;
         }
 
-        public virtual ArrayList GetPageNodeIdArrayListByAccessNum(int publishmentSystemId)
+        public List<int> GetPageNodeIdListByAccessNum(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<int>();
 
-            var sqlSelectPageUrlAccessNum = @"
+            const string sqlSelectPageUrlAccessNum = @"
 SELECT PageNodeID, COUNT(*) AS AccessNum
 FROM siteserver_Tracking
 WHERE (PublishmentSystemID = @PublishmentSystemID AND PageNodeID <> 0 AND TrackerType = @TrackerType)
 GROUP BY PageNodeID ORDER BY AccessNum DESC
-";//访问页面，总访问量
+"; //访问页面，总访问量
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmTrackerType, EDataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Page))
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmTrackerType, DataType.VarChar, 50, ETrackerTypeUtils.GetValue(ETrackerType.Page))
 			};
 
             using (var rdr = ExecuteReader(sqlSelectPageUrlAccessNum, parms))
@@ -1458,12 +1399,12 @@ GROUP BY PageNodeID ORDER BY AccessNum DESC
                 while (rdr.Read())
                 {
                     var pageNodeId = GetInt(rdr, 0);
-                    arraylist.Add(pageNodeId);
+                    list.Add(pageNodeId);
                 }
                 rdr.Close();
             }
 
-            return arraylist;
+            return list;
         }
 
         public void DeleteAll(int publishmentSystemId)

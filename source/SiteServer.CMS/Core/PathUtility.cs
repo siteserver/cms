@@ -9,6 +9,7 @@ using BaiRong.Core.AuxiliaryTable;
 using System.Text.RegularExpressions;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
@@ -360,7 +361,7 @@ namespace SiteServer.CMS.Core
         public static string GetAdminDirectoryPath(string relatedPath)
         {
             relatedPath = PathUtils.RemoveParentPath(relatedPath);
-            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, FileConfigManager.Instance.AdminDirectoryName, relatedPath);
+            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory, relatedPath);
         }
 
         public static string MapPath(PublishmentSystemInfo publishmentSystemInfo, string virtualPath)
@@ -437,7 +438,7 @@ namespace SiteServer.CMS.Core
             foreach (var originalImageSrc in originalImageSrcs)
             {
                 if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
-                    StringUtils.StartsWithIgnoreCase(originalImageSrc, WebConfigUtils.ApplicationPath) ||
+                    StringUtils.StartsWithIgnoreCase(originalImageSrc, PageUtils.ApplicationPath) ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, publishmentSystemInfo.PublishmentSystemUrl))
                     continue;
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);
@@ -570,7 +571,7 @@ namespace SiteServer.CMS.Core
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.Channel, DataProvider.NodeDao.TableName, relatedIdentities);
                 foreach (var styleInfo in styleInfoList)
                 {
-                    if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Text))
+                    if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Text))
                     {
                         dictionary.Add($@"{{@{StringUtils.LowerFirst(styleInfo.AttributeName)}}}", styleInfo.DisplayName);
                         dictionary.Add($@"{{@lower{styleInfo.AttributeName}}}", styleInfo.DisplayName + "(小写)");
@@ -745,7 +746,7 @@ namespace SiteServer.CMS.Core
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
                 foreach (var styleInfo in styleInfoList)
                 {
-                    if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Text))
+                    if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Text))
                     {
                         dictionary.Add($@"{{@{StringUtils.LowerFirst(styleInfo.AttributeName)}}}", styleInfo.DisplayName);
                         dictionary.Add($@"{{@lower{styleInfo.AttributeName}}}", styleInfo.DisplayName + "(小写)");

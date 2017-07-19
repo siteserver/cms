@@ -20,26 +20,23 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "None";
             }
-            else if (type == ELevelPeriodType.Once)
+            if (type == ELevelPeriodType.Once)
             {
                 return "Once";
             }
-            else if (type == ELevelPeriodType.Everyday)
+            if (type == ELevelPeriodType.Everyday)
             {
                 return "Everyday";
             }
-            else if (type == ELevelPeriodType.Hour)
+            if (type == ELevelPeriodType.Hour)
             {
                 return "Hour";
             }
-            else if (type == ELevelPeriodType.Minute)
+            if (type == ELevelPeriodType.Minute)
             {
                 return "Minute";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(ELevelPeriodType type)
@@ -48,26 +45,23 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "不限";
             }
-            else if (type == ELevelPeriodType.Once)
+            if (type == ELevelPeriodType.Once)
             {
                 return "一次";
             }
-            else if (type == ELevelPeriodType.Everyday)
+            if (type == ELevelPeriodType.Everyday)
             {
                 return "每天";
             }
-            else if (type == ELevelPeriodType.Hour)
+            if (type == ELevelPeriodType.Hour)
             {
                 return "间隔小时";
             }
-            else if (type == ELevelPeriodType.Minute)
+            if (type == ELevelPeriodType.Minute)
             {
                 return "间隔分钟";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static ELevelPeriodType GetEnumType(string typeStr)

@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (!IsPostBack)
             {
  
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdCard, "会员卡管理", AppManager.WeiXin.Permission.WebSite.Card);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdCard, "会员卡管理", AppManager.WeiXin.Permission.WebSite.Card);
                 SpContents.DataBind();
 
                 TbCardSn.Text = Request.QueryString["cardSN"];

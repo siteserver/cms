@@ -7,6 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.CMS.Wcm.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {

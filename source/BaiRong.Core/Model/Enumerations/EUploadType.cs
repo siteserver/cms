@@ -15,58 +15,52 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(EUploadType type)
 		{
-            if (type == EUploadType.Image)
+		    if (type == EUploadType.Image)
 			{
                 return "Image";
 			}
-            else if (type == EUploadType.Video)
-			{
-                return "Video";
-			}
-            else if (type == EUploadType.File)
-			{
-                return "File";
-            }
-            else if (type == EUploadType.Special)
-            {
-                return "Special";
-            }
-            else if (type == EUploadType.AdvImage)
-            {
-                return "AdvImage";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EUploadType.Video)
+		    {
+		        return "Video";
+		    }
+		    if (type == EUploadType.File)
+		    {
+		        return "File";
+		    }
+		    if (type == EUploadType.Special)
+		    {
+		        return "Special";
+		    }
+		    if (type == EUploadType.AdvImage)
+		    {
+		        return "AdvImage";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EUploadType type)
 		{
-            if (type == EUploadType.Image)
+		    if (type == EUploadType.Image)
 			{
 				return "图片";
 			}
-            else if (type == EUploadType.Video)
-			{
-				return "视频";
-			}
-            else if (type == EUploadType.File)
-			{
-				return "文件";
-            }
-            else if (type == EUploadType.Special)
-            {
-                return "专题";
-            }
-            else if (type == EUploadType.AdvImage)
-            {
-                return "广告";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EUploadType.Video)
+		    {
+		        return "视频";
+		    }
+		    if (type == EUploadType.File)
+		    {
+		        return "文件";
+		    }
+		    if (type == EUploadType.Special)
+		    {
+		        return "专题";
+		    }
+		    if (type == EUploadType.AdvImage)
+		    {
+		        return "广告";
+		    }
+		    throw new Exception();
 		}
 
 		public static EUploadType GetEnumType(string typeStr)

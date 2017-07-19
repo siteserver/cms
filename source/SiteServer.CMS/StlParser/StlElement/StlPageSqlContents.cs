@@ -17,6 +17,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public const string AttributePageNum = "pageNum";
 
+        private readonly string _stlPageSqlContentsElement;
         private readonly XmlNode _node;
         private readonly ListInfo _listInfo;
         private readonly PageInfo _pageInfo;
@@ -40,18 +41,19 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public StlPageSqlContents(string stlPageSqlContentsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent, bool isLoadData)
         {
+            _stlPageSqlContentsElement = stlPageSqlContentsElement;
             _pageInfo = pageInfo;
             _contextInfo = contextInfo;
             try
             {
-                var xmlDocument = StlParserUtility.GetXmlDocument(stlPageSqlContentsElement, isXmlContent);
+                var xmlDocument = StlParserUtility.GetXmlDocument(_stlPageSqlContentsElement, isXmlContent);
                 _node = xmlDocument.DocumentElement;
                 _node = _node?.FirstChild;
 
-                _listInfo = ListInfo.GetListInfoByXmlNode(_node, pageInfo, _contextInfo, EContextType.SqlContent);
+                _listInfo = ListInfo.GetListInfoByXmlNode(_node, _pageInfo, _contextInfo, EContextType.SqlContent);
                 if (isLoadData)
                 {
-                    _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString);
+                    _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _pageInfo.Guid);
                 }
             }
             catch
@@ -70,8 +72,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 _node = xmlDocument.DocumentElement;
                 _node = _node?.FirstChild;
 
-                _listInfo = ListInfo.GetListInfoByXmlNode(_node, pageInfo, _contextInfo, EContextType.SqlContent);
-                _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString);
+                _listInfo = ListInfo.GetListInfoByXmlNode(_node, _pageInfo, _contextInfo, EContextType.SqlContent);
+                _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _pageInfo.Guid);
             }
             catch
             {
@@ -81,7 +83,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public void LoadData()
         {
-            _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString);
+            _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _pageInfo.Guid);
         }
 
         public int GetPageCount(out int contentNum)
@@ -201,7 +203,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, _stlPageSqlContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

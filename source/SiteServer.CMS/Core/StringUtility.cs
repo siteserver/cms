@@ -95,7 +95,7 @@ namespace SiteServer.CMS.Core
         /// <returns></returns>
         public static string TextEditorContentDecode(string content, PublishmentSystemInfo publishmentSystemInfo, bool isFromBack)
         {
-            var publishmentSystemUrl = publishmentSystemInfo != null ? publishmentSystemInfo.PublishmentSystemUrl : WebConfigUtils.ApplicationPath;
+            var publishmentSystemUrl = publishmentSystemInfo != null ? publishmentSystemInfo.PublishmentSystemUrl : PageUtils.ApplicationPath;
             return TextEditorContentDecode(content, publishmentSystemUrl, publishmentSystemInfo?.Additional.EditorUploadFilePre, isFromBack);
         }
 

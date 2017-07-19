@@ -11,23 +11,23 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageChannel : BasePageCms
     {
-        public Repeater rptContents;
+        public Repeater RptContents;
 
-        public PlaceHolder PlaceHolder_AddChannel;
-        public Button AddChannel1;
-        public Button AddChannel2;
-        public PlaceHolder PlaceHolder_ChannelEdit;
-        public Button AddToGroup;
-        public Button SelectEditColumns;
-        public PlaceHolder PlaceHolder_Translate;
-        public Button Translate;
-        public PlaceHolder PlaceHolder_Import;
-        public Button Import;
-        public Button Export;
-        public PlaceHolder PlaceHolder_Delete;
-        public Button Delete;
-        public PlaceHolder PlaceHolder_Create;
-        public Button Create;
+        public PlaceHolder PhAddChannel;
+        public Button BtnAddChannel1;
+        public Button BtnAddChannel2;
+        public PlaceHolder PhChannelEdit;
+        public Button BtnAddToGroup;
+        public Button BtnSelectEditColumns;
+        public PlaceHolder PhTranslate;
+        public Button BtnTranslate;
+        public PlaceHolder PhImport;
+        public Button BtnImport;
+        public Button BtnExport;
+        public PlaceHolder PhDelete;
+        public Button BtnDelete;
+        public PlaceHolder PhCreate;
+        public Button BtnCreate;
 
         private int _currentNodeId;
 
@@ -93,63 +93,61 @@ namespace SiteServer.BackgroundPages.Cms
 
         private void ButtonPreLoad()
         {
-            var showPopWinString = string.Empty;
-
-            PlaceHolder_AddChannel.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Cms.Permission.Channel.ChannelAdd);
-            if (PlaceHolder_AddChannel.Visible)
+            PhAddChannel.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelAdd);
+            if (PhAddChannel.Visible)
             {
-                AddChannel1.Attributes.Add("onclick", ModalChannelAdd.GetOpenWindowString(PublishmentSystemId, PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)));
-                AddChannel2.Attributes.Add("onclick",
+                BtnAddChannel1.Attributes.Add("onclick", ModalChannelAdd.GetOpenWindowString(PublishmentSystemId, PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)));
+                BtnAddChannel2.Attributes.Add("onclick",
                     $"location.href='{PageChannelAdd.GetRedirectUrl(PublishmentSystemId, PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, 0))}';return false;");
             }
 
-            PlaceHolder_ChannelEdit.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Cms.Permission.Channel.ChannelEdit);
-            if (PlaceHolder_ChannelEdit.Visible)
+            PhChannelEdit.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelEdit);
+            if (PhChannelEdit.Visible)
             {
-                showPopWinString = ModalAddToGroup.GetOpenWindowStringToChannel(PublishmentSystemId);
-                AddToGroup.Attributes.Add("onclick", showPopWinString);
+                var showPopWinString = ModalAddToGroup.GetOpenWindowStringToChannel(PublishmentSystemId);
+                BtnAddToGroup.Attributes.Add("onclick", showPopWinString);
 
-                SelectEditColumns.Attributes.Add("onclick", ModalSelectColumns.GetOpenWindowStringToChannel(PublishmentSystemId, false));
+                BtnSelectEditColumns.Attributes.Add("onclick", ModalSelectColumns.GetOpenWindowStringToChannel(PublishmentSystemId, false));
             }
 
-            PlaceHolder_Translate.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Cms.Permission.Channel.ChannelTranslate);
-            if (PlaceHolder_Translate.Visible)
+            PhTranslate.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelTranslate);
+            if (PhTranslate.Visible)
             {
-                Translate.Attributes.Add("onclick",
+                BtnTranslate.Attributes.Add("onclick",
                     PageUtils.GetRedirectStringWithCheckBoxValue(
                         PageChannelTranslate.GetRedirectUrl(PublishmentSystemId,
                             GetRedirectUrl(PublishmentSystemId, _currentNodeId)), "ChannelIDCollection",
                         "ChannelIDCollection", "请选择需要转移的栏目！"));
             }
 
-            PlaceHolder_Delete.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Cms.Permission.Channel.ChannelDelete);
-            if (PlaceHolder_Delete.Visible)
+            PhDelete.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelDelete);
+            if (PhDelete.Visible)
             {
-                Delete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
+                BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
             }
 
-            PlaceHolder_Create.Visible = AdminUtility.HasWebsitePermissions(Body.AdministratorName, PublishmentSystemId, AppManager.Cms.Permission.WebSite.Create) 
- || HasChannelPermissionsIgnoreNodeId(AppManager.Cms.Permission.Channel.CreatePage);
-            if (PlaceHolder_Create.Visible)
+            PhCreate.Visible = AdminUtility.HasWebsitePermissions(Body.AdministratorName, PublishmentSystemId, AppManager.Permissions.WebSite.Create) 
+ || HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.CreatePage);
+            if (PhCreate.Visible)
             {
-                Create.Attributes.Add("onclick", ModalCreateChannels.GetOpenWindowString(PublishmentSystemId));
+                BtnCreate.Attributes.Add("onclick", ModalCreateChannels.GetOpenWindowString(PublishmentSystemId));
             }
 
-            PlaceHolder_Import.Visible = PlaceHolder_AddChannel.Visible;
-            if (PlaceHolder_Import.Visible)
+            PhImport.Visible = PhAddChannel.Visible;
+            if (PhImport.Visible)
             {
-                Import.Attributes.Add("onclick", ModalChannelImport.GetOpenWindowString(PublishmentSystemId, PublishmentSystemId));
+                BtnImport.Attributes.Add("onclick", ModalChannelImport.GetOpenWindowString(PublishmentSystemId, PublishmentSystemId));
             }
-            Export.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToChannel(PublishmentSystemId, "ChannelIDCollection", "请选择需要导出的栏目！"));
+            BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToChannel(PublishmentSystemId, "ChannelIDCollection", "请选择需要导出的栏目！"));
         }
 
         public void BindGrid()
         {
             try
             {
-                rptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
-                rptContents.ItemDataBound += rptContents_ItemDataBound;
-                rptContents.DataBind();
+                RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+                RptContents.ItemDataBound += RptContents_ItemDataBound;
+                RptContents.DataBind();
             }
             catch (Exception ex)
             {
@@ -157,17 +155,17 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-        void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            var nodeID = (int)e.Item.DataItem;
-            var enabled = (IsOwningNodeId(nodeID)) ? true : false;
+            var nodeId = (int)e.Item.DataItem;
+            var enabled = IsOwningNodeId(nodeId);
             if (!enabled)
             {
-                if (!IsHasChildOwningNodeId(nodeID)) e.Item.Visible = false;
+                if (!IsHasChildOwningNodeId(nodeId)) e.Item.Visible = false;
             }
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
+            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
 
-            var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
+            var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
             ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.Channel, null, Body.AdministratorName);
         }

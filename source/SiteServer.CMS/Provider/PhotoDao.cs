@@ -1,11 +1,10 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -33,13 +32,13 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, photoInfo.PublishmentSystemID),
-                GetParameter(ParmContentid, EDataType.Integer, photoInfo.ContentID),
-                GetParameter(ParmSmallUrl, EDataType.VarChar, 200, photoInfo.SmallUrl),
-                GetParameter(ParmMiddleUrl, EDataType.VarChar, 200, photoInfo.MiddleUrl),
-                GetParameter(ParmLargeUrl, EDataType.VarChar, 200, photoInfo.LargeUrl),
-                GetParameter(ParmTaxis, EDataType.Integer, photoInfo.Taxis),
-				GetParameter(ParmDescription, EDataType.NVarChar, 255, photoInfo.Description)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, photoInfo.PublishmentSystemID),
+                GetParameter(ParmContentid, DataType.Integer, photoInfo.ContentID),
+                GetParameter(ParmSmallUrl, DataType.VarChar, 200, photoInfo.SmallUrl),
+                GetParameter(ParmMiddleUrl, DataType.VarChar, 200, photoInfo.MiddleUrl),
+                GetParameter(ParmLargeUrl, DataType.VarChar, 200, photoInfo.LargeUrl),
+                GetParameter(ParmTaxis, DataType.Integer, photoInfo.Taxis),
+				GetParameter(ParmDescription, DataType.NVarChar, 255, photoInfo.Description)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -49,12 +48,12 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-                GetParameter(ParmSmallUrl, EDataType.VarChar, 200, photoInfo.SmallUrl),
-                GetParameter(ParmMiddleUrl, EDataType.VarChar, 200, photoInfo.MiddleUrl),
-                GetParameter(ParmLargeUrl, EDataType.VarChar, 200, photoInfo.LargeUrl),
-                GetParameter(ParmTaxis, EDataType.Integer, photoInfo.Taxis),
-				GetParameter(ParmDescription, EDataType.NVarChar, 255, photoInfo.Description),
-                GetParameter(ParmId, EDataType.Integer, photoInfo.ID),
+                GetParameter(ParmSmallUrl, DataType.VarChar, 200, photoInfo.SmallUrl),
+                GetParameter(ParmMiddleUrl, DataType.VarChar, 200, photoInfo.MiddleUrl),
+                GetParameter(ParmLargeUrl, DataType.VarChar, 200, photoInfo.LargeUrl),
+                GetParameter(ParmTaxis, DataType.Integer, photoInfo.Taxis),
+				GetParameter(ParmDescription, DataType.NVarChar, 255, photoInfo.Description),
+                GetParameter(ParmId, DataType.Integer, photoInfo.ID),
 			};
 
             ExecuteNonQuery(SqlUpdatePhotoContent, updateParms);
@@ -64,7 +63,7 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmId, EDataType.Integer, id)
+                GetParameter(ParmId, DataType.Integer, id)
 			};
 
             ExecuteNonQuery(SqlDeletePhotoContent, parms);
@@ -84,8 +83,8 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmContentid, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmContentid, DataType.Integer, contentId)
 			};
 
             ExecuteNonQuery(SqlDeletePhotoContents, parms);

@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings(AppManager.Settings.LeftMenu.Utility, "清空数据库日志", AppManager.Settings.Permission.SettingsUtility);
+                BreadCrumbSettings("清空数据库日志", AppManager.Permissions.Settings.Utility);
             }
         }
 

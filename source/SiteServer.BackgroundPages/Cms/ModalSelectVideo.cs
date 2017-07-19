@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public string PublishmentSystemUrl => PublishmentSystemInfo.PublishmentSystemUrl;
 
-	    public string RootUrl => WebConfigUtils.ApplicationPath;
+	    public string RootUrl => PageUtils.ApplicationPath;
 
 	    public static string GetOpenWindowString(PublishmentSystemInfo publishmentSystemInfo, string textBoxClientId)
         {

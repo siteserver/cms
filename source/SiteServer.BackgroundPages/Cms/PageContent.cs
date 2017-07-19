@@ -24,20 +24,19 @@ namespace SiteServer.BackgroundPages.Cms
         public SqlPager spContents;
         public Literal ltlColumnHeadRows;
         public Literal ltlCommandHeadRows;
-
         public Literal ltlContentButtons;
-
         public DateTimeTextBox DateFrom;
         public DropDownList SearchType;
         public TextBox Keyword;
 
-        private NodeInfo nodeInfo;
-        private ETableStyle tableStyle;
-        private string tableName;
-        private StringCollection attributesOfDisplay;
-        private List<int> relatedIdentities;
-        private List<TableStyleInfo> styleInfoList;
-        private readonly Hashtable valueHashtable = new Hashtable();
+        private NodeInfo _nodeInfo;
+        private ETableStyle _tableStyle;
+        private string _tableName;
+        private StringCollection _attributesOfDisplay;
+        private List<int> _relatedIdentities;
+        private List<TableStyleInfo> _styleInfoList;
+        private ContentModelInfo _modelInfo;
+        private readonly Hashtable _valueHashtable = new Hashtable();
 
         public static string GetRedirectUrl(int publishmentSystemId, int nodeId)
         {
@@ -55,22 +54,23 @@ namespace SiteServer.BackgroundPages.Cms
             var permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
 
             PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
-            var nodeID = Body.GetQueryInt("NodeID");
-            relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeID);
-            nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
-            tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
-            tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
-            styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
+            var nodeId = Body.GetQueryInt("NodeID");
+            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeId);
+            _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+            _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
+            _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
+            _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
+            _modelInfo = ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId);
 
-            if (nodeInfo.Additional.IsPreviewContents)
+            if (_nodeInfo.Additional.IsPreviewContents)
             {
                 new Action(() =>
                 {
-                    DataProvider.ContentDao.DeletePreviewContents(PublishmentSystemId, tableName, nodeInfo);
+                    DataProvider.ContentDao.DeletePreviewContents(PublishmentSystemId, _tableName, _nodeInfo);
                 }).BeginInvoke(null, null);
             }
 
-            if (!HasChannelPermissions(nodeID, AppManager.Cms.Permission.Channel.ContentView, AppManager.Cms.Permission.Channel.ContentAdd, AppManager.Cms.Permission.Channel.ContentEdit, AppManager.Cms.Permission.Channel.ContentDelete, AppManager.Cms.Permission.Channel.ContentTranslate))
+            if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentView, AppManager.Permissions.Channel.ContentAdd, AppManager.Permissions.Channel.ContentEdit, AppManager.Permissions.Channel.ContentDelete, AppManager.Permissions.Channel.ContentTranslate))
             {
                 if (!Body.IsAdministratorLoggin)
                 {
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, nodeID));
+            _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, nodeId));
 
             //this.attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(this.nodeInfo.Additional.ContentAttributesOfDisplay);
 
@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
             rptContents.ItemDataBound += rptContents_ItemDataBound;
             spContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
-            var administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdministratorName, PublishmentSystemId, nodeID)
+            var administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdministratorName, PublishmentSystemId, nodeId)
                     ? Body.AdministratorName
                     : string.Empty;
 
@@ -97,34 +97,35 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var owningNodeIdList = new List<int>
                 {
-                    nodeID
+                    nodeId
                 };
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableStyle, tableName, PublishmentSystemId, nodeID, permissions.IsSystemAdministrator, owningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), string.Empty, false, ETriState.All, false, false, false, administratorName);
+                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableStyle, _tableName, PublishmentSystemId, nodeId, permissions.IsSystemAdministrator, owningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), string.Empty, false, ETriState.All, false, false, false, administratorName);
             }
             else
             {
-                spContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectCommend(tableName, nodeID, ETriState.All, administratorName);
+                spContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectCommend(_tableName, nodeId, ETriState.All, administratorName);
             }
 
-            spContents.SortField = BaiRongDataProvider.ContentDao.GetSortFieldName();
-            spContents.SortMode = SortMode.DESC;
-            spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisType.OrderByTaxisDesc);
+            //spContents.SortField = BaiRongDataProvider.ContentDao.GetSortFieldName();
+            //spContents.SortMode = SortMode.DESC;
+            //spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisType.OrderByTaxisDesc);
+            spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisTypeUtils.GetEnumType(_nodeInfo.Additional.DefaultTaxisType));
 
             //分页的时候，不去查询总条数，直接使用栏目的属性：ContentNum
             spContents.IsQueryTotalCount = false;
-            spContents.TotalCount = nodeInfo.ContentNum;
+            spContents.TotalCount = _nodeInfo.ContentNum;
 
             if (!IsPostBack)
             {
-                var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeID);
-                BreadCrumbWithItemTitle(AppManager.Cms.LeftMenu.IdContent, "内容管理", nodeName, string.Empty);
+                var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId);
+                BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdContent, "内容管理", nodeName, string.Empty);
 
-                ltlContentButtons.Text = WebUtils.GetContentCommands(Body.AdministratorName, PublishmentSystemInfo, nodeInfo, PageUrl, GetRedirectUrl(PublishmentSystemId, nodeInfo.NodeId), false);
+                ltlContentButtons.Text = WebUtils.GetContentCommands(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, PageUrl, GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId), false);
                 spContents.DataBind();
 
-                if (styleInfoList != null)
+                if (_styleInfoList != null)
                 {
-                    foreach (var styleInfo in styleInfoList)
+                    foreach (var styleInfo in _styleInfoList)
                     {
                         if (styleInfo.IsVisible)
                         {
@@ -154,8 +155,8 @@ $(document).ready(function() {
 ";
                 }
 
-                ltlColumnHeadRows.Text = ContentUtility.GetColumnHeadRowsHtml(styleInfoList, attributesOfDisplay, tableStyle, PublishmentSystemInfo);
-                ltlCommandHeadRows.Text = ContentUtility.GetCommandHeadRowsHtml(Body.AdministratorName, tableStyle, PublishmentSystemInfo, nodeInfo);
+                ltlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_styleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
+                ltlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _modelInfo);
             }
         }
 
@@ -163,11 +164,11 @@ $(document).ready(function() {
         {
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
             {
-                var ltlItemTitle = e.Item.FindControl("ltlItemTitle") as Literal;
-                var ltlColumnItemRows = e.Item.FindControl("ltlColumnItemRows") as Literal;
-                var ltlItemStatus = e.Item.FindControl("ltlItemStatus") as Literal;
-                var ltlItemEditUrl = e.Item.FindControl("ltlItemEditUrl") as Literal;
-                var ltlCommandItemRows = e.Item.FindControl("ltlCommandItemRows") as Literal;
+                var ltlItemTitle = (Literal)e.Item.FindControl("ltlItemTitle");
+                var ltlColumnItemRows = (Literal)e.Item.FindControl("ltlColumnItemRows");
+                var ltlItemStatus = (Literal)e.Item.FindControl("ltlItemStatus");
+                var ltlItemEditUrl = (Literal)e.Item.FindControl("ltlItemEditUrl");
+                var ltlCommandItemRows = (Literal)e.Item.FindControl("ltlCommandItemRows");
 
                 var contentInfo = new ContentInfo(e.Item.DataItem);
 
@@ -179,15 +180,15 @@ $(document).ready(function() {
                     $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{showPopWinString}"">{LevelManager.GetCheckState(
                         PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Cms.Permission.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
                 {
                     ltlItemEditUrl.Text =
-                        $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, nodeInfo, contentInfo.Id, PageUrl)}\">编辑</a>";
+                        $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, _nodeInfo, contentInfo.Id, PageUrl)}\">编辑</a>";
                 }
 
-                ltlColumnItemRows.Text = TextUtility.GetColumnItemRowsHtml(styleInfoList, attributesOfDisplay, valueHashtable, tableStyle, PublishmentSystemInfo, contentInfo);
+                ltlColumnItemRows.Text = TextUtility.GetColumnItemRowsHtml(_styleInfoList, _attributesOfDisplay, _valueHashtable, _tableStyle, PublishmentSystemInfo, contentInfo);
 
-                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(tableStyle, PublishmentSystemInfo, nodeInfo, contentInfo, PageUrl, Body.AdministratorName);
+                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _modelInfo, contentInfo, PageUrl, Body.AdministratorName);
             }
         }
 
@@ -206,7 +207,7 @@ $(document).ready(function() {
                     _pageUrl = PageUtils.GetCmsUrl(nameof(PageContent), new NameValueCollection
                     {
                         {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"NodeID", nodeInfo.NodeId.ToString()},
+                        {"NodeID", _nodeInfo.NodeId.ToString()},
                         {"DateFrom", DateFrom.Text},
                         {"SearchType", SearchType.SelectedValue},
                         {"Keyword", Keyword.Text},

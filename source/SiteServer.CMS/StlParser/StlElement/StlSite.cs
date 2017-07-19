@@ -5,6 +5,7 @@ using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
@@ -69,7 +70,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			}
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
 			return parsedContent;
@@ -89,7 +90,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else
             {
-                var siteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
+                //var siteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
+                var siteId = PublishmentSystem.GetPublishmentSystemIdByIsHeadquarters(pageInfo.Guid);
                 if (siteId > 0)
                 {
                     publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);

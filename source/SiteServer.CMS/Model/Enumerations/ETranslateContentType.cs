@@ -15,50 +15,44 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ETranslateContentType type)
 		{
-            if (type == ETranslateContentType.Copy)
+		    if (type == ETranslateContentType.Copy)
 			{
                 return "Copy";
 			}
-            else if (type == ETranslateContentType.Cut)
-			{
-                return "Cut";
-			}
-            else if (type == ETranslateContentType.Reference)
-			{
-                return "Reference";
-			}
-            else if (type == ETranslateContentType.ReferenceContent)
-            {
-                return "ReferenceContent";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETranslateContentType.Cut)
+		    {
+		        return "Cut";
+		    }
+		    if (type == ETranslateContentType.Reference)
+		    {
+		        return "Reference";
+		    }
+		    if (type == ETranslateContentType.ReferenceContent)
+		    {
+		        return "ReferenceContent";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ETranslateContentType type)
 		{
-            if (type == ETranslateContentType.Copy)
+		    if (type == ETranslateContentType.Copy)
 			{
                 return "复制";
 			}
-            else if (type == ETranslateContentType.Cut)
-			{
-                return "剪切";
-			}
-            else if (type == ETranslateContentType.Reference)
-			{
-                return "引用地址";
-			}
-            else if (type == ETranslateContentType.ReferenceContent)
-            {
-                return "引用内容";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETranslateContentType.Cut)
+		    {
+		        return "剪切";
+		    }
+		    if (type == ETranslateContentType.Reference)
+		    {
+		        return "引用地址";
+		    }
+		    if (type == ETranslateContentType.ReferenceContent)
+		    {
+		        return "引用内容";
+		    }
+		    throw new Exception();
 		}
 
 		public static ETranslateContentType GetEnumType(string typeStr)

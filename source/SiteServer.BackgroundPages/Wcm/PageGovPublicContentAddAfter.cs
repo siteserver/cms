@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicContent, "后续操作", AppManager.Wcm.Permission.WebSite.GovPublicContent);
+                BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, "后续操作", AppManager.Wcm.Permission.WebSite.GovPublicContent);
 
                 Operation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
                 Operation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));

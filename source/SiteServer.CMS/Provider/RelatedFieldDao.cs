@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Data;
-using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -28,11 +27,11 @@ namespace SiteServer.CMS.Provider
 
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldName, EDataType.NVarChar, 50, relatedFieldInfo.RelatedFieldName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, relatedFieldInfo.PublishmentSystemID),
-                GetParameter(ParmTotalLevel, EDataType.Integer, relatedFieldInfo.TotalLevel),
-                GetParameter(ParmPrefixes, EDataType.NVarChar, 255, relatedFieldInfo.Prefixes),
-                GetParameter(ParmSuffixes, EDataType.NVarChar, 255, relatedFieldInfo.Suffixes),
+				GetParameter(ParmRelatedFieldName, DataType.NVarChar, 50, relatedFieldInfo.RelatedFieldName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, relatedFieldInfo.PublishmentSystemID),
+                GetParameter(ParmTotalLevel, DataType.Integer, relatedFieldInfo.TotalLevel),
+                GetParameter(ParmPrefixes, DataType.NVarChar, 255, relatedFieldInfo.Prefixes),
+                GetParameter(ParmSuffixes, DataType.NVarChar, 255, relatedFieldInfo.Suffixes),
 			};
 
             using (var conn = GetConnection())
@@ -60,11 +59,11 @@ namespace SiteServer.CMS.Provider
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldName, EDataType.NVarChar, 50, relatedFieldInfo.RelatedFieldName),
-                GetParameter(ParmTotalLevel, EDataType.Integer, relatedFieldInfo.TotalLevel),
-                GetParameter(ParmPrefixes, EDataType.NVarChar, 255, relatedFieldInfo.Prefixes),
-                GetParameter(ParmSuffixes, EDataType.NVarChar, 255, relatedFieldInfo.Suffixes),
-				GetParameter(ParmRelatedFieldId, EDataType.Integer, relatedFieldInfo.RelatedFieldID)
+				GetParameter(ParmRelatedFieldName, DataType.NVarChar, 50, relatedFieldInfo.RelatedFieldName),
+                GetParameter(ParmTotalLevel, DataType.Integer, relatedFieldInfo.TotalLevel),
+                GetParameter(ParmPrefixes, DataType.NVarChar, 255, relatedFieldInfo.Prefixes),
+                GetParameter(ParmSuffixes, DataType.NVarChar, 255, relatedFieldInfo.Suffixes),
+				GetParameter(ParmRelatedFieldId, DataType.Integer, relatedFieldInfo.RelatedFieldID)
 			};
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -74,7 +73,7 @@ namespace SiteServer.CMS.Provider
 		{
 			var relatedFieldInfoParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldId, EDataType.Integer, relatedFieldId)
+				GetParameter(ParmRelatedFieldId, DataType.Integer, relatedFieldId)
 			};
 
             ExecuteNonQuery(SqlDelete, relatedFieldInfoParms);
@@ -112,7 +111,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldName, EDataType.NVarChar, 255, relatedFieldName)			 
+				GetParameter(ParmRelatedFieldName, DataType.NVarChar, 255, relatedFieldName)			 
 			};
 
             using (var rdr = ExecuteReader(sqlString, selectParms))

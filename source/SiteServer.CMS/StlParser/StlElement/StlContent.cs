@@ -11,8 +11,10 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -190,7 +192,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -222,13 +224,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && contentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType) == ETranslateContentType.Reference.ToString())
                 {
                     var targetNodeId = contentInfo.SourceId;
-                    var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
+                    //var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
+                    var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId, pageInfo.Guid);
                     var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
                     var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
 
                     var tableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeInfo);
                     var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
-                    var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
+                    //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
+                    var targetContentInfo = Content.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId, pageInfo.Guid);
                     if (targetContentInfo != null && targetContentInfo.NodeId > 0)
                     {
                         //标题可以使用自己的
@@ -266,7 +270,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         wordNum = contextInfo.TitleWordNum;
                     }
                     parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.PublishmentSystemInfo, tableStyle, styleInfo, formatString, attributes, node.InnerXml, false);
-                    parsedContent = StringUtils.ParseString(EInputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                    parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(contentInfo.Attributes[BackgroundContentAttribute.TitleFormatString]))
                     {
@@ -677,7 +681,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
-                        var displayName = BaiRongDataProvider.AdministratorDao.GetDisplayName(contentInfo.AddUserName);
+                        //var displayName = BaiRongDataProvider.AdministratorDao.GetDisplayName(contentInfo.AddUserName);
+                        var displayName = Administrator.GetDisplayName(contentInfo.AddUserName, pageInfo.Guid);
                         parsedContent = string.IsNullOrEmpty(displayName) ? contentInfo.AddUserName : displayName;
                     }
                 }
@@ -698,19 +703,21 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.Reply))
                         {
-                            var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
+                            //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
+                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id, pageInfo.Guid);
                             if (replyInfo != null)
                             {
                                 parsedContent = replyInfo.Reply;
                                 if (!string.IsNullOrEmpty(parsedContent))
                                 {
-                                    parsedContent = StringUtils.ParseString(EInputType.TextEditor, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                                    parsedContent = StringUtils.ParseString(InputType.TextEditor, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                                 }
                             }
                         }
                         else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyDepartment))
                         {
-                            var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
+                            //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
+                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id, pageInfo.Guid);
                             if (replyInfo != null)
                             {
                                 parsedContent = DepartmentManager.GetDepartmentName(replyInfo.DepartmentID);
@@ -718,7 +725,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyUserName))
                         {
-                            var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
+                            //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
+                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id, pageInfo.Guid);
                             if (replyInfo != null)
                             {
                                 parsedContent = replyInfo.UserName;
@@ -726,7 +734,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyDate))
                         {
-                            var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
+                            //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
+                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id, pageInfo.Guid);
                             if (replyInfo != null)
                             {
                                 var addDate = replyInfo.AddDate;
@@ -735,7 +744,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyFileUrl))
                         {
-                            var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
+                            //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
+                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id, pageInfo.Guid);
                             if (replyInfo != null)
                             {
                                 parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, replyInfo.FileUrl);
@@ -758,7 +768,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var styleInfo = TableStyleManager.GetTableStyleInfo(tableStyle, tableName, type, relatedIdentities);
                             var num = TranslateUtils.ToInt(no);
                             parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.PublishmentSystemInfo, tableStyle, styleInfo, formatString, num, attributes, node.InnerXml, false);
-                            parsedContent = StringUtils.ParseString(EInputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else
                         {
@@ -776,20 +786,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
                     parsedContent = leftText + parsedContent + rightText;
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(type) && contextInfo.ItemContainer?.ContentItem != null)
-                {
-                    parsedContent = DataBinder.Eval(contextInfo.ItemContainer.ContentItem.DataItem, type, "{0}");
-
-                    parsedContent = StringUtils.ParseString(parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
-
-                    if (!string.IsNullOrEmpty(parsedContent))
-                    {
-                        parsedContent = leftText + parsedContent + rightText;
-                    }
                 }
             }
 

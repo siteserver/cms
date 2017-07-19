@@ -141,6 +141,8 @@
     <Compile Include="AuxiliaryTable\TableUtils.cs" />
     <Compile Include="AuxiliaryTable\TableStyleManager.cs" />
     <Compile Include="Collection\Pair.cs" />
+    <Compile Include="Model\Attributes\JobContentAttribute.cs" />
+    <Compile Include="Model\Enumerations\EDatabaseType.cs" />
     <Compile Include="RoleManager.cs" />
     <Compile Include="SiteFilesAssets.cs" />
     <Compile Include="SiteServerAssets.cs" />
@@ -250,7 +252,6 @@
     <Compile Include="Provider\ConfigDao.cs" />
     <Compile Include="Provider\ContentCheckDao.cs" />
     <Compile Include="Provider\ContentDao.cs" />
-    <Compile Include="Provider\ContentModelDao.cs" />
     <Compile Include="Provider\CountDao.cs" />
     <Compile Include="Provider\DatabaseDao.cs" />
     <Compile Include="Provider\DbCacheDao.cs" />
@@ -294,7 +295,6 @@
     <Compile Include="IO\Serialization\Serializer.cs" />
     <Compile Include="IO\Serialization\SerializerData.cs" />
     <Compile Include="IO\ZipUtils.cs" />
-    <Compile Include="Model\Attributes\JobContentAttribute.cs" />
     <Compile Include="Model\Attributes\ContentAttribute.cs" />
     <Compile Include="Model\Attributes\ResumeContentAttribute.cs" />
     <Compile Include="Model\ConfigInfo.cs" />
@@ -302,7 +302,6 @@
     <Compile Include="Model\LogInfo.cs" />
     <Compile Include="Model\ContentCheckInfo.cs" />
     <Compile Include="Model\ContentInfo.cs" />
-    <Compile Include="Model\Enumerations\EContentModelType.cs" />
     <Compile Include="Model\Enumerations\EDiggType.cs" />
     <Compile Include="Model\Enumerations\EMonth.cs" />
     <Compile Include="Model\Enumerations\EScopeType.cs" />
@@ -314,7 +313,6 @@
     <Compile Include="Model\DepartmentInfo.cs" />
     <Compile Include="Model\TagInfo.cs" />
     <Compile Include="Model\AuxiliaryTableInfo.cs" />
-    <Compile Include="Model\ContentModelInfo.cs" />
     <Compile Include="Model\TableColumnInfo.cs" />
     <Compile Include="Model\Enumerations\ECountType.cs" />
     <Compile Include="Model\Enumerations\EPhotoListType.cs" />
@@ -847,23 +845,20 @@
     <Compile Include="ThirdParty\LitJson\Lexer.cs" />
     <Compile Include="ThirdParty\LitJson\ParserToken.cs" />
     <Compile Include="WebConfigUtils.cs" />
-    <Compile Include="FileConfigManager.cs" />
-    <Compile Include="ContentModelUtils.cs" />
     <Compile Include="ConvertHelper.cs" />
     <Compile Include="DateUtils.cs" />
     <Compile Include="Model\Copyable.cs" />
     <Compile Include="Model\Enumerations\EAuxiliaryTableType.cs" />
     <Compile Include="Model\Enumerations\EBoolean.cs" />
     <Compile Include="Model\Enumerations\ECharset.cs" />
-    <Compile Include="Model\Enumerations\EDataType.cs" />
+    <Compile Include="DataTypeUtils.cs" />
     <Compile Include="Model\Enumerations\EDateFormatType.cs" />
     <Compile Include="Model\Enumerations\EFileSystemType.cs" />
     <Compile Include="Model\Enumerations\EImageSizeType.cs" />
     <Compile Include="Model\Enumerations\EImageType.cs" />
-    <Compile Include="Model\Enumerations\EInputType.cs" />
+    <Compile Include="InputTypeUtils.cs" />
     <Compile Include="Model\Enumerations\EInputValidateType.cs" />
     <Compile Include="Model\Enumerations\EPasswordFormat.cs" />
-    <Compile Include="Model\Enumerations\ERestrictionType.cs" />
     <Compile Include="Model\Enumerations\ETimeFormatType.cs" />
     <Compile Include="Model\Enumerations\ETriState.cs" />
     <Compile Include="Model\Enumerations\EVoteItemType.cs" />
@@ -878,8 +873,6 @@
     <Compile Include="Tabs\TabCollection.cs" />
     <Compile Include="Model\LowerNameValueCollection.cs" />
     <Compile Include="Data\SqlBase.cs" />
-    <Compile Include="RestrictionManager.cs" />
-    <Compile Include="Tabs\TabManager.cs" />
     <Compile Include="TagUtils.cs" />
     <Compile Include="ThirdParty\Sgml\SgmlParser.cs" />
     <Compile Include="ThirdParty\Sgml\SgmlReader.cs" />
@@ -893,7 +886,6 @@
     <Compile Include="CountManager.cs" />
     <Compile Include="DbCacheManager.cs" />
     <Compile Include="Net\SmtpMail\MailUtils.cs" />
-    <Compile Include="IPList.cs" />
     <Compile Include="MessageUtils.cs" />
     <Compile Include="PageUtils.cs" />
     <Compile Include="RegexUtils.cs" />
@@ -951,9 +943,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ref\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -996,7 +987,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{8451ecdd-2ea4-4966-bb0a-7bbc40138e80}</Project>
+      <Name>SiteServer.Plugin</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

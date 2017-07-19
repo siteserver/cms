@@ -26,54 +26,51 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "ContentTree";
             }
-            else if (type == ELoadingType.Channel)
+            if (type == ELoadingType.Channel)
             {
                 return "Channel";
             }
-            else if (type == ELoadingType.ChannelSelect)
+            if (type == ELoadingType.ChannelSelect)
             {
                 return "ChannelSelect";
             }
-            else if (type == ELoadingType.SiteAnalysis)
+            if (type == ELoadingType.SiteAnalysis)
             {
                 return "SiteAnalysis";
             }
-            else if (type == ELoadingType.TemplateFilePathRule)
+            if (type == ELoadingType.TemplateFilePathRule)
             {
                 return "TemplateFilePathRule";
             }
-            else if (type == ELoadingType.ConfigurationCreateDetails)
+            if (type == ELoadingType.ConfigurationCreateDetails)
             {
                 return "ConfigurationCreateDetails";
             }
-            else if (type == ELoadingType.ConfigurationCrossSiteTrans)
+            if (type == ELoadingType.ConfigurationCrossSiteTrans)
             {
                 return "ConfigurationCrossSiteTrans";
             }
-            else if (type == ELoadingType.ConfigurationSignin)
+            if (type == ELoadingType.ConfigurationSignin)
             {
                 return "ConfigurationSignin";
             }
-            else if (type == ELoadingType.GovPublicChannelAdd)
+            if (type == ELoadingType.GovPublicChannelAdd)
             {
                 return "GovPublicChannelAdd";
             }
-            else if (type == ELoadingType.GovPublicChannelTree)
+            if (type == ELoadingType.GovPublicChannelTree)
             {
                 return "GovPublicChannelTree";
             }
-            else if (type == ELoadingType.GovPublicChannel)
+            if (type == ELoadingType.GovPublicChannel)
             {
                 return "GovPublicChannel";
             }
-            else if (type == ELoadingType.GovInteractChannel)
+            if (type == ELoadingType.GovInteractChannel)
             {
                 return "GovInteractChannel";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static ELoadingType GetEnumType(string typeStr)

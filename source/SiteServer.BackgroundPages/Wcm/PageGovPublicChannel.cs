@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
             if (IsPostBack) return;
 
-            BreadCrumbWithItemTitle(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicContentConfiguration, "分类法管理", "主题分类", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
+            BreadCrumbWithTitle(AppManager.Wcm.LeftMenu.IdGovPublic, "分类法管理", "主题分类", AppManager.Wcm.Permission.WebSite.GovPublicContentConfiguration);
 
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.GovPublicChannel, null));
 

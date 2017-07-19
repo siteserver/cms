@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdCoupon, "优惠劵管理", AppManager.WeiXin.Permission.WebSite.Coupon);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdCoupon, "优惠劵管理", AppManager.WeiXin.Permission.WebSite.Coupon);
 
                 SpContents.DataBind();
 

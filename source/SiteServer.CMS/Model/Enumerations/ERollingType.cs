@@ -17,42 +17,36 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ERollingType type)
 		{
-			if (type == ERollingType.Static)
+		    if (type == ERollingType.Static)
 			{
 				return "Static";
 			}
-			else if (type == ERollingType.FollowingScreen)
-			{
-				return "FollowingScreen";
-			}
-			else if (type == ERollingType.FloatingInWindow)
-			{
-				return "FloatingInWindow";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ERollingType.FollowingScreen)
+		    {
+		        return "FollowingScreen";
+		    }
+		    if (type == ERollingType.FloatingInWindow)
+		    {
+		        return "FloatingInWindow";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ERollingType type)
 		{
-			if (type == ERollingType.Static)
+		    if (type == ERollingType.Static)
 			{
 				return "静止不动";
 			}
-			else if (type == ERollingType.FollowingScreen)
-			{
-				return "跟随窗体滚动";
-			}
-			else if (type == ERollingType.FloatingInWindow)
-			{
-				return "在窗体中不断移动";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ERollingType.FollowingScreen)
+		    {
+		        return "跟随窗体滚动";
+		    }
+		    if (type == ERollingType.FloatingInWindow)
+		    {
+		        return "在窗体中不断移动";
+		    }
+		    throw new Exception();
 		}
 
 		public static ERollingType GetEnumType(string typeStr)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using BaiRong.Core.Model.Enumerations;
 
@@ -143,18 +144,18 @@ namespace BaiRong.Core
 		public static bool CopyFile(string sourceFilePath, string destFilePath, bool isOverride)
 		{
             var retval = true;
-            try
-            {
-              DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
-                
-                File.Copy(sourceFilePath, destFilePath, isOverride);
+		    try
+		    {
+		        DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
 
-            }
-            catch
-            {
-                retval = false;
-            }
-            return retval;
+		        File.Copy(sourceFilePath, destFilePath, isOverride);
+
+		    }
+		    catch
+		    {
+		        retval = false;
+		    }
+		    return retval;
 		}
 
         //public static bool MoveFile(string sourceFilePath, string destFilePath)
@@ -194,6 +195,17 @@ namespace BaiRong.Core
         {
             var encoding = EncodingType.GetType(filePath);
             return ECharsetUtils.GetEnumType(encoding.BodyName);
+        }
+
+	    public static string ComputeHash(string filePath)
+	    {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(filePath))
+                {
+                    return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "‌​").ToLower();
+                }
+            }
         }
 
         public class EncodingType

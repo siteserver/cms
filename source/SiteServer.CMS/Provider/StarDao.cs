@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -24,13 +24,13 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmChannelId, EDataType.Integer, channelId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId),
-				GetParameter(ParmUserName, EDataType.NVarChar, 255, userName),
-				GetParameter(ParmPoint, EDataType.Integer, point),
-                GetParameter(ParmMessage, EDataType.NVarChar, 255, message),
-                GetParameter(ParmAdddate, EDataType.DateTime, addDate)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmChannelId, DataType.Integer, channelId),
+                GetParameter(ParmContentId, DataType.Integer, contentId),
+				GetParameter(ParmUserName, DataType.NVarChar, 255, userName),
+				GetParameter(ParmPoint, DataType.Integer, point),
+                GetParameter(ParmMessage, DataType.NVarChar, 255, message),
+                GetParameter(ParmAdddate, DataType.DateTime, addDate)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -43,8 +43,8 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectStar, parms))
@@ -59,9 +59,9 @@ namespace SiteServer.CMS.Provider
             return new[] { totalCount, totalPoint };
         }
 
-        public ArrayList GetContentIdArrayListByPoint(int publishmentSystemId)
+        public List<int> GetContentIdListByPoint(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<int>();
 
             string sqlString = $@"
 SELECT ContentID, (SUM(Point) * 100)/Count(*) AS Num
@@ -75,12 +75,12 @@ ORDER BY Num DESC";
                 while (rdr.Read())
                 {
                     var relatedIdentity = GetInt(rdr, 0);
-                    arraylist.Add(relatedIdentity);
+                    list.Add(relatedIdentity);
                 }
                 rdr.Close();
             }
 
-            return arraylist;
+            return list;
         }
 	}
 }

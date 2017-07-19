@@ -21,18 +21,18 @@ namespace SiteServer.CMS.Core.User
             var checkedLevel = 0;
             if (publishmentSystemInfo.IsCheckContentUseLevel == false)
             {
-                if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Cms.Permission.Channel.ContentCheck))
+                if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentCheck))
                 {
                     isChecked = true;
                 }
             }
             else
             {
-                if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Cms.Permission.Channel.ContentCheckLevel5))
+                if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentCheckLevel5))
                 {
                     isChecked = true;
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Cms.Permission.Channel.ContentCheckLevel4))
+                else if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentCheckLevel4))
                 {
                     if (publishmentSystemInfo.CheckContentLevel <= 4)
                     {
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.Core.User
                         checkedLevel = 4;
                     }
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Cms.Permission.Channel.ContentCheckLevel3))
+                else if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentCheckLevel3))
                 {
                     if (publishmentSystemInfo.CheckContentLevel <= 3)
                     {
@@ -54,7 +54,7 @@ namespace SiteServer.CMS.Core.User
                         checkedLevel = 3;
                     }
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Cms.Permission.Channel.ContentCheckLevel2))
+                else if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentCheckLevel2))
                 {
                     if (publishmentSystemInfo.CheckContentLevel <= 2)
                     {
@@ -65,7 +65,7 @@ namespace SiteServer.CMS.Core.User
                         checkedLevel = 2;
                     }
                 }
-                else if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Cms.Permission.Channel.ContentCheckLevel1))
+                else if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentCheckLevel1))
                 {
                     if (publishmentSystemInfo.CheckContentLevel <= 1)
                     {

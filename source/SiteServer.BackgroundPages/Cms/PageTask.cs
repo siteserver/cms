@@ -69,11 +69,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (PublishmentSystemId > 0)
                 {
-                    BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationTask, taskName + "任务", AppManager.Cms.Permission.WebSite.Configration);
+                    BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, taskName + "任务", AppManager.Permissions.WebSite.Configration);
                 }
                 else
                 {
-                    BreadCrumbService(AppManager.Service.LeftMenu.Task, taskName + "任务", AppManager.Service.Permission.ServiceTask);
+                    BreadCrumbSettings(taskName + "任务", AppManager.Permissions.Settings.Service);
                 }
 
                 AddTask.Text = $"添加{taskName}任务";

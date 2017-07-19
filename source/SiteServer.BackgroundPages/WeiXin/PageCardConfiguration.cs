@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             {
                
-                BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdCard, "会员卡设置", AppManager.WeiXin.Permission.WebSite.Card);
+                BreadCrumb(AppManager.WeiXin.LeftMenu.Function.IdCard, "会员卡设置", AppManager.WeiXin.Permission.WebSite.Card);
                 EBooleanUtils.AddListItems(IsClaimCardCredits, "是", "否");
                 ControlUtils.SelectListItemsIgnoreCase(IsClaimCardCredits, PublishmentSystemInfo.Additional.WxCardIsClaimCardCredits.ToString());
                 TbClaimCardCredits.Text = PublishmentSystemInfo.Additional.WxCardClaimCardCredits.ToString();

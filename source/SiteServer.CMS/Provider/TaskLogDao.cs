@@ -5,6 +5,7 @@ using BaiRong.Core;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -25,10 +26,10 @@ namespace SiteServer.CMS.Provider
                 
                 var parms = new IDataParameter[]
 			    {
-                    GetParameter(ParmTaskId, EDataType.Integer, log.TaskID),
-                    GetParameter(ParmIsSuccess, EDataType.VarChar, 18, log.IsSuccess.ToString()),
-                    GetParameter(ParmErrorMessage, EDataType.NVarChar, 255, log.ErrorMessage),
-				    GetParameter(ParmAddDate, EDataType.DateTime, log.AddDate)
+                    GetParameter(ParmTaskId, DataType.Integer, log.TaskID),
+                    GetParameter(ParmIsSuccess, DataType.VarChar, 18, log.IsSuccess.ToString()),
+                    GetParameter(ParmErrorMessage, DataType.NVarChar, 255, log.ErrorMessage),
+				    GetParameter(ParmAddDate, DataType.DateTime, log.AddDate)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);
