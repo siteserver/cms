@@ -13,7 +13,7 @@
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />
 
-  <asp:dataGrid id="dgContents" showHeader="true" AutoGenerateColumns="false" DataKeyField="TableENName" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
+  <asp:dataGrid id="DgContents" showHeader="true" AutoGenerateColumns="false" DataKeyField="TableENName" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
     <PagerStyle Mode="NumericPages" PageButtonCount="10" HorizontalAlign="Right" />
       <Columns>
       <asp:TemplateColumn HeaderText="辅助表标识">
@@ -40,7 +40,7 @@
       </asp:TemplateColumn>
       <asp:TemplateColumn
         HeaderText="创建后修改">
-        <ItemTemplate> <span style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>"> <%# GetIsChangedAfterCreatedInDB(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%></span> </ItemTemplate>
+        <ItemTemplate> <span style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>"> <%# GetIsChangedAfterCreatedInDb(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%></span> </ItemTemplate>
         <ItemStyle Width="80" cssClass="center" />
       </asp:TemplateColumn>
       <asp:TemplateColumn>
@@ -61,6 +61,10 @@
       </asp:TemplateColumn>
     </Columns>
   </asp:dataGrid>
+
+  <ul class="breadcrumb breadcrumb-button">
+    <asp:Button class="btn btn-success" id="BtnAdd" Text="新增辅助表" runat="server" />
+  </ul>
 
 </form>
 </body>

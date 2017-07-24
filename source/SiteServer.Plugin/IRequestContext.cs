@@ -17,6 +17,12 @@ namespace SiteServer.Plugin
 
         int SiteId { get; }
 
+        int ChannelId { get; }
+
+        int ContentId { get; }
+
+        string ReturnUrl { get; }
+
         HttpRequest Request { get; }
 
         string GetQueryString(string name);

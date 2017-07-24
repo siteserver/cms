@@ -49,16 +49,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataType.cs" />
+    <Compile Include="Hooks\ITable.cs" />
     <Compile Include="Hooks\IPageAdmin.cs" />
-    <Compile Include="Hooks\IContentTable.cs" />
+    <Compile Include="IPlugin.cs" />
     <Compile Include="InputType.cs" />
-    <Compile Include="Hooks\IHooks.cs" />
     <Compile Include="Hooks\IMenu.cs" />
-    <Compile Include="Hooks\IContentExtra.cs" />
+    <Compile Include="Hooks\IContentModel.cs" />
     <Compile Include="Hooks\IFileSystemWatcher.cs" />
     <Compile Include="Hooks\IRestful.cs" />
     <Compile Include="IDbHelper.cs" />
-    <Compile Include="IPlugin.cs" />
+    <Compile Include="PluginBase.cs" />
     <Compile Include="IRequestContext.cs" />
     <Compile Include="IPublicApi.cs" />
     <Compile Include="PluginEnvironment.cs" />

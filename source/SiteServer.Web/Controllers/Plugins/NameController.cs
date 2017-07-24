@@ -24,7 +24,7 @@ namespace SiteServer.API.Controllers.Plugins
 
                 var body = new RequestBody();
 
-                return Ok(restful.Get(body, name, 0));
+                return Ok(restful.Get(body, name));
             }
             catch (Exception ex)
             {
@@ -46,7 +46,7 @@ namespace SiteServer.API.Controllers.Plugins
 
                 var body = new RequestBody();
 
-                return Ok(restful.Post(body, name, 0));
+                return Ok(restful.Post(body, name));
             }
             catch (Exception ex)
             {
@@ -68,7 +68,7 @@ namespace SiteServer.API.Controllers.Plugins
 
                 var body = new RequestBody();
 
-                return Ok(restful.Put(body, name, 0));
+                return Ok(restful.Put(body, name));
             }
             catch (Exception ex)
             {
@@ -90,7 +90,7 @@ namespace SiteServer.API.Controllers.Plugins
 
                 var body = new RequestBody();
 
-                return Ok(restful.Delete(body, name, 0));
+                return Ok(restful.Delete(body, name));
             }
             catch (Exception ex)
             {
@@ -112,7 +112,7 @@ namespace SiteServer.API.Controllers.Plugins
 
                 var body = new RequestBody();
 
-                return Ok(restful.Patch(body, name, 0));
+                return Ok(restful.Patch(body, name));
             }
             catch (Exception ex)
             {

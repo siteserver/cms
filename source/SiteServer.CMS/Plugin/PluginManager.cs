@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BaiRong.Core;
+using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.IO;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
@@ -105,26 +106,54 @@ namespace SiteServer.CMS.Plugin
             var context = new PluginContext(Environment, metadata, new PublicApiInstance(metadata));
             plugin.Active(context);
 
-            var contentTable = plugin as IContentTable;
-            if (contentTable != null)
+            var contentTable = plugin as IContentModel;
+            if (!string.IsNullOrEmpty(contentTable?.CustomContentTableName) && contentTable.CustomContentTableColumns != null)
             {
-                if (!BaiRongDataProvider.TableCollectionDao.IsTableExists(metadata.Id))
+                var tableName = contentTable.CustomContentTableName;
+                if (!BaiRongDataProvider.DatabaseDao.IsTableExists(tableName))
                 {
-                    var tableName = metadata.Id;
                     var tableInfo = new AuxiliaryTableInfo(tableName, $"插件内容表：{metadata.DisplayName}", 0,
-                        EAuxiliaryTableType.Custom, false, false, true, string.Empty);
+                        EAuxiliaryTableType.Custom, false, false, false, string.Empty);
                     BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                    foreach (var tableColumn in contentTable.ContentTableColumns)
+
+                    foreach (var tableColumn in contentTable.CustomContentTableColumns)
                     {
+                        if (string.IsNullOrEmpty(tableColumn.AttributeName)) continue;
+
                         var tableMetadataInfo = new TableMetadataInfo(0, tableName, tableColumn.AttributeName,
                             tableColumn.DataType, tableColumn.DataLength, 0, true);
                         BaiRongDataProvider.TableMetadataDao.Insert(tableMetadataInfo);
+
+                        var tableStyleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.BackgroundContent, tableName,
+                            tableColumn.AttributeName, new List<int> { 0 });
+                        tableStyleInfo.DisplayName = tableColumn.DisplayName;
+                        tableStyleInfo.InputType = InputTypeUtils.GetValue(tableColumn.InputType);
+                        tableStyleInfo.DefaultValue = tableColumn.DefaultValue;
+                        tableStyleInfo.Additional.IsValidate = true;
+                        tableStyleInfo.Additional.IsRequired = tableColumn.IsRequired;
+                        tableStyleInfo.Additional.MinNum = tableColumn.MinNum;
+                        tableStyleInfo.Additional.MaxNum = tableColumn.MaxNum;
+                        tableStyleInfo.Additional.RegExp = tableColumn.RegExp;
+                        tableStyleInfo.Additional.Width = tableColumn.Width;
+                        TableStyleManager.Insert(tableStyleInfo, ETableStyle.BackgroundContent);
                     }
+
                     BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableName);
                 }
-                else
+            }
+
+            var table = plugin as ITable;
+            if (table?.Tables != null)
+            {
+                foreach (var tableName in table.Tables.Keys)
                 {
-                    
+                    if (BaiRongDataProvider.DatabaseDao.IsTableExists(tableName)) continue;
+
+                    var tableColumns = table.Tables[tableName];
+                    if (tableColumns != null && tableColumns.Count > 0)
+                    {
+                        BaiRongDataProvider.DatabaseDao.CreatePluginTable(tableName, tableColumns);
+                    }
                 }
             }
 
@@ -243,12 +272,20 @@ namespace SiteServer.CMS.Plugin
             return AllPlugins.IsExists(pluginId);
         }
 
-        public static T GetHook<T>(string pluginId) where T : IHooks
+        public static T GetHook<T>(string pluginId) where T : IPlugin
         {
-            return AllPlugins.GetHook<T>(pluginId);
+            try
+            {
+                return AllPlugins.GetHook<T>(pluginId);
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex, "插件:GetHook");
+                return default(T);
+            }
         }
 
-        public static List<T> GetHooks<T>() where T : IHooks
+        public static List<T> GetHooks<T>() where T : IPlugin
         {
             return AllPlugins.GetHooks<T>();
         }
@@ -345,16 +382,17 @@ namespace SiteServer.CMS.Plugin
 
             contentModels = new List<ContentModelInfo>();
 
-            var pairs = AllPlugins.GetEnabledPluginPairs<IContentExtra, IContentTable>();
+            var pairs = AllPlugins.GetEnabledPluginPairs<IContentModel>();
             foreach (var pluginPair in pairs)
             {
-                var extra = pluginPair.Plugin as IContentExtra;
-                var table = pluginPair.Plugin as IContentTable;
+                var model = pluginPair.Plugin as IContentModel;
+
+                if (model == null) continue;
 
                 var links = new List<PluginContentLink>();
-                if (extra?.ContentLinks != null)
+                if (model.ContentLinks != null)
                 {
-                    links.AddRange(extra.ContentLinks.Select(link => new PluginContentLink
+                    links.AddRange(model.ContentLinks.Select(link => new PluginContentLink
                     {
                         Text = link.Text,
                         Href = PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, link.Href),
@@ -363,7 +401,7 @@ namespace SiteServer.CMS.Plugin
                 }
                 var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
                 var tableType = EAuxiliaryTableType.BackgroundContent;
-                if (table != null)
+                if (model.IsCustomContentTable && model.CustomContentTableColumns != null && model.CustomContentTableColumns.Count > 0)
                 {
                     tableName = pluginPair.Metadata.Id;
                     tableType = EAuxiliaryTableType.Custom;

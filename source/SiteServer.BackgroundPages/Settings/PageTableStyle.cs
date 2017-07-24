@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings($"虚拟字段管理（{_tableName}）", AppManager.Permissions.Settings.Auxiliary);
+            BreadCrumbSettings($"虚拟字段管理（{_tableName}）", AppManager.Permissions.Settings.SiteManagement);
 
             //删除样式
             if (Body.IsQueryExists("DeleteStyle"))

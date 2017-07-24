@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Hooks;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -81,7 +80,7 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static List<PluginPair> GetEnabledPluginPairs<T>() where T : IHooks
+        public static List<PluginPair> GetEnabledPluginPairs<T>() where T : IPlugin
         {
             lock (AllPluginsLock)
             {
@@ -105,7 +104,7 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static T GetHook<T>(string pluginId) where T : IHooks
+        public static T GetHook<T>(string pluginId) where T : IPlugin
         {
             lock (AllPluginsLock)
             {
@@ -116,7 +115,7 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static List<T> GetHooks<T>() where T : IHooks
+        public static List<T> GetHooks<T>() where T : IPlugin
         {
             lock (AllPluginsLock)
             {

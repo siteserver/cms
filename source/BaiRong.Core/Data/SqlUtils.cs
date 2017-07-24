@@ -251,38 +251,40 @@ namespace BaiRong.Core.Data
         public static string GetMySqlColumnSqlString(DataType dataType, string attributeName, int length)
         {
             string retval;
-            var sqlDbType = DataTypeUtils.ToSqlDbType(dataType);
-            switch (sqlDbType)
+            switch (dataType)
             {
-                case SqlDbType.Char:
+                case DataType.Char:
                     retval = $"{attributeName} VARCHAR({length})";
                     break;
-                case SqlDbType.DateTime:
+                case DataType.DateTime:
                     retval = $"{attributeName} DATETIME";
                     break;
-                case SqlDbType.Decimal:
+                case DataType.Decimal:
                     retval = $"{attributeName} DECIMAL(18, 2)";
                     break;
-                case SqlDbType.Float:
+                case DataType.Float:
                     retval = $"{attributeName} FLOAT(18, 2)";
                     break;
-                case SqlDbType.Int:
+                case DataType.Integer:
                     retval = $"{attributeName} INT";
                     break;
-                case SqlDbType.NChar:
+                case DataType.NChar:
                     retval = $"{attributeName} VARCHAR({length})";
                     break;
-                case SqlDbType.NText:
+                case DataType.NText:
                     retval = $"{attributeName} LONGTEXT";
                     break;
-                case SqlDbType.NVarChar:
+                case DataType.NVarChar:
                     retval = $"{attributeName} VARCHAR({length})";
                     break;
-                case SqlDbType.Text:
+                case DataType.Text:
                     retval = $"{attributeName} LONGTEXT";
                     break;
-                case SqlDbType.VarChar:
+                case DataType.VarChar:
                     retval = $"{attributeName} VARCHAR({length})";
+                    break;
+                case DataType.Bit:
+                    retval = $"{attributeName} TINYINT(1)";
                     break;
                 default:
                     retval = $"{attributeName} VARCHAR({length})";

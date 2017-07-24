@@ -10,6 +10,7 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using MySql.Data.MySqlClient;
+using SiteServer.Plugin;
 
 namespace BaiRong.Core.Provider
 {
@@ -612,6 +613,77 @@ SELECT * FROM (
             {
                 errorMessage = e.Message;
                 return false;
+            }
+        }
+
+        public bool IsTableExists(string tableName)
+        {
+            bool exists;
+
+            try
+            {
+                // ANSI SQL way.  Works in PostgreSQL, MSSQL, MySQL.  
+                exists = (int)ExecuteScalar($"select case when exists((select * from information_schema.tables where table_name = '{tableName}')) then 1 else 0 end") == 1;
+            }
+            catch
+            {
+                try
+                {
+                    // Other RDBMS.  Graceful degradation
+                    exists = true;
+                    ExecuteNonQuery($"select 1 from {tableName} where 1 = 0");
+                }
+                catch
+                {
+                    exists = false;
+                }
+            }
+
+            return exists;
+        }
+
+        public void CreatePluginTable(string tableName, List<PluginTableColumn> tableColumns)
+        {
+            var sqlBuilder = new StringBuilder();
+
+            try
+            {
+                sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
+
+                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+                {
+                    sqlBuilder.Append(@"Id INT AUTO_INCREMENT,").AppendLine();
+                }
+                else
+                {
+                    sqlBuilder.Append(@"Id int IDENTITY (1, 1),").AppendLine();
+                }
+
+                foreach (var tableColumn in tableColumns)
+                {
+                    if (string.IsNullOrEmpty(tableColumn.AttributeName) ||
+                        StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, "Id")) continue;
+
+                    var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName,
+                        tableColumn.DataLength);
+                    if (!string.IsNullOrEmpty(columnSql))
+                    {
+                        sqlBuilder.Append(columnSql).Append(",").AppendLine();
+                    }
+                }
+
+                //添加主键及索引
+                sqlBuilder.Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                    ? @"PRIMARY KEY (Id)"
+                    : $@"CONSTRAINT PK_{tableName} PRIMARY KEY (Id)").AppendLine();
+
+                sqlBuilder.Append(")");
+
+                ExecuteNonQuery(sqlBuilder.ToString());
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex, sqlBuilder.ToString());
             }
         }
     }

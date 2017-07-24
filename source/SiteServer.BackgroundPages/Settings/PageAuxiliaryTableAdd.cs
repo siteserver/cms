@@ -15,6 +15,11 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox Description;
         public RadioButtonList AuxiliaryTableType;
 
+        public static string GetRedirectUrl()
+        {
+            return PageUtils.GetSettingsUrl(nameof(PageAuxiliaryTableAdd), null);
+        }
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
@@ -24,7 +29,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (!IsPostBack)
             {
                 var pageTitle = !string.IsNullOrEmpty(enName) ? "编辑辅助表" : "添加辅助表";
-                BreadCrumbSettings(pageTitle, AppManager.Permissions.Settings.Auxiliary);
+                BreadCrumbSettings(pageTitle, AppManager.Permissions.Settings.SiteManagement);
 
                 ltlPageTitle.Text = pageTitle;
 

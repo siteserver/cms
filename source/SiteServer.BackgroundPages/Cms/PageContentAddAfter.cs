@@ -5,7 +5,6 @@ using BaiRong.Core;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -56,51 +55,17 @@ namespace SiteServer.BackgroundPages.Cms
 
                 Operation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
                 Operation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
-                var isContribute = CrossSiteTransUtility.IsTranslatable(PublishmentSystemInfo, _nodeInfo);
-                var isTransOk = false;
-                if (isContribute)
-                {
-                    var isAutomatic = CrossSiteTransUtility.IsAutomatic(_nodeInfo);
-                    if (isAutomatic)
-                    {
-                        var targetPublishmentSystemId = 0;
 
-                        if (_nodeInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite)
-                        {
-                            targetPublishmentSystemId = _nodeInfo.Additional.TransPublishmentSystemID;
-                        }
-                        else if (_nodeInfo.Additional.TransType == ECrossSiteTransType.SelfSite)
-                        {
-                            targetPublishmentSystemId = PublishmentSystemId;
-                        }
-                        else if (_nodeInfo.Additional.TransType == ECrossSiteTransType.ParentSite)
-                        {
-                            targetPublishmentSystemId = PublishmentSystemManager.GetParentPublishmentSystemId(PublishmentSystemId);
-                        }
+                var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTrans(PublishmentSystemInfo, _nodeInfo);
+                var isAutomatic = CrossSiteTransUtility.IsAutomatic(_nodeInfo);
 
-                        if (targetPublishmentSystemId > 0)
-                        {
-                            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
-                            if (targetPublishmentSystemInfo != null)
-                            {
-                                var targetNodeIdArrayList = TranslateUtils.StringCollectionToIntList(_nodeInfo.Additional.TransNodeIDs);
-                                if (targetNodeIdArrayList.Count > 0)
-                                {
-                                    foreach (int targetNodeId in targetNodeIdArrayList)
-                                    {
-                                        CrossSiteTransUtility.TransContentInfo(PublishmentSystemInfo, _nodeInfo, _contentId, targetPublishmentSystemInfo, targetNodeId);
-                                        isTransOk = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Operation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
-                    }
+                var isTranslated = ContentUtility.AfterContentAdded(PublishmentSystemInfo, _nodeInfo, _contentId, isCrossSiteTrans, isAutomatic);
+			    if (isCrossSiteTrans && !isAutomatic)
+			    {
+                    Operation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
                 }
-			    SuccessMessage(isTransOk ? "内容添加成功并已转发到指定站点，请选择后续操作。" : "内容添加成功，请选择后续操作。");
+
+			    SuccessMessage(isTranslated ? "内容添加成功并已转发到指定站点，请选择后续操作。" : "内容添加成功，请选择后续操作。");
 
 			    phPublishmentSystemID.Visible = phSubmit.Visible = false;
 			}
@@ -120,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (after == EContentAddAfter.Contribute)
             {
-                CrossSiteTransUtility.LoadPublishmentSystemIDDropDownList(PublishmentSystemIDDropDownList, PublishmentSystemInfo, _nodeInfo.NodeId);
+                CrossSiteTransUtility.LoadPublishmentSystemIdDropDownList(PublishmentSystemIDDropDownList, PublishmentSystemInfo, _nodeInfo.NodeId);
 
                 if (PublishmentSystemIDDropDownList.Items.Count > 0)
                 {
@@ -133,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void PublishmentSystemID_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
-            CrossSiteTransUtility.LoadNodeIDListBox(NodeIDListBox, PublishmentSystemInfo, psId, _nodeInfo, Body.AdministratorName);
+            CrossSiteTransUtility.LoadNodeIdListBox(NodeIDListBox, PublishmentSystemInfo, psId, _nodeInfo, Body.AdministratorName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

@@ -2,14 +2,16 @@
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
 	public class PageAuxiliaryTable : BasePageCms
     {
-		public DataGrid dgContents;
+		public DataGrid DgContents;
+        public Button BtnAdd;
 
-	    public static string GetRedirectUrl()
+        public static string GetRedirectUrl()
 	    {
 	        return PageUtils.GetSettingsUrl(nameof(PageAuxiliaryTable), null);
 	    }
@@ -37,31 +39,26 @@ namespace SiteServer.BackgroundPages.Settings
                     FailDeleteMessage(ex);
 				}
 			}
-			if (!IsPostBack)
-            {
-                BreadCrumbSettings("辅助表管理", AppManager.Permissions.Settings.Auxiliary);
 
-                try
-                {
-                    dgContents.DataSource = BaiRongDataProvider.TableCollectionDao.GetDataSourceByAuxiliaryTableType();
-                    dgContents.DataBind();
-                }
-                catch (Exception ex)
-                {
-                    PageUtils.RedirectToErrorPage(ex.Message);
-                }
-			}
-		}
+            if (IsPostBack) return;
+
+            BreadCrumbSettings("辅助表管理", AppManager.Permissions.Settings.SiteManagement);
+
+            DgContents.DataSource = BaiRongDataProvider.TableCollectionDao.GetDataSourceByAuxiliaryTableType();
+            DgContents.DataBind();
+
+            BtnAdd.OnClientClick = $"location.href='{PageUtils.GetLoadingUrl(PageAuxiliaryTableAdd.GetRedirectUrl())}';return false;";
+        }
 
         public string GetYesOrNo(string isDefaultStr)
         {
             return StringUtils.GetBoolText(TranslateUtils.ToBool(isDefaultStr));
         }
 
-        public int GetTableUsedNum(string tableENName, string auxiliaryTableType)
+        public int GetTableUsedNum(string tableEnName, string auxiliaryTableType)
         {
             var tableType = EAuxiliaryTableTypeUtils.GetEnumType(auxiliaryTableType);
-            var usedNum = BaiRongDataProvider.TableCollectionDao.GetTableUsedNum(tableENName, tableType);
+            var usedNum = BaiRongDataProvider.TableCollectionDao.GetTableUsedNum(tableEnName, tableType);
             return usedNum;
         }
 
@@ -70,35 +67,18 @@ namespace SiteServer.BackgroundPages.Settings
             return EAuxiliaryTableTypeUtils.GetText(EAuxiliaryTableTypeUtils.GetEnumType(auxiliaryTableType));
         }
 
-        public string GetIsChangedAfterCreatedInDB(string isCreatedInDB, string isChangedAfterCreatedInDB)
+        public string GetIsChangedAfterCreatedInDb(string isCreatedInDb, string isChangedAfterCreatedInDb)
         {
-            if (TranslateUtils.ToBool(isCreatedInDB) == false)
-            {
-                return "----";
-            }
-            else
-            {
-                return StringUtils.GetBoolText(TranslateUtils.ToBool(isChangedAfterCreatedInDB));
-            }
+            return TranslateUtils.ToBool(isCreatedInDb) == false ? "----" : StringUtils.GetBoolText(TranslateUtils.ToBool(isChangedAfterCreatedInDb));
         }
 
-        public string GetFontColor(string isCreatedInDB, string isChangedAfterCreatedInDB)
+        public string GetFontColor(string isCreatedInDb, string isChangedAfterCreatedInDb)
         {
-            if (EBooleanUtils.Equals(EBoolean.False, isCreatedInDB))
+            if (EBooleanUtils.Equals(EBoolean.False, isCreatedInDb))
             {
                 return string.Empty;
             }
-            else
-            {
-                if (EBooleanUtils.Equals(EBoolean.False, isChangedAfterCreatedInDB))
-                {
-                    return string.Empty;
-                }
-                else
-                {
-                    return "red";
-                }
-            }
+            return EBooleanUtils.Equals(EBoolean.False, isChangedAfterCreatedInDb) ? string.Empty : "red";
         }
 	}
 }

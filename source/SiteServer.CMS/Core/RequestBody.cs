@@ -43,6 +43,12 @@ namespace SiteServer.CMS.Core
 
         public int SiteId => GetQueryInt("siteId");
 
+        public int ChannelId => GetQueryInt("channelId");
+
+        public int ContentId => GetQueryInt("contentId");
+
+        public string ReturnUrl => GetQueryString("ReturnUrl");
+
         private UserInfo _userInfo;
         public UserInfo UserInfo
         {

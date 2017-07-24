@@ -2,7 +2,7 @@
 
 namespace SiteServer.Plugin.Hooks
 {
-    public interface IPageAdmin: IHooks
+    public interface IPageAdmin : IPlugin
     {
         //
         // 摘要:

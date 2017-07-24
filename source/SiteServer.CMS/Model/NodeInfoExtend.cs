@@ -63,16 +63,16 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("TransType", ECrossSiteTransTypeUtils.GetValue(value)); }
         }
 
-        public int TransPublishmentSystemID
+        public int TransPublishmentSystemId
         {
-            get { return TranslateUtils.ToInt(GetExtendedAttribute("TransPublishmentSystemID")); }
-            set { SetExtendedAttribute("TransPublishmentSystemID", value.ToString()); }
+            get { return TranslateUtils.ToInt(GetExtendedAttribute("TransPublishmentSystemId")); }
+            set { SetExtendedAttribute("TransPublishmentSystemId", value.ToString()); }
         }
 
-        public string TransNodeIDs
+        public string TransNodeIds
         {
-            get { return GetExtendedAttribute("TransNodeIDs"); }
-            set { SetExtendedAttribute("TransNodeIDs", value); }
+            get { return GetExtendedAttribute("TransNodeIds"); }
+            set { SetExtendedAttribute("TransNodeIds", value); }
         }
 
         public string TransNodeNames

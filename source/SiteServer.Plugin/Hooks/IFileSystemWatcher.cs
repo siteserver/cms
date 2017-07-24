@@ -2,7 +2,7 @@
 
 namespace SiteServer.Plugin.Hooks
 {
-    public interface IFileSystemWatcher : IHooks
+    public interface IFileSystemWatcher : IPlugin
     {
         void OnChanged(object sender, FileSystemEventArgs e);
     }

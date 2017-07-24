@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                CrossSiteTransUtility.LoadPublishmentSystemIDDropDownList(PublishmentSystemIDDropDownList, PublishmentSystemInfo, _nodeId);
+                CrossSiteTransUtility.LoadPublishmentSystemIdDropDownList(PublishmentSystemIDDropDownList, PublishmentSystemInfo, _nodeId);
 
                 if (PublishmentSystemIDDropDownList.Items.Count > 0)
                 {
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void PublishmentSystemID_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psID = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
-            CrossSiteTransUtility.LoadNodeIDListBox(NodeIDListBox, PublishmentSystemInfo, psID, NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId), Body.AdministratorName);
+            CrossSiteTransUtility.LoadNodeIdListBox(NodeIDListBox, PublishmentSystemInfo, psID, NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId), Body.AdministratorName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

@@ -330,6 +330,62 @@ namespace SiteServer.CMS.Core
             return arraylist;
         }
 
+        public static bool AfterContentAdded(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
+        {
+            var isTranslated = false;
+            if (isCrossSiteTrans && isAutomatic)
+            {
+                var targetPublishmentSystemId = 0;
+
+                if (nodeInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite)
+                {
+                    targetPublishmentSystemId = nodeInfo.Additional.TransPublishmentSystemId;
+                }
+                else if (nodeInfo.Additional.TransType == ECrossSiteTransType.SelfSite)
+                {
+                    targetPublishmentSystemId = publishmentSystemInfo.PublishmentSystemId;
+                }
+                else if (nodeInfo.Additional.TransType == ECrossSiteTransType.ParentSite)
+                {
+                    targetPublishmentSystemId = PublishmentSystemManager.GetParentPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
+                }
+
+                if (targetPublishmentSystemId > 0)
+                {
+                    var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
+                    if (targetPublishmentSystemInfo != null)
+                    {
+                        var targetNodeIdArrayList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.TransNodeIds);
+                        if (targetNodeIdArrayList.Count > 0)
+                        {
+                            foreach (var targetNodeId in targetNodeIdArrayList)
+                            {
+                                CrossSiteTransUtility.TransContentInfo(publishmentSystemInfo, nodeInfo, contentId, targetPublishmentSystemInfo, targetNodeId);
+                                isTranslated = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
+            if (string.IsNullOrEmpty(contentModelInfo.PluginId)) return isTranslated;
+
+            var hook = PluginManager.GetHook<IContentModel>(contentModelInfo.PluginId);
+            if (hook == null) return isTranslated;
+
+            try
+            {
+                hook.AfterContentAdded(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId);
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex, $"插件：{contentModelInfo.PluginId} AfterContentAdded");
+            }
+
+            return isTranslated;
+        }
+
         public static void Translate(PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, string translateCollection, ETranslateContentType translateType, string administratorName, string guid)
         {
             var translateArrayList = TranslateUtils.StringCollectionToStringList(translateCollection);
@@ -377,7 +433,7 @@ namespace SiteServer.CMS.Core
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginManager.GetHook<IContentExtra>(contentModelInfo.PluginId);
+                    var hook = PluginManager.GetHook<IContentModel>(contentModelInfo.PluginId);
                     try
                     {
                         hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
@@ -412,7 +468,7 @@ namespace SiteServer.CMS.Core
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginManager.GetHook<IContentExtra>(contentModelInfo.PluginId);
+                    var hook = PluginManager.GetHook<IContentModel>(contentModelInfo.PluginId);
                     try
                     {
                         hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, newContentId);
@@ -457,7 +513,7 @@ namespace SiteServer.CMS.Core
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginManager.GetHook<IContentExtra>(contentModelInfo.PluginId);
+                    var hook = PluginManager.GetHook<IContentModel>(contentModelInfo.PluginId);
                     try
                     {
                         hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);

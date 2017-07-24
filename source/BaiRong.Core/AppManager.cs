@@ -74,7 +74,6 @@ namespace BaiRong.Core
             {
                 public const string SiteAdd = "settings_site_add";
                 public const string SiteManagement = "settings_site_management";
-                public const string Auxiliary = "settings_auxiliary";
                 public const string Config = "settings_config";
                 public const string Service = "settings_service";
                 public const string Chart = "settings_chart";

@@ -249,7 +249,7 @@ namespace SiteServer.BackgroundPages.Core
                             publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl)}"">归 档</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
                 }
                 //跨站转发
-                if (CrossSiteTransUtility.IsTranslatable(publishmentSystemInfo, nodeInfo))
+                if (CrossSiteTransUtility.IsCrossSiteTrans(publishmentSystemInfo, nodeInfo) && !CrossSiteTransUtility.IsAutomatic(nodeInfo))
                 {
                     builder.Append(
                         $@"<a href=""javascript:;"" onclick=""{ModalContentCrossSiteTrans.GetOpenWindowString(

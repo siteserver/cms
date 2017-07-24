@@ -169,7 +169,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings($"辅助表字段管理（{_tableName}）", AppManager.Permissions.Settings.Auxiliary);
+                BreadCrumbSettings($"辅助表字段管理（{_tableName}）", AppManager.Permissions.Settings.SiteManagement);
 
                 DgContents.DataSource = BaiRongDataProvider.TableMetadataDao.GetDataSource(_tableName);
                 DgContents.ItemDataBound += dgContents_ItemDataBound;

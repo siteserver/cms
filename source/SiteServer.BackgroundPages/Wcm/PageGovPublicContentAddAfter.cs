@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
                 Operation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
                 Operation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
-                var isContribute = CrossSiteTransUtility.IsTranslatable(PublishmentSystemInfo, nodeInfo);
+                var isContribute = CrossSiteTransUtility.IsCrossSiteTrans(PublishmentSystemInfo, nodeInfo);
                 var isTransOk = false;
                 if (isContribute)
                 {
@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
                         if (nodeInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite)
                         {
-                            targetPublishmentSystemID = nodeInfo.Additional.TransPublishmentSystemID;
+                            targetPublishmentSystemID = nodeInfo.Additional.TransPublishmentSystemId;
                         }
                         else if (nodeInfo.Additional.TransType == ECrossSiteTransType.SelfSite)
                         {
@@ -87,12 +87,12 @@ namespace SiteServer.BackgroundPages.Wcm
                             var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemID);
                             if (targetPublishmentSystemInfo != null)
                             {
-                                var targetNodeIDArrayList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.TransNodeIDs);
-                                if (targetNodeIDArrayList.Count > 0)
+                                var targetNodeIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.TransNodeIds);
+                                if (targetNodeIdList.Count > 0)
                                 {
-                                    foreach (int targetNodeID in targetNodeIDArrayList)
+                                    foreach (var targetNodeId in targetNodeIdList)
                                     {
-                                        CrossSiteTransUtility.TransContentInfo(PublishmentSystemInfo, nodeInfo, contentID, targetPublishmentSystemInfo, targetNodeID);
+                                        CrossSiteTransUtility.TransContentInfo(PublishmentSystemInfo, nodeInfo, contentID, targetPublishmentSystemInfo, targetNodeId);
                                         isTransOk = true;
                                     }
                                 }
@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Wcm
             }
             else if (after == EContentAddAfter.Contribute)
             {
-                CrossSiteTransUtility.LoadPublishmentSystemIDDropDownList(PublishmentSystemIDDropDownList, PublishmentSystemInfo, nodeInfo.NodeId);
+                CrossSiteTransUtility.LoadPublishmentSystemIdDropDownList(PublishmentSystemIDDropDownList, PublishmentSystemInfo, nodeInfo.NodeId);
 
                 if (PublishmentSystemIDDropDownList.Items.Count > 0)
                 {
@@ -143,7 +143,7 @@ namespace SiteServer.BackgroundPages.Wcm
         public void PublishmentSystemID_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psID = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
-            CrossSiteTransUtility.LoadNodeIDListBox(NodeIDListBox, PublishmentSystemInfo, psID, nodeInfo, Body.AdministratorName);
+            CrossSiteTransUtility.LoadNodeIdListBox(NodeIDListBox, PublishmentSystemInfo, psID, nodeInfo, Body.AdministratorName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

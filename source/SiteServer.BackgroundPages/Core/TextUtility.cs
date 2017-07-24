@@ -258,6 +258,7 @@ namespace SiteServer.BackgroundPages.Core
             if (modelInfo?.Links != null && modelInfo.Links.Count > 0)
             {
                 var apiUrl = Root.GetUrl(PageUtility.GetApiUrl(publishmentSystemInfo), modelInfo.ModelId);
+                apiUrl = PageUtils.AddProtocolToUrl(apiUrl);
                 foreach (var link in modelInfo.Links)
                 {
                     var href = PageUtils.AddQueryString(link.Href, new NameValueCollection

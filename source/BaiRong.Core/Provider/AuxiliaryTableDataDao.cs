@@ -165,36 +165,19 @@ SettingsXML ntext NULL,
 ");
             }
             //添加主键及索引
-            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
-            {
-                sqlBuilder.Append(@"PRIMARY KEY (ID)");
-            }
-            else
-            {
-                sqlBuilder.Append($@"CONSTRAINT PK_{tableName} PRIMARY KEY (ID)");
-            }
-sqlBuilder.Append($@"
+            sqlBuilder.Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                ? @"PRIMARY KEY (ID)"
+                : $@"CONSTRAINT PK_{tableName} PRIMARY KEY (ID)");
+
+            sqlBuilder.Append($@"
 )
 go
 CREATE INDEX IX_{tableName} ON {tableName}(IsTop DESC, Taxis DESC, ID DESC)
 go
-CREATE INDEX IX_Taxis ON {tableName}(Taxis DESC)
+CREATE INDEX IX_{tableName}_Taxis ON {tableName}(Taxis DESC)
 go");
 
             return sqlBuilder.ToString();
-        }
-
-        public List<TableMetadataInfo> GetPluginTableMetadataInfoList(string pluginId, List<PluginTableColumn> tableColumns)
-        {
-            var list = new List<TableMetadataInfo>();
-
-            foreach (var tableColumn in tableColumns)
-            {
-                var metadataInfo = new TableMetadataInfo(0, pluginId, tableColumn.AttributeName, tableColumn.DataType, tableColumn.DataLength, 0, true);
-                list.Add(metadataInfo);
-            }
-
-            return list;
         }
 
         public List<TableMetadataInfo> GetDefaultTableMetadataInfoList(string tableName, EAuxiliaryTableType tableType)

@@ -91,26 +91,25 @@
     $('#right').src = url;
   }
 
-  var waiting = 3000;
+  var siteId = <%=PublishmentSystemId%>;
 
-  $(document).ready(function ($) {
-    var create = $.connection.createHub;
-    create.client.next = function (total) {
-      $('#progress').html(total);
-      if (total) {
-        waiting = 3000;
-        create.server.execute(<%=PublishmentSystemId%>);
-      } else {
-        setTimeout(function () {
-          if (waiting < 9000) waiting += 1000;
-          create.server.execute(<%=PublishmentSystemId%>);
-        }, waiting);
-      }
-    };
-    $.connection.hub.start().done(function () {
-      create.server.execute(<%=PublishmentSystemId%>);
-    });
+  var create = $.connection.createHub;
+  create.client.next = function (total) {
+    $('#progress').html(total);
+    if (total) {
+      create.server.execute(siteId);
+    } else {
+      setTimeout(function () {
+        create.server.execute(siteId);
+      }, 5000);
+    }
+  };
+  $.connection.hub.start().done(function () {
+    create.server.execute(siteId);
+  });
 
+  $(document).ready(function () {
+    
     $('#frmMain').height($(window).height() - 70);
 
     $('.waves-primary').click(function () {

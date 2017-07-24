@@ -42,8 +42,8 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
-            var nodeID = int.Parse(Body.GetQueryString("NodeID"));
-            nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
+            var nodeId = int.Parse(Body.GetQueryString("NodeID"));
+            nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
 
             if (!IsPostBack)
             {
@@ -52,11 +52,11 @@ namespace SiteServer.BackgroundPages.Cms
                 ControlUtils.SelectListItems(TransType, ECrossSiteTransTypeUtils.GetValue(nodeInfo.Additional.TransType));
 
                 TransType_OnSelectedIndexChanged(null, EventArgs.Empty);
-                ControlUtils.SelectListItems(PublishmentSystemIDCollection, nodeInfo.Additional.TransPublishmentSystemID.ToString());
+                ControlUtils.SelectListItems(PublishmentSystemIDCollection, nodeInfo.Additional.TransPublishmentSystemId.ToString());
 
 
                 PublishmentSystemIDCollection_OnSelectedIndexChanged(null, EventArgs.Empty);
-                ControlUtils.SelectListItems(NodeIDCollection, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.TransNodeIDs));
+                ControlUtils.SelectListItems(NodeIDCollection, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.TransNodeIds));
                 NodeNames.Text = nodeInfo.Additional.TransNodeNames;
 
                 EBooleanUtils.AddListItems(IsAutomatic, "自动", "提示");
@@ -166,13 +166,13 @@ namespace SiteServer.BackgroundPages.Cms
                 nodeInfo.Additional.TransType = ECrossSiteTransTypeUtils.GetEnumType(TransType.SelectedValue);
                 if (nodeInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite)
                 {
-                    nodeInfo.Additional.TransPublishmentSystemID = TranslateUtils.ToInt(PublishmentSystemIDCollection.SelectedValue);
+                    nodeInfo.Additional.TransPublishmentSystemId = TranslateUtils.ToInt(PublishmentSystemIDCollection.SelectedValue);
                 }
                 else
                 {
-                    nodeInfo.Additional.TransPublishmentSystemID = 0;
+                    nodeInfo.Additional.TransPublishmentSystemId = 0;
                 }
-                nodeInfo.Additional.TransNodeIDs = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollection);
+                nodeInfo.Additional.TransNodeIds = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollection);
                 nodeInfo.Additional.TransNodeNames = NodeNames.Text;
 
                 nodeInfo.Additional.TransIsAutomatic = TranslateUtils.ToBool(IsAutomatic.SelectedValue);
