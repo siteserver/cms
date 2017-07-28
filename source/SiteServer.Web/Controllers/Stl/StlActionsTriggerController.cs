@@ -57,20 +57,20 @@ namespace SiteServer.API.Controllers.Stl
                     var redirectUrl = string.Empty;
                     if (fileTemplateId != 0)
                     {
-                        redirectUrl = PageUtility.GetFileUrl(publishmentSystemInfo, fileTemplateId, true);
+                        redirectUrl = PageUtility.GetFileUrl(publishmentSystemInfo, fileTemplateId);
                     }
                     else if (contentId != 0)
                     {
                         var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
-                        redirectUrl = PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo, true);
+                        redirectUrl = PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo);
                     }
                     else if (channelId != 0)
                     {
-                        redirectUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true);
+                        redirectUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
                     }
                     else if (publishmentSystemId != 0)
                     {
-                        redirectUrl = PageUtility.GetIndexPageUrl(publishmentSystemInfo, true);
+                        redirectUrl = PageUtility.GetIndexPageUrl(publishmentSystemInfo);
                     }
 
                     if (!string.IsNullOrEmpty(redirectUrl))
@@ -83,7 +83,7 @@ namespace SiteServer.API.Controllers.Stl
             }
             catch
             {
-                var redirectUrl = PageUtility.GetIndexPageUrl(publishmentSystemInfo, true);
+                var redirectUrl = PageUtility.GetIndexPageUrl(publishmentSystemInfo);
                 HttpContext.Current.Response.Redirect(redirectUrl, true);
                 return;
             }

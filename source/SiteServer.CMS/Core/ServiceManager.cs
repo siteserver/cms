@@ -87,10 +87,6 @@ namespace SiteServer.CMS.Core
             CacheManager.UpdateTemporaryCacheFile(CacheFileNameIsPendingCreate);
         }
 
-        /// <summary>
-        /// 服务组件是否启用
-        /// </summary>
-        /// <returns></returns>
         public static bool IsServiceOnline()
         {
             var cacheValue = CacheManager.GetCache(CacheKeyStatus) as string;

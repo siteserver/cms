@@ -11,36 +11,40 @@ namespace SiteServer.CMS.Model
             SetExtendedAttribute(nameValueCollection);
         }
 
-        //允许匿名评论
-        public bool IsAnomynous
+        public string MessageSuccess
+        {
+            get { return GetString("MessageSuccess", string.Empty); }
+            set { SetExtendedAttribute("MessageSuccess", value); }
+        }
+
+        public string MessageFailure
+        {
+            get { return GetString("MessageFailure", string.Empty); }
+            set { SetExtendedAttribute("MessageFailure", value); }
+        }
+
+        public bool IsAnomynous         //允许匿名评论
         {
             get { return GetBool("IsAnomynous", true); }
             set { SetExtendedAttribute("IsAnomynous", value.ToString()); }
         }
 
-        //向管理员发送短信通知
-        public bool IsAdministratorSmsNotify
+        public bool IsSuccessHide
         {
-            get { return GetBool("IsAdministratorSmsNotify", false); }
-            set { SetExtendedAttribute("IsAdministratorSmsNotify", value.ToString()); }
+            get { return GetBool("IsSuccessHide", true); }
+            set { SetExtendedAttribute("IsSuccessHide", value.ToString()); }
         }
 
-        public string AdministratorSmsNotifyTplId
+        public bool IsSuccessReload
         {
-            get { return GetString("AdministratorSmsNotifyTplId", string.Empty); }
-            set { SetExtendedAttribute("AdministratorSmsNotifyTplId", value); }
+            get { return GetBool("IsSuccessReload", false); }
+            set { SetExtendedAttribute("IsSuccessReload", value.ToString()); }
         }
 
-        public string AdministratorSmsNotifyKeys
+        public bool IsCtrlEnter
         {
-            get { return GetString("AdministratorSmsNotifyKeys", string.Empty); }
-            set { SetExtendedAttribute("AdministratorSmsNotifyKeys", value); }
-        }
-
-        public string AdministratorSmsNotifyMobile
-        {
-            get { return GetString("AdministratorSmsNotifyMobile", string.Empty); }
-            set { SetExtendedAttribute("AdministratorSmsNotifyMobile", value); }
+            get { return GetBool("IsCtrlEnter", true); }
+            set { SetExtendedAttribute("IsCtrlEnter", value.ToString()); }
         }
 
         public override string ToString()

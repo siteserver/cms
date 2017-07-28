@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Data;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovPublic;
 using SiteServer.CMS.Wcm.Model;
@@ -88,7 +89,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             base.OnInit(e);
 
-            PageUtils.CheckRequestParameter("ApplyID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("PublishmentSystemID", "ApplyID", "ReturnUrl");
 
             applyInfo = DataProvider.GovPublicApplyDao.GetApplyInfo(TranslateUtils.ToInt(Request.QueryString["ApplyID"]));
             returnUrl = StringUtils.ValueFromUrl(Request.QueryString["ReturnUrl"]);

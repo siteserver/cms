@@ -8,6 +8,7 @@ using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;

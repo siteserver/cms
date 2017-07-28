@@ -45,7 +45,7 @@ namespace BaiRong.Core
 
         public static bool IsMobile(string val)
         {
-            return Regex.IsMatch(val, @"^1[3456789]\d{9}$", RegexOptions.IgnoreCase);
+            return Regex.IsMatch(val, @"^1[358]\d{9}$", RegexOptions.IgnoreCase);
         }
 
         public static bool IsEmail(string val)

@@ -3,23 +3,25 @@ using System.Collections.Generic;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Permissions;
+using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Share;
 
 namespace SiteServer.BackgroundPages
 {
     public class BasePage : Page
     {
-        public Literal LtlBreadCrumb; // 面包屑(头部导航 + 左边一级二级菜单 + 其他)
+        public Literal ltlBreadCrumb;
+        public Message messageCtrl;
 
         private MessageUtils.Message.EMessageType _messageType;
         private string _message = string.Empty;
         private string _scripts = string.Empty;
 
-        protected virtual bool IsAccessable => false; // 页面默认情况下是不能直接访问
+        protected virtual bool IsAccessable => false;
 
-        protected virtual bool IsSinglePage => false; // 是否为单页（即是否需要放在框架页内运行,false表示需要）
+        protected virtual bool IsSinglePage => false;
 
         protected bool IsForbidden { get; private set; }
 
@@ -27,7 +29,7 @@ namespace SiteServer.BackgroundPages
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
-            _messageType = messageType; 
+            _messageType = messageType;
             _message = ex != null ? $"{message}<!-- {ex} -->" : message;
         }
 
@@ -37,7 +39,7 @@ namespace SiteServer.BackgroundPages
 
             Body = new RequestBody();
 
-            if (!IsAccessable && !Body.IsAdministratorLoggin) // 如果页面不能直接访问且又没有登录则直接跳登录页
+            if (!IsAccessable && !Body.IsAdministratorLoggin)
             {
                 IsForbidden = true;
                 PageUtils.RedirectToLoginPage();
@@ -51,12 +53,21 @@ namespace SiteServer.BackgroundPages
         {
             if (!string.IsNullOrEmpty(_message))
             {
-                MessageUtils.SaveMessage(_messageType, _message);
+                if (messageCtrl != null)
+                {
+                    messageCtrl.IsShowImmidiatary = true;
+                    messageCtrl.MessageType = _messageType;
+                    messageCtrl.Content = _message;
+                }
+                else
+                {
+                    MessageUtils.SaveMessage(_messageType, _message);
+                }
             }
 
             base.Render(writer);
 
-            if (!IsAccessable && !IsSinglePage) // 页面不能直接访问且不是单页，需要加一段框架检测代码，检测页面是否运行在框架内
+            if (!IsAccessable && !IsSinglePage)
             {
                 writer.Write($@"<script type=""text/javascript"">
 if (window.top.location.href.toLowerCase().indexOf(""main.aspx"") == -1){{
@@ -178,97 +189,97 @@ $('.operation-area').hide();
 
         public void BreadCrumbSys(string leftMenuId, string pageTitle, string permission)
         {
-            if (LtlBreadCrumb != null)
+            if (ltlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdSys);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSys, topTitle, leftMenuId, leftTitle, String.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSys, topTitle, leftMenuId, leftTitle, String.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
             {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 
         public void BreadCrumbAdmin(string leftMenuId, string pageTitle, string permission)
         {
-            if (LtlBreadCrumb != null)
+            if (ltlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdAdmin);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdAdmin, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdAdmin, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
             {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 
         public void BreadCrumbUser(string leftMenuId, string pageTitle, string permission)
         {
-            if (LtlBreadCrumb != null)
+            if (ltlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdUser);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdUser, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdUser, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
             {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 
         public void BreadCrumbAnalysis(string leftMenuId, string pageTitle, string permission)
         {
-            if (LtlBreadCrumb != null)
+            if (ltlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdAnalysis);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdAnalysis, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdAnalysis, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
             {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 
         public void BreadCrumbSettings(string leftMenuId, string pageTitle, string permission)
         {
-            if (LtlBreadCrumb != null)
+            if (ltlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdSettings);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSettings, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSettings, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
             {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 
         public void BreadCrumbService(string leftMenuId, string pageTitle, string permission)
         {
-            if (LtlBreadCrumb != null)
+            if (ltlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var topTitle = AppManager.GetTopMenuName(AppManager.IdService);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdService, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdService, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
             {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
             }
         }
 

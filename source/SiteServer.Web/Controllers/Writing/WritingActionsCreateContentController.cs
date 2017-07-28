@@ -3,6 +3,7 @@ using System.Web.Http;
 using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Text;
 using SiteServer.API.Model;
 using SiteServer.CMS.Controllers.Writing;
 using SiteServer.CMS.Core;

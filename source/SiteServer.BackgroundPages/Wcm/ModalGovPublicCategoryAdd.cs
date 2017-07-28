@@ -2,7 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Text;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Wcm.Model;
 
 namespace SiteServer.BackgroundPages.Wcm
@@ -25,7 +27,7 @@ namespace SiteServer.BackgroundPages.Wcm
             return PageUtils.GetOpenWindowString("添加节点", PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryAdd), new NameValueCollection
             {
                 {"ClassCode", classCode},
-                {"siteId", publishmentSystemId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), 500, 340);
         }
@@ -35,7 +37,7 @@ namespace SiteServer.BackgroundPages.Wcm
             return PageUtils.GetOpenWindowString("修改节点", PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryAdd), new NameValueCollection
             {
                 {"ClassCode", classCode},
-                {"siteId", publishmentSystemId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CategoryID", categoryId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), 520, 320);

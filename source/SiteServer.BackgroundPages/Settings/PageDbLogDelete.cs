@@ -1,5 +1,6 @@
 ﻿using System;
 using BaiRong.Core;
+using BaiRong.Core.Text;
 
 namespace SiteServer.BackgroundPages.Settings
 {

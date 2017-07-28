@@ -131,10 +131,12 @@ namespace SiteServer.BackgroundPages.Ajax
                     FileUtility.AddWaterMark(PublishmentSystemInfo, filePath);
 
                     var widthSmall = PublishmentSystemInfo.Additional.PhotoSmallWidth;
-                    ImageUtils.MakeThumbnail(filePath, filePathSamll, widthSmall, 0, true);
+                    var heightSamll = PublishmentSystemInfo.Additional.PhotoSmallHeight;
+                    ImageUtils.MakeThumbnail(filePath, filePathSamll, widthSmall, heightSamll, true);
 
                     var widthMiddle = PublishmentSystemInfo.Additional.PhotoMiddleWidth;
-                    ImageUtils.MakeThumbnail(filePath, filePathMiddle, widthMiddle, 0, true);
+                    var heightMiddle = PublishmentSystemInfo.Additional.PhotoMiddleHeight;
+                    ImageUtils.MakeThumbnail(filePath, filePathMiddle, widthMiddle, heightMiddle, true);
 
                     url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePathSamll);
 
@@ -183,10 +185,12 @@ namespace SiteServer.BackgroundPages.Ajax
                     FileUtility.AddWaterMark(PublishmentSystemInfo, filePath);
 
                     var widthSmall = PublishmentSystemInfo.Additional.PhotoSmallWidth;
-                    ImageUtils.MakeThumbnail(filePath, filePathSmall, widthSmall, 0, true);
+                    var heightSmall = PublishmentSystemInfo.Additional.PhotoSmallHeight;
+                    ImageUtils.MakeThumbnail(filePath, filePathSmall, widthSmall, heightSmall, true);
 
                     var widthMiddle = PublishmentSystemInfo.Additional.PhotoMiddleWidth;
-                    ImageUtils.MakeThumbnail(filePath, filePathMiddle, widthMiddle, 0, true);
+                    var heightMiddle = PublishmentSystemInfo.Additional.PhotoMiddleHeight;
+                    ImageUtils.MakeThumbnail(filePath, filePathMiddle, widthMiddle, heightMiddle, true);
 
                     url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePathSmall);
 

@@ -395,6 +395,8 @@ namespace SiteServer.BackgroundPages.Sys
                         var siteTemplateInfo = new SiteTemplateInfo
                         {
                             SiteTemplateName = TbSiteTemplateName.Text,
+                            PublishmentSystemType =
+                                EPublishmentSystemTypeUtils.GetValue(PublishmentSystemInfo.PublishmentSystemType),
                             PicFileName = samplePicPath,
                             WebSiteUrl = TbWebSiteUrl.Text,
                             Description = TbDescription.Text

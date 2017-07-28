@@ -18,33 +18,35 @@ namespace SiteServer.BackgroundPages.Wcm
 
         private int _currentNodeId;
 
-        public static string GetRedirectUrl(int siteId)
+        public static string GetRedirectUrl(int publishmentSystemId)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicChannel), new NameValueCollection
             {
-                {"siteId", siteId.ToString()}
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
             });
         }
 
-        public static string GetRedirectUrl(int siteId, int currentNodeId)
+        public static string GetRedirectUrl(int publishmentSystemId, int currentNodeId)
         {
-            if (currentNodeId != 0 && currentNodeId != siteId)
+            if (currentNodeId != 0 && currentNodeId != publishmentSystemId)
             {
                 return PageUtils.GetWcmUrl(nameof(PageGovPublicChannel), new NameValueCollection
                 {
-                    {"siteId", siteId.ToString()},
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"CurrentNodeID", currentNodeId.ToString()}
                 });
             }
 
             return PageUtils.GetWcmUrl(nameof(PageGovPublicChannel), new NameValueCollection
             {
-                {"siteId", siteId.ToString()}
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
             });
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
+            PageUtils.CheckRequestParameter("PublishmentSystemID");
+
             if (Body.IsQueryExists("NodeID") && (Body.IsQueryExists("Subtract") || Body.IsQueryExists("Add")))
             {
                 var nodeId = Body.GetQueryInt("NodeID");
@@ -96,7 +98,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
                     PageUtils.GetWcmUrl(nameof(PageGovPublicChannel), new NameValueCollection
                     {
-                        {"siteId", PublishmentSystemId.ToString()},
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"Delete", true.ToString()}
                     }), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的节点！", "此操作将删除对应节点以及所有下级节点，确认删除吗？"));
 

@@ -40,7 +40,7 @@ namespace SiteServer.CMS.WeiXin.MP
             //比如MessageHandler<MessageContext>.GlobalWeixinContext.ExpireMinutes = 3。
             WeixinContext.ExpireMinutes = 3;
 
-            publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(accountInfo.PublishmentSystemId);
+            publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(accountInfo.PublishmentSystemID);
             this.accountInfo = accountInfo;
         }
 
@@ -48,7 +48,7 @@ namespace SiteServer.CMS.WeiXin.MP
         {
             KeywordInfo keywordInfo = null;
 
-            var keywordID = DataProviderWx.KeywordMatchDao.GetKeywordIdbyMpController(publishmentSystemInfo.PublishmentSystemId, keyword);
+            var keywordID = DataProviderWX.KeywordMatchDAO.GetKeywordIDByMPController(publishmentSystemInfo.PublishmentSystemId, keyword);
             if (keywordID == 0 && StringUtils.StartsWith(keyword, "GX_"))
             {
                 var keywordType = EKeywordTypeUtils.GetEnumType(keyword.Substring(3));
@@ -57,12 +57,12 @@ namespace SiteServer.CMS.WeiXin.MP
 
             if (keywordID == 0 && keywordInfo == null && accountInfo.IsDefaultReply && !string.IsNullOrEmpty(accountInfo.DefaultReplyKeyword))
             {
-                keywordID = DataProviderWx.KeywordMatchDao.GetKeywordIdbyMpController(publishmentSystemInfo.PublishmentSystemId, accountInfo.DefaultReplyKeyword);
+                keywordID = DataProviderWX.KeywordMatchDAO.GetKeywordIDByMPController(publishmentSystemInfo.PublishmentSystemId, accountInfo.DefaultReplyKeyword);
             }
 
             if (keywordInfo == null && keywordID > 0)
             {
-                keywordInfo = DataProviderWx.KeywordDao.GetKeywordInfo(keywordID);
+                keywordInfo = DataProviderWX.KeywordDAO.GetKeywordInfo(keywordID);
             }               
 
             return GetResponseMessage(keywordInfo, keyword);
@@ -76,7 +76,7 @@ namespace SiteServer.CMS.WeiXin.MP
                 {
                     if (keywordInfo.KeywordType == EKeywordType.Text)
                     {
-                        DataProviderWx.CountDao.AddCount(publishmentSystemInfo.PublishmentSystemId, ECountType.RequestText);
+                        DataProviderWX.CountDAO.AddCount(publishmentSystemInfo.PublishmentSystemId, ECountType.RequestText);
 
                         var responseMessage = CreateResponseMessage<ResponseMessageText>();
                         responseMessage.Content = keywordInfo.Reply;
@@ -84,24 +84,24 @@ namespace SiteServer.CMS.WeiXin.MP
                     }
                     else if (keywordInfo.KeywordType == EKeywordType.News)
                     {
-                        DataProviderWx.CountDao.AddCount(publishmentSystemInfo.PublishmentSystemId, ECountType.RequestNews);
+                        DataProviderWX.CountDAO.AddCount(publishmentSystemInfo.PublishmentSystemId, ECountType.RequestNews);
 
                         var responseMessage = CreateResponseMessage<ResponseMessageNews>();
 
-                        foreach (var resourceInfo in DataProviderWx.KeywordResourceDao.GetResourceInfoList(keywordInfo.KeywordId))
+                        foreach (var resourceInfo in DataProviderWX.KeywordResourceDAO.GetResourceInfoList(keywordInfo.KeywordID))
                         {
                             var imageUrl = PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, resourceInfo.ImageUrl));
 
                             var pageUrl = string.Empty;
                             if (resourceInfo.ResourceType == EResourceType.Site)
                             {
-                                if (resourceInfo.ChannelId > 0 && resourceInfo.ContentId > 0)
+                                if (resourceInfo.ChannelID > 0 && resourceInfo.ContentID > 0)
                                 {
-                                    pageUrl = PageUtilityWX.GetContentUrl(publishmentSystemInfo, resourceInfo.ChannelId, resourceInfo.ContentId, false);
+                                    pageUrl = PageUtilityWX.GetContentUrl(publishmentSystemInfo, resourceInfo.ChannelID, resourceInfo.ContentID, false);
                                 }
-                                else if (resourceInfo.ChannelId > 0)
+                                else if (resourceInfo.ChannelID > 0)
                                 {
-                                    pageUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, resourceInfo.ChannelId);
+                                    pageUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, resourceInfo.ChannelID);
                                 }
                                 else
                                 {
@@ -110,7 +110,7 @@ namespace SiteServer.CMS.WeiXin.MP
                             }
                             else if (resourceInfo.ResourceType == EResourceType.Content)
                             {
-                                pageUrl = PageUtilityWX.GetWeiXinFileUrl(publishmentSystemInfo, resourceInfo.KeywordId, resourceInfo.ResourceId);
+                                pageUrl = PageUtilityWX.GetWeiXinFileUrl(publishmentSystemInfo, resourceInfo.KeywordID, resourceInfo.ResourceID);
                             }
                             else if (resourceInfo.ResourceType == EResourceType.Url)
                             {
@@ -370,7 +370,7 @@ namespace SiteServer.CMS.WeiXin.MP
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddLog(string.Empty, "Gexia Error", ex.StackTrace);
             }
 
             return null;
@@ -451,20 +451,20 @@ namespace SiteServer.CMS.WeiXin.MP
         //关注时触发
         public override IResponseMessageBase OnEvent_SubscribeRequest(RequestMessageEvent_Subscribe requestMessage)
         {
-            DataProviderWx.CountDao.AddCount(publishmentSystemInfo.PublishmentSystemId , ECountType.UserSubscribe);
+            DataProviderWX.CountDAO.AddCount(publishmentSystemInfo.PublishmentSystemId , ECountType.UserSubscribe);
 
             var keywordID = 0;
             var keyword = string.Empty;
             if (accountInfo.IsWelcome && !string.IsNullOrEmpty(accountInfo.WelcomeKeyword))
             {
                 keyword = accountInfo.WelcomeKeyword;
-                keywordID = DataProviderWx.KeywordMatchDao.GetKeywordIdbyMpController(publishmentSystemInfo.PublishmentSystemId, keyword);
+                keywordID = DataProviderWX.KeywordMatchDAO.GetKeywordIDByMPController(publishmentSystemInfo.PublishmentSystemId, keyword);
             }
 
             KeywordInfo keywordInfo = null;
             if (keywordID > 0)
             {
-                keywordInfo = DataProviderWx.KeywordDao.GetKeywordInfo(keywordID);
+                keywordInfo = DataProviderWX.KeywordDAO.GetKeywordInfo(keywordID);
             }
 
             return GetResponseMessage(keywordInfo, keyword);
@@ -472,7 +472,7 @@ namespace SiteServer.CMS.WeiXin.MP
 
         public override IResponseMessageBase OnEvent_UnsubscribeRequest(RequestMessageEvent_Unsubscribe requestMessage)
         {
-            DataProviderWx.CountDao.AddCount(publishmentSystemInfo.PublishmentSystemId, ECountType.UserUnsubscribe);
+            DataProviderWX.CountDAO.AddCount(publishmentSystemInfo.PublishmentSystemId, ECountType.UserUnsubscribe);
 
             return base.OnEvent_UnsubscribeRequest(requestMessage);
         }

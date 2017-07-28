@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -24,11 +25,26 @@ namespace BaiRong.Core
             public const string DirectoryName = "obj";
         }
 
+        public class SiteServer
+        {
+            public const string DirectoryName = "SiteServer";
+        }
+
+        public class Api
+        {
+            public const string DirectoryName = "Api";
+        }
+
         public class PublishmentSytem
         {
             public const string Include = "Include";
             public const string Template = "Template";
             public const string Content = "Content";
+        }
+
+        public class WebConfig
+        {
+            public const string DirectoryName = "Web.config";
         }
 
         public class SiteFiles
@@ -39,7 +55,6 @@ namespace BaiRong.Core
             public const string BackupFiles = "BackupFiles";
             public const string TemporaryFiles = "TemporaryFiles";
             public const string Configuration = "Configuration";
-            public const string Plugins = "Plugins";
         }
 
         public class SiteTemplates
@@ -137,8 +152,16 @@ namespace BaiRong.Core
         /// <returns></returns>
         public static string GetDirectoryPath(string path)
         {
+            string directoryPath;
             var ext = Path.GetExtension(path);
-            var directoryPath = !string.IsNullOrEmpty(ext) ? Path.GetDirectoryName(path) : path;
+            if (!string.IsNullOrEmpty(ext))		//path为文件路径
+            {
+                directoryPath = Path.GetDirectoryName(path);
+            }
+            else									//path为文件夹路径
+            {
+                directoryPath = path;
+            }
             return directoryPath;
         }
 
@@ -150,7 +173,10 @@ namespace BaiRong.Core
 
         public static bool IsInDirectory(string parentDirectoryPath, string path)
         {
-            if (string.IsNullOrEmpty(parentDirectoryPath) || string.IsNullOrEmpty(path)) return false;
+            if (string.IsNullOrEmpty(parentDirectoryPath) || string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentNullException();
+            }
 
             parentDirectoryPath = parentDirectoryPath.Trim().ToLower();
             path = path.Trim().ToLower();
@@ -378,7 +404,11 @@ namespace BaiRong.Core
             if (StringUtils.EqualsIgnoreCase(directoryName, AspnetClient.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, Bin.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, SiteFiles.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, FileConfigManager.Instance.AdminDirectoryName))
+                || StringUtils.EqualsIgnoreCase(directoryName, FileConfigManager.Instance.AdminDirectoryName)
+                || StringUtils.EqualsIgnoreCase(directoryName, SiteTemplates.SiteTemplateMetadata)
+                || StringUtils.EqualsIgnoreCase(directoryName, Api.DirectoryName)
+                || StringUtils.EqualsIgnoreCase(directoryName, "obj")
+                || StringUtils.EqualsIgnoreCase(directoryName, "Properties"))
             {
                 return true;
             }

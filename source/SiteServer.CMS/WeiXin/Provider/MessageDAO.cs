@@ -7,17 +7,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class MessageDao : DataProviderBase
+    public class MessageDAO : DataProviderBase
     {
-        private const string TableName = "wx_Message";
+        private const string TABLE_NAME = "wx_Message";
          
         public int Insert(MessageInfo messageInfo)
         {
-            var messageId = 0;
+            var messageID = 0;
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(messageInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(messageInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
             using (var conn = GetConnection())
             {
@@ -26,7 +26,9 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        messageId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
+                        ExecuteNonQuery(trans, SQL_INSERT, parms);
+
+                        messageID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
 
                         trans.Commit();
                     }
@@ -38,148 +40,148 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return messageId;
+            return messageID;
         }
 
         public void Update(MessageInfo messageInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(messageInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(messageInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
-            ExecuteNonQuery(sqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
 
-        private List<int> GetMessageIdList(int publishmentSystemId)
+        private List<int> GetMessageIDList(int publishmentSystemID)
         {
-            var messageIdList = new List<int>();
+            var messageIDList = new List<int>();
 
-            string sqlWhere = $"WHERE {MessageAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, MessageAttribute.Id, sqlWhere, null);
+            string SQL_WHERE = $"WHERE {MessageAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, MessageAttribute.ID, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
-                    messageIdList.Add(rdr.GetInt32(0));
+                    messageIDList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return messageIdList;
+            return messageIDList;
         }
 
-        public void UpdateUserCount(int publishmentSystemId, Dictionary<int, int> messageIdWithCount)
+        public void UpdateUserCount(int publishmentSystemID, Dictionary<int, int> messageIDWithCount)
         {
-            if (messageIdWithCount.Count == 0)
+            if (messageIDWithCount.Count == 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {MessageAttribute.UserCount} = 0 WHERE {MessageAttribute.PublishmentSystemId} = {publishmentSystemId}";
+                    $"UPDATE {TABLE_NAME} SET {MessageAttribute.UserCount} = 0 WHERE {MessageAttribute.PublishmentSystemID} = {publishmentSystemID}";
                 ExecuteNonQuery(sqlString);
             }
             else
             {
-                var messageIdList = GetMessageIdList(publishmentSystemId);
-                foreach (var messageId in messageIdList)
+                var messageIDList = GetMessageIDList(publishmentSystemID);
+                foreach (var messageID in messageIDList)
                 {
-                    if (messageIdWithCount.ContainsKey(messageId))
+                    if (messageIDWithCount.ContainsKey(messageID))
                     {
                         string sqlString =
-                            $"UPDATE {TableName} SET {MessageAttribute.UserCount} = {messageIdWithCount[messageId]} WHERE ID = {messageId}";
+                            $"UPDATE {TABLE_NAME} SET {MessageAttribute.UserCount} = {messageIDWithCount[messageID]} WHERE ID = {messageID}";
                         ExecuteNonQuery(sqlString);
                     }
                     else
                     {
                         string sqlString =
-                            $"UPDATE {TableName} SET {MessageAttribute.UserCount} = 0 WHERE ID = {messageId}";
+                            $"UPDATE {TABLE_NAME} SET {MessageAttribute.UserCount} = 0 WHERE ID = {messageID}";
                         ExecuteNonQuery(sqlString);
                     }
                 }
             }
         }
 
-        public void AddUserCount(int messageId)
+        public void AddUserCount(int messageID)
         {
-            if (messageId > 0)
+            if (messageID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {MessageAttribute.UserCount} = {MessageAttribute.UserCount} + 1 WHERE ID = {messageId}";
+                    $"UPDATE {TABLE_NAME} SET {MessageAttribute.UserCount} = {MessageAttribute.UserCount} + 1 WHERE ID = {messageID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void AddPvCount(int messageId)
+        public void AddPVCount(int messageID)
         {
-            if (messageId > 0)
+            if (messageID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {MessageAttribute.PvCount} = {MessageAttribute.PvCount} + 1 WHERE ID = {messageId}";
+                    $"UPDATE {TABLE_NAME} SET {MessageAttribute.PVCount} = {MessageAttribute.PVCount} + 1 WHERE ID = {messageID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int messageId)
+        public void Delete(int messageID)
         {
-            if (messageId > 0)
+            if (messageID > 0)
             {
-                var messageIdList = new List<int>();
-                messageIdList.Add(messageId);
+                var messageIDList = new List<int>();
+                messageIDList.Add(messageID);
 
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(messageIdList));
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(messageIDList));
 
-                DataProviderWx.MessageContentDao.DeleteAll(messageId);
+                DataProviderWX.MessageContentDAO.DeleteAll(messageID);
 
-                string sqlString = $"DELETE FROM {TableName} WHERE ID = {messageId}";
+                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {messageID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(List<int> messageIdList)
+        public void Delete(List<int> messageIDList)
         {
-            if (messageIdList != null  && messageIdList.Count > 0)
+            if (messageIDList != null  && messageIDList.Count > 0)
             {
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(messageIdList));
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(messageIDList));
 
-                foreach (var messageId in messageIdList)
+                foreach (var messageID in messageIDList)
                 {
-                    DataProviderWx.MessageContentDao.DeleteAll(messageId);
+                    DataProviderWX.MessageContentDAO.DeleteAll(messageID);
                 }
 
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(messageIdList)})";
+                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(messageIDList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private List<int> GetKeywordIdList(List<int> messageIdList)
+        private List<int> GetKeywordIDList(List<int> messageIDList)
         {
-            var keywordIdList = new List<int>();
+            var keywordIDList = new List<int>();
 
-            if (messageIdList != null && messageIdList.Count > 0)
+            if (messageIDList != null && messageIDList.Count > 0)
             {
                 string sqlString =
-                    $"SELECT {MessageAttribute.KeywordId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(messageIdList)})";
+                    $"SELECT {MessageAttribute.KeywordID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(messageIDList)})";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
                     while (rdr.Read())
                     {
-                        keywordIdList.Add(rdr.GetInt32(0));
+                        keywordIDList.Add(rdr.GetInt32(0));
                     }
                     rdr.Close();
                 }
             }
 
-            return keywordIdList;
+            return keywordIDList;
         }
 
-        public MessageInfo GetMessageInfo(int messageId)
+        public MessageInfo GetMessageInfo(int messageID)
         {
             MessageInfo messageInfo = null;
 
-            string sqlWhere = $"WHERE ID = {messageId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {messageID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -191,20 +193,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return messageInfo;
         }
 
-        public List<MessageInfo> GetMessageInfoListByKeywordId(int publishmentSystemId, int keywordId)
+        public List<MessageInfo> GetMessageInfoListByKeywordID(int publishmentSystemID, int keywordID)
         {
             var messageInfoList = new List<MessageInfo>();
 
-            string sqlWhere =
-                $"WHERE {MessageAttribute.PublishmentSystemId} = {publishmentSystemId} AND {MessageAttribute.IsDisabled} <> '{true}'";
-            if (keywordId > 0)
+            string SQL_WHERE =
+                $"WHERE {MessageAttribute.PublishmentSystemID} = {publishmentSystemID} AND {MessageAttribute.IsDisabled} <> '{true}'";
+            if (keywordID > 0)
             {
-                sqlWhere += $" AND {MessageAttribute.KeywordId} = {keywordId}";
+                SQL_WHERE += $" AND {MessageAttribute.KeywordID} = {keywordID}";
             }
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
@@ -217,14 +219,14 @@ namespace SiteServer.CMS.WeiXin.Provider
             return messageInfoList;
         }
 
-        public string GetTitle(int messageId)
+        public string GetTitle(int messageID)
         {
             var title = string.Empty;
 
-            string sqlWhere = $"WHERE ID = {messageId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, MessageAttribute.Title, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {messageID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, MessageAttribute.Title, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -236,29 +238,29 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
 
-        public int GetFirstIdByKeywordId(int publishmentSystemId, int keywordId)
+        public int GetFirstIDByKeywordID(int publishmentSystemID, int keywordID)
         {
             string sqlString =
-                $"SELECT TOP 1 ID FROM {TableName} WHERE {MessageAttribute.PublishmentSystemId} = {publishmentSystemId} AND {MessageAttribute.IsDisabled} <> '{true}' AND {MessageAttribute.KeywordId} = {keywordId}";
+                $"SELECT TOP 1 ID FROM {TABLE_NAME} WHERE {MessageAttribute.PublishmentSystemID} = {publishmentSystemID} AND {MessageAttribute.IsDisabled} <> '{true}' AND {MessageAttribute.KeywordID} = {keywordID}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetSelectString(int publishmentSystemId)
+        public string GetSelectString(int publishmentSystemID)
         {
-            string whereString = $"WHERE {MessageAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {MessageAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
         }
 
-        public List<MessageInfo> GetMessageInfoList(int publishmentSystemId)
+        public List<MessageInfo> GetMessageInfoList(int publishmentSystemID)
         {
             var messageInfoList = new List<MessageInfo>();
 
-            string sqlWhere = $"WHERE {MessageAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            string SQL_WHERE = $"WHERE {MessageAttribute.PublishmentSystemID} = {publishmentSystemID}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {

@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovPublic;
 using SiteServer.CMS.Wcm.Model;
@@ -21,11 +22,11 @@ namespace SiteServer.BackgroundPages.Wcm
             }
         }
 
-        public static string GetRedirectUrl(int siteId, int applyId, string listPageUrl)
+        public static string GetRedirectUrl(int publishmentSystemId, int applyId, string listPageUrl)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicApplyToCheckDetail), new NameValueCollection
             {
-                {"siteId", siteId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ApplyID", applyId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(listPageUrl)}
             });

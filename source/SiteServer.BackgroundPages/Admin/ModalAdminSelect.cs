@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Permissions;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core.Permissions;
 
 namespace SiteServer.BackgroundPages.Admin
 {

@@ -3,31 +3,32 @@ using System.Web.UI.WebControls;
 
 namespace SiteServer.CMS.WeiXin.Model.Enumerations
 {
-	public enum EWxAccountType
+	public enum EWXAccountType
 	{
         Subscribe,
         AuthenticatedSubscribe,
         Service,
         AuthenticatedService
+
 	}
 
-    public class EWxAccountTypeUtils
+    public class EWXAccountTypeUtils
 	{
-        public static string GetValue(EWxAccountType type)
+        public static string GetValue(EWXAccountType type)
 		{
-            if (type == EWxAccountType.Subscribe)
+            if (type == EWXAccountType.Subscribe)
             {
                 return "Subscribe";
             }
-            else if (type == EWxAccountType.AuthenticatedSubscribe)
+            else if (type == EWXAccountType.AuthenticatedSubscribe)
             {
                 return "AuthenticatedSubscribe";
             }
-            else if (type == EWxAccountType.Service)
+            else if (type == EWXAccountType.Service)
             {
                 return "Service";
             }
-            else if (type == EWxAccountType.AuthenticatedService)
+            else if (type == EWXAccountType.AuthenticatedService)
             {
                 return "AuthenticatedService";
             }
@@ -37,23 +38,23 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 			}
 		}
 
-		public static string GetText(EWxAccountType type)
+		public static string GetText(EWXAccountType type)
 		{
-            if (type == EWxAccountType.Subscribe)
+            if (type == EWXAccountType.Subscribe)
             {
-                return "ËÆ¢ÈòÖÂè∑";
+                return "∂©‘ƒ∫≈";
             }
-            else if (type == EWxAccountType.AuthenticatedSubscribe)
+            else if (type == EWXAccountType.AuthenticatedSubscribe)
             {
-                return "ËÆ§ËØÅËÆ¢ÈòÖÂè∑";
+                return "»œ÷§∂©‘ƒ∫≈";
             }
-            else if (type == EWxAccountType.Service)
+            else if (type == EWXAccountType.Service)
             {
-                return "ÊúçÂä°Âè∑";
+                return "∑˛ŒÒ∫≈";
             }
-            else if (type == EWxAccountType.AuthenticatedService)
+            else if (type == EWXAccountType.AuthenticatedService)
             {
-                return "ËÆ§ËØÅÊúçÂä°Âè∑";
+                return "»œ÷§∑˛ŒÒ∫≈";
             }
 			else
 			{
@@ -61,31 +62,31 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 			}
 		}
 
-		public static EWxAccountType GetEnumType(string typeStr)
+		public static EWXAccountType GetEnumType(string typeStr)
 		{
-            var retval = EWxAccountType.Subscribe;
+            var retval = EWXAccountType.Subscribe;
 
-            if (Equals(EWxAccountType.Subscribe, typeStr))
+            if (Equals(EWXAccountType.Subscribe, typeStr))
             {
-                retval = EWxAccountType.Subscribe;
+                retval = EWXAccountType.Subscribe;
             }
-            else if (Equals(EWxAccountType.AuthenticatedSubscribe, typeStr))
+            else if (Equals(EWXAccountType.AuthenticatedSubscribe, typeStr))
             {
-                retval = EWxAccountType.AuthenticatedSubscribe;
+                retval = EWXAccountType.AuthenticatedSubscribe;
             }
-            else if (Equals(EWxAccountType.Service, typeStr))
+            else if (Equals(EWXAccountType.Service, typeStr))
             {
-                retval = EWxAccountType.Service;
+                retval = EWXAccountType.Service;
             }
-            else if (Equals(EWxAccountType.AuthenticatedService, typeStr))
+            else if (Equals(EWXAccountType.AuthenticatedService, typeStr))
             {
-                retval = EWxAccountType.AuthenticatedService;
+                retval = EWXAccountType.AuthenticatedService;
             }
 
 			return retval;
 		}
 
-		public static bool Equals(EWxAccountType type, string typeStr)
+		public static bool Equals(EWXAccountType type, string typeStr)
 		{
 			if (string.IsNullOrEmpty(typeStr)) return false;
 			if (string.Equals(GetValue(type).ToLower(), typeStr.ToLower()))
@@ -95,12 +96,12 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 			return false;
 		}
 
-        public static bool Equals(string typeStr, EWxAccountType type)
+        public static bool Equals(string typeStr, EWXAccountType type)
         {
             return Equals(type, typeStr);
         }
 
-        public static ListItem GetListItem(EWxAccountType type, bool selected)
+        public static ListItem GetListItem(EWXAccountType type, bool selected)
         {
             var item = new ListItem(GetText(type), GetValue(type));
             if (selected)
@@ -114,10 +115,10 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
         {
             if (listControl != null)
             {
-                listControl.Items.Add(GetListItem(EWxAccountType.Subscribe, false));
-                listControl.Items.Add(GetListItem(EWxAccountType.AuthenticatedSubscribe, false));
-                listControl.Items.Add(GetListItem(EWxAccountType.Service, false));
-                listControl.Items.Add(GetListItem(EWxAccountType.AuthenticatedService, false));
+                listControl.Items.Add(GetListItem(EWXAccountType.Subscribe, false));
+                listControl.Items.Add(GetListItem(EWXAccountType.AuthenticatedSubscribe, false));
+                listControl.Items.Add(GetListItem(EWXAccountType.Service, false));
+                listControl.Items.Add(GetListItem(EWXAccountType.AuthenticatedService, false));
             }
         }
 	}

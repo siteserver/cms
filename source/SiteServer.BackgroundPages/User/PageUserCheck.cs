@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
+using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 

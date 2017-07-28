@@ -2,4 +2,3 @@
 packages/
 **/bin/
 **/obj/
-Plugins/**/*.dll

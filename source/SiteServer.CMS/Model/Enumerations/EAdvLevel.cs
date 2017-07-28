@@ -5,16 +5,16 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EAdvLevel
     {
-        Level1,       //1çº§
-        Level2,       //2çº§
-        Level3,       //3çº§
-        Level4,       //4çº§
-        Level5,       //5çº§
-        Level6,       //6çº§
-        Level7,       //7çº§
-        Level8,       //8çº§
-        Level9,       //9çº§
-        Level10       //10çº§
+        Level1,       //1¼¶
+        Level2,       //2¼¶
+        Level3,       //3¼¶
+        Level4,       //4¼¶
+        Level5,       //5¼¶
+        Level6,       //6¼¶
+        Level7,       //7¼¶
+        Level8,       //8¼¶
+        Level9,       //9¼¶
+        Level10       //10¼¶
     }
 
     public class EAdvLevelUtils
@@ -71,43 +71,43 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (type == EAdvLevel.Level1)
             {
-                return "1çº§";
+                return "1¼¶";
             } 
             else if (type == EAdvLevel.Level2)
             {
-                return "2çº§";
+                return "2¼¶";
             }
             else if (type == EAdvLevel.Level3)
             {
-                return "3çº§";
+                return "3¼¶";
             }
             else if (type == EAdvLevel.Level4)
             {
-                return "4çº§";
+                return "4¼¶";
             }
             else if (type == EAdvLevel.Level5)
             {
-                return "5çº§";
+                return "5¼¶";
             }
             else if (type == EAdvLevel.Level6)
             {
-                return "6çº§";
+                return "6¼¶";
             }
             else if (type == EAdvLevel.Level7)
             {
-                return "7çº§";
+                return "7¼¶";
             }
             else if (type == EAdvLevel.Level8)
             {
-                return "8çº§";
+                return "8¼¶";
             }
             else if (type == EAdvLevel.Level9)
             {
-                return "9çº§";
+                return "9¼¶";
             }
             else if (type == EAdvLevel.Level10)
             {
-                return "10çº§";
+                return "10¼¶";
             }
             else
             {

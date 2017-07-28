@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Configuration;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Wcm.Model;
 
 namespace SiteServer.BackgroundPages.Wcm
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("权限设置", PageUtils.GetWcmUrl(nameof(ModalGovInteractPermissions), new NameValueCollection
             {
-                {"siteId", publishmentSystemId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"UserName", userName}
             }), 450, 320);

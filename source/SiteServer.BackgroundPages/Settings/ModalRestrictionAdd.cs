@@ -2,6 +2,7 @@ using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Text;
 
 namespace SiteServer.BackgroundPages.Settings
 {

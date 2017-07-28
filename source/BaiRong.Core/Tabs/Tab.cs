@@ -10,17 +10,19 @@ namespace BaiRong.Core.Tabs
 	public class Tab
 	{
         private string _id;
-        private string _parentId;
         private string _text;
         private string _href;
         private string _name;
         private string _permissions;
         private bool _enable = true;
+        private bool _isOwner;
+        private bool _isPlatform;
         private Tab[] _children;
         private bool _keepQueryString;
         private bool _selected;
         private string _target;
         private string _iconUrl;
+        private string _ban;
         private string _addtionalString;
 
         /// <summary>
@@ -31,16 +33,6 @@ namespace BaiRong.Core.Tabs
         {
             get { return _id; }
             set { _id = value; }
-        }
-
-        /// <summary>
-        /// Property Text (string)
-        /// </summary>
-        [XmlAttribute("parentId")]
-        public string ParentId
-        {
-            get { return _parentId; }
-            set { _parentId = value; }
         }
 
         /// <summary>
@@ -94,6 +86,20 @@ namespace BaiRong.Core.Tabs
             set { _enable = value; }
         }
 
+        [XmlAttribute("isowner")]
+        public bool IsOwner
+        {
+            get { return _isOwner; }
+            set { _isOwner = value; }
+        }
+
+        [XmlAttribute("isplatform")]
+        public bool IsPlatform
+        {
+            get { return _isPlatform; }
+            set { _isPlatform = value; }
+        }
+
         /// <summary>
         /// Property KeepQueryString (bool)
         /// </summary>
@@ -132,6 +138,16 @@ namespace BaiRong.Core.Tabs
         {
             get { return _iconUrl; }
             set { _iconUrl = value; }
+        }
+
+        /// <summary>
+        /// Property AddtionalString (string)
+        /// </summary>
+        [XmlAttribute("ban")]
+        public string Ban
+        {
+            get { return _ban; }
+            set { _ban = value; }
         }
 
         /// <summary>

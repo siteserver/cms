@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetWcmUrl(nameof(PageGovInteractPageReply), new NameValueCollection
             {
-                {"siteId", publishmentSystemId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ContentID", contentId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(listPageUrl)}

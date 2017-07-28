@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
+using BaiRong.Core.Text;
 using SiteServer.CMS.Wcm.GovPublic;
 
 namespace SiteServer.BackgroundPages.Wcm
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages.Wcm
 	        return PageUtils.GetOpenWindowString("添加部门",
 	            PageUtils.GetWcmUrl(nameof(ModalGovPublicDepartmentAdd), new NameValueCollection
 	            {
-	                {"siteId", publishmentSystemId.ToString()},
+	                {"PublishmentSystemID", publishmentSystemId.ToString()},
 	                {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
 	            }), 460, 360);
 	    }

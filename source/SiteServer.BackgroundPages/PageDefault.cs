@@ -1,4 +1,4 @@
-﻿using BaiRong.Core;
+using BaiRong.Core;
 
 namespace SiteServer.BackgroundPages
 {

@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 {
                     _pageUrl = PageUtils.GetWcmUrl(nameof(PageGovPublicApplyToAccept), new NameValueCollection
                     {
-                        {"siteId", PublishmentSystemId.ToString()}
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()}
                     });
                 }
                 return _pageUrl;

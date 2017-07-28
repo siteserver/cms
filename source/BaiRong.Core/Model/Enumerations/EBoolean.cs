@@ -31,11 +31,11 @@ namespace BaiRong.Core.Model.Enumerations
 		{
 			if (type == EBoolean.True)
 			{
-				return "æ˜¯";
+				return "ÊÇ";
 			}
 			else if (type == EBoolean.False)
 			{
-				return "å¦";
+				return "·ñ";
 			}
 			else
 			{

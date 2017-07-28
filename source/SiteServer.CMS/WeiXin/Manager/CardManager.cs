@@ -58,8 +58,8 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var attributes = new NameValueCollection
             {
-                {"publishmentSystemID", cardInfo.PublishmentSystemId.ToString()},
-                {"cardID", cardInfo.Id.ToString()},
+                {"publishmentSystemID", cardInfo.PublishmentSystemID.ToString()},
+                {"cardID", cardInfo.ID.ToString()},
                 {"wxOpenID", wxOpenId}
             };
             return PageUtils.AddQueryString(GetCardUrl(publishmentSystemInfo), attributes);
@@ -68,12 +68,12 @@ namespace SiteServer.CMS.WeiXin.Manager
         public static int GetSignCredits(PublishmentSystemInfo publishmentSystemInfo, string userName)
         {
             var credits = 0;
-            var signCreditsConfigure = publishmentSystemInfo.Additional.WxCardSignCreditsConfigure;
+            var signCreditsConfigure = publishmentSystemInfo.Additional.CardSignCreditsConfigure;
             if (!string.IsNullOrEmpty(signCreditsConfigure))
             {
                 var days = 0;
                 var curDateTime = DateTime.Now;
-                var signDateList = DataProviderWx.CardSignLogDao.GetSignDateList(publishmentSystemInfo.PublishmentSystemId, userName);
+                var signDateList = DataProviderWX.CardSignLogDAO.GetSignDateList(publishmentSystemInfo.PublishmentSystemId, userName);
                 foreach (var dateTime in signDateList)
                 {
                     days++;
@@ -123,9 +123,9 @@ namespace SiteServer.CMS.WeiXin.Manager
         { 
             var articleList = new List<Article>();
              
-            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
+            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
 
-            var CardInfoList = DataProviderWx.CardDao.GetCardInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
+            var CardInfoList = DataProviderWX.CardDAO.GetCardInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
 
             foreach (var cardInfo in CardInfoList)
             {

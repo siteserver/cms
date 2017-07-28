@@ -5,6 +5,7 @@ using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;

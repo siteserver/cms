@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovInteract;
 using SiteServer.CMS.Wcm.Model;
@@ -18,18 +19,20 @@ namespace SiteServer.BackgroundPages.Wcm
 
         private List<int> _idArrayList;
 
-        public static string GetOpenWindowString(int siteId)
+        public static string GetOpenWindowString(int publishmentSystemId)
         {
             return PageUtils.GetOpenWindowStringWithCheckBoxValue("批示",
                 PageUtils.GetWcmUrl(nameof(ModalGovInteractApplyComment), new NameValueCollection
                 {
-                    {"siteId", siteId.ToString()}
+                    {"PublishmentSystemID", publishmentSystemId.ToString()}
                 }), "IDCollection", "请选择需要批示的申请！", 450, 320);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
+
+            PageUtils.CheckRequestParameter("PublishmentSystemID");
 
             _idArrayList = TranslateUtils.StringCollectionToIntList(Request.QueryString["IDCollection"]);
 

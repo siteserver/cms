@@ -55,22 +55,6 @@ namespace BaiRong.Core
             return retval;
         }
 
-        public static bool IsEquals(string path1, string path2)
-        {
-            if (string.IsNullOrEmpty(path1) || string.IsNullOrEmpty(path2)) return false;
-            return string.Equals(Path.GetFullPath(path1), Path.GetFullPath(path2), StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static bool IsSystemPath(string path)
-        {
-            return DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.AspnetClient.DirectoryName), path)
-                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.Bin.DirectoryName), path)
-                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName), path)
-                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, FileConfigManager.Instance.AdminDirectoryName), path)
-                   || IsEquals(Combine(WebConfigUtils.PhysicalApplicationPath, "web.config"), path)
-                   || IsEquals(Combine(WebConfigUtils.PhysicalApplicationPath, "Global.asax"), path);
-        }
-
         public static string GetExtension(string path)
         {
             var retval = string.Empty;
@@ -177,12 +161,7 @@ namespace BaiRong.Core
 
         public static string GetSiteFilesPath(params string[] paths)
         {
-            return MapPath(Combine("~/" + DirectoryUtils.SiteFiles.DirectoryName, Combine(paths)));
-        }
-
-        public static string GetPluginsPath(params string[] paths)
-        {
-            return GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins, Combine(paths));
+            return MapPath(Combine("~/sitefiles", Combine(paths)));
         }
 
         public static string RemovePathInvalidChar(string filePath)

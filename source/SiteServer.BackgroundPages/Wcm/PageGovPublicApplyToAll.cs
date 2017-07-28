@@ -74,7 +74,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 {
                     _pageUrl = PageUtils.GetWcmUrl(nameof(PageGovPublicApplyToAll), new NameValueCollection
                     {
-                        {"siteId", PublishmentSystemId.ToString()},
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"isTaxisDESC", ddlTaxis.SelectedValue},
                         {"state", ddlState.SelectedValue},
                         {"keyword", tbKeyword.Text},

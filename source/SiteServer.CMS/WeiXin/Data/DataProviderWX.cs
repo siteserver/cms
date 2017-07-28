@@ -2,578 +2,578 @@ using SiteServer.CMS.WeiXin.Provider;
 
 namespace SiteServer.CMS.WeiXin.Data
 {
-	public class DataProviderWx
+	public class DataProviderWX
 	{
 
-        private static MenuDao _menuDao;
-        public static MenuDao MenuDao
+        private static MenuDAO menuDAO;
+        public static MenuDAO MenuDAO
         {
             get
             {
-                if (_menuDao == null)
+                if (menuDAO == null)
                 {
-                    _menuDao = new MenuDao();
+                    menuDAO = new MenuDAO();
                 }
-                return _menuDao;
+                return menuDAO;
             }
         }
 
-        private static WebMenuDao _webMenuDao;
-        public static WebMenuDao WebMenuDao
+        private static WebMenuDAO webMenuDAO;
+        public static WebMenuDAO WebMenuDAO
         {
             get
             {
-                if (_webMenuDao == null)
+                if (webMenuDAO == null)
                 {
-                    _webMenuDao = new WebMenuDao();
+                    webMenuDAO = new WebMenuDAO();
                 }
-                return _webMenuDao;
+                return webMenuDAO;
             }
         }
 
-        private static KeywordDao _keywordDao;
-        public static KeywordDao KeywordDao
+        private static KeywordDAO keywordDAO;
+        public static KeywordDAO KeywordDAO
         {
             get
             {
-                if (_keywordDao == null)
+                if (keywordDAO == null)
                 {
-                    _keywordDao = new KeywordDao();
+                    keywordDAO = new KeywordDAO();
                 }
-                return _keywordDao;
+                return keywordDAO;
             }
         }
 
-        private static KeywordGroupDao _keywordGroupDao;
-        public static KeywordGroupDao KeywordGroupDao
+        private static KeywordGroupDAO keywordGroupDAO;
+        public static KeywordGroupDAO KeywordGroupDAO
         {
             get
             {
-                if (_keywordGroupDao == null)
+                if (keywordGroupDAO == null)
                 {
-                    _keywordGroupDao = new KeywordGroupDao();
+                    keywordGroupDAO = new KeywordGroupDAO();
                 }
-                return _keywordGroupDao;
+                return keywordGroupDAO;
             }
         }
 
-        private static KeywordResourceDao _keywordResourceDao;
-        public static KeywordResourceDao KeywordResourceDao
+        private static KeywordResourceDAO keywordResourceDAO;
+        public static KeywordResourceDAO KeywordResourceDAO
         {
             get
             {
-                if (_keywordResourceDao == null)
+                if (keywordResourceDAO == null)
                 {
-                    _keywordResourceDao = new KeywordResourceDao();
+                    keywordResourceDAO = new KeywordResourceDAO();
                 }
-                return _keywordResourceDao;
+                return keywordResourceDAO;
             }
         }
 
-        private static KeywordMatchDao _keywordMatchDao;
-        public static KeywordMatchDao KeywordMatchDao
+        private static KeywordMatchDAO keywordMatchDAO;
+        public static KeywordMatchDAO KeywordMatchDAO
         {
             get
             {
-                if (_keywordMatchDao == null)
+                if (keywordMatchDAO == null)
                 {
-                    _keywordMatchDao = new KeywordMatchDao();
+                    keywordMatchDAO = new KeywordMatchDAO();
                 }
-                return _keywordMatchDao;
+                return keywordMatchDAO;
             }
         }
 
-        private static CountDao _countDao;
-        public static CountDao CountDao
+        private static CountDAO countDAO;
+        public static CountDAO CountDAO
         {
             get
             {
-                if (_countDao == null)
+                if (countDAO == null)
                 {
-                    _countDao = new CountDao();
+                    countDAO = new CountDAO();
                 }
-                return _countDao;
+                return countDAO;
             }
         }
 
-        private static CouponDao _couponDao;
-        public static CouponDao CouponDao
+        private static CouponDAO couponDAO;
+        public static CouponDAO CouponDAO
         {
             get
             {
-                if (_couponDao == null)
+                if (couponDAO == null)
                 {
-                    _couponDao = new CouponDao();
+                    couponDAO = new CouponDAO();
                 }
-                return _couponDao;
+                return couponDAO;
             }
         }
 
-	    private static CouponSnDao _couponSnDao;
-        public static CouponSnDao CouponSnDao
+        private static CouponSNDAO couponSNDAO;
+        public static CouponSNDAO CouponSNDAO
         {
             get
             {
-                if (_couponSnDao == null)
+                if (couponSNDAO == null)
                 {
-                    _couponSnDao = new CouponSnDao();
+                    couponSNDAO = new CouponSNDAO();
                 }
-                return _couponSnDao;
+                return couponSNDAO;
             }
         }
 
-        private static CouponActDao _couponActDao;
-        public static CouponActDao CouponActDao
+        private static CouponActDAO couponActDAO;
+        public static CouponActDAO CouponActDAO
         {
             get
             {
-                if (_couponActDao == null)
+                if (couponActDAO == null)
                 {
-                    _couponActDao = new CouponActDao();
+                    couponActDAO = new CouponActDAO();
                 }
-                return _couponActDao;
+                return couponActDAO;
             }
         }
 
-        private static AccountDao _accountDao;
-        public static AccountDao AccountDao
+        private static AccountDAO accountDAO;
+        public static AccountDAO AccountDAO
         {
             get
             {
-                if (_accountDao == null)
+                if (accountDAO == null)
                 {
-                    _accountDao = new AccountDao();
+                    accountDAO = new AccountDAO();
                 }
-                return _accountDao;
+                return accountDAO;
             }
         }
 
-        private static VoteDao _voteDao;
-        public static VoteDao VoteDao
+        private static VoteDAO voteDAO;
+        public static VoteDAO VoteDAO
         {
             get
             {
-                if (_voteDao == null)
+                if (voteDAO == null)
                 {
-                    _voteDao = new VoteDao();
+                    voteDAO = new VoteDAO();
                 }
-                return _voteDao;
+                return voteDAO;
             }
         }
 
-        private static VoteItemDao _voteItemDao;
-        public static VoteItemDao VoteItemDao
+        private static VoteItemDAO voteItemDAO;
+        public static VoteItemDAO VoteItemDAO
         {
             get
             {
-                if (_voteItemDao == null)
+                if (voteItemDAO == null)
                 {
-                    _voteItemDao = new VoteItemDao();
+                    voteItemDAO = new VoteItemDAO();
                 }
-                return _voteItemDao;
+                return voteItemDAO;
             }
         }
 
-        private static VoteLogDao _voteLogDao;
-        public static VoteLogDao VoteLogDao
+        private static VoteLogDAO voteLogDAO;
+        public static VoteLogDAO VoteLogDAO
         {
             get
             {
-                if (_voteLogDao == null)
+                if (voteLogDAO == null)
                 {
-                    _voteLogDao = new VoteLogDao();
+                    voteLogDAO = new VoteLogDAO();
                 }
-                return _voteLogDao;
+                return voteLogDAO;
             }
         }
 
-        private static MessageDao _messageDao;
-        public static MessageDao MessageDao
+        private static MessageDAO messageDAO;
+        public static MessageDAO MessageDAO
         {
             get
             {
-                if (_messageDao == null)
+                if (messageDAO == null)
                 {
-                    _messageDao = new MessageDao();
+                    messageDAO = new MessageDAO();
                 }
-                return _messageDao;
+                return messageDAO;
             }
         }
 
-        private static MessageContentDao _messageContentDao;
-        public static MessageContentDao MessageContentDao
+        private static MessageContentDAO messageContentDAO;
+        public static MessageContentDAO MessageContentDAO
         {
             get
             {
-                if (_messageContentDao == null)
+                if (messageContentDAO == null)
                 {
-                    _messageContentDao = new MessageContentDao();
+                    messageContentDAO = new MessageContentDAO();
                 }
-                return _messageContentDao;
+                return messageContentDAO;
             }
         }
 
-        private static View360Dao _view360Dao;
-        public static View360Dao View360Dao
+        private static View360DAO view360DAO;
+        public static View360DAO View360DAO
         {
             get
             {
-                if (_view360Dao == null)
+                if (view360DAO == null)
                 {
-                    _view360Dao = new View360Dao();
+                    view360DAO = new View360DAO();
                 }
-                return _view360Dao;
+                return view360DAO;
             }
         }
 
-        private static ConferenceDao _conferenceDao;
-        public static ConferenceDao ConferenceDao
+        private static ConferenceDAO conferenceDAO;
+        public static ConferenceDAO ConferenceDAO
         {
             get
             {
-                if (_conferenceDao == null)
+                if (conferenceDAO == null)
                 {
-                    _conferenceDao = new ConferenceDao();
+                    conferenceDAO = new ConferenceDAO();
                 }
-                return _conferenceDao;
+                return conferenceDAO;
             }
         }
 
-        private static ConferenceContentDao _conferenceContentDao;
-        public static ConferenceContentDao ConferenceContentDao
+        private static ConferenceContentDAO conferenceContentDAO;
+        public static ConferenceContentDAO ConferenceContentDAO
         {
             get
             {
-                if (_conferenceContentDao == null)
+                if (conferenceContentDAO == null)
                 {
-                    _conferenceContentDao = new ConferenceContentDao();
+                    conferenceContentDAO = new ConferenceContentDAO();
                 }
-                return _conferenceContentDao;
+                return conferenceContentDAO;
             }
         }
 
-        private static MapDao _mapDao;
-        public static MapDao MapDao
+        private static MapDAO mapDAO;
+        public static MapDAO MapDAO
         {
             get
             {
-                if (_mapDao == null)
+                if (mapDAO == null)
                 {
-                    _mapDao = new MapDao();
+                    mapDAO = new MapDAO();
                 }
-                return _mapDao;
+                return mapDAO;
             }
         }
 
-        private static LotteryDao _lotteryDao;
-        public static LotteryDao LotteryDao
+        private static LotteryDAO lotteryDAO;
+        public static LotteryDAO LotteryDAO
         {
             get
             {
-                if (_lotteryDao == null)
+                if (lotteryDAO == null)
                 {
-                    _lotteryDao = new LotteryDao();
+                    lotteryDAO = new LotteryDAO();
                 }
-                return _lotteryDao;
+                return lotteryDAO;
             }
         }
 
-        private static LotteryAwardDao _lotteryAwardDao;
-        public static LotteryAwardDao LotteryAwardDao
+        private static LotteryAwardDAO lotteryAwardDAO;
+        public static LotteryAwardDAO LotteryAwardDAO
         {
             get
             {
-                if (_lotteryAwardDao == null)
+                if (lotteryAwardDAO == null)
                 {
-                    _lotteryAwardDao = new LotteryAwardDao();
+                    lotteryAwardDAO = new LotteryAwardDAO();
                 }
-                return _lotteryAwardDao;
+                return lotteryAwardDAO;
             }
         }
 
-        private static LotteryWinnerDao _lotteryWinnerDao;
-        public static LotteryWinnerDao LotteryWinnerDao
+        private static LotteryWinnerDAO lotteryWinnerDAO;
+        public static LotteryWinnerDAO LotteryWinnerDAO
         {
             get
             {
-                if (_lotteryWinnerDao == null)
+                if (lotteryWinnerDAO == null)
                 {
-                    _lotteryWinnerDao = new LotteryWinnerDao();
+                    lotteryWinnerDAO = new LotteryWinnerDAO();
                 }
-                return _lotteryWinnerDao;
+                return lotteryWinnerDAO;
             }
         }
 
-        private static LotteryLogDao _lotteryLogDao;
-        public static LotteryLogDao LotteryLogDao
+        private static LotteryLogDAO lotteryLogDAO;
+        public static LotteryLogDAO LotteryLogDAO
         {
             get
             {
-                if (_lotteryLogDao == null)
+                if (lotteryLogDAO == null)
                 {
-                    _lotteryLogDao = new LotteryLogDao();
+                    lotteryLogDAO = new LotteryLogDAO();
                 }
-                return _lotteryLogDao;
+                return lotteryLogDAO;
             }
         }
 
-        private static AlbumDao _albumDao;
-        public static AlbumDao AlbumDao
+        private static AlbumDAO albumDAO;
+        public static AlbumDAO AlbumDAO
         {
             get
             {
-                if (_albumDao == null)
+                if (albumDAO == null)
                 {
-                    _albumDao = new AlbumDao();
+                    albumDAO = new AlbumDAO();
                 }
-                return _albumDao;
+                return albumDAO;
             }
         }
 
-        private static AlbumContentDao _albumContentDao;
-        public static AlbumContentDao AlbumContentDao
+        private static AlbumContentDAO albumContentDAO;
+        public static AlbumContentDAO AlbumContentDAO
         {
             get
             {
-                if (_albumContentDao == null)
+                if (albumContentDAO == null)
                 {
-                    _albumContentDao = new AlbumContentDao();
+                    albumContentDAO = new AlbumContentDAO();
                 }
-                return _albumContentDao;
+                return albumContentDAO;
             }
         }
 
-        private static AppointmentDao _appointmentDao;
-        public static AppointmentDao AppointmentDao
+        private static AppointmentDAO appointmentDAO;
+        public static AppointmentDAO AppointmentDAO
         {
             get
             {
-                if (_appointmentDao == null)
+                if (appointmentDAO == null)
                 {
-                    _appointmentDao = new AppointmentDao();
+                    appointmentDAO = new AppointmentDAO();
                 }
-                return _appointmentDao;
+                return appointmentDAO;
             }
         }
 
-        private static AppointmentItemDao _appointmentItemDao;
-        public static AppointmentItemDao AppointmentItemDao
+        private static AppointmentItemDAO appointmentItemDAO;
+        public static AppointmentItemDAO AppointmentItemDAO
         {
             get
             {
-                if (_appointmentItemDao == null)
+                if (appointmentItemDAO == null)
                 {
-                    _appointmentItemDao = new AppointmentItemDao();
+                    appointmentItemDAO = new AppointmentItemDAO();
                 }
-                return _appointmentItemDao;
+                return appointmentItemDAO;
             }
         }
 
-        private static AppointmentContentDao _appointmentContentDao;
-        public static AppointmentContentDao AppointmentContentDao
+        private static AppointmentContentDAO appointmentContentDAO;
+        public static AppointmentContentDAO AppointmentContentDAO
         {
             get
             {
-                if (_appointmentContentDao == null)
+                if (appointmentContentDAO == null)
                 {
-                    _appointmentContentDao = new AppointmentContentDao();
+                    appointmentContentDAO = new AppointmentContentDAO();
                 }
-                return _appointmentContentDao;
+                return appointmentContentDAO;
             }
         }
 
-        private static SearchDao _searchDao;
-        public static SearchDao SearchDao
+        private static SearchDAO searchDAO;
+        public static SearchDAO SearchDAO
         {
             get
             {
-                if (_searchDao == null)
+                if (searchDAO == null)
                 {
-                    _searchDao = new SearchDao();
+                    searchDAO = new SearchDAO();
                 }
-                return _searchDao;
+                return searchDAO;
             }
         }
 
-        private static SearchNavigationDao _searchNavigationDao;
-        public static SearchNavigationDao SearchNavigationDao
+        private static SearchNavigationDAO searchNavigationDAO;
+        public static SearchNavigationDAO SearchNavigationDAO
         {
             get
             {
-                if (_searchNavigationDao == null)
+                if (searchNavigationDAO == null)
                 {
-                    _searchNavigationDao = new SearchNavigationDao();
+                    searchNavigationDAO = new SearchNavigationDAO();
                 }
-                return _searchNavigationDao;
+                return searchNavigationDAO;
             }
         }
 
-        private static StoreDao _storeDao;
-        public static StoreDao StoreDao
+        private static StoreDAO storeDAO;
+        public static StoreDAO StoreDAO
         {
             get
             {
-                if (_storeDao == null)
+                if (storeDAO == null)
                 {
-                    _storeDao = new StoreDao();
+                    storeDAO = new StoreDAO();
                 }
-                return _storeDao;
+                return storeDAO;
             }
         }
 
-        private static StoreCategoryDao _storeCategoryDao;
-        public static StoreCategoryDao StoreCategoryDao
+        private static StoreCategoryDAO storeCategoryDAO;
+        public static StoreCategoryDAO StoreCategoryDAO
         {
             get
             {
-                if (_storeCategoryDao == null)
+                if (storeCategoryDAO == null)
                 {
-                    _storeCategoryDao = new StoreCategoryDao();
+                    storeCategoryDAO = new StoreCategoryDAO();
                 }
-                return _storeCategoryDao;
+                return storeCategoryDAO;
             }
         }
 
-        private static StoreItemDao _storeItemDao;
-        public static StoreItemDao StoreItemDao
+        private static StoreItemDAO storeItemDAO;
+        public static StoreItemDAO StoreItemDAO
         {
             get
             {
-                if (_storeItemDao == null)
+                if (storeItemDAO == null)
                 {
-                    _storeItemDao = new StoreItemDao();
+                    storeItemDAO = new StoreItemDAO();
                 }
-                return _storeItemDao;
+                return storeItemDAO;
             }
         }
 
-        private static ScenceDao _scenceDao;
-        public static ScenceDao ScenceDao
+        private static ScenceDAO scenceDAO;
+        public static ScenceDAO ScenceDAO
         {
             get
             {
-                if (_scenceDao == null)
+                if (scenceDAO == null)
                 {
-                    _scenceDao = new ScenceDao();
+                    scenceDAO = new ScenceDAO();
                 }
-                return _scenceDao;
+                return scenceDAO;
             }
         }
 
-        private static ConfigExtendDao _configExtendDao;
-        public static ConfigExtendDao ConfigExtendDao
+        private static ConfigExtendDAO configExtendDAO;
+        public static ConfigExtendDAO ConfigExtendDAO
         {
             get
             {
-                if (_configExtendDao == null)
+                if (configExtendDAO == null)
                 {
-                    _configExtendDao = new ConfigExtendDao();
+                    configExtendDAO = new ConfigExtendDAO();
                 }
-                return _configExtendDao;
+                return configExtendDAO;
             }
         }
 
-        private static CardDao _cardDao;
-        public static CardDao CardDao
+        private static CardDAO cardDAO;
+        public static CardDAO CardDAO
         {
             get
             {
-                if (_cardDao == null)
+                if (cardDAO == null)
                 {
-                    _cardDao = new CardDao();
+                    cardDAO = new CardDAO();
                 }
-                return _cardDao;
+                return cardDAO;
             }
         }
 
-        private static CardSnDao _cardSnDao;
-        public static CardSnDao CardSnDao
+        private static CardSNDAO cardSNDAO;
+        public static CardSNDAO CardSNDAO
         {
             get
             {
-                if (_cardSnDao == null)
+                if (cardSNDAO == null)
                 {
-                    _cardSnDao = new CardSnDao();
+                    cardSNDAO = new CardSNDAO();
                 }
-                return _cardSnDao;
+                return cardSNDAO;
             }
         }
 
-        private static CardEntitySnDao _cardEntitySnDao;
-        public static CardEntitySnDao CardEntitySnDao
+        private static CardEntitySNDAO cardEntitySNDAO;
+        public static CardEntitySNDAO CardEntitySNDAO
         {
             get
             {
-                if (_cardEntitySnDao == null)
+                if (cardEntitySNDAO == null)
                 {
-                    _cardEntitySnDao = new CardEntitySnDao();
+                    cardEntitySNDAO = new CardEntitySNDAO();
                 }
-                return _cardEntitySnDao;
+                return cardEntitySNDAO;
             }
         }
 
-        private static CardSignLogDao _cardSignLogDao;
-        public static CardSignLogDao CardSignLogDao
+        private static CardSignLogDAO cardSignLogDAO;
+        public static CardSignLogDAO CardSignLogDAO
         {
             get
             {
-                if (_cardSignLogDao == null)
+                if (cardSignLogDAO == null)
                 {
-                    _cardSignLogDao = new CardSignLogDao();
+                    cardSignLogDAO = new CardSignLogDAO();
                 }
-                return _cardSignLogDao;
+                return cardSignLogDAO;
             }
         }
 
-        private static CardCashLogDao _cardCashLogDao;
-        public static CardCashLogDao CardCashLogDao
+        private static CardCashLogDAO cardCashLogDAO;
+        public static CardCashLogDAO CardCashLogDAO
         {
             get
             {
-                if (_cardCashLogDao == null)
+                if (cardCashLogDAO == null)
                 {
-                    _cardCashLogDao = new CardCashLogDao();
+                    cardCashLogDAO = new CardCashLogDAO();
                 }
-                return _cardCashLogDao;
+                return cardCashLogDAO;
             }
         }
 
-        private static CollectDao _collectDao;
-        public static CollectDao CollectDao
+        private static CollectDAO collectDAO;
+        public static CollectDAO CollectDAO
         {
             get
             {
-                if (_collectDao == null)
+                if (collectDAO == null)
                 {
-                    _collectDao = new CollectDao();
+                    collectDAO = new CollectDAO();
                 }
-                return _collectDao;
+                return collectDAO;
             }
         }
 
-        private static CollectItemDao _collectItemDao;
-        public static CollectItemDao CollectItemDao
+        private static CollectItemDAO collectItemDAO;
+        public static CollectItemDAO CollectItemDAO
         {
             get
             {
-                if (_collectItemDao == null)
+                if (collectItemDAO == null)
                 {
-                    _collectItemDao = new CollectItemDao();
+                    collectItemDAO = new CollectItemDAO();
                 }
-                return _collectItemDao;
+                return collectItemDAO;
             }
         }
 
-        private static CollectLogDao _collectLogDao;
-        public static CollectLogDao CollectLogDao
+        private static CollectLogDAO collectLogDAO;
+        public static CollectLogDAO CollectLogDAO
         {
             get
             {
-                if (_collectLogDao == null)
+                if (collectLogDAO == null)
                 {
-                    _collectLogDao = new CollectLogDao();
+                    collectLogDAO = new CollectLogDAO();
                 }
-                return _collectLogDao;
+                return collectLogDAO;
             }
         }
 	}

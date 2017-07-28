@@ -12,11 +12,11 @@ namespace SiteServer.CMS.WeiXin.MP
     {
         public static string GetAccessToken(AccountInfo accountInfo)
         {
-            if (AccessTokenContainer.CheckRegistered(accountInfo.AppId) == false)
+            if (AccessTokenContainer.CheckRegistered(accountInfo.AppID) == false)
             {
-                AccessTokenContainer.Register(accountInfo.AppId, accountInfo.AppSecret);
+                AccessTokenContainer.Register(accountInfo.AppID, accountInfo.AppSecret);
             }
-            return AccessTokenContainer.GetToken(accountInfo.AppId);
+            return AccessTokenContainer.GetToken(accountInfo.AppID);
         }
 
         public static string GetSummary(string summary, string content)

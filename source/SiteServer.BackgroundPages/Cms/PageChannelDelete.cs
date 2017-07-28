@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using System.Collections.Generic;
+using BaiRong.Core.Text;
 
 namespace SiteServer.BackgroundPages.Cms
 {

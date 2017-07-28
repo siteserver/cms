@@ -4,7 +4,9 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+
 using BaiRong.Core.Model;
+using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Web.Controls;
 using System.Collections.Generic;
 
@@ -151,18 +153,18 @@ namespace BaiRong.Core
 
         public static string GetSelectedListControlValueCollection(ListControl listControl)
         {
-            var list = new List<string>();
+            var arraylist = new ArrayList();
             if (listControl != null)
             {
                 foreach (ListItem item in listControl.Items)
                 {
                     if (item.Selected)
                     {
-                        list.Add(item.Value);
+                        arraylist.Add(item.Value);
                     }
                 }
             }
-            return TranslateUtils.ObjectCollectionToString(list);
+            return TranslateUtils.ObjectCollectionToString(arraylist);
         }
 
         public static ArrayList GetSelectedListControlValueArrayList(ListControl listControl)
@@ -370,7 +372,7 @@ namespace BaiRong.Core
 
         public static string GetInputValue(Control containerControl, string inputName)
         {
-            Control control;
+            Control control = null;
             return GetInputValue(containerControl, inputName, out control);
         }
 

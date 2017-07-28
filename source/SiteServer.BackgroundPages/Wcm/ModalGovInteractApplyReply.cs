@@ -5,6 +5,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovInteract;
 using SiteServer.CMS.Wcm.Model;
@@ -20,12 +21,12 @@ namespace SiteServer.BackgroundPages.Wcm
 
         private GovInteractContentInfo _contentInfo;
 
-	    public static string GetOpenWindowString(int siteId, int nodeId, int contentId)
+	    public static string GetOpenWindowString(int publishmentSystemId, int nodeId, int contentId)
 	    {
 	        return PageUtils.GetOpenWindowString("回复办件",
 	            PageUtils.GetWcmUrl(nameof(ModalGovInteractApplyReply), new NameValueCollection
 	            {
-	                {"siteId", siteId.ToString()},
+	                {"PublishmentSystemID", publishmentSystemId.ToString()},
 	                {"ContentID", contentId.ToString()}
 	            }), 600, 450);
 	    }
@@ -34,7 +35,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("ContentID");
+            PageUtils.CheckRequestParameter("PublishmentSystemID", "ContentID");
 
             _contentInfo = DataProvider.GovInteractContentDao.GetContentInfo(PublishmentSystemInfo, TranslateUtils.ToInt(Request.QueryString["ContentID"]));
 

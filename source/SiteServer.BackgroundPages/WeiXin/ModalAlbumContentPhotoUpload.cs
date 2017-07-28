@@ -13,19 +13,19 @@ namespace SiteServer.BackgroundPages.WeiXin
 {
     public class ModalAlbumContentPhotoUpload : BasePageCms
     {
-        public Literal LtlScript;
+        public Literal ltlScript;
 
-        private int _albumId;
-        private int _parentId;
+        private int albumID;
+        private int parentID;
 
-        public static string GetOpenWindowStringToAdd(int publishmentSystemId, int albumId, int parentId)
+        public static string GetOpenWindowStringToAdd(int publishmentSystemId, int albumID, int parentID)
         {
             return PageUtils.GetOpenWindowString("上传照片",
                 PageUtils.GetWeiXinUrl(nameof(ModalAlbumContentPhotoUpload), new NameValueCollection
                 {
-                    {"PublishmentSystemId", publishmentSystemId.ToString()},
-                    {"albumID", albumId.ToString()},
-                    {"parentID", parentId.ToString()}
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"albumID", albumID.ToString()},
+                    {"parentID", parentID.ToString()}
                 }));
         }
 
@@ -43,15 +43,15 @@ namespace SiteServer.BackgroundPages.WeiXin
         {
             if (IsForbidden) return;
 
-            _albumId = Body.GetQueryInt("albumID");
-            _parentId = Body.GetQueryInt("parentID");
+            albumID = Body.GetQueryInt("albumID");
+            parentID = Body.GetQueryInt("parentID");
 
             if (!IsPostBack)
             {
                 var list = new List<AlbumContentInfo>();
-                if (_parentId > 0)
+                if (parentID > 0)
                 {
-                    list = DataProviderWx.AlbumContentDao.GetAlbumContentInfoList(PublishmentSystemId, _albumId, _parentId);
+                    list = DataProviderWX.AlbumContentDAO.GetAlbumContentInfoList(PublishmentSystemId, albumID, parentID);
                 }
 
                 var scriptBuilder = new StringBuilder();
@@ -60,12 +60,12 @@ namespace SiteServer.BackgroundPages.WeiXin
                 {
                     scriptBuilder.AppendFormat(@"
 add_form({0}, '{1}', '{2}', '{3}', '{4}');
-", albumContentInfo.Id, StringUtils.ToJsString(PageUtility.ParseNavigationUrl(PublishmentSystemInfo, albumContentInfo.ImageUrl)), StringUtils.ToJsString(albumContentInfo.ImageUrl), StringUtils.ToJsString(albumContentInfo.LargeImageUrl), albumContentInfo.Title);
+", albumContentInfo.ID, StringUtils.ToJsString(PageUtility.ParseNavigationUrl(PublishmentSystemInfo, albumContentInfo.ImageUrl)), StringUtils.ToJsString(albumContentInfo.ImageUrl), StringUtils.ToJsString(albumContentInfo.LargeImageUrl), albumContentInfo.Title);
                 }
 
-                LtlScript.Text = $@"
+                ltlScript.Text = $@"
 $(document).ready(function(){{
-	{scriptBuilder}
+	{scriptBuilder.ToString()}
 }});
 ";
             }
@@ -80,15 +80,15 @@ $(document).ready(function(){{
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                var albumContentIdList = new List<int>();
-                if (_parentId > 0)
+                var albumContentIDList = new List<int>();
+                if (parentID > 0)
                 {
-                    albumContentIdList = DataProviderWx.AlbumContentDao.GetAlbumContentIdList(PublishmentSystemId, _albumId, _parentId);
+                    albumContentIDList = DataProviderWX.AlbumContentDAO.GetAlbumContentIDList(PublishmentSystemId, albumID, parentID);
                 }
-                var photoCount = TranslateUtils.ToInt(Request.Form["Photo_Count"]);
-                if (photoCount > 0)
+                var photo_Count = TranslateUtils.ToInt(Request.Form["Photo_Count"]);
+                if (photo_Count > 0)
                 {
-                    for (var index = 1; index <= photoCount; index++)
+                    for (var index = 1; index <= photo_Count; index++)
                     {
                         var id = TranslateUtils.ToInt(Request.Form["ID_" + index]);
                         var smallUrl = Request.Form["SmallUrl_" + index];
@@ -99,36 +99,36 @@ $(document).ready(function(){{
                         {
                             if (id > 0)
                             {
-                                var albumContentInfo = DataProviderWx.AlbumContentDao.GetAlbumContentInfo(id);
+                                var albumContentInfo = DataProviderWX.AlbumContentDAO.GetAlbumContentInfo(id);
                                 if (albumContentInfo != null)
                                 {
                                     albumContentInfo.ImageUrl = smallUrl;
                                     albumContentInfo.LargeImageUrl = largeUrl;
                                     albumContentInfo.Title = title;
 
-                                    DataProviderWx.AlbumContentDao.Update(albumContentInfo);
+                                    DataProviderWX.AlbumContentDAO.Update(albumContentInfo);
                                 }
-                                albumContentIdList.Remove(id);
+                                albumContentIDList.Remove(id);
                             }
                             else
                             {
                                 var albumContentInfo = new AlbumContentInfo();
-                                albumContentInfo.PublishmentSystemId = PublishmentSystemId;
-                                albumContentInfo.AlbumId = _albumId;
-                                albumContentInfo.ParentId = _parentId;
+                                albumContentInfo.PublishmentSystemID = PublishmentSystemId;
+                                albumContentInfo.AlbumID = albumID;
+                                albumContentInfo.ParentID = parentID;
                                 albumContentInfo.ImageUrl = smallUrl;
                                 albumContentInfo.LargeImageUrl = largeUrl;
                                 albumContentInfo.Title = title;
 
-                                DataProviderWx.AlbumContentDao.Insert(albumContentInfo);
+                                DataProviderWX.AlbumContentDAO.Insert(albumContentInfo);
                             }
                         }
                     }
                 }
 
-                if (albumContentIdList.Count > 0)
+                if (albumContentIDList.Count > 0)
                 {
-                    DataProviderWx.AlbumContentDao.Delete(PublishmentSystemId, albumContentIdList);
+                    DataProviderWX.AlbumContentDAO.Delete(PublishmentSystemId, albumContentIDList);
                 }
 
                 PageUtils.CloseModalPage(Page);

@@ -5,10 +5,10 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EAdvType
     {
-        JsCode,         //JS浠ｇ爜
-        HtmlCode,       //HTML浠ｇ爜
-        Text,           //鏂囧瓧
-        Image,          //鍥剧墖
+        JsCode,         //JS代码
+        HtmlCode,       //HTML代码
+        Text,           //文字
+        Image,          //图片
         Flash           //Flash
     }
 
@@ -46,18 +46,18 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (type == EAdvType.JsCode)
             {
-                return "JS浠ｇ爜";
+                return "JS代码";
             } if (type == EAdvType.HtmlCode)
             {
-                return "HTML浠ｇ爜";
+                return "HTML代码";
             }
             else if (type == EAdvType.Text)
             {
-                return "鏂囧瓧";
+                return "文字";
             }
             else if (type == EAdvType.Image)
             {
-                return "鍥剧墖";
+                return "图片";
             }
             else if (type == EAdvType.Flash)
             {

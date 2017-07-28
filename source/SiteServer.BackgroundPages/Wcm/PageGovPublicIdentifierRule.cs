@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovPublic;
 using SiteServer.CMS.Wcm.Model;
@@ -15,11 +16,11 @@ namespace SiteServer.BackgroundPages.Wcm
         public DataGrid dgContents;
         public Button AddButton;
 
-        public static string GetRedirectUrl(int siteId)
+        public static string GetRedirectUrl(int publishmentSystemId)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicIdentifierRule), new NameValueCollection
             {
-                {"siteId", siteId.ToString()}
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
             });
         }
 
@@ -92,7 +93,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 hlUpLinkButton.NavigateUrl = PageUtils.GetWcmUrl(nameof(PageGovPublicIdentifierRule),
                     new NameValueCollection
                     {
-                        {"siteId", PublishmentSystemId.ToString()},
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"RuleID", ruleInfo.RuleID.ToString()},
                         {"Up", true.ToString()}
                     });
@@ -100,7 +101,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 hlDownLinkButton.NavigateUrl = PageUtils.GetWcmUrl(nameof(PageGovPublicIdentifierRule),
                     new NameValueCollection
                     {
-                        {"siteId", PublishmentSystemId.ToString()},
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"RuleID", ruleInfo.RuleID.ToString()},
                         {"Down", true.ToString()}
                     });
@@ -122,7 +123,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 var urlDelete = PageUtils.GetWcmUrl(nameof(PageGovPublicIdentifierRule),
                     new NameValueCollection
                     {
-                        {"siteId", PublishmentSystemId.ToString()},
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"RuleID", ruleInfo.RuleID.ToString()},
                         {"Delete", true.ToString()}
                     });

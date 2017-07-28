@@ -4,13 +4,13 @@ using System.Web.UI.WebControls;
 namespace SiteServer.CMS.Model.Enumerations
 {
 	/// <summary>
-	/// æ‰¹é‡è½¬ç§»ç±»å‹
+	/// ÅúÁ¿×ªÒÆÀàĞÍ
 	/// </summary>
 	public enum ETranslateType
 	{
-		Content,				//ä»…è½¬ç§»å†…å®¹
-		Channel,				//ä»…è½¬ç§»æ ç›®
-		All						//è½¬ç§»æ ç›®åŠå†…å®¹
+		Content,				//½ö×ªÒÆÄÚÈİ
+		Channel,				//½ö×ªÒÆÀ¸Ä¿
+		All						//×ªÒÆÀ¸Ä¿¼°ÄÚÈİ
 	}
 
 	public class ETranslateTypeUtils
@@ -39,15 +39,15 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
 			if (type == ETranslateType.Content)
 			{
-				return "ä»…è½¬ç§»å†…å®¹";
+				return "½ö×ªÒÆÄÚÈİ";
 			}
 			else if (type == ETranslateType.Channel)
 			{
-				return "ä»…è½¬ç§»æ ç›®";
+				return "½ö×ªÒÆÀ¸Ä¿";
 			}
 			else if (type == ETranslateType.All)
 			{
-				return "è½¬ç§»æ ç›®åŠå†…å®¹";
+				return "×ªÒÆÀ¸Ä¿¼°ÄÚÈİ";
 			}
 			else
 			{

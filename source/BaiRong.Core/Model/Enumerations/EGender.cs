@@ -36,15 +36,15 @@ namespace BaiRong.Core.Model.Enumerations
 		{
 			if (type == EGender.NotSet)
 			{
-				return "æœªè®¾ç½®";
+				return "Î´ÉèÖÃ";
 			}
 			else if (type == EGender.Male)
 			{
-				return "ç”·";
+				return "ÄÐ";
 			}
 			else if (type == EGender.Female)
 			{
-				return "å¥³";
+				return "Å®";
 			}
 			else
 			{

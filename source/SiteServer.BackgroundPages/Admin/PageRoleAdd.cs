@@ -5,8 +5,10 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Configuration;
+using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Permissions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
@@ -57,11 +59,12 @@ namespace SiteServer.BackgroundPages.Admin
                     space = "<tr>";
                 }
 
-                var pageUrl = PagePermissionAdd.GetRedirectUrl(publishmentSystemId, Body.GetQueryString("RoleName"));
+                var pageUrl = PageRoleAddPublishmentSystemPermissions.GetRedirectUrl(publishmentSystemId, Body.GetQueryString("RoleName"));
                 string content = $@"
 					<td height=20>
                         <img id='PublishmentSystemImage_{publishmentSystemId}' align='absmiddle' border='0' src='../pic/{imageName}.gif'/>
-					    <a href='{pageUrl}'>{psInfo.PublishmentSystemName}</a>{space}
+					    <a href='{pageUrl}'>{psInfo.PublishmentSystemName}&nbsp;{EPublishmentSystemTypeUtils.GetIconHtml(
+                    psInfo.PublishmentSystemType)}</a>{space}
                     </td>
 				";
                 htmlBuilder.Append(content);
@@ -82,7 +85,7 @@ namespace SiteServer.BackgroundPages.Admin
 
             if (!IsPostBack)
             {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, AppManager.Admin.Permission.AdminManagement);
+                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, AppManager.Admin.Permission.AdminManagement);
 
                 if (!string.IsNullOrEmpty(_theRoleName))
                 {
@@ -106,10 +109,10 @@ namespace SiteServer.BackgroundPages.Admin
 
                 var cblPermissions = new CheckBoxList();
 
-                var permissions = PermissionConfigManager.Instance.GeneralPermissions;
+                var permissions = PermissionConfigManager.GetGeneralPermissionsOfProduct();
                 if (permissions.Count > 0)
                 {
-                    foreach (var permission in permissions)
+                    foreach (PermissionConfig permission in permissions)
                     {
                         if (_generalPermissionList.Contains(permission.Name))
                         {

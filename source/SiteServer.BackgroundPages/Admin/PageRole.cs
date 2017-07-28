@@ -3,7 +3,8 @@ using System.Data;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Core.Permissions;
+using BaiRong.Core.Permissions;
+using BaiRong.Core.Text;
 
 namespace SiteServer.BackgroundPages.Admin
 {

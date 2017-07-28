@@ -5,10 +5,10 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EGovPublicApplyLimitType
 	{
-        Normal,                 //æ­£å¸¸
-        Alert,                  //é¢„è­¦
-        Yellow,                 //é»„ç‰Œ
-        Red,                    //çº¢ç‰Œ
+        Normal,                 //Õý³£
+        Alert,                  //Ô¤¾¯
+        Yellow,                 //»ÆÅÆ
+        Red,                    //ºìÅÆ
 	}
 
     public class EGovPublicApplyLimitTypeUtils
@@ -41,19 +41,19 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == EGovPublicApplyLimitType.Normal)
 			{
-                return "æœªè¶…æœŸ";
+                return "Î´³¬ÆÚ";
 			}
             else if (type == EGovPublicApplyLimitType.Alert)
 			{
-                return "é¢„è­¦";
+                return "Ô¤¾¯";
             }
             else if (type == EGovPublicApplyLimitType.Yellow)
             {
-                return "é»„ç‰Œ";
+                return "»ÆÅÆ";
             }
             else if (type == EGovPublicApplyLimitType.Red)
             {
-                return "çº¢ç‰Œ";
+                return "ºìÅÆ";
             }
 			else
 			{

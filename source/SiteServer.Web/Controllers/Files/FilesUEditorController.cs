@@ -76,7 +76,7 @@ namespace SiteServer.API.Controllers.Files
                     action = new ListFileManager(HttpContext.Current, Config.GetString("fileManagerListPath"), Config.GetStringList("fileManagerAllowFiles"));
                     break;
                 case "catchimage":
-                    action = new CrawlerHandler(HttpContext.Current);
+                    action = new CrawlerHandler(HttpContext.Current, publishmentSystemId);
                     break;
                 default:
                     action = new NotSupportedHandler(HttpContext.Current);

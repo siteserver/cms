@@ -7,101 +7,101 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class ConferenceContentDao : DataProviderBase
+    public class ConferenceContentDAO : DataProviderBase
     {
-        private const string TableName = "wx_ConferenceContent";
+        private const string TABLE_NAME = "wx_ConferenceContent";
 
 
         public void Insert(ConferenceContentInfo contentInfo)
         {
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
 
-            ExecuteNonQuery(sqlInsert, parms);
+            ExecuteNonQuery(SQL_INSERT, parms);
         }
 
-        public void DeleteAll(int conferenceId)
+        public void DeleteAll(int conferenceID)
         {
-            if (conferenceId > 0)
+            if (conferenceID > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE {ConferenceContentAttribute.ConferenceId} = {conferenceId}";
+                    $"DELETE FROM {TABLE_NAME} WHERE {ConferenceContentAttribute.ConferenceID} = {conferenceID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, List<int> contentIdList)
+        public void Delete(int publishmentSystemID, List<int> contentIDList)
         {
-            if (contentIdList != null && contentIdList.Count > 0)
+            if (contentIDList != null && contentIDList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIDList)})";
                 ExecuteNonQuery(sqlString);
 
-                UpdateUserCount(publishmentSystemId);
+                UpdateUserCount(publishmentSystemID);
             }
         }
 
-        private void UpdateUserCount(int publishmentSystemId)
+        private void UpdateUserCount(int publishmentSystemID)
         {
-            var conferenceIdWithCount = new Dictionary<int, int>();
+            var conferenceIDWithCount = new Dictionary<int, int>();
 
             string sqlString =
-                $"SELECT {ConferenceContentAttribute.ConferenceId}, COUNT(*) FROM {TableName} WHERE {ConferenceContentAttribute.PublishmentSystemId} = {publishmentSystemId} GROUP BY {ConferenceContentAttribute.ConferenceId}";
+                $"SELECT {ConferenceContentAttribute.ConferenceID}, COUNT(*) FROM {TABLE_NAME} WHERE {ConferenceContentAttribute.PublishmentSystemID} = {publishmentSystemID} GROUP BY {ConferenceContentAttribute.ConferenceID}";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    conferenceIdWithCount.Add(rdr.GetInt32(0), rdr.GetInt32(1));
+                    conferenceIDWithCount.Add(rdr.GetInt32(0), rdr.GetInt32(1));
                 }
                 rdr.Close();
             }
 
-            DataProviderWx.ConferenceDao.UpdateUserCount(publishmentSystemId, conferenceIdWithCount);
+            DataProviderWX.ConferenceDAO.UpdateUserCount(publishmentSystemID, conferenceIDWithCount);
         }
 
-        public int GetCount(int conferenceId)
+        public int GetCount(int conferenceID)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM {TableName} WHERE {ConferenceContentAttribute.ConferenceId} = {conferenceId}";
+                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {ConferenceContentAttribute.ConferenceID} = {conferenceID}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public bool IsApplied(int conferenceId, string cookieSn, string wxOpenId)
+        public bool IsApplied(int conferenceID, string cookieSN, string wxOpenID)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM {TableName} WHERE {ConferenceContentAttribute.ConferenceId} = {conferenceId}";
+                $"SELECT COUNT(*) FROM {TABLE_NAME} WHERE {ConferenceContentAttribute.ConferenceID} = {conferenceID}";
 
-            sqlString += $" AND ({ConferenceContentAttribute.CookieSn} = '{cookieSn}'";
+            sqlString += $" AND ({ConferenceContentAttribute.CookieSN} = '{cookieSN}'";
             sqlString += ")";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString) > 0;
         }
 
-        public string GetSelectString(int publishmentSystemId, int conferenceId)
+        public string GetSelectString(int publishmentSystemID, int conferenceID)
         {
-            string whereString = $"WHERE {ConferenceContentAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            if (conferenceId > 0)
+            string whereString = $"WHERE {ConferenceContentAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            if (conferenceID > 0)
             {
-                whereString += $" AND {ConferenceContentAttribute.ConferenceId} = {conferenceId}";
+                whereString += $" AND {ConferenceContentAttribute.ConferenceID} = {conferenceID}";
             }
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
         }
 
-        public List<ConferenceContentInfo> GetConferenceContentInfoList(int publishmentSystemId, int conferenceId)
+        public List<ConferenceContentInfo> GetConferenceContentInfoList(int publishmentSystemID, int conferenceID)
         {
             var conferenceContentInfoList = new List<ConferenceContentInfo>();
 
-            string sqlWhere =
-                $" AND {ConferenceContentAttribute.PublishmentSystemId} = {publishmentSystemId} AND {ConferenceContentAttribute.ConferenceId} = {conferenceId}";
+            string SQL_WHERE =
+                $" AND {ConferenceContentAttribute.PublishmentSystemID} = {publishmentSystemID} AND {ConferenceContentAttribute.ConferenceID} = {conferenceID}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {

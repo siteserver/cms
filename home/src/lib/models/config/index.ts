@@ -6,5 +6,4 @@ export type Config = {
   beianNo?: string
   isWritingEnabled?: boolean
   isRegisterAllowed?: boolean
-  isFindPassword?: boolean
 }

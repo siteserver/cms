@@ -5,12 +5,12 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EGovPublicApplyState
 	{
-        New,                //æ–°ç”³è¯·
-        Denied,             //æ‹’ç»å—ç†
-        Accepted,           //å·²å—ç†
-        Redo,               //è¦æ±‚è¿”å·¥
-        Replied,            //å·²åŠç†
-        Checked,            //å·²å®¡æ ¸
+        New,                //ĞÂÉêÇë
+        Denied,             //¾Ü¾øÊÜÀí
+        Accepted,           //ÒÑÊÜÀí
+        Redo,               //ÒªÇó·µ¹¤
+        Replied,            //ÒÑ°ìÀí
+        Checked,            //ÒÑÉóºË
 	}
 
     public class EGovPublicApplyStateUtils
@@ -51,27 +51,27 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == EGovPublicApplyState.New)
 			{
-                return "æ–°ç”³è¯·";
+                return "ĞÂÉêÇë";
 			}
             else if (type == EGovPublicApplyState.Denied)
 			{
-                return "æ‹’ç»å—ç†";
+                return "¾Ü¾øÊÜÀí";
             }
             else if (type == EGovPublicApplyState.Accepted)
             {
-                return "å·²å—ç†";
+                return "ÒÑÊÜÀí";
             }
             else if (type == EGovPublicApplyState.Redo)
             {
-                return "è¦æ±‚è¿”å·¥";
+                return "ÒªÇó·µ¹¤";
             }
             else if (type == EGovPublicApplyState.Replied)
             {
-                return "å·²åŠç†";
+                return "ÒÑ°ìÀí";
             }
             else if (type == EGovPublicApplyState.Checked)
             {
-                return "å¤„ç†å®Œæ¯•";
+                return "´¦ÀíÍê±Ï";
             }
 			else
 			{
@@ -83,15 +83,15 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (type == EGovPublicApplyState.Denied)
             {
-                return "æ‹’ç»å—ç†";
+                return "¾Ü¾øÊÜÀí";
             }
             else if (type == EGovPublicApplyState.Checked)
             {
-                return "åŠç†å®Œæ¯•";
+                return "°ìÀíÍê±Ï";
             }
             else
             {
-                return "ç”³è¯·åŠç†ä¸­";
+                return "ÉêÇë°ìÀíÖĞ";
             }
         }
 

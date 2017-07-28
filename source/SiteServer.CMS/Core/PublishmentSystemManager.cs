@@ -5,7 +5,7 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Core.Permissions;
+using BaiRong.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
@@ -28,8 +28,6 @@ namespace SiteServer.CMS.Core
 
         public static PublishmentSystemInfo GetPublishmentSystemInfo(int publishmentSystemId)
         {
-            if (publishmentSystemId <= 0) return null;
-
             var list = GetPublishmentSystemInfoKeyValuePairList();
 
             foreach (var pair in list)
@@ -76,6 +74,25 @@ namespace SiteServer.CMS.Core
             return null;
         }
 
+        public static List<EPublishmentSystemType> GetPublishmentSystemTypeList()
+        {
+            var list = new List<EPublishmentSystemType>();
+
+            var pairList = GetPublishmentSystemInfoKeyValuePairList();
+
+            foreach (var pair in pairList)
+            {
+                var publishmentSystemInfo = pair.Value;
+                if (publishmentSystemInfo == null) continue;
+
+                if (!list.Contains(publishmentSystemInfo.PublishmentSystemType))
+                {
+                    list.Add(publishmentSystemInfo.PublishmentSystemType);
+                }
+            }
+            return list;
+        }
+
         public static List<int> GetPublishmentSystemIdList()
         {
             var pairList = GetPublishmentSystemInfoKeyValuePairList();
@@ -84,6 +101,23 @@ namespace SiteServer.CMS.Core
             {
                 list.Add(pair.Key);
             }
+            return list;
+        }
+
+        public static List<int> GetPublishmentSystemIdList(EPublishmentSystemType publishmentSystemType)
+        {
+            var list = new List<int>();
+
+            var publishmentSystemIdList = GetPublishmentSystemIdList();
+            foreach (var publishmentSystemId in publishmentSystemIdList)
+            {
+                var publishmentSystemInfo = GetPublishmentSystemInfo(publishmentSystemId);
+                if (publishmentSystemInfo.PublishmentSystemType == publishmentSystemType)
+                {
+                    list.Add(publishmentSystemInfo.PublishmentSystemId);
+                }
+            }
+
             return list;
         }
 
@@ -378,8 +412,11 @@ namespace SiteServer.CMS.Core
                         if (!publishmentSystemIdList.Contains(itemForPsid))
                         {
                             var publishmentSystemInfo = GetPublishmentSystemInfo(itemForPsid);
-                            publishmentSystemInfoList.Add(publishmentSystemInfo);
-                            publishmentSystemIdList.Add(itemForPsid);
+                            if ((Equals(EPublishmentSystemType.CMS, publishmentSystemInfo.PublishmentSystemType) || Equals(EPublishmentSystemType.WCM, publishmentSystemInfo.PublishmentSystemType)))
+                            {
+                                publishmentSystemInfoList.Add(publishmentSystemInfo);
+                                publishmentSystemIdList.Add(itemForPsid);
+                            }
                         }
                     }
                 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using BaiRong.Core;
-using BaiRong.Core.Data;
 using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Model
@@ -13,87 +12,109 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string KeywordId = nameof(KeywordInfo.KeywordId);
-        public const string PublishmentSystemId = nameof(KeywordInfo.PublishmentSystemId);
-        public const string Keywords = nameof(KeywordInfo.Keywords);
-        public const string IsDisabled = nameof(KeywordInfo.IsDisabled);
-        public const string KeywordType = nameof(KeywordInfo.KeywordType);
-        public const string MatchType = nameof(KeywordInfo.MatchType);
-        public const string Reply = nameof(KeywordInfo.Reply);
-        public const string AddDate = nameof(KeywordInfo.AddDate);
-        public const string Taxis = nameof(KeywordInfo.Taxis);
+        public const string KeywordID = "KeywordID";
+        public const string PublishmentSystemID = "PublishmentSystemID";
+        public const string Keywords = "Keywords";
+        public const string IsDisabled = "IsDisabled";
+        public const string KeywordType = "KeywordType";
+        public const string MatchType = "MatchType";
+        public const string Reply = "Reply";
+        public const string AddDate = "AddDate";
+        public const string Taxis = "Taxis";
 
-        private static List<string> _allAttributes;
-        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
+        private static List<string> allAttributes;
+        public static List<string> AllAttributes
         {
-            KeywordId,
-            PublishmentSystemId,
-            Keywords,
-            IsDisabled,
-            KeywordType,
-            MatchType,
-            Reply,
-            AddDate,
-            Taxis
-        });
+            get
+            {
+                if (allAttributes == null)
+                {
+                    allAttributes = new List<string>();
+                    allAttributes.Add(KeywordID);
+                    allAttributes.Add(PublishmentSystemID);
+                    allAttributes.Add(Keywords);
+                    allAttributes.Add(IsDisabled);
+                    allAttributes.Add(KeywordType);
+                    allAttributes.Add(MatchType);
+                    allAttributes.Add(Reply);
+                    allAttributes.Add(AddDate);
+                    allAttributes.Add(Taxis);
+                }
+
+                return allAttributes;
+            }
+        }
     }
 
     public class KeywordInfo
     {
+        private int keywordID;
+        private int publishmentSystemID;
+        private string keywords;
+        private bool isDisabled;
+        private EKeywordType keywordType;
+        private EMatchType matchType;
+        private string reply;
+        private DateTime addDate;
+        private int taxis;
+
         public KeywordInfo()
         {
-            KeywordId = 0;
-            PublishmentSystemId = 0;
-            Keywords = string.Empty;
-            IsDisabled = false;
-            KeywordType = EKeywordType.Text;
-            MatchType = EMatchType.Exact;
-            Reply = string.Empty;
-            AddDate = DateTime.Now;
-            Taxis = 0;
+            keywordID = 0;
+            publishmentSystemID = 0;
+            keywords = string.Empty;
+            isDisabled = false;
+            keywordType = EKeywordType.Text;
+            matchType = EMatchType.Exact;
+            reply = string.Empty;
+            addDate = DateTime.Now;
+            taxis = 0;
         }
 
-        public KeywordInfo(int keywordId, int publishmentSystemId, string keywords, bool isDisabled, EKeywordType keywordType, EMatchType matchType, string reply, DateTime addDate, int taxis)
+        public KeywordInfo(int keywordID, int publishmentSystemID, string keywords, bool isDisabled, EKeywordType keywordType, EMatchType matchType, string reply, DateTime addDate, int taxis)
         {
-            KeywordId = keywordId;
-            PublishmentSystemId = publishmentSystemId;
-            Keywords = keywords;
-            IsDisabled = isDisabled;
-            KeywordType = keywordType;
-            MatchType = matchType;
-            Reply = reply;
-            AddDate = addDate;
-            Taxis = taxis;
+            this.keywordID = keywordID;
+            this.publishmentSystemID = publishmentSystemID;
+            this.keywords = keywords;
+            this.isDisabled = isDisabled;
+            this.keywordType = keywordType;
+            this.matchType = matchType;
+            this.reply = reply;
+            this.addDate = addDate;
+            this.taxis = taxis;
         }
 
         public KeywordInfo(object dataItem)
         {
-            if (dataItem == null) return;
-
-            foreach (var name in AllAttributes)
+            if (dataItem != null)
             {
-                var value = SqlUtils.Eval(dataItem, name);
-                if (value != null)
+                foreach (var name in AllAttributes)
                 {
-                    SetValueInternal(name, value);
+                    var value = TranslateUtils.Eval(dataItem, name);
+                    if (value != null)
+                    {
+                        SetValueInternal(name, value);
+                    }
                 }
             }
         }
 
         public KeywordInfo(NameValueCollection form, bool isFilterSqlAndXss)
         {
-            if (form == null) return;
-
-            foreach (var name in AllAttributes)
+            if (form != null)
             {
-                var value = form[name];
-                if (value == null) continue;
-
-                if (isFilterSqlAndXss)
+                foreach (var name in AllAttributes)
                 {
-                    value = PageUtils.FilterSqlAndXss(value);
+                    var value = form[name];
+                    if (value != null)
+                    {
+                        if (isFilterSqlAndXss)
+                        {
+                            value = PageUtils.FilterSqlAndXss(value);
+                        }
+                        SetValueInternal(name, value);
+                    }
                 }
-                SetValueInternal(name, value);
             }
         }
 
@@ -115,20 +136,21 @@ namespace SiteServer.CMS.WeiXin.Model
         {
             foreach (var name in AllAttributes)
             {
-                if (!StringUtils.EqualsIgnoreCase(name, attributeName)) continue;
-
-                var nameVlaue = GetType().GetProperty(name).GetValue(this, null);
-
-                if (attributeName == "KeywordType")
+                if (StringUtils.EqualsIgnoreCase(name, attributeName))
                 {
-                    return EKeywordTypeUtils.GetEnumType(nameVlaue.ToString());
-                }
-                if (attributeName == "MatchType")
-                {
-                    return EMatchTypeUtils.GetEnumType(nameVlaue.ToString());
-                }
+                    var nameVlaue = GetType().GetProperty(name).GetValue(this, null);
 
-                return nameVlaue;
+                    if (attributeName == "KeywordType")
+                    {
+                        return EKeywordTypeUtils.GetEnumType(nameVlaue.ToString());
+                    }
+                    if (attributeName == "MatchType")
+                    {
+                        return EMatchTypeUtils.GetEnumType(nameVlaue.ToString());
+                    }
+
+                    return nameVlaue;
+                }
             }
             return null;
         }
@@ -137,18 +159,16 @@ namespace SiteServer.CMS.WeiXin.Model
         {
             foreach (var name in AllAttributes)
             {
-                if (!StringUtils.EqualsIgnoreCase(name, attributeName)) continue;
-
-                try
+                if (StringUtils.EqualsIgnoreCase(name, attributeName))
                 {
-                    SetValueInternal(name, value);
-                }
-                catch
-                {
-                    // ignored
-                }
+                    try
+                    {
+                        SetValueInternal(name, value);
+                    }
+                    catch { }
 
-                break;
+                    break;
+                }
             }
         }
 
@@ -179,24 +199,66 @@ namespace SiteServer.CMS.WeiXin.Model
             }
         }
 
-        protected List<string> AllAttributes => KeyWordAttribute.AllAttributes;
+        protected List<string> AllAttributes
+        {
+            get
+            {
+                return KeyWordAttribute.AllAttributes;
+            }
+        }
 
-        public int KeywordId { get; set; }
+        public int KeywordID
+        {
+            get { return keywordID; }
+            set { keywordID = value; }
+        }
 
-        public int PublishmentSystemId { get; set; }
+        public int PublishmentSystemID
+        {
+            get { return publishmentSystemID; }
+            set { publishmentSystemID = value; }
+        }
 
-        public string Keywords { get; set; }
+        public string Keywords
+        {
+            get { return keywords; }
+            set { keywords = value; }
+        }
 
-        public bool IsDisabled { get; set; }
+        public bool IsDisabled
+        {
+            get { return isDisabled; }
+            set { isDisabled = value; }
+        }
 
-        public EKeywordType KeywordType { get; set; }
+        public EKeywordType KeywordType
+        {
+            get { return keywordType; }
+            set { keywordType = value; }
+        }
 
-        public EMatchType MatchType { get; set; }
+        public EMatchType MatchType
+        {
+            get { return matchType; }
+            set { matchType = value; }
+        }
 
-        public string Reply { get; set; }
+        public string Reply
+        {
+            get { return reply; }
+            set { reply = value; }
+        }
 
-        public DateTime AddDate { get; set; }
+        public DateTime AddDate
+        {
+            get { return addDate; }
+            set { addDate = value; }
+        }
 
-        public int Taxis { get; set; }
+        public int Taxis
+        {
+            get { return taxis; }
+            set { taxis = value; }
+        }
     }
 }

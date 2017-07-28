@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Wcm
             return PageUtils.GetOpenWindowString("设置分类",
                 PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryDepartmentSelect), new NameValueCollection
                 {
-                    {"siteId", publishmentSystemId.ToString()}
+                    {"PublishmentSystemID", publishmentSystemId.ToString()}
                 }), 460, 360, true);
         }
 
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Wcm
             _additional.Add("UrlFormatString",
                 PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryDepartmentSelect), new NameValueCollection
                 {
-                    {"siteId", PublishmentSystemId.ToString()}
+                    {"PublishmentSystemID", PublishmentSystemId.ToString()}
                 }));
 
 			if (!IsPostBack)

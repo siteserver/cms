@@ -42,20 +42,20 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         public static AccountInfo GetAccountInfo(int publishmentSystemID)
         {
-            return DataProviderWx.AccountDao.GetAccountInfo(publishmentSystemID);
+            return DataProviderWX.AccountDAO.GetAccountInfo(publishmentSystemID);
         }
         public static bool IsBinding(AccountInfo accountInfo)
         {
             var isBinding = false;
 
-            var accountType = EWxAccountTypeUtils.GetEnumType(accountInfo.AccountType);
-            if (accountType == EWxAccountType.Subscribe)
+            var accountType = EWXAccountTypeUtils.GetEnumType(accountInfo.AccountType);
+            if (accountType == EWXAccountType.Subscribe)
             {
                 isBinding = accountInfo.IsBinding;
             }
             else
             {
-                isBinding = accountInfo.IsBinding && !string.IsNullOrEmpty(accountInfo.AppId) && !string.IsNullOrEmpty(accountInfo.AppSecret);
+                isBinding = accountInfo.IsBinding && !string.IsNullOrEmpty(accountInfo.AppID) && !string.IsNullOrEmpty(accountInfo.AppSecret);
             }
 
             return isBinding;

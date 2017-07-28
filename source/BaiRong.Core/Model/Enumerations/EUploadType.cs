@@ -45,23 +45,23 @@ namespace BaiRong.Core.Model.Enumerations
 		{
             if (type == EUploadType.Image)
 			{
-				return "鍥剧墖";
+				return "图片";
 			}
             else if (type == EUploadType.Video)
 			{
-				return "瑙嗛";
+				return "视频";
 			}
             else if (type == EUploadType.File)
 			{
-				return "鏂囦欢";
+				return "文件";
             }
             else if (type == EUploadType.Special)
             {
-                return "涓撻";
+                return "专题";
             }
             else if (type == EUploadType.AdvImage)
             {
-                return "骞垮憡";
+                return "广告";
             }
 			else
 			{

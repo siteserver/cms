@@ -10,55 +10,55 @@ using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class KeywordResourceDao : DataProviderBase
+    public class KeywordResourceDAO : DataProviderBase
 	{
-        private const string SqlUpdate = "UPDATE wx_KeywordResource SET PublishmentSystemID = @PublishmentSystemID, KeywordID = @KeywordID, Title = @Title, ImageUrl = @ImageUrl, Summary = @Summary, ResourceType = @ResourceType, IsShowCoverPic = @IsShowCoverPic, Content = @Content, NavigationUrl = @NavigationUrl, ChannelID = @ChannelID, ContentID = @ContentID, Taxis = @Taxis WHERE ResourceID = @ResourceID";
+        private const string SQL_UPDATE = "UPDATE wx_KeywordResource SET PublishmentSystemID = @PublishmentSystemID, KeywordID = @KeywordID, Title = @Title, ImageUrl = @ImageUrl, Summary = @Summary, ResourceType = @ResourceType, IsShowCoverPic = @IsShowCoverPic, Content = @Content, NavigationUrl = @NavigationUrl, ChannelID = @ChannelID, ContentID = @ContentID, Taxis = @Taxis WHERE ResourceID = @ResourceID";
 
-        private const string SqlDelete = "DELETE FROM wx_KeywordResource WHERE ResourceID = @ResourceID";
+        private const string SQL_DELETE = "DELETE FROM wx_KeywordResource WHERE ResourceID = @ResourceID";
 
-        private const string SqlSelect = "SELECT ResourceID, PublishmentSystemID, KeywordID, Title, ImageUrl, Summary, ResourceType, IsShowCoverPic, Content, NavigationUrl, ChannelID, ContentID, Taxis FROM wx_KeywordResource WHERE ResourceID = @ResourceID";
+        private const string SQL_SELECT = "SELECT ResourceID, PublishmentSystemID, KeywordID, Title, ImageUrl, Summary, ResourceType, IsShowCoverPic, Content, NavigationUrl, ChannelID, ContentID, Taxis FROM wx_KeywordResource WHERE ResourceID = @ResourceID";
 
-        private const string SqlSelectFirst = "SELECT TOP 1 ResourceID, PublishmentSystemID, KeywordID, Title, ImageUrl, Summary, ResourceType, IsShowCoverPic, Content, NavigationUrl, ChannelID, ContentID, Taxis FROM wx_KeywordResource WHERE KeywordID = @KeywordID ORDER BY Taxis";
+        private const string SQL_SELECT_FIRST = "SELECT TOP 1 ResourceID, PublishmentSystemID, KeywordID, Title, ImageUrl, Summary, ResourceType, IsShowCoverPic, Content, NavigationUrl, ChannelID, ContentID, Taxis FROM wx_KeywordResource WHERE KeywordID = @KeywordID ORDER BY Taxis";
 
-        private const string SqlSelectAll = "SELECT ResourceID, PublishmentSystemID, KeywordID, Title, ImageUrl, Summary, ResourceType, IsShowCoverPic, Content, NavigationUrl, ChannelID, ContentID, Taxis FROM wx_KeywordResource WHERE KeywordID = @KeywordID ORDER BY Taxis";
+        private const string SQL_SELECT_ALL = "SELECT ResourceID, PublishmentSystemID, KeywordID, Title, ImageUrl, Summary, ResourceType, IsShowCoverPic, Content, NavigationUrl, ChannelID, ContentID, Taxis FROM wx_KeywordResource WHERE KeywordID = @KeywordID ORDER BY Taxis";
 
-        private const string SqlSelectAllId = "SELECT ResourceID FROM wx_KeywordResource WHERE KeywordID = @KeywordID ORDER BY Taxis";
+        private const string SQL_SELECT_ALL_ID = "SELECT ResourceID FROM wx_KeywordResource WHERE KeywordID = @KeywordID ORDER BY Taxis";
 
-        private const string ParmResourceId = "@ResourceID";
-        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
-        private const string ParmKeywordId = "@KeywordID";
-        private const string ParmTitle = "@Title";
-        private const string ParmImageUrl = "@ImageUrl";
-        private const string ParmSummary = "@Summary";
-        private const string ParmResourceType = "@ResourceType";
-        private const string ParmIsShowCoverPic = "@IsShowCoverPic";
-        private const string ParmContent = "@Content";
-        private const string ParmNavigationUrl = "@NavigationUrl";
-        private const string ParmChannelId = "@ChannelID";
-        private const string ParmContentId = "@ContentID";
-        private const string ParmTaxis = "@Taxis";
+        private const string PARM_RESOURCE_ID = "@ResourceID";
+        private const string PARM_PUBLISHMENT_SYSTEM_ID = "@PublishmentSystemID";
+        private const string PARM_KEYWORD_ID = "@KeywordID";
+        private const string PARM_TITLE = "@Title";
+        private const string PARM_IMAGE_URL = "@ImageUrl";
+        private const string PARM_SUMMARY = "@Summary";
+        private const string PARM_RESOURCE_TYPE = "@ResourceType";
+        private const string PARM_IS_SHOW_COVER_PIC = "@IsShowCoverPic";
+        private const string PARM_CONTENT = "@Content";
+        private const string PARM_NAVIGATION_URL = "@NavigationUrl";
+        private const string PARM_CHANNEL_ID = "@ChannelID";
+        private const string PARM_CONTENT_ID = "@ContentID";
+        private const string PARM_TAXIS = "@Taxis";
 
         public int Insert(KeywordResourceInfo resourceInfo)
         {
-            var resourceId = 0;
+            var resourceID = 0;
 
             var sqlString = "INSERT INTO wx_KeywordResource (PublishmentSystemID, KeywordID, Title, ImageUrl, Summary, ResourceType, IsShowCoverPic, Content, NavigationUrl, ChannelID, ContentID, Taxis) VALUES (@PublishmentSystemID, @KeywordID, @Title, @ImageUrl, @Summary, @ResourceType, @IsShowCoverPic, @Content, @NavigationUrl, @ChannelID, @ContentID, @Taxis)";
 
-            var taxis = GetMaxTaxis(resourceInfo.KeywordId) + 1;
+            var taxis = GetMaxTaxis(resourceInfo.KeywordID) + 1;
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, resourceInfo.PublishmentSystemId),
-                GetParameter(ParmKeywordId, EDataType.Integer, resourceInfo.KeywordId),
-                GetParameter(ParmTitle, EDataType.NVarChar, 255, resourceInfo.Title),
-                GetParameter(ParmImageUrl, EDataType.VarChar, 200, resourceInfo.ImageUrl),
-                GetParameter(ParmSummary, EDataType.NVarChar, 255, resourceInfo.Summary),
-                GetParameter(ParmResourceType, EDataType.VarChar, 50, EResourceTypeUtils.GetValue(resourceInfo.ResourceType)),
-                GetParameter(ParmIsShowCoverPic, EDataType.VarChar, 18, resourceInfo.IsShowCoverPic.ToString()),
-                GetParameter(ParmContent, EDataType.NText, resourceInfo.Content),
-                GetParameter(ParmNavigationUrl, EDataType.VarChar, 200, resourceInfo.NavigationUrl),
-                GetParameter(ParmChannelId, EDataType.Integer, resourceInfo.ChannelId),
-                GetParameter(ParmContentId, EDataType.Integer, resourceInfo.ContentId),
-                GetParameter(ParmTaxis, EDataType.Integer, taxis)
+                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, resourceInfo.PublishmentSystemID),
+                GetParameter(PARM_KEYWORD_ID, EDataType.Integer, resourceInfo.KeywordID),
+                GetParameter(PARM_TITLE, EDataType.NVarChar, 255, resourceInfo.Title),
+                GetParameter(PARM_IMAGE_URL, EDataType.VarChar, 200, resourceInfo.ImageUrl),
+                GetParameter(PARM_SUMMARY, EDataType.NVarChar, 255, resourceInfo.Summary),
+                GetParameter(PARM_RESOURCE_TYPE, EDataType.VarChar, 50, EResourceTypeUtils.GetValue(resourceInfo.ResourceType)),
+                GetParameter(PARM_IS_SHOW_COVER_PIC, EDataType.VarChar, 18, resourceInfo.IsShowCoverPic.ToString()),
+                GetParameter(PARM_CONTENT, EDataType.NText, resourceInfo.Content),
+                GetParameter(PARM_NAVIGATION_URL, EDataType.VarChar, 200, resourceInfo.NavigationUrl),
+                GetParameter(PARM_CHANNEL_ID, EDataType.Integer, resourceInfo.ChannelID),
+                GetParameter(PARM_CONTENT_ID, EDataType.Integer, resourceInfo.ContentID),
+                GetParameter(PARM_TAXIS, EDataType.Integer, taxis)
 			};
 
             using (var conn = GetConnection())
@@ -68,7 +68,8 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        resourceId = ExecuteNonQueryAndReturnId(trans, sqlString, parms);
+                        ExecuteNonQuery(trans, sqlString, parms);
+                        resourceID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, "wx_KeywordResource");
                         trans.Commit();
                     }
                     catch
@@ -79,51 +80,51 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return resourceId;
+            return resourceID;
         }
 
         public void Update(KeywordResourceInfo resourceInfo)
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, resourceInfo.PublishmentSystemId),
-                GetParameter(ParmKeywordId, EDataType.Integer, resourceInfo.KeywordId),
-                GetParameter(ParmTitle, EDataType.NVarChar, 255, resourceInfo.Title),
-                GetParameter(ParmImageUrl, EDataType.VarChar, 200, resourceInfo.ImageUrl),
-                GetParameter(ParmSummary, EDataType.NVarChar, 255, resourceInfo.Summary),
-                GetParameter(ParmResourceType, EDataType.VarChar, 50, EResourceTypeUtils.GetValue(resourceInfo.ResourceType)),
-                GetParameter(ParmIsShowCoverPic, EDataType.VarChar, 18, resourceInfo.IsShowCoverPic.ToString()),
-                GetParameter(ParmContent, EDataType.NText, resourceInfo.Content),
-                GetParameter(ParmNavigationUrl, EDataType.VarChar, 200, resourceInfo.NavigationUrl),
-                GetParameter(ParmChannelId, EDataType.Integer, resourceInfo.ChannelId),
-                GetParameter(ParmContentId, EDataType.Integer, resourceInfo.ContentId),
-                GetParameter(ParmTaxis, EDataType.Integer, resourceInfo.Taxis),
-                GetParameter(ParmResourceId, EDataType.Integer, resourceInfo.ResourceId)
+                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, resourceInfo.PublishmentSystemID),
+                GetParameter(PARM_KEYWORD_ID, EDataType.Integer, resourceInfo.KeywordID),
+                GetParameter(PARM_TITLE, EDataType.NVarChar, 255, resourceInfo.Title),
+                GetParameter(PARM_IMAGE_URL, EDataType.VarChar, 200, resourceInfo.ImageUrl),
+                GetParameter(PARM_SUMMARY, EDataType.NVarChar, 255, resourceInfo.Summary),
+                GetParameter(PARM_RESOURCE_TYPE, EDataType.VarChar, 50, EResourceTypeUtils.GetValue(resourceInfo.ResourceType)),
+                GetParameter(PARM_IS_SHOW_COVER_PIC, EDataType.VarChar, 18, resourceInfo.IsShowCoverPic.ToString()),
+                GetParameter(PARM_CONTENT, EDataType.NText, resourceInfo.Content),
+                GetParameter(PARM_NAVIGATION_URL, EDataType.VarChar, 200, resourceInfo.NavigationUrl),
+                GetParameter(PARM_CHANNEL_ID, EDataType.Integer, resourceInfo.ChannelID),
+                GetParameter(PARM_CONTENT_ID, EDataType.Integer, resourceInfo.ContentID),
+                GetParameter(PARM_TAXIS, EDataType.Integer, resourceInfo.Taxis),
+                GetParameter(PARM_RESOURCE_ID, EDataType.Integer, resourceInfo.ResourceID)
 			};
 
-            ExecuteNonQuery(SqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
 
-        public void Delete(int resourceId)
+        public void Delete(int resourceID)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmResourceId, EDataType.Integer, resourceId)
+				GetParameter(PARM_RESOURCE_ID, EDataType.Integer, resourceID)
 			};
 
-            ExecuteNonQuery(SqlDelete, parms);
+            ExecuteNonQuery(SQL_DELETE, parms);
         }
 
-        public KeywordResourceInfo GetResourceInfo(int resourceId)
+        public KeywordResourceInfo GetResourceInfo(int resourceID)
         {
             KeywordResourceInfo resourceInfo = null;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmResourceId, EDataType.Integer, resourceId)
+				GetParameter(PARM_RESOURCE_ID, EDataType.Integer, resourceID)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelect, parms))
+            using (var rdr = ExecuteReader(SQL_SELECT, parms))
             {
                 if (rdr.Read())
                 {
@@ -135,16 +136,16 @@ namespace SiteServer.CMS.WeiXin.Provider
             return resourceInfo;
         }
 
-        public KeywordResourceInfo GetFirstResourceInfo(int keywordId)
+        public KeywordResourceInfo GetFirstResourceInfo(int keywordID)
         {
             KeywordResourceInfo resourceInfo = null;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
+				GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectFirst, parms))
+            using (var rdr = ExecuteReader(SQL_SELECT_FIRST, parms))
             {
                 if (rdr.Read())
                 {
@@ -156,33 +157,33 @@ namespace SiteServer.CMS.WeiXin.Provider
             return resourceInfo;
         }
 
-        public IEnumerable GetDataSource(int keywordId)
+        public IEnumerable GetDataSource(int keywordID)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
+				GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
 			};
 
-            var enumerable = (IEnumerable)ExecuteReader(SqlSelectAll, parms);
+            var enumerable = (IEnumerable)ExecuteReader(SQL_SELECT_ALL, parms);
             return enumerable;
         }
 
-        public int GetCount(int keywordId)
+        public int GetCount(int keywordID)
         {
-            var sqlString = "SELECT COUNT(*) FROM wx_KeywordResource WHERE KeywordID = " + keywordId;
+            var sqlString = "SELECT COUNT(*) FROM wx_KeywordResource WHERE KeywordID = " + keywordID;
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public List<KeywordResourceInfo> GetResourceInfoList(int keywordId)
+        public List<KeywordResourceInfo> GetResourceInfoList(int keywordID)
         {
             var list = new List<KeywordResourceInfo>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
+				GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectAll, parms))
+            using (var rdr = ExecuteReader(SQL_SELECT_ALL, parms))
             {
                 while (rdr.Read())
                 {
@@ -195,16 +196,16 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public List<int> GetResourceIdList(int keywordId)
+        public List<int> GetResourceIDList(int keywordID)
         {
             var list = new List<int>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
+				GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectAllId, parms))
+            using (var rdr = ExecuteReader(SQL_SELECT_ALL_ID, parms))
             {
                 while (rdr.Read())
                 {
@@ -216,71 +217,71 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public bool UpdateTaxisToUp(int keywordId, int resourceId)
+        public bool UpdateTaxisToUp(int keywordID, int resourceID)
         {
             string sqlString =
-                $"SELECT TOP 1 ResourceID, Taxis FROM wx_KeywordResource WHERE (Taxis > (SELECT Taxis FROM wx_KeywordResource WHERE ResourceID = {resourceId} AND KeywordID = {keywordId})) AND KeywordID = {keywordId} ORDER BY Taxis";
-            var higherId = 0;
+                $"SELECT TOP 1 ResourceID, Taxis FROM wx_KeywordResource WHERE (Taxis > (SELECT Taxis FROM wx_KeywordResource WHERE ResourceID = {resourceID} AND KeywordID = {keywordID})) AND KeywordID = {keywordID} ORDER BY Taxis";
+            var higherID = 0;
             var higherTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    higherId = rdr.GetInt32(0);
+                    higherID = rdr.GetInt32(0);
                     higherTaxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }
 
-            var selectedTaxis = GetTaxis(resourceId);
+            var selectedTaxis = GetTaxis(resourceID);
 
-            if (higherId > 0)
+            if (higherID > 0)
             {
-                SetTaxis(resourceId, higherTaxis);
-                SetTaxis(higherId, selectedTaxis);
+                SetTaxis(resourceID, higherTaxis);
+                SetTaxis(higherID, selectedTaxis);
                 return true;
             }
             return false;
         }
 
-        public bool UpdateTaxisToDown(int keywordId, int resourceId)
+        public bool UpdateTaxisToDown(int keywordID, int resourceID)
         {
             string sqlString =
-                $"SELECT TOP 1 ResourceID, Taxis FROM wx_KeywordResource WHERE (Taxis < (SELECT Taxis FROM wx_KeywordResource WHERE ResourceID = {resourceId} AND KeywordID = {keywordId})) AND KeywordID = {keywordId} ORDER BY Taxis DESC";
-            var lowerId = 0;
+                $"SELECT TOP 1 ResourceID, Taxis FROM wx_KeywordResource WHERE (Taxis < (SELECT Taxis FROM wx_KeywordResource WHERE ResourceID = {resourceID} AND KeywordID = {keywordID})) AND KeywordID = {keywordID} ORDER BY Taxis DESC";
+            var lowerID = 0;
             var lowerTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    lowerId = rdr.GetInt32(0);
+                    lowerID = rdr.GetInt32(0);
                     lowerTaxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }
 
-            var selectedTaxis = GetTaxis(resourceId);
+            var selectedTaxis = GetTaxis(resourceID);
 
-            if (lowerId > 0)
+            if (lowerID > 0)
             {
-                SetTaxis(resourceId, lowerTaxis);
-                SetTaxis(lowerId, selectedTaxis);
+                SetTaxis(resourceID, lowerTaxis);
+                SetTaxis(lowerID, selectedTaxis);
                 return true;
             }
             return false;
         }
 
-        private int GetMaxTaxis(int keywordId)
+        private int GetMaxTaxis(int keywordID)
         {
-            string sqlString = $"SELECT MAX(Taxis) FROM wx_KeywordResource WHERE KeywordID = {keywordId}";
+            string sqlString = $"SELECT MAX(Taxis) FROM wx_KeywordResource WHERE KeywordID = {keywordID}";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private int GetTaxis(int resourceId)
+        private int GetTaxis(int resourceID)
         {
-            string sqlString = $"SELECT Taxis FROM wx_KeywordResource WHERE ResourceID = {resourceId}";
+            string sqlString = $"SELECT Taxis FROM wx_KeywordResource WHERE ResourceID = {resourceID}";
             var taxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
@@ -295,22 +296,22 @@ namespace SiteServer.CMS.WeiXin.Provider
             return taxis;
         }
 
-        private void SetTaxis(int resourceId, int taxis)
+        private void SetTaxis(int resourceID, int taxis)
         {
-            string sqlString = $"UPDATE wx_KeywordResource SET Taxis = {taxis} WHERE ResourceID = {resourceId}";
+            string sqlString = $"UPDATE wx_KeywordResource SET Taxis = {taxis} WHERE ResourceID = {resourceID}";
             ExecuteNonQuery(sqlString);
         }
-        public List<KeywordResourceInfo> GetKeywordResourceInfoList(int publishmentSystemId,int keywordId)
+        public List<KeywordResourceInfo> GetKeywordResourceInfoList(int publishmentSystemID,int keywordID)
         {
             var list = new List<KeywordResourceInfo>();
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmKeywordId, EDataType.Integer, keywordId)
+                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, publishmentSystemID),
+				GetParameter(PARM_KEYWORD_ID, EDataType.Integer, keywordID)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectAll, parms))
+            using (var rdr = ExecuteReader(SQL_SELECT_ALL, parms))
             {
                 while (rdr.Read())
                 {

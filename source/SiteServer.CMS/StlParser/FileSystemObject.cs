@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
@@ -77,8 +75,8 @@ namespace SiteServer.CMS.StlParser
                 CreateChannel(nodeId);
                 CreateContents(nodeId);
             }
-            var templateIdList = DataProvider.TemplateDao.GetTemplateIdListByType(PublishmentSystemId, ETemplateType.FileTemplate);
-            foreach (var templateId in templateIdList)
+            var templateIdArrayList = DataProvider.TemplateDao.GetTemplateIdArrayListByType(PublishmentSystemId, ETemplateType.FileTemplate);
+            foreach (int templateId in templateIdArrayList)
             {
                 CreateFile(templateId);
             }
@@ -173,46 +171,22 @@ namespace SiteServer.CMS.StlParser
 
                 StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
-                //for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
-                //{
-                //    PageContentsDetail(filePath, pageInfo, stlLabelList, pageContentsElementParser, contentBuilder, stlElementTranslated, totalNum, pageCount, currentPageIndex);
-
-                //    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
-                //    var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
-                //    var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
-
-                //    StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageNodeId, currentPageIndex, pageCount, totalNum);
-
-                //    filePath = PathUtility.GetChannelPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
-                //    thePageInfo.AddLastPageScript(pageInfo);
-
-                //    GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
-
-                //    thePageInfo.ClearLastPageScript(pageInfo);
-                //    pageInfo.ClearLastPageScript();
-                //}
-
-                if (PublishmentSystemInfo.Additional.IsCreateMultiThread) // 多线程并发生成页面
+                for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    for (int i = 1; i <= pageCount; i = i + 3)
-                    {
-                        var list = new List<int>();
-                        list.Add(i);
-                        if (i <= pageCount - 1)
-                            list.Add(i + 1);
-                        if (i <= pageCount - 2)
-                            list.Add(i + 2);
-                        Parallel.ForEach(list, currentPageIndex => PageContentsDetail(filePath, pageInfo, stlLabelList, pageContentsElementParser, contentBuilder, stlElementTranslated, totalNum, pageCount, currentPageIndex));
-                    }
-                }
-                else // 单线程生成页面
-                { 
-                    for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
-                    {
-                        PageContentsDetail(filePath, pageInfo, stlLabelList, pageContentsElementParser, contentBuilder, stlElementTranslated, totalNum, pageCount, currentPageIndex);
-                    }
-                } 
+                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                    var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
+                    var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
+                    StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageNodeId, currentPageIndex, pageCount, totalNum);
+
+                    filePath = PathUtility.GetChannelPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
+                    thePageInfo.AddLastPageScript(pageInfo);
+
+                    GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+
+                    thePageInfo.ClearLastPageScript(pageInfo);
+                    pageInfo.ClearLastPageScript();
+                }
             }
             //如果标签中存在<stl:pageChannels>
             else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlLabelList))
@@ -293,34 +267,6 @@ namespace SiteServer.CMS.StlParser
             }
         }
 
-        /// <summary>
-        /// 处理栏目列表页分页标签PageContents
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="pageInfo"></param>
-        /// <param name="stlLabelList"></param>
-        /// <param name="pageContentsElementParser"></param>
-        /// <param name="contentBuilder"></param>
-        /// <param name="stlElementTranslated"></param>
-        /// <param name="totalNum"></param>
-        /// <param name="pageCount"></param>
-        private void PageContentsDetail(string filePath, PageInfo pageInfo,List<string> stlLabelList, StlPageContents pageContentsElementParser, StringBuilder contentBuilder, string stlElementTranslated,int totalNum,int pageCount, int currentPageIndex)
-        { 
-                var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
-                var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
-                var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
-
-                StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageNodeId, currentPageIndex, pageCount, totalNum);
-
-                filePath = PathUtility.GetChannelPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
-                thePageInfo.AddLastPageScript(pageInfo);
-
-                GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
-
-                thePageInfo.ClearLastPageScript(pageInfo);
-                pageInfo.ClearLastPageScript(); 
-        }
-
         public void CreateContents(int nodeId)
         {
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
@@ -328,32 +274,9 @@ namespace SiteServer.CMS.StlParser
             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
             var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, nodeId, orderByString);
-
-            //foreach (var contentId in contentIdList)
-            //{
-            //    CreateContent(tableStyle, tableName, nodeId, contentId); 
-            //}
-
-            if (PublishmentSystemInfo.Additional.IsCreateMultiThread) // 多线程并发生成页面
+            foreach (var contentId in contentIdList)
             {
-                for (int i = 0; i < contentIdList.Count; i = i + 3)
-                {
-                    var list = new List<int>();
-                    list.Add(contentIdList[i]);
-                    if (i < contentIdList.Count - 1)
-                        list.Add(contentIdList[i + 1]);
-                    if (i < contentIdList.Count - 2)
-                        list.Add(contentIdList[i + 2]);
-                    Parallel.ForEach(list, contentId => CreateContent(tableStyle, tableName, nodeId, contentId));
-                }
-            }
-            else  // 单线程生成页面
-            {
-                foreach (var contentId in contentIdList)
-                {
-                    CreateContent(tableStyle, tableName, nodeId, contentId);
-
-                } 
+                CreateContent(tableStyle, tableName, nodeId, contentId);
             }
         }
 

@@ -192,15 +192,15 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public int GetCountOfContentAdd(string tableName, int publishmentSystemId, int nodeId, EScopeType scope, DateTime begin, DateTime end, string userName)
+        public int GetCountOfContentAdd(string tableName, int publishmentSystemId, int nodeId, DateTime begin, DateTime end, string userName)
         {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scope, string.Empty, string.Empty);
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, EScopeType.All, string.Empty, string.Empty);
             return BaiRongDataProvider.ContentDao.GetCountOfContentAdd(tableName, publishmentSystemId, nodeIdList, begin, end, userName);
         }
 
-        public int GetCountOfContentUpdate(string tableName, int publishmentSystemId, int nodeId, EScopeType scope, DateTime begin, DateTime end, string userName)
+        public int GetCountOfContentUpdate(string tableName, int publishmentSystemId, int nodeId, DateTime begin, DateTime end, string userName)
         {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scope, string.Empty, string.Empty);
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, EScopeType.All, string.Empty, string.Empty);
             return BaiRongDataProvider.ContentDao.GetCountOfContentUpdate(tableName, publishmentSystemId, nodeIdList, begin, end, userName);
         }
 

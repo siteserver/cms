@@ -28,7 +28,6 @@ namespace SiteServer.BackgroundPages.User
                 Response.End();
                 return;
             }
-            LtlLogoUrl.Text = $@"<img id=""logoUrl"" src=""{ConfigManager.UserConfigInfo.LogoUrl}"" />";
             if (IsPostBack) return;
 
             BreadCrumbUser(AppManager.User.LeftMenu.UserConfiguration, "基本配置", AppManager.User.Permission.UserConfiguration);
@@ -40,6 +39,7 @@ namespace SiteServer.BackgroundPages.User
             TbCopyright.Text = ConfigManager.UserConfigInfo.Copyright;
             TbBeianNo.Text = ConfigManager.UserConfigInfo.BeianNo;
 
+            LtlLogoUrl.Text = $@"<img id=""logoUrl"" src=""{ConfigManager.UserConfigInfo.LogoUrl}"" />";
             PhOpen.Visible = ConfigManager.UserConfigInfo.IsEnable;
         }
 
@@ -75,7 +75,6 @@ namespace SiteServer.BackgroundPages.User
         {
             var success = false;
             var message = string.Empty;
-            var logoUrl = ConfigManager.UserConfigInfo.LogoUrl;
 
             if (Request.Files["Filedata"] != null)
             {
@@ -89,11 +88,10 @@ namespace SiteServer.BackgroundPages.User
                         var imageType = EImageTypeUtils.GetEnumType(fileExtName);
                         if (imageType != EImageType.Unknown)
                         {
-                            string fileName = $"home_logo.{fileExtName}";
+                            string fileName = $"home_logo.{EImageTypeUtils.GetValue(imageType)}";
                             var logoPath = PathUtils.GetUserFilesPath(string.Empty, fileName);
                             postedFile.SaveAs(logoPath);
-                            logoUrl = PageUtils.AddProtocolToUrl(PageUtils.GetUserFilesUrl(string.Empty, fileName));
-                            ConfigManager.UserConfigInfo.LogoUrl = logoUrl;
+                            ConfigManager.UserConfigInfo.LogoUrl = PageUtils.AddProtocolToUrl(PageUtils.GetUserFilesUrl(string.Empty, fileName));
                             BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
 
                             success = true;
@@ -110,7 +108,7 @@ namespace SiteServer.BackgroundPages.User
             if (success)
             {
                 jsonAttributes.Add("success", "true");
-                jsonAttributes.Add("logoUrl", logoUrl);
+                jsonAttributes.Add("logoUrl", ConfigManager.UserConfigInfo.LogoUrl);
             }
             else
             {

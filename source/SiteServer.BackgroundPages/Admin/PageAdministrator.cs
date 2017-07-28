@@ -5,9 +5,9 @@ using BaiRong.Core;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Permissions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core.Permissions;
 
 namespace SiteServer.BackgroundPages.Admin
 {

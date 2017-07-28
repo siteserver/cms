@@ -4,6 +4,7 @@ using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
 
@@ -19,7 +20,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("流动轨迹", PageUtils.GetWcmUrl(nameof(ModalGovInteractApplyFlow), new NameValueCollection
             {
-                {"siteId", publishmentSystemId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ContentID", contentId.ToString()}
             }), 300, 600, true);

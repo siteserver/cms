@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetWcmUrl(nameof(PageGovInteractListCheck), new NameValueCollection
             {
-                {"siteId", publishmentSystemId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
             });
         }

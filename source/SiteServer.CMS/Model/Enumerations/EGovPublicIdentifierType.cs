@@ -41,19 +41,19 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == EGovPublicIdentifierType.Department)
 			{
-                return "æœºæ„åˆ†ç±»ä»£ç ";
+                return "»ú¹¹·ÖÀà´úÂë";
 			}
             else if (type == EGovPublicIdentifierType.Channel)
 			{
-                return "ä¸»é¢˜åˆ†ç±»ä»£ç ";
+                return "Ö÷Ìâ·ÖÀà´úÂë";
             }
             else if (type == EGovPublicIdentifierType.Attribute)
             {
-                return "å­—æ®µå€¼";
+                return "×Ö¶ÎÖµ";
             }
             else if (type == EGovPublicIdentifierType.Sequence)
             {
-                return "é¡ºåºå·";
+                return "Ë³ĞòºÅ";
             }
 			else
 			{

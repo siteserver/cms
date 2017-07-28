@@ -4,13 +4,13 @@ using System.Web.UI.WebControls;
 namespace SiteServer.CMS.Model.Enumerations
 {
 	/// <summary>
-	/// FloatDivInfo 婊氬姩鏂瑰紡
+	/// FloatDivInfo 滚动方式
 	/// </summary>
 	public enum ERollingType
 	{
-		Static,							//闈欐涓嶅姩
-		FollowingScreen,				//璺熼殢绐椾綋婊氬姩
-		FloatingInWindow				//鍦ㄧ獥浣撲腑涓嶆柇绉诲姩
+		Static,							//静止不动
+		FollowingScreen,				//跟随窗体滚动
+		FloatingInWindow				//在窗体中不断移动
 	}
 
 	public class ERollingTypeUtils
@@ -39,15 +39,15 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
 			if (type == ERollingType.Static)
 			{
-				return "闈欐涓嶅姩";
+				return "静止不动";
 			}
 			else if (type == ERollingType.FollowingScreen)
 			{
-				return "璺熼殢绐椾綋婊氬姩";
+				return "跟随窗体滚动";
 			}
 			else if (type == ERollingType.FloatingInWindow)
 			{
-				return "鍦ㄧ獥浣撲腑涓嶆柇绉诲姩";
+				return "在窗体中不断移动";
 			}
 			else
 			{

@@ -6,6 +6,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovInteract;
 using SiteServer.CMS.Wcm.Model;
@@ -42,7 +43,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             base.OnInit(e);
 
-            PageUtils.CheckRequestParameter("NodeID");
+            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
             nodeID = TranslateUtils.ToInt(Request.QueryString["NodeID"]);
 
             isPermissionReply = GovInteractManager.IsPermission(PublishmentSystemId, nodeID, AppManager.Wcm.Permission.GovInteract.GovInteractReply);

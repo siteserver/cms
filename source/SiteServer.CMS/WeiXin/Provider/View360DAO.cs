@@ -7,17 +7,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class View360Dao : DataProviderBase
+    public class View360DAO : DataProviderBase
     {
-        private const string TableName = "wx_View360";
+        private const string TABLE_NAME = "wx_View360";
 
         public int Insert(View360Info view360Info)
         {
-            var view360Id = 0;
+            var view360ID = 0;
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(view360Info.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(view360Info.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
             using (var conn = GetConnection())
             {
@@ -26,7 +26,9 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        view360Id = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
+                        ExecuteNonQuery(trans, SQL_INSERT, parms);
+
+                        view360ID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
 
                         trans.Commit();
                     }
@@ -38,79 +40,79 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return view360Id;
+            return view360ID;
         }
 
         public void Update(View360Info view360Info)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(view360Info.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(view360Info.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
-            ExecuteNonQuery(sqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
 
-        public void AddPvCount(int view360Id)
+        public void AddPVCount(int view360ID)
         {
-            if (view360Id > 0)
+            if (view360ID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {View360Attribute.PvCount} = {View360Attribute.PvCount} + 1 WHERE ID = {view360Id}";
+                    $"UPDATE {TABLE_NAME} SET {View360Attribute.PVCount} = {View360Attribute.PVCount} + 1 WHERE ID = {view360ID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int view360Id)
+        public void Delete(int view360ID)
         {
-            if (view360Id > 0)
+            if (view360ID > 0)
             {
-                var view360IdList = new List<int>();
-                view360IdList.Add(view360Id);
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(view360IdList));
+                var view360IDList = new List<int>();
+                view360IDList.Add(view360ID);
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(view360IDList));
 
-                string sqlString = $"DELETE FROM {TableName} WHERE ID = {view360Id}";
+                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {view360ID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(List<int> view360IdList)
+        public void Delete(List<int> view360IDList)
         {
-            if (view360IdList != null && view360IdList.Count > 0)
+            if (view360IDList != null && view360IDList.Count > 0)
             {
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(view360IdList));
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(view360IDList));
 
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(view360IdList)})";
+                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(view360IDList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private List<int> GetKeywordIdList(List<int> view360IdList)
+        private List<int> GetKeywordIDList(List<int> view360IDList)
         {
-            var keywordIdList = new List<int>();
+            var keywordIDList = new List<int>();
 
             string sqlString =
-                $"SELECT {View360Attribute.KeywordId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(view360IdList)})";
+                $"SELECT {View360Attribute.KeywordID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(view360IDList)})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    keywordIdList.Add(rdr.GetInt32(0));
+                    keywordIDList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return keywordIdList;
+            return keywordIDList;
         }
 
-        public View360Info GetView360Info(int view360Id)
+        public View360Info GetView360Info(int view360ID)
         {
             View360Info view360Info = null;
 
-            string sqlWhere = $"WHERE ID = {view360Id}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {view360ID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -122,20 +124,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return view360Info;
         }
 
-        public List<View360Info> GetView360InfoListByKeywordId(int publishmentSystemId, int keywordId)
+        public List<View360Info> GetView360InfoListByKeywordID(int publishmentSystemID, int keywordID)
         {
             var view360InfoList = new List<View360Info>();
 
-            string sqlWhere =
-                $"WHERE {View360Attribute.PublishmentSystemId} = {publishmentSystemId} AND {View360Attribute.IsDisabled} <> '{true}'";
-            if (keywordId > 0)
+            string SQL_WHERE =
+                $"WHERE {View360Attribute.PublishmentSystemID} = {publishmentSystemID} AND {View360Attribute.IsDisabled} <> '{true}'";
+            if (keywordID > 0)
             {
-                sqlWhere += $" AND {View360Attribute.KeywordId} = {keywordId}";
+                SQL_WHERE += $" AND {View360Attribute.KeywordID} = {keywordID}";
             }
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
@@ -148,22 +150,22 @@ namespace SiteServer.CMS.WeiXin.Provider
             return view360InfoList;
         }
 
-        public int GetFirstIdByKeywordId(int publishmentSystemId, int keywordId)
+        public int GetFirstIDByKeywordID(int publishmentSystemID, int keywordID)
         {
             string sqlString =
-                $"SELECT TOP 1 ID FROM {TableName} WHERE {View360Attribute.PublishmentSystemId} = {publishmentSystemId} AND {View360Attribute.IsDisabled} <> '{true}' AND {View360Attribute.KeywordId} = {keywordId}";
+                $"SELECT TOP 1 ID FROM {TABLE_NAME} WHERE {View360Attribute.PublishmentSystemID} = {publishmentSystemID} AND {View360Attribute.IsDisabled} <> '{true}' AND {View360Attribute.KeywordID} = {keywordID}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetTitle(int view360Id)
+        public string GetTitle(int view360ID)
         {
             var title = string.Empty;
 
-            string sqlWhere = $"WHERE ID = {view360Id}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, View360Attribute.Title, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {view360ID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, View360Attribute.Title, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -175,20 +177,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
 
-        public string GetSelectString(int publishmentSystemId)
+        public string GetSelectString(int publishmentSystemID)
         {
-            string whereString = $"WHERE {View360Attribute.PublishmentSystemId} = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {View360Attribute.PublishmentSystemID} = {publishmentSystemID}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
         }
 
-        public List<View360Info> GetView360InfoList(int publishmentSystemId)
+        public List<View360Info> GetView360InfoList(int publishmentSystemID)
         {
             var view360InfoList = new List<View360Info>();
 
-            string sqlWhere = $" AND {View360Attribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $" AND {View360Attribute.PublishmentSystemID} = {publishmentSystemID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {

@@ -790,16 +790,6 @@ namespace BaiRong.Core
             return Combine(WebConfigUtils.ApplicationPath, FileConfigManager.Instance.AdminDirectoryName, relatedUrl);
         }
 
-        public static string GetSiteFilesUrl(string relatedUrl)
-        {
-            return Combine(WebConfigUtils.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
-        }
-
-        public static string GetPluginUrl(string pluginId, string relatedUrl)
-        {
-            return GetSiteFilesUrl(Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
-        }
-
         public static string GetSiteServerUrl(string className, NameValueCollection queryString)
         {
             return AddQueryString(GetAdminDirectoryUrl(className.ToLower() + ".aspx"), queryString);

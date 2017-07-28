@@ -6,17 +6,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class AccountDao : DataProviderBase
+    public class AccountDAO : DataProviderBase
     {
-        private const string TableName = "wx_Account";
+        private const string TABLE_NAME = "wx_Account";
 
         public int Insert(AccountInfo accountInfo)
         {
-            int accountId;
+            var accountID = 0;
 
-            IDataParameter[] parms;
+            IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(accountInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(accountInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
             using (var conn = GetConnection())
             {
@@ -25,7 +25,9 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        accountId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
+                        ExecuteNonQuery(trans, SQL_INSERT, parms);
+
+                        accountID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
 
                         trans.Commit();
                     }
@@ -37,25 +39,25 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return accountId;
+            return accountID;
         }
 
         public void Update(AccountInfo accountInfo)
         {
-            IDataParameter[] parms;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(accountInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            IDataParameter[] parms = null;
+            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(accountInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
-            ExecuteNonQuery(sqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
 
-        public AccountInfo GetAccountInfo(int publishmentSystemId)
+        public AccountInfo GetAccountInfo(int publishmentSystemID)
         {
             AccountInfo accountInfo = null;
 
-            string sqlWhere = $"WHERE {AccountAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE {AccountAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -66,26 +68,24 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             if (accountInfo == null)
             {
-                accountInfo = new AccountInfo
-                {
-                    PublishmentSystemId = publishmentSystemId,
-                    Token = StringUtils.GetShortGuid()
-                };
-                accountInfo.Id = Insert(accountInfo);
+                accountInfo = new AccountInfo();
+                accountInfo.PublishmentSystemID = publishmentSystemID;
+                accountInfo.Token = StringUtils.GetShortGuid();
+                accountInfo.ID = Insert(accountInfo);
             }
 
             return accountInfo;
         }
 
-        public List<AccountInfo> GetAccountInfoList(int publishmentSystemId)
+        public List<AccountInfo> GetAccountInfoList(int publishmentSystemID)
         {
             var accountInfoList = new List<AccountInfo>();
 
-            string sqlWhere = $"WHERE {AccountAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            string SQL_WHERE = $"WHERE {AccountAttribute.PublishmentSystemID} = {publishmentSystemID}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {

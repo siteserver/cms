@@ -30,11 +30,11 @@ namespace SiteServer.BackgroundPages.Wcm
             Contribute
         }
 
-        public static string GetRedirectUrl(int siteId, int nodeId, int contentId, string returnUrl)
+        public static string GetRedirectUrl(int publishmentSystemId, int nodeId, int contentId, string returnUrl)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicContentAddAfter), new NameValueCollection
             {
-                {"siteId", siteId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ContentID", contentId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
         public void Page_Load(object sender, EventArgs e)
 		{
-			PageUtils.CheckRequestParameter("NodeID", "ContentID", "ReturnUrl");
+			PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ContentID", "ReturnUrl");
 			var nodeID = int.Parse(Request.QueryString["NodeID"]);
             contentID = int.Parse(Request.QueryString["ContentID"]);
             returnUrl = StringUtils.ValueFromUrl(Request.QueryString["ReturnUrl"]);

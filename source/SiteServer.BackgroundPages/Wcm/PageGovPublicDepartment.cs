@@ -17,27 +17,27 @@ namespace SiteServer.BackgroundPages.Wcm
         private int _currentDepartmentId;
         private readonly NameValueCollection _additional = new NameValueCollection();
 
-        public static string GetRedirectUrl(int siteId)
+        public static string GetRedirectUrl(int publishmentSystemId)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicDepartment), new NameValueCollection
             {
-                {"siteId", siteId.ToString()}
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
             });
         }
 
-        public static string GetRedirectUrl(int siteId, int currentDepartmentId)
+        public static string GetRedirectUrl(int publishmentSystemId, int currentDepartmentId)
         {
             if (currentDepartmentId != 0)
             {
                 return PageUtils.GetWcmUrl(nameof(PageGovPublicDepartment), new NameValueCollection
                 {
-                    {"siteId", siteId.ToString()},
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"CurrentDepartmentID", currentDepartmentId.ToString()}
                 });
             }
             return PageUtils.GetWcmUrl(nameof(PageGovPublicDepartment), new NameValueCollection
             {
-                {"siteId", siteId.ToString()}
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
             });
         }
 
@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 return;
             }
 
-            _additional["siteId"] = PublishmentSystemId.ToString();
+            _additional["PublishmentSystemID"] = PublishmentSystemId.ToString();
 
             if (!IsPostBack)
             {
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
                 Delete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetWcmUrl(nameof(PageGovPublicDepartment), new NameValueCollection
                 {
-                    {"siteId", PublishmentSystemId.ToString()},
+                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
                     {"Delete", true.ToString()}
                 }), "DepartmentIDCollection", "DepartmentIDCollection", "请选择需要删除的部门！", "此操作将删除对应部门以及所有下级部门，确认删除吗？"));
 

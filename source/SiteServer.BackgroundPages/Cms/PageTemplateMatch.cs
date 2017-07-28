@@ -60,19 +60,19 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (nodeInfo.NodeType == ENodeType.BackgroundPublishNode)
 			{
-                var indexTemplateId = TemplateManager.GetDefaultTemplateID(PublishmentSystemId, ETemplateType.IndexPageTemplate);
-                var indexTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, indexTemplateId);
+                var indexTemplateID = TemplateManager.GetDefaultTemplateID(PublishmentSystemId, ETemplateType.IndexPageTemplate);
+                var indexTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, indexTemplateID);
 				str = string.Concat(str, $" ({indexTemplateName})");
             }
             else
             {
-                var channelTemplateId = nodeInfo.ChannelTemplateId;
-                var contentTemplateId = nodeInfo.ContentTemplateId;
+                var channelTemplateID = nodeInfo.ChannelTemplateId;
+                var contentTemplateID = nodeInfo.ContentTemplateId;
 
                 var channelTemplateName = string.Empty;
-                if (channelTemplateId != 0)
+                if (channelTemplateID != 0)
                 {
-                    channelTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, channelTemplateId);
+                    channelTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, channelTemplateID);
                 }
                 if (string.IsNullOrEmpty(channelTemplateName))
                 {
@@ -81,9 +81,9 @@ namespace SiteServer.BackgroundPages.Cms
                 str = string.Concat(str, $" ({channelTemplateName})");
 
                 var contentTemplateName = string.Empty;
-                if (contentTemplateId != 0)
+                if (contentTemplateID != 0)
                 {
-                    contentTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, contentTemplateId);
+                    contentTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, contentTemplateID);
                 }
                 if (string.IsNullOrEmpty(contentTemplateName))
                 {
@@ -101,11 +101,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-            var defaultChannelTemplateId = TemplateManager.GetDefaultTemplateID(PublishmentSystemId, ETemplateType.ChannelTemplate);
-            defaultChannelTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, defaultChannelTemplateId);
+            var defaultChannelTemplateID = TemplateManager.GetDefaultTemplateID(PublishmentSystemId, ETemplateType.ChannelTemplate);
+            defaultChannelTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, defaultChannelTemplateID);
 
-            var defaultContentTemplateId = TemplateManager.GetDefaultTemplateID(PublishmentSystemId, ETemplateType.ContentTemplate);
-            defaultContentTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, defaultContentTemplateId);
+            var defaultContentTemplateID = TemplateManager.GetDefaultTemplateID(PublishmentSystemId, ETemplateType.ContentTemplate);
+            defaultContentTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, defaultContentTemplateID);
 
 			if (!IsPostBack)
             {
@@ -121,13 +121,13 @@ namespace SiteServer.BackgroundPages.Cms
 
 		public void BindListBox()
 		{
-			var selectedNodeIdArrayList = new ArrayList();
+			var selectedNodeIDArrayList = new ArrayList();
 			foreach (ListItem listitem in NodeIDCollectionToMatch.Items)
 			{
-				if (listitem.Selected) selectedNodeIdArrayList.Add(listitem.Value);
+				if (listitem.Selected) selectedNodeIDArrayList.Add(listitem.Value);
 			}
-			var selectedChannelTemplateId = ChannelTemplateID.SelectedValue;
-			var selectedContentTemplateId = ContentTemplateID.SelectedValue;
+			var selectedChannelTemplateID = ChannelTemplateID.SelectedValue;
+			var selectedContentTemplateID = ContentTemplateID.SelectedValue;
 
 			NodeIDCollectionToMatch.Items.Clear();
 			ChannelTemplateID.Items.Clear();
@@ -135,9 +135,9 @@ namespace SiteServer.BackgroundPages.Cms
 			var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
             var nodeCount = nodeIdList.Count;
 			IsLastNodeArray = new bool[nodeCount];
-            foreach (var theNodeId in nodeIdList)
+            foreach (int theNodeID in nodeIdList)
 			{
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeId);
+                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeID);
                 var listitem = new ListItem(GetTitle(nodeInfo), nodeInfo.NodeId.ToString());
 				NodeIDCollectionToMatch.Items.Add(listitem);
 			}
@@ -146,11 +146,11 @@ namespace SiteServer.BackgroundPages.Cms
             ContentTemplateID.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ContentTemplate);
 			DataBind();
 
-			var stringArray = new string[selectedNodeIdArrayList.Count];
-			selectedNodeIdArrayList.CopyTo(stringArray);
+			var stringArray = new string[selectedNodeIDArrayList.Count];
+			selectedNodeIDArrayList.CopyTo(stringArray);
 			ControlUtils.SelectListItems(NodeIDCollectionToMatch, stringArray);
-			ControlUtils.SelectListItems(ChannelTemplateID, selectedChannelTemplateId);
-			ControlUtils.SelectListItems(ContentTemplateID, selectedContentTemplateId);
+			ControlUtils.SelectListItems(ChannelTemplateID, selectedChannelTemplateID);
+			ControlUtils.SelectListItems(ContentTemplateID, selectedContentTemplateID);
 		}
 
 
@@ -160,17 +160,17 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				if (Validate(true, true))
 				{
-					var nodeIdArrayList = new ArrayList();
+					var nodeIDArrayList = new ArrayList();
 					foreach (ListItem item in NodeIDCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeId = int.Parse(item.Value);
-							nodeIdArrayList.Add(nodeId);
+							var nodeID = int.Parse(item.Value);
+							nodeIDArrayList.Add(nodeID);
 						}
 					}
-					var channelTemplateId = int.Parse(ChannelTemplateID.SelectedValue);
-					Process(nodeIdArrayList, channelTemplateId, true);
+					var channelTemplateID = int.Parse(ChannelTemplateID.SelectedValue);
+					Process(nodeIDArrayList, channelTemplateID, true);
 				}
 			}
 		}
@@ -181,17 +181,17 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				if (Validate(false, true))
 				{
-					var nodeIdArrayList = new ArrayList();
+					var nodeIDArrayList = new ArrayList();
 					foreach (ListItem item in NodeIDCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeId = int.Parse(item.Value);
-							nodeIdArrayList.Add(nodeId);
+							var nodeID = int.Parse(item.Value);
+							nodeIDArrayList.Add(nodeID);
 						}
 					}
 					var channelTemplateID = 0;
-					Process(nodeIdArrayList, channelTemplateID, true);
+					Process(nodeIDArrayList, channelTemplateID, true);
 				}
 			}
 		}
@@ -202,17 +202,17 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				if (Validate(true, false))
 				{
-					var nodeIdArrayList = new ArrayList();
+					var nodeIDArrayList = new ArrayList();
 					foreach (ListItem item in NodeIDCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeId = int.Parse(item.Value);
-							nodeIdArrayList.Add(nodeId);
+							var nodeID = int.Parse(item.Value);
+							nodeIDArrayList.Add(nodeID);
 						}
 					}
-					var contentTemplateId = int.Parse(ContentTemplateID.SelectedValue);
-					Process(nodeIdArrayList, contentTemplateId, false);
+					var contentTemplateID = int.Parse(ContentTemplateID.SelectedValue);
+					Process(nodeIDArrayList, contentTemplateID, false);
 				}
 			}
 		}
@@ -223,17 +223,17 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				if (Validate(false, false))
 				{
-					var nodeIdArrayList = new ArrayList();
+					var nodeIDArrayList = new ArrayList();
 					foreach (ListItem item in NodeIDCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeId = int.Parse(item.Value);
-							nodeIdArrayList.Add(nodeId);
+							var nodeID = int.Parse(item.Value);
+							nodeIDArrayList.Add(nodeID);
 						}
 					}
 					var contentTemplateID = 0;
-					Process(nodeIdArrayList, contentTemplateID, false);
+					Process(nodeIDArrayList, contentTemplateID, false);
 				}
 			}
 		}
@@ -267,27 +267,27 @@ namespace SiteServer.BackgroundPages.Cms
 			return true;
 		}
 
-		private void Process(ArrayList nodeIdArrayList, int templateId, bool isChannelTemplate)
+		private void Process(ArrayList nodeIDArrayList, int templateID, bool isChannelTemplate)
 		{
-			if (nodeIdArrayList != null && nodeIdArrayList.Count > 0)
+			if (nodeIDArrayList != null && nodeIDArrayList.Count > 0)
 			{
                 if (isChannelTemplate)
                 {
-                    foreach (int nodeId in nodeIdArrayList)
+                    foreach (int nodeID in nodeIDArrayList)
                     {
-                        TemplateManager.UpdateChannelTemplateID(PublishmentSystemId, nodeId, templateId);
+                        TemplateManager.UpdateChannelTemplateID(PublishmentSystemId, nodeID, templateID);
                     }
                 }
                 else
                 {
-                    foreach (int nodeId in nodeIdArrayList)
+                    foreach (int nodeID in nodeIDArrayList)
                     {
-                        TemplateManager.UpdateContentTemplateID(PublishmentSystemId, nodeId, templateId);
+                        TemplateManager.UpdateContentTemplateID(PublishmentSystemId, nodeID, templateID);
                     }
                 }
 			}
 			
-			if (templateId == 0)
+			if (templateID == 0)
 			{
                 Body.AddSiteLog(PublishmentSystemId, "取消模板匹配", $"栏目:{GetNodeNames()}");
 				SuccessMessage("取消匹配成功！");
@@ -326,46 +326,46 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				if (Validate(false, false))
 				{
-                    var defaultChannelTemplateId = TemplateManager.GetDefaultTemplateID(PublishmentSystemId, ETemplateType.ChannelTemplate);
-                    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(PublishmentSystemId, ETemplateType.ChannelTemplate);
-                    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(PublishmentSystemId, ETemplateType.ChannelTemplate);
+                    var defaultChannelTemplateID = TemplateManager.GetDefaultTemplateID(PublishmentSystemId, ETemplateType.ChannelTemplate);
+                    var relatedFileNameArrayList = DataProvider.TemplateDao.GetLowerRelatedFileNameArrayList(PublishmentSystemId, ETemplateType.ChannelTemplate);
+                    var templateNameArrayList = DataProvider.TemplateDao.GetTemplateNameArrayList(PublishmentSystemId, ETemplateType.ChannelTemplate);
 					foreach (ListItem item in NodeIDCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeId = int.Parse(item.Value);
-							var channelTemplateId = -1;
+							var nodeID = int.Parse(item.Value);
+							var channelTemplateID = -1;
 
-                            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+                            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
 							if (nodeInfo.NodeType != ENodeType.BackgroundPublishNode)
 							{
-                                channelTemplateId = nodeInfo.ChannelTemplateId;
+                                channelTemplateID = nodeInfo.ChannelTemplateId;
 							}
 
-							if (channelTemplateId != -1 && channelTemplateId != 0 && channelTemplateId != defaultChannelTemplateId)
+							if (channelTemplateID != -1 && channelTemplateID != 0 && channelTemplateID != defaultChannelTemplateID)
 							{
-                                if (TemplateManager.GetTemplateInfo(PublishmentSystemId, channelTemplateId) == null)
+                                if (TemplateManager.GetTemplateInfo(PublishmentSystemId, channelTemplateID) == null)
 								{
-									channelTemplateId = -1;
+									channelTemplateID = -1;
 								}
 							}
 
-							if (channelTemplateId != -1)
+							if (channelTemplateID != -1)
 							{
                                 var templateInfo = new TemplateInfo(0, PublishmentSystemId, nodeInfo.NodeName, ETemplateType.ChannelTemplate, "T_" + nodeInfo.NodeName + ".html", "index.html", ".html", ECharsetUtils.GetEnumType(PublishmentSystemInfo.Additional.Charset), false);
 								
-								if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
+								if (relatedFileNameArrayList.Contains(templateInfo.RelatedFileName.ToLower()))
 								{
 									continue;
 								}
-								else if (templateNameList.Contains(templateInfo.TemplateName))
+								else if (templateNameArrayList.Contains(templateInfo.TemplateName))
 								{
 									continue;
 								}
-								var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
+								var insertedTemplateID = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
                                 if (nodeInfo.NodeType != ENodeType.BackgroundPublishNode)
                                 {
-                                    TemplateManager.UpdateChannelTemplateID(PublishmentSystemId, nodeId, insertedTemplateId);
+                                    TemplateManager.UpdateChannelTemplateID(PublishmentSystemId, nodeID, insertedTemplateID);
                                     //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(nodeID, insertedTemplateID);
                                 }
 								
@@ -388,30 +388,30 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				if (Validate(false, false))
 				{
-                    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(PublishmentSystemId, ETemplateType.ChannelTemplate);
-                    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(PublishmentSystemId, ETemplateType.ChannelTemplate);
+                    var relatedFileNameArrayList = DataProvider.TemplateDao.GetLowerRelatedFileNameArrayList(PublishmentSystemId, ETemplateType.ChannelTemplate);
+                    var templateNameArrayList = DataProvider.TemplateDao.GetTemplateNameArrayList(PublishmentSystemId, ETemplateType.ChannelTemplate);
 					foreach (ListItem item in NodeIDCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeId = int.Parse(item.Value);
-                            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+							var nodeID = int.Parse(item.Value);
+                            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
 
                             var templateInfo = new TemplateInfo(0, PublishmentSystemId, nodeInfo.NodeName + "_下级", ETemplateType.ChannelTemplate, "T_" + nodeInfo.NodeName + "_下级.html", "index.html", ".html", ECharsetUtils.GetEnumType(PublishmentSystemInfo.Additional.Charset), false);
 								
-							if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
+							if (relatedFileNameArrayList.Contains(templateInfo.RelatedFileName.ToLower()))
 							{
 								continue;
 							}
-							else if (templateNameList.Contains(templateInfo.TemplateName))
+							else if (templateNameArrayList.Contains(templateInfo.TemplateName))
 							{
 								continue;
 							}
-							var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
-							var childNodeIdArrayList = DataProvider.NodeDao.GetNodeIdListForDescendant(nodeId);
-							foreach (var childNodeId in childNodeIdArrayList)
+							var insertedTemplateID = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
+							var childNodeIDArrayList = DataProvider.NodeDao.GetNodeIdListForDescendant(nodeID);
+							foreach (int childNodeID in childNodeIDArrayList)
 							{
-                                TemplateManager.UpdateChannelTemplateID(PublishmentSystemId, childNodeId, insertedTemplateId);
+                                TemplateManager.UpdateChannelTemplateID(PublishmentSystemId, childNodeID, insertedTemplateID);
 								//DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(childNodeID, insertedTemplateID);
 							}
 						}
@@ -432,40 +432,40 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				if (Validate(false, false))
 				{
-                    var defaultContentTemplateId = TemplateManager.GetDefaultTemplateID(PublishmentSystemId, ETemplateType.ContentTemplate);
-                    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(PublishmentSystemId, ETemplateType.ContentTemplate);
-                    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(PublishmentSystemId, ETemplateType.ContentTemplate);
+                    var defaultContentTemplateID = TemplateManager.GetDefaultTemplateID(PublishmentSystemId, ETemplateType.ContentTemplate);
+                    var relatedFileNameArrayList = DataProvider.TemplateDao.GetLowerRelatedFileNameArrayList(PublishmentSystemId, ETemplateType.ContentTemplate);
+                    var templateNameArrayList = DataProvider.TemplateDao.GetTemplateNameArrayList(PublishmentSystemId, ETemplateType.ContentTemplate);
 					foreach (ListItem item in NodeIDCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeId = int.Parse(item.Value);
+							var nodeID = int.Parse(item.Value);
 
-                            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+                            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
 
-                            var contentTemplateId = nodeInfo.ContentTemplateId;                            
+                            var contentTemplateID = nodeInfo.ContentTemplateId;                            
 
-							if (contentTemplateId != 0 && contentTemplateId != defaultContentTemplateId)
+							if (contentTemplateID != 0 && contentTemplateID != defaultContentTemplateID)
 							{
-                                if (TemplateManager.GetTemplateInfo(PublishmentSystemId, contentTemplateId) == null)
+                                if (TemplateManager.GetTemplateInfo(PublishmentSystemId, contentTemplateID) == null)
 								{
-									contentTemplateId = -1;
+									contentTemplateID = -1;
 								}
 							}
 
-							if (contentTemplateId != -1)
+							if (contentTemplateID != -1)
 							{
                                 var templateInfo = new TemplateInfo(0, PublishmentSystemId, nodeInfo.NodeName, ETemplateType.ContentTemplate, "T_" + nodeInfo.NodeName + ".html", "index.html", ".html", ECharsetUtils.GetEnumType(PublishmentSystemInfo.Additional.Charset), false);
-								if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
+								if (relatedFileNameArrayList.Contains(templateInfo.RelatedFileName.ToLower()))
 								{
 									continue;
 								}
-								else if (templateNameList.Contains(templateInfo.TemplateName))
+								else if (templateNameArrayList.Contains(templateInfo.TemplateName))
 								{
 									continue;
 								}
-								var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
-                                TemplateManager.UpdateContentTemplateID(PublishmentSystemId, nodeId, insertedTemplateId);
+								var insertedTemplateID = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
+                                TemplateManager.UpdateContentTemplateID(PublishmentSystemId, nodeID, insertedTemplateID);
 								//DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(nodeID, insertedTemplateID);
 							}
 						}
@@ -486,30 +486,30 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				if (Validate(false, false))
 				{
-                    var relatedFileNameList = DataProvider.TemplateDao.GetLowerRelatedFileNameList(PublishmentSystemId, ETemplateType.ContentTemplate);
-                    var templateNameList = DataProvider.TemplateDao.GetTemplateNameList(PublishmentSystemId, ETemplateType.ContentTemplate);
+                    var relatedFileNameArrayList = DataProvider.TemplateDao.GetLowerRelatedFileNameArrayList(PublishmentSystemId, ETemplateType.ContentTemplate);
+                    var templateNameArrayList = DataProvider.TemplateDao.GetTemplateNameArrayList(PublishmentSystemId, ETemplateType.ContentTemplate);
 					foreach (ListItem item in NodeIDCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeId = int.Parse(item.Value);
-                            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+							var nodeID = int.Parse(item.Value);
+                            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
 
                             var templateInfo = new TemplateInfo(0, PublishmentSystemId, nodeInfo.NodeName + "_下级", ETemplateType.ContentTemplate, "T_" + nodeInfo.NodeName + "_下级.html", "index.html", ".html", ECharsetUtils.GetEnumType(PublishmentSystemInfo.Additional.Charset), false);
 								
-							if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
+							if (relatedFileNameArrayList.Contains(templateInfo.RelatedFileName.ToLower()))
 							{
 								continue;
 							}
-							else if (templateNameList.Contains(templateInfo.TemplateName))
+							else if (templateNameArrayList.Contains(templateInfo.TemplateName))
 							{
 								continue;
 							}
-							var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
-							var childNodeIdList = DataProvider.NodeDao.GetNodeIdListForDescendant(nodeId);
-							foreach (var childNodeId in childNodeIdList)
+							var insertedTemplateID = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
+							var childNodeIDArrayList = DataProvider.NodeDao.GetNodeIdListForDescendant(nodeID);
+							foreach (int childNodeID in childNodeIDArrayList)
 							{
-                                TemplateManager.UpdateContentTemplateID(PublishmentSystemId, childNodeId, insertedTemplateId);
+                                TemplateManager.UpdateContentTemplateID(PublishmentSystemId, childNodeID, insertedTemplateID);
 								//DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(childNodeID, insertedTemplateID);
 							}
 						}

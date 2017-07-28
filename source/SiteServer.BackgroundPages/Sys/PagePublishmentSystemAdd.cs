@@ -8,9 +8,10 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Permissions;
+using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Core.SystemData;
 using SiteServer.CMS.ImportExport;
@@ -24,6 +25,7 @@ namespace SiteServer.BackgroundPages.Sys
     {
         protected override bool IsSinglePage => true;
 
+        public Literal ltlPageTitle;
         public PlaceHolder ChooseSiteTemplate;
         public CheckBox UseSiteTemplate;
         public DataList dlContents;
@@ -33,11 +35,13 @@ namespace SiteServer.BackgroundPages.Sys
         public Control RowSiteTemplateName;
         public Label SiteTemplateName;
         public TextBox PublishmentSystemName;
+        public Literal ltlPublishmentSystemType;
         public RadioButtonList IsHeadquarters;
         public PlaceHolder phNotIsHeadquarters;
         public DropDownList ParentPublishmentSystemID;
         public TextBox PublishmentSystemDir;
 
+        public PlaceHolder phNodeRelated;
         public DropDownList Charset;
         public Control RowIsImportContents;
         public CheckBox IsImportContents;
@@ -47,6 +51,9 @@ namespace SiteServer.BackgroundPages.Sys
         public RadioButtonList IsUserSiteTemplateAuxiliaryTables;
         public PlaceHolder phAuxiliaryTable;
         public DropDownList AuxiliaryTableForContent;
+        public PlaceHolder phWCMTables;
+        public DropDownList AuxiliaryTableForGovPublic;
+        public DropDownList AuxiliaryTableForGovInteract;
         public DropDownList AuxiliaryTableForVote;
         public DropDownList AuxiliaryTableForJob;
         public RadioButtonList IsCheckContentUseLevel;
@@ -59,12 +66,16 @@ namespace SiteServer.BackgroundPages.Sys
         public Button Previous;
         public Button Next;
 
+        private EPublishmentSystemType _publishmentSystemType = EPublishmentSystemType.CMS;
         private SortedList _sortedlist = new SortedList();
         private AdministratorWithPermissions _permissions;
 
-        public static string GetRedirectUrl()
+        public static string GetRedirectUrl(EPublishmentSystemType publishmentSystemType)
         {
-            return PageUtils.GetSysUrl(nameof(PagePublishmentSystemAdd), null);
+            return PageUtils.GetSysUrl(nameof(PagePublishmentSystemAdd), new NameValueCollection
+            {
+                {"publishmentSystemType", EPublishmentSystemTypeUtils.GetValue(publishmentSystemType)}
+            });
         }
 
         public static string GetRedirectUrl(string siteTemplate)
@@ -79,6 +90,7 @@ namespace SiteServer.BackgroundPages.Sys
         {
             if (IsForbidden) return;
 
+            _publishmentSystemType = EPublishmentSystemTypeUtils.GetEnumType(Body.GetQueryString("publishmentSystemType"));
             _sortedlist = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
             _permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
 
@@ -88,7 +100,9 @@ namespace SiteServer.BackgroundPages.Sys
 
                 SiteTemplateDir.Value = Body.GetQueryString("siteTemplate");
 
-                BreadCrumbSys(AppManager.Sys.LeftMenu.Site, "创建站点", AppManager.Sys.Permission.SysSite);
+                string pageTitle = $"创建{EPublishmentSystemTypeUtils.GetText(_publishmentSystemType)}";
+                ltlPageTitle.Text = pageTitle;
+                BreadCrumbSys(AppManager.Sys.LeftMenu.Site, pageTitle, AppManager.Sys.Permission.SysSite);
 
                 var hqSiteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
                 if (hqSiteId == 0)
@@ -100,6 +114,10 @@ namespace SiteServer.BackgroundPages.Sys
                 {
                     IsHeadquarters.Enabled = false;
                 }
+
+                ltlPublishmentSystemType.Text = EPublishmentSystemTypeUtils.GetHtml(_publishmentSystemType);
+
+                phWCMTables.Visible = _publishmentSystemType == EPublishmentSystemType.WCM;
 
                 ParentPublishmentSystemID.Items.Add(new ListItem("<无上级站点>", "0"));
                 var publishmentSystemIdArrayList = PublishmentSystemManager.GetPublishmentSystemIdList();
@@ -132,6 +150,8 @@ namespace SiteServer.BackgroundPages.Sys
                 }
                 ControlUtils.SelectListItems(ParentPublishmentSystemID, "0");
 
+                phNodeRelated.Visible = EPublishmentSystemTypeUtils.IsNodeRelated(_publishmentSystemType);
+
                 ECharsetUtils.AddListItems(Charset);
                 ControlUtils.SelectListItems(Charset, ECharsetUtils.GetValue(ECharset.utf_8));
 
@@ -140,6 +160,20 @@ namespace SiteServer.BackgroundPages.Sys
                 {
                     var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
                     AuxiliaryTableForContent.Items.Add(li);
+                }
+
+                tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.GovPublicContent);
+                foreach (var tableInfo in tableList)
+                {
+                    var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
+                    AuxiliaryTableForGovPublic.Items.Add(li);
+                }
+
+                tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.GovInteractContent);
+                foreach (var tableInfo in tableList)
+                {
+                    var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
+                    AuxiliaryTableForGovInteract.Items.Add(li);
                 }
 
                 tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.VoteContent);
@@ -412,11 +446,11 @@ namespace SiteServer.BackgroundPages.Sys
 
                 nodeInfo.NodeName = nodeInfo.NodeIndexName = "首页";
                 nodeInfo.NodeType = ENodeType.BackgroundPublishNode;
-                nodeInfo.ContentModelId = EContentModelTypeUtils.GetValue(EContentModelType.Content);
+                nodeInfo.ContentModelId = EContentModelTypeUtils.GetValue(EContentModelTypeUtils.GetEnumTypeByPublishmentSystemType(_publishmentSystemType));
 
                 var publishmentSystemUrl = PageUtils.Combine(WebConfigUtils.ApplicationPath, publishmentSystemDir);
 
-                var psInfo = BaseTable.GetDefaultPublishmentSystemInfo(PageUtils.FilterXss(PublishmentSystemName.Text), AuxiliaryTableForContent.SelectedValue, string.Empty, string.Empty, AuxiliaryTableForVote.SelectedValue, AuxiliaryTableForJob.SelectedValue, publishmentSystemDir, publishmentSystemUrl, parentPublishmentSystemId);
+                var psInfo = BaseTable.GetDefaultPublishmentSystemInfo(PageUtils.FilterXss(PublishmentSystemName.Text), _publishmentSystemType, AuxiliaryTableForContent.SelectedValue, AuxiliaryTableForGovPublic.SelectedValue, AuxiliaryTableForGovInteract.SelectedValue, AuxiliaryTableForVote.SelectedValue, AuxiliaryTableForJob.SelectedValue, publishmentSystemDir, publishmentSystemUrl, parentPublishmentSystemId);
 
                 if (psInfo.ParentPublishmentSystemId > 0)
                 {
@@ -442,7 +476,7 @@ namespace SiteServer.BackgroundPages.Sys
                     BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(Body.AdministratorName, TranslateUtils.ObjectCollectionToString(publishmentSystemIdList));
                 }
 
-                Body.AddAdminLog("新建站点", $"站点名称:{PageUtils.FilterXss(PublishmentSystemName.Text)}");
+                Body.AddAdminLog($"新建{EPublishmentSystemTypeUtils.GetText(_publishmentSystemType)}站点", $"站点名称:{PageUtils.FilterXss(PublishmentSystemName.Text)}");
 
                 //if (isHQ == EBoolean.False)
                 //{
@@ -484,7 +518,7 @@ namespace SiteServer.BackgroundPages.Sys
 
                         PublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
                         PublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
-                        var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.PublishmentSystemUrl, publishmentSystemInfo.SettingsXml);
+                        var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.SettingsXml);
                         if (!string.IsNullOrEmpty(extend.Charset))
                         {
                             Charset.SelectedValue = extend.Charset;

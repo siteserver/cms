@@ -36,15 +36,15 @@ namespace BaiRong.Core.Model.Enumerations
         {
             if (type == ESecurityType.Public)
             {
-                return "æ‰€æœ‰äºº";
+                return "ËùÓĞÈË";
             }
             else if (type == ESecurityType.Friends)
             {
-                return "æˆ‘çš„å¥½å‹";
+                return "ÎÒµÄºÃÓÑ";
             }
             else if (type == ESecurityType.SelfOnly)
             {
-                return "åªæœ‰æˆ‘è‡ªå·±";
+                return "Ö»ÓĞÎÒ×Ô¼º";
             }
             else
             {

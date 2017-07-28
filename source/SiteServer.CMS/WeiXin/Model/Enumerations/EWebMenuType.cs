@@ -47,23 +47,23 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == EWebMenuType.Type1)
             {
-                return "æ ·å¼ä¸€";
+                return "ÑùÊ½Ò»";
             }
             else if (type == EWebMenuType.Type2)
             {
-                return "æ ·å¼äºŒ";
+                return "ÑùÊ½¶ş";
             }
             //else if (type == EWebMenuType.Type3)
             //{
-            //    return "æ ·å¼ä¸‰";
+            //    return "ÑùÊ½Èı";
             //}
             //else if (type == EWebMenuType.Type4)
             //{
-            //    return "æ ·å¼å››";
+            //    return "ÑùÊ½ËÄ";
             //}
             //else if (type == EWebMenuType.Type5)
             //{
-            //    return "æ ·å¼äº”";
+            //    return "ÑùÊ½Îå";
             //}
 			else
 			{

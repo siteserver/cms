@@ -4,6 +4,7 @@ using BaiRong.Core;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovPublic;
 using SiteServer.CMS.Wcm.Model;
@@ -28,6 +29,8 @@ namespace SiteServer.BackgroundPages.Wcm
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
+
+            PageUtils.CheckRequestParameter("PublishmentSystemID");
 
             if (Body.IsQueryExists("Delete"))
             {

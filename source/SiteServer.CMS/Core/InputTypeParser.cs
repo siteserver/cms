@@ -11,6 +11,8 @@ using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Wcm.GovInteract;
+using SiteServer.CMS.Wcm.Model;
 
 namespace SiteServer.CMS.Core
 {
@@ -22,104 +24,157 @@ namespace SiteServer.CMS.Core
 
         public const string Current = "{Current}";
 
-        public static string Parse(PublishmentSystemInfo publishmentSystemInfo, TableStyleInfo styleInfo, string attributeName, NameValueCollection pageScripts)
+        public static string Parse(PublishmentSystemInfo publishmentSystemInfo, int nodeId, TableStyleInfo styleInfo, ETableStyle tableStyle, string attributeName, NameValueCollection formCollection, bool isEdit, bool isPostBack, string additionalAttributes, NameValueCollection pageScripts, bool isValidate)
         {
             var retval = string.Empty;
 
+            var isAddAndNotPostBack = !isEdit && !isPostBack;
+
+            var oriIsValidate = styleInfo.Additional.IsValidate;
+            if (!isValidate)
+            {
+                styleInfo.Additional.IsValidate = false;
+            }
+
             if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Text))
             {
-                retval = ParseText(attributeName, styleInfo);
+                retval = ParseText(publishmentSystemInfo, nodeId, attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, styleInfo, tableStyle);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.TextArea))
             {
-                retval = ParseTextArea(attributeName, styleInfo);
+                retval = ParseTextArea(attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.TextEditor))
             {
-                retval = ParseTextEditor(publishmentSystemInfo, attributeName, pageScripts, styleInfo);
+                retval = ParseTextEditor(publishmentSystemInfo, attributeName, formCollection, isAddAndNotPostBack, pageScripts, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.SelectOne))
             {
-                retval = ParseSelectOne(attributeName, styleInfo);
+                retval = ParseSelectOne(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.SelectMultiple))
             {
-                retval = ParseSelectMultiple(attributeName, styleInfo);
+                retval = ParseSelectMultiple(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.CheckBox))
             {
-                retval = ParseCheckBox(attributeName, styleInfo);
+                retval = ParseCheckBox(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Radio))
             {
-                retval = ParseRadio(attributeName, styleInfo);
+                retval = ParseRadio(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Date))
             {
-                retval = ParseDate(publishmentSystemInfo, attributeName, pageScripts, styleInfo);
+                retval = ParseDate(publishmentSystemInfo, attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, pageScripts, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.DateTime))
             {
-                retval = ParseDateTime(publishmentSystemInfo, attributeName, pageScripts, styleInfo);
+                retval = ParseDateTime(publishmentSystemInfo, attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, pageScripts, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Image))
             {
-                retval = ParseImageUpload(attributeName, styleInfo);
+                retval = !isValidate ? ParseImageUpload(attributeName, additionalAttributes, styleInfo) : ParseImageUploadForTouGao(formCollection, isAddAndNotPostBack, attributeName, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Video))
             {
-                retval = ParseVideoUpload(attributeName, styleInfo);
+                retval = !isValidate ? ParseVideoUpload(attributeName, additionalAttributes, styleInfo) : ParseVideoUploadForTouGao(formCollection, isAddAndNotPostBack, attributeName, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.File))
             {
-                retval = ParseFileUpload(attributeName, styleInfo);
+                retval = !isValidate ? ParseFileUpload(attributeName, additionalAttributes, styleInfo) : ParseFileUploadForTouGao(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
             else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.RelatedField))
             {
-                retval = ParseRelatedField(publishmentSystemInfo, attributeName, styleInfo);
+                retval = ParseRelatedField(publishmentSystemInfo, attributeName, formCollection, styleInfo);
             }
+            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.SpecifiedValue))
+            {
+                retval = ParseSpecifiedValue(publishmentSystemInfo, nodeId, tableStyle, attributeName, formCollection, isAddAndNotPostBack, styleInfo);
+            }
+
+            styleInfo.Additional.IsValidate = oriIsValidate;
 
             return retval;
         }
 
-        public static string ParseText(string attributeName, TableStyleInfo styleInfo)
+        public static string ParseText(PublishmentSystemInfo publishmentSystemInfo, int nodeId, string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, string additionalAttributes, TableStyleInfo styleInfo, ETableStyle tableStyle)
         {
             var builder = new StringBuilder();
 
-            var value = styleInfo.DefaultValue ?? string.Empty;
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+
+            var value = GetValue(attributeName, formCollection, isAddAndNotPostBack, styleInfo.DefaultValue);
             value = StringUtils.HtmlDecode(value);
 
+            var width = styleInfo.Additional.Width;
+            if (string.IsNullOrEmpty(width))
+            {
+                width = styleInfo.IsSingleLine ? "380px" : "220px";
+            }
+            string style = $@"style=""width:{TranslateUtils.ToWidth(width)};""";
             builder.Append(
-                $@"<input id=""{attributeName}"" type=""text"" value=""{value}"" />");
+                $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""input_text"" value=""{value}"" {additionalAttributes} {style} {validateAttributes} />");
 
             AddHelpText(builder, styleInfo.HelpText);
+
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append(
+                    $@"<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
+            }
 
             return builder.ToString();
         }
 
-        public static string ParseTextArea(string attributeName, TableStyleInfo styleInfo)
+        public static string ParseTextArea(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, string additionalAttributes, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
-            var value = styleInfo.DefaultValue ?? string.Empty;
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+
+            var value = GetValue(attributeName, formCollection, isAddAndNotPostBack, styleInfo.DefaultValue);
             value = StringUtils.HtmlDecode(value);
 
+            var width = styleInfo.Additional.Width;
+            if (string.IsNullOrEmpty(width))
+            {
+                width = styleInfo.IsSingleLine ? "98%" : "220px";
+            }
+            var height = styleInfo.Additional.Height;
+            if (height == 0)
+            {
+                height = 80;
+            }
+            string style = $@"style=""width:{TranslateUtils.ToWidth(width)};height:{height}px;""";
+
             builder.Append(
-                $@"<textarea id=""{attributeName}"">{value}</textarea>");
+                $@"<textarea id=""{attributeName}"" name=""{attributeName}"" class=""textarea"" {additionalAttributes} {style} {validateAttributes}>{value}</textarea>");
 
             AddHelpText(builder, styleInfo.HelpText);
+
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
 
             return builder.ToString();
         }
 
-        private static string ParseTextEditor(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection pageScripts, TableStyleInfo styleInfo)
+        private static string ParseTextEditor(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, NameValueCollection pageScripts, TableStyleInfo styleInfo)
         {
-            return ParseTextEditor(publishmentSystemInfo, attributeName, pageScripts, styleInfo.DefaultValue, styleInfo.Additional.Width, styleInfo.Additional.Height);
+            return ParseTextEditor(publishmentSystemInfo, attributeName, formCollection, isAddAndNotPostBack, pageScripts, styleInfo.DefaultValue, styleInfo.Additional.Width, styleInfo.Additional.Height);
         }
 
-        public static string ParseTextEditor(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection pageScripts, string defaultValue, string width, int height)
+        public static string ParseTextEditor(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, NameValueCollection pageScripts, string defaultValue, string width, int height)
         {
-            var value = defaultValue ?? string.Empty;
+            var value = GetValue(attributeName, formCollection, isAddAndNotPostBack, defaultValue);
 
             /****获取编辑器中内容，解析@符号，添加了远程路径处理 20151103****/
             value = StringUtility.TextEditorContentDecode(value, publishmentSystemInfo);
@@ -150,14 +205,24 @@ $(function(){{
             return builder.ToString();
         }
 
-        private static string ParseDate(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection pageScripts, TableStyleInfo styleInfo)
+        private static string ParseDate(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, string additionalAttributes, NameValueCollection pageScripts, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
             var dateTime = DateUtils.SqlMinValue;
-            if (!string.IsNullOrEmpty(styleInfo.DefaultValue))
+            if (isAddAndNotPostBack)
             {
-                dateTime = styleInfo.DefaultValue == Current ? DateTime.Now : TranslateUtils.ToDateTime(styleInfo.DefaultValue);
+                if (!string.IsNullOrEmpty(styleInfo.DefaultValue))
+                {
+                    dateTime = styleInfo.DefaultValue == Current ? DateTime.Now : TranslateUtils.ToDateTime(styleInfo.DefaultValue);
+                }
+            }
+            else
+            {
+                if (formCollection?[attributeName] != null)
+                {
+                    dateTime = TranslateUtils.ToDateTime(formCollection[attributeName]);
+                }
             }
 
             if (pageScripts != null)
@@ -173,21 +238,31 @@ $(function(){{
             }
 
             builder.Append(
-                $@"<input id=""{attributeName}"" type=""text"" value=""{value}"" onfocus=""{SiteFilesAssets.DatePicker.OnFocusDateOnly}"" />");
+                $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""input_text"" value=""{value}"" {additionalAttributes} onfocus=""{SiteFilesAssets.DatePicker.OnFocusDateOnly}"" />");
 
             AddHelpText(builder, styleInfo.HelpText);
 
             return builder.ToString();
         }
 
-        private static string ParseDateTime(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection pageScripts, TableStyleInfo styleInfo)
+        private static string ParseDateTime(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, string additionalAttributes, NameValueCollection pageScripts, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
             var dateTime = DateUtils.SqlMinValue;
-            if (!string.IsNullOrEmpty(styleInfo.DefaultValue))
+            if (isAddAndNotPostBack)
             {
-                dateTime = styleInfo.DefaultValue == Current ? DateTime.Now : TranslateUtils.ToDateTime(styleInfo.DefaultValue);
+                if (!string.IsNullOrEmpty(styleInfo.DefaultValue))
+                {
+                    dateTime = styleInfo.DefaultValue == Current ? DateTime.Now : TranslateUtils.ToDateTime(styleInfo.DefaultValue);
+                }
+            }
+            else
+            {
+                if (formCollection?[attributeName] != null)
+                {
+                    dateTime = TranslateUtils.ToDateTime(formCollection[attributeName]);
+                }
             }
 
             if (pageScripts != null)
@@ -203,14 +278,14 @@ $(function(){{
             }
 
             builder.Append(
-                $@"<input id=""{attributeName}"" type=""text"" value=""{value}"" onfocus=""{SiteFilesAssets.DatePicker.OnFocus}"" />");
+                $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""input_text"" value=""{value}"" {additionalAttributes} onfocus=""{SiteFilesAssets.DatePicker.OnFocus}"" />");
 
             AddHelpText(builder, styleInfo.HelpText);
 
             return builder.ToString();
         }
 
-        private static string ParseCheckBox(string attributeName, TableStyleInfo styleInfo)
+        private static string ParseCheckBox(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
@@ -223,10 +298,15 @@ $(function(){{
                 RepeatDirection = styleInfo.IsHorizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
                 RepeatColumns = styleInfo.Additional.Columns
             };
+            var selectedValues = !string.IsNullOrEmpty(formCollection?[attributeName]) ? formCollection[attributeName] : string.Empty;
+            var selectedValueArrayList = TranslateUtils.StringCollectionToStringList(selectedValues);
 
-            foreach (var styleItem in styleItems)
+            //验证属性
+            InputParserUtils.GetValidateAttributesForListItem(checkBoxList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+
+            foreach (TableStyleItemInfo styleItem in styleItems)
             {
-                var isSelected = styleItem.IsSelected;
+                var isSelected = isAddAndNotPostBack ? styleItem.IsSelected : selectedValueArrayList.Contains(styleItem.ItemValue);
                 var listItem = new ListItem(styleItem.ItemTitle, styleItem.ItemValue)
                 {
                     Selected = isSelected
@@ -238,7 +318,7 @@ $(function(){{
             builder.Append(ControlUtils.GetControlRenderHtml(checkBoxList));
 
             var i = 0;
-            foreach (var styleItem in styleItems)
+            foreach (TableStyleItemInfo styleItem in styleItems)
             {
                 builder.Replace($@"name=""{attributeName}${i}""",
                     $@"name=""{attributeName}"" value=""{styleItem.ItemValue}""");
@@ -247,10 +327,19 @@ $(function(){{
 
             AddHelpText(builder, styleInfo.HelpText);
 
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
+
             return builder.ToString();
         }
 
-        private static string ParseRadio(string attributeName, TableStyleInfo styleInfo)
+        private static string ParseRadio(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
@@ -262,14 +351,27 @@ $(function(){{
                 RepeatDirection = styleInfo.IsHorizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
                 RepeatColumns = styleInfo.Additional.Columns
             };
+            var selectedValue = !string.IsNullOrEmpty(formCollection?[attributeName]) ? formCollection[attributeName] : null;
 
-            foreach (var styleItem in styleItems)
+            //验证属性
+            InputParserUtils.GetValidateAttributesForListItem(radioButtonList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+
+            foreach (TableStyleItemInfo styleItem in styleItems)
             {
-                bool isSelected = styleItem.IsSelected;
+                bool isSelected;
+                if (isAddAndNotPostBack)
+                {
+                    isSelected = styleItem.IsSelected;
+                }
+                else
+                {
+                    isSelected = (styleItem.ItemValue == selectedValue);
+                }
                 var listItem = new ListItem(styleItem.ItemTitle, styleItem.ItemValue)
                 {
                     Selected = isSelected
                 };
+                listItem.Attributes.Add("class", "input_radio");
                 radioButtonList.Items.Add(listItem);
             }
             radioButtonList.Attributes.Add("isListItem", "true");
@@ -277,47 +379,95 @@ $(function(){{
 
             AddHelpText(builder, styleInfo.HelpText);
 
+
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
+
             return builder.ToString();
         }
 
-        private static string ParseSelectOne(string attributeName, TableStyleInfo styleInfo)
+        private static string ParseSelectOne(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
             var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
+            var selectedValue = !string.IsNullOrEmpty(formCollection?[attributeName]) ? formCollection[attributeName] : null;
+            //验证属性
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
             builder.Append(
-                $@"<select id=""{attributeName}"">");
+                $@"<select id=""{attributeName}"" name=""{attributeName}"" class=""select""  isListItem=""true"" {validateAttributes}>");
             foreach (var styleItem in styleItems)
             {
-                var isSelected = styleItem.IsSelected ? "selected" : string.Empty;
+                string isSelected;
+                if (isAddAndNotPostBack)
+                {
+                    isSelected = styleItem.IsSelected ? "selected" : string.Empty;
+                }
+                else
+                {
+                    isSelected = (styleItem.ItemValue == selectedValue) ? "selected" : string.Empty;
+                }
 
                 builder.Append($@"<option value=""{styleItem.ItemValue}"" {isSelected}>{styleItem.ItemTitle}</option>");
             }
             builder.Append("</select>");
 
             AddHelpText(builder, styleInfo.HelpText);
-
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
             return builder.ToString();
         }
 
-        private static string ParseSelectMultiple(string attributeName, TableStyleInfo styleInfo)
+        private static string ParseSelectMultiple(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
             var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
+            var selectedValues = !string.IsNullOrEmpty(formCollection?[attributeName]) ? formCollection[attributeName] : string.Empty;
+            var selectedValueArrayList = TranslateUtils.StringCollectionToStringList(selectedValues);
+            //验证属性
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
             builder.Append(
-                $@"<select id=""{attributeName}"" multiple>");
+                $@"<select id=""{attributeName}"" name=""{attributeName}"" class=""select_multiple""  isListItem=""true"" multiple  {validateAttributes}>");
             foreach (var styleItem in styleItems)
             {
-                string isSelected = styleItem.IsSelected ? "selected" : string.Empty;
+                string isSelected;
+                if (isAddAndNotPostBack)
+                {
+                    isSelected = styleItem.IsSelected ? "selected" : string.Empty;
+                }
+                else
+                {
+                    isSelected = (selectedValueArrayList.Contains(styleItem.ItemValue)) ? "selected" : string.Empty;
+                }
 
                 builder.Append($@"<option value=""{styleItem.ItemValue}"" {isSelected}>{styleItem.ItemTitle}</option>");
             }
             builder.Append("</select>");
 
             AddHelpText(builder, styleInfo.HelpText);
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
             return builder.ToString();
         }
 
@@ -326,43 +476,190 @@ $(function(){{
             return attributeName + "_uploader";
         }
 
-        private static string ParseImageUpload(string attributeName, TableStyleInfo styleInfo)
+        private static string ParseImageUpload(string attributeName, string additionalAttributes, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+
             builder.Append(
-                $@"<input id=""{attributeName}"" type=""file"" />");
+                $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""file"" class=""input_file"" {additionalAttributes} {validateAttributes} />");
 
             AddHelpText(builder, styleInfo.HelpText);
+
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
 
             return builder.ToString();
         }
 
-        private static string ParseVideoUpload(string attributeName, TableStyleInfo styleInfo)
+        private static string ParseImageUploadForTouGao(NameValueCollection formCollection, bool isAddAndNotPostBack, string attributeName, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
-            builder.Append(
-                $@"<input id=""{attributeName}"" type=""file"" />");
+            var attributeNameToUpload = GetAttributeNameToUploadForTouGao(attributeName);
+            var value = GetValue(attributeName, formCollection, isAddAndNotPostBack, string.Empty);
+
+            builder.Append($@"
+<table width=""100%"" border=""0"" cellspacing=""0"" cellpadding=""0"">
+<tr>
+    <td width=""400"">
+        <input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""input-txt"" value='{value}' style=""display:;width:320px"" />
+        <input id=""{attributeNameToUpload}"" name=""{attributeNameToUpload}"" style=""width:320px;display:none"" type=""file"" class=""input-txt"" />
+    </td>
+</tr>
+<tr>
+    <td valign=""top"">
+        <a id=""{attributeName}_link1"" style=""font-weight:bold"" href=""javascript:;"" onclick=""document.getElementById('{attributeName}_link2').style.fontWeight = '';this.style.fontWeight = 'bold';document.getElementById('{attributeName}').style.display = '';document.getElementById('{attributeNameToUpload}').style.display = 'none';"">输入 URL</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a id=""{attributeName}_link2"" href=""javascript:;"" onclick=""document.getElementById('{attributeName}_link1').style.fontWeight = '';this.style.fontWeight = 'bold';document.getElementById('{attributeName}').style.display = 'none';document.getElementById('{attributeNameToUpload}').style.display = '';"" >上传图片</a>
+    </td>
+</tr>
+</table>");
 
             AddHelpText(builder, styleInfo.HelpText);
+
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
 
             return builder.ToString();
         }
 
-        private static string ParseFileUpload(string attributeName, TableStyleInfo styleInfo)
+        private static string ParseVideoUpload(string attributeName, string additionalAttributes, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+
             builder.Append(
-                $@"<input id=""{attributeName}"" type=""file"" />");
+                $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""file"" class=""input_file"" {additionalAttributes} {validateAttributes} />");
 
             AddHelpText(builder, styleInfo.HelpText);
+
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
 
             return builder.ToString();
         }
 
-        private static string ParseRelatedField(PublishmentSystemInfo publishmentSystemInfo, string attributeName, TableStyleInfo styleInfo)
+        private static string ParseVideoUploadForTouGao(NameValueCollection formCollection, bool isAddAndNotPostBack, string attributeName, TableStyleInfo styleInfo)
+        {
+            var builder = new StringBuilder();
+
+            var attributeNameToUpload = GetAttributeNameToUploadForTouGao(attributeName);
+            var value = GetValue(attributeName, formCollection, isAddAndNotPostBack, string.Empty);
+
+            builder.Append($@"
+<table width=""100%"" border=""0"" cellspacing=""0"" cellpadding=""0"">
+<tr>
+    <td width=""400"">
+        <input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""input-txt"" value='{value}' style=""display:;width:320px"" />
+        <input id=""{attributeNameToUpload}"" name=""{attributeNameToUpload}"" style=""width:320px;display:none"" type=""file"" class=""input-txt"" />
+    </td>
+</tr>
+<tr>
+    <td valign=""top"">
+        <a id=""{attributeName}_link1"" style=""font-weight:bold"" href=""javascript:;"" onclick=""document.getElementById('{attributeName}_link2').style.fontWeight = '';this.style.fontWeight = 'bold';document.getElementById('{attributeName}').style.display = '';document.getElementById('{attributeNameToUpload}').style.display = 'none';"">输入 URL</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a id=""{attributeName}_link2"" href=""javascript:;"" onclick=""document.getElementById('{attributeName}_link1').style.fontWeight = '';this.style.fontWeight = 'bold';document.getElementById('{attributeName}').style.display = 'none';document.getElementById('{attributeNameToUpload}').style.display = '';"" >上传视频</a>
+    </td>
+</tr>
+</table>");
+
+            AddHelpText(builder, styleInfo.HelpText);
+
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
+
+            return builder.ToString();
+        }
+
+        private static string ParseFileUpload(string attributeName, string additionalAttributes, TableStyleInfo styleInfo)
+        {
+            var builder = new StringBuilder();
+
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+
+            builder.Append(
+                $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""file"" class=""input_file"" {additionalAttributes} {validateAttributes} />");
+
+            AddHelpText(builder, styleInfo.HelpText);
+
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
+
+            return builder.ToString();
+        }
+
+        private static string ParseFileUploadForTouGao(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, TableStyleInfo styleInfo)
+        {
+            var builder = new StringBuilder();
+
+            var attributeNameToUpload = GetAttributeNameToUploadForTouGao(attributeName);
+            var value = GetValue(attributeName, formCollection, isAddAndNotPostBack, string.Empty);
+
+            builder.Append($@"
+<table width=""100%"" border=""0"" cellspacing=""0"" cellpadding=""0"">
+<tr>
+    <td width=""400"">
+        <input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""input-txt"" value='{value}' style=""display:;width:320px"" />
+        <input id=""{attributeNameToUpload}"" name=""{attributeNameToUpload}"" style=""width:320px;display:none"" type=""file"" class=""input-txt"" />
+    </td>
+</tr>
+<tr>
+    <td valign=""top"">
+        <a id=""{attributeName}_link1"" style=""font-weight:bold"" href=""javascript:;"" onclick=""document.getElementById('{attributeName}_link2').style.fontWeight = '';this.style.fontWeight = 'bold';document.getElementById('{attributeName}').style.display = '';document.getElementById('{attributeNameToUpload}').style.display = 'none';"">输入 URL</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a id=""{attributeName}_link2"" href=""javascript:;"" onclick=""document.getElementById('{attributeName}_link1').style.fontWeight = '';this.style.fontWeight = 'bold';document.getElementById('{attributeName}').style.display = 'none';document.getElementById('{attributeNameToUpload}').style.display = '';"" >上传附件</a>
+    </td>
+</tr>
+</table>");
+
+            AddHelpText(builder, styleInfo.HelpText);
+
+            if (styleInfo.Additional.IsValidate)
+            {
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
+
+            return builder.ToString();
+        }
+
+        private static string ParseRelatedField(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection formCollection, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
@@ -377,10 +674,15 @@ $(function(){{
                 var style = ERelatedFieldStyleUtils.GetEnumType(styleInfo.Additional.RelatedFieldStyle);
 
                 builder.Append($@"
-<span id=""c_{attributeName}_1"">{prefixes[0]}<select name=""{attributeName}"" id=""{attributeName}_1"" onchange=""getRelatedField_{fieldInfo.RelatedFieldID}(2);"">
+<span id=""c_{attributeName}_1"">{prefixes[0]}<select name=""{attributeName}"" id=""{attributeName}_1"" class=""select"" onchange=""getRelatedField_{fieldInfo.RelatedFieldID}(2);"">
 	<option value="""">请选择</option>");
 
+                var values = formCollection[attributeName];
                 var value = string.Empty;
+                if (!string.IsNullOrEmpty(values))
+                {
+                    value = values.Split(',')[0];
+                }
 
                 var isLoad = false;
                 foreach (var itemInfo in list)
@@ -401,7 +703,7 @@ $(function(){{
                         builder.Append($@"<span id=""c_{attributeName}_{i}"" style=""display:none"">");
                         builder.Append(style == ERelatedFieldStyle.Virtical ? @"<br />" : "&nbsp;");
                         builder.Append($@"
-{prefixes[i - 1]}<select name=""{attributeName}"" id=""{attributeName}_{i}"" onchange=""getRelatedField_{fieldInfo.RelatedFieldID}({i} + 1);""></select>{suffixes[i - 1]}</span>
+{prefixes[i - 1]}<select name=""{attributeName}"" id=""{attributeName}_{i}"" class=""select"" onchange=""getRelatedField_{fieldInfo.RelatedFieldID}({i} + 1);""></select>{suffixes[i - 1]}</span>
 ");
                     }
                 }
@@ -418,7 +720,7 @@ function getRelatedField_{fieldInfo.RelatedFieldID}(level){{
     var itemID = $('option:selected', obj).attr('itemID');
     if (itemID){{
         var url = '{Controllers.Stl.ActionsRelatedField.GetUrl(publishmentSystemInfo.Additional.ApiUrl, publishmentSystemInfo.PublishmentSystemId, styleInfo.Additional.RelatedFieldId, 0)}' + itemID;
-        var values = '';
+        var values = '{values}';
         var value = (values) ? values.split(',')[level - 1] : '';
         $.post(url + '&callback=?', '', function(data, textStatus){{
             var $sel = $('#' + attributeName + '_' + level);
@@ -461,6 +763,56 @@ $(document).ready(function(){{
                 AddHelpText(builder, styleInfo.HelpText);
             }
             return builder.ToString();
+        }
+
+        private static string ParseSpecifiedValue(PublishmentSystemInfo publishmentSystemInfo, int nodeId, ETableStyle tableStyle, string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, TableStyleInfo styleInfo)
+        {
+            if (tableStyle == ETableStyle.GovInteractContent)
+            {
+                if (StringUtils.EqualsIgnoreCase(attributeName, GovInteractContentAttribute.TypeId))
+                {
+                    styleInfo.StyleItems = new List<TableStyleItemInfo>();
+                    var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, "<<请选择>>", string.Empty, false);
+                    styleInfo.StyleItems.Add(itemInfo);
+                    var typeInfoArrayList = DataProvider.GovInteractTypeDao.GetTypeInfoArrayList(nodeId);
+                    foreach (GovInteractTypeInfo typeInfo in typeInfoArrayList)
+                    {
+                        var isSelected = false;
+                        if (!isAddAndNotPostBack)
+                        {
+                            isSelected = formCollection[attributeName] == typeInfo.TypeID.ToString();
+                        }
+                        itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, typeInfo.TypeName, typeInfo.TypeID.ToString(), isSelected);
+                        styleInfo.StyleItems.Add(itemInfo);
+                    }
+                    return ParseSelectOne(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(attributeName, GovInteractContentAttribute.DepartmentId))
+                {
+                    styleInfo.StyleItems = new List<TableStyleItemInfo>();
+                    var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, "<<请选择>>", string.Empty, false);
+                    styleInfo.StyleItems.Add(itemInfo);
+                    var channelInfo = DataProvider.GovInteractChannelDao.GetChannelInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
+                    var departmentIdList = GovInteractManager.GetFirstDepartmentIdList(channelInfo);
+                    foreach (var departmentId in departmentIdList)
+                    {
+                        var departmentInfo = DepartmentManager.GetDepartmentInfo(departmentId);
+                        if (departmentInfo != null)
+                        {
+                            var isSelected = false;
+                            if (!isAddAndNotPostBack)
+                            {
+                                isSelected = formCollection[attributeName] == departmentInfo.DepartmentId.ToString();
+                            }
+                            itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, departmentInfo.DepartmentName, departmentInfo.DepartmentId.ToString(), isSelected);
+                            styleInfo.StyleItems.Add(itemInfo);
+                        }
+                    }
+                    return ParseSelectOne(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
+                }
+            }
+
+            return string.Empty;
         }
 
         private static void AddHelpText(StringBuilder builder, string helpText)
@@ -614,6 +966,20 @@ $(document).ready(function(){{
             }
 
             return theValue;
+        }
+
+        private static string GetValue(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, string defaultValue)
+        {
+            var value = string.Empty;
+            if (formCollection?[attributeName] != null)
+            {
+                value = formCollection[attributeName];
+            }
+            if (isAddAndNotPostBack && string.IsNullOrEmpty(value))
+            {
+                value = defaultValue;
+            }
+            return value;
         }
 
         private static string GetValueByForm(TableStyleInfo styleInfo, PublishmentSystemInfo publishmentSystemInfo, NameValueCollection formCollection)

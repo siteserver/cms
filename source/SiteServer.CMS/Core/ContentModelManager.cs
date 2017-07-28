@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Core
             }
             if (retval == null)
             {
-                retval = EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForContent, EContentModelType.Content);
+                retval = EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemType, publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForContent, EContentModelType.Content);
             }
             return retval;
         }
@@ -35,15 +35,24 @@ namespace SiteServer.CMS.Core
         {
             var list = new List<ContentModelInfo>
             {
-                EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForContent,
+                EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemType,
+                    publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForContent,
                     EContentModelType.Content),
-                EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForContent,
+                EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemType,
+                    publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForContent,
                     EContentModelType.Photo)
             };
 
-            list.Add(EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForVote, EContentModelType.Vote));
+            if (publishmentSystemInfo.PublishmentSystemType == EPublishmentSystemType.WCM)
+            {
+                list.Add(EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemType, publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForGovPublic, EContentModelType.GovPublic));
 
-            list.Add(EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForJob, EContentModelType.Job));
+                list.Add(EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemType, publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForGovInteract, EContentModelType.GovInteract));
+            }
+
+            list.Add(EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemType, publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForVote, EContentModelType.Vote));
+
+            list.Add(EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.PublishmentSystemType, publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.AuxiliaryTableForJob, EContentModelType.Job));
 
             list.AddRange(ContentModelUtils.GetContentModelInfoList(publishmentSystemInfo.PublishmentSystemId));
 

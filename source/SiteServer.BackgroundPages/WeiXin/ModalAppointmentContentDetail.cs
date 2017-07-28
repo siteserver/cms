@@ -9,22 +9,22 @@ namespace SiteServer.BackgroundPages.WeiXin
 {
     public class ModalAppointmentContentDetail : BasePageCms
     {
-        public Literal LtlAppointementTitle;
-        public Literal LtlRealName;
-        public Literal LtlMobile;
-        public Literal LtlEmail;
-        public Literal LtlAddDate;
-        public Literal LtlExtendVal;
+        public Literal ltlAppointementTitle;
+        public Literal ltlRealName;
+        public Literal ltlMobile;
+        public Literal ltlEmail;
+        public Literal ltlAddDate;
+        public Literal ltlExtendVal;
 
-        private int _appointmentContentId;
+        private int appointmentContentID;
 
-        public static string GetOpenWindowStringToSingle(int publishmentSystemId, int appointmentContentId)
+        public static string GetOpenWindowStringToSingle(int publishmentSystemId, int appointmentContentID)
         {
             return PageUtils.GetOpenWindowString("预约详情查看",
                 PageUtils.GetWeiXinUrl(nameof(ModalAppointmentContentDetail), new NameValueCollection
                 {
-                    {"PublishmentSystemId", publishmentSystemId.ToString()},
-                    {"appointmentContentID", appointmentContentId.ToString()}
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"appointmentContentID", appointmentContentID.ToString()}
                 }), 450, 550);
         }
 
@@ -32,23 +32,23 @@ namespace SiteServer.BackgroundPages.WeiXin
         {
             if (IsForbidden) return;
 
-            _appointmentContentId = Body.GetQueryInt("appointmentContentID");
+            appointmentContentID = Body.GetQueryInt("appointmentContentID");
 
             if (!IsPostBack)
             {
-                var appointmentContentInfo = DataProviderWx.AppointmentContentDao.GetContentInfo(_appointmentContentId);
-                var appointmentItemInfo = DataProviderWx.AppointmentItemDao.GetItemInfo(appointmentContentInfo.AppointmentItemId);
-                LtlAppointementTitle.Text = appointmentItemInfo.Title;
-                LtlMobile.Text = appointmentContentInfo.Mobile;
-                LtlEmail.Text = appointmentContentInfo.Email;
-                LtlAddDate.Text = DateUtils.GetDateAndTimeString(appointmentContentInfo.AddDate);
-                LtlExtendVal.Text = "";
-                if (!string.IsNullOrEmpty(appointmentContentInfo.SettingsXml) && appointmentContentInfo.SettingsXml.Trim() != "{}")
+                var appointmentContentInfo = DataProviderWX.AppointmentContentDAO.GetContentInfo(appointmentContentID);
+                var appointmentItemInfo = DataProviderWX.AppointmentItemDAO.GetItemInfo(appointmentContentInfo.AppointmentItemID);
+                ltlAppointementTitle.Text = appointmentItemInfo.Title;
+                ltlMobile.Text = appointmentContentInfo.Mobile;
+                ltlEmail.Text = appointmentContentInfo.Email;
+                ltlAddDate.Text = DateUtils.GetDateAndTimeString(appointmentContentInfo.AddDate);
+                ltlExtendVal.Text = "";
+                if (!string.IsNullOrEmpty(appointmentContentInfo.SettingsXML) && appointmentContentInfo.SettingsXML.ToString().Trim() != "{}")
                 {
-                    var settingsXml = appointmentContentInfo.SettingsXml.Replace("{", "").Replace("}", "");
+                    var SettingsXML = appointmentContentInfo.SettingsXML.Replace("{", "").Replace("}", "");
                     var stringBuilderHtml = new StringBuilder();
 
-                    var arr = settingsXml.Split(',');
+                    var arr = SettingsXML.Split(',');
                     for (var i = 0; i < arr.Length; i++)
                     {
                         var arr1 = arr[i].Replace("\"", "").Split(':');
@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                         stringBuilderHtml.AppendFormat(@"<td>{0}</td>", arr1[1]);
                         stringBuilderHtml.AppendFormat(@"</tr>");
                     }
-                    LtlExtendVal.Text = stringBuilderHtml.ToString();
+                    ltlExtendVal.Text = stringBuilderHtml.ToString();
                 }
 
             }

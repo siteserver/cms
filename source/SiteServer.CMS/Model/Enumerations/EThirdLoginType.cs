@@ -43,19 +43,19 @@ namespace Siteserver.Core.Model
         {
             if (type == SiteserverEThirdLoginType.Weibo)
             {
-                return "æ–°æµªå¾®åš";
+                return "ĞÂÀËÎ¢²©";
             }
             else if (type == SiteserverEThirdLoginType.QQ)
             {
-                return "QQè´¦å·";
+                return "QQÕËºÅ";
             }
             else if (type == SiteserverEThirdLoginType.WeixinPC)
             {
-                return "å¾®ä¿¡è´¦å·";
+                return "Î¢ĞÅÕËºÅ";
             }
             else if (type == SiteserverEThirdLoginType.WeixinMob)
             {
-                return "å¾®ä¿¡è´¦å·";
+                return "Î¢ĞÅÕËºÅ";
             }
             else
             {
@@ -67,19 +67,19 @@ namespace Siteserver.Core.Model
         {
             if (type == SiteserverEThirdLoginType.Weibo)
             {
-                return "æ–°æµªå¾®åš";
+                return "ĞÂÀËÎ¢²©";
             }
             else if (type == SiteserverEThirdLoginType.QQ)
             {
-                return "QQè´¦å·";
+                return "QQÕËºÅ";
             }
             else if (type == SiteserverEThirdLoginType.WeixinPC)
             {
-                return "å¾®ä¿¡è´¦å·";
+                return "Î¢ĞÅÕËºÅ";
             }
             else if (type == SiteserverEThirdLoginType.WeixinMob)
             {
-                return "å¾®ä¿¡è´¦å·";
+                return "Î¢ĞÅÕËºÅ";
             }
             else
             {

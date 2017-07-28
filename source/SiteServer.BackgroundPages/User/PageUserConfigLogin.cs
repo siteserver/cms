@@ -7,64 +7,56 @@ namespace SiteServer.BackgroundPages.User
 {
     public class PageUserConfigLogin : BasePage
     {
-        public RadioButtonList RblIsRecordIp;
-        public RadioButtonList RblIsRecordSource;
-        public RadioButtonList RblIsFailToLock;
-        public PlaceHolder PhFailToLock;
-        public DropDownList DdlLockType;
-        public TextBox TbLoginFailCount;
-        public PlaceHolder PhLockingTime;
-        public TextBox TbLockingTime;
-
-        public RadioButtonList RblIsFindPassword;
-        public PlaceHolder PhFindPassword;
-        public TextBox TbFindPasswordSmsTplId;
+        public RadioButtonList rblIsRecordIP;
+        public RadioButtonList rblIsRecordSource;
+        public RadioButtonList rblIsFailToLock;
+        public DropDownList ddlLockType;
+        public TextBox loginFailCount;
+        public TextBox lockingTime;
+        public PlaceHolder phLockingTime;
+        public PlaceHolder phFailToLock;
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
-            if (IsPostBack) return;
 
-            BreadCrumbUser(AppManager.User.LeftMenu.UserConfiguration, "用户登录配置", AppManager.User.Permission.UserConfiguration);
+            if (!IsPostBack)
+            {
+                BreadCrumbUser(AppManager.User.LeftMenu.UserConfiguration, "用户登录配置", AppManager.User.Permission.UserConfiguration);
 
-            EBooleanUtils.AddListItems(RblIsRecordIp, "是", "否");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsRecordIp, ConfigManager.UserConfigInfo.IsRecordIp.ToString());
-            EBooleanUtils.AddListItems(RblIsRecordSource, "是", "否");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsRecordSource, ConfigManager.UserConfigInfo.IsRecordSource.ToString());
-            EBooleanUtils.AddListItems(RblIsFailToLock, "是", "否");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsFailToLock, ConfigManager.UserConfigInfo.IsLoginFailToLock.ToString());
+                EBooleanUtils.AddListItems(rblIsRecordIP, "是", "否");
+                ControlUtils.SelectListItemsIgnoreCase(rblIsRecordIP, ConfigManager.UserConfigInfo.IsRecordIp.ToString());
+                EBooleanUtils.AddListItems(rblIsRecordSource, "是", "否");
+                ControlUtils.SelectListItemsIgnoreCase(rblIsRecordSource, ConfigManager.UserConfigInfo.IsRecordSource.ToString());
+                EBooleanUtils.AddListItems(rblIsFailToLock, "是", "否");
+                ControlUtils.SelectListItemsIgnoreCase(rblIsFailToLock, ConfigManager.UserConfigInfo.IsLoginFailToLock.ToString());
 
-            PhFailToLock.Visible = ConfigManager.UserConfigInfo.IsLoginFailToLock;
+                phFailToLock.Visible = false;
+                if (ConfigManager.UserConfigInfo.IsLoginFailToLock)
+                {
+                    phFailToLock.Visible = true;
+                }
 
-            TbLoginFailCount.Text = ConfigManager.UserConfigInfo.LoginFailToLockCount.ToString();
+                loginFailCount.Text = ConfigManager.UserConfigInfo.LoginFailToLockCount.ToString();
 
-            DdlLockType.Items.Add(new ListItem("按小时锁定", EUserLockTypeUtils.GetValue(EUserLockType.Hours)));
-            DdlLockType.Items.Add(new ListItem("永久锁定", EUserLockTypeUtils.GetValue(EUserLockType.Forever)));
-            ControlUtils.SelectListItemsIgnoreCase(DdlLockType, ConfigManager.UserConfigInfo.LoginLockingType);
-            TbLockingTime.Text = ConfigManager.UserConfigInfo.LoginLockingHours.ToString();
+                ddlLockType.Items.Add(new ListItem("按小时锁定", EUserLockTypeUtils.GetValue(EUserLockType.Hours)));
+                ddlLockType.Items.Add(new ListItem("永久锁定", EUserLockTypeUtils.GetValue(EUserLockType.Forever)));
+                ControlUtils.SelectListItemsIgnoreCase(ddlLockType, ConfigManager.UserConfigInfo.LoginLockingType);
+                lockingTime.Text = ConfigManager.UserConfigInfo.LoginLockingHours.ToString();
 
-            PhLockingTime.Visible = false;
-            PhLockingTime.Visible = EUserLockTypeUtils.Equals(ConfigManager.UserConfigInfo.LoginLockingType, EUserLockType.Hours);
-
-            EBooleanUtils.AddListItems(RblIsFindPassword, "启用", "禁用");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsFindPassword, ConfigManager.UserConfigInfo.IsFindPassword.ToString());
-            PhFindPassword.Visible = ConfigManager.UserConfigInfo.IsFindPassword;
-            TbFindPasswordSmsTplId.Text = ConfigManager.UserConfigInfo.FindPasswordSmsTplId;
+                phLockingTime.Visible = false;
+                phLockingTime.Visible = EUserLockTypeUtils.Equals(ConfigManager.UserConfigInfo.LoginLockingType, EUserLockType.Hours);
+            }
         }
 
-        public void RblIsFailToLock_SelectedIndexChanged(object sender, EventArgs e)
+        protected void rblIsFailToLock_SelectedIndexChanged(object sender, EventArgs e)
         {
-            PhFailToLock.Visible = TranslateUtils.ToBool(RblIsFailToLock.SelectedValue);
+            phFailToLock.Visible = TranslateUtils.ToBool(rblIsFailToLock.SelectedValue);
         }
 
-        public void DdlLockType_SelectedIndexChanged(object sender, EventArgs e)
+        protected void ddlLockType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            PhLockingTime.Visible = !EUserLockTypeUtils.Equals(EUserLockType.Forever, DdlLockType.SelectedValue);
-        }
-
-        public void RblIsFindPassword_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            PhFindPassword.Visible = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
+            phLockingTime.Visible = !EUserLockTypeUtils.Equals(EUserLockType.Forever, ddlLockType.SelectedValue);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -73,18 +65,15 @@ namespace SiteServer.BackgroundPages.User
             {
                 try
                 {
-                    ConfigManager.UserConfigInfo.IsRecordIp = TranslateUtils.ToBool(RblIsRecordIp.SelectedValue);
-                    ConfigManager.UserConfigInfo.IsRecordSource = TranslateUtils.ToBool(RblIsRecordSource.SelectedValue);
-                    ConfigManager.UserConfigInfo.IsLoginFailToLock = TranslateUtils.ToBool(RblIsFailToLock.SelectedValue);
+                    ConfigManager.UserConfigInfo.IsRecordIp = TranslateUtils.ToBool(rblIsRecordIP.SelectedValue);
+                    ConfigManager.UserConfigInfo.IsRecordSource = TranslateUtils.ToBool(rblIsRecordSource.SelectedValue);
+                    ConfigManager.UserConfigInfo.IsLoginFailToLock = TranslateUtils.ToBool(rblIsFailToLock.SelectedValue);
 
-                    ConfigManager.UserConfigInfo.LoginFailToLockCount = TranslateUtils.ToInt(TbLoginFailCount.Text, 3);
+                    ConfigManager.UserConfigInfo.LoginFailToLockCount = TranslateUtils.ToInt(loginFailCount.Text, 3);
 
-                    ConfigManager.UserConfigInfo.LoginLockingType = DdlLockType.SelectedValue;
+                    ConfigManager.UserConfigInfo.LoginLockingType = ddlLockType.SelectedValue;
 
-                    ConfigManager.UserConfigInfo.LoginLockingHours = TranslateUtils.ToInt(TbLockingTime.Text);
-
-                    ConfigManager.UserConfigInfo.IsFindPassword = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
-                    ConfigManager.UserConfigInfo.FindPasswordSmsTplId = TbFindPasswordSmsTplId.Text;
+                    ConfigManager.UserConfigInfo.LoginLockingHours = TranslateUtils.ToInt(lockingTime.Text);
 
                     BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
 

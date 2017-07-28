@@ -11,35 +11,45 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string Id = nameof(StoreItemInfo.Id);
-        public const string PublishmentSystemId = nameof(StoreItemInfo.PublishmentSystemId);
-        public const string StoreId = nameof(StoreItemInfo.StoreId);
-        public const string CategoryId = nameof(StoreItemInfo.CategoryId);
-        public const string StoreName = nameof(StoreItemInfo.StoreName);
-        public const string Tel = nameof(StoreItemInfo.Tel);
-        public const string Mobile = nameof(StoreItemInfo.Mobile);
-        public const string ImageUrl = nameof(StoreItemInfo.ImageUrl);
-        public const string Address = nameof(StoreItemInfo.Address);
-        public const string Longitude = nameof(StoreItemInfo.Longitude);
-        public const string Latitude = nameof(StoreItemInfo.Latitude);
-        public const string Summary = nameof(StoreItemInfo.Summary);
+        public const string ID = "ID";
+        public const string PublishmentSystemID = "PublishmentSystemID";
+        public const string StoreID = "StoreID";
+        public const string CategoryID = "CategoryID";
+        public const string StoreName = "StoreName";
+        public const string Tel = "Tel";
+        public const string Mobile = "Mobile";
+        public const string ImageUrl = "ImageUrl";
+        public const string Address = "Address";
+        public const string Longitude = "Longitude";
+        public const string Latitude = "Latitude";
+        public const string Summary = "Summary";
 
-        private static List<string> _allAttributes;
-        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
+        private static List<string> allAttributes;
+        public static List<string> AllAttributes
         {
-            Id,
-            PublishmentSystemId,
-            StoreId,
-            CategoryId,
-            StoreName,
-            Tel,
-            Mobile,
-            ImageUrl,
-            Address,
-            Longitude,
-            Latitude,
-            Summary
-        });
+            get
+            {
+                if (allAttributes == null)
+                {
+                    allAttributes = new List<string>();
+                    allAttributes.Add(ID);
+                    allAttributes.Add(PublishmentSystemID);
+                    allAttributes.Add(StoreID);
+                    allAttributes.Add(CategoryID);
+                    allAttributes.Add(StoreName);
+                    allAttributes.Add(Tel);
+                    allAttributes.Add(Mobile);
+                    allAttributes.Add(ImageUrl);
+                    allAttributes.Add(Address);
+                    allAttributes.Add(Longitude);
+                    allAttributes.Add(Latitude);
+                    allAttributes.Add(Summary);
+
+                }
+
+                return allAttributes;
+            }
+        }
     }
 
     public class StoreItemInfo : BaseInfo
@@ -48,9 +58,9 @@ namespace SiteServer.CMS.WeiXin.Model
         public StoreItemInfo(object dataItem) : base(dataItem) { }
         public StoreItemInfo(NameValueCollection form) : base(form) { }
         public StoreItemInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemId { get; set; }
-        public int StoreId { get; set; }
-        public int CategoryId { get; set; }
+        public int PublishmentSystemID { get; set; }
+        public int StoreID { get; set; }
+        public int CategoryID { get; set; }
         public string StoreName { get; set; }
         public string Tel { get; set; }
         public string Mobile { get; set; }
@@ -60,6 +70,12 @@ namespace SiteServer.CMS.WeiXin.Model
         public string Latitude { get; set; }
         public string Summary { get; set; }
         
-        protected override List<string> AllAttributes => StoreItemAttribute.AllAttributes;
+        protected override List<string> AllAttributes
+        {
+            get
+            {
+                return StoreItemAttribute.AllAttributes;
+            }
+        }
     }
 }

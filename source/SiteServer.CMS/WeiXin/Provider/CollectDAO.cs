@@ -7,17 +7,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class CollectDao : DataProviderBase
+    public class CollectDAO : DataProviderBase
     {
-        private const string TableName = "wx_Collect";
+        private const string TABLE_NAME = "wx_Collect";
 
         public int Insert(CollectInfo collectInfo)
         {
-            var collectId = 0;
+            var collectID = 0;
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(collectInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(collectInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
             using (var conn = GetConnection())
             {
@@ -26,7 +26,9 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        collectId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
+                        ExecuteNonQuery(trans, SQL_INSERT, parms);
+
+                        collectID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
 
                         trans.Commit();
                     }
@@ -38,98 +40,98 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return collectId;
+            return collectID;
         }
 
         public void Update(CollectInfo collectInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(collectInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(collectInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
-            ExecuteNonQuery(sqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
 
-        public void AddUserCount(int collectId)
+        public void AddUserCount(int collectID)
         {
-            if (collectId > 0)
+            if (collectID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {CollectAttribute.UserCount} = {CollectAttribute.UserCount} + 1 WHERE ID = {collectId}";
+                    $"UPDATE {TABLE_NAME} SET {CollectAttribute.UserCount} = {CollectAttribute.UserCount} + 1 WHERE ID = {collectID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void AddPvCount(int collectId)
+        public void AddPVCount(int collectID)
         {
-            if (collectId > 0)
+            if (collectID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {CollectAttribute.PvCount} = {CollectAttribute.PvCount} + 1 WHERE ID = {collectId}";
+                    $"UPDATE {TABLE_NAME} SET {CollectAttribute.PVCount} = {CollectAttribute.PVCount} + 1 WHERE ID = {collectID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, int collectId)
+        public void Delete(int publishmentSystemID, int collectID)
         {
-            if (collectId > 0)
+            if (collectID > 0)
             {
-                var collectIdList = new List<int>();
-                collectIdList.Add(collectId);
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(collectIdList));
+                var collectIDList = new List<int>();
+                collectIDList.Add(collectID);
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(collectIDList));
 
-                DataProviderWx.CollectLogDao.DeleteAll(collectId);
-                DataProviderWx.CollectItemDao.DeleteAll(publishmentSystemId, collectId);
+                DataProviderWX.CollectLogDAO.DeleteAll(collectID);
+                DataProviderWX.CollectItemDAO.DeleteAll(publishmentSystemID, collectID);
 
-                string sqlString = $"DELETE FROM {TableName} WHERE ID = {collectId}";
+                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {collectID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, List<int> collectIdList)
+        public void Delete(int publishmentSystemID, List<int> collectIDList)
         {
-            if (collectIdList != null && collectIdList.Count > 0)
+            if (collectIDList != null && collectIDList.Count > 0)
             {
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(collectIdList));
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(collectIDList));
 
-                foreach (var collectId in collectIdList)
+                foreach (var collectID in collectIDList)
                 {
-                    DataProviderWx.CollectLogDao.DeleteAll(collectId);
-                    DataProviderWx.CollectItemDao.DeleteAll(publishmentSystemId, collectId);
+                    DataProviderWX.CollectLogDAO.DeleteAll(collectID);
+                    DataProviderWX.CollectItemDAO.DeleteAll(publishmentSystemID, collectID);
                 }
 
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(collectIdList)})";
+                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(collectIDList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private List<int> GetKeywordIdList(List<int> collectIdList)
+        private List<int> GetKeywordIDList(List<int> collectIDList)
         {
-            var keywordIdList = new List<int>();
+            var keywordIDList = new List<int>();
 
             string sqlString =
-                $"SELECT {CollectAttribute.KeywordId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(collectIdList)})";
+                $"SELECT {CollectAttribute.KeywordID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(collectIDList)})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    keywordIdList.Add(rdr.GetInt32(0));
+                    keywordIDList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return keywordIdList;
+            return keywordIDList;
         }
 
-        public CollectInfo GetCollectInfo(int collectId)
+        public CollectInfo GetCollectInfo(int collectID)
         {
             CollectInfo collectInfo = null;
 
-            string sqlWhere = $"WHERE ID = {collectId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {collectID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -141,20 +143,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return collectInfo;
         }
 
-        public List<CollectInfo> GetCollectInfoListByKeywordId(int publishmentSystemId, int keywordId)
+        public List<CollectInfo> GetCollectInfoListByKeywordID(int publishmentSystemID, int keywordID)
         {
             var collectInfoList = new List<CollectInfo>();
 
-            string sqlWhere =
-                $"WHERE {CollectAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CollectAttribute.IsDisabled} <> '{true}'";
-            if (keywordId > 0)
+            string SQL_WHERE =
+                $"WHERE {CollectAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CollectAttribute.IsDisabled} <> '{true}'";
+            if (keywordID > 0)
             {
-                sqlWhere += $" AND {CollectAttribute.KeywordId} = {keywordId}";
+                SQL_WHERE += $" AND {CollectAttribute.KeywordID} = {keywordID}";
             }
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
@@ -167,22 +169,22 @@ namespace SiteServer.CMS.WeiXin.Provider
             return collectInfoList;
         }
 
-        public int GetFirstIdByKeywordId(int publishmentSystemId, int keywordId)
+        public int GetFirstIDByKeywordID(int publishmentSystemID, int keywordID)
         {
             string sqlString =
-                $"SELECT TOP 1 ID FROM {TableName} WHERE {CollectAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CollectAttribute.IsDisabled} <> '{true}' AND {CollectAttribute.KeywordId} = {keywordId}";
+                $"SELECT TOP 1 ID FROM {TABLE_NAME} WHERE {CollectAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CollectAttribute.IsDisabled} <> '{true}' AND {CollectAttribute.KeywordID} = {keywordID}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetTitle(int collectId)
+        public string GetTitle(int collectID)
         {
             var title = string.Empty;
 
-            string sqlWhere = $"WHERE ID = {collectId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, CollectAttribute.Title, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {collectID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, CollectAttribute.Title, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -194,21 +196,21 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
 
-        public string GetSelectString(int publishmentSystemId)
+        public string GetSelectString(int publishmentSystemID)
         {
-            string whereString = $"WHERE {CollectAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {CollectAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
         }
 
-        public List<CollectInfo> GetCollectInfoList(int publishmentSystemId)
+        public List<CollectInfo> GetCollectInfoList(int publishmentSystemID)
         {
             var collectInfoList = new List<CollectInfo>();
 
-            string sqlWhere = $"WHERE {CollectAttribute.PublishmentSystemId} = {publishmentSystemId}";            
+            string SQL_WHERE = $"WHERE {CollectAttribute.PublishmentSystemID} = {publishmentSystemID}";            
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {

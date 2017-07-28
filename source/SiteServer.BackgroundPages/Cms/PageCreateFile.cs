@@ -5,6 +5,7 @@ using BaiRong.Core;
 using SiteServer.BackgroundPages.Service;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -25,9 +26,9 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "生成文件页", AppManager.Cms.Permission.WebSite.Create);
 
-                var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListOfFile(PublishmentSystemId);
+                var templateInfoArrayList = DataProvider.TemplateDao.GetTemplateInfoArrayListOfFile(PublishmentSystemId);
 
-                foreach (var templateInfo in templateInfoList)
+                foreach (TemplateInfo templateInfo in templateInfoArrayList)
                 {
                     var listitem = new ListItem(templateInfo.CreatedFileFullName, templateInfo.TemplateId.ToString());
                     FileCollectionToCreate.Items.Add(listitem);
@@ -41,16 +42,16 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                var templateIdArrayList = new ArrayList();
+                var templateIDArrayList = new ArrayList();
                 foreach (ListItem item in FileCollectionToCreate.Items)
                 {
                     if (item.Selected)
                     {
-                        var templateId = int.Parse(item.Value);
-                        templateIdArrayList.Add(templateId);
+                        var templateID = int.Parse(item.Value);
+                        templateIDArrayList.Add(templateID);
                     }
                 }
-                ProcessCreateFile(templateIdArrayList);
+                ProcessCreateFile(templateIDArrayList);
             }
         }
 
@@ -63,17 +64,17 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-        private void ProcessCreateFile(ICollection templateIdArrayList)
+        private void ProcessCreateFile(ICollection templateIDArrayList)
         {
-            if (templateIdArrayList.Count == 0)
+            if (templateIDArrayList.Count == 0)
             {
                 FailMessage("请选择需要生成的文件页！");
                 return;
             }
 
-            foreach (int templateId in templateIdArrayList)
+            foreach (int templateID in templateIDArrayList)
             {
-                CreateManager.CreateFile(PublishmentSystemId, templateId);
+                CreateManager.CreateFile(PublishmentSystemId, templateID);
             }
 
             PageCreateStatus.Redirect(PublishmentSystemId);

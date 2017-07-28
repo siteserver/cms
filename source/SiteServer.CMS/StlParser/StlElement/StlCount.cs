@@ -136,7 +136,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 foreach (var nodeId in nodeIdList)
                 {
                     var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeId);
-                    count += DataProvider.ContentDao.GetCountOfContentAdd(tableName, pageInfo.PublishmentSystemId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
+                    count += DataProvider.ContentDao.GetCountOfContentAdd(tableName, pageInfo.PublishmentSystemId, nodeId, sinceDate, DateTime.Now.AddDays(1), string.Empty);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))

@@ -42,19 +42,19 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == ECountType.UserSubscribe)
             {
-                return "用户关注";
+                return "�û���ע";
             }
             else if (type == ECountType.UserUnsubscribe)
             {
-                return "用户取消关注";
+                return "�û�ȡ����ע";
             }
             else if (type == ECountType.RequestText)
             {
-                return "文本回复";
+                return "�ı��ظ�";
             }
             else if (type == ECountType.RequestNews)
             {
-                return "图文回复";
+                return "ͼ�Ļظ�";
             }
 			else
 			{

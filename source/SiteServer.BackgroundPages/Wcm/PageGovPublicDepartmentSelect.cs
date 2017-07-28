@@ -116,7 +116,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 SuccessMessage("可选择部门设置成功");
 			    AddWaitAndRedirectScript(PageUtils.GetWcmUrl(nameof(PageGovPublicDepartmentSelect), new NameValueCollection
 			    {
-			        {"siteId", PublishmentSystemId.ToString()}
+			        {"PublishmentSystemID", PublishmentSystemId.ToString()}
 			    }));
 			}
 		}

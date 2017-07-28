@@ -5,6 +5,7 @@ using System.Text;
 using System.Web.UI;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -43,9 +44,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             var eTemplateType = ETemplateTypeUtils.GetEnumType(templateType);
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(publishmentSystemId, eTemplateType);
+            var templateInfoArrayList = DataProvider.TemplateDao.GetTemplateInfoArrayListByType(publishmentSystemId, eTemplateType);
 
-            foreach (var templateInfo in templateInfoList)
+            foreach (TemplateInfo templateInfo in templateInfoArrayList)
             {
                 var templateAddUrl = PageTemplateAdd.GetRedirectUrl(publishmentSystemId, templateInfo.TemplateId, eTemplateType);
                 arraylist.Add($@"

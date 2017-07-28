@@ -10,20 +10,20 @@ using ECountTypeUtils = SiteServer.CMS.WeiXin.Model.Enumerations.ECountTypeUtils
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class CountDao : DataProviderBase
+    public class CountDAO : DataProviderBase
     {
-        private const string TableName = "wx_Count";
+        private const string TABLE_NAME = "wx_Count";
 
 
         public int Insert(CountInfo countInfo)
         {
-            var countId = 0;
+            var countID = 0;
 
             var sqlString = @"INSERT INTO wx_Count (PublishmentSystemID, CountYear, CountMonth, CountDay, CountType, Count) VALUES (@PublishmentSystemID, @CountYear, @CountMonth, @CountDay, @CountType, @Count)";
 
             var parms = new IDataParameter[]
 			{
-                GetParameter("@PublishmentSystemID", EDataType.Integer, countInfo.PublishmentSystemId),
+                GetParameter("@PublishmentSystemID", EDataType.Integer, countInfo.PublishmentSystemID),
                 GetParameter("@CountYear", EDataType.Integer, countInfo.CountYear),
                 GetParameter("@CountMonth", EDataType.Integer, 255, countInfo.CountMonth),
                 GetParameter("@CountDay", EDataType.Integer, 200, countInfo.CountDay),        
@@ -38,7 +38,8 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        countId = ExecuteNonQueryAndReturnId(trans, sqlString, parms);
+                        ExecuteNonQuery(trans, sqlString, parms);
+                        countID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, "wx_Count");
                         trans.Commit();
                     }
                     catch
@@ -49,38 +50,38 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return countId;
+            return countID;
         }
        
 
-        public void AddCount(int publishmentSystemId, ECountType countType)
+        public void AddCount(int publishmentSystemID, ECountType countType)
         {
-            var count = GetCount(publishmentSystemId, countType);
+            var count = GetCount(publishmentSystemID, countType);
             var now = DateTime.Now;
 
             if (count == 0)
             {
                 string sqlString =
-                    $"INSERT INTO wx_Count (PublishmentSystemID, CountYear, CountMonth, CountDay, CountType, Count) VALUES ({publishmentSystemId}, {now.Year}, {now.Month}, {now.Day}, '{ECountTypeUtils.GetValue(countType)}', 1)";
+                    $"INSERT INTO wx_Count (PublishmentSystemID, CountYear, CountMonth, CountDay, CountType, Count) VALUES ({publishmentSystemID}, {now.Year}, {now.Month}, {now.Day}, '{ECountTypeUtils.GetValue(countType)}', 1)";
 
                 ExecuteNonQuery(sqlString);
             }
             else
             {
                 string sqlString =
-                    $"UPDATE wx_Count SET Count = Count + 1 WHERE PublishmentSystemID = {publishmentSystemId} AND CountYear = {now.Year} AND CountMonth = {now.Month} AND CountDay = {now.Day} AND CountType = '{ECountTypeUtils.GetValue(countType)}'";
+                    $"UPDATE wx_Count SET Count = Count + 1 WHERE PublishmentSystemID = {publishmentSystemID} AND CountYear = {now.Year} AND CountMonth = {now.Month} AND CountDay = {now.Day} AND CountType = '{ECountTypeUtils.GetValue(countType)}'";
 
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public int GetCount(int publishmentSystemId, ECountType countType)
+        public int GetCount(int publishmentSystemID, ECountType countType)
         {
             var count = 0;
 
             var now = DateTime.Now;
             string sqlString =
-                $"SELECT Count FROM wx_Count WHERE PublishmentSystemID = {publishmentSystemId} AND CountYear = {now.Year} AND CountMonth = {now.Month} AND CountDay = {now.Day} AND CountType = '{ECountTypeUtils.GetValue(countType)}'";
+                $"SELECT Count FROM wx_Count WHERE PublishmentSystemID = {publishmentSystemID} AND CountYear = {now.Year} AND CountMonth = {now.Month} AND CountDay = {now.Day} AND CountType = '{ECountTypeUtils.GetValue(countType)}'";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -94,12 +95,12 @@ namespace SiteServer.CMS.WeiXin.Provider
             return count;
         }
 
-        public int GetCount(int publishmentSystemId, int year, int month, ECountType countType)
+        public int GetCount(int publishmentSystemID, int year, int month, ECountType countType)
         {
             var count = 0;
 
             string sqlString =
-                $"SELECT Count FROM wx_Count WHERE PublishmentSystemID = {publishmentSystemId} AND CountYear = {year} AND CountMonth = {month} AND CountType = '{ECountTypeUtils.GetValue(countType)}'";
+                $"SELECT Count FROM wx_Count WHERE PublishmentSystemID = {publishmentSystemID} AND CountYear = {year} AND CountMonth = {month} AND CountType = '{ECountTypeUtils.GetValue(countType)}'";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -113,12 +114,12 @@ namespace SiteServer.CMS.WeiXin.Provider
             return count;
         }
 
-        public Dictionary<int, int> GetDayCount(int publishmentSystemId, int year, int month, ECountType countType)
+        public Dictionary<int, int> GetDayCount(int publishmentSystemID, int year, int month, ECountType countType)
         {
             var dictionary = new Dictionary<int, int>();
 
             string sqlString =
-                $"SELECT CountDay, Count FROM wx_Count WHERE PublishmentSystemID = {publishmentSystemId} AND CountYear = {year} AND CountMonth = {month} AND CountType = '{ECountTypeUtils.GetValue(countType)}'";
+                $"SELECT CountDay, Count FROM wx_Count WHERE PublishmentSystemID = {publishmentSystemID} AND CountYear = {year} AND CountMonth = {month} AND CountType = '{ECountTypeUtils.GetValue(countType)}'";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -134,15 +135,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             return dictionary;
         }
 
-        public List<CountInfo> GetCountInfoList(int publishmentSystemId)
+        public List<CountInfo> GetCountInfoList(int publishmentSystemID)
         {
             var countInfoList = new List<CountInfo>();
 
-            string sqlWhere = $"WHERE {CountAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            string SQL_WHERE = $"WHERE {CountAttribute.PublishmentSystemID} = {publishmentSystemID}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {

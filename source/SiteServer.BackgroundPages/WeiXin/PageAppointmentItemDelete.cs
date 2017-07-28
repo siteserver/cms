@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             {
                 try
                 {
-                    DataProviderWx.AppointmentItemDao.Delete(PublishmentSystemId, list);
+                    DataProviderWX.AppointmentItemDAO.Delete(PublishmentSystemId, list);
                     Response.Write("success");
                     Response.End();
                 }

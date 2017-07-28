@@ -10,48 +10,48 @@ using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class MenuDao : DataProviderBase
+    public class MenuDAO : DataProviderBase
     {
-        private const string SqlUpdate = "UPDATE wx_Menu SET PublishmentSystemID = @PublishmentSystemID, MenuName = @MenuName, MenuType = @MenuType, Keyword = @Keyword, Url = @Url, ChannelID = @ChannelID, ContentID = @ContentID, ParentID = @ParentID, Taxis = @Taxis WHERE MenuID = @MenuID";
+        private const string SQL_UPDATE = "UPDATE wx_Menu SET PublishmentSystemID = @PublishmentSystemID, MenuName = @MenuName, MenuType = @MenuType, Keyword = @Keyword, Url = @Url, ChannelID = @ChannelID, ContentID = @ContentID, ParentID = @ParentID, Taxis = @Taxis WHERE MenuID = @MenuID";
 
-        private const string SqlDelete = "DELETE FROM wx_Menu WHERE MenuID = @MenuID OR ParentID = @MenuID";
+        private const string SQL_DELETE = "DELETE FROM wx_Menu WHERE MenuID = @MenuID OR ParentID = @MenuID";
 
-        private const string SqlSelect = "SELECT MenuID, PublishmentSystemID, MenuName, MenuType, Keyword, Url, ChannelID, ContentID, ParentID, Taxis FROM wx_Menu WHERE MenuID = @MenuID";
+        private const string SQL_SELECT = "SELECT MenuID, PublishmentSystemID, MenuName, MenuType, Keyword, Url, ChannelID, ContentID, ParentID, Taxis FROM wx_Menu WHERE MenuID = @MenuID";
 
-        private const string SqlSelectAll = "SELECT MenuID, PublishmentSystemID, MenuName, MenuType, Keyword, Url, ChannelID, ContentID, ParentID, Taxis FROM wx_Menu WHERE PublishmentSystemID = @PublishmentSystemID AND ParentID = @ParentID ORDER BY Taxis";
+        private const string SQL_SELECT_ALL = "SELECT MenuID, PublishmentSystemID, MenuName, MenuType, Keyword, Url, ChannelID, ContentID, ParentID, Taxis FROM wx_Menu WHERE PublishmentSystemID = @PublishmentSystemID AND ParentID = @ParentID ORDER BY Taxis";
 
-        private const string SqlSelectAllby = "SELECT MenuID, PublishmentSystemID, MenuName, MenuType, Keyword, Url, ChannelID, ContentID, ParentID, Taxis FROM wx_Menu WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY Taxis";
+        private const string SQL_SELECT_ALLBY = "SELECT MenuID, PublishmentSystemID, MenuName, MenuType, Keyword, Url, ChannelID, ContentID, ParentID, Taxis FROM wx_Menu WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY Taxis";
 
 
-        private const string ParmMenuId = "@MenuID";
-        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
-        private const string ParmMenuName = "@MenuName";
-        private const string ParmMenuType = "@MenuType";
-        private const string ParmKeyword = "@Keyword";
-        private const string ParmUrl = "@Url";
-        private const string ParmChannelId = "@ChannelID";
-        private const string ParmContentId = "@ContentID";
-        private const string ParmParentId = "@ParentID";
-        private const string ParmTaxis = "@Taxis";
+        private const string PARM_MENU_ID = "@MenuID";
+        private const string PARM_PUBLISHMENT_SYSTEM_ID = "@PublishmentSystemID";
+        private const string PARM_MENU_NAME = "@MenuName";
+        private const string PARM_MENU_TYPE = "@MenuType";
+        private const string PARM_KEYWORD = "@Keyword";
+        private const string PARM_URL = "@Url";
+        private const string PARM_CHANNEL_ID = "@ChannelID";
+        private const string PARM_CONTENT_ID = "@ContentID";
+        private const string PARM_PARENT_ID = "@ParentID";
+        private const string PARM_TAXIS = "@Taxis";
 
         public int Insert(MenuInfo menuInfo)
         {
-            var menuId = 0;
+            var menuID = 0;
 
             var sqlString = "INSERT INTO wx_Menu (PublishmentSystemID, MenuName, MenuType, Keyword, Url, ChannelID, ContentID, ParentID, Taxis) VALUES (@PublishmentSystemID, @MenuName, @MenuType, @Keyword, @Url, @ChannelID, @ContentID, @ParentID, @Taxis)";
 
-            var taxis = GetMaxTaxis(menuInfo.ParentId) + 1;
+            var taxis = GetMaxTaxis(menuInfo.ParentID) + 1;
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, menuInfo.PublishmentSystemId),
-                GetParameter(ParmMenuName, EDataType.NVarChar, 50, menuInfo.MenuName),
-                GetParameter(ParmMenuType, EDataType.VarChar, 50, EMenuTypeUtils.GetValue(menuInfo.MenuType)),
-                GetParameter(ParmKeyword, EDataType.NVarChar, 50, menuInfo.Keyword),
-                GetParameter(ParmUrl, EDataType.VarChar, 200, menuInfo.Url),
-                GetParameter(ParmChannelId, EDataType.Integer, menuInfo.ChannelId),
-                GetParameter(ParmContentId, EDataType.Integer, menuInfo.ContentId),
-                GetParameter(ParmParentId, EDataType.Integer, menuInfo.ParentId),
-                GetParameter(ParmTaxis, EDataType.Integer, taxis)
+                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, menuInfo.PublishmentSystemID),
+                GetParameter(PARM_MENU_NAME, EDataType.NVarChar, 50, menuInfo.MenuName),
+                GetParameter(PARM_MENU_TYPE, EDataType.VarChar, 50, EMenuTypeUtils.GetValue(menuInfo.MenuType)),
+                GetParameter(PARM_KEYWORD, EDataType.NVarChar, 50, menuInfo.Keyword),
+                GetParameter(PARM_URL, EDataType.VarChar, 200, menuInfo.Url),
+                GetParameter(PARM_CHANNEL_ID, EDataType.Integer, menuInfo.ChannelID),
+                GetParameter(PARM_CONTENT_ID, EDataType.Integer, menuInfo.ContentID),
+                GetParameter(PARM_PARENT_ID, EDataType.Integer, menuInfo.ParentID),
+                GetParameter(PARM_TAXIS, EDataType.Integer, taxis)
 			};
 
             using (var conn = GetConnection())
@@ -61,7 +61,8 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        menuId = ExecuteNonQueryAndReturnId(trans, sqlString, parms);
+                        ExecuteNonQuery(trans, sqlString, parms);
+                        menuID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, "wx_Menu");
                         trans.Commit();
                     }
                     catch
@@ -72,48 +73,48 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return menuId;
+            return menuID;
         }
 
         public void Update(MenuInfo menuInfo)
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, menuInfo.PublishmentSystemId),
-                GetParameter(ParmMenuName, EDataType.NVarChar, 50, menuInfo.MenuName),
-                GetParameter(ParmMenuType, EDataType.VarChar, 50, EMenuTypeUtils.GetValue(menuInfo.MenuType)),
-                GetParameter(ParmKeyword, EDataType.NVarChar, 50, menuInfo.Keyword),
-                GetParameter(ParmUrl, EDataType.VarChar, 200, menuInfo.Url),
-                GetParameter(ParmChannelId, EDataType.Integer, menuInfo.ChannelId),
-                GetParameter(ParmContentId, EDataType.Integer, menuInfo.ContentId),
-                GetParameter(ParmParentId, EDataType.Integer, menuInfo.ParentId),
-                GetParameter(ParmTaxis, EDataType.Integer, menuInfo.Taxis),
-                GetParameter(ParmMenuId, EDataType.Integer, menuInfo.MenuId)
+                GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, menuInfo.PublishmentSystemID),
+                GetParameter(PARM_MENU_NAME, EDataType.NVarChar, 50, menuInfo.MenuName),
+                GetParameter(PARM_MENU_TYPE, EDataType.VarChar, 50, EMenuTypeUtils.GetValue(menuInfo.MenuType)),
+                GetParameter(PARM_KEYWORD, EDataType.NVarChar, 50, menuInfo.Keyword),
+                GetParameter(PARM_URL, EDataType.VarChar, 200, menuInfo.Url),
+                GetParameter(PARM_CHANNEL_ID, EDataType.Integer, menuInfo.ChannelID),
+                GetParameter(PARM_CONTENT_ID, EDataType.Integer, menuInfo.ContentID),
+                GetParameter(PARM_PARENT_ID, EDataType.Integer, menuInfo.ParentID),
+                GetParameter(PARM_TAXIS, EDataType.Integer, menuInfo.Taxis),
+                GetParameter(PARM_MENU_ID, EDataType.Integer, menuInfo.MenuID)
 			};
 
-            ExecuteNonQuery(SqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
 
-        public void Delete(int menuId)
+        public void Delete(int menuID)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmMenuId, EDataType.Integer, menuId)
+				GetParameter(PARM_MENU_ID, EDataType.Integer, menuID)
 			};
 
-            ExecuteNonQuery(SqlDelete, parms);
+            ExecuteNonQuery(SQL_DELETE, parms);
         }
 
-        public MenuInfo GetMenuInfo(int menuId)
+        public MenuInfo GetMenuInfo(int menuID)
         {
             MenuInfo menuInfo = null;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmMenuId, EDataType.Integer, menuId)
+				GetParameter(PARM_MENU_ID, EDataType.Integer, menuID)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelect, parms))
+            using (var rdr = ExecuteReader(SQL_SELECT, parms))
             {
                 if (rdr.Read())
                 {
@@ -125,35 +126,35 @@ namespace SiteServer.CMS.WeiXin.Provider
             return menuInfo;
         }
 
-        public IEnumerable GetDataSource(int publishmentSystemId, int parentId)
+        public IEnumerable GetDataSource(int publishmentSystemID, int parentID)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmParentId, EDataType.Integer, parentId)
+				GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, publishmentSystemID),
+                GetParameter(PARM_PARENT_ID, EDataType.Integer, parentID)
 			};
 
-            var enumerable = (IEnumerable)ExecuteReader(SqlSelectAll, parms);
+            var enumerable = (IEnumerable)ExecuteReader(SQL_SELECT_ALL, parms);
             return enumerable;
         }
 
-        public int GetCount(int parentId)
+        public int GetCount(int parentID)
         {
-            var sqlString = "SELECT COUNT(*) FROM wx_Menu WHERE ParentID = " + parentId;
+            var sqlString = "SELECT COUNT(*) FROM wx_Menu WHERE ParentID = " + parentID;
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public List<MenuInfo> GetMenuInfoList(int publishmentSystemId, int parentId)
+        public List<MenuInfo> GetMenuInfoList(int publishmentSystemID, int parentID)
         {
             var list = new List<MenuInfo>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmParentId, EDataType.Integer, parentId)
+				GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, publishmentSystemID),
+                GetParameter(PARM_PARENT_ID, EDataType.Integer, parentID)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectAll, parms))
+            using (var rdr = ExecuteReader(SQL_SELECT_ALL, parms))
             {
                 while (rdr.Read())
                 {
@@ -163,7 +164,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 rdr.Close();
             }
 
-            if (parentId > 0)
+            if (parentID > 0)
             {
                 list.Reverse();
             }
@@ -171,71 +172,71 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public bool UpdateTaxisToUp(int parentId, int menuId)
+        public bool UpdateTaxisToUp(int parentID, int menuID)
         {
             string sqlString =
-                $"SELECT TOP 1 MenuID, Taxis FROM wx_Menu WHERE (Taxis > (SELECT Taxis FROM wx_Menu WHERE MenuID = {menuId} AND ParentID = {parentId})) AND ParentID = {parentId} ORDER BY Taxis";
-            var higherId = 0;
+                $"SELECT TOP 1 MenuID, Taxis FROM wx_Menu WHERE (Taxis > (SELECT Taxis FROM wx_Menu WHERE MenuID = {menuID} AND ParentID = {parentID})) AND ParentID = {parentID} ORDER BY Taxis";
+            var higherID = 0;
             var higherTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    higherId = rdr.GetInt32(0);
+                    higherID = rdr.GetInt32(0);
                     higherTaxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }
 
-            var selectedTaxis = GetTaxis(menuId);
+            var selectedTaxis = GetTaxis(menuID);
 
-            if (higherId > 0)
+            if (higherID > 0)
             {
-                SetTaxis(menuId, higherTaxis);
-                SetTaxis(higherId, selectedTaxis);
+                SetTaxis(menuID, higherTaxis);
+                SetTaxis(higherID, selectedTaxis);
                 return true;
             }
             return false;
         }
 
-        public bool UpdateTaxisToDown(int parentId, int menuId)
+        public bool UpdateTaxisToDown(int parentID, int menuID)
         {
             string sqlString =
-                $"SELECT TOP 1 MenuID, Taxis FROM wx_Menu WHERE (Taxis < (SELECT Taxis FROM wx_Menu WHERE MenuID = {menuId} AND ParentID = {parentId})) AND ParentID = {parentId} ORDER BY Taxis DESC";
-            var lowerId = 0;
+                $"SELECT TOP 1 MenuID, Taxis FROM wx_Menu WHERE (Taxis < (SELECT Taxis FROM wx_Menu WHERE MenuID = {menuID} AND ParentID = {parentID})) AND ParentID = {parentID} ORDER BY Taxis DESC";
+            var lowerID = 0;
             var lowerTaxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
-                    lowerId = rdr.GetInt32(0);
+                    lowerID = rdr.GetInt32(0);
                     lowerTaxis = rdr.GetInt32(1);
                 }
                 rdr.Close();
             }
 
-            var selectedTaxis = GetTaxis(menuId);
+            var selectedTaxis = GetTaxis(menuID);
 
-            if (lowerId > 0)
+            if (lowerID > 0)
             {
-                SetTaxis(menuId, lowerTaxis);
-                SetTaxis(lowerId, selectedTaxis);
+                SetTaxis(menuID, lowerTaxis);
+                SetTaxis(lowerID, selectedTaxis);
                 return true;
             }
             return false;
         }
 
-        private int GetMaxTaxis(int parentId)
+        private int GetMaxTaxis(int parentID)
         {
-            string sqlString = $"SELECT MAX(Taxis) FROM wx_Menu WHERE ParentID = {parentId}";
+            string sqlString = $"SELECT MAX(Taxis) FROM wx_Menu WHERE ParentID = {parentID}";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private int GetTaxis(int menuId)
+        private int GetTaxis(int menuID)
         {
-            string sqlString = $"SELECT Taxis FROM wx_Menu WHERE MenuID = {menuId}";
+            string sqlString = $"SELECT Taxis FROM wx_Menu WHERE MenuID = {menuID}";
             var taxis = 0;
 
             using (var rdr = ExecuteReader(sqlString))
@@ -250,23 +251,23 @@ namespace SiteServer.CMS.WeiXin.Provider
             return taxis;
         }
 
-        private void SetTaxis(int menuId, int taxis)
+        private void SetTaxis(int menuID, int taxis)
         {
-            string sqlString = $"UPDATE wx_Menu SET Taxis = {taxis} WHERE MenuID = {menuId}";
+            string sqlString = $"UPDATE wx_Menu SET Taxis = {taxis} WHERE MenuID = {menuID}";
             ExecuteNonQuery(sqlString);
         }
 
-        public List<MenuInfo> GetMenuInfoList(int publishmentSystemId)
+        public List<MenuInfo> GetMenuInfoList(int publishmentSystemID)
         {
             var list = new List<MenuInfo>();
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmParentId, EDataType.Integer, 0)
+				GetParameter(PARM_PUBLISHMENT_SYSTEM_ID, EDataType.Integer, publishmentSystemID),
+                GetParameter(PARM_PARENT_ID, EDataType.Integer, 0)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectAllby, parms))
+            using (var rdr = ExecuteReader(SQL_SELECT_ALLBY, parms))
             {
                 while (rdr.Read())
                 {

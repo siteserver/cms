@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using BaiRong.Core;
 using System.Collections.Specialized;
 using BaiRong.Core.Model.Enumerations;
@@ -86,15 +85,18 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (loadingType == ELoadingType.SiteAnalysis)
             {
+                var contentAddNum = string.Empty;
+                var contentUpdateNum = string.Empty;
+
                 var startDate = TranslateUtils.ToDateTime(additional["StartDate"]);
                 var endDate = TranslateUtils.ToDateTime(additional["EndDate"]);
 
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                var num = DataProvider.ContentDao.GetCountOfContentAdd(tableName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, EScopeType.All, startDate, endDate, string.Empty);
-                var contentAddNum = num == 0 ? "0" : $"<strong>{num}</strong>";
+                var num = DataProvider.ContentDao.GetCountOfContentAdd(tableName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, startDate, endDate, string.Empty);
+                contentAddNum = (num == 0) ? "0" : $"<strong>{num}</strong>";
 
-                num = DataProvider.ContentDao.GetCountOfContentUpdate(tableName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, EScopeType.All, startDate, endDate, string.Empty);
-                var contentUpdateNum = num == 0 ? "0" : $"<strong>{num}</strong>";
+                num = DataProvider.ContentDao.GetCountOfContentUpdate(tableName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, startDate, endDate, string.Empty);
+                contentUpdateNum = (num == 0) ? "0" : $"<strong>{num}</strong>";
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
@@ -114,12 +116,14 @@ namespace SiteServer.BackgroundPages.Core
             {
                 var editLink = string.Empty;
 
+                var filePath = string.Empty;
+
                 if (enabled)
                 {
                     var showPopWinString = ModalTemplateFilePathRule.GetOpenWindowString(nodeInfo.PublishmentSystemId, nodeInfo.NodeId);
                     editLink = $"<a href=\"javascript:;\" onclick=\"{showPopWinString}\">更改</a>";
                 }
-                var filePath = PageUtility.GetInputChannelUrl(publishmentSystemInfo, nodeInfo);
+                filePath = PageUtility.GetInputChannelUrl(publishmentSystemInfo, nodeInfo);
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
@@ -150,10 +154,10 @@ namespace SiteServer.BackgroundPages.Core
                 if (nodeInfo.Additional.Attributes.Count > 0)
                 {
                     var nodeNameBuilder = new StringBuilder();
-                    var nodeIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIDsIfContentChanged);
-                    foreach (var theNodeId in nodeIdList)
+                    var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.CreateChannelIDsIfContentChanged);
+                    foreach (int theNodeID in nodeIDArrayList)
                     {
-                        var theNodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, theNodeId);
+                        var theNodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, theNodeID);
                         if (theNodeInfo != null)
                         {
                             nodeNameBuilder.Append(theNodeInfo.NodeName).Append(",");
@@ -184,13 +188,15 @@ namespace SiteServer.BackgroundPages.Core
             {
                 var editLink = string.Empty;
 
+                var contribute = string.Empty;
+
                 if (enabled)
                 {
                     var showPopWinString = ModalCrossSiteTransEdit.GetOpenWindowString(nodeInfo.PublishmentSystemId, nodeInfo.NodeId);
                     editLink = $"<a href=\"javascript:;\" onclick=\"{showPopWinString}\">更改</a>";
                 }
 
-                var contribute = CrossSiteTransUtility.GetDescription(nodeInfo.PublishmentSystemId, nodeInfo);
+                contribute = CrossSiteTransUtility.GetDescription(nodeInfo.PublishmentSystemId, nodeInfo);
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
@@ -211,7 +217,16 @@ namespace SiteServer.BackgroundPages.Core
                 }
 
                 //string contribute = CrossSiteTransUtility.GetDescription(nodeInfo.PublishmentSystemID, nodeInfo);
-                var isSign = nodeInfo.Additional.IsSignin ? "是" : "否";
+                var isSign = "";
+                var SignUser = "";
+                if (nodeInfo.Additional.IsSignin)
+                {
+                    isSign = "是";
+                }
+                else
+                {
+                    isSign = "否";
+                }
                 //if (!string.IsNullOrEmpty(nodeInfo.Additional.SigninUserGroupCollection))
                 //{
                 //    ArrayList groupIDlist = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.SigninUserGroupCollection);
@@ -225,13 +240,13 @@ namespace SiteServer.BackgroundPages.Core
                 //}
                 //else
                 //{
-                var signUser = nodeInfo.Additional.SigninUserNameCollection;
+                SignUser = nodeInfo.Additional.SigninUserNameCollection;
                 //}
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
 	<td>{title}</td>
-    <td>{signUser}</td>
+    <td>{SignUser}</td>
 	<td class=""center"">{isSign}</td>
 	<td class=""center"">{editLink}</td>
 </tr>
@@ -366,21 +381,21 @@ namespace SiteServer.BackgroundPages.Core
             return NodeTreeItem.GetScript(publishmentSystemInfo, loadingType, additional);
         }
 
-        public static string GetScriptOnLoad(int publishmentSystemId, int currentNodeId)
+        public static string GetScriptOnLoad(int publishmentSystemID, int currentNodeID)
         {
-            if (currentNodeId != 0 && currentNodeId != publishmentSystemId)
+            if (currentNodeID != 0 && currentNodeID != publishmentSystemID)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, currentNodeId);
+                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemID, currentNodeID);
                 if (nodeInfo != null)
                 {
-                    string path;
-                    if (nodeInfo.ParentId == publishmentSystemId)
+                    var path = string.Empty;
+                    if (nodeInfo.ParentId == publishmentSystemID)
                     {
-                        path = currentNodeId.ToString();
+                        path = currentNodeID.ToString();
                     }
                     else
                     {
-                        path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",", StringComparison.Ordinal) + 1) + "," + currentNodeId;
+                        path = nodeInfo.ParentsPath.Substring(nodeInfo.ParentsPath.IndexOf(",") + 1) + "," + currentNodeID.ToString();
                     }
                     return NodeTreeItem.GetScriptOnLoad(path);
                 }

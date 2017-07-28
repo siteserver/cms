@@ -1,4 +1,4 @@
-﻿using System.Web.UI;
+using System.Web.UI;
 using BaiRong.Core;
 
 namespace SiteServer.BackgroundPages.Controls

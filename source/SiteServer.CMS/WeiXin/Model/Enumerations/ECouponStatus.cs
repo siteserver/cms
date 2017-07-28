@@ -36,15 +36,15 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == ECouponStatus.Unused)
             {
-                return "æœªé¢†å–";
+                return "Î´ÁìÈ¡";
             }
             else if (type == ECouponStatus.Hold)
             {
-                return "å·²é¢†å–";
+                return "ÒÑÁìÈ¡";
             }
             else if (type == ECouponStatus.Cash)
             {
-                return "å·²ä½¿ç”¨";
+                return "ÒÑÊ¹ÓÃ";
             }
 			else
 			{

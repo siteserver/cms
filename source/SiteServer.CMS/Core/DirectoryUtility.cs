@@ -228,9 +228,9 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void DeleteFiles(PublishmentSystemInfo publishmentSystemInfo, List<int> templateIdList)
+        public static void DeleteFiles(PublishmentSystemInfo publishmentSystemInfo, ArrayList templateIdArrayList)
         {
-            foreach (var templateId in templateIdList)
+            foreach (int templateId in templateIdArrayList)
             {
                 var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemInfo.PublishmentSystemId, templateId);
                 if (templateInfo == null || templateInfo.TemplateType != ETemplateType.FileTemplate)
@@ -297,6 +297,13 @@ namespace SiteServer.CMS.Core
                     }
                 }
             }
+        }
+
+        public static string GetBlogSystemPath(PublishmentSystemInfo publishmentSystemInfo, string blogSystemDir)
+        {
+            var publishmentSystemPath = PathUtility.GetPublishmentSystemPath(publishmentSystemInfo);
+
+            return PathUtils.Combine(publishmentSystemPath, blogSystemDir);
         }
     }
 }

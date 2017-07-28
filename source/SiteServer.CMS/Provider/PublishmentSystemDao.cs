@@ -16,13 +16,13 @@ namespace SiteServer.CMS.Provider
     {
         public string TableName => "siteserver_PublishmentSystem";
 
-        private const string SqlSelectPublishmentSystemAll = "SELECT PublishmentSystemID, PublishmentSystemName, AuxiliaryTableForContent, AuxiliaryTableForGovPublic, AuxiliaryTableForGovInteract, AuxiliaryTableForVote, AuxiliaryTableForJob, IsCheckContentUseLevel, CheckContentLevel, PublishmentSystemDir, PublishmentSystemUrl, IsHeadquarters, ParentPublishmentSystemID, Taxis, SettingsXML FROM siteserver_PublishmentSystem ORDER BY Taxis";
+        private const string SqlSelectPublishmentSystemAll = "SELECT PublishmentSystemID, PublishmentSystemName, PublishmentSystemType, AuxiliaryTableForContent, AuxiliaryTableForGovPublic, AuxiliaryTableForGovInteract, AuxiliaryTableForVote, AuxiliaryTableForJob, IsCheckContentUseLevel, CheckContentLevel, PublishmentSystemDir, PublishmentSystemUrl, IsHeadquarters, ParentPublishmentSystemID, Taxis, SettingsXML FROM siteserver_PublishmentSystem ORDER BY Taxis";
 
-        private const string SqlSelectAllWithNode = "SELECT p.PublishmentSystemID, p.PublishmentSystemName, p.AuxiliaryTableForContent, p.AuxiliaryTableForGovPublic, p.AuxiliaryTableForGovInteract, p.AuxiliaryTableForVote, p.AuxiliaryTableForJob, p.IsCheckContentUseLevel, p.CheckContentLevel, p.PublishmentSystemDir, p.PublishmentSystemUrl, p.IsHeadquarters, p.ParentPublishmentSystemID, p.Taxis, n.NodeName FROM siteserver_PublishmentSystem p INNER JOIN siteserver_Node n ON (p.PublishmentSystemID = n.NodeID) ORDER BY p.IsHeadquarters DESC, p.ParentPublishmentSystemID, p.Taxis DESC, n.NodeID";
+        private const string SqlSelectAllWithNode = "SELECT p.PublishmentSystemID, p.PublishmentSystemName, p.PublishmentSystemType, p.AuxiliaryTableForContent, p.AuxiliaryTableForGovPublic, p.AuxiliaryTableForGovInteract, p.AuxiliaryTableForVote, p.AuxiliaryTableForJob, p.IsCheckContentUseLevel, p.CheckContentLevel, p.PublishmentSystemDir, p.PublishmentSystemUrl, p.IsHeadquarters, p.ParentPublishmentSystemID, p.Taxis, n.NodeName FROM siteserver_PublishmentSystem p INNER JOIN siteserver_Node n ON (p.PublishmentSystemID = n.NodeID) ORDER BY p.IsHeadquarters DESC, p.ParentPublishmentSystemID, p.Taxis DESC, n.NodeID";
 
-        private const string SqlInsertPublishmentSystem = "INSERT INTO siteserver_PublishmentSystem (PublishmentSystemID, PublishmentSystemName, AuxiliaryTableForContent, AuxiliaryTableForGovPublic, AuxiliaryTableForGovInteract, AuxiliaryTableForVote, AuxiliaryTableForJob, IsCheckContentUseLevel, CheckContentLevel, PublishmentSystemDir, PublishmentSystemUrl, IsHeadquarters, ParentPublishmentSystemID, Taxis, SettingsXML) VALUES (@PublishmentSystemID, @PublishmentSystemName, @AuxiliaryTableForContent, @AuxiliaryTableForGovPublic, @AuxiliaryTableForGovInteract, @AuxiliaryTableForVote, @AuxiliaryTableForJob, @IsCheckContentUseLevel, @CheckContentLevel, @PublishmentSystemDir, @PublishmentSystemUrl, @IsHeadquarters, @ParentPublishmentSystemID, @Taxis, @SettingsXML)";
+        private const string SqlInsertPublishmentSystem = "INSERT INTO siteserver_PublishmentSystem (PublishmentSystemID, PublishmentSystemName, PublishmentSystemType, AuxiliaryTableForContent, AuxiliaryTableForGovPublic, AuxiliaryTableForGovInteract, AuxiliaryTableForVote, AuxiliaryTableForJob, IsCheckContentUseLevel, CheckContentLevel, PublishmentSystemDir, PublishmentSystemUrl, IsHeadquarters, ParentPublishmentSystemID, Taxis, SettingsXML) VALUES (@PublishmentSystemID, @PublishmentSystemName, @PublishmentSystemType, @AuxiliaryTableForContent, @AuxiliaryTableForGovPublic, @AuxiliaryTableForGovInteract, @AuxiliaryTableForVote, @AuxiliaryTableForJob, @IsCheckContentUseLevel, @CheckContentLevel, @PublishmentSystemDir, @PublishmentSystemUrl, @IsHeadquarters, @ParentPublishmentSystemID, @Taxis, @SettingsXML)";
 
-        private const string SqlUpdatePublishmentSystem = "UPDATE siteserver_PublishmentSystem SET PublishmentSystemName = @PublishmentSystemName, AuxiliaryTableForContent = @AuxiliaryTableForContent, AuxiliaryTableForGovPublic = @AuxiliaryTableForGovPublic, AuxiliaryTableForGovInteract = @AuxiliaryTableForGovInteract, AuxiliaryTableForVote = @AuxiliaryTableForVote, AuxiliaryTableForJob = @AuxiliaryTableForJob, IsCheckContentUseLevel = @IsCheckContentUseLevel, CheckContentLevel = @CheckContentLevel, PublishmentSystemDir = @PublishmentSystemDir, PublishmentSystemUrl = @PublishmentSystemUrl, IsHeadquarters = @IsHeadquarters, ParentPublishmentSystemID = @ParentPublishmentSystemID, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  PublishmentSystemID = @PublishmentSystemID";
+        private const string SqlUpdatePublishmentSystem = "UPDATE siteserver_PublishmentSystem SET PublishmentSystemName = @PublishmentSystemName, PublishmentSystemType = @PublishmentSystemType, AuxiliaryTableForContent = @AuxiliaryTableForContent, AuxiliaryTableForGovPublic = @AuxiliaryTableForGovPublic, AuxiliaryTableForGovInteract = @AuxiliaryTableForGovInteract, AuxiliaryTableForVote = @AuxiliaryTableForVote, AuxiliaryTableForJob = @AuxiliaryTableForJob, IsCheckContentUseLevel = @IsCheckContentUseLevel, CheckContentLevel = @CheckContentLevel, PublishmentSystemDir = @PublishmentSystemDir, PublishmentSystemUrl = @PublishmentSystemUrl, IsHeadquarters = @IsHeadquarters, ParentPublishmentSystemID = @ParentPublishmentSystemID, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  PublishmentSystemID = @PublishmentSystemID";
 
         private const string SqlUpdateAllIsHeadquarters = "UPDATE siteserver_PublishmentSystem SET IsHeadquarters = @IsHeadquarters";
 
@@ -36,6 +36,7 @@ namespace SiteServer.CMS.Provider
 
         private const string ParmPublishmentsystemId = "@PublishmentSystemID";
         private const string ParmPublishmentsystemName = "@PublishmentSystemName";
+        private const string ParmPublishmentsystemType = "@PublishmentSystemType";
         private const string ParmAuxiliaryTableForContent = "@AuxiliaryTableForContent";
         private const string ParmAuxiliaryTableForGovpublic = "@AuxiliaryTableForGovPublic";
         private const string ParmAuxiliaryTableForGovinteract = "@AuxiliaryTableForGovInteract";
@@ -58,6 +59,7 @@ namespace SiteServer.CMS.Provider
 			{
 				GetParameter(ParmPublishmentsystemId, EDataType.Integer, info.PublishmentSystemId),
 				GetParameter(ParmPublishmentsystemName, EDataType.NVarChar, 50, info.PublishmentSystemName),
+                GetParameter(ParmPublishmentsystemType, EDataType.VarChar, 50, EPublishmentSystemTypeUtils.GetValue(info.PublishmentSystemType)),
 				GetParameter(ParmAuxiliaryTableForContent, EDataType.VarChar, 50, info.AuxiliaryTableForContent),
                 GetParameter(ParmAuxiliaryTableForGovpublic, EDataType.VarChar, 50, info.AuxiliaryTableForGovPublic),
                 GetParameter(ParmAuxiliaryTableForGovinteract, EDataType.VarChar, 50, info.AuxiliaryTableForGovInteract),
@@ -102,6 +104,7 @@ namespace SiteServer.CMS.Provider
             var updateParms = new IDataParameter[]
 			{
 				GetParameter(ParmPublishmentsystemName, EDataType.NVarChar, 50, info.PublishmentSystemName),
+                GetParameter(ParmPublishmentsystemType, EDataType.VarChar, 50, EPublishmentSystemTypeUtils.GetValue(info.PublishmentSystemType)),
 				GetParameter(ParmAuxiliaryTableForContent, EDataType.VarChar, 50, info.AuxiliaryTableForContent),
                 GetParameter(ParmAuxiliaryTableForGovpublic, EDataType.VarChar, 50, info.AuxiliaryTableForGovPublic),
                 GetParameter(ParmAuxiliaryTableForGovinteract, EDataType.VarChar, 50, info.AuxiliaryTableForGovInteract),
@@ -227,7 +230,7 @@ namespace SiteServer.CMS.Provider
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var publishmentSystemInfo = new PublishmentSystemInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i));
+                    var publishmentSystemInfo = new PublishmentSystemInfo(GetInt(rdr, i++), GetString(rdr, i++), EPublishmentSystemTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i));
                     list.Add(publishmentSystemInfo);
                 }
                 rdr.Close();

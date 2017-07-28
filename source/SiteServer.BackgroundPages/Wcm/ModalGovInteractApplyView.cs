@@ -10,7 +10,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("快速查看", PageUtils.GetWcmUrl(nameof(ModalGovInteractApplyView), new NameValueCollection
             {
-                {"siteId", publishmentSystemId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ContentID", contentId.ToString()},
                 {"ReturnUrl", string.Empty}

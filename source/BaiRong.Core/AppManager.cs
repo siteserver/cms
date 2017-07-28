@@ -8,7 +8,7 @@ namespace BaiRong.Core
     {
         private AppManager() { }
 
-        public const string Version = "5.1";
+        public const string Version = "5.0";
 
         public static string GetFullVersion()
         {
@@ -62,14 +62,12 @@ namespace BaiRong.Core
             public class LeftMenu
             {
                 public const string Site = "Site";
-                public const string Plugin = "Plugin";
                 public const string Auxiliary = "Auxiliary";
             }
 
             public class Permission
             {
                 public const string SysSite = "sys_site";
-                public const string SysPlugin = "sys_plugin";
                 public const string SysAuxiliary = "sys_auxiliary";
             }
         }
@@ -269,10 +267,6 @@ namespace BaiRong.Core
             else if (menuId == Sys.LeftMenu.Site)
             {
                 retval = "系统站点管理";
-            }
-            else if (menuId == Sys.LeftMenu.Plugin)
-            {
-                retval = "插件管理";
             }
             else if (menuId == Sys.LeftMenu.Auxiliary)
             {
@@ -614,7 +608,6 @@ namespace BaiRong.Core
                 public const string IdAccounts = "Accounts";
 
                 public const string IdFunction = "Function";
-                public const string IdConfiguration = "Configuration";
 
                 public class Function
                 {
@@ -806,17 +799,29 @@ namespace BaiRong.Core
 
         public static List<string> GetAppIdList()
         {
-            return new List<string> { Cms.AppId, Wcm.AppId, WeiXin.AppId };
+            return new List<string> { Cms.AppId, Wcm.AppId };
+        }
+
+        public static string GetAppName(string appId, bool isFullName)
+        {
+            var retval = string.Empty;
+            if (StringUtils.EqualsIgnoreCase(appId, Cms.AppId))
+            {
+                retval = "SiteServer CMS";
+                if (isFullName) retval += " 内容管理系统";
+            }
+            else if (StringUtils.EqualsIgnoreCase(appId, Wcm.AppId))
+            {
+                retval = "SiteServer WCM";
+                if (isFullName) retval += " 内容协作平台";
+            }
+
+            return retval;
         }
 
         public static bool IsWcm()
         {
             return FileUtils.IsFileExists(PathUtils.GetMenusPath(Wcm.AppId, "Management.config"));
-        }
-
-        public static bool IsWeiXin()
-        {
-            return FileUtils.IsFileExists(PathUtils.GetMenusPath(WeiXin.AppId, "Management.config"));
         }
 
         public static void Upgrade(string version, out string errorMessage)

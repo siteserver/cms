@@ -7,17 +7,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class AlbumDao : DataProviderBase
+    public class AlbumDAO : DataProviderBase
     {
-        private const string TableName = "wx_Album";
+        private const string TABLE_NAME = "wx_Album";
          
         public int Insert(AlbumInfo albumInfo)
         {
-            var albumId = 0;
+            var albumID = 0;
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(albumInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(albumInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
              
             using (var conn = GetConnection())
             {
@@ -26,7 +26,9 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        albumId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
+                        ExecuteNonQuery(trans, SQL_INSERT, parms);
+
+                        albumID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
 
                         trans.Commit();
                     }
@@ -38,79 +40,79 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return albumId;
+            return albumID;
         }
 
         public void Update(AlbumInfo albumInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(albumInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(albumInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
              
-            ExecuteNonQuery(sqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
   
-        public void AddPvCount(int albumId)
+        public void AddPVCount(int albumID)
         {
-            if (albumId > 0)
+            if (albumID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {AlbumAttribute.PvCount} = {AlbumAttribute.PvCount} + 1 WHERE ID = {albumId}";
+                    $"UPDATE {TABLE_NAME} SET {AlbumAttribute.PVCount} = {AlbumAttribute.PVCount} + 1 WHERE ID = {albumID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, int albumId)
+        public void Delete(int publishmentSystemID, int albumID)
         {
-            if (albumId > 0)
+            if (albumID > 0)
             {
-                var albumIdList = new List<int>();
-                albumIdList.Add(albumId);
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(albumIdList));
+                var albumIDList = new List<int>();
+                albumIDList.Add(albumID);
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(albumIDList));
 
-                string sqlString = $"DELETE FROM {TableName} WHERE ID = {albumId}";
+                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {albumID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, List<int> albumIdList)
+        public void Delete(int publishmentSystemID, List<int> albumIDList)
         {
-            if (albumIdList != null && albumIdList.Count > 0)
+            if (albumIDList != null && albumIDList.Count > 0)
             {
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(albumIdList));
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(albumIDList));
 
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(albumIdList)})";
+                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(albumIDList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private List<int> GetKeywordIdList(List<int> albumIdList)
+        private List<int> GetKeywordIDList(List<int> albumIDList)
         {
-            var keywordIdList = new List<int>();
+            var keywordIDList = new List<int>();
 
             string sqlString =
-                $"SELECT {AlbumAttribute.KeywordId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(albumIdList)})";
+                $"SELECT {AlbumAttribute.KeywordID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(albumIDList)})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    keywordIdList.Add(rdr.GetInt32(0));
+                    keywordIDList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return keywordIdList;
+            return keywordIDList;
         }
 
-        public AlbumInfo GetAlbumInfo(int albumId)
+        public AlbumInfo GetAlbumInfo(int albumID)
         {
             AlbumInfo albumInfo = null;
 
-            string sqlWhere = $"WHERE ID = {albumId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {albumID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -122,20 +124,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return albumInfo;
         }
 
-        public List<AlbumInfo> GetAlbumInfoListByKeywordId(int publishmentSystemId, int keywordId)
+        public List<AlbumInfo> GetAlbumInfoListByKeywordID(int publishmentSystemID, int keywordID)
         {
             var albumInfoList = new List<AlbumInfo>();
 
-            string sqlWhere =
-                $"WHERE {AlbumAttribute.PublishmentSystemId} = {publishmentSystemId} AND {AlbumAttribute.IsDisabled} <> '{true}'";
-            if (keywordId > 0)
+            string SQL_WHERE =
+                $"WHERE {AlbumAttribute.PublishmentSystemID} = {publishmentSystemID} AND {AlbumAttribute.IsDisabled} <> '{true}'";
+            if (keywordID > 0)
             {
-                sqlWhere += $" AND {AlbumAttribute.KeywordId} = {keywordId}";
+                SQL_WHERE += $" AND {AlbumAttribute.KeywordID} = {keywordID}";
             }
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
@@ -148,22 +150,22 @@ namespace SiteServer.CMS.WeiXin.Provider
             return albumInfoList;
         }
 
-        public int GetFirstIdByKeywordId(int publishmentSystemId, int keywordId)
+        public int GetFirstIDByKeywordID(int publishmentSystemID, int keywordID)
         {
             string sqlString =
-                $"SELECT TOP 1 ID FROM {TableName} WHERE {AlbumAttribute.PublishmentSystemId} = {publishmentSystemId} AND {AlbumAttribute.IsDisabled} <> '{true}' AND {AlbumAttribute.KeywordId} = {keywordId}";
+                $"SELECT TOP 1 ID FROM {TABLE_NAME} WHERE {AlbumAttribute.PublishmentSystemID} = {publishmentSystemID} AND {AlbumAttribute.IsDisabled} <> '{true}' AND {AlbumAttribute.KeywordID} = {keywordID}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetTitle(int albumId)
+        public string GetTitle(int albumID)
         {
             var title = string.Empty;
 
-            string sqlWhere = $"WHERE ID = {albumId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, AlbumAttribute.Title, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {albumID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, AlbumAttribute.Title, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -175,20 +177,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
 
-        public string GetSelectString(int publishmentSystemId)
+        public string GetSelectString(int publishmentSystemID)
         {
-            string whereString = $"WHERE {AlbumAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {AlbumAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
         }
 
-        public List<AlbumInfo> GetAlbumInfoList(int publishmentSystemId)
+        public List<AlbumInfo> GetAlbumInfoList(int publishmentSystemID)
         {
             var albumInfoList = new List<AlbumInfo>();
 
-            string sqlWhere = $" AND {AlbumAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $" AND {AlbumAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {

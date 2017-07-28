@@ -1414,11 +1414,7 @@ label, input, button, select, textarea {
     float: left;
     position: relative;
     margin: 0;
-    font-size: 14px;
-}
-
-#navigation .main-nav>li a {
-    text-decoration: none;
+    font-weight: bold;
 }
 
 #navigation .main-nav>li.active>a {

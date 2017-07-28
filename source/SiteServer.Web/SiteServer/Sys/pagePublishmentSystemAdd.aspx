@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
+  <asp:Literal id="ltlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />
 
   <script language="javascript">
@@ -54,7 +54,7 @@
   </script>
 
   <div class="popover popover-static">
-    <h3 class="popover-title">创建站点</h3>
+    <h3 class="popover-title"><asp:Literal id="ltlPageTitle" runat="server" /></h3>
     <div class="popover-content">
 
       <asp:PlaceHolder id="ChooseSiteTemplate" runat="server">
@@ -121,6 +121,12 @@
             </td>
           </tr>
           <tr>
+            <td width="160">站点类型：</td>
+            <td>
+              <asp:Literal ID="ltlPublishmentSystemType" runat="server"/>
+            </td>
+          </tr>
+          <tr>
             <td>站点级别：</td>
             <td>
               <asp:RadioButtonList ID="IsHeadquarters" AutoPostBack="true" OnSelectedIndexChanged="IsHeadquarters_SelectedIndexChanged" RepeatDirection="Horizontal" class="noborder" runat="server" >
@@ -151,6 +157,7 @@
               </td>
             </tr>
           </asp:PlaceHolder>
+          <asp:PlaceHolder ID="phNodeRelated" runat="server">
           <tr>
             <td>网页编码：</td>
             <td>
@@ -191,6 +198,32 @@
                   runat="server"/>
               </td>
             </tr>
+            <asp:PlaceHolder id="phWCMTables" visible="false" runat="server">
+              <tr>
+                <td>信息公开辅助表：</td>
+                <td>
+                  <asp:DropDownList ID="AuxiliaryTableForGovPublic" runat="server" > </asp:DropDownList>
+                  <asp:RequiredFieldValidator
+                    ControlToValidate="AuxiliaryTableForGovPublic"
+                    ErrorMessage="辅助表不能为空！"
+                    foreColor="red"
+                    Display="Dynamic"
+                    runat="server"/>
+                </td>
+              </tr>
+              <tr>
+                <td>互动交流辅助表：</td>
+                <td>
+                  <asp:DropDownList ID="AuxiliaryTableForGovInteract" runat="server" > </asp:DropDownList>
+                  <asp:RequiredFieldValidator
+                    ControlToValidate="AuxiliaryTableForGovInteract"
+                    ErrorMessage="辅助表不能为空！"
+                    foreColor="red"
+                    Display="Dynamic"
+                    runat="server"/>
+                </td>
+              </tr>
+            </asp:PlaceHolder>
             <tr>
               <td>投票辅助表：</td>
               <td>
@@ -235,6 +268,7 @@
               <span>指此内容在添加后需要经多少次审核才能正式发布</span>
             </td>
           </tr>
+          </asp:PlaceHolder>
         </table>
 
       </asp:PlaceHolder>

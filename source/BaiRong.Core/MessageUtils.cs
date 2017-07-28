@@ -21,24 +21,30 @@ namespace BaiRong.Core
                 //message = StringUtils.HtmlDecode(message);
                 message = message.Replace("''", "\"");
             }
-            return message; 
+            return message;
         }
 
         public static string GetMessageHtml(Message.EMessageType messageType, string message, Control control)
         {
             var messageHtml = string.Empty;
             message = DecodeMessage(message);
-            if (!string.IsNullOrEmpty(message))
+            if (messageType == Message.EMessageType.Success)
             {
-                if (messageType == Message.EMessageType.Success)
+                if (!string.IsNullOrEmpty(message))
                 {
                     messageHtml = $@"<DIV class=""msg_succeed"">{message}</DIV>";
                 }
-                else if (messageType == Message.EMessageType.Error)
+            }
+            else if (messageType == Message.EMessageType.Error)
+            {
+                if (!string.IsNullOrEmpty(message))
                 {
                     messageHtml = $@"<DIV class=""msg_failed"">{message}</DIV>";
                 }
-                else if (messageType == Message.EMessageType.Info)
+            }
+            else if (messageType == Message.EMessageType.Info)
+            {
+                if (!string.IsNullOrEmpty(message))
                 {
                     messageHtml = $@"<DIV class=""msg_info"">{message}</DIV>";
                 }

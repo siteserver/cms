@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using BaiRong.Core;
-using BaiRong.Core.Data;
 using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Model
@@ -12,104 +11,129 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ResourceId = nameof(KeywordResourceInfo.ResourceId);
-        public const string PublishmentSystemId = nameof(KeywordResourceInfo.PublishmentSystemId);
-        public const string KeywordId = nameof(KeywordResourceInfo.KeywordId);
-        public const string Title = nameof(KeywordResourceInfo.Title);
-        public const string ImageUrl = nameof(KeywordResourceInfo.ImageUrl);
-        public const string Summary = nameof(KeywordResourceInfo.Summary);
-        public const string ResourceType = nameof(KeywordResourceInfo.ResourceType);
-        public const string IsShowCoverPic = nameof(KeywordResourceInfo.IsShowCoverPic);
-        public const string Content = nameof(KeywordResourceInfo.Content);
-        public const string NavigationUrl = nameof(KeywordResourceInfo.NavigationUrl);
-        public const string ChannelId = nameof(KeywordResourceInfo.ChannelId);
-        public const string ContentId = nameof(KeywordResourceInfo.ContentId);
-        public const string Taxis = nameof(KeywordResourceInfo.Taxis);
+        public const string ResourceID = "ResourceID";
+        public const string PublishmentSystemID = "PublishmentSystemID";
+        public const string KeywordID = "KeywordID";
+        public const string Title = "Title";
+        public const string ImageUrl = "ImageUrl";
+        public const string Summary = "Summary";
+
+        public const string ResourceType = "ResourceType";
+        public const string IsShowCoverPic = "IsShowCoverPic";
+        public const string Content = "Content";
+        public const string NavigationUrl = "NavigationUrl";
+        public const string ChannelID = "ChannelID";
+        public const string ContentID = "ContentID";
+        public const string Taxis = "Taxis";
 
 
-        private static List<string> _allAttributes;
-        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
+        private static List<string> allAttributes;
+        public static List<string> AllAttributes
         {
-            ResourceId,
-            PublishmentSystemId,
-            KeywordId,
-            Title,
-            ImageUrl,
-            Summary,
-            ResourceType,
-            IsShowCoverPic,
-            Content,
-            NavigationUrl,
-            ChannelId,
-            ContentId,
-            Taxis
-        });
+            get
+            {
+                if (allAttributes == null)
+                {
+                    allAttributes = new List<string>();
+                    allAttributes.Add(ResourceID);
+                    allAttributes.Add(PublishmentSystemID);
+                    allAttributes.Add(KeywordID);
+                    allAttributes.Add(Title);
+                    allAttributes.Add(ImageUrl);
+                    allAttributes.Add(Summary);
+                    allAttributes.Add(ResourceType);
+                    allAttributes.Add(IsShowCoverPic);
+                    allAttributes.Add(Content);
+                    allAttributes.Add(NavigationUrl);
+                    allAttributes.Add(ChannelID);
+                    allAttributes.Add(ContentID);
+                    allAttributes.Add(Taxis);
+                }
+
+                return allAttributes;
+            }
+        }
     }
 
     public class KeywordResourceInfo
     {
+        private int resourceID;
+        private int publishmentSystemID;
+        private int keywordID;
+        private string title;
+        private string imageUrl;
+        private string summary;
+        private EResourceType resourceType;
+        private bool isShowCoverPic;
+        private string content;
+        private string navigationUrl;
+        private int channelID;
+        private int contentID;
+        private int taxis;
+
         public KeywordResourceInfo()
         {
-            ResourceId = 0;
-            PublishmentSystemId = 0;
-            KeywordId = 0;
-            Title = string.Empty;
-            ImageUrl = string.Empty;
-            Summary = string.Empty;
-            ResourceType = EResourceType.Content;
-            IsShowCoverPic = true;
-            Content = string.Empty;
-            NavigationUrl = string.Empty;
-            ChannelId = 0;
-            ContentId = 0;
-            Taxis = 0;
+            resourceID = 0;
+            publishmentSystemID = 0;
+            keywordID = 0;
+            title = string.Empty;
+            imageUrl = string.Empty;
+            summary = string.Empty;
+            resourceType = EResourceType.Content;
+            isShowCoverPic = true;
+            content = string.Empty;
+            navigationUrl = string.Empty;
+            channelID = 0;
+            contentID = 0;
+            taxis = 0;
         }
 
-        public KeywordResourceInfo(int resourceId, int publishmentSystemId, int keywordId, string title, string imageUrl, string summary, EResourceType resourceType, bool isShowCoverPic, string content, string navigationUrl, int channelId, int contentId, int taxis)
+        public KeywordResourceInfo(int resourceID, int publishmentSystemID, int keywordID, string title, string imageUrl, string summary, EResourceType resourceType, bool isShowCoverPic, string content, string navigationUrl, int channelID, int contentID, int taxis)
         {
-            ResourceId = resourceId;
-            PublishmentSystemId = publishmentSystemId;
-            KeywordId = keywordId;
-            Title = title;
-            ImageUrl = imageUrl;
-            Summary = summary;
-            ResourceType = resourceType;
-            IsShowCoverPic = isShowCoverPic;
-            Content = content;
-            NavigationUrl = navigationUrl;
-            ChannelId = channelId;
-            ContentId = contentId;
-            Taxis = taxis;
+            this.resourceID = resourceID;
+            this.publishmentSystemID = publishmentSystemID;
+            this.keywordID = keywordID;
+            this.title = title;
+            this.imageUrl = imageUrl;
+            this.summary = summary;
+            this.resourceType = resourceType;
+            this.isShowCoverPic = isShowCoverPic;
+            this.content = content;
+            this.navigationUrl = navigationUrl;
+            this.channelID = channelID;
+            this.contentID = contentID;
+            this.taxis = taxis;
         }
-
         public KeywordResourceInfo(object dataItem)
         {
-            if (dataItem == null) return;
-
-            foreach (var name in AllAttributes)
+            if (dataItem != null)
             {
-                var value = SqlUtils.Eval(dataItem, name);
-                if (value != null)
+                foreach (var name in AllAttributes)
                 {
-                    SetValueInternal(name, value);
+                    var value = TranslateUtils.Eval(dataItem, name);
+                    if (value != null)
+                    {
+                        SetValueInternal(name, value);
+                    }
                 }
             }
         }
-
         public KeywordResourceInfo(NameValueCollection form, bool isFilterSqlAndXss)
         {
-            if (form == null) return;
-
-            foreach (var name in AllAttributes)
+            if (form != null)
             {
-                var value = form[name];
-                if (value == null) continue;
-
-                if (isFilterSqlAndXss)
+                foreach (var name in AllAttributes)
                 {
-                    value = PageUtils.FilterSqlAndXss(value);
+                    var value = form[name];
+                    if (value != null)
+                    {
+                        if (isFilterSqlAndXss)
+                        {
+                            value = PageUtils.FilterSqlAndXss(value);
+                        }
+                        SetValueInternal(name, value);
+                    }
                 }
-                SetValueInternal(name, value);
             }
         }
 
@@ -131,15 +155,18 @@ namespace SiteServer.CMS.WeiXin.Model
         {
             foreach (var name in AllAttributes)
             {
-                if (!StringUtils.EqualsIgnoreCase(name, attributeName)) continue;
-                var nameVlaue = GetType().GetProperty(name).GetValue(this, null);
-
-                if (attributeName == "ResourceType")
+                if (StringUtils.EqualsIgnoreCase(name, attributeName))
                 {
-                    return EResourceTypeUtils.GetEnumType(nameVlaue.ToString());
-                }
+                    var nameVlaue = GetType().GetProperty(name).GetValue(this, null);
 
-                return nameVlaue;
+                    if (attributeName == "ResourceType")
+                    {
+                        return EResourceTypeUtils.GetEnumType(nameVlaue.ToString());
+                    }
+
+                    return nameVlaue;
+
+                }
             }
             return null;
         }
@@ -148,18 +175,16 @@ namespace SiteServer.CMS.WeiXin.Model
         {
             foreach (var name in AllAttributes)
             {
-                if (!StringUtils.EqualsIgnoreCase(name, attributeName)) continue;
-
-                try
+                if (StringUtils.EqualsIgnoreCase(name, attributeName))
                 {
-                    SetValueInternal(name, value);
-                }
-                catch
-                {
-                    // ignored
-                }
+                    try
+                    {
+                        SetValueInternal(name, value);
+                    }
+                    catch { }
 
-                break;
+                    break;
+                }
             }
         }
 
@@ -190,32 +215,89 @@ namespace SiteServer.CMS.WeiXin.Model
             }
         }
 
-        protected List<string> AllAttributes => KeywordResourceAttribute.AllAttributes;
+        protected List<string> AllAttributes
+        {
+            get
+            {
+                return KeywordResourceAttribute.AllAttributes;
+            }
+        }
+        public int ResourceID
+        {
+            get { return resourceID; }
+            set { resourceID = value; }
+        }
 
-        public int ResourceId { get; set; }
+        public int PublishmentSystemID
+        {
+            get { return publishmentSystemID; }
+            set { publishmentSystemID = value; }
+        }
 
-        public int PublishmentSystemId { get; set; }
+        public int KeywordID
+        {
+            get { return keywordID; }
+            set { keywordID = value; }
+        }
 
-        public int KeywordId { get; set; }
+        public string Title
+        {
+            get { return title; }
+            set { title = value; }
+        }
 
-        public string Title { get; set; }
+        public string ImageUrl
+        {
+            get { return imageUrl; }
+            set { imageUrl = value; }
+        }
 
-        public string ImageUrl { get; set; }
+        public string Summary
+        {
+            get { return summary; }
+            set { summary = value; }
+        }
 
-        public string Summary { get; set; }
+        public EResourceType ResourceType
+        {
+            get { return resourceType; }
+            set { resourceType = value; }
+        }
 
-        public EResourceType ResourceType { get; set; }
+        public bool IsShowCoverPic
+        {
+            get { return isShowCoverPic; }
+            set { isShowCoverPic = value; }
+        }
 
-        public bool IsShowCoverPic { get; set; }
+        public string Content
+        {
+            get { return content; }
+            set { content = value; }
+        }
 
-        public string Content { get; set; }
+        public string NavigationUrl
+        {
+            get { return navigationUrl; }
+            set { navigationUrl = value; }
+        }
 
-        public string NavigationUrl { get; set; }
+        public int ChannelID
+        {
+            get { return channelID; }
+            set { channelID = value; }
+        }
 
-        public int ChannelId { get; set; }
+        public int ContentID
+        {
+            get { return contentID; }
+            set { contentID = value; }
+        }
 
-        public int ContentId { get; set; }
-
-        public int Taxis { get; set; }
+        public int Taxis
+        {
+            get { return taxis; }
+            set { taxis = value; }
+        }
     }
 }

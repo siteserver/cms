@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
@@ -11,19 +12,19 @@ namespace SiteServer.BackgroundPages.WeiXin
 {
     public class ModalAppointmentItemPhotoUpload : BasePageCms
     {
-        public Literal LtlScript;
+        public Literal ltlScript;
 
-        private string _imageUrlCollection;
-        private string _largeImageUrlCollection;
-        private List<string> _imageUrlArrayList=new List<string>();
-        private List<string> _largeImageUrlArrayList =new List<string>();
+        private string imageUrlCollection;
+        private string largeImageUrlCollection;
+        private List<string> imageUrlArrayList=new List<string>();
+        private List<string> largeImageUrlArrayList =new List<string>();
 
         public static string GetOpenWindowStringToAdd(int publishmentSystemId, string imageUrlCollection, string largeImageUrlCollection)
         {
             return PageUtils.GetOpenWindowString("上传照片",
                 PageUtils.GetWeiXinUrl(nameof(ModalAppointmentItemPhotoUpload), new NameValueCollection
                 {
-                    {"PublishmentSystemId", publishmentSystemId.ToString()},
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"imageUrlCollection", imageUrlCollection},
                     {"largeImageUrlCollection", largeImageUrlCollection}
                 }));
@@ -42,31 +43,31 @@ namespace SiteServer.BackgroundPages.WeiXin
         {
             if (IsForbidden) return;
 
-            _imageUrlCollection = Body.GetQueryString("imageUrlCollection");
-            _largeImageUrlCollection = Body.GetQueryString("largeImageUrlCollection");
+            imageUrlCollection = Body.GetQueryString("imageUrlCollection");
+            largeImageUrlCollection = Body.GetQueryString("largeImageUrlCollection");
 
             if (!IsPostBack)
             {
-                if (!string.IsNullOrEmpty(_imageUrlCollection))
+                if (!string.IsNullOrEmpty(imageUrlCollection))
                 { 
-                    _imageUrlArrayList = TranslateUtils.StringCollectionToStringList(_imageUrlCollection);
-                    _largeImageUrlArrayList = TranslateUtils.StringCollectionToStringList(_largeImageUrlCollection);
+                    imageUrlArrayList = TranslateUtils.StringCollectionToStringList(imageUrlCollection);
+                    largeImageUrlArrayList = TranslateUtils.StringCollectionToStringList(largeImageUrlCollection);
                 }
                 
                 var index = -1;
                 var scriptBuilder = new StringBuilder();
                  
-                foreach (string imageUrl in _imageUrlArrayList)
+                foreach (string imageUrl in imageUrlArrayList)
                 {
                     index++;
                     scriptBuilder.AppendFormat(@"
 add_form({0}, '{1}', '{2}', '{3}');
-", index + 1, StringUtils.ToJsString(PageUtility.ParseNavigationUrl(PublishmentSystemInfo, imageUrl)), StringUtils.ToJsString(imageUrl), StringUtils.ToJsString(_largeImageUrlArrayList[index]));
+", index + 1, StringUtils.ToJsString(PageUtility.ParseNavigationUrl(PublishmentSystemInfo, imageUrl)), StringUtils.ToJsString(imageUrl), StringUtils.ToJsString(largeImageUrlArrayList[index].ToString()));
                 }
 
-                LtlScript.Text = $@"
+                ltlScript.Text = $@"
 $(document).ready(function(){{
-	{scriptBuilder}
+	{scriptBuilder.ToString()}
 }});
 ";
             }
@@ -81,10 +82,10 @@ $(document).ready(function(){{
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                var photoCount = TranslateUtils.ToInt(Request.Form["Photo_Count"]);
-                if (photoCount > 0)
+                var photo_Count = TranslateUtils.ToInt(Request.Form["Photo_Count"]);
+                if (photo_Count > 0)
                 {
-                    for (var index = 1; index <= photoCount; index++)
+                    for (var index = 1; index <= photo_Count; index++)
                     {
                         var id = TranslateUtils.ToInt(Request.Form["ID_" + index]);
                         var smallUrl = Request.Form["SmallUrl_" + index];
@@ -92,20 +93,20 @@ $(document).ready(function(){{
 
                         if (!string.IsNullOrEmpty(smallUrl) && !string.IsNullOrEmpty(largeUrl))
                         {
-                            _imageUrlArrayList.Add(smallUrl);
-                            _largeImageUrlArrayList.Add(largeUrl);
+                            imageUrlArrayList.Add(smallUrl);
+                            largeImageUrlArrayList.Add(largeUrl);
                         }
                     }
                 }
 
-                if (_imageUrlArrayList != null && _imageUrlArrayList.Count > 0)
+                if (imageUrlArrayList != null && imageUrlArrayList.Count > 0)
                 {
-                    _imageUrlCollection = TranslateUtils.ToSqlInStringWithoutQuote(_imageUrlArrayList);
-                    _largeImageUrlCollection = TranslateUtils.ToSqlInStringWithoutQuote(_largeImageUrlArrayList);
+                    imageUrlCollection = TranslateUtils.ToSqlInStringWithoutQuote(imageUrlArrayList);
+                    largeImageUrlCollection = TranslateUtils.ToSqlInStringWithoutQuote(largeImageUrlArrayList);
                 }
 
                 string scripts =
-                    $"window.parent.addImage('{_imageUrlCollection}', '{_largeImageUrlCollection}');";
+                    $"window.parent.addImage('{imageUrlCollection}', '{largeImageUrlCollection}');";
                 PageUtils.CloseModalPageWithoutRefresh(Page, scripts);
             }
         }

@@ -2,9 +2,6 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -12,17 +9,17 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalInputAdd : BasePageCms
     {
-        public TextBox TbInputName;
-        public RadioButtonList RblIsChecked;
-        public RadioButtonList RblIsReply;
-        public RadioButtonList RblIsAnomynous;
+        protected TextBox InputName;
+        protected RadioButtonList IsChecked;
+        protected RadioButtonList IsReply;
 
-        public PlaceHolder PhAdministratorSmsNotify;
-        public RadioButtonList RblIsAdministratorSmsNotify;
-        public PlaceHolder PhIsAdministratorSmsNotify;
-        public TextBox TbAdministratorSmsNotifyTplId;
-        public CheckBoxList CblAdministratorSmsNotifyKeys;
-        public TextBox TbAdministratorSmsNotifyMobile;
+        protected TextBox MessageSuccess;
+        protected TextBox MessageFailure;
+
+        protected RadioButtonList IsAnomynous;
+        protected RadioButtonList IsSuccessHide;
+        protected RadioButtonList IsSuccessReload;
+        protected RadioButtonList IsCtrlEnter;
 
         private bool _isPreview;
 
@@ -40,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
             return PageUtils.GetOpenWindowString("添加提交表单", PageUtils.GetCmsUrl(nameof(ModalInputAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
-            }), 600, 520);
+            }), 560, 510);
         }
 
         public static string GetOpenWindowStringToEdit(int publishmentSystemId, int inputId, bool isPreview)
@@ -50,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"InputID", inputId.ToString()},
                 {"IsPreview", isPreview.ToString()}
-            }), 600, 520);
+            }), 560, 510);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -59,51 +56,29 @@ namespace SiteServer.BackgroundPages.Cms
 
             _isPreview = Body.GetQueryBool("IsPreview");
 
-            if (IsPostBack) return;
-
-            var inputId = Body.GetQueryInt("InputID");
-            var inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
-            if (inputInfo != null)
+            if (!IsPostBack)
             {
-                PhAdministratorSmsNotify.Visible = true;
-
-                TbInputName.Text = inputInfo.InputName;
-                ControlUtils.SelectListItems(RblIsChecked, inputInfo.IsChecked.ToString());
-                ControlUtils.SelectListItems(RblIsReply, inputInfo.IsReply.ToString());
-                ControlUtils.SelectListItems(RblIsAnomynous, inputInfo.Additional.IsAnomynous.ToString());
-
-                ControlUtils.SelectListItems(RblIsAdministratorSmsNotify,
-                    inputInfo.Additional.IsAdministratorSmsNotify.ToString());
-                TbAdministratorSmsNotifyTplId.Text = inputInfo.Additional.AdministratorSmsNotifyTplId;
-
-                var keys = TranslateUtils.StringCollectionToStringList(inputInfo.Additional.AdministratorSmsNotifyKeys);
-                CblAdministratorSmsNotifyKeys.Items.Add(new ListItem(InputContentAttribute.Id, InputContentAttribute.Id));
-                CblAdministratorSmsNotifyKeys.Items.Add(new ListItem(InputContentAttribute.AddDate,
-                    InputContentAttribute.AddDate));
-                var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent,
-                    PublishmentSystemId, inputInfo.InputId);
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent,
-                    DataProvider.InputContentDao.TableName, relatedIdentities);
-                foreach (var styleInfo in styleInfoList)
+                if (Body.IsQueryExists("InputID"))
                 {
-                    CblAdministratorSmsNotifyKeys.Items.Add(new ListItem(styleInfo.AttributeName,
-                        styleInfo.AttributeName));
+                    var inputId = Body.GetQueryInt("InputID");
+                    var inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
+                    if (inputInfo != null)
+                    {
+                        InputName.Text = inputInfo.InputName;
+                        ControlUtils.SelectListItems(IsChecked, inputInfo.IsChecked.ToString());
+                        ControlUtils.SelectListItems(IsReply, inputInfo.IsReply.ToString());
+
+                        MessageSuccess.Text = inputInfo.Additional.MessageSuccess;
+                        MessageFailure.Text = inputInfo.Additional.MessageFailure;
+
+                        ControlUtils.SelectListItems(IsAnomynous, inputInfo.Additional.IsAnomynous.ToString());
+                        ControlUtils.SelectListItems(IsSuccessHide, inputInfo.Additional.IsSuccessHide.ToString());
+                        ControlUtils.SelectListItems(IsSuccessReload, inputInfo.Additional.IsSuccessReload.ToString());
+                        ControlUtils.SelectListItems(IsCtrlEnter, inputInfo.Additional.IsCtrlEnter.ToString());
+                    }
                 }
-                ControlUtils.SelectListItems(CblAdministratorSmsNotifyKeys, keys);
 
-                TbAdministratorSmsNotifyMobile.Text = inputInfo.Additional.AdministratorSmsNotifyMobile;
             }
-            else
-            {
-                PhAdministratorSmsNotify.Visible = false;
-            }
-
-            RblIsAdministratorSmsNotify_SelectedIndexChanged(null, EventArgs.Empty);
-        }
-
-        public void RblIsAdministratorSmsNotify_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            PhIsAdministratorSmsNotify.Visible = TranslateUtils.ToBool(RblIsAdministratorSmsNotify.SelectedValue);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -119,26 +94,24 @@ namespace SiteServer.BackgroundPages.Cms
                     inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
                     if (inputInfo != null)
                     {
-                        if (inputInfo.InputName != TbInputName.Text)
+                        if (inputInfo.InputName != InputName.Text)
                         {
-                            inputInfo.InputName = TbInputName.Text;
+                            inputInfo.InputName = InputName.Text;
                         }
-                        inputInfo.IsChecked = TranslateUtils.ToBool(RblIsChecked.SelectedValue);
-                        inputInfo.IsReply = TranslateUtils.ToBool(RblIsReply.SelectedValue);
-                        inputInfo.Additional.IsAnomynous = TranslateUtils.ToBool(RblIsAnomynous.SelectedValue);
+                        inputInfo.IsChecked = TranslateUtils.ToBool(IsChecked.SelectedValue);
+                        inputInfo.IsReply = TranslateUtils.ToBool(IsReply.SelectedValue);
 
-                        inputInfo.Additional.IsAdministratorSmsNotify = TranslateUtils.ToBool(RblIsAdministratorSmsNotify.SelectedValue);
-                        inputInfo.Additional.AdministratorSmsNotifyTplId = TbAdministratorSmsNotifyTplId.Text;
+                        inputInfo.Additional.MessageSuccess = MessageSuccess.Text;
+                        inputInfo.Additional.MessageFailure = MessageFailure.Text;
 
-                        inputInfo.Additional.AdministratorSmsNotifyKeys =
-                            ControlUtils.GetSelectedListControlValueCollection(CblAdministratorSmsNotifyKeys);
-
-                        inputInfo.Additional.AdministratorSmsNotifyMobile = TbAdministratorSmsNotifyMobile.Text;
-
-                        DataProvider.InputDao.Update(inputInfo);
-
-                        Body.AddSiteLog(PublishmentSystemId, "修改提交表单", $"提交表单:{inputInfo.InputName}");
+                        inputInfo.Additional.IsAnomynous = TranslateUtils.ToBool(IsAnomynous.SelectedValue);
+                        inputInfo.Additional.IsSuccessHide = TranslateUtils.ToBool(IsSuccessHide.SelectedValue);
+                        inputInfo.Additional.IsSuccessReload = TranslateUtils.ToBool(IsSuccessReload.SelectedValue);
+                        inputInfo.Additional.IsCtrlEnter = TranslateUtils.ToBool(IsCtrlEnter.SelectedValue);
                     }
+                    DataProvider.InputDao.Update(inputInfo);
+
+                    Body.AddSiteLog(PublishmentSystemId, "修改提交表单", $"提交表单:{inputInfo.InputName}");
 
                     isChanged = true;
                 }
@@ -149,8 +122,8 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                var inputNameList = DataProvider.InputDao.GetInputNameList(PublishmentSystemId);
-                if (inputNameList.IndexOf(TbInputName.Text) != -1)
+                var inputNameArrayList = DataProvider.InputDao.GetInputNameArrayList(PublishmentSystemId);
+                if (inputNameArrayList.IndexOf(InputName.Text) != -1)
                 {
                     FailMessage("提交表单添加失败，提交表单名称已存在！");
                 }
@@ -160,13 +133,19 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         inputInfo = new InputInfo
                         {
-                            InputName = TbInputName.Text,
+                            InputName = InputName.Text,
                             PublishmentSystemId = PublishmentSystemId,
-                            IsChecked = TranslateUtils.ToBool(RblIsChecked.SelectedValue),
-                            IsReply = TranslateUtils.ToBool(RblIsReply.SelectedValue)
+                            IsChecked = TranslateUtils.ToBool(IsChecked.SelectedValue),
+                            IsReply = TranslateUtils.ToBool(IsReply.SelectedValue)
                         };
 
-                        inputInfo.Additional.IsAnomynous = TranslateUtils.ToBool(RblIsAnomynous.SelectedValue);
+                        inputInfo.Additional.MessageSuccess = MessageSuccess.Text;
+                        inputInfo.Additional.MessageFailure = MessageFailure.Text;
+
+                        inputInfo.Additional.IsAnomynous = TranslateUtils.ToBool(IsAnomynous.SelectedValue);
+                        inputInfo.Additional.IsSuccessHide = TranslateUtils.ToBool(IsSuccessHide.SelectedValue);
+                        inputInfo.Additional.IsSuccessReload = TranslateUtils.ToBool(IsSuccessReload.SelectedValue);
+                        inputInfo.Additional.IsCtrlEnter = TranslateUtils.ToBool(IsCtrlEnter.SelectedValue);
 
                         DataProvider.InputDao.Insert(inputInfo);
 

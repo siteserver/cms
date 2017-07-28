@@ -6,9 +6,9 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum ELayout
 	{
-		Table,					//Ë°®Ê†º
-		Flow,					//ÊµÅ
-		None,					//Êó†Â∏ÉÂ±Ä
+		Table,					//±Ì∏Ò
+		Flow,					//¡˜
+		None,					//Œﬁ≤ºæ÷
 	}
 
 	public class ELayoutUtils
@@ -37,15 +37,15 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == ELayout.Table)
 			{
-				return "Ë°®Ê†º";
+				return "±Ì∏Ò";
 			}
 			else if (type == ELayout.Flow)
 			{
-				return "ÊµÅ";
+				return "¡˜";
 			}
 			else if (type == ELayout.None)
 			{
-				return "Êó†Â∏ÉÂ±Ä";
+				return "Œﬁ≤ºæ÷";
 			}
 			else
 			{

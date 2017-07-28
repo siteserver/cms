@@ -158,10 +158,10 @@ namespace SiteServer.BackgroundPages.Cms
                     NodeIDCollectionToContent.Items.Add(listitem2);
                 }
 
-                var fileTemplateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(PublishmentSystemId, ETemplateType.FileTemplate);
-                if (fileTemplateInfoList.Count > 0)
+                var fileTemplateInfoArrayList = DataProvider.TemplateDao.GetTemplateInfoArrayListByType(PublishmentSystemId, ETemplateType.FileTemplate);
+                if (fileTemplateInfoArrayList.Count > 0)
                 {
-                    foreach (var fileTemplateInfo in fileTemplateInfoList)
+                    foreach (TemplateInfo fileTemplateInfo in fileTemplateInfoArrayList)
                     {
                         var listitem = new ListItem(fileTemplateInfo.CreatedFileFullName, fileTemplateInfo.TemplateId.ToString());
                         FileTemplateIDCollection.Items.Add(listitem);
@@ -421,7 +421,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 		public void NextPanel(object sender, EventArgs e)
 		{
-			string errorMessage;
+			var errorMessage = "";
 			switch (CurrentWizardPanel)
 			{
 				case WizardPanel.AdvertisementBase:

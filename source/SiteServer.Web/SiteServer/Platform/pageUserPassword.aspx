@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server" autocomplete="off">
-        <asp:Literal ID="LtlBreadCrumb" runat="server" />
+        <asp:Literal ID="ltlBreadCrumb" runat="server" />
         <bairong:Alerts runat="server" />
 
         <ul class="nav nav-pills">

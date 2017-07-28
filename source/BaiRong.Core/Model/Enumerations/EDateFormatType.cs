@@ -5,10 +5,10 @@ namespace BaiRong.Core.Model.Enumerations
 {
     public enum EDateFormatType
     {
-        Month,				//6æœˆ18æ—¥
+        Month,				//6ÔÂ18ÈÕ
         Day,				//2006-6-18
-        Year,				//2006å¹´6æœˆ
-        Chinese,		    //2006å¹´6æœˆ18æ—¥
+        Year,				//2006Äê6ÔÂ
+        Chinese,		    //2006Äê6ÔÂ18ÈÕ
     }
 
     public class EDateFormatTypeUtils
@@ -41,7 +41,7 @@ namespace BaiRong.Core.Model.Enumerations
         {
             if (type == EDateFormatType.Month)
             {
-                return "6æœˆ18æ—¥";
+                return "6ÔÂ18ÈÕ";
             }
             else if (type == EDateFormatType.Day)
             {
@@ -49,11 +49,11 @@ namespace BaiRong.Core.Model.Enumerations
             }
             else if (type == EDateFormatType.Year)
             {
-                return "2006å¹´6æœˆ";
+                return "2006Äê6ÔÂ";
             }
             else if (type == EDateFormatType.Chinese)
             {
-                return "2006å¹´6æœˆ18æ—¥";
+                return "2006Äê6ÔÂ18ÈÕ";
             }
             else
             {

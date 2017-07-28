@@ -4,18 +4,18 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class ScenceDao : DataProviderBase
+    public class ScenceDAO : DataProviderBase
     {
-        private const string TableName = "wx_Scence";
+        private const string TABLE_NAME = "wx_Scence";
 
-        public ScenceInfo GetScenceInfo(int scenceId)
+        public ScenceInfo GetScenceInfo(int scenceID)
         {
             ScenceInfo scenceInfo = null;
 
-            string sqlWhere = $"WHERE ID = {scenceId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {scenceID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -28,12 +28,12 @@ namespace SiteServer.CMS.WeiXin.Provider
         }
 
         // Mr.wu begin
-        public void UpdateClickNum(int scenceId, int publishmentSystemId)
+        public void UpdateClickNum(int scenceID, int publishmentSystemID)
         {
-            if (scenceId > 0)
+            if (scenceID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} set ClickNum= ClickNum+1 WHERE ID = {scenceId} AND publishmentSystemID = {publishmentSystemId}";
+                    $"UPDATE {TABLE_NAME} set ClickNum= ClickNum+1 WHERE ID = {scenceID} AND publishmentSystemID = {publishmentSystemID}";
                 ExecuteNonQuery(sqlString);
             }
         }

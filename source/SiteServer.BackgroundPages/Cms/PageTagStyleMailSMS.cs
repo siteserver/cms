@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
@@ -97,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (string.IsNullOrEmpty(tbSMSContent.Text))
                 {
-                    tbSMSContent.Text = MessageManager.GetSmsContent(styleInfoList);
+                    tbSMSContent.Text = MessageManager.GetSMSContent(styleInfoList);
                 }
 			}
 		}

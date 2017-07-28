@@ -7,17 +7,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class CardSignLogDao : DataProviderBase
+    public class CardSignLogDAO : DataProviderBase
     {
-        private const string TableName = "wx_CardSignLog";
+        private const string TABLE_NAME = "wx_CardSignLog";
 
         public int Insert(CardSignLogInfo cardSignLogInfo)
         {
-            var cardSignLogId = 0;
+            var cardSignLogID = 0;
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(cardSignLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(cardSignLogInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
 
             using (var conn = GetConnection())
@@ -27,7 +27,9 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        cardSignLogId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
+                        ExecuteNonQuery(trans, SQL_INSERT, parms);
+
+                        cardSignLogID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
 
                         trans.Commit();
                     }
@@ -39,45 +41,45 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return cardSignLogId;
+            return cardSignLogID;
         }
 
         public void Update(CardSignLogInfo cardSignLogInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(cardSignLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(cardSignLogInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
-            ExecuteNonQuery(sqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
 
-        public void Delete(int publishmentSystemId, int cardSignLogId)
+        public void Delete(int publishmentSystemID, int cardSignLogID)
         {
-            if (cardSignLogId > 0)
+            if (cardSignLogID > 0)
             {
-                string sqlString = $"DELETE FROM {TableName} WHERE ID = {cardSignLogId}";
+                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {cardSignLogID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, List<int> cardSignLogIdList)
+        public void Delete(int publishmentSystemID, List<int> cardSignLogIDList)
         {
-            if (cardSignLogIdList != null && cardSignLogIdList.Count > 0)
+            if (cardSignLogIDList != null && cardSignLogIDList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardSignLogIdList)})";
+                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardSignLogIDList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public bool IsSign(int publishmentSystemId, string userName)
+        public bool IsSign(int publishmentSystemID, string userName)
         {
             var isSign = false;
 
-            string sqlWhere =
-                $"WHERE PublishmentSystemID ={publishmentSystemId} AND UserName = '{PageUtils.FilterSql(userName)}' AND SignDate > '{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}'";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE =
+                $"WHERE PublishmentSystemID ={publishmentSystemID} AND UserName = '{PageUtils.FilterSql(userName)}' AND SignDate > '{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}'";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -89,14 +91,14 @@ namespace SiteServer.CMS.WeiXin.Provider
             return isSign;
         }
 
-        public CardSignLogInfo GetCardSignLogInfo(int cardSignLogId)
+        public CardSignLogInfo GetCardSignLogInfo(int cardSignLogID)
         {
             CardSignLogInfo cardSignLogInfo = null;
 
-            string sqlWhere = $"WHERE ID = {cardSignLogId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {cardSignLogID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -108,15 +110,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             return cardSignLogInfo;
         }
 
-        public List<CardSignLogInfo> GetCardSignLogInfoList(int publishmentSystemId, string userName)
+        public List<CardSignLogInfo> GetCardSignLogInfoList(int publishmentSystemID, string userName)
         {
             var cardSignLogInfoList = new List<CardSignLogInfo>();
 
-            string sqlWhere =
-                $"WHERE PublishmentSystemID = {publishmentSystemId} AND UserName='{PageUtils.FilterSql(userName)}'";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE =
+                $"WHERE PublishmentSystemID = {publishmentSystemID} AND UserName='{PageUtils.FilterSql(userName)}'";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
@@ -129,16 +131,16 @@ namespace SiteServer.CMS.WeiXin.Provider
             return cardSignLogInfoList;
         }
 
-        public List<DateTime> GetSignDateList(int publishmentSystemId, string userName)
+        public List<DateTime> GetSignDateList(int publishmentSystemID, string userName)
         {
             var signDateList = new List<DateTime>();
 
-            string sqlWhere =
-                $"WHERE PublishmentSystemID = {publishmentSystemId} AND UserName='{PageUtils.FilterSql(userName)}'";
-            var sqlOrder = " ORDER BY SignDate DESC ";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, CardSignLogAttribute.SignDate, sqlWhere, sqlOrder);
+            string SQL_WHERE =
+                $"WHERE PublishmentSystemID = {publishmentSystemID} AND UserName='{PageUtils.FilterSql(userName)}'";
+            var SQL_ORDER = " ORDER BY SignDate DESC ";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, CardSignLogAttribute.SignDate, SQL_WHERE, SQL_ORDER);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
@@ -149,24 +151,24 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             return signDateList;
         }
-        public string GetSelectString(int publishmentSystemId)
+        public string GetSelectString(int publishmentSystemID)
         {
-            string whereString = $"WHERE {CardSignLogAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {CardSignLogAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
         }
 
         public string GetSignAction()
         {
             return "签到领取积分";
         }
-        public List<CardSignLogInfo> GetCardSignLogInfoList(int publishmentSystemId)
+        public List<CardSignLogInfo> GetCardSignLogInfoList(int publishmentSystemID)
         {
             var cardSignLogInfoList = new List<CardSignLogInfo>();
 
-            string sqlWhere = $"WHERE PublishmentSystemID = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE PublishmentSystemID = {publishmentSystemID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {

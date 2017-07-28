@@ -38,17 +38,16 @@ namespace BaiRong.Core.Tabs
 		/// <returns></returns>
 		public static TabCollection GetTabs(string filePath)
 		{
-		    if (filePath.StartsWith("/") || filePath.StartsWith("~"))
-		    {
-                filePath = HttpContext.Current.Server.MapPath(filePath);
-            }
+			if(filePath.StartsWith("/") || filePath.StartsWith("~"))
+				filePath = HttpContext.Current.Server.MapPath(filePath);
 
 			var tc = CacheUtils.Get(filePath) as TabCollection;
-		    if (tc != null) return tc;
-
-		    tc = (TabCollection)Serializer.ConvertFileToObject(filePath,typeof(TabCollection));
-		    CacheUtils.Max(filePath,tc,new CacheDependency(filePath));
-		    return tc;
+			if(tc == null)
+			{
+				tc = (TabCollection)Serializer.ConvertFileToObject(filePath,typeof(TabCollection));
+				CacheUtils.Max(filePath,tc,new CacheDependency(filePath));
+			}
+			return tc;
 		}
-    }
+	}
 }

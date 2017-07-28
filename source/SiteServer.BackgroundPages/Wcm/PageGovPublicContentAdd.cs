@@ -9,6 +9,7 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Controls;
@@ -21,7 +22,6 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovPublic;
 using SiteServer.CMS.Wcm.Model;
-using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Wcm
 {
@@ -64,21 +64,21 @@ namespace SiteServer.BackgroundPages.Wcm
         private ETableStyle _tableStyle;
         private List<int> _relatedIdentities;
 
-        public static string GetRedirectUrlOfAdd(int siteId, int nodeId, string returnUrl)
+        public static string GetRedirectUrlOfAdd(int publishmentSystemId, int nodeId, string returnUrl)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicContentAdd), new NameValueCollection
             {
-                {"siteId", siteId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
 
-        public static string GetRedirectUrlOfEdit(int siteId, int nodeId, int id, string returnUrl)
+        public static string GetRedirectUrlOfEdit(int publishmentSystemId, int nodeId, int id, string returnUrl)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicContentAdd), new NameValueCollection
             {
-                {"siteId", siteId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ID", id.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -87,6 +87,8 @@ namespace SiteServer.BackgroundPages.Wcm
 
         public void Page_Load(object sender, EventArgs e)
         {
+            PageUtils.CheckRequestParameter("PublishmentSystemID");
+
             var nodeId = TranslateUtils.ToInt(Request.QueryString["NodeID"]);
             if (nodeId == 0)
             {
@@ -463,7 +465,7 @@ $('#Tags').keyup(function (e) {
                 var contentInfo = new GovPublicContentInfo();
                 try
                 {
-                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                    InputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
 
                     contentInfo.NodeId = categoryChannelId;
                     contentInfo.Description = tbDescription.Text;
@@ -551,7 +553,7 @@ $('#Tags').keyup(function (e) {
                     }
 
                     var identifier = contentInfo.Identifier;
-                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                    InputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
 
                     contentInfo.DepartmentId = categoryDepartmentId;
                     SetCategoryAttributes(contentInfo, categoryClassInfoArrayList);

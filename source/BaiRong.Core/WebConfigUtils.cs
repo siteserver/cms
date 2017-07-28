@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Web;
 using System.Xml;
 using BaiRong.Core.Data;
@@ -39,7 +38,7 @@ namespace BaiRong.Core
 
         static WebConfigUtils()
         {
-            var physicalApplicationPath = string.Empty;
+            string physicalApplicationPath;
             var applicationPath = string.Empty;
             if (HttpContext.Current != null)
             {

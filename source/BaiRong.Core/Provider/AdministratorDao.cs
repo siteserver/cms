@@ -8,6 +8,7 @@ using BaiRong.Core.Cryptography;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Permissions;
 
 namespace BaiRong.Core.Provider
 {
@@ -842,7 +843,7 @@ namespace BaiRong.Core.Provider
             }
         }
 
-        public bool ChangePassword(string userName, string password, out string errorMessage)
+        public bool ChangePassword(string userName, EPasswordFormat passwordFormat, string password, out string errorMessage)
         {
             errorMessage = string.Empty;
 
@@ -864,8 +865,8 @@ namespace BaiRong.Core.Provider
             }
 
             string passwordSalt;
-            password = EncodePassword(password, EPasswordFormat.Encrypted, out passwordSalt);
-            return ChangePassword(userName, EPasswordFormat.Encrypted, passwordSalt, password);
+            password = EncodePassword(password, passwordFormat, out passwordSalt);
+            return ChangePassword(userName, passwordFormat, passwordSalt, password);
         }
 
         public bool ValidateAccount(string account, string password, out string userName, out string errorMessage)

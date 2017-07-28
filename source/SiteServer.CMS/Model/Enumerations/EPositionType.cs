@@ -5,10 +5,10 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EPositionType
 	{
-		LeftTop,				//宸︿笂
-		LeftBottom,				//宸︿笅
-		RightTop,               //鍙充笂
-        RightBottom             //鍙充笅
+		LeftTop,				//左上
+		LeftBottom,				//左下
+		RightTop,               //右上
+        RightBottom             //右下
 	}
 
     public class EPositionTypeUtils
@@ -41,19 +41,19 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == EPositionType.LeftTop)
             {
-                return "宸︿笂";
+                return "左上";
             }
             else if (type == EPositionType.LeftBottom)
             {
-                return "宸︿笅";
+                return "左下";
             }
             else if (type == EPositionType.RightTop)
             {
-                return "鍙充笂";
+                return "右上";
             }
             else if (type == EPositionType.RightBottom)
             {
-                return "鍙充笅";
+                return "右下";
             }
             else
             {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
+using BaiRong.Core.Text;
 
 namespace SiteServer.BackgroundPages.User
 {

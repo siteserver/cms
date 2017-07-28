@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetWcmUrl(nameof(PageGovInteractPermissions), new NameValueCollection
             {
-                {"siteId", publishmentSystemId.ToString() },
+                {"PublishmentSystemID", publishmentSystemId.ToString() },
                 {"NodeID", nodeId.ToString() }
             });
         }

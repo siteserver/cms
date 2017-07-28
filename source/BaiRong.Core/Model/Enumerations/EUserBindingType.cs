@@ -30,7 +30,7 @@ namespace BaiRong.Core.Model.Enumerations
 		{
             if (type == EUserBindingType.Weibo)
 			{
-				return "æ–°æµªå¾®åš";
+				return "ĞÂÀËÎ¢²©";
 			}
             else if (type == EUserBindingType.QQ)
 			{

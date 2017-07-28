@@ -6,18 +6,18 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class AppointmentItemDao : DataProviderBase
+    public class AppointmentItemDAO : DataProviderBase
     {
-        private const string TableName = "wx_AppointmentItem";
+        private const string TABLE_NAME = "wx_AppointmentItem";
 
          
         public int Insert(AppointmentItemInfo appointmentItemInfo)
         {
-            var appointmentItemId = 0;
+            var appointmentItemID = 0;
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(appointmentItemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(appointmentItemInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
              
             
             using (var conn = GetConnection())
@@ -27,7 +27,9 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        appointmentItemId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
+                        ExecuteNonQuery(trans, SQL_INSERT, parms);
+
+                        appointmentItemID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
 
                         trans.Commit();
                     }
@@ -39,104 +41,104 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return appointmentItemId;
+            return appointmentItemID;
         }
 
         public void Update(AppointmentItemInfo appointmentItemInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(appointmentItemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(appointmentItemInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
              
 
-            ExecuteNonQuery(sqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
 
-        public void UpdateAppointmentId(int publishmentSystemId, int appointmentId)
+        public void UpdateAppointmentID(int publishmentSystemID, int appointmentID)
         {
-            if (appointmentId > 0)
+            if (appointmentID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {AppointmentItemAttribute.AppointmentId} = {appointmentId} WHERE {AppointmentItemAttribute.AppointmentId} = 0 AND {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId}";
+                    $"UPDATE {TABLE_NAME} SET {AppointmentItemAttribute.AppointmentID} = {appointmentID} WHERE {AppointmentItemAttribute.AppointmentID} = 0 AND {AppointmentItemAttribute.PublishmentSystemID} = {publishmentSystemID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, int appointmentItemId)
+        public void Delete(int publishmentSystemID, int appointmentItemID)
         {
-            if (appointmentItemId > 0)
+            if (appointmentItemID > 0)
             {  
-                string sqlString = $"DELETE FROM {TableName} WHERE ID = {appointmentItemId}";
+                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {appointmentItemID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, List<int> appointmentItemIdList)
+        public void Delete(int publishmentSystemID, List<int> appointmentItemIDList)
         {
-            if (appointmentItemIdList != null && appointmentItemIdList.Count > 0)
+            if (appointmentItemIDList != null && appointmentItemIDList.Count > 0)
             { 
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(appointmentItemIdList)})";
+                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(appointmentItemIDList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void DeleteAll(int appointmentId)
+        public void DeleteAll(int appointmentID)
         {
-            if (appointmentId > 0)
+            if (appointmentID > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE {AppointmentItemAttribute.AppointmentId} = {appointmentId}";
+                    $"DELETE FROM {TABLE_NAME} WHERE {AppointmentItemAttribute.AppointmentID} = {appointmentID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void AddUserCount(int itemId)
+        public void AddUserCount(int itemID)
         {
-            if (itemId > 0)
+            if (itemID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {AppointmentItemAttribute.UserCount} = {AppointmentItemAttribute.UserCount} + 1 WHERE ID = {itemId}";
+                    $"UPDATE {TABLE_NAME} SET {AppointmentItemAttribute.UserCount} = {AppointmentItemAttribute.UserCount} + 1 WHERE ID = {itemID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void UpdateUserCount(int publishmentSystemId, Dictionary<int, int> itemIdWithCount)
+        public void UpdateUserCount(int publishmentSystemID, Dictionary<int, int> itemIDWithCount)
         {
-            if (itemIdWithCount.Count == 0)
+            if (itemIDWithCount.Count == 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {AppointmentItemAttribute.UserCount} = 0 WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId}";
+                    $"UPDATE {TABLE_NAME} SET {AppointmentItemAttribute.UserCount} = 0 WHERE {AppointmentItemAttribute.PublishmentSystemID} = {publishmentSystemID}";
                 ExecuteNonQuery(sqlString);
             }
             else
             {
-                var itemIdList = GetItemIdList(publishmentSystemId);
-                foreach (var itemId in itemIdList)
+                var itemIDList = GetItemIDList(publishmentSystemID);
+                foreach (var itemID in itemIDList)
                 {
-                    if (itemIdWithCount.ContainsKey(itemId))
+                    if (itemIDWithCount.ContainsKey(itemID))
                     {
                         string sqlString =
-                            $"UPDATE {TableName} SET {AppointmentItemAttribute.UserCount} = {itemIdWithCount[itemId]} WHERE ID = {itemId}";
+                            $"UPDATE {TABLE_NAME} SET {AppointmentItemAttribute.UserCount} = {itemIDWithCount[itemID]} WHERE ID = {itemID}";
                         ExecuteNonQuery(sqlString);
                     }
                     else
                     {
                         string sqlString =
-                            $"UPDATE {TableName} SET {AppointmentItemAttribute.UserCount} = 0 WHERE ID = {itemId}";
+                            $"UPDATE {TABLE_NAME} SET {AppointmentItemAttribute.UserCount} = 0 WHERE ID = {itemID}";
                         ExecuteNonQuery(sqlString);
                     }
                 }
             }
         }
  
-        public AppointmentItemInfo GetItemInfo(int appointmentItemId)
+        public AppointmentItemInfo GetItemInfo(int appointmentItemID)
         {
             AppointmentItemInfo appointmentItemInfo = null;
 
-            string sqlWhere = $"WHERE ID = {appointmentItemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {appointmentItemID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -148,15 +150,15 @@ namespace SiteServer.CMS.WeiXin.Provider
             return appointmentItemInfo;
         }
 
-        public AppointmentItemInfo GetItemInfo(int publishmentSystemId, int appointmentId)
+        public AppointmentItemInfo GetItemInfo(int publishmentSystemID, int appointmentID)
         {
             AppointmentItemInfo appointmentItemInfo = null;
 
-            string sqlWhere =
-                $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {AppointmentItemAttribute.AppointmentId} = {appointmentId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE =
+                $"WHERE {AppointmentItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {AppointmentItemAttribute.AppointmentID} = {appointmentID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -168,54 +170,54 @@ namespace SiteServer.CMS.WeiXin.Provider
             return appointmentItemInfo;
         }
 
-        public int GetItemId(int publishmentSystemId, int appointmentId)
+        public int GetItemID(int publishmentSystemID, int appointmentID)
         {
-            var itemId = 0;
+            var itemID = 0;
 
-            string sqlWhere =
-                $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {AppointmentItemAttribute.AppointmentId} = {appointmentId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, AppointmentItemAttribute.Id, sqlWhere, null);
+            string SQL_WHERE =
+                $"WHERE {AppointmentItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {AppointmentItemAttribute.AppointmentID} = {appointmentID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, AppointmentItemAttribute.ID, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))
                 {
-                    itemId = rdr.GetInt32(0);
+                    itemID = rdr.GetInt32(0);
                 }
                 rdr.Close();
             }
 
-            return itemId;
+            return itemID;
         }
 
-        private List<int> GetItemIdList(int publishmentSystemId)
+        private List<int> GetItemIDList(int publishmentSystemID)
         {
-            var itemIdList = new List<int>();
+            var itemIDList = new List<int>();
 
-            string sqlWhere = $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, AppointmentItemAttribute.Id, sqlWhere, null);
+            string SQL_WHERE = $"WHERE {AppointmentItemAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, AppointmentItemAttribute.ID, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
-                    itemIdList.Add(rdr.GetInt32(0));
+                    itemIDList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return itemIdList;
+            return itemIDList;
         }
 
-        public List<AppointmentItemInfo> GetItemInfoList(int publishmentSystemId, int appointmentId)
+        public List<AppointmentItemInfo> GetItemInfoList(int publishmentSystemID, int appointmentID)
         {
             var list = new List<AppointmentItemInfo>();
 
-            string sqlWhere =
-                $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {AppointmentItemAttribute.AppointmentId} = {appointmentId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE =
+                $"WHERE {AppointmentItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {AppointmentItemAttribute.AppointmentID} = {appointmentID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
@@ -228,21 +230,21 @@ namespace SiteServer.CMS.WeiXin.Provider
             return list;
         }
 
-        public List<AppointmentItemInfo> GetItemInfoList(string wxOpenId,string userName)
+        public List<AppointmentItemInfo> GetItemInfoList(string wxOpenID,string userName)
         {
             var list = new List<AppointmentItemInfo>();
 
-            string sqlWhere =
-                $"WHERE  {AppointmentItemAttribute.Id} IN (SELECT AppointmentItemID FROM wx_AppointmentContent WHERE UserName = '{PageUtils.FilterSql(userName)}')";
-            if (!string.IsNullOrEmpty(wxOpenId))
+            string SQL_WHERE =
+                $"WHERE  {AppointmentItemAttribute.ID} IN (SELECT AppointmentItemID FROM wx_AppointmentContent WHERE UserName = '{PageUtils.FilterSql(userName)}')";
+            if (!string.IsNullOrEmpty(wxOpenID))
             {
-                sqlWhere =
-                    $"WHERE  {AppointmentItemAttribute.Id} IN (SELECT AppointmentItemID FROM wx_AppointmentContent WHERE WXOpenID = '{PageUtils.FilterSql(wxOpenId)}')";
+                SQL_WHERE =
+                    $"WHERE  {AppointmentItemAttribute.ID} IN (SELECT AppointmentItemID FROM wx_AppointmentContent WHERE WXOpenID = '{PageUtils.FilterSql(wxOpenID)}')";
             }
             
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
@@ -256,14 +258,14 @@ namespace SiteServer.CMS.WeiXin.Provider
         }
 
          
-        public string GetTitle(int appointmentItemId)
+        public string GetTitle(int appointmentItemID)
         {
             var title = string.Empty;
 
-            string sqlWhere = $"WHERE ID = {appointmentItemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, AppointmentItemAttribute.Title, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {appointmentItemID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, AppointmentItemAttribute.Title, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -275,21 +277,21 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
          
-        public string GetSelectString(int publishmentSystemId,int appointmentId)
+        public string GetSelectString(int publishmentSystemID,int appointmentID)
         {
             string whereString =
-                $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {AppointmentItemAttribute.AppointmentId} = {appointmentId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+                $"WHERE {AppointmentItemAttribute.PublishmentSystemID} = {publishmentSystemID} AND {AppointmentItemAttribute.AppointmentID} = {appointmentID}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
         }
 
-        public List<AppointmentItemInfo> GetAppointmentItemInfoList(int publishmentSystemId)
+        public List<AppointmentItemInfo> GetAppointmentItemInfoList(int publishmentSystemID)
         {
             var list = new List<AppointmentItemInfo>();
 
-            string sqlWhere = $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE {AppointmentItemAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {

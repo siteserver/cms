@@ -5,6 +5,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovPublic;
 using SiteServer.CMS.Wcm.Model;
@@ -20,18 +21,20 @@ namespace SiteServer.BackgroundPages.Wcm
 
         private List<int> _idArrayList;
 
-	    public static string GetOpenWindowString(int siteId)
+	    public static string GetOpenWindowString(int publishmentSystemId)
 	    {
 	        return PageUtils.GetOpenWindowStringWithCheckBoxValue("转办申请",
 	            PageUtils.GetWcmUrl(nameof(ModalGovPublicApplySwitchTo), new NameValueCollection
 	            {
-	                {"siteId", siteId.ToString()}
+	                {"PublishmentSystemID", publishmentSystemId.ToString()}
 	            }), "IDCollection", "请选择需要转办的申请！", 500, 500);
 	    }
 
 	    public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
+
+            PageUtils.CheckRequestParameter("PublishmentSystemID");
 
             _idArrayList = TranslateUtils.StringCollectionToIntList(Request.QueryString["IDCollection"]);
 

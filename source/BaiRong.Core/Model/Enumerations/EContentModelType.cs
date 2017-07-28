@@ -162,16 +162,14 @@ namespace BaiRong.Core.Model.Enumerations
             }
         }
 
-        public static ContentModelInfo GetContentModelInfo(int siteId, string tableName, EContentModelType modelType)
+        public static ContentModelInfo GetContentModelInfo(EPublishmentSystemType publishmentSystemType, int siteID, string tableName, EContentModelType modelType)
         {
-            var modelInfo = new ContentModelInfo
-            {
-                ModelId = GetValue(modelType),
-                ModelName = GetText(modelType),
-                SiteId = siteId,
-                IsSystem = true,
-                TableName = tableName
-            };
+            var modelInfo = new ContentModelInfo();
+            modelInfo.ModelId = GetValue(modelType);
+            modelInfo.ModelName = GetText(modelType);
+            modelInfo.SiteId = siteID;
+            modelInfo.IsSystem = true;
+            modelInfo.TableName = tableName;
             if (modelType == EContentModelType.Content)
             {
                 modelInfo.TableType = EAuxiliaryTableType.BackgroundContent;
@@ -204,9 +202,14 @@ namespace BaiRong.Core.Model.Enumerations
             return modelInfo;
         }
 
-        public static bool IsPhoto(string contentModelId)
+        public static EContentModelType GetEnumTypeByPublishmentSystemType(EPublishmentSystemType publishmentSystemType)
         {
-            var modelType = GetEnumType(contentModelId);
+            return EContentModelType.Content;
+        }
+
+        public static bool IsPhoto(string contentModelID)
+        {
+            var modelType = GetEnumType(contentModelID);
 
             if (modelType == EContentModelType.Photo)
             {

@@ -5,8 +5,8 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum ENodeType
 	{
-		BackgroundPublishNode,	//应用
-        BackgroundNormalNode,	//栏目
+		BackgroundPublishNode,	//վ��
+        BackgroundNormalNode,	//��Ŀ
 	}
 
 	public class ENodeTypeUtils
@@ -29,7 +29,7 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ENodeType GetEnumType(string typeStr)
 		{
-			ENodeType retval = ENodeType.BackgroundNormalNode;
+			var retval = ENodeType.BackgroundNormalNode;
 
 			if (Equals(ENodeType.BackgroundPublishNode, typeStr))
 			{

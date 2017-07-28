@@ -1,8 +1,9 @@
 using System.Web.Caching;
 using BaiRong.Core;
+using BaiRong.Core.Configuration;
 using System.Collections.Generic;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Core.Permissions;
+using BaiRong.Core.Permissions;
 
 namespace SiteServer.CMS.Core.Security
 {
@@ -50,7 +51,7 @@ namespace SiteServer.CMS.Core.Security
                             if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
                             {
                                 var allWebsitePermissionList = new List<string>();
-                                foreach (var permission in PermissionConfigManager.Instance.WebsitePermissions)
+                                foreach (PermissionConfig permission in PermissionConfigManager.Instance.WebsitePermissions)
                                 {
                                     allWebsitePermissionList.Add(permission.Name);
                                 }
@@ -93,7 +94,7 @@ namespace SiteServer.CMS.Core.Security
                             if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
                             {
                                 var allChannelPermissionList = new List<string>();
-                                foreach (var permission in PermissionConfigManager.Instance.ChannelPermissions)
+                                foreach (PermissionConfig permission in PermissionConfigManager.Instance.ChannelPermissions)
                                 {
                                     allChannelPermissionList.Add(permission.Name);
                                 }
@@ -137,7 +138,7 @@ namespace SiteServer.CMS.Core.Security
                             if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
                             {
                                 _channelPermissionListIgnoreNodeId = new List<string>();
-                                foreach (var permission in PermissionConfigManager.Instance.ChannelPermissions)
+                                foreach (PermissionConfig permission in PermissionConfigManager.Instance.ChannelPermissions)
                                 {
                                     _channelPermissionListIgnoreNodeId.Add(permission.Name);
                                 }

@@ -5,15 +5,15 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EGovInteractLogType
 	{
-        New,                //æ–°ç”³è¯·
-        Accept,             //å—ç†
-        Deny,               //æ‹’ç»
-        SwitchTo,           //è½¬åŠ
-        Translate,          //è½¬ç§»
-        Comment,            //æ‰¹ç¤º
-        Redo,               //è¦æ±‚è¿”å·¥
-        Reply,              //åŠç†
-        Check,              //å®¡æ ¸
+        New,                //ĞÂÉêÇë
+        Accept,             //ÊÜÀí
+        Deny,               //¾Ü¾ø
+        SwitchTo,           //×ª°ì
+        Translate,          //×ªÒÆ
+        Comment,            //ÅúÊ¾
+        Redo,               //ÒªÇó·µ¹¤
+        Reply,              //°ìÀí
+        Check,              //ÉóºË
 	}
 
     public class EGovInteractLogTypeUtils
@@ -66,39 +66,39 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
             if (type == EGovInteractLogType.New)
             {
-                return "å‰å°ç½‘å‹æäº¤åŠä»¶";
+                return "Ç°Ì¨ ÍøÓÑ Ìá½»°ì¼ş";
             }
             else if (type == EGovInteractLogType.Accept)
             {
-                return "å—ç†åŠä»¶";
+                return "ÊÜÀí°ì¼ş";
             }
             else if (type == EGovInteractLogType.Deny)
             {
-                return "æ‹’ç»åŠä»¶";
+                return "¾Ü¾ø°ì¼ş";
             }
             else if (type == EGovInteractLogType.SwitchTo)
             {
-                return "è½¬åŠåŠä»¶";
+                return "×ª°ì°ì¼ş";
             }
             else if (type == EGovInteractLogType.Translate)
             {
-                return "è½¬ç§»åŠä»¶";
+                return "×ªÒÆ°ì¼ş";
             }
             else if (type == EGovInteractLogType.Comment)
             {
-                return "æ‰¹ç¤ºåŠä»¶";
+                return "ÅúÊ¾°ì¼ş";
             }
             else if (type == EGovInteractLogType.Redo)
             {
-                return "è¦æ±‚è¿”å·¥";
+                return "ÒªÇó·µ¹¤";
             }
             else if (type == EGovInteractLogType.Reply)
             {
-                return "å›å¤åŠä»¶";
+                return "»Ø¸´°ì¼ş";
             }
             else if (type == EGovInteractLogType.Check)
             {
-                return "å®¡æ ¸é€šè¿‡åŠä»¶";
+                return "ÉóºËÍ¨¹ı°ì¼ş";
             }
             else
             {

@@ -6,6 +6,7 @@ using BaiRong.Core.Model;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovInteract;
 
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
 		public void Page_Load(object sender, EventArgs e)
 		{
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtils.CheckRequestParameter("PublishmentSystemID");
 
 			if(!IsPostBack)
             {

@@ -17,29 +17,29 @@ namespace SiteServer.BackgroundPages.Wcm
         private GovPublicCategoryClassInfo _categoryClassInfo;
         private int _currentCategoryId;
 
-        public static string GetRedirectUrl(int siteId, string classCode)
+        public static string GetRedirectUrl(int publishmentSystemId, string classCode)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicCategory), new NameValueCollection
             {
-                {"siteId", siteId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ClassCode", classCode}
             });
         }
 
-        public static string GetRedirectUrl(int siteId, string classCode, int currentCategoryId)
+        public static string GetRedirectUrl(int publishmentSystemId, string classCode, int currentCategoryId)
         {
             if (currentCategoryId != 0)
             {
                 return PageUtils.GetWcmUrl(nameof(PageGovPublicCategory), new NameValueCollection
                 {
-                    {"siteId", siteId.ToString()},
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"ClassCode", classCode},
                     {"CurrentCategoryID", currentCategoryId.ToString()},
                 });
             }
             return PageUtils.GetWcmUrl(nameof(PageGovPublicCategory), new NameValueCollection
             {
-                {"siteId", siteId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ClassCode", classCode}
             });
         }
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Wcm
                     PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
                         PageUtils.GetWcmUrl(nameof(PageGovPublicCategory), new NameValueCollection
                         {
-                            {"siteId", PublishmentSystemId.ToString()},
+                            {"PublishmentSystemID", PublishmentSystemId.ToString()},
                             {"ClassCode", _categoryClassInfo.ClassCode},
                             {"Delete", true.ToString()},
                         }), "CategoryIDCollection", "CategoryIDCollection", "请选择需要删除的节点！", "此操作将删除对应节点以及所有下级节点，确认删除吗？"));
@@ -176,7 +176,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
                     var urlUp = PageUtils.GetWcmUrl(nameof(PageGovPublicCategory), new NameValueCollection
                     {
-                        {"siteId", categoryInfo.PublishmentSystemID.ToString()},
+                        {"PublishmentSystemID", categoryInfo.PublishmentSystemID.ToString()},
                         {"ClassCode", categoryInfo.ClassCode},
                         {"Subtract", true.ToString()},
                         {"CategoryID", categoryInfo.CategoryID.ToString()}
@@ -185,7 +185,7 @@ namespace SiteServer.BackgroundPages.Wcm
 
                     var urlDown = PageUtils.GetWcmUrl(nameof(PageGovPublicCategory), new NameValueCollection
                     {
-                        {"siteId", categoryInfo.PublishmentSystemID.ToString()},
+                        {"PublishmentSystemID", categoryInfo.PublishmentSystemID.ToString()},
                         {"ClassCode", categoryInfo.ClassCode},
                         {"Add", true.ToString()},
                         {"CategoryID", categoryInfo.CategoryID.ToString()}

@@ -14,139 +14,139 @@ namespace SiteServer.BackgroundPages.WeiXin
 {
     public class ModalAppointmentItemAdd : BasePageCms
     {
-        public Literal LtlPageTitle;
-        public TextBox TbTitle;
-        public CheckBox CbIsDescription;
-        public TextBox TbDescriptionTitle;
-        public TextBox TbDescription;
-        public Literal LtlTopImageUrl;
-        public HtmlInputHidden TopImageUrl;
+        public Literal ltlPageTitle;
+        public TextBox tbTitle;
+        public CheckBox cbIsDescription;
+        public TextBox tbDescriptionTitle;
+        public TextBox tbDescription;
+        public Literal ltlTopImageUrl;
+        public HtmlInputHidden topImageUrl;
 
-        public CheckBox CbIsImageUrl;
-        public TextBox TbImageUrlTitle;
-        public TextBox TbContentImageUrl;
-        public Literal LtlContentImageUrl;
+        public CheckBox cbIsImageUrl;
+        public TextBox tbImageUrlTitle;
+        public TextBox tbContentImageUrl;
+        public Literal ltlContentImageUrl;
 
-        public CheckBox CbIsVideoUrl;
-        public TextBox TbVideoUrlTitle;
-        public TextBox TbContentVideoUrl;
-        public Literal LtlContentVideoUrl;
+        public CheckBox cbIsVideoUrl;
+        public TextBox tbVideoUrlTitle;
+        public TextBox tbContentVideoUrl;
+        public Literal ltlContentVideoUrl;
 
-        public CheckBox CbIsImageUrlCollection;
-        public TextBox TbImageUrlCollectionTitle;
-        public Literal LtlScript;
-        public HtmlInputHidden ImageUrlCollection;
-        public HtmlInputHidden LargeImageUrlCollection;
+        public CheckBox cbIsImageUrlCollection;
+        public TextBox tbImageUrlCollectionTitle;
+        public Literal ltlScript;
+        public HtmlInputHidden imageUrlCollection;
+        public HtmlInputHidden largeImageUrlCollection;
          
-        public CheckBox CbIsMap;
-        public TextBox TbMapTitle;
-        public TextBox TbMapAddress;
+        public CheckBox cbIsMap;
+        public TextBox tbMapTitle;
+        public TextBox tbMapAddress;
         //public Button btnMapAddress;
-        public Literal LtlMap;
+        public Literal ltlMap;
        
-        public CheckBox CbIsTel;
-        public TextBox TbTelTitle;
-        public TextBox TbTel;
+        public CheckBox cbIsTel;
+        public TextBox tbTelTitle;
+        public TextBox tbTel;
 
-        private int _appointmentId;
-        private int _appointmentItemId;
+        private int appointmentID;
+        private int appointmentItemID;
          
-        public static string GetOpenWindowStringToAdd(int publishmentSystemId, int appointmentId, int appointmentItemId)
+        public static string GetOpenWindowStringToAdd(int publishmentSystemId, int appointmentID, int appointmentItemID)
         {
             return PageUtils.GetOpenWindowString("添加预约项目",
                 PageUtils.GetWeiXinUrl(nameof(ModalAppointmentItemAdd), new NameValueCollection
                 {
-                    {"PublishmentSystemId", publishmentSystemId.ToString()},
-                    {"appointmentID", appointmentId.ToString()},
-                    {"appointmentItemID", appointmentItemId.ToString()}
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"appointmentID", appointmentID.ToString()},
+                    {"appointmentItemID", appointmentItemID.ToString()}
                 }));
         }
 
-        public static string GetOpenWindowStringToEdit(int publishmentSystemId, int appointmentId, int appointmentItemId)
+        public static string GetOpenWindowStringToEdit(int publishmentSystemId, int appointmentID, int appointmentItemID)
         {
             return PageUtils.GetOpenWindowString("编辑预约项目",
                 PageUtils.GetWeiXinUrl(nameof(ModalAppointmentItemAdd), new NameValueCollection
                 {
-                    {"PublishmentSystemId", publishmentSystemId.ToString()},
-                    {"appointmentID", appointmentId.ToString()},
-                    {"appointmentItemID", appointmentItemId.ToString()}
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"appointmentID", appointmentID.ToString()},
+                    {"appointmentItemID", appointmentItemID.ToString()}
                 }));
         }
 
         public string GetUploadUrl()
         {
             return string.Empty;
-            //return BackgroundAjaxUpload.GetImageUrlUploadUrl(PublishmentSystemId);
+            //return BackgroundAjaxUpload.GetImageUrlUploadUrl(PublishmentSystemID);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            _appointmentId = Body.GetQueryInt("appointmentID");
-            _appointmentItemId = Body.GetQueryInt("appointmentItemID");
+            appointmentID = Body.GetQueryInt("appointmentID");
+            appointmentItemID = Body.GetQueryInt("appointmentItemID");
 
-            var selectImageClick = ModalSelectImage.GetOpenWindowString(PublishmentSystemInfo, TbContentImageUrl.ClientID);
-            var uploadImageClick = ModalUploadImageSingle.GetOpenWindowStringToTextBox(PublishmentSystemId, TbContentImageUrl.ClientID);
-            var cuttingImageClick = ModalCuttingImage.GetOpenWindowStringWithTextBox(PublishmentSystemId, TbContentImageUrl.ClientID);
-            var previewImageClick = ModalMessage.GetOpenWindowStringToPreviewImage(PublishmentSystemId, TbContentImageUrl.ClientID);
-            LtlContentImageUrl.Text = $@"
+            var selectImageClick = ModalSelectImage.GetOpenWindowString(PublishmentSystemInfo, tbContentImageUrl.ClientID);
+            var uploadImageClick = ModalUploadImageSingle.GetOpenWindowStringToTextBox(PublishmentSystemId, tbContentImageUrl.ClientID);
+            var cuttingImageClick = ModalCuttingImage.GetOpenWindowStringWithTextBox(PublishmentSystemId, tbContentImageUrl.ClientID);
+            var previewImageClick = ModalMessage.GetOpenWindowStringToPreviewImage(PublishmentSystemId, tbContentImageUrl.ClientID);
+            ltlContentImageUrl.Text = $@"
                       <a class=""btn"" href=""javascript:;"" onclick=""{selectImageClick};return false;"" title=""选择""><i class=""icon-th""></i></a>
                       <a class=""btn"" href=""javascript:;"" onclick=""{uploadImageClick};return false;"" title=""上传""><i class=""icon-arrow-up""></i></a>
                       <a class=""btn"" href=""javascript:;"" onclick=""{cuttingImageClick};return false;"" title=""裁切""><i class=""icon-crop""></i></a>
                       <a class=""btn"" href=""javascript:;"" onclick=""{previewImageClick};return false;"" title=""预览""><i class=""icon-eye-open""></i></a>";
 
-            var selectVideoClick = ModalSelectVideo.GetOpenWindowString(PublishmentSystemInfo, TbContentVideoUrl.ClientID);
-            var uploadVideoClick = ModalUploadVideo.GetOpenWindowStringToTextBox(PublishmentSystemId, TbContentVideoUrl.ClientID);
-            var previewVideoClick = ModalMessage.GetOpenWindowStringToPreviewVideoByUrl(PublishmentSystemId, TbContentVideoUrl.ClientID);
-            LtlContentVideoUrl.Text = $@"
+            var selectVideoClick = ModalSelectVideo.GetOpenWindowString(PublishmentSystemInfo, tbContentVideoUrl.ClientID);
+            var uploadVideoClick = ModalUploadVideo.GetOpenWindowStringToTextBox(PublishmentSystemId, tbContentVideoUrl.ClientID);
+            var previewVideoClick = ModalMessage.GetOpenWindowStringToPreviewVideoByUrl(PublishmentSystemId, tbContentVideoUrl.ClientID);
+            ltlContentVideoUrl.Text = $@"
                       <a class=""btn"" href=""javascript:;"" onclick=""{selectVideoClick};return false;"" title=""选择""><i class=""icon-th""></i></a>
                       <a class=""btn"" href=""javascript:;"" onclick=""{uploadVideoClick};return false;"" title=""上传""><i class=""icon-arrow-up""></i></a>
                       <a class=""btn"" href=""javascript:;"" onclick=""{previewVideoClick};return false;"" title=""预览""><i class=""icon-eye-open""></i></a>";
 
             if (!IsPostBack)
             {
-                LtlTopImageUrl.Text =
+                ltlTopImageUrl.Text =
                     $@"<img id=""preview_topImageUrl"" src=""{AppointmentManager.GetImageUrl(PublishmentSystemInfo,
                         string.Empty)}"" width=""370"" align=""middle"" />";
                  
-                if (_appointmentItemId > 0)
+                if (appointmentItemID > 0)
                 {
-                    var appointmentItemInfo = DataProviderWx.AppointmentItemDao.GetItemInfo(_appointmentItemId);
+                    var appointmentItemInfo = DataProviderWX.AppointmentItemDAO.GetItemInfo(appointmentItemID);
                     if (appointmentItemInfo != null)
                     {
-                        TbTitle.Text = appointmentItemInfo.Title;
-                        TopImageUrl.Value = appointmentItemInfo.TopImageUrl;
-                        CbIsDescription.Checked = appointmentItemInfo.IsDescription;
-                        TbDescriptionTitle.Text = appointmentItemInfo.DescriptionTitle;
-                        TbDescription.Text = appointmentItemInfo.Description;
-                        CbIsImageUrl.Checked = appointmentItemInfo.IsImageUrl;
-                        TbImageUrlTitle.Text = appointmentItemInfo.ImageUrlTitle;
-                        TbContentImageUrl.Text = appointmentItemInfo.ImageUrl;
-                        CbIsVideoUrl.Checked = appointmentItemInfo.IsVideoUrl;
-                        TbVideoUrlTitle.Text = appointmentItemInfo.VideoUrlTitle;
-                        TbContentVideoUrl.Text = appointmentItemInfo.VideoUrl;
-                        CbIsImageUrlCollection.Checked = appointmentItemInfo.IsImageUrlCollection;
-                        TbImageUrlCollectionTitle.Text = appointmentItemInfo.ImageUrlCollectionTitle;
-                        ImageUrlCollection.Value = appointmentItemInfo.ImageUrlCollection;
-                        LargeImageUrlCollection.Value = appointmentItemInfo.LargeImageUrlCollection;
-                        CbIsMap.Checked = appointmentItemInfo.IsMap;
-                        TbMapTitle.Text = appointmentItemInfo.MapTitle;
-                        TbMapAddress.Text = appointmentItemInfo.MapAddress;
-                        CbIsTel.Checked = appointmentItemInfo.IsTel;
-                        TbTelTitle.Text = appointmentItemInfo.TelTitle;
-                        TbTel.Text = appointmentItemInfo.Tel;
+                        tbTitle.Text = appointmentItemInfo.Title;
+                        topImageUrl.Value = appointmentItemInfo.TopImageUrl;
+                        cbIsDescription.Checked = appointmentItemInfo.IsDescription;
+                        tbDescriptionTitle.Text = appointmentItemInfo.DescriptionTitle;
+                        tbDescription.Text = appointmentItemInfo.Description;
+                        cbIsImageUrl.Checked = appointmentItemInfo.IsImageUrl;
+                        tbImageUrlTitle.Text = appointmentItemInfo.ImageUrlTitle;
+                        tbContentImageUrl.Text = appointmentItemInfo.ImageUrl;
+                        cbIsVideoUrl.Checked = appointmentItemInfo.IsVideoUrl;
+                        tbVideoUrlTitle.Text = appointmentItemInfo.VideoUrlTitle;
+                        tbContentVideoUrl.Text = appointmentItemInfo.VideoUrl;
+                        cbIsImageUrlCollection.Checked = appointmentItemInfo.IsImageUrlCollection;
+                        tbImageUrlCollectionTitle.Text = appointmentItemInfo.ImageUrlCollectionTitle;
+                        imageUrlCollection.Value = appointmentItemInfo.ImageUrlCollection;
+                        largeImageUrlCollection.Value = appointmentItemInfo.LargeImageUrlCollection;
+                        cbIsMap.Checked = appointmentItemInfo.IsMap;
+                        tbMapTitle.Text = appointmentItemInfo.MapTitle;
+                        tbMapAddress.Text = appointmentItemInfo.MapAddress;
+                        cbIsTel.Checked = appointmentItemInfo.IsTel;
+                        tbTelTitle.Text = appointmentItemInfo.TelTitle;
+                        tbTel.Text = appointmentItemInfo.Tel;
 
                         if (!string.IsNullOrEmpty(appointmentItemInfo.TopImageUrl))
                         {
-                            LtlTopImageUrl.Text =
+                            ltlTopImageUrl.Text =
                                 $@"<img id=""preview_topImageUrl"" src=""{PageUtility.ParseNavigationUrl(
                                     PublishmentSystemInfo, appointmentItemInfo.TopImageUrl)}"" width=""370"" align=""middle"" />";
                         }
                         if (!string.IsNullOrEmpty(appointmentItemInfo.MapAddress))
                         { 
-                            LtlMap.Text =
-                                $@"<iframe style=""width:100%;height:100%;background-color:#ffffff;margin-bottom:15px;"" scrolling=""auto"" frameborder=""0"" width=""100%"" height=""100%"" src=""{MapManager.GetMapUrl(PublishmentSystemInfo, TbMapAddress.Text)}""></iframe>";
+                            ltlMap.Text =
+                                $@"<iframe style=""width:100%;height:100%;background-color:#ffffff;margin-bottom:15px;"" scrolling=""auto"" frameborder=""0"" width=""100%"" height=""100%"" src=""{MapManager.GetMapUrl(PublishmentSystemInfo, tbMapAddress.Text)}""></iframe>";
                         }
                         if (!string.IsNullOrEmpty(appointmentItemInfo.ImageUrlCollection))
                         { 
@@ -155,9 +155,9 @@ namespace SiteServer.BackgroundPages.WeiXin
 addImage('{0}','{1}');
 ", appointmentItemInfo.ImageUrlCollection, appointmentItemInfo.LargeImageUrlCollection);
 
-                            LtlScript.Text = $@"
+                            ltlScript.Text = $@"
 $(document).ready(function(){{
-	{scriptBuilder}
+	{scriptBuilder.ToString()}
 }});
 ";
                         }
@@ -165,7 +165,7 @@ $(document).ready(function(){{
                 }
              }
 
-           // this.btnAddImageUrl.Attributes.Add("onclick", Modal.AppointmentItemPhotoUpload.GetOpenWindowStringToAdd(base.PublishmentSystemId, this.imageUrlCollection.Value));
+           // this.btnAddImageUrl.Attributes.Add("onclick", Modal.AppointmentItemPhotoUpload.GetOpenWindowStringToAdd(base.PublishmentSystemID, this.imageUrlCollection.Value));
          }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -174,49 +174,49 @@ $(document).ready(function(){{
             {
                 var isAdd = false;
                 var appointmentItemInfo = new AppointmentItemInfo();
-                appointmentItemInfo.PublishmentSystemId = PublishmentSystemId;
-                if (_appointmentItemId > 0)
+                appointmentItemInfo.PublishmentSystemID = PublishmentSystemId;
+                if (appointmentItemID > 0)
                 {
-                    appointmentItemInfo = DataProviderWx.AppointmentItemDao.GetItemInfo(_appointmentItemId);
+                    appointmentItemInfo = DataProviderWX.AppointmentItemDAO.GetItemInfo(appointmentItemID);
                 }
 
-                appointmentItemInfo.AppointmentId = _appointmentId;
-                appointmentItemInfo.Title = TbTitle.Text;
-                appointmentItemInfo.TopImageUrl = TopImageUrl.Value;
-                appointmentItemInfo.IsDescription = CbIsDescription.Checked;
-                appointmentItemInfo.DescriptionTitle = TbDescriptionTitle.Text;
-                appointmentItemInfo.Description = TbDescription.Text;
-                appointmentItemInfo.IsImageUrl = CbIsImageUrl.Checked;
-                appointmentItemInfo.ImageUrlTitle = TbImageUrlTitle.Text;
-                appointmentItemInfo.ImageUrl = TbContentImageUrl.Text;
-                appointmentItemInfo.IsVideoUrl = CbIsVideoUrl.Checked;
-                appointmentItemInfo.VideoUrlTitle = TbVideoUrlTitle.Text;
-                appointmentItemInfo.VideoUrl = TbContentVideoUrl.Text;
-                appointmentItemInfo.IsImageUrlCollection = CbIsImageUrlCollection.Checked;
-                appointmentItemInfo.ImageUrlCollectionTitle = TbImageUrlCollectionTitle.Text;
-                appointmentItemInfo.ImageUrlCollection = ImageUrlCollection.Value;
-                appointmentItemInfo.LargeImageUrlCollection = LargeImageUrlCollection.Value;
-                appointmentItemInfo.IsMap = CbIsMap.Checked;
-                appointmentItemInfo.MapTitle = TbMapTitle.Text;
-                appointmentItemInfo.MapAddress = TbMapAddress.Text;
-                appointmentItemInfo.IsTel = CbIsTel.Checked;
-                appointmentItemInfo.TelTitle = TbTelTitle.Text;
-                appointmentItemInfo.Tel = TbTel.Text;
+                appointmentItemInfo.AppointmentID = appointmentID;
+                appointmentItemInfo.Title = tbTitle.Text;
+                appointmentItemInfo.TopImageUrl = topImageUrl.Value;
+                appointmentItemInfo.IsDescription = cbIsDescription.Checked;
+                appointmentItemInfo.DescriptionTitle = tbDescriptionTitle.Text;
+                appointmentItemInfo.Description = tbDescription.Text;
+                appointmentItemInfo.IsImageUrl = cbIsImageUrl.Checked;
+                appointmentItemInfo.ImageUrlTitle = tbImageUrlTitle.Text;
+                appointmentItemInfo.ImageUrl = tbContentImageUrl.Text;
+                appointmentItemInfo.IsVideoUrl = cbIsVideoUrl.Checked;
+                appointmentItemInfo.VideoUrlTitle = tbVideoUrlTitle.Text;
+                appointmentItemInfo.VideoUrl = tbContentVideoUrl.Text;
+                appointmentItemInfo.IsImageUrlCollection = cbIsImageUrlCollection.Checked;
+                appointmentItemInfo.ImageUrlCollectionTitle = tbImageUrlCollectionTitle.Text;
+                appointmentItemInfo.ImageUrlCollection = imageUrlCollection.Value;
+                appointmentItemInfo.LargeImageUrlCollection = largeImageUrlCollection.Value;
+                appointmentItemInfo.IsMap = cbIsMap.Checked;
+                appointmentItemInfo.MapTitle = tbMapTitle.Text;
+                appointmentItemInfo.MapAddress = tbMapAddress.Text;
+                appointmentItemInfo.IsTel = cbIsTel.Checked;
+                appointmentItemInfo.TelTitle = tbTelTitle.Text;
+                appointmentItemInfo.Tel = tbTel.Text;
 
-                if (_appointmentItemId > 0)
+                if (appointmentItemID > 0)
                 {
-                    DataProviderWx.AppointmentItemDao.Update(appointmentItemInfo);
-                    Body.AddSiteLog(PublishmentSystemId, "修改预约项目", $"预约项目:{TbTitle.Text}");
+                    DataProviderWX.AppointmentItemDAO.Update(appointmentItemInfo);
+                    Body.AddLog(PublishmentSystemId, "修改预约项目", $"预约项目:{tbTitle.Text}");
                 }
                 else
                 {
                     isAdd = true;
-                    _appointmentItemId = DataProviderWx.AppointmentItemDao.Insert(appointmentItemInfo);
-                    Body.AddSiteLog(PublishmentSystemId, "新增预约项目", $"预约项目:{TbTitle.Text}");
+                    appointmentItemID = DataProviderWX.AppointmentItemDAO.Insert(appointmentItemInfo);
+                    Body.AddLog(PublishmentSystemId, "新增预约项目", $"预约项目:{tbTitle.Text}");
                 }
 
                 string scripts =
-                    $"window.parent.addItem('{TbTitle.Text}', '{TbMapAddress.Text}','{TbTel.Text}','{PublishmentSystemId}','{_appointmentId}','{_appointmentItemId}','{isAdd}');";
+                    $"window.parent.addItem('{tbTitle.Text}', '{tbMapAddress.Text}','{tbTel.Text}','{PublishmentSystemId}','{appointmentID}','{appointmentItemID}','{isAdd.ToString()}');";
                 PageUtils.CloseModalPageWithoutRefresh(Page, scripts);
             }
             catch (Exception ex)
@@ -229,8 +229,8 @@ $(document).ready(function(){{
         {
             if (Page.IsPostBack && Page.IsValid)
             { 
-                LtlMap.Text =
-                    $@"<iframe style=""width:100%;height:100%;background-color:#ffffff;margin-bottom:15px;"" scrolling=""auto"" frameborder=""0"" width=""100%"" height=""100%"" src=""{MapManager.GetMapUrl(PublishmentSystemInfo, TbMapAddress.Text)}""></iframe>";
+                ltlMap.Text =
+                    $@"<iframe style=""width:100%;height:100%;background-color:#ffffff;margin-bottom:15px;"" scrolling=""auto"" frameborder=""0"" width=""100%"" height=""100%"" src=""{MapManager.GetMapUrl(PublishmentSystemInfo, tbMapAddress.Text)}""></iframe>";
             }
         }
        

@@ -6,9 +6,9 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum EMenuDisplayType
 	{
-		UseChildrenNodeToDisplay,	//æ˜¾ç¤ºæ­¤æ ç›®çš„å­æ ç›®
-		UseNodeGroupToDisplay,		//æ˜¾ç¤ºå±äºæ ç›®ç»„ä¸­çš„æ ç›®
-		Both						//æ˜¾ç¤ºåŒæ—¶æ»¡è¶³ä»¥ä¸Šä¸¤æ¡ä»¶çš„æ ç›®
+		UseChildrenNodeToDisplay,	//ÏÔÊ¾´ËÀ¸Ä¿µÄ×ÓÀ¸Ä¿
+		UseNodeGroupToDisplay,		//ÏÔÊ¾ÊôÓÚÀ¸Ä¿×éÖĞµÄÀ¸Ä¿
+		Both						//ÏÔÊ¾Í¬Ê±Âú×ãÒÔÉÏÁ½Ìõ¼şµÄÀ¸Ä¿
 	}
 
 	public class EMenuDisplayTypeUtils
@@ -37,15 +37,15 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
 			if (type == EMenuDisplayType.UseChildrenNodeToDisplay)
 			{
-				return "æ˜¾ç¤ºæ­¤æ ç›®çš„å­æ ç›®";
+				return "ÏÔÊ¾´ËÀ¸Ä¿µÄ×ÓÀ¸Ä¿";
 			}
 			else if (type == EMenuDisplayType.UseNodeGroupToDisplay)
 			{
-				return "æ˜¾ç¤ºå±äºæ ç›®ç»„ä¸­çš„æ ç›®";
+				return "ÏÔÊ¾ÊôÓÚÀ¸Ä¿×éÖĞµÄÀ¸Ä¿";
 			}
 			else if (type == EMenuDisplayType.Both)
 			{
-				return "æ˜¾ç¤ºåŒæ—¶æ»¡è¶³ä»¥ä¸Šä¸¤æ¡ä»¶çš„æ ç›®";
+				return "ÏÔÊ¾Í¬Ê±Âú×ãÒÔÉÏÁ½Ìõ¼şµÄÀ¸Ä¿";
 			}
 			else
 			{

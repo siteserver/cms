@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+using System.Collections.Specialized;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages
         }
 
         private int _publishmentSystemId = -1;
-        public virtual int PublishmentSystemId
+        public int PublishmentSystemId
         {
             get
             {
@@ -65,12 +65,12 @@ namespace SiteServer.BackgroundPages
 
         public void BreadCrumbWithItemTitle(string leftMenuId, string leftSubMenuId, string pageTitle, string itemTitle, string permission)
         {
-            if (LtlBreadCrumb != null)
+            if (ltlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
                 var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
                 var leftSubTitle = AppManager.GetLeftSubMenuName(leftSubMenuId);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdManagement, string.Empty, leftMenuId, leftTitle, leftSubMenuId, leftSubTitle, pageUrl, pageTitle, itemTitle);
+                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdManagement, string.Empty, leftMenuId, leftTitle, leftSubMenuId, leftSubTitle, pageUrl, pageTitle, itemTitle);
             }
 
             if (!string.IsNullOrEmpty(permission))

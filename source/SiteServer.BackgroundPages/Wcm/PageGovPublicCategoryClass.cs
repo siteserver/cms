@@ -14,11 +14,11 @@ namespace SiteServer.BackgroundPages.Wcm
         public DataGrid dgContents;
         public Button AddButton;
 
-        public static string GetRedirectUrl(int siteId)
+        public static string GetRedirectUrl(int publishmentSystemId)
         {
             return PageUtils.GetWcmUrl(nameof(PageGovPublicCategoryClass), new NameValueCollection
             {
-                {"siteId", siteId.ToString()}
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
             });
         }
 
@@ -104,7 +104,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 hlUpLinkButton.NavigateUrl = PageUtils.GetWcmUrl(nameof(PageGovPublicCategoryClass),
                     new NameValueCollection
                     {
-                        {"siteId", PublishmentSystemId.ToString()},
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"ClassCode", classCode},
                         {"Up", true.ToString()}
                     });
@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 hlDownLinkButton.NavigateUrl = PageUtils.GetWcmUrl(nameof(PageGovPublicCategoryClass),
                     new NameValueCollection
                     {
-                        {"siteId", PublishmentSystemId.ToString()},
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"ClassCode", classCode},
                         {"Down", true.ToString()}
                     });
@@ -125,7 +125,7 @@ namespace SiteServer.BackgroundPages.Wcm
                 {
                     var urlDelete = PageUtils.GetWcmUrl(nameof(PageGovPublicCategoryClass), new NameValueCollection
                     {
-                        {"siteId", PublishmentSystemId.ToString()},
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"ClassCode", classCode},
                         {"Delete", true.ToString()}
                     });

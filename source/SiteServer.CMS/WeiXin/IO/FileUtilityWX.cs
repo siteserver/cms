@@ -21,7 +21,7 @@ namespace SiteServer.CMS.WeiXin.IO
 
         public static void CreateWeiXinContent(PublishmentSystemInfo publishmentSystemInfo, int keywordID, int resourceID)
         {
-            var keywordInfo = DataProviderWx.KeywordDao.GetKeywordInfo(keywordID);
+            var keywordInfo = DataProviderWX.KeywordDAO.GetKeywordInfo(keywordID);
 
             if (keywordInfo != null)
             {
@@ -31,7 +31,7 @@ namespace SiteServer.CMS.WeiXin.IO
 
                 var builder = new StringBuilder(FileUtils.ReadText(templateFilePath, ECharset.utf_8));
 
-                var resourceInfo = DataProviderWx.KeywordResourceDao.GetResourceInfo(resourceID);
+                var resourceInfo = DataProviderWX.KeywordResourceDAO.GetResourceInfo(resourceID);
                 if (resourceInfo != null)
                 {
                     builder.Replace("{serviceUrl}", serviceUrl);

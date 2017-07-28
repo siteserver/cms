@@ -6,10 +6,10 @@ namespace BaiRong.Core.Model.Enumerations
 
     public enum EStatictisXType
     {
-        Hour,          //å°æ—¶
-        Day,            //æ—¥
-        Month,       //æœˆ
-        Year,           //å¹´
+        Hour,          //Ğ¡Ê±
+        Day,            //ÈÕ
+        Month,       //ÔÂ
+        Year,           //Äê
     }
 
     public class EStatictisXTypeUtils
@@ -42,19 +42,19 @@ namespace BaiRong.Core.Model.Enumerations
         {
             if (type == EStatictisXType.Hour)
             {
-                return "æ—¶";
+                return "Ê±";
             }
             else if (type == EStatictisXType.Day)
             {
-                return "æ—¥";
+                return "ÈÕ";
             }
             else if (type == EStatictisXType.Month)
             {
-                return "æœˆ";
+                return "ÔÂ";
             }
             else if (type == EStatictisXType.Year)
             {
-                return "å¹´";
+                return "Äê";
             }
             else
             {

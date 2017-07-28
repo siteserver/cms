@@ -4,7 +4,7 @@ using System.Web.UI.WebControls;
 namespace BaiRong.Core.Model.Enumerations
 {
     /// <summary>
-    /// æ¨é€ç±»å‹
+    /// ÍÆËÍÀàĞÍ
     /// </summary>
     public enum ESubscribePushType
     {
@@ -34,11 +34,11 @@ namespace BaiRong.Core.Model.Enumerations
         {
             if (type == ESubscribePushType.ManualPush)
             {
-                return "æ‰‹åŠ¨æ¨é€";
+                return "ÊÖ¶¯ÍÆËÍ";
             }
             else if (type == ESubscribePushType.TimedPush)
             {
-                return "å®šæ—¶æ¨é€";
+                return "¶¨Ê±ÍÆËÍ";
             } 
             else
             {

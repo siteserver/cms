@@ -18,6 +18,25 @@ namespace SiteServer.CMS.Core
         {
         }
 
+        public static string GetValidateHtmlString(TableStyleInfo styleInfo, out string validateAttributes)
+        {
+            var builder = new StringBuilder();
+
+            validateAttributes = string.Empty;
+
+            if (styleInfo.Additional.IsValidate && !EInputTypeUtils.Equals(styleInfo.InputType, EInputType.TextEditor))
+            {
+                validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+
+                builder.Append(
+                    $@"&nbsp;<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span>");
+                builder.Append($@"
+<script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>
+");
+            }
+            return builder.ToString();
+        }
+
         public static string GetContentByTableStyle(string content, PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, TableStyleInfo styleInfo)
         {
             if (!string.IsNullOrEmpty(content))
@@ -69,16 +88,33 @@ namespace SiteServer.CMS.Core
             {
                 var selectedTexts = new ArrayList();
                 var selectedValues = TranslateUtils.StringCollectionToStringList(content);
-                var styleItems = styleInfo.StyleItems ??
-                                 BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                var styleItems = styleInfo.StyleItems;
+                if (styleItems == null)
+                {
+                    styleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                }
                 foreach (var itemInfo in styleItems)
                 {
                     if (selectedValues.Contains(itemInfo.ItemValue))
                     {
-                        selectedTexts.Add(isStlEntity ? itemInfo.ItemValue : itemInfo.ItemTitle);
+                        if (isStlEntity)
+                        {
+                            selectedTexts.Add(itemInfo.ItemValue);
+                        }
+                        else
+                        {
+                            selectedTexts.Add(itemInfo.ItemTitle);
+                        }
                     }
                 }
-                parsedContent = separator == null ? TranslateUtils.ObjectCollectionToString(selectedTexts) : TranslateUtils.ObjectCollectionToString(selectedTexts, separator);
+                if (separator == null)
+                {
+                    parsedContent = TranslateUtils.ObjectCollectionToString(selectedTexts);
+                }
+                else
+                {
+                    parsedContent = TranslateUtils.ObjectCollectionToString(selectedTexts, separator);
+                }
             }
             //else if (styleInfo.InputType == EInputType.TextArea)
             //{
@@ -91,15 +127,15 @@ namespace SiteServer.CMS.Core
             }
             else if (inputType == EInputType.Image)
             {
-                parsedContent = GetImageOrFlashHtml(publishmentSystemInfo, parsedContent, attributes, isStlEntity);
+                parsedContent = InputParserUtility.GetImageOrFlashHtml(publishmentSystemInfo, parsedContent, attributes, isStlEntity);
             }
             else if (inputType == EInputType.Video)
             {
-                parsedContent = GetVideoHtml(publishmentSystemInfo, parsedContent, attributes, isStlEntity);
+                parsedContent = InputParserUtility.GetVideoHtml(publishmentSystemInfo, parsedContent, attributes, isStlEntity);
             }
             else if (inputType == EInputType.File)
             {
-                parsedContent = GetFileHtmlWithoutCount(publishmentSystemInfo, parsedContent, attributes, innerXml, isStlEntity);
+                parsedContent = InputParserUtility.GetFileHtmlWithoutCount(publishmentSystemInfo, parsedContent, attributes, innerXml, isStlEntity);
             }
 
             return parsedContent;
@@ -140,16 +176,33 @@ namespace SiteServer.CMS.Core
             {
                 var selectedTexts = new ArrayList();
                 var selectedValues = TranslateUtils.StringCollectionToStringList(value);
-                var styleItems = styleInfo.StyleItems ??
-                                 BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                var styleItems = styleInfo.StyleItems;
+                if (styleItems == null)
+                {
+                    styleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                }
                 foreach (var itemInfo in styleItems)
                 {
                     if (selectedValues.Contains(itemInfo.ItemValue))
                     {
-                        selectedTexts.Add(isStlEntity ? itemInfo.ItemValue : itemInfo.ItemTitle);
+                        if (isStlEntity)
+                        {
+                            selectedTexts.Add(itemInfo.ItemValue);
+                        }
+                        else
+                        {
+                            selectedTexts.Add(itemInfo.ItemTitle);
+                        }
                     }
                 }
-                parsedContent = separator == null ? TranslateUtils.ObjectCollectionToString(selectedTexts) : TranslateUtils.ObjectCollectionToString(selectedTexts, separator);
+                if (separator == null)
+                {
+                    parsedContent = TranslateUtils.ObjectCollectionToString(selectedTexts);
+                }
+                else
+                {
+                    parsedContent = TranslateUtils.ObjectCollectionToString(selectedTexts, separator);
+                }
             }
             else if (inputType == EInputType.TextEditor)
             {
@@ -160,7 +213,7 @@ namespace SiteServer.CMS.Core
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetImageOrFlashHtml(publishmentSystemInfo, value, attributes, isStlEntity);
+                    parsedContent = InputParserUtility.GetImageOrFlashHtml(publishmentSystemInfo, value, attributes, isStlEntity);
                 }
                 else
                 {
@@ -173,7 +226,7 @@ namespace SiteServer.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = GetImageOrFlashHtml(publishmentSystemInfo, extendValue, attributes, isStlEntity);
+                                parsedContent = InputParserUtility.GetImageOrFlashHtml(publishmentSystemInfo, extendValue, attributes, isStlEntity);
                                 break;
                             }
                             index++;
@@ -185,7 +238,7 @@ namespace SiteServer.CMS.Core
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetVideoHtml(publishmentSystemInfo, value, attributes, isStlEntity);
+                    parsedContent = InputParserUtility.GetVideoHtml(publishmentSystemInfo, value, attributes, isStlEntity);
                 }
                 else
                 {
@@ -198,7 +251,7 @@ namespace SiteServer.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = GetVideoHtml(publishmentSystemInfo, extendValue, attributes, isStlEntity);
+                                parsedContent = InputParserUtility.GetVideoHtml(publishmentSystemInfo, extendValue, attributes, isStlEntity);
                                 break;
                             }
                             index++;
@@ -210,7 +263,7 @@ namespace SiteServer.CMS.Core
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetFileHtmlWithoutCount(publishmentSystemInfo, value, attributes, innerXml, isStlEntity);
+                    parsedContent = InputParserUtility.GetFileHtmlWithoutCount(publishmentSystemInfo, value, attributes, innerXml, isStlEntity);
                 }
                 else
                 {
@@ -223,7 +276,7 @@ namespace SiteServer.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = GetFileHtmlWithoutCount(publishmentSystemInfo, extendValue, attributes, innerXml, isStlEntity);
+                                parsedContent = InputParserUtility.GetFileHtmlWithoutCount(publishmentSystemInfo, extendValue, attributes, innerXml, isStlEntity);
                                 break;
                             }
                             index++;
@@ -278,10 +331,7 @@ namespace SiteServer.CMS.Core
                                 {
                                     width = int.Parse(attributes["width"]);
                                 }
-                                catch
-                                {
-                                    // ignored
-                                }
+                                catch { }
                             }
                             if (!string.IsNullOrEmpty(attributes["height"]))
                             {
@@ -289,10 +339,7 @@ namespace SiteServer.CMS.Core
                                 {
                                     height = int.Parse(attributes["height"]);
                                 }
-                                catch
-                                {
-                                    // ignored
-                                }
+                                catch { }
                             }
                         }
                         retval = $@"
@@ -343,7 +390,14 @@ namespace SiteServer.CMS.Core
                     var stlAnchor = new HtmlAnchor();
                     ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
                     stlAnchor.HRef = ActionsDownload.GetUrl(publishmentSystemInfo.Additional.ApiUrl, publishmentSystemInfo.PublishmentSystemId, nodeId, contentId, fileUrl);
-                    stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
+                    if (string.IsNullOrEmpty(innerXml))
+                    {
+                        stlAnchor.InnerHtml = PageUtils.GetFileNameFromUrl(fileUrl);
+                    }
+                    else
+                    {
+                        stlAnchor.InnerHtml = innerXml;
+                    }
 
                     retval = ControlUtils.GetControlRenderHtml(stlAnchor);
                 }
@@ -367,7 +421,14 @@ namespace SiteServer.CMS.Core
                         var stlAnchor = new HtmlAnchor();
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
                         stlAnchor.HRef = ActionsDownload.GetUrl(publishmentSystemInfo.Additional.ApiUrl, publishmentSystemInfo.PublishmentSystemId, fileUrl);
-                        stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
+                        if (string.IsNullOrEmpty(innerXml))
+                        {
+                            stlAnchor.InnerHtml = PageUtils.GetFileNameFromUrl(fileUrl);
+                        }
+                        else
+                        {
+                            stlAnchor.InnerHtml = innerXml;
+                        }
 
                         retval = ControlUtils.GetControlRenderHtml(stlAnchor);
                     }

@@ -161,12 +161,13 @@ function checkFormValueById(formId) {
     var myArray = document.getElementById(formId).getElementsByTagName('*');
 
     //设置提交按钮为不可用
-    var btnSubmit = document.getElementById("input-submit");
+    var btnSubmit = document.getElementById("Submit");
     if (!!btnSubmit) {
         if (btnSubmit.hasAttribute("clicking")) {
             return false;
         } else {
             btnSubmit.setAttribute("clicking", "true");
+            btnSubmit.setAttribute("class", "btn");
         }
     }
 
@@ -191,7 +192,9 @@ function checkFormValueById(formId) {
     //如果检测不通过，设置提交按钮为可用
     if (!isChecked) {
         btnSubmit.removeAttribute("clicking");
+        btnSubmit.setAttribute("class", "btn btn-primary");
     }
+
 
     return isChecked;
 }

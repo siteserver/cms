@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
 
-namespace BaiRong.Model
+namespace BaiRong.Core.Model.Enumerations
 {
 	
 	public enum EVoteRestrictType
 	{
-		NoRestrict,				//允许重复投票
-		RestrictOneDay,			//一天内禁止同一IP重复投票
-		RestrictOnlyOnce,		//每台机只能投一票
-        RestrictUser    		//每用户只能投一票
+		NoRestrict,				//�����ظ�ͶƱ
+		RestrictOneDay,			//һ���ڽ�ֹͬһIP�ظ�ͶƱ
+		RestrictOnlyOnce,		//ÿ̨��ֻ��ͶһƱ
+        RestrictUser    		//ÿ�û�ֻ��ͶһƱ
 	}
 
 	public class EVoteRestrictTypeUtils
@@ -43,19 +42,19 @@ namespace BaiRong.Model
 		{
 			if (type == EVoteRestrictType.NoRestrict)
 			{
-				return "允许重复投票";
+				return "�����ظ�ͶƱ";
 			}
 			else if (type == EVoteRestrictType.RestrictOneDay)
 			{
-				return "一天内禁止重复投票";
+				return "һ���ڽ�ֹ�ظ�ͶƱ";
 			}
 			else if (type == EVoteRestrictType.RestrictOnlyOnce)
 			{
-				return "每台机只能投一票";
+				return "ÿ̨��ֻ��ͶһƱ";
             }
             else if (type == EVoteRestrictType.RestrictUser)
             {
-                return "每用户只能投一票";
+                return "ÿ�û�ֻ��ͶһƱ";
             }
 			else
 			{
@@ -65,7 +64,7 @@ namespace BaiRong.Model
 
 		public static EVoteRestrictType GetEnumType(string typeStr)
 		{
-			EVoteRestrictType retval = EVoteRestrictType.NoRestrict;
+			var retval = EVoteRestrictType.NoRestrict;
 
 			if (Equals(EVoteRestrictType.NoRestrict, typeStr))
 			{
@@ -104,7 +103,7 @@ namespace BaiRong.Model
 
 		public static ListItem GetListItem(EVoteRestrictType type, bool selected)
 		{
-			ListItem item = new ListItem(GetText(type), GetValue(type));
+			var item = new ListItem(GetText(type), GetValue(type));
 			if (selected)
 			{
 				item.Selected = true;

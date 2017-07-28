@@ -17,35 +17,35 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalTableStyleAdd : BasePageCms
     {
-        public TextBox TbAttributeName;
-        public TextBox TbDisplayName;
-        public TextBox TbHelpText;
-        public RadioButtonList RblIsVisible;
-        public RadioButtonList RblIsSingleLine;
-        public PlaceHolder PhIsFormatString;
-        public DropDownList DdlInputType;
-        public RadioButtonList RblIsFormatString;
-        public TextBox TbDefaultValue;
-        public Control SpanDateTip;
-        public DropDownList DdlIsHorizontal;
-        public TextBox TbColumns;
-        public DropDownList DdlRelatedFieldId;
-        public DropDownList DdlRelatedFieldStyle;
-        public TextBox TbHeight;
-        public TextBox TbWidth;
+        public TextBox tbAttributeName;
+        public TextBox tbDisplayName;
+        public TextBox tbHelpText;
+        public RadioButtonList rblIsVisible;
+        public RadioButtonList rblIsSingleLine;
+        public PlaceHolder phIsFormatString;
+        public DropDownList ddlInputType;
+        public RadioButtonList rblIsFormatString;
+        public TextBox tbDefaultValue;
+        public Control DateTip;
+        public DropDownList ddlIsHorizontal;
+        public TextBox tbColumns;
+        public DropDownList ddlRelatedFieldID;
+        public DropDownList ddlRelatedFieldStyle;
+        public TextBox tbHeight;
+        public TextBox tbWidth;
 
-        public DropDownList DdlItemType;
-        public PlaceHolder PhItemCount;
-        public TextBox TbItemCount;
-        public TextBox TbItemValues;
-        public Repeater RptItems;
+        public DropDownList ddlItemType;
+        public PlaceHolder phItemCount;
+        public TextBox tbItemCount;
+        public TextBox tbItemValues;
+        public Repeater MyRepeater;
 
-        public Control TrRepeat;
-        public Control TrRelatedField;
-        public Control TrHeightAndWidth;
-        public Control TrItemsType;
-        public Control TrItemsRapid;
-        public Control TrItems;
+        public Control rowRepeat;
+        public Control rowRelatedField;
+        public Control rowHeightAndWidth;
+        public Control rowItemsType;
+        public Control rowItemsRapid;
+        public Control rowItems;
 
         private int _tableStyleId;
         private List<int> _relatedIdentities;
@@ -88,63 +88,63 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                RblIsVisible.Items[0].Value = true.ToString();
-                RblIsVisible.Items[1].Value = false.ToString();
+                rblIsVisible.Items[0].Value = true.ToString();
+                rblIsVisible.Items[1].Value = false.ToString();
 
-                RblIsSingleLine.Items[0].Value = true.ToString();
-                RblIsSingleLine.Items[1].Value = false.ToString();
+                rblIsSingleLine.Items[0].Value = true.ToString();
+                rblIsSingleLine.Items[1].Value = false.ToString();
 
-                RblIsFormatString.Items[0].Value = true.ToString();
-                RblIsFormatString.Items[1].Value = false.ToString();
+                rblIsFormatString.Items[0].Value = true.ToString();
+                rblIsFormatString.Items[1].Value = false.ToString();
 
-                DdlIsHorizontal.Items[0].Value = true.ToString();
-                DdlIsHorizontal.Items[1].Value = false.ToString();
+                ddlIsHorizontal.Items[0].Value = true.ToString();
+                ddlIsHorizontal.Items[1].Value = false.ToString();
 
-                EInputTypeUtils.AddListItems(DdlInputType);
+                EInputTypeUtils.AddListItems(ddlInputType);
 
                 var arraylist = DataProvider.RelatedFieldDao.GetRelatedFieldInfoArrayList(PublishmentSystemId);
                 foreach (RelatedFieldInfo rfInfo in arraylist)
                 {
                     var listItem = new ListItem(rfInfo.RelatedFieldName, rfInfo.RelatedFieldID.ToString());
-                    DdlRelatedFieldId.Items.Add(listItem);
+                    ddlRelatedFieldID.Items.Add(listItem);
                 }
 
-                ERelatedFieldStyleUtils.AddListItems(DdlRelatedFieldStyle);
+                ERelatedFieldStyleUtils.AddListItems(ddlRelatedFieldStyle);
 
                 if (_styleInfo.TableStyleId != 0 || _attributeName == "IsHot" || _attributeName == "IsRecommend" || _attributeName == "IsColor" || _attributeName == "IsTop")
                 {
-                    DdlItemType.SelectedValue = false.ToString();
+                    ddlItemType.SelectedValue = false.ToString();
                 }
                 else
                 {
-                    DdlItemType.SelectedValue = true.ToString();
+                    ddlItemType.SelectedValue = true.ToString();
                 }
 
-                TbAttributeName.Text = _styleInfo.AttributeName;
-                TbDisplayName.Text = _styleInfo.DisplayName;
-                TbHelpText.Text = _styleInfo.HelpText;
-                ControlUtils.SelectListItems(DdlInputType, _styleInfo.InputType);
-                ControlUtils.SelectListItems(RblIsVisible, _styleInfo.IsVisible.ToString());
-                ControlUtils.SelectListItems(RblIsSingleLine, _styleInfo.IsSingleLine.ToString());
-                ControlUtils.SelectListItems(RblIsFormatString, _styleInfo.Additional.IsFormatString.ToString());
-                TbDefaultValue.Text = _styleInfo.DefaultValue;
-                DdlIsHorizontal.SelectedValue = _styleInfo.IsHorizontal.ToString();
-                TbColumns.Text = _styleInfo.Additional.Columns.ToString();
+                tbAttributeName.Text = _styleInfo.AttributeName;
+                tbDisplayName.Text = _styleInfo.DisplayName;
+                tbHelpText.Text = _styleInfo.HelpText;
+                ControlUtils.SelectListItems(ddlInputType, _styleInfo.InputType);
+                ControlUtils.SelectListItems(rblIsVisible, _styleInfo.IsVisible.ToString());
+                ControlUtils.SelectListItems(rblIsSingleLine, _styleInfo.IsSingleLine.ToString());
+                ControlUtils.SelectListItems(rblIsFormatString, _styleInfo.Additional.IsFormatString.ToString());
+                tbDefaultValue.Text = _styleInfo.DefaultValue;
+                ddlIsHorizontal.SelectedValue = _styleInfo.IsHorizontal.ToString();
+                tbColumns.Text = _styleInfo.Additional.Columns.ToString();
 
-                ControlUtils.SelectListItems(DdlRelatedFieldId, _styleInfo.Additional.RelatedFieldId.ToString());
-                ControlUtils.SelectListItems(DdlRelatedFieldStyle, _styleInfo.Additional.RelatedFieldStyle);
+                ControlUtils.SelectListItems(ddlRelatedFieldID, _styleInfo.Additional.RelatedFieldId.ToString());
+                ControlUtils.SelectListItems(ddlRelatedFieldStyle, _styleInfo.Additional.RelatedFieldStyle);
 
-                TbHeight.Text = _styleInfo.Additional.Height.ToString();
-                TbWidth.Text = _styleInfo.Additional.Width;
+                tbHeight.Text = _styleInfo.Additional.Height.ToString();
+                tbWidth.Text = _styleInfo.Additional.Width;
 
                 var styleItems = _styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
-                TbItemCount.Text = styleItems.Count.ToString();
-                RptItems.DataSource = TableStyleManager.GetStyleItemDataSet(styleItems.Count, styleItems);
-                RptItems.ItemDataBound += MyRepeater_ItemDataBound;
-                RptItems.DataBind();
-                if (RptItems.Items.Count > 0)
+                tbItemCount.Text = styleItems.Count.ToString();
+                MyRepeater.DataSource = TableStyleManager.GetStyleItemDataSet(styleItems.Count, styleItems);
+                MyRepeater.ItemDataBound += MyRepeater_ItemDataBound;
+                MyRepeater.DataBind();
+                if (MyRepeater.Items.Count > 0)
                 {
-                    DdlItemType.SelectedValue = false.ToString();
+                    ddlItemType.SelectedValue = false.ToString();
                 }
             }
 
@@ -165,55 +165,55 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void ReFresh(object sender, EventArgs e)
         {
-            TrRelatedField.Visible = TrHeightAndWidth.Visible = SpanDateTip.Visible = TrItemsType.Visible = TrItemsRapid.Visible = TrItems.Visible = TrRepeat.Visible = PhItemCount.Visible = PhIsFormatString.Visible = false;
+            rowRelatedField.Visible = rowHeightAndWidth.Visible = DateTip.Visible = rowItemsType.Visible = rowItemsRapid.Visible = rowItems.Visible = rowRepeat.Visible = phItemCount.Visible = phIsFormatString.Visible = false;
 
             if (!string.IsNullOrEmpty(_attributeName))
             {
-                TbAttributeName.Enabled = false;
+                tbAttributeName.Enabled = false;
             }
 
-            var inputType = EInputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
+            var inputType = EInputTypeUtils.GetEnumType(ddlInputType.SelectedValue);
             if (inputType == EInputType.CheckBox || inputType == EInputType.Radio || inputType == EInputType.SelectMultiple || inputType == EInputType.SelectOne)
             {
-                TrItemsType.Visible = true;
-                var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
+                rowItemsType.Visible = true;
+                var isRapid = TranslateUtils.ToBool(ddlItemType.SelectedValue);
                 if (isRapid)
                 {
-                    TrItemsRapid.Visible = true;
-                    PhItemCount.Visible = false;
-                    TrItems.Visible = false;
+                    rowItemsRapid.Visible = true;
+                    phItemCount.Visible = false;
+                    rowItems.Visible = false;
                 }
                 else
                 {
-                    TrItemsRapid.Visible = false;
-                    PhItemCount.Visible = true;
-                    TrItems.Visible = true;
+                    rowItemsRapid.Visible = false;
+                    phItemCount.Visible = true;
+                    rowItems.Visible = true;
                 }
                 if (inputType == EInputType.CheckBox || inputType == EInputType.Radio)
                 {
-                    TrRepeat.Visible = true;
+                    rowRepeat.Visible = true;
                 }
             }
             else if (inputType == EInputType.TextEditor)
             {
-                TrHeightAndWidth.Visible = true;
+                rowHeightAndWidth.Visible = true;
             }
             else if (inputType == EInputType.TextArea)
             {
-                TrHeightAndWidth.Visible = true;
+                rowHeightAndWidth.Visible = true;
             }
             else if (inputType == EInputType.Text)
             {
-                PhIsFormatString.Visible = true;
-                TrHeightAndWidth.Visible = true;
+                phIsFormatString.Visible = true;
+                rowHeightAndWidth.Visible = true;
             }
             else if (inputType == EInputType.Date || inputType == EInputType.DateTime)
             {
-                SpanDateTip.Visible = true;
+                DateTip.Visible = true;
             }
             else if (inputType == EInputType.RelatedField)
             {
-                TrRelatedField.Visible = true;
+                rowRelatedField.Visible = true;
             }
         }
 
@@ -221,7 +221,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack)
             {
-                var count = TranslateUtils.ToInt(TbItemCount.Text);
+                var count = TranslateUtils.ToInt(tbItemCount.Text);
                 if (count != 0)
                 {
                     List<TableStyleItemInfo> styleItems = null;
@@ -229,8 +229,8 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         styleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
                     }
-                    RptItems.DataSource = TableStyleManager.GetStyleItemDataSet(count, styleItems);
-                    RptItems.DataBind();
+                    MyRepeater.DataSource = TableStyleManager.GetStyleItemDataSet(count, styleItems);
+                    MyRepeater.DataBind();
                 }
                 else
                 {
@@ -244,14 +244,14 @@ namespace SiteServer.BackgroundPages.Cms
         {
             bool isChanged;
 
-            var inputType = EInputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
+            var inputType = EInputTypeUtils.GetEnumType(ddlInputType.SelectedValue);
 
             if (inputType == EInputType.Radio || inputType == EInputType.SelectMultiple || inputType == EInputType.SelectOne)
             {
-                var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
+                var isRapid = TranslateUtils.ToBool(ddlItemType.SelectedValue);
                 if (!isRapid)
                 {
-                    var itemCount = TranslateUtils.ToInt(TbItemCount.Text);
+                    var itemCount = TranslateUtils.ToInt(tbItemCount.Text);
                     if (itemCount == 0)
                     {
                         FailMessage("操作失败，选项数目不能为0！");
@@ -282,21 +282,21 @@ namespace SiteServer.BackgroundPages.Cms
         private bool UpdateTableStyleInfo(EInputType inputType)
         {
             var isChanged = false;
-            _styleInfo.AttributeName =TbAttributeName.Text;
-            _styleInfo.DisplayName = PageUtils.FilterXss(TbDisplayName.Text);
-            _styleInfo.HelpText = TbHelpText.Text;
-            _styleInfo.IsVisible = TranslateUtils.ToBool(RblIsVisible.SelectedValue);
-            _styleInfo.IsSingleLine = TranslateUtils.ToBool(RblIsSingleLine.SelectedValue);
+            _styleInfo.AttributeName =tbAttributeName.Text;
+            _styleInfo.DisplayName = PageUtils.FilterXss(tbDisplayName.Text);
+            _styleInfo.HelpText = tbHelpText.Text;
+            _styleInfo.IsVisible = TranslateUtils.ToBool(rblIsVisible.SelectedValue);
+            _styleInfo.IsSingleLine = TranslateUtils.ToBool(rblIsSingleLine.SelectedValue);
             _styleInfo.InputType = EInputTypeUtils.GetValue(inputType);
-            _styleInfo.DefaultValue = TbDefaultValue.Text;
-            _styleInfo.IsHorizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
+            _styleInfo.DefaultValue = tbDefaultValue.Text;
+            _styleInfo.IsHorizontal = TranslateUtils.ToBool(ddlIsHorizontal.SelectedValue);
 
-            _styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
-            _styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
-            _styleInfo.Additional.Width = TbWidth.Text;
-            _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(RblIsFormatString.SelectedValue);
-            _styleInfo.Additional.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
-            _styleInfo.Additional.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
+            _styleInfo.Additional.Columns = TranslateUtils.ToInt(tbColumns.Text);
+            _styleInfo.Additional.Height = TranslateUtils.ToInt(tbHeight.Text);
+            _styleInfo.Additional.Width = tbWidth.Text;
+            _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(rblIsFormatString.SelectedValue);
+            _styleInfo.Additional.RelatedFieldId = TranslateUtils.ToInt(ddlRelatedFieldID.SelectedValue);
+            _styleInfo.Additional.RelatedFieldStyle = ddlRelatedFieldStyle.SelectedValue;
 
             ArrayList styleItems = null;
 
@@ -304,10 +304,10 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 styleItems = new ArrayList();
 
-                var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
+                var isRapid = TranslateUtils.ToBool(ddlItemType.SelectedValue);
                 if (isRapid)
                 {
-                    var itemArrayList = TranslateUtils.StringCollectionToStringList(TbItemValues.Text);
+                    var itemArrayList = TranslateUtils.StringCollectionToStringList(tbItemValues.Text);
                     foreach (string itemValue in itemArrayList)
                     {
                         var itemInfo = new TableStyleItemInfo(0, _styleInfo.TableStyleId, itemValue, itemValue, false);
@@ -317,7 +317,7 @@ namespace SiteServer.BackgroundPages.Cms
                 else
                 {
                     var isHasSelected = false;
-                    foreach (RepeaterItem item in RptItems.Items)
+                    foreach (RepeaterItem item in MyRepeater.Items)
                     {
                         var itemTitle = (TextBox)item.FindControl("ItemTitle");
                         var itemValue = (TextBox)item.FindControl("ItemValue");
@@ -356,41 +356,41 @@ namespace SiteServer.BackgroundPages.Cms
 
             var relatedIdentity = _relatedIdentities[0];
 
-            if (TableStyleManager.IsExists(relatedIdentity, _tableName, TbAttributeName.Text))
+            if (TableStyleManager.IsExists(relatedIdentity, _tableName, tbAttributeName.Text))
             //|| TableStyleManager.IsExistsInParents(this.relatedIdentities, this.tableName, this.tbAttributeName.Text)      
             {
-                FailMessage($@"显示样式添加失败：字段名""{TbAttributeName.Text}""已存在");
+                FailMessage($@"显示样式添加失败：字段名""{tbAttributeName.Text}""已存在");
                 return false;
             }
 
-            _styleInfo = TableStyleManager.IsMetadata(_tableStyle, TbAttributeName.Text) ? TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, TbAttributeName.Text, _relatedIdentities) : new TableStyleInfo();
+            _styleInfo = TableStyleManager.IsMetadata(_tableStyle, tbAttributeName.Text) ? TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, tbAttributeName.Text, _relatedIdentities) : new TableStyleInfo();
 
             _styleInfo.RelatedIdentity = relatedIdentity;
             _styleInfo.TableName = _tableName;
-            _styleInfo.AttributeName = TbAttributeName.Text;
-            _styleInfo.DisplayName =PageUtils.FilterXss(TbDisplayName.Text);
-            _styleInfo.HelpText = TbHelpText.Text;
-            _styleInfo.IsVisible = TranslateUtils.ToBool(RblIsVisible.SelectedValue);
-            _styleInfo.IsSingleLine = TranslateUtils.ToBool(RblIsSingleLine.SelectedValue);
+            _styleInfo.AttributeName = tbAttributeName.Text;
+            _styleInfo.DisplayName =PageUtils.FilterXss(tbDisplayName.Text);
+            _styleInfo.HelpText = tbHelpText.Text;
+            _styleInfo.IsVisible = TranslateUtils.ToBool(rblIsVisible.SelectedValue);
+            _styleInfo.IsSingleLine = TranslateUtils.ToBool(rblIsSingleLine.SelectedValue);
             _styleInfo.InputType = EInputTypeUtils.GetValue(inputType);
-            _styleInfo.DefaultValue = TbDefaultValue.Text;
-            _styleInfo.IsHorizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
+            _styleInfo.DefaultValue = tbDefaultValue.Text;
+            _styleInfo.IsHorizontal = TranslateUtils.ToBool(ddlIsHorizontal.SelectedValue);
 
-            _styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
-            _styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
-            _styleInfo.Additional.Width = TbWidth.Text;
-            _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(RblIsFormatString.SelectedValue);
-            _styleInfo.Additional.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
-            _styleInfo.Additional.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
+            _styleInfo.Additional.Columns = TranslateUtils.ToInt(tbColumns.Text);
+            _styleInfo.Additional.Height = TranslateUtils.ToInt(tbHeight.Text);
+            _styleInfo.Additional.Width = tbWidth.Text;
+            _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(rblIsFormatString.SelectedValue);
+            _styleInfo.Additional.RelatedFieldId = TranslateUtils.ToInt(ddlRelatedFieldID.SelectedValue);
+            _styleInfo.Additional.RelatedFieldStyle = ddlRelatedFieldStyle.SelectedValue;
 
             if (inputType == EInputType.CheckBox || inputType == EInputType.Radio || inputType == EInputType.SelectMultiple || inputType == EInputType.SelectOne)
             {
                 _styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
-                var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
+                var isRapid = TranslateUtils.ToBool(ddlItemType.SelectedValue);
                 if (isRapid)
                 {
-                    var itemArrayList = TranslateUtils.StringCollectionToStringList(TbItemValues.Text);
+                    var itemArrayList = TranslateUtils.StringCollectionToStringList(tbItemValues.Text);
                     foreach (string itemValue in itemArrayList)
                     {
                         var itemInfo = new TableStyleItemInfo(0, _styleInfo.TableStyleId, itemValue, itemValue, false);
@@ -400,7 +400,7 @@ namespace SiteServer.BackgroundPages.Cms
                 else
                 {
                     var isHasSelected = false;
-                    foreach (RepeaterItem item in RptItems.Items)
+                    foreach (RepeaterItem item in MyRepeater.Items)
                     {
                         var itemTitle = (TextBox)item.FindControl("ItemTitle");
                         var itemValue = (TextBox)item.FindControl("ItemValue");

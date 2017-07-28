@@ -3,9 +3,11 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
 
@@ -34,7 +36,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("添加规则", PageUtils.GetWcmUrl(nameof(ModalGovPublicIdentifierRuleAdd), new NameValueCollection
             {
-                {"siteId", publishmentSystemId.ToString()}
+                {"PublishmentSystemID", publishmentSystemId.ToString()}
             }), 520, 460);
         }
 
@@ -42,7 +44,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("修改规则", PageUtils.GetWcmUrl(nameof(ModalGovPublicIdentifierRuleAdd), new NameValueCollection
             {
-                {"siteId", publishmentSystemId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RuleID", ruleId.ToString()}
             }), 520, 460);
         }

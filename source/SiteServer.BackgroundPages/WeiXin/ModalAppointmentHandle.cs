@@ -4,26 +4,27 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.WeiXin.Data;
+using SiteServer.CMS.WeiXin.IO;
 using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.WeiXin
 {
     public class ModalAppointmentHandle : BasePageCms
     { 
-        public DropDownList DdlStatus;
-        public PlaceHolder PhMessage;
-        public TextBox TbMessage;
+        public DropDownList ddlStatus;
+        public PlaceHolder phMessage;
+        public TextBox tbMessage;
 
-        private int _contentId;
-        private List<int> _contentIdList;
+        private int contentID;
+        private List<int> contentIDList;
 
-        public static string GetOpenWindowStringToSingle(int publishmentSystemId, int contentId)
+        public static string GetOpenWindowStringToSingle(int publishmentSystemId, int contentID)
         {
             return PageUtils.GetOpenWindowString("预约处理",
                 PageUtils.GetWeiXinUrl(nameof(ModalAppointmentHandle), new NameValueCollection
                 {
-                    {"PublishmentSystemId", publishmentSystemId.ToString()},
-                    {"contentID", contentId.ToString()}
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"contentID", contentID.ToString()}
                 }), 360, 380);
         }
 
@@ -32,7 +33,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             return PageUtils.GetOpenWindowStringWithCheckBoxValue("预约处理",
                 PageUtils.GetWeiXinUrl(nameof(ModalAppointmentHandle), new NameValueCollection
                 {
-                    {"PublishmentSystemId", publishmentSystemId.ToString()}
+                    {"PublishmentSystemID", publishmentSystemId.ToString()}
                 }), "IDCollection", "请选择需要处理的预约申请", 360, 380);
         }
        
@@ -40,24 +41,24 @@ namespace SiteServer.BackgroundPages.WeiXin
         {
             if (IsForbidden) return;
 
-            _contentId = Body.GetQueryInt("contentID");
-            if (_contentId == 0)
+            contentID = Body.GetQueryInt("contentID");
+            if (contentID == 0)
             {
-                _contentIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
+                contentIDList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
             }
              
             if (!IsPostBack)
             {
-                EAppointmentStatusUtils.AddListItems(DdlStatus);
-                ControlUtils.SelectListItems(DdlStatus, EAppointmentStatusUtils.GetValue(EAppointmentStatus.Agree));
+                EAppointmentStatusUtils.AddListItems(ddlStatus);
+                ControlUtils.SelectListItems(ddlStatus, EAppointmentStatusUtils.GetValue(EAppointmentStatus.Agree));
 
-                if (_contentId > 0)
+                if (contentID > 0)
                 {
-                    var contentInfo = DataProviderWx.AppointmentContentDao.GetContentInfo(_contentId);
+                    var contentInfo = DataProviderWX.AppointmentContentDAO.GetContentInfo(contentID);
                     if (contentInfo != null)
                     {
-                        DdlStatus.SelectedValue = contentInfo.Status;
-                        TbMessage.Text = contentInfo.Message;
+                        ddlStatus.SelectedValue = contentInfo.Status;
+                        tbMessage.Text = contentInfo.Message;
                     }
                 }
             }
@@ -65,14 +66,14 @@ namespace SiteServer.BackgroundPages.WeiXin
 
         public void ddlStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var status = EAppointmentStatusUtils.GetEnumType(DdlStatus.SelectedValue);
+            var status = EAppointmentStatusUtils.GetEnumType(ddlStatus.SelectedValue);
             if (status == EAppointmentStatus.Agree || status == EAppointmentStatus.Refuse)
             {
-                PhMessage.Visible = true;
+                phMessage.Visible = true;
             }
             else
             {
-                PhMessage.Visible = false;
+                phMessage.Visible = false;
             }
         }
 
@@ -80,26 +81,26 @@ namespace SiteServer.BackgroundPages.WeiXin
         {
             try
             {
-                if (_contentId > 0)
+                if (contentID > 0)
                 {
-                    var contentInfo = DataProviderWx.AppointmentContentDao.GetContentInfo(_contentId);
+                    var contentInfo = DataProviderWX.AppointmentContentDAO.GetContentInfo(contentID);
                     if (contentInfo != null)
                     {
-                        contentInfo.Status = DdlStatus.SelectedValue;
-                        contentInfo.Message = TbMessage.Text;
-                        DataProviderWx.AppointmentContentDao.Update(contentInfo);
+                        contentInfo.Status = ddlStatus.SelectedValue;
+                        contentInfo.Message = tbMessage.Text;
+                        DataProviderWX.AppointmentContentDAO.Update(contentInfo);
                     }
                 }
-                else if (_contentIdList != null && _contentIdList.Count > 0)
+                else if (contentIDList != null && contentIDList.Count > 0)
                 {
-                    foreach (var theContentId in _contentIdList)
+                    foreach (var theContentID in contentIDList)
                     {
-                        var contentInfo = DataProviderWx.AppointmentContentDao.GetContentInfo(theContentId);
+                        var contentInfo = DataProviderWX.AppointmentContentDAO.GetContentInfo(theContentID);
                         if (contentInfo != null)
                         {
-                            contentInfo.Status = DdlStatus.SelectedValue;
-                            contentInfo.Message = TbMessage.Text;
-                            DataProviderWx.AppointmentContentDao.Update(contentInfo);
+                            contentInfo.Status = ddlStatus.SelectedValue;
+                            contentInfo.Message = tbMessage.Text;
+                            DataProviderWX.AppointmentContentDAO.Update(contentInfo);
                         }
                     }
                 }

@@ -2,6 +2,7 @@
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Text;
 
 namespace SiteServer.BackgroundPages.Settings
 {

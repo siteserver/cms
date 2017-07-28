@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SiteServer.CMS.Model.Enumerations
 {

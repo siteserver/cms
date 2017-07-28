@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using SiteServer.CMS.Core.Permissions;
+using BaiRong.Core.Permissions;
 
 namespace SiteServer.BackgroundPages.Admin
 {

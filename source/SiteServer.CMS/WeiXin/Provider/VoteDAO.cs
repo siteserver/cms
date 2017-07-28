@@ -7,17 +7,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class VoteDao : DataProviderBase
+    public class VoteDAO : DataProviderBase
     {
-        private const string TableName = "wx_Vote";
+        private const string TABLE_NAME = "wx_Vote";
 
         public int Insert(VoteInfo voteInfo)
         {
-            var voteId = 0;
+            var voteID = 0;
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(voteInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(voteInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
             using (var conn = GetConnection())
             {
@@ -26,7 +26,9 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        voteId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
+                        ExecuteNonQuery(trans, SQL_INSERT, parms);
+
+                        voteID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
 
                         trans.Commit();
                     }
@@ -38,98 +40,98 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return voteId;
+            return voteID;
         }
 
         public void Update(VoteInfo voteInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(voteInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(voteInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
-            ExecuteNonQuery(sqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
 
-        public void AddUserCount(int voteId)
+        public void AddUserCount(int voteID)
         {
-            if (voteId > 0)
+            if (voteID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {VoteAttribute.UserCount} = {VoteAttribute.UserCount} + 1 WHERE ID = {voteId}";
+                    $"UPDATE {TABLE_NAME} SET {VoteAttribute.UserCount} = {VoteAttribute.UserCount} + 1 WHERE ID = {voteID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void AddPvCount(int voteId)
+        public void AddPVCount(int voteID)
         {
-            if (voteId > 0)
+            if (voteID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {VoteAttribute.PvCount} = {VoteAttribute.PvCount} + 1 WHERE ID = {voteId}";
+                    $"UPDATE {TABLE_NAME} SET {VoteAttribute.PVCount} = {VoteAttribute.PVCount} + 1 WHERE ID = {voteID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, int voteId)
+        public void Delete(int publishmentSystemID, int voteID)
         {
-            if (voteId > 0)
+            if (voteID > 0)
             {
-                var voteIdList = new List<int>();
-                voteIdList.Add(voteId);
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(voteIdList));
+                var voteIDList = new List<int>();
+                voteIDList.Add(voteID);
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(voteIDList));
 
-                DataProviderWx.VoteLogDao.DeleteAll(voteId);
-                DataProviderWx.VoteItemDao.DeleteAll(publishmentSystemId, voteId);
+                DataProviderWX.VoteLogDAO.DeleteAll(voteID);
+                DataProviderWX.VoteItemDAO.DeleteAll(publishmentSystemID, voteID);
 
-                string sqlString = $"DELETE FROM {TableName} WHERE ID = {voteId}";
+                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {voteID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, List<int> voteIdList)
+        public void Delete(int publishmentSystemID, List<int> voteIDList)
         {
-            if (voteIdList != null  && voteIdList.Count > 0)
+            if (voteIDList != null  && voteIDList.Count > 0)
             {
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(voteIdList));
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(voteIDList));
 
-                foreach (var voteId in voteIdList)
+                foreach (var voteID in voteIDList)
                 {
-                    DataProviderWx.VoteLogDao.DeleteAll(voteId);
-                    DataProviderWx.VoteItemDao.DeleteAll(publishmentSystemId, voteId);
+                    DataProviderWX.VoteLogDAO.DeleteAll(voteID);
+                    DataProviderWX.VoteItemDAO.DeleteAll(publishmentSystemID, voteID);
                 }
 
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(voteIdList)})";
+                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(voteIDList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private List<int> GetKeywordIdList(List<int> voteIdList)
+        private List<int> GetKeywordIDList(List<int> voteIDList)
         {
-            var keywordIdList = new List<int>();
+            var keywordIDList = new List<int>();
 
             string sqlString =
-                $"SELECT {VoteAttribute.KeywordId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(voteIdList)})";
+                $"SELECT {VoteAttribute.KeywordID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(voteIDList)})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    keywordIdList.Add(rdr.GetInt32(0));
+                    keywordIDList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return keywordIdList;
+            return keywordIDList;
         }
 
-        public VoteInfo GetVoteInfo(int voteId)
+        public VoteInfo GetVoteInfo(int voteID)
         {
             VoteInfo voteInfo = null;
 
-            string sqlWhere = $"WHERE ID = {voteId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {voteID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -141,20 +143,20 @@ namespace SiteServer.CMS.WeiXin.Provider
             return voteInfo;
         }
 
-        public List<VoteInfo> GetVoteInfoListByKeywordId(int publishmentSystemId, int keywordId)
+        public List<VoteInfo> GetVoteInfoListByKeywordID(int publishmentSystemID, int keywordID)
         {
             var voteInfoList = new List<VoteInfo>();
 
-            string sqlWhere =
-                $"WHERE {VoteAttribute.PublishmentSystemId} = {publishmentSystemId} AND {VoteAttribute.IsDisabled} <> '{true}'";
-            if (keywordId > 0)
+            string SQL_WHERE =
+                $"WHERE {VoteAttribute.PublishmentSystemID} = {publishmentSystemID} AND {VoteAttribute.IsDisabled} <> '{true}'";
+            if (keywordID > 0)
             {
-                sqlWhere += $" AND {VoteAttribute.KeywordId} = {keywordId}";
+                SQL_WHERE += $" AND {VoteAttribute.KeywordID} = {keywordID}";
             }
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
@@ -167,22 +169,22 @@ namespace SiteServer.CMS.WeiXin.Provider
             return voteInfoList;
         }
 
-        public int GetFirstIdByKeywordId(int publishmentSystemId, int keywordId)
+        public int GetFirstIDByKeywordID(int publishmentSystemID, int keywordID)
         {
             string sqlString =
-                $"SELECT TOP 1 ID FROM {TableName} WHERE {VoteAttribute.PublishmentSystemId} = {publishmentSystemId} AND {VoteAttribute.IsDisabled} <> '{true}' AND {VoteAttribute.KeywordId} = {keywordId}";
+                $"SELECT TOP 1 ID FROM {TABLE_NAME} WHERE {VoteAttribute.PublishmentSystemID} = {publishmentSystemID} AND {VoteAttribute.IsDisabled} <> '{true}' AND {VoteAttribute.KeywordID} = {keywordID}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetTitle(int voteId)
+        public string GetTitle(int voteID)
         {
             var title = string.Empty;
 
-            string sqlWhere = $"WHERE ID = {voteId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, VoteAttribute.Title, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {voteID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, VoteAttribute.Title, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -194,31 +196,31 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
 
-        public string GetSelectString(int publishmentSystemId)
+        public string GetSelectString(int publishmentSystemID)
         {
-            string whereString = $"WHERE {VoteAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {VoteAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
         }
 
-        public void UpdateUserCountById(int cNum, int voteId)
+        public void UpdateUserCountByID(int CNum, int voteID)
         {
-            if (voteId > 0)
+            if (voteID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {VoteAttribute.UserCount} = {cNum} WHERE ID = {voteId} ";
+                    $"UPDATE {TABLE_NAME} SET {VoteAttribute.UserCount} = {CNum} WHERE ID = {voteID} ";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public List<VoteInfo> GetVoteInfoList(int publishmentSystemId)
+        public List<VoteInfo> GetVoteInfoList(int publishmentSystemID)
         {
             var voteInfoList = new List<VoteInfo>();
 
-            string sqlWhere = $"WHERE {LotteryAttribute.PublishmentSystemId} = {publishmentSystemId}";
+            string SQL_WHERE = $"WHERE {LotteryAttribute.PublishmentSystemID} = {publishmentSystemID}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {

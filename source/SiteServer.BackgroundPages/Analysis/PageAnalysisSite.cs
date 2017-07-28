@@ -102,8 +102,8 @@ yArrayRemark.push('{yValueRemark}');";
                 //x轴信息
                 SetXHashtable(key, publishmentSystemInfo.PublishmentSystemName);
                 //y轴信息
-                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentAdd(publishmentSystemInfo.AuxiliaryTableForContent, publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.PublishmentSystemId, EScopeType.All, TranslateUtils.ToDateTime(StartDate.Text), TranslateUtils.ToDateTime(EndDate.Text), string.Empty), YTypeNew);
-                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentUpdate(publishmentSystemInfo.AuxiliaryTableForContent, publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.PublishmentSystemId, EScopeType.All, TranslateUtils.ToDateTime(StartDate.Text), TranslateUtils.ToDateTime(EndDate.Text), string.Empty), YTypeUpdate);
+                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentAdd(publishmentSystemInfo.AuxiliaryTableForContent, publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.PublishmentSystemId, TranslateUtils.ToDateTime(StartDate.Text), TranslateUtils.ToDateTime(EndDate.Text), string.Empty), YTypeNew);
+                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentUpdate(publishmentSystemInfo.AuxiliaryTableForContent, publishmentSystemInfo.PublishmentSystemId, publishmentSystemInfo.PublishmentSystemId, TranslateUtils.ToDateTime(StartDate.Text), TranslateUtils.ToDateTime(EndDate.Text), string.Empty), YTypeUpdate);
                 SetYHashtable(key, DataProvider.CommentDao.GetCountChecked(publishmentSystemInfo.PublishmentSystemId, TranslateUtils.ToDateTime(StartDate.Text), TranslateUtils.ToDateTime(EndDate.Text)), YTypeRemrk);
             }
 
@@ -124,7 +124,7 @@ yArrayRemark.push('{yValueRemark}');";
             var ltlNewRemarkNum = (Literal)e.Item.FindControl("ltlNewRemarkNum");
             var ltlTotalNum = (Literal)e.Item.FindControl("ltlTotalNum");
 
-            ltlPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
+            ltlPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName + "&nbsp;" + EPublishmentSystemTypeUtils.GetIconHtml(publishmentSystemInfo.PublishmentSystemType);
             ltlNewContentNum.Text = GetYHashtable(publishmentSystemId, YTypeNew);
             ltlUpdateContentNum.Text = GetYHashtable(publishmentSystemId, YTypeUpdate);
             ltlNewRemarkNum.Text = GetYHashtable(publishmentSystemId, YTypeRemrk);

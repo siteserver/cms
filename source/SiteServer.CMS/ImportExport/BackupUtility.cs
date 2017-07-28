@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.ImportExport
@@ -12,8 +13,6 @@ namespace SiteServer.CMS.ImportExport
         public const string CacheTotalCount = "_TotalCount";
         public const string CacheCurrentCount = "_CurrentCount";
         public const string CacheMessage = "_Message";
-        public const string UploadFolderName = "upload"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
-        public const string UploadFileName = "upload.xml"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件名
 
         public static void BackupTemplates(int publishmentSystemId, string filePath)
         {
@@ -26,7 +25,7 @@ namespace SiteServer.CMS.ImportExport
             var exportObject = new ExportObject(publishmentSystemId);
 
             var nodeIdList = DataProvider.NodeDao.GetNodeIdListByParentId(publishmentSystemId, publishmentSystemId);
-            exportObject.ExportChannels(nodeIdList, filePath);  
+            exportObject.ExportChannels(nodeIdList, filePath);
         }
 
         public static void BackupFiles(int publishmentSystemId, string filePath)
@@ -105,9 +104,9 @@ namespace SiteServer.CMS.ImportExport
             }
             if (isDeleteTemplates)
             {
-                var templateInfoList =
-                    DataProvider.TemplateDao.GetTemplateInfoListByPublishmentSystemId(publishmentSystemId);
-                foreach (var templateInfo in templateInfoList)
+                var templateInfoArrayList =
+                    DataProvider.TemplateDao.GetTemplateInfoArrayListByPublishmentSystemId(publishmentSystemId);
+                foreach (TemplateInfo templateInfo in templateInfoArrayList)
                 {
                     if (templateInfo.IsDefault == false)
                     {

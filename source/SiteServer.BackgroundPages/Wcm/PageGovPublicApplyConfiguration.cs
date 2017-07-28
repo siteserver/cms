@@ -16,6 +16,8 @@ namespace SiteServer.BackgroundPages.Wcm
 
 		public void Page_Load(object sender, EventArgs e)
 		{
+            PageUtils.CheckRequestParameter("PublishmentSystemID");
+
 			if (!IsPostBack)
             {
                 BreadCrumb(AppManager.Wcm.LeftMenu.IdGovPublic, AppManager.Wcm.LeftMenu.GovPublic.IdGovPublicApplyConfiguration, "依申请公开设置", AppManager.Wcm.Permission.WebSite.GovPublicApplyConfiguration);

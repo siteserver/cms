@@ -6,9 +6,11 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovInteract;
 using SiteServer.CMS.Wcm.Model;
@@ -63,7 +65,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             base.OnInit(e);
 
-            PageUtils.CheckRequestParameter("ContentID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("PublishmentSystemID", "ContentID", "ReturnUrl");
 
             contentInfo = DataProvider.GovInteractContentDao.GetContentInfo(PublishmentSystemInfo, TranslateUtils.ToInt(Request.QueryString["ContentID"]));
             returnUrl = StringUtils.ValueFromUrl(Request.QueryString["ReturnUrl"]);

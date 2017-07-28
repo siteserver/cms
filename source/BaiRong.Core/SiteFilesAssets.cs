@@ -55,11 +55,6 @@ namespace BaiRong.Core
 
         public class Input
         {
-            public static string TemplatePath => GetPath("input/template.html");
-            public static string LoadingPath => GetPath("input/loading.html");
-            public static string YesPath => GetPath("input/yes.html");
-            public static string NoPath => GetPath("input/no.html");
-
             public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "input/script.js");
         }
 
@@ -254,6 +249,12 @@ namespace BaiRong.Core
             {
                 public const string Js = "jquery/layer/layer.min.js";
             }
+        }
+
+        public class Validate
+        {
+            public const string Js = "scripts/independent/validate.js";
+            public const string Charset = "utf-8";
         }
 
         public class DateString

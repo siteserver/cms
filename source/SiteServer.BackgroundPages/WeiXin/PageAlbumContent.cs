@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Data;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.WeiXin.Data;
@@ -11,27 +10,27 @@ namespace SiteServer.BackgroundPages.WeiXin
 {
 	public class PageAlbumContent : BasePageCms
 	{
-        public Repeater RptParentAlbumContents;
+        public Repeater rptParentAlbumContents;
          
-        public Button BtnAddAlbumContent;
+        public Button btnAddAlbumContent;
 
-        public int AlbumId;
+        public int albumID;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int albumId)
+        public static string GetRedirectUrl(int publishmentSystemId, int albumID)
         {
             return PageUtils.GetWeiXinUrl(nameof(PageAlbumContent), new NameValueCollection
             {
-                {"PublishmentSystemId", publishmentSystemId.ToString()},
-                {"albumID", albumId.ToString()}
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"albumID", albumID.ToString()}
             });
         }
 
-        public static string GetRedirectUrl(int publishmentSystemId, int albumId,int id)
+        public static string GetRedirectUrl(int publishmentSystemId, int albumID,int id)
         {
             return PageUtils.GetWeiXinUrl(nameof(PageAlbumContent), new NameValueCollection
             {
-                {"PublishmentSystemId", publishmentSystemId.ToString()},
-                {"albumID", albumId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
+                {"albumID", albumID.ToString()},
                 {"id", id.ToString()}
             });
         }
@@ -40,7 +39,7 @@ namespace SiteServer.BackgroundPages.WeiXin
         {
             if (IsForbidden) return;
 
-            AlbumId = Body.GetQueryInt("albumID");
+            albumID = Body.GetQueryInt("albumID");
 
 			if (Request.QueryString["delete"] != null)
 			{
@@ -48,8 +47,8 @@ namespace SiteServer.BackgroundPages.WeiXin
 			
 				try
 				{
-                    DataProviderWx.AlbumContentDao.Delete(PublishmentSystemId, id);
-                    DataProviderWx.AlbumContentDao.DeleteByParentId(PublishmentSystemId, id);
+                    DataProviderWX.AlbumContentDAO.Delete(PublishmentSystemId, id);
+                    DataProviderWX.AlbumContentDAO.DeleteByParentID(PublishmentSystemId, id);
 					SuccessDeleteMessage();
 				}
 				catch(Exception ex)
@@ -61,11 +60,11 @@ namespace SiteServer.BackgroundPages.WeiXin
 			if (!IsPostBack)
             { 
                 BreadCrumb(AppManager.WeiXin.LeftMenu.IdFunction, AppManager.WeiXin.LeftMenu.Function.IdAlbum, "相册管理", AppManager.WeiXin.Permission.WebSite.Album);
-                RptParentAlbumContents.DataSource = DataProviderWx.AlbumContentDao.GetDataSource(PublishmentSystemId, AlbumId);
-                RptParentAlbumContents.ItemDataBound += rptParentContents_ItemDataBound;
-                RptParentAlbumContents.DataBind();
+                rptParentAlbumContents.DataSource = DataProviderWX.AlbumContentDAO.GetDataSource(PublishmentSystemId, albumID);
+                rptParentAlbumContents.ItemDataBound += rptParentContents_ItemDataBound;
+                rptParentAlbumContents.DataBind();
 
-                BtnAddAlbumContent.Attributes.Add("onclick", ModalAlbumContentAdd.GetOpenWindowStringToAdd(PublishmentSystemId, AlbumId,0));
+                btnAddAlbumContent.Attributes.Add("onclick", ModalAlbumContentAdd.GetOpenWindowStringToAdd(PublishmentSystemId, albumID,0));
                 
 			}
 		}
@@ -74,16 +73,16 @@ namespace SiteServer.BackgroundPages.WeiXin
         {
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
             {
-                var id = SqlUtils.EvalInt(e.Item.DataItem, "ID");
-                var albumId = SqlUtils.EvalInt(e.Item.DataItem, "AlbumID");
-                var parentId = SqlUtils.EvalInt(e.Item.DataItem, "ParentID");
-                var title = SqlUtils.EvalString(e.Item.DataItem, "Title");
-                var imageUrl = SqlUtils.EvalString(e.Item.DataItem, "ImageUrl");
-                var largeImageUrl = SqlUtils.EvalString(e.Item.DataItem, "LargeImageUrl");
+                var id = TranslateUtils.EvalInt(e.Item.DataItem, "ID");
+                var albumID = TranslateUtils.EvalInt(e.Item.DataItem, "AlbumID");
+                var parentID = TranslateUtils.EvalInt(e.Item.DataItem, "ParentID");
+                var title = TranslateUtils.EvalString(e.Item.DataItem, "Title");
+                var imageUrl = TranslateUtils.EvalString(e.Item.DataItem, "ImageUrl");
+                var largeImageUrl = TranslateUtils.EvalString(e.Item.DataItem, "LargeImageUrl");
 
-                var albumInfo = DataProviderWx.AlbumDao.GetAlbumInfo(albumId);
-                var keywordInfo = DataProviderWx.KeywordDao.GetKeywordInfo(albumInfo.KeywordId);
-                var count=DataProviderWx.AlbumContentDao.GetCount(PublishmentSystemId, id);
+                var albumInfo = DataProviderWX.AlbumDAO.GetAlbumInfo(albumID);
+                var keywordInfo = DataProviderWX.KeywordDAO.GetKeywordInfo(albumInfo.KeywordID);
+                var count=DataProviderWX.AlbumContentDAO.GetCount(PublishmentSystemId, id);
 
                 var ltlkeywrods = e.Item.FindControl("ltlkeywrods") as Literal;
                 var ltlAddDate = e.Item.FindControl("ltlAddDate") as Literal;
@@ -97,7 +96,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 var ltlDeleteUrl = e.Item.FindControl("ltlDeleteUrl") as Literal;
 
                 ltlkeywrods.Text =
-                    $@" <a href=""javascript:;"" onclick=""{ModalAlbumContentAdd.GetOpenWindowStringToEdit(PublishmentSystemId, this.AlbumId, id)}"">编辑相册</a>";
+                    $@" <a href=""javascript:;"" onclick=""{ModalAlbumContentAdd.GetOpenWindowStringToEdit(PublishmentSystemId, this.albumID, id)}"">编辑相册</a>";
                 ltlAddDate.Text =DateUtils.GetDateString(keywordInfo.AddDate);
 
                 ltlTitle.Text = $@"<a href=""{"javascript:;"}"" target=""_blank"">{title}&nbsp;({count})</a>";
@@ -105,17 +104,17 @@ namespace SiteServer.BackgroundPages.WeiXin
                     $@"<img src=""{PageUtility.ParseNavigationUrl(PublishmentSystemInfo, largeImageUrl)}"" class=""appmsg_thumb"">";
 
 
-                dlAlbumContents.DataSource = DataProviderWx.AlbumContentDao.GetDataSource(PublishmentSystemId, this.AlbumId, id);
+                dlAlbumContents.DataSource = DataProviderWX.AlbumContentDAO.GetDataSource(PublishmentSystemId, this.albumID, id);
                 dlAlbumContents.ItemDataBound +=dlContents_ItemDataBound;
                 dlAlbumContents.DataBind();
 
 
                 ltlAddUrl.Text =
-                    $@"<a class=""js_edit"" href=""javascript:;"" onclick=""{ModalAlbumContentPhotoUpload.GetOpenWindowStringToAdd(PublishmentSystemId, this.AlbumId, id)}""><i class=""icon18_common edit_gray"">上传照片</i></a>";
+                    $@"<a class=""js_edit"" href=""javascript:;"" onclick=""{ModalAlbumContentPhotoUpload.GetOpenWindowStringToAdd(PublishmentSystemId, this.albumID, id)}""><i class=""icon18_common edit_gray"">上传照片</i></a>";
                 
                 ltlDeleteUrl.Text =
                     $@"<a class=""js_delno_extra"" href=""{GetRedirectUrl(PublishmentSystemId,
-                        this.AlbumId)}&delete=true&id={id}"" onclick=""javascript:return confirm('此操作将删除相册“{title}”，确认吗？');""><i class=""icon18_common del_gray"">删除</i></a>";
+                        this.albumID)}&delete=true&id={id}"" onclick=""javascript:return confirm('此操作将删除相册“{title}”，确认吗？');""><i class=""icon18_common del_gray"">删除</i></a>";
 
             }
         }
@@ -125,8 +124,8 @@ namespace SiteServer.BackgroundPages.WeiXin
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
             {
                 
-                var imageUrl = SqlUtils.EvalString(e.Item.DataItem, "ImageUrl");
-                var largeImageUrl = SqlUtils.EvalString(e.Item.DataItem, "LargeImageUrl");
+                var imageUrl = TranslateUtils.EvalString(e.Item.DataItem, "ImageUrl");
+                var largeImageUrl = TranslateUtils.EvalString(e.Item.DataItem, "LargeImageUrl");
 
                 var tbContentImageUrl = e.Item.FindControl("tbContentImageUrl") as TextBox;
                 var ltlImageUrl = e.Item.FindControl("ltlImageUrl") as Literal;

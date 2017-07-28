@@ -6,12 +6,12 @@ using BaiRong.Core;
 using BaiRong.Core.Auth;
 using BaiRong.Core.Auth.JWT;
 using BaiRong.Core.Model;
+using BaiRong.Core.Text;
 using Newtonsoft.Json.Linq;
-using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
-    public class RequestBody : IRequestContext
+    public class RequestBody
     {
         private const string UserAccessToken = "ss_user_access_token";
         private const string AdministratorAccessToken = "ss_administrator_access_token";
@@ -31,8 +31,6 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public HttpRequest Request => HttpContext.Current.Request;
-
         public string UserName { get; private set; }
 
         public string AdministratorName { get; private set; }
@@ -40,8 +38,6 @@ namespace SiteServer.CMS.Core
         public bool IsUserLoggin => !string.IsNullOrEmpty(UserName);
 
         public bool IsAdministratorLoggin => !string.IsNullOrEmpty(AdministratorName);
-
-        public int SiteId => GetQueryInt("siteId");
 
         private UserInfo _userInfo;
         public UserInfo UserInfo
@@ -98,9 +94,7 @@ namespace SiteServer.CMS.Core
 
         public bool GetQueryBool(string name, bool defaultValue = false)
         {
-            var str = HttpContext.Current.Request.QueryString[name];
-            var retval = !string.IsNullOrEmpty(str) ? TranslateUtils.ToBool(str) : defaultValue;
-            return retval;
+            return !string.IsNullOrEmpty(HttpContext.Current.Request.QueryString[name]) ? TranslateUtils.ToBool(HttpContext.Current.Request.QueryString[name]) : defaultValue;
         }
 
         public string GetPostString(string name)
@@ -108,14 +102,19 @@ namespace SiteServer.CMS.Core
             return PostData[name]?.ToString();
         }
 
-        public int GetPostInt(string name, int defaultValue = 0)
+        public int GetPostInt(string name)
+        {
+            return TranslateUtils.ToInt(PostData[name]?.ToString());
+        }
+
+        public int GetPostInt(string name, int defaultValue)
         {
             return TranslateUtils.ToInt(PostData[name]?.ToString(), defaultValue);
         }
 
-        public bool GetPostBool(string name, bool defaultValue = false)
+        public bool GetPostBool(string name)
         {
-            return TranslateUtils.ToBool(PostData[name]?.ToString(), defaultValue);
+            return TranslateUtils.ToBool(PostData[name]?.ToString());
         }
 
         public NameValueCollection GetPostCollection()

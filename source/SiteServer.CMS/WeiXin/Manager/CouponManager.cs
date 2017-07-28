@@ -93,11 +93,11 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
+            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
 
-            var actInfoList = DataProviderWx.CouponActDao.GetActInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
+            var actInfoList = DataProviderWX.CouponActDAO.GetActInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(keywordInfo.PublishmentSystemId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(keywordInfo.PublishmentSystemID);
 
             foreach (var actInfo in actInfoList)
             {
@@ -114,7 +114,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                     }
                     else
                     {
-                        snID = DataProviderWx.CouponSnDao.Hold(keywordInfo.PublishmentSystemId, actInfo.Id, requestFromUserName);
+                        snID = DataProviderWX.CouponSNDAO.Hold(keywordInfo.PublishmentSystemID, actInfo.ID, requestFromUserName);
                         if (snID == 0)
                         {
                             isEnd = true;
@@ -135,7 +135,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                     else
                     {
                         var imageUrl = GetImageUrl(publishmentSystemInfo, actInfo.ImageUrl);
-                        var pageUrl = GetCouponHoldUrl(publishmentSystemInfo, actInfo.Id);
+                        var pageUrl = GetCouponHoldUrl(publishmentSystemInfo, actInfo.ID);
 
                         article = new Article()
                         {
@@ -160,22 +160,22 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             try
             {
-                var couponInfoList = DataProviderWx.CouponDao.GetCouponInfoList(publishmentSystemID, actID);
+                var couponInfoList = DataProviderWX.CouponDAO.GetCouponInfoList(publishmentSystemID, actID);
 
                 var snID = 0;
                 var couponID = 0;
                 var cookieSN = WeiXinManager.GetCookieSN();
-                snID = DataProviderWx.CouponSnDao.Hold(publishmentSystemID, actID, cookieSN);
+                snID = DataProviderWX.CouponSNDAO.Hold(publishmentSystemID, actID, cookieSN);
 
-                var newCouponSNInfo = DataProviderWx.CouponSnDao.GetSnInfo(snID);
-                couponID = newCouponSNInfo.CouponId;
+                var newCouponSNInfo = DataProviderWX.CouponSNDAO.GetSNInfo(snID);
+                couponID = newCouponSNInfo.CouponID;
 
-                var couponSNInfo = new CouponSnInfo();
+                var couponSNInfo = new CouponSNInfo();
 
-                couponSNInfo.PublishmentSystemId = publishmentSystemID;
-                couponSNInfo.CookieSn = cookieSN;
-                couponSNInfo.CouponId = couponID;
-                couponSNInfo.Id = snID;
+                couponSNInfo.PublishmentSystemID = publishmentSystemID;
+                couponSNInfo.CookieSN = cookieSN;
+                couponSNInfo.CouponID = couponID;
+                couponSNInfo.ID = snID;
                 couponSNInfo.HoldDate = DateTime.Now;
                 couponSNInfo.HoldRealName = realName;
                 couponSNInfo.HoldMobile = mobile;
@@ -183,15 +183,15 @@ namespace SiteServer.CMS.WeiXin.Manager
                 couponSNInfo.HoldAddress = address;
                 couponSNInfo.CashDate = DateTime.Now;
                 couponSNInfo.Status = ECouponStatusUtils.GetValue(ECouponStatus.Hold);
-                couponSNInfo.WxOpenId = uniqueID;
+                couponSNInfo.WXOpenID = uniqueID;
 
                 if (newCouponSNInfo.Status == ECouponStatusUtils.GetValue(ECouponStatus.Cash))
                 {
                     couponSNInfo.Status = ECouponStatusUtils.GetValue(ECouponStatus.Cash);
                 }
-                DataProviderWx.CouponSnDao.Update(couponSNInfo);
+                DataProviderWX.CouponSNDAO.Update(couponSNInfo);
 
-                return newCouponSNInfo.Id;
+                return newCouponSNInfo.ID;
             }
             catch (Exception ex)
             {

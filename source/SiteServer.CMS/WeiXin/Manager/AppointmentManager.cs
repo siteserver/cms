@@ -98,11 +98,11 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
+            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
 
-            var appointmentInfoList = DataProviderWx.AppointmentDao.GetAppointmentInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
+            var appointmentInfoList = DataProviderWX.AppointmentDAO.GetAppointmentInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(keywordInfo.PublishmentSystemId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(keywordInfo.PublishmentSystemID);
 
             foreach (var appointmentInfo in appointmentInfoList)
             {
@@ -131,11 +131,11 @@ namespace SiteServer.CMS.WeiXin.Manager
                     else
                     {
                         var imageUrl = GetImageUrl(publishmentSystemInfo, appointmentInfo.ImageUrl);
-                        var pageUrl = GetIndexUrl(publishmentSystemInfo, appointmentInfo.Id, wxOpenID);
+                        var pageUrl = GetIndexUrl(publishmentSystemInfo, appointmentInfo.ID, wxOpenID);
                         if (appointmentInfo.ContentIsSingle)
                         {
-                            var itemID = DataProviderWx.AppointmentItemDao.GetItemId(publishmentSystemInfo.PublishmentSystemId, appointmentInfo.Id);
-                            pageUrl = GetItemUrl(publishmentSystemInfo, appointmentInfo.Id, itemID, wxOpenID);
+                            var itemID = DataProviderWX.AppointmentItemDAO.GetItemID(publishmentSystemInfo.PublishmentSystemId, appointmentInfo.ID);
+                            pageUrl = GetItemUrl(publishmentSystemInfo, appointmentInfo.ID, itemID, wxOpenID);
                         }
 
                         article = new Article()

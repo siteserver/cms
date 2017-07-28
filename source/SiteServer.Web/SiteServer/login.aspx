@@ -15,7 +15,6 @@
         $(document).ready(function () { $('#TbAccount').focus(); });
     </script>
     <link href="css/login.css" rel="stylesheet" type="text/css" />
-    <link href="images/siteserver_icon.png" rel="icon" type="image/png" >
 </head>
 <body class="yunBg">
     <form class="form-inline" runat="server" autocomplete="off">
@@ -80,9 +79,8 @@
                         </li>
                         <li><span class="yun_s1">&nbsp;</span>
                             <asp:Button class="yun_submit" ID="LoginSubmit" Style="width: 101px" OnClick="Submit_OnClick" runat="server" />
-                            <asp:PlaceHolder id="PhFindPassword" runat="server">
-                                &nbsp;<a href="findPwd.aspx">找回密码？</a>
-                            </asp:PlaceHolder>
+                            &nbsp;
+                            <a href="findPwd.aspx">找回密码？</a>
                         </li>
                     </ul>
                 </div>

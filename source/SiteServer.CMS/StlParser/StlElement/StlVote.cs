@@ -32,10 +32,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var isDynamic = false;
 
                 string inputTemplateString;
-                string loadingTemplateString;
                 string successTemplateString;
                 string failureTemplateString;
-                StlInnerUtility.GetTemplateLoadingYesNo(node, pageInfo, out inputTemplateString, out loadingTemplateString, out successTemplateString, out failureTemplateString);
+                StlParserUtility.GetInnerTemplateStringOfInput(node, out inputTemplateString, out successTemplateString, out failureTemplateString, pageInfo, contextInfo);
 
                 var ie = node.Attributes?.GetEnumerator();
                 if (ie != null)

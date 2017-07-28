@@ -64,6 +64,7 @@ namespace SiteServer.BackgroundPages.Sys
                 if (publishmentSystemInfo != null)
                 {
                     var ltlPublishmentSystemName = e.Item.FindControl("ltlPublishmentSystemName") as Literal;
+                    var ltlPublishmentSystemType = e.Item.FindControl("ltlPublishmentSystemType") as Literal;
                     var ltlPublishmentSystemDir = e.Item.FindControl("ltlPublishmentSystemDir") as Literal;
                     var ltlAddDate = e.Item.FindControl("ltlAddDate") as Literal;
                     var ltlChangeType = e.Item.FindControl("ltlChangeType") as Literal;
@@ -73,6 +74,7 @@ namespace SiteServer.BackgroundPages.Sys
                     var ltDownLink = e.Item.FindControl("ltDownLink") as Literal;
 
                     ltlPublishmentSystemName.Text = GetPublishmentSystemNameHtml(publishmentSystemInfo);
+                    ltlPublishmentSystemType.Text = EPublishmentSystemTypeUtils.GetHtml(publishmentSystemInfo.PublishmentSystemType);
                     ltlPublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
                     ltlAddDate.Text = DateUtils.GetDateString(NodeManager.GetAddDate(publishmentSystemID, publishmentSystemID));
                     var upUrl = PageUtils.GetSysUrl(nameof(PagePublishmentSystem), new NameValueCollection

@@ -24,7 +24,10 @@ namespace SiteServer.CMS.Core
 
             if (isFromBackground)
             {
-                url = publishmentSystemInfo.Additional.IsMultiDeployment ? publishmentSystemInfo.Additional.InnerSiteUrl : publishmentSystemInfo.Additional.SiteUrl;
+                if (publishmentSystemInfo.Additional.IsMultiDeployment)
+                {
+                    url = publishmentSystemInfo.Additional.InnerUrl;
+                }
             }
             if (string.IsNullOrEmpty(url))
             {
@@ -43,15 +46,16 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            if (string.IsNullOrEmpty(requestPath)) return url;
-
-            requestPath = PathUtils.RemovePathInvalidChar(requestPath);
-            if (requestPath.StartsWith("/"))
+            if (!string.IsNullOrEmpty(requestPath))
             {
-                requestPath = requestPath.Substring(1);
-            }
+                requestPath = PathUtils.RemovePathInvalidChar(requestPath);
+                if (requestPath.StartsWith("/"))
+                {
+                    requestPath = requestPath.Substring(1);
+                }
 
-            url = PageUtils.Combine(url, requestPath);
+                url = PageUtils.Combine(url, requestPath);
+            }
             return url;
         }
 
@@ -62,7 +66,10 @@ namespace SiteServer.CMS.Core
 
             if (isFromBackground)
             {
-                url = publishmentSystemInfo.Additional.IsMultiDeployment ? publishmentSystemInfo.Additional.InnerSiteUrl : publishmentSystemInfo.Additional.SiteUrl;
+                if (publishmentSystemInfo.Additional.IsMultiDeployment)
+                {
+                    url = publishmentSystemInfo.Additional.InnerUrl;
+                }
             }
             else if (requestPath.StartsWith("@/upload") || requestPath.StartsWith("/upload") || requestPath.StartsWith("@\\upload") || requestPath.StartsWith("\\upload"))
             {
@@ -303,13 +310,8 @@ namespace SiteServer.CMS.Core
 
         public static string GetFileUrl(PublishmentSystemInfo publishmentSystemInfo, int fileTemplateId)
         {
-            return GetFileUrl(publishmentSystemInfo, fileTemplateId, false);
-        }
-
-        public static string GetFileUrl(PublishmentSystemInfo publishmentSystemInfo, int fileTemplateId, bool isFromBackground)
-        {
             var createdFileFullName = TemplateManager.GetCreatedFileFullName(publishmentSystemInfo.PublishmentSystemId, fileTemplateId);
-            return ParseNavigationUrl(publishmentSystemInfo, createdFileFullName, isFromBackground);
+            return ParseNavigationUrl(publishmentSystemInfo, createdFileFullName);
         }
 
         public static string GetContentUrl(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, int contentId, bool isFromBackground)
@@ -734,18 +736,6 @@ namespace SiteServer.CMS.Core
             }
 
             return SiteFilesAssets.GetUrl(apiUrl, "default_avatar.png");
-        }
-
-        public static string GetApiUrl(PublishmentSystemInfo publishmentSystemInfo = null)
-        {
-            if (publishmentSystemInfo == null) return PageUtils.GetApiUrl();
-
-            var apiUrl = publishmentSystemInfo.Additional.ApiUrl;
-            if (publishmentSystemInfo.Additional.IsMultiDeployment)
-            {
-                apiUrl = publishmentSystemInfo.Additional.InnerApiUrl;
-            }
-            return apiUrl;
         }
     }
 }

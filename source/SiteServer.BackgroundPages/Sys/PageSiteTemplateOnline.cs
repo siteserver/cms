@@ -140,6 +140,7 @@ namespace SiteServer.BackgroundPages.Sys
                 var dict = (Dictionary<string, string>)e.Item.DataItem;
 
                 var ltlTemplateName = (Literal)e.Item.FindControl("ltlTemplateName");
+                var ltlTemplateType = (Literal)e.Item.FindControl("ltlTemplateType");
                 var ltlDirectoryName = (Literal)e.Item.FindControl("ltlDirectoryName"); 
                 var ltlSize = (Literal)e.Item.FindControl("ltlSize");
                 var ltlAuthor = (Literal)e.Item.FindControl("ltlAuthor");
@@ -149,6 +150,9 @@ namespace SiteServer.BackgroundPages.Sys
                 var ltlDownloadUrl = (Literal)e.Item.FindControl("ltlDownloadUrl");
 
                 ltlTemplateName.Text = dict["templateName"];
+                var templateType = dict["templateType"];
+                var publishmentSystemType = EPublishmentSystemTypeUtils.GetEnumType(templateType);
+                ltlTemplateType.Text = EPublishmentSystemTypeUtils.GetHtml(publishmentSystemType);
                 var directoryName = dict["directoryName"];
                 ltlDirectoryName.Text = directoryName;
                 ltlSize.Text = dict["size"];

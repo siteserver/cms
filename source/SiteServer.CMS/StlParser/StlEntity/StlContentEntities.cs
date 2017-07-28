@@ -198,7 +198,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = ActionsDownload.GetUrl(pageInfo.PublishmentSystemInfo.Additional.ApiUrl, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId);
+                            parsedContent = ActionsDownload.GetUrl(pageInfo.PublishmentSystemInfo.Additional.ApiUrl, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, parsedContent);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//内容添加日期

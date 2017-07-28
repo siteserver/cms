@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Wcm.Model;
 
 namespace SiteServer.BackgroundPages.Wcm
@@ -21,7 +22,7 @@ namespace SiteServer.BackgroundPages.Wcm
             return PageUtils.GetOpenWindowString("添加分类法",
                 PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryClassAdd), new NameValueCollection
                 {
-                    {"siteId", publishmentSystemId.ToString()}
+                    {"PublishmentSystemID", publishmentSystemId.ToString()}
                 }), 400, 360);
         }
 
@@ -30,7 +31,7 @@ namespace SiteServer.BackgroundPages.Wcm
             return PageUtils.GetOpenWindowString("修改分类法",
                 PageUtils.GetWcmUrl(nameof(ModalGovPublicCategoryClassAdd), new NameValueCollection
                 {
-                    {"siteId", publishmentSystemId.ToString()},
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"ClassCode", classCode}
                 }), 400, 360);
         }

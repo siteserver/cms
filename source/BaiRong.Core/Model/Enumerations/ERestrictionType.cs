@@ -36,15 +36,15 @@ namespace BaiRong.Core.Model.Enumerations
 		{
             if (type == ERestrictionType.NoRestriction)
 			{
-                return "æ— è®¿é—®é™åˆ¶";
+                return "ÎŞ·ÃÎÊÏŞÖÆ";
 			}
             else if (type == ERestrictionType.BlackList)
 			{
-                return "å¯ç”¨é»‘åå•ï¼Œç¦æ­¢é»‘åå•ä¸­çš„IPè¿›è¡Œè®¿é—®ï¼Œå…¶ä½™å…è®¸è®¿é—®";
+                return "ÆôÓÃºÚÃûµ¥£¬½ûÖ¹ºÚÃûµ¥ÖĞµÄIP½øĞĞ·ÃÎÊ£¬ÆäÓàÔÊĞí·ÃÎÊ";
             }
             else if (type == ERestrictionType.WhiteList)
             {
-                return "å¯ç”¨ç™½åå•ï¼Œå…è®¸ç™½åå•ä¸­çš„IPè¿›è¡Œè®¿é—®ï¼Œå…¶ä½™ç¦æ­¢è®¿é—®";
+                return "ÆôÓÃ°×Ãûµ¥£¬ÔÊĞí°×Ãûµ¥ÖĞµÄIP½øĞĞ·ÃÎÊ£¬ÆäÓà½ûÖ¹·ÃÎÊ";
             }
 			else
 			{
@@ -56,15 +56,15 @@ namespace BaiRong.Core.Model.Enumerations
         {
             if (type == ERestrictionType.NoRestriction)
             {
-                return "æ— ";
+                return "ÎŞ";
             }
             else if (type == ERestrictionType.BlackList)
             {
-                return "å¯ç”¨é»‘åå•";
+                return "ÆôÓÃºÚÃûµ¥";
             }
             else if (type == ERestrictionType.WhiteList)
             {
-                return "å¯ç”¨ç™½åå•";
+                return "ÆôÓÃ°×Ãûµ¥";
             }
             else
             {

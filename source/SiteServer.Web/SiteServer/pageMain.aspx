@@ -44,8 +44,8 @@
             create.server.execute();
           }
         };
-        $.connection.hub.start({ transport: 'longPolling' }).done(function () {
-            create.server.execute();
+        $.connection.hub.start().done(function () {
+          create.server.execute();
         });
 
         $('#right').height($(window).height() - 40);
@@ -137,7 +137,8 @@
         <div id="left">
             <form runat="server">
                 <table class="table table-condensed table-hover left-table">
-                    <bairong:NavigationTree ID="NtLeftMenu" runat="server" />
+                    <bairong:NodeNaviTree ID="NtLeftMenuSite" runat="server" />
+                    <bairong:NavigationTree ID="NtLeftMenuSystem" runat="server" />
                     <tr><td></td></tr>
                 </table>
             </form>

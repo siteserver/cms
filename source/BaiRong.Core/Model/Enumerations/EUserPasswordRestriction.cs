@@ -36,15 +36,15 @@ namespace BaiRong.Core.Model.Enumerations
         {
             if (type == EUserPasswordRestriction.None)
             {
-                return "ä¸é™åˆ¶";
+                return "²»ÏŞÖÆ";
             }
             else if (type == EUserPasswordRestriction.LetterAndDigit)
             {
-                return "å­—æ¯å’Œæ•°å­—ç»„åˆ";
+                return "×ÖÄ¸ºÍÊı×Ö×éºÏ";
             }
             else if (type == EUserPasswordRestriction.LetterAndDigitAndSymbol)
             {
-                return "å­—æ¯ã€æ•°å­—ä»¥åŠç¬¦å·ç»„åˆ";
+                return "×ÖÄ¸¡¢Êı×ÖÒÔ¼°·ûºÅ×éºÏ";
             }
             else
             {

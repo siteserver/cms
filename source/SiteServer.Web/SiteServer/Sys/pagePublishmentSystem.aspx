@@ -10,7 +10,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
-        <asp:Literal ID="LtlBreadCrumb" runat="server" />
+        <asp:Literal ID="ltlBreadCrumb" runat="server" />
         <bairong:Alerts runat="server" />
 
         <asp:DataGrid ID="dgContents" ShowHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" GridLines="none" runat="server">
@@ -20,6 +20,12 @@
                         <asp:Literal ID="ltlPublishmentSystemName" runat="server"></asp:Literal>
                     </ItemTemplate>
                     <ItemStyle HorizontalAlign="left" />
+                </asp:TemplateColumn>
+                <asp:TemplateColumn HeaderText="站点类型">
+                    <ItemTemplate>
+                        <asp:Literal ID="ltlPublishmentSystemType" runat="server"></asp:Literal>
+                    </ItemTemplate>
+                    <ItemStyle Width="110" CssClass="center" />
                 </asp:TemplateColumn>
                 <asp:TemplateColumn HeaderText="文件夹">
                     <ItemTemplate>

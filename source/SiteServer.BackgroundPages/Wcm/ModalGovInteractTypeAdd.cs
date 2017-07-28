@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Wcm.Model;
 
 namespace SiteServer.BackgroundPages.Wcm
@@ -18,7 +19,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("添加办件类型", PageUtils.GetWcmUrl(nameof(ModalGovInteractTypeAdd), new NameValueCollection
             {
-                {"siteId", publishmentSystemId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
             }), 450, 220);
         }
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Wcm
         {
             return PageUtils.GetOpenWindowString("修改办件类型", PageUtils.GetWcmUrl(nameof(ModalGovInteractTypeAdd), new NameValueCollection
             {
-                {"siteId", publishmentSystemId.ToString()},
+                {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"TypeID", typeId.ToString()}
             }), 450, 220);

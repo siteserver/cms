@@ -4,6 +4,7 @@ using System.Data;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Permissions;
 
 namespace BaiRong.Core.Provider
 {

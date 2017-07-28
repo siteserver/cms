@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages
@@ -36,13 +37,13 @@ namespace SiteServer.BackgroundPages
             _vcManager = VcManager.GetInstance();
             if (Page.IsPostBack) return;
 
-            if (!ConfigManager.SystemConfigInfo.IsFindPassword)
+            if (!FileConfigManager.Instance.IsFindPassword)
             {
                 PageUtils.RedirectToErrorPage("基于安全考虑，找回密码功能已关闭，如需使用请与管理员联系！");
             }
-            else if (!SmsManager.IsSmsReady() || string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.FindPasswordSmsTplId))
+            else if (!SmsManager.IsSmsReady())
             {
-                PageUtils.RedirectToErrorPage("短信验证码发送功能未开启或配置不正确，找回密码功能无法使用，如需使用请与管理员联系！");
+                PageUtils.RedirectToErrorPage("短信发送未开启或配置不正确，找回密码功能无法使用，如需使用请与管理员联系！");
             }
 
             if (FileConfigManager.Instance.IsValidateCode)
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages
                 PhValidateCode.Visible = false;
             }
 
-            LtlPageTitle.Text = "找回密码";
+            this.LtlPageTitle.Text = "找回密码";
         }
 
         public void Account_OnClick(object sender, EventArgs e)
@@ -104,15 +105,15 @@ namespace SiteServer.BackgroundPages
             string errorMessage;
             var code = StringUtils.GetRandomInt(1111, 9999);
             DbCacheManager.RemoveAndInsert($"BaiRong.BackgroundPages.FrameworkFindPwd.{userName}.Code", code.ToString());
-            var isSend = SmsManager.SendVerify(mobile, code, ConfigManager.SystemConfigInfo.FindPasswordSmsTplId, out errorMessage);
+            var isSend = SmsManager.SendCode(mobile, code, out errorMessage);
             if (!isSend)
             {
                 LtlMessage.Text = GetMessageHtml($"找回密码错误：{errorMessage}", true);
                 return;
             }
 
-            ViewState["UserName"] = userName;
-            LtlPageTitle.Text = "验证手机";
+            base.ViewState["UserName"] = userName;
+            this.LtlPageTitle.Text = "验证手机";
             LtlMessage.Text = GetMessageHtml($"短信验证码已发送至：{mobile.Substring(0, 3) + "*****" + mobile.Substring(8)}", true);
             PhStepAccount.Visible = false;
             PhStepSmsCode.Visible = true;
@@ -122,7 +123,7 @@ namespace SiteServer.BackgroundPages
         public void SmsCode_OnClick(object sender, EventArgs e)
         {
             var smsCode = TbSmsCode.Text;
-            var userName = ViewState["UserName"];
+            var userName = base.ViewState["UserName"];
             var code = DbCacheManager.GetValueAndRemove($"BaiRong.BackgroundPages.FrameworkFindPwd.{userName}.Code");
 
             if (smsCode != code)
@@ -131,7 +132,7 @@ namespace SiteServer.BackgroundPages
                 return;
             }
 
-            LtlPageTitle.Text = "重设密码";
+            this.LtlPageTitle.Text = "重设密码";
             LtlMessage.Text = string.Empty;
             PhStepAccount.Visible = false;
             PhStepSmsCode.Visible = false;
@@ -140,7 +141,7 @@ namespace SiteServer.BackgroundPages
 
         public void ChangePassword_OnClick(object sender, EventArgs e)
         {
-            var userName = ViewState["UserName"] as string;
+            var userName = base.ViewState["UserName"] as string;
 
             var password = TbPassword.Text;
             var confirmPassword = TbConfirmPassword.Text;
@@ -152,15 +153,15 @@ namespace SiteServer.BackgroundPages
             }
 
             string errorMessage;
-            if (!BaiRongDataProvider.AdministratorDao.ChangePassword(userName, password, out errorMessage))
+            if (!BaiRongDataProvider.AdministratorDao.ChangePassword(userName, EPasswordFormat.Encrypted, password, out errorMessage))
             {
                 LtlMessage.Text = GetMessageHtml($"重设密码错误：{errorMessage}", true);
                 return;
             }
 
-            LtlPageTitle.Text = "密码设置成功";
+            this.LtlPageTitle.Text = "密码设置成功";
             LtlMessage.Text = GetMessageHtml("密码设置成功，系统将跳转至登录页面", false);
-            AddWaitAndRedirectScript("login.aspx");
+            base.AddWaitAndRedirectScript("login.aspx");
             PhStepAccount.Visible = false;
             PhStepSmsCode.Visible = false;
             PhStepChangePassword.Visible = false;

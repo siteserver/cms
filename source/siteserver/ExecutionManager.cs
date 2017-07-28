@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using BaiRong.Core;
+using BaiRong.Core.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
@@ -11,11 +10,6 @@ namespace siteserver
 {
     public class ExecutionManager
     {
-        public static void ClearAllPendingCreate()
-        {
-            CreateTaskManager.Instance.ClearAllTask();
-        }
-
         public static bool ExecutePendingCreate()
         {
             try
@@ -54,7 +48,7 @@ namespace siteserver
             }
 
             return false;
-        } 
+        }
 
         public static bool ExecuteTask()
         {

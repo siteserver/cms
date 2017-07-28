@@ -55,12 +55,6 @@ namespace BaiRong.Core.Model
             return returnValue ?? string.Empty;
         }
 
-        public virtual void RemoveExtendedAttribute(string name)
-        {
-            name = name.ToLower();
-            _extendedAttributes.Remove(name);
-        }
-
         public bool ContainsKey(string name)
         {
             name = name.ToLower();

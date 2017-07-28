@@ -7,17 +7,17 @@ using SiteServer.CMS.WeiXin.Model;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {
-    public class CardDao : DataProviderBase
+    public class CardDAO : DataProviderBase
     {
-        private const string TableName = "wx_Card";
+        private const string TABLE_NAME = "wx_Card";
          
         public int Insert(CardInfo cardInfo)
         {
-            var cardId = 0;
+            var cardID = 0;
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(cardInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_INSERT = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(cardInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
               
             using (var conn = GetConnection())
             {
@@ -26,7 +26,9 @@ namespace SiteServer.CMS.WeiXin.Provider
                 {
                     try
                     {
-                        cardId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
+                        ExecuteNonQuery(trans, SQL_INSERT, parms);
+
+                        cardID = BaiRongDataProvider.DatabaseDao.GetSequence(trans, TABLE_NAME);
 
                         trans.Commit();
                     }
@@ -38,98 +40,98 @@ namespace SiteServer.CMS.WeiXin.Provider
                 }
             }
 
-            return cardId;
+            return cardID;
         }
 
         public void Update(CardInfo cardInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(cardInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var SQL_UPDATE = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(cardInfo.ToNameValueCollection(), ConnectionString, TABLE_NAME, out parms);
 
-            ExecuteNonQuery(sqlUpdate, parms);
+            ExecuteNonQuery(SQL_UPDATE, parms);
         }
   
-        public void AddPvCount(int cardId)
+        public void AddPVCount(int cardID)
         {
-            if (cardId > 0)
+            if (cardID > 0)
             {
                 string sqlString =
-                    $"UPDATE {TableName} SET {CardAttribute.PvCount} = {CardAttribute.PvCount} + 1 WHERE ID = {cardId}";
+                    $"UPDATE {TABLE_NAME} SET {CardAttribute.PVCount} = {CardAttribute.PVCount} + 1 WHERE ID = {cardID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, int cardId)
+        public void Delete(int publishmentSystemID, int cardID)
         {
-            if (cardId > 0)
+            if (cardID > 0)
             {
-                var cardIdList = new List<int>();
-                cardIdList.Add(cardId);
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(cardIdList));
+                var CardIDList = new List<int>();
+                CardIDList.Add(cardID);
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(CardIDList));
 
-                string sqlString = $"DELETE FROM {TableName} WHERE ID = {cardId}";
+                string sqlString = $"DELETE FROM {TABLE_NAME} WHERE ID = {cardID}";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        public void Delete(int publishmentSystemId, List<int> cardIdList)
+        public void Delete(int publishmentSystemID, List<int> cardIDList)
         {
-            if (cardIdList != null && cardIdList.Count > 0)
+            if (cardIDList != null && cardIDList.Count > 0)
             {
-                DataProviderWx.KeywordDao.Delete(GetKeywordIdList(cardIdList));
+                DataProviderWX.KeywordDAO.Delete(GetKeywordIDList(cardIDList));
 
                 string sqlString =
-                    $"DELETE FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardIdList)})";
+                    $"DELETE FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardIDList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
 
-        private List<int> GetKeywordIdList(List<int> cardIdList)
+        private List<int> GetKeywordIDList(List<int> cardIDList)
         {
-            var keywordIdList = new List<int>();
+            var keywordIDList = new List<int>();
 
             string sqlString =
-                $"SELECT {CardAttribute.KeywordId} FROM {TableName} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardIdList)})";
+                $"SELECT {CardAttribute.KeywordID} FROM {TABLE_NAME} WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(cardIDList)})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    keywordIdList.Add(rdr.GetInt32(0));
+                    keywordIDList.Add(rdr.GetInt32(0));
                 }
                 rdr.Close();
             }
 
-            return keywordIdList;
+            return keywordIDList;
         }
 
-        public CardInfo GetCardInfo(int cardId)
+        public CardInfo GetCardInfo(int cardID)
         {
-            CardInfo cardInfo = null;
+            CardInfo CardInfo = null;
 
-            string sqlWhere = $"WHERE ID = {cardId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {cardID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
-                    cardInfo = new CardInfo(rdr);
+                    CardInfo = new CardInfo(rdr);
                 }
                 rdr.Close();
             }
 
-            return cardInfo;
+            return CardInfo;
         }
 
-        public List<CardInfo> GetCardInfoList(int publishmentSystemId)
+        public List<CardInfo> GetCardInfoList(int publishmentSystemID)
         {
             var cardInfoList = new List<CardInfo>();
 
-            string sqlWhere = $"WHERE {CardAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            string SQL_WHERE = $"WHERE {CardAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
@@ -142,48 +144,48 @@ namespace SiteServer.CMS.WeiXin.Provider
             return cardInfoList;
         }
 
-        public List<CardInfo> GetCardInfoListByKeywordId(int publishmentSystemId, int keywordId)
+        public List<CardInfo> GetCardInfoListByKeywordID(int publishmentSystemID, int keywordID)
         {
-            var cardInfoList = new List<CardInfo>();
+            var CardInfoList = new List<CardInfo>();
 
-            string sqlWhere =
-                $"WHERE {CardAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CardAttribute.IsDisabled} <> '{true}'";
-            if (keywordId > 0)
+            string SQL_WHERE =
+                $"WHERE {CardAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CardAttribute.IsDisabled} <> '{true}'";
+            if (keywordID > 0)
             {
-                sqlWhere += $" AND {CardAttribute.KeywordId} = {keywordId}";
+                SQL_WHERE += $" AND {CardAttribute.KeywordID} = {keywordID}";
             }
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, SqlUtils.Asterisk, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 while (rdr.Read())
                 {
-                    var cardInfo = new CardInfo(rdr);
-                    cardInfoList.Add(cardInfo);
+                    var CardInfo = new CardInfo(rdr);
+                    CardInfoList.Add(CardInfo);
                 }
                 rdr.Close();
             }
 
-            return cardInfoList;
+            return CardInfoList;
         }
 
-        public int GetFirstIdByKeywordId(int publishmentSystemId, int keywordId)
+        public int GetFirstIDByKeywordID(int publishmentSystemID, int keywordID)
         {
             string sqlString =
-                $"SELECT TOP 1 ID FROM {TableName} WHERE {CardAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CardAttribute.IsDisabled} <> '{true}' AND {CardAttribute.KeywordId} = {keywordId}";
+                $"SELECT TOP 1 ID FROM {TABLE_NAME} WHERE {CardAttribute.PublishmentSystemID} = {publishmentSystemID} AND {CardAttribute.IsDisabled} <> '{true}' AND {CardAttribute.KeywordID} = {keywordID}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetTitle(int cardId)
+        public string GetTitle(int cardID)
         {
             var title = string.Empty;
 
-            string sqlWhere = $"WHERE ID = {cardId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, CardAttribute.Title, sqlWhere, null);
+            string SQL_WHERE = $"WHERE ID = {cardID}";
+            var SQL_SELECT = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TABLE_NAME, 0, CardAttribute.Title, SQL_WHERE, null);
 
-            using (var rdr = ExecuteReader(sqlSelect))
+            using (var rdr = ExecuteReader(SQL_SELECT))
             {
                 if (rdr.Read())
                 {
@@ -195,10 +197,10 @@ namespace SiteServer.CMS.WeiXin.Provider
             return title;
         }
 
-        public string GetSelectString(int publishmentSystemId)
+        public string GetSelectString(int publishmentSystemID)
         {
-            string whereString = $"WHERE {CardAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            string whereString = $"WHERE {CardAttribute.PublishmentSystemID} = {publishmentSystemID}";
+            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TABLE_NAME, SqlUtils.Asterisk, whereString);
         }
     }
 }
