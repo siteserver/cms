@@ -1,12 +1,12 @@
-using System;
+锘縰sing System;
 using System.Web.UI.WebControls;
 
 namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EAdvLevelType
     {
-        Hold,           //独占
-        Standard       //标准
+        Hold,           //鐙崰
+        Standard       //鏍囧噯
     }
 
     public class EAdvLevelTypeUtils
@@ -31,11 +31,11 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (type == EAdvLevelType.Hold )
             {
-                return "独占";
+                return "鐙崰";
             }
             else if (type == EAdvLevelType.Standard)
             {
-                return "标准";
+                return "鏍囧噯";
             }
            else
             {

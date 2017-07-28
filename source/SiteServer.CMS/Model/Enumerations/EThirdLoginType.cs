@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using System.Collections.Generic;
@@ -43,19 +43,19 @@ namespace Siteserver.Core.Model
         {
             if (type == SiteserverEThirdLoginType.Weibo)
             {
-                return "ĞÂÀËÎ¢²©";
+                return "æ–°æµªå¾®åš";
             }
             else if (type == SiteserverEThirdLoginType.QQ)
             {
-                return "QQÕËºÅ";
+                return "QQè´¦å·";
             }
             else if (type == SiteserverEThirdLoginType.WeixinPC)
             {
-                return "Î¢ĞÅÕËºÅ";
+                return "å¾®ä¿¡è´¦å·";
             }
             else if (type == SiteserverEThirdLoginType.WeixinMob)
             {
-                return "Î¢ĞÅÕËºÅ";
+                return "å¾®ä¿¡è´¦å·";
             }
             else
             {
@@ -67,19 +67,19 @@ namespace Siteserver.Core.Model
         {
             if (type == SiteserverEThirdLoginType.Weibo)
             {
-                return "ĞÂÀËÎ¢²©";
+                return "æ–°æµªå¾®åš";
             }
             else if (type == SiteserverEThirdLoginType.QQ)
             {
-                return "QQÕËºÅ";
+                return "QQè´¦å·";
             }
             else if (type == SiteserverEThirdLoginType.WeixinPC)
             {
-                return "Î¢ĞÅÕËºÅ";
+                return "å¾®ä¿¡è´¦å·";
             }
             else if (type == SiteserverEThirdLoginType.WeixinMob)
             {
-                return "Î¢ĞÅÕËºÅ";
+                return "å¾®ä¿¡è´¦å·";
             }
             else
             {

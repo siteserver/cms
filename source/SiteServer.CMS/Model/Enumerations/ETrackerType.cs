@@ -1,12 +1,12 @@
-using System;
+ï»¿using System;
 
 namespace SiteServer.CMS.Model.Enumerations
 {
 	
 	public enum ETrackerType
 	{
-        Site,					//¸ú×ÙÕ¾µãµÄ·Ã¿ÍÈËÊı
-        Page,					//¸ú×ÙÒ³ÃæµÄ·ÃÎÊÁ¿
+        Site,					//è·Ÿè¸ªç«™ç‚¹çš„è®¿å®¢äººæ•°
+        Page,					//è·Ÿè¸ªé¡µé¢çš„è®¿é—®é‡
 	}
 
 	public class ETrackerTypeUtils

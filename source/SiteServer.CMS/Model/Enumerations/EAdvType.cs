@@ -1,14 +1,14 @@
-using System;
+ï»¿using System;
 using System.Web.UI.WebControls;
 
 namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EAdvType
     {
-        JsCode,         //JS´úÂë
-        HtmlCode,       //HTML´úÂë
-        Text,           //ÎÄ×Ö
-        Image,          //Í¼Æ¬
+        JsCode,         //JSä»£ç 
+        HtmlCode,       //HTMLä»£ç 
+        Text,           //æ–‡å­—
+        Image,          //å›¾ç‰‡
         Flash           //Flash
     }
 
@@ -46,18 +46,18 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (type == EAdvType.JsCode)
             {
-                return "JS´úÂë";
+                return "JSä»£ç ";
             } if (type == EAdvType.HtmlCode)
             {
-                return "HTML´úÂë";
+                return "HTMLä»£ç ";
             }
             else if (type == EAdvType.Text)
             {
-                return "ÎÄ×Ö";
+                return "æ–‡å­—";
             }
             else if (type == EAdvType.Image)
             {
-                return "Í¼Æ¬";
+                return "å›¾ç‰‡";
             }
             else if (type == EAdvType.Flash)
             {

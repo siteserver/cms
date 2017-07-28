@@ -5,9 +5,9 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum ENodeType
 	{
-		BackgroundPublishNode,	//վ��
-        BackgroundNormalNode,	//��Ŀ
-	}
+        BackgroundPublishNode,	//应用
+        BackgroundNormalNode,   //栏目
+    }
 
 	public class ENodeTypeUtils
 	{
