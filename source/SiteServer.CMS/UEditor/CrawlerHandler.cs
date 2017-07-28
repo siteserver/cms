@@ -4,6 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Web;
 
+using BaiRong.Core;
+using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+
 namespace SiteServer.CMS.UEditor
 {
     /// <summary>
@@ -13,7 +18,11 @@ namespace SiteServer.CMS.UEditor
     {
         private string[] Sources;
         private Crawler[] Crawlers;
-        public CrawlerHandler(HttpContext context) : base(context) { }
+        public int PublishmentSystemID { get; private set; }
+        public CrawlerHandler(HttpContext context, int publishmentSystemID) : base(context) {
+
+            PublishmentSystemID = publishmentSystemID; 
+        }
 
         public override void Process()
         {
@@ -26,7 +35,9 @@ namespace SiteServer.CMS.UEditor
                 });
                 return;
             }
-            Crawlers = Sources.Select(x => new Crawler(x, Server).Fetch()).ToArray();
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(PublishmentSystemID);
+
+            Crawlers = Sources.Select(x => new Crawler(x, publishmentSystemInfo,Server).Fetch()).ToArray();
             WriteJson(new
             {
                 state = "SUCCESS",
@@ -45,13 +56,15 @@ namespace SiteServer.CMS.UEditor
         public string SourceUrl { get; set; }
         public string ServerUrl { get; set; }
         public string State { get; set; }
+        public PublishmentSystemInfo PubSystemInfo { get; private set; }
 
         private HttpServerUtility Server { get; set; }
 
 
-        public Crawler(string sourceUrl, HttpServerUtility server)
+        public Crawler(string sourceUrl, PublishmentSystemInfo pubSystemInfo, HttpServerUtility server)
         {
             SourceUrl = sourceUrl;
+            PubSystemInfo = pubSystemInfo;
             Server = server;
         }
 
@@ -62,6 +75,16 @@ namespace SiteServer.CMS.UEditor
                 State = "INVALID_URL";
                 return this;
             }
+
+            //格式验证
+            string uploadFileName = Path.GetFileName(SourceUrl);
+            var currentType = PathUtils.GetExtension(uploadFileName);
+            if (!PathUtility.IsUploadExtenstionAllowed(EUploadType.Image, PubSystemInfo, currentType))
+            {
+                State = "不允许的文件类型";
+                return this;
+            }
+
             var request = WebRequest.Create(SourceUrl) as HttpWebRequest;
             using (var response = request.GetResponse() as HttpWebResponse)
             {
@@ -75,8 +98,12 @@ namespace SiteServer.CMS.UEditor
                     State = "Url is not an image";
                     return this;
                 }
-                ServerUrl = PathFormatter.Format(Path.GetFileName(SourceUrl), Config.GetString("catcherPathFormat"));
-                var savePath = Server.MapPath(ServerUrl);
+                //ServerUrl = PathFormatter.Format(Path.GetFileName(SourceUrl), Config.GetString("catcherPathFormat"));
+                //var savePath = Server.MapPath(ServerUrl);
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(PubSystemInfo, EUploadType.Image);
+                var localFileName = PathUtility.GetUploadFileName(PubSystemInfo, uploadFileName);
+                var savePath = PathUtils.Combine(localDirectoryPath, localFileName); 
+                
                 if (!Directory.Exists(Path.GetDirectoryName(savePath)))
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(savePath));
@@ -98,6 +125,9 @@ namespace SiteServer.CMS.UEditor
                     }
                     File.WriteAllBytes(savePath, bytes);
                     State = "SUCCESS";
+
+                    ServerUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PubSystemInfo, savePath);
+
                 }
                 catch (Exception e)
                 {
