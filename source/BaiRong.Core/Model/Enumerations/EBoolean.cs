@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Web.UI.WebControls;
 
 namespace BaiRong.Core.Model.Enumerations
@@ -31,11 +31,11 @@ namespace BaiRong.Core.Model.Enumerations
 		{
 			if (type == EBoolean.True)
 			{
-				return " «";
+				return "ÊòØ";
 			}
 			else if (type == EBoolean.False)
 			{
-				return "∑Ò";
+				return "Âê¶";
 			}
 			else
 			{
