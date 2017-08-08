@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.StlParser.Parser
 {
@@ -142,10 +144,10 @@ namespace SiteServer.CMS.StlParser.Parser
 
                         var ie = node.Attributes?.GetEnumerator();
                         if (ie != null)
-                        {   
+                        {
                             while (ie.MoveNext())
                             {
-                                var attr = (XmlAttribute)ie.Current;
+                                var attr = (XmlAttribute) ie.Current;
 
                                 if (StringUtils.EqualsIgnoreCase(attr.Name, "isDynamic"))
                                 {
@@ -178,12 +180,71 @@ namespace SiteServer.CMS.StlParser.Parser
                                 Func<PageInfo, ContextInfo, string> func;
                                 if (ElementsToParseDic.TryGetValue(elementName, out func))
                                 {
-                                    parsedContent = func(pageInfo, contextInfo.Clone(stlElement, attributes, innerXml, childNodes));
+                                    parsedContent = func(pageInfo,
+                                        contextInfo.Clone(stlElement, attributes, innerXml, childNodes));
                                 }
                             }
                             catch (Exception ex)
                             {
                                 parsedContent = StlParserUtility.GetStlErrorMessage(elementName, stlElement, ex);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var parsers = PluginCache.GetParsers();
+                        if (parsers.ContainsKey(elementName))
+                        {
+                            var isDynamic = false;
+                            var attributes = new Dictionary<string, string>();
+                            var innerXml = StringUtils.Trim(node.InnerXml);
+
+                            var ie = node.Attributes?.GetEnumerator();
+                            if (ie != null)
+                            {
+                                while (ie.MoveNext())
+                                {
+                                    var attr = (XmlAttribute)ie.Current;
+
+                                    if (StringUtils.EqualsIgnoreCase(attr.Name, "isDynamic"))
+                                    {
+                                        isDynamic = TranslateUtils.ToBool(attr.Value, false);
+                                    }
+                                    else
+                                    {
+                                        var key = attr.Name;
+                                        if (!string.IsNullOrEmpty(key))
+                                        {
+                                            var value = attr.Value;
+                                            if (string.IsNullOrEmpty(StringUtils.Trim(value)))
+                                            {
+                                                value = string.Empty;
+                                            }
+                                            attributes[key] = value;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (isDynamic)
+                            {
+                                parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    Func<PluginParserContext, string> func;
+                                    if (parsers.TryGetValue(elementName, out func))
+                                    {
+                                        var context = new PluginParserContext(elementName, attributes, innerXml, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId);
+                                        parsedContent = func(context);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    parsedContent = StlParserUtility.GetStlErrorMessage(elementName, stlElement, ex);
+                                }
                             }
                         }
                     }

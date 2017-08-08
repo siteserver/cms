@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Writing;

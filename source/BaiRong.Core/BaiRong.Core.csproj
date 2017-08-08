@@ -292,10 +292,7 @@
     <Compile Include="FileUtils.cs" />
     <Compile Include="IO\FileWatcherClass.cs" />
     <Compile Include="PathUtils.cs" />
-    <Compile Include="IO\Serialization\Serializer.cs" />
-    <Compile Include="IO\Serialization\SerializerData.cs" />
     <Compile Include="IO\ZipUtils.cs" />
-    <Compile Include="Model\Attributes\ContentAttribute.cs" />
     <Compile Include="Model\Attributes\ResumeContentAttribute.cs" />
     <Compile Include="Model\ConfigInfo.cs" />
     <Compile Include="Model\SystemConfigInfo.cs" />
@@ -847,7 +844,6 @@
     <Compile Include="WebConfigUtils.cs" />
     <Compile Include="ConvertHelper.cs" />
     <Compile Include="DateUtils.cs" />
-    <Compile Include="Model\Copyable.cs" />
     <Compile Include="Model\Enumerations\EAuxiliaryTableType.cs" />
     <Compile Include="Model\Enumerations\EBoolean.cs" />
     <Compile Include="Model\Enumerations\ECharset.cs" />
@@ -864,7 +860,6 @@
     <Compile Include="Model\Enumerations\EVoteItemType.cs" />
     <Compile Include="Model\Enumerations\EVoteRestrictType.cs" />
     <Compile Include="Model\Enumerations\EVoteType.cs" />
-    <Compile Include="Model\ExtendedAttributes.cs" />
     <Compile Include="Model\TableMatchInfo.cs" />
     <Compile Include="Model\TableMetadataInfo.cs" />
     <Compile Include="Model\TableStyleInfo.cs" />
@@ -992,6 +987,9 @@
       <Project>{8451ecdd-2ea4-4966-bb0a-7bbc40138e80}</Project>
       <Name>SiteServer.Plugin</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IO\Serialization\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

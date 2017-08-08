@@ -2,6 +2,7 @@ using System;
 using System.Web;
 using System.Web.Caching;
 using System.Xml.Serialization;
+using SiteServer.Plugin.Data;
 
 namespace BaiRong.Core.Tabs
 {

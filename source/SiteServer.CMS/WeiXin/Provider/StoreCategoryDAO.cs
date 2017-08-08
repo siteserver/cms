@@ -5,7 +5,6 @@ using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.WeiXin.Data;
 using SiteServer.CMS.WeiXin.Model;
 using SiteServer.Plugin;

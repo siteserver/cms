@@ -72,8 +72,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            contextInfo.TitleWordNum = 0;
-
             var siteName = listInfo.Others.Get(AttributeSiteName);
             var siteDir = listInfo.Others.Get(AttributeSiteDir);
             var since = listInfo.Others.Get(AttributeSince);

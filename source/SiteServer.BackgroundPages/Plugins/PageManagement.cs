@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             var list = new List<PluginPair>();
             int[] arr = {0, 0, 0};
-            foreach (var pluginPair in PluginManager.GetAllPluginPairs())
+            foreach (var pluginPair in PluginCache.AllPluginPairs)
             {
                 arr[0]++;
                 if (!pluginPair.Metadata.Disabled)

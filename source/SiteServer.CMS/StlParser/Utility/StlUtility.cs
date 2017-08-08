@@ -205,7 +205,7 @@ namespace SiteServer.CMS.StlParser.Utility
                         fileTemplateId = pageInfo.TemplateInfo.TemplateId;
                     }
                     
-                    var apiUrl = PageUtility.GetApiUrl(pageInfo.PublishmentSystemInfo);
+                    var apiUrl = pageInfo.ApiUrl;
                     var ajaxUrl = ActionsTrigger.GetUrl(apiUrl, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, fileTemplateId, true);
                     pageInfo.AddPageEndScriptsIfNotExists("CreateDoubleClick", $@"
 <script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}';}}</script>");

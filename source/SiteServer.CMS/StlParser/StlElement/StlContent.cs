@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
@@ -230,10 +231,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
 
                     var styleInfo = TableStyleManager.GetTableStyleInfo(tableStyle, tableName, type, relatedIdentities);
-                    if (wordNum == 0)
-                    {
-                        wordNum = contextInfo.TitleWordNum;
-                    }
                     parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.PublishmentSystemInfo, tableStyle, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
                     parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 

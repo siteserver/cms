@@ -657,7 +657,7 @@ namespace SiteServer.CMS.Core
             return url.StartsWith("~") || url.StartsWith("@");
         }
 
-        public static string GetUserFilesUrl(string apiUrl, string relatedUrl)
+        public static string GetSiteFilesUrl(string apiUrl, string relatedUrl)
         {
             if (string.IsNullOrEmpty(apiUrl))
             {
@@ -680,8 +680,12 @@ namespace SiteServer.CMS.Core
             {
                 apiUrl = "/";
             }
-            return PageUtils.Combine(apiUrl, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.UserFiles,
-                relatedUrl);
+            return PageUtils.Combine(apiUrl, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
+        }
+
+        public static string GetUserFilesUrl(string apiUrl, string relatedUrl)
+        {
+            return GetSiteFilesUrl(apiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.UserFiles, relatedUrl));
         }
 
         public static string GetUserAvatarUrl(string apiUrl, UserInfo userInfo)
@@ -696,16 +700,14 @@ namespace SiteServer.CMS.Core
             return SiteFilesAssets.GetUrl(apiUrl, "default_avatar.png");
         }
 
-        public static string GetApiUrl(PublishmentSystemInfo publishmentSystemInfo = null)
+        public static string GetInnerApiUrl(PublishmentSystemInfo publishmentSystemInfo = null)
         {
-            if (publishmentSystemInfo == null) return PageUtils.GetApiUrl();
+            return publishmentSystemInfo == null ? PageUtils.GetApiUrl() : publishmentSystemInfo.Additional.InnerApiUrl;
+        }
 
-            var apiUrl = publishmentSystemInfo.Additional.ApiUrl;
-            if (publishmentSystemInfo.Additional.IsMultiDeployment)
-            {
-                apiUrl = publishmentSystemInfo.Additional.InnerApiUrl;
-            }
-            return apiUrl;
+        public static string GetOuterApiUrl(PublishmentSystemInfo publishmentSystemInfo = null)
+        {
+            return publishmentSystemInfo == null ? PageUtils.GetApiUrl() : publishmentSystemInfo.Additional.OuterApiUrl;
         }
     }
 }

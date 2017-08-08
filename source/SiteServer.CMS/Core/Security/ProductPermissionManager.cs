@@ -1,5 +1,3 @@
-using BaiRong.Core.Auth;
-
 namespace SiteServer.CMS.Core.Security
 {
 	public class ProductPermissionsManager

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using BaiRong.Core.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;

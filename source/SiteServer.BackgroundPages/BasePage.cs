@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages
 
             try
             {
-                foreach (var pageAdmin in PluginManager.GetHooks<IPageAdmin>())
+                foreach (var pageAdmin in PluginCache.GetHooks<IPageAdmin>())
                 {
                     pageAdmin.OnLoadComplete(e);
                 }
@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages
 
             try
             {
-                foreach (var pageAdmin in PluginManager.GetHooks<IPageAdmin>())
+                foreach (var pageAdmin in PluginCache.GetHooks<IPageAdmin>())
                 {
                     pageAdmin.OnPreLoad(e);
                 }

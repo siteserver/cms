@@ -1,4 +1,5 @@
 ﻿using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Data;
 
 namespace BaiRong.Core.Model
 {

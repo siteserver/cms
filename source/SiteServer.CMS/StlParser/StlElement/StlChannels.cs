@@ -26,7 +26,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeGroupChannelNot = "groupChannelNot";	    //指定不显示的栏目组
         public const string AttributeTotalNum = "totalNum";					    //显示栏目数目
         public const string AttributeStartNum = "startNum";					    //从第几条信息开始显示
-        public const string AttributeTitleWordNum = "titleWordNum";			    //
         public const string AttributeOrder = "order";						    //排序
         public const string AttributeIsImage = "isImage";					    //仅显示图片栏目
         public const string AttributeWhere = "where";                           //获取栏目列表的条件判断
@@ -57,7 +56,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeGroupChannelNot, "指定不显示的栏目组"},
             {AttributeTotalNum, "显示栏目数目"},
             {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeTitleWordNum, "栏目名称文字数量"},
             {AttributeOrder, "排序"},
             {AttributeIsImage, "仅显示图片栏目"},
             {AttributeWhere, "获取栏目列表的条件判断"},
@@ -103,8 +101,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var parsedContent = string.Empty;
-
-            contextInfo.TitleWordNum = listInfo.TitleWordNum;
 
             var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
 

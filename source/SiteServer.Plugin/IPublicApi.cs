@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiteServer.Plugin.Data;
 
 namespace SiteServer.Plugin
 {
@@ -39,5 +40,13 @@ namespace SiteServer.Plugin
         string GetUploadFilePath(int siteId, string filePath);
 
         string GetUrlByFilePath(string filePath);
+
+        string GetPluginUrl(int siteId, string relatedUrl);
+
+        IPublishmentSystemInfo GetPublishmentSystemInfo(int siteId);
+
+        INodeInfo GetNodeInfo(int siteId, int channelId);
+
+        IContentInfo GetContentInfo(int siteId, int channelId, int contentId);
     }
 }

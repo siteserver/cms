@@ -19,7 +19,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeOrder = "order";
         public const string AttributeIsReply = "isReply";
         public const string AttributeWhere = "where";
-        public const string AttributeIsDynamic = "isDynamic";
         public const string AttributeCellPadding = "cellPadding";
         public const string AttributeCellSpacing = "cellSpacing";
         public const string AttributeClass = "class";
@@ -43,7 +42,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeStartNum, "从第几条信息开始显示"},
             {AttributeOrder, "排序"},
             {AttributeWhere, "获取内容列表的条件判断"},
-            {AttributeIsDynamic, "是否动态显示"},
             {AttributeCellPadding, "填充"},
             {AttributeCellSpacing, "间距"},
             {AttributeClass, "Css类"},
@@ -71,7 +69,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            contextInfo.TitleWordNum = 0;
             //var inputId = DataProvider.InputDao.GetInputIdAsPossible(listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId);
             var inputId = Input.GetInputIdAsPossible(listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId, pageInfo.Guid);
 

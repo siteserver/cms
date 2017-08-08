@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             BreadCrumbPlugins("插件查看", AppManager.Permissions.Plugins.Add);
 
-            if (PluginManager.IsExists(_pluginId))
+            if (PluginCache.IsExists(_pluginId))
             {
                 BtnInstall.Text = "插件已安装";
                 BtnInstall.Enabled = false;

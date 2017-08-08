@@ -216,9 +216,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = StringUtils.Replace(replace, parsedContent, to);
                     }
 
-                    if (wordNum == 0 && contextInfo.TitleWordNum > 0)
-                        wordNum = contextInfo.TitleWordNum;
-
                     if (!string.IsNullOrEmpty(parsedContent) && wordNum > 0)
                     {
                         parsedContent = StringUtils.MaxLengthText(parsedContent, wordNum, ellipsis);

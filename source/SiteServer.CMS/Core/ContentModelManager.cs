@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Core
                 EContentModelTypeUtils.GetContentModelInfo(publishmentSystemInfo.AuxiliaryTableForJob, EContentModelType.Job)
             };
 
-            var contentModels = PluginManager.GetAllContentModels(publishmentSystemInfo);
+            var contentModels = PluginCache.GetAllContentModels(publishmentSystemInfo);
             if (contentModels != null)
             {
                 list.AddRange(contentModels);

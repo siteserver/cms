@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Data;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -175,6 +176,28 @@ namespace SiteServer.CMS.Plugin
             var siteId = GetSiteIdByFilePath(filePath);
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
             return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath);
+        }
+
+        public string GetPluginUrl(int siteId, string relatedUrl)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var apiUrl = PageUtility.GetOuterApiUrl(publishmentSystemInfo);
+            return PageUtility.GetSiteFilesUrl(apiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
+        }
+
+        public IPublishmentSystemInfo GetPublishmentSystemInfo(int siteId)
+        {
+            return PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+        }
+
+        public INodeInfo GetNodeInfo(int siteId, int channelId)
+        {
+            return NodeManager.GetNodeInfo(siteId, channelId);
+        }
+
+        public IContentInfo GetContentInfo(int siteId, int channelId, int contentId)
+        {
+            return DataProvider.ContentDao.GetContentInfo(siteId, channelId, contentId);
         }
     }
 }

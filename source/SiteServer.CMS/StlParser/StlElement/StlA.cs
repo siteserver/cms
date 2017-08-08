@@ -242,7 +242,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     if (string.IsNullOrEmpty(contextInfo.InnerXml))
                     {
-                        var title = StringUtils.MaxLengthText(contextInfo.ContentInfo?.Title, contextInfo.TitleWordNum);
+                        var title = contextInfo.ContentInfo?.Title;
                         title = ContentUtility.FormatTitle(contextInfo.ContentInfo?.Attributes[BackgroundContentAttribute.TitleFormatString], title);
 
                         if (pageInfo.PublishmentSystemInfo.Additional.IsContentTitleBreakLine)

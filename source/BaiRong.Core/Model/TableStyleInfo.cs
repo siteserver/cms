@@ -1,6 +1,7 @@
 ﻿using System;
 using BaiRong.Core.Model.Enumerations;
 using System.Collections.Generic;
+using SiteServer.Plugin.Data;
 
 namespace BaiRong.Core.Model
 {

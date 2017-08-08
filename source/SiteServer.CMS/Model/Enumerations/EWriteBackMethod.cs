@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using BaiRong.Core;
 
 namespace SiteServer.CMS.Model
 {

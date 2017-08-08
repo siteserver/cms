@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Data;
 
 namespace SiteServer.CMS.Model
 {
@@ -211,25 +211,37 @@ namespace SiteServer.CMS.Model
 
         public string OuterSiteUrl
         {
-            get { return GetString("OuterSiteUrl", string.Empty); }
+            get
+            {
+                return IsMultiDeployment ? GetString("OuterSiteUrl", string.Empty) : SiteUrl;
+            }
             set { SetExtendedAttribute("OuterSiteUrl", value); }
         }
 
         public string InnerSiteUrl
         {
-            get { return GetString("InnerSiteUrl", string.Empty); }
+            get
+            {
+                return IsMultiDeployment ? GetString("InnerSiteUrl", string.Empty) : SiteUrl;
+            }
             set { SetExtendedAttribute("InnerSiteUrl", value); }
         }
 
         public string OuterApiUrl
         {
-            get { return GetString("OuterApiUrl", string.Empty); }
+            get
+            {
+                return IsMultiDeployment ? GetString("OuterApiUrl", DefaultApiUrl) : ApiUrl;
+            }
             set { SetExtendedAttribute("OuterApiUrl", value); }
         }
 
         public string InnerApiUrl
         {
-            get { return GetString("InnerApiUrl", DefaultApiUrl); }
+            get
+            {
+                return IsMultiDeployment ? GetString("InnerApiUrl", DefaultApiUrl) : ApiUrl;
+            }
             set { SetExtendedAttribute("InnerApiUrl", value); }
         }
 

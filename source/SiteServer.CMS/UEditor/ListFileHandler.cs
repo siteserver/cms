@@ -7,7 +7,6 @@ using System.Web;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.UEditor
 {

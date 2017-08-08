@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -32,7 +33,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeIsColor = "isColor";
         public const string AttributeTotalNum = "totalNum";
         public const string AttributeStartNum = "startNum";
-        public const string AttributeTitleWordNum = "titleWordNum";
         public const string AttributeOrder = "order";
         public const string AttributeIsImage = "isImage";
         public const string AttributeIsVideo = "isVideo";
@@ -75,7 +75,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeIsColor, "仅显示醒目内容"},
             {AttributeTotalNum, "显示内容数目"},
             {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeTitleWordNum, "内容标题文字数量"},
             {AttributeOrder, "排序"},
             {AttributeIsImage, "仅显示图片内容"},
             {AttributeIsVideo, "仅显示视频内容"},
@@ -118,9 +117,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var parsedContent = string.Empty;
-
-            var titleWordNum = contextInfo.TitleWordNum;
-            contextInfo.TitleWordNum = listInfo.TitleWordNum;
 
             var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
 
@@ -192,8 +188,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
                 }
             }
-
-            contextInfo.TitleWordNum = titleWordNum;
 
             return parsedContent;
         }

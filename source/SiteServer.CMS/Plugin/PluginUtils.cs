@@ -138,7 +138,7 @@ namespace SiteServer.CMS.Plugin
         {
             var directoryPath = DirectoryUtils.GetDirectoryPath(e.FullPath);
 
-            foreach (var pluginPair in PluginManager.GetAllPluginPairs())
+            foreach (var pluginPair in PluginCache.AllPluginPairs)
             {
                 if (!PathUtils.IsEquals(pluginPair.Metadata.DirectoryPath, directoryPath)) continue;
                 PluginManager.DeactiveAndRemove(pluginPair);
@@ -148,8 +148,6 @@ namespace SiteServer.CMS.Plugin
             Thread.Sleep(1000);
 
             ActivePlugin(directoryPath);
-
-            PluginCache.ClearCache();
         }
 
         internal static void ActivePlugin(string directoryPath)
@@ -212,7 +210,7 @@ namespace SiteServer.CMS.Plugin
         {
             var directoryPath = DirectoryUtils.GetDirectoryPath(e.FullPath);
 
-            foreach (var pluginPair in PluginManager.GetAllPluginPairs())
+            foreach (var pluginPair in PluginCache.AllPluginPairs)
             {
                 if (!PathUtils.IsEquals(pluginPair.Metadata.DirectoryPath, directoryPath)) continue;
 

@@ -4,6 +4,7 @@ using System.Text;
 using System.Web.UI.WebControls;
 using System.Xml;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Stl;
@@ -75,8 +76,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                 ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
             }
 
-            _contextInfo.TitleWordNum = ListInfo.TitleWordNum;
-
             var channelId = StlDataUtility.GetNodeIdByLevel(_pageInfo.PublishmentSystemId, _contextInfo.ChannelId, ListInfo.UpLevel, ListInfo.TopLevel);
 
             channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(_pageInfo.PublishmentSystemId, channelId, ListInfo.ChannelIndex, ListInfo.ChannelName, _pageInfo.Guid);
@@ -121,8 +120,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                 ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
             }
             ListInfo.Scope = EScopeType.All;
-
-            _contextInfo.TitleWordNum = ListInfo.TitleWordNum;
 
             ListInfo.Where += whereString;
             if (pageNum > 0)

@@ -12,6 +12,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
+using BaiRong.Core.Model;
 
 namespace SiteServer.CMS.StlParser
 {

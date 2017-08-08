@@ -214,10 +214,6 @@ namespace SiteServer.CMS.StlParser.Model
                 {
                     listInfo.MaxPage = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo));
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeTitleWordNum))
-                {
-                    listInfo.TitleWordNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo));
-                }
                 else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeStartNum))
                 {
                     listInfo.StartNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo));
@@ -423,8 +419,6 @@ namespace SiteServer.CMS.StlParser.Model
         public int PageNum { get; set; }
 
         public int MaxPage { get; set; }
-
-        public int TitleWordNum { get; set; }
 
         public int StartNum { get; set; } = 1;
 

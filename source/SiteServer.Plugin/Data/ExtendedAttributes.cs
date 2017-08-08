@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Collections.Generic;
-using BaiRong.Core.Data;
+using System.Collections.Specialized;
+using System.Web.UI;
+using System.Text;
 
-namespace BaiRong.Core.Model
+namespace SiteServer.Plugin.Data
 {
     /// <summary>
     /// Provides standard implementation for simple extendent data storage
@@ -33,7 +34,7 @@ namespace BaiRong.Core.Model
 
             if (returnValue == null && _dataItem != null)
             {
-                var obj = SqlUtils.Eval(_dataItem, name);
+                var obj = Eval(_dataItem, name);
                 if (obj != null)
                 {
                     if (obj is string)
@@ -49,7 +50,7 @@ namespace BaiRong.Core.Model
 
             if (!string.IsNullOrEmpty(returnValue))
             {
-                returnValue = PageUtils.UnFilterSql(returnValue);
+                returnValue = UnFilterSql(returnValue);
             }
 
             return returnValue ?? string.Empty;
@@ -68,7 +69,7 @@ namespace BaiRong.Core.Model
 
             if (returnValue == null && _dataItem != null)
             {
-                var obj = SqlUtils.Eval(_dataItem, name);
+                var obj = Eval(_dataItem, name);
                 if (obj != null)
                 {
                     if (obj is string)
@@ -123,19 +124,9 @@ namespace BaiRong.Core.Model
             }
         }
 
-        public bool ShouldSerializeAttributes()
-        {
-            return false;
-        }
-
         public int ExtendedAttributesCount => _extendedAttributes.Count;
 
-        public bool ShouldSerializeExtendedAttributesCount()
-        {
-            return false;
-        }
-
-        protected bool GetBool(string name, bool defaultValue)
+        public bool GetBool(string name, bool defaultValue = false)
         {
             name = name.ToLower();
             var b = GetExtendedAttribute(name);
@@ -152,7 +143,7 @@ namespace BaiRong.Core.Model
             return defaultValue;
         }
 
-        protected int GetInt(string name, int defaultValue)
+        public int GetInt(string name, int defaultValue = 0)
         {
             name = name.ToLower();
             var i = GetExtendedAttribute(name);
@@ -171,7 +162,7 @@ namespace BaiRong.Core.Model
             return retval;
         }
 
-        protected decimal GetDecimal(string name, decimal defaultValue)
+        public decimal GetDecimal(string name, decimal defaultValue = 0)
         {
             name = name.ToLower();
             var i = GetExtendedAttribute(name);
@@ -190,7 +181,7 @@ namespace BaiRong.Core.Model
             return retval;
         }
 
-        protected DateTime GetDateTime(string name, DateTime defaultValue)
+        public DateTime GetDateTime(string name, DateTime defaultValue)
         {
             name = name.ToLower();
             var d = GetExtendedAttribute(name);
@@ -209,7 +200,7 @@ namespace BaiRong.Core.Model
             return retval;
         }
 
-        protected string GetString(string name, string defaultValue)
+        public string GetString(string name, string defaultValue = "")
         {
             name = name.ToLower();
             var v = GetExtendedAttribute(name);
@@ -225,8 +216,8 @@ namespace BaiRong.Core.Model
 
         private string SettingsXml
         {
-            get { return GetExtendedAttribute("SettingsXML"); }
-            set { SetExtendedAttribute("SettingsXML", value); }
+            get { return GetExtendedAttribute("SettingsXml"); }
+            set { SetExtendedAttribute("SettingsXml", value); }
         }
 
         public virtual List<string> GetDefaultAttributesNames()
@@ -244,7 +235,7 @@ namespace BaiRong.Core.Model
                 attributes.Remove(attributeName.ToLower());
             }
 
-            SettingsXml = TranslateUtils.NameValueCollectionToString(attributes);
+            SettingsXml = NameValueCollectionToString(attributes);
         }
 
 
@@ -263,7 +254,7 @@ namespace BaiRong.Core.Model
                 SetExtendedAttribute(attributeName.ToLower(), value);
             }
 
-            var attributes = TranslateUtils.ToNameValueCollection(SettingsXml);
+            var attributes = ToNameValueCollection(SettingsXml);
             if (attributes == null) return;
 
             foreach (string key in attributes)
@@ -304,7 +295,7 @@ namespace BaiRong.Core.Model
         {
             if (_extendedAttributes != null && _extendedAttributes.Count > 0)
             {
-                return TranslateUtils.NameValueCollectionToString(_extendedAttributes);
+                return NameValueCollectionToString(_extendedAttributes);
             }
             return string.Empty;
         }
@@ -313,8 +304,100 @@ namespace BaiRong.Core.Model
         {
             return new ExtendedAttributes
             {
-                _extendedAttributes = TranslateUtils.ToNameValueCollection(str)
+                _extendedAttributes = ToNameValueCollection(str)
             };
         }
+
+        #region Utils
+
+        private static object Eval(object dataItem, string name)
+        {
+            object o = null;
+            try
+            {
+                o = DataBinder.Eval(dataItem, name);
+            }
+            catch
+            {
+                // ignored
+            }
+            if (o == DBNull.Value)
+            {
+                o = null;
+            }
+            return o;
+        }
+
+        private static string UnFilterSql(string objStr)
+        {
+            if (string.IsNullOrEmpty(objStr)) return string.Empty;
+
+            return objStr.Replace("_sqlquote_", "'").Replace("_sqldoulbeline_", "--").Replace("_sqlleftparenthesis_", "\\(").Replace("_sqlrightparenthesis_", "\\)");
+        }
+
+        private static string NameValueCollectionToString(NameValueCollection attributes, char seperator = '&')
+        {
+            if (attributes == null || attributes.Count <= 0) return string.Empty;
+
+            var builder = new StringBuilder();
+            foreach (string key in attributes.Keys)
+            {
+                builder.Append(
+                    $@"{ValueToUrl(key)}={ValueToUrl(attributes[key])}{seperator}");
+            }
+            builder.Length--;
+            return builder.ToString();
+        }
+
+        private static string ValueToUrl(string value)
+        {
+            var retval = string.Empty;
+            if (!string.IsNullOrEmpty(value))
+            {
+                //替换url中的换行符，update by sessionliang at 20151211
+                retval = value.Replace("=", "_equals_").Replace("&", "_and_").Replace("?", "_question_").Replace("'", "_quote_").Replace("+", "_add_").Replace("\r", "").Replace("\n", "");
+            }
+            return retval;
+        }
+
+        private static NameValueCollection ToNameValueCollection(string separateString)
+        {
+            if (!string.IsNullOrEmpty(separateString))
+            {
+                separateString = separateString.Replace("/u0026", "&");
+            }
+            return ToNameValueCollection(separateString, '&');
+        }
+
+        private static string ValueFromUrl(string value)
+        {
+            var retval = string.Empty;
+            if (!string.IsNullOrEmpty(value))
+            {
+                retval = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+");
+            }
+            return retval;
+        }
+
+        private static NameValueCollection ToNameValueCollection(string separateString, char seperator)
+        {
+            var attributes = new NameValueCollection();
+            if (!string.IsNullOrEmpty(separateString))
+            {
+                var pairs = separateString.Split(seperator);
+                foreach (var pair in pairs)
+                {
+                    if (pair.IndexOf("=", StringComparison.Ordinal) != -1)
+                    {
+                        var name = ValueFromUrl(pair.Split('=')[0]);
+                        var value = ValueFromUrl(pair.Split('=')[1]);
+                        attributes.Add(name, value);
+                    }
+                }
+            }
+            return attributes;
+        }
+
+        #endregion
     }
 }

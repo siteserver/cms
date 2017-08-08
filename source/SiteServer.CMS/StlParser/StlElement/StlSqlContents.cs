@@ -66,8 +66,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            contextInfo.TitleWordNum = 0;
-
             if (listInfo.Layout == ELayout.None)
             {
                 var rptContents = new Repeater

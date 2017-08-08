@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -18,7 +19,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeTotalNum = "totalNum";
         public const string AttributeStartNum = "startNum";
         public const string AttributeOrder = "order";
-        public const string AttributeIsDynamic = "isDynamic";
         public const string AttributeCellPadding = "cellPadding";
         public const string AttributeCellSpacing = "cellSpacing";
         public const string AttributeClass = "class";
@@ -40,7 +40,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeTotalNum, "显示信息数目"},
             {AttributeStartNum, "从第几条信息开始显示"},
             {AttributeOrder, "排序"},
-            {AttributeIsDynamic, "是否动态显示"},
             {AttributeCellPadding, "填充"},
             {AttributeCellSpacing, "间距"},
             {AttributeClass, "Css类"},

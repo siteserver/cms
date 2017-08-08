@@ -19,16 +19,6 @@ namespace SiteServer.CMS.StlParser.Model
             Guid = pageInfo.Guid;
         }
 
-        public ContextInfo(EContextType contextType, PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, ContentInfo contentInfo, string guid)
-        {
-            ContextType = contextType;
-            PublishmentSystemInfo = publishmentSystemInfo;
-            ChannelId = channelId;
-            ContentId = contentId;
-            _contentInfo = contentInfo;
-            Guid = guid;
-        }
-
         //用于clone
         private ContextInfo(ContextInfo contextInfo)
         {
@@ -41,9 +31,7 @@ namespace SiteServer.CMS.StlParser.Model
 
             IsInnerElement = contextInfo.IsInnerElement;
             IsCurlyBrace = contextInfo.IsCurlyBrace;
-            TitleWordNum = contextInfo.TitleWordNum;
             PageItemIndex = contextInfo.PageItemIndex;
-            TotalNum = contextInfo.TotalNum;
             ItemContainer = contextInfo.ItemContainer;
             ContainerClientId = contextInfo.ContainerClientId;
 
@@ -108,10 +96,6 @@ namespace SiteServer.CMS.StlParser.Model
         public bool IsInnerElement { get; set; }
 
         public bool IsCurlyBrace { get; set; }
-
-        public int TitleWordNum { get; set; }
-
-        public int TotalNum { get; set; }
 
         public int PageItemIndex { get; set; }
 

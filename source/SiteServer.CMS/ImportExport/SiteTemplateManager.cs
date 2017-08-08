@@ -4,6 +4,7 @@ using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin.Data;
 
 namespace SiteServer.CMS.ImportExport
 {

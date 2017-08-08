@@ -94,7 +94,7 @@ namespace SiteServer.CMS.Plugin
         public static void DeactiveAndRemove(PluginPair pluginPair)
         {
             pluginPair.Plugin.Deactive(pluginPair.Context);
-            AllPlugins.Remove(pluginPair.Metadata.Id);
+            PluginCache.Remove(pluginPair.Metadata.Id);
         }
 
         public static bool ActiveAndAdd(PluginMetadata metadata, IPlugin plugin)
@@ -163,7 +163,7 @@ namespace SiteServer.CMS.Plugin
 
             var pair = new PluginPair(context, plugin);
 
-            AllPlugins.Set(metadata.Id, pair);
+            PluginCache.Set(metadata.Id, pair);
             return true;
         }
 
@@ -197,7 +197,7 @@ namespace SiteServer.CMS.Plugin
                     return false;
                 }
 
-                if (IsExists(plugin.Id))
+                if (PluginCache.IsExists(plugin.Id))
                 {
                     errorMessage = "插件已存在";
                     return false;
@@ -224,12 +224,12 @@ namespace SiteServer.CMS.Plugin
 
         public static PluginMetadata Delete(string pluginId)
         {
-            var metadata = AllPlugins.GetMetadata(pluginId);
+            var metadata = PluginCache.GetMetadata(pluginId);
             if (metadata != null)
             {
                 if (DirectoryUtils.DeleteDirectoryIfExists(metadata.DirectoryPath))
                 {
-                    AllPlugins.Remove(pluginId);
+                    PluginCache.Remove(pluginId);
                 }
             }
             Thread.Sleep(1200);
@@ -238,11 +238,11 @@ namespace SiteServer.CMS.Plugin
 
         public static PluginMetadata Enable(string pluginId)
         {
-            var metadata = AllPlugins.GetMetadata(pluginId);
+            var metadata = PluginCache.GetMetadata(pluginId);
             if (metadata != null)
             {
                 metadata.Disabled = false;
-                AllPlugins.SetMetadata(metadata);
+                PluginCache.SetMetadata(metadata);
                 PluginUtils.SaveMetadataToJson(metadata);
             }
             Thread.Sleep(1200);
@@ -251,176 +251,15 @@ namespace SiteServer.CMS.Plugin
 
         public static PluginMetadata Disable(string pluginId)
         {
-            var metadata = AllPlugins.GetMetadata(pluginId);
+            var metadata = PluginCache.GetMetadata(pluginId);
             if (metadata != null)
             {
                 metadata.Disabled = true;
-                AllPlugins.SetMetadata(metadata);
+                PluginCache.SetMetadata(metadata);
                 PluginUtils.SaveMetadataToJson(metadata);
             }
             Thread.Sleep(1200);
             return metadata;
-        }
-
-        public static List<PluginPair> GetAllPluginPairs()
-        {
-            return AllPlugins.AllPluginPairs;
-        }
-
-        public static bool IsExists(string pluginId)
-        {
-            return AllPlugins.IsExists(pluginId);
-        }
-
-        public static T GetHook<T>(string pluginId) where T : IPlugin
-        {
-            try
-            {
-                return AllPlugins.GetHook<T>(pluginId);
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddErrorLog(ex, "插件:GetHook");
-                return default(T);
-            }
-        }
-
-        public static List<T> GetHooks<T>() where T : IPlugin
-        {
-            return AllPlugins.GetHooks<T>();
-        }
-
-        public static List<PermissionConfig> GetTopPermissions()
-        {
-            var pairs = AllPlugins.GetEnabledPluginPairs<IMenu>();
-            var permissions = new List<PermissionConfig>();
-
-            foreach (var pluginPair in pairs)
-            {
-                var feature = (IMenu)pluginPair.Plugin;
-                var menu = feature.GetTopMenu();
-                if (menu != null)
-                {
-                    permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"插件（{pluginPair.Metadata.DisplayName}）"));
-                }
-            }
-
-            return permissions;
-        }
-
-        public static List<PermissionConfig> GetSitePermissions(int siteId)
-        {
-            var pairs = AllPlugins.GetEnabledPluginPairs<IMenu>();
-            var permissions = new List<PermissionConfig>();
-
-            foreach (var pluginPair in pairs)
-            {
-                var feature = (IMenu)pluginPair.Plugin;
-                var menu = feature.GetSiteMenu(siteId);
-                if (menu != null)
-                {
-                    permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"插件（{pluginPair.Metadata.DisplayName}）"));
-                }
-            }
-
-            return permissions;
-        }
-
-        public static Dictionary<string, PluginMenu> GetTopMenus()
-        {
-            var pairs = AllPlugins.GetEnabledPluginPairs<IMenu>();
-            if (pairs == null || pairs.Count == 0) return null;
-
-            var menus = new Dictionary<string, PluginMenu>();
-
-            var apiUrl = PageUtils.GetApiUrl();
-
-            foreach (var pluginPair in pairs)
-            {
-                var feature = (IMenu)pluginPair.Plugin;
-
-                var metadataMenu = feature.GetTopMenu();
-                if (metadataMenu == null) continue;
-
-                var menu = PluginUtils.GetMenu(pluginPair.Metadata.Id, metadataMenu, apiUrl, 0, 0);
-
-                menus.Add(pluginPair.Metadata.Id, menu);
-            }
-
-            return menus;
-        }
-
-        public static Dictionary<string, PluginMenu> GetSiteMenus(int siteId)
-        {
-            var pairs = AllPlugins.GetEnabledPluginPairs<IMenu>();
-            if (pairs == null || pairs.Count == 0) return null;
-
-            var menus = new Dictionary<string, PluginMenu>();
-
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
-            var apiUrl = PageUtility.GetApiUrl(publishmentSystemInfo);
-
-            foreach (var pluginPair in pairs)
-            {
-                var feature = (IMenu)pluginPair.Plugin;
-
-                var metadataMenu = feature.GetSiteMenu(siteId);
-                if (metadataMenu == null) continue;
-                var menu = PluginUtils.GetMenu(pluginPair.Metadata.Id, metadataMenu, apiUrl, siteId, 0);
-
-                menus.Add(pluginPair.Metadata.Id, menu);
-            }
-
-            return menus;
-        }
-
-        public static List<ContentModelInfo> GetAllContentModels(PublishmentSystemInfo publishmentSystemInfo)
-        {
-            var cacheName = nameof(GetAllContentModels) + publishmentSystemInfo.PublishmentSystemId;
-            var contentModels = PluginCache.GetCache<List<ContentModelInfo>>(cacheName);
-            if (contentModels != null) return contentModels;
-
-            contentModels = new List<ContentModelInfo>();
-
-            var pairs = AllPlugins.GetEnabledPluginPairs<IContentModel>();
-            foreach (var pluginPair in pairs)
-            {
-                var model = pluginPair.Plugin as IContentModel;
-
-                if (model == null) continue;
-
-                var links = new List<PluginContentLink>();
-                if (model.ContentLinks != null)
-                {
-                    links.AddRange(model.ContentLinks.Select(link => new PluginContentLink
-                    {
-                        Text = link.Text,
-                        Href = PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, link.Href),
-                        Target = link.Target
-                    }));
-                }
-                var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
-                var tableType = EAuxiliaryTableType.BackgroundContent;
-                if (model.IsCustomContentTable && model.CustomContentTableColumns != null && model.CustomContentTableColumns.Count > 0)
-                {
-                    tableName = pluginPair.Metadata.Id;
-                    tableType = EAuxiliaryTableType.Custom;
-                }
-
-                contentModels.Add(new ContentModelInfo(
-                    pluginPair.Metadata.Id,
-                    pluginPair.Metadata.Id,
-                    $"插件：{pluginPair.Metadata.DisplayName}",
-                    tableName,
-                    tableType,
-                    PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, pluginPair.Metadata.Icon),
-                    links)
-                );
-            }
-
-            PluginCache.SetCache(cacheName, contentModels);
-
-            return contentModels;
         }
     }
 }

@@ -2,8 +2,8 @@
 using BaiRong.Core;
 using Word.Plugin;
 using System.Collections.Specialized;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.Core.Office

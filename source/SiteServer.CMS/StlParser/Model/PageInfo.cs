@@ -294,15 +294,7 @@ wnd_frame.src=url;}}
 
         public bool IsPageScriptsExists(string pageJsName, bool isAfterBody)
         {
-            if (isAfterBody)
-            {
-                return _pageAfterBodyScripts.ContainsKey(pageJsName);
-            }
-            else
-            {
-                return _pageBeforeBodyScripts.ContainsKey(pageJsName);
-            }
-
+            return isAfterBody ? _pageAfterBodyScripts.ContainsKey(pageJsName) : _pageBeforeBodyScripts.ContainsKey(pageJsName);
         }
 
         public void AddPageScriptsIfNotExists(string pageJsName)
