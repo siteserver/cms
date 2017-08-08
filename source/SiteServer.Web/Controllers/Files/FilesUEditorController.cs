@@ -70,13 +70,13 @@ namespace SiteServer.API.Controllers.Files
                     }, publishmentSystemId, EUploadType.File);
                     break;
                 case "listimage":
-                    action = new ListFileManager(HttpContext.Current, Config.GetString("imageManagerListPath"), Config.GetStringList("imageManagerAllowFiles"));
+                    action = new ListFileManager(HttpContext.Current, Config.GetString("imageManagerListPath"), Config.GetStringList("imageManagerAllowFiles"), publishmentSystemId, EUploadType.Image);
                     break;
                 case "listfile":
-                    action = new ListFileManager(HttpContext.Current, Config.GetString("fileManagerListPath"), Config.GetStringList("fileManagerAllowFiles"));
+                    action = new ListFileManager(HttpContext.Current, Config.GetString("fileManagerListPath"), Config.GetStringList("fileManagerAllowFiles"), publishmentSystemId, EUploadType.File);
                     break;
                 case "catchimage":
-                    action = new CrawlerHandler(HttpContext.Current);
+                    action = new CrawlerHandler(HttpContext.Current, publishmentSystemId);
                     break;
                 default:
                     action = new NotSupportedHandler(HttpContext.Current);

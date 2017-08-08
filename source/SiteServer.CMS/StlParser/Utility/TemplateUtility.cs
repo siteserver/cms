@@ -20,7 +20,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
         public static string GetContentsItemTemplateString(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
-            //var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
+            var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
             //var contentInfo = new BackgroundContentInfo(itemContainer.ContentItem.DataItem);
 
             ContentItemInfo contentItemInfo = null;
@@ -34,7 +34,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;
-            //contextInfo.ItemContainer = itemContainer;
+            contextInfo.ItemContainer = itemContainer;
             contextInfo.ContainerClientId = containerClientId;
             contextInfo.ChannelId = contentInfo.NodeId;
             contextInfo.ContentId = contentInfo.Id;
