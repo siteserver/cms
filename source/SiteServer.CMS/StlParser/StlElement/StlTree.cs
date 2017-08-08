@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Stl;
 using SiteServer.CMS.Core;
@@ -34,7 +32,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeIsShowTreeLine = "isShowTreeLine";
         public const string AttributeCurrentFormatString = "currentFormatString";
         public const string AttributeTarget = "target";
-        public const string AttributeIsDynamic = "isDynamic";
 
 	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
 	    {
@@ -49,111 +46,79 @@ namespace SiteServer.CMS.StlParser.StlElement
 	        {AttributeIsShowContentNum, "是否显示栏目内容数"},
 	        {AttributeIsShowTreeLine, "是否显示树状线"},
 	        {AttributeCurrentFormatString, "当前项格式化字符串"},
-	        {AttributeTarget, "打开窗口目标"},
-	        {AttributeIsDynamic, "是否动态显示"}
+	        {AttributeTarget, "打开窗口目标"}
 	    };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			string parsedContent;
-			try
-			{
-				var channelIndex = string.Empty;
-				var channelName = string.Empty;
-                var upLevel = 0;
-                var topLevel = -1;
-                var groupChannel = string.Empty;
-                var groupChannelNot = string.Empty;
-                var title = string.Empty;
-                var isLoading = false;
-                var isShowContentNum = false;
-                var isShowTreeLine = true;
-                var currentFormatString = "<strong>{0}</strong>";
-                var isDynamic = false;
-                var attributes = new LowerNameValueCollection();
+		    var channelIndex = string.Empty;
+            var channelName = string.Empty;
+            var upLevel = 0;
+            var topLevel = -1;
+            var groupChannel = string.Empty;
+            var groupChannelNot = string.Empty;
+            var title = string.Empty;
+            var isLoading = false;
+            var isShowContentNum = false;
+            var isShowTreeLine = true;
+            var currentFormatString = "<strong>{0}</strong>";
 
-                var ie = node.Attributes?.GetEnumerator();
-			    if (ie != null)
-			    {
-			        while (ie.MoveNext())
-			        {
-			            var attr = (XmlAttribute) ie.Current;
-
-			            if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
-			            {
-			                channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
-			            {
-			                channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeUpLevel))
-			            {
-			                upLevel = TranslateUtils.ToInt(attr.Value);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTopLevel))
-			            {
-			                topLevel = TranslateUtils.ToInt(attr.Value);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupChannel))
-			            {
-			                groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupChannelNot))
-			            {
-			                groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo,
-			                    contextInfo);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTitle))
-			            {
-			                title = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsLoading))
-			            {
-			                isLoading = TranslateUtils.ToBool(attr.Value, false);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsShowContentNum))
-			            {
-			                isShowContentNum = TranslateUtils.ToBool(attr.Value, false);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsShowTreeLine))
-			            {
-			                isShowTreeLine = TranslateUtils.ToBool(attr.Value, true);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeCurrentFormatString))
-			            {
-			                currentFormatString = attr.Value;
-			                if (!StringUtils.Contains(currentFormatString, "{0}"))
-			                {
-			                    currentFormatString += "{0}";
-			                }
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-			            {
-			                isDynamic = TranslateUtils.ToBool(attr.Value);
-			            }
-			            else
-			            {
-			                attributes.Set(attr.Name, attr.Value);
-			            }
-			        }
-			    }
-
-			    if (isDynamic)
-                {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
-                }
-                else
-                {
-                    parsedContent = isLoading ? ParseImplAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString) : ParseImplNotAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString);
-                }
-			}
-            catch (Exception ex)
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                {
+                    channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                {
+                    channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeUpLevel))
+                {
+                    upLevel = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTopLevel))
+                {
+                    topLevel = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannel))
+                {
+                    groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannelNot))
+                {
+                    groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo,
+                        contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTitle))
+                {
+                    title = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsLoading))
+                {
+                    isLoading = TranslateUtils.ToBool(value, false);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsShowContentNum))
+                {
+                    isShowContentNum = TranslateUtils.ToBool(value, false);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsShowTreeLine))
+                {
+                    isShowTreeLine = TranslateUtils.ToBool(value, true);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeCurrentFormatString))
+                {
+                    currentFormatString = value;
+                    if (!StringUtils.Contains(currentFormatString, "{0}"))
+                    {
+                        currentFormatString += "{0}";
+                    }
+                }
             }
 
-			return parsedContent;
+            return isLoading ? ParseImplAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString) : ParseImplNotAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString);
 		}
 
         private static string ParseImplNotAjax(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, int upLevel, int topLevel, string groupChannel, string groupChannelNot, string title, bool isShowContentNum, bool isShowTreeLine, string currentFormatString)

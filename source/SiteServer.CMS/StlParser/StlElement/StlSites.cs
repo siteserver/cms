@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -22,7 +20,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeScope = "scope";
         public const string AttributeOrder = "order";
         public const string AttributeSince = "since";
-        public const string AttributeIsDynamic = "isDynamic";
         public const string AttributeCellPadding = "cellPadding";
         public const string AttributeCellSpacing = "cellSpacing";
         public const string AttributeClass = "class";
@@ -61,25 +58,14 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeWhere, "获取站点列表的条件判断"},
             {AttributeScope, "范围"},
             {AttributeOrder, "排序"},
-            {AttributeSince, "时间段"},
-            {AttributeIsDynamic, "是否动态显示"}
+            {AttributeSince, "时间段"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
-            {
-                var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Site);
+            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Site);
 
-                parsedContent = listInfo.IsDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, listInfo);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
-
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, listInfo);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)

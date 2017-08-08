@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Text;
 using System.Web.UI.WebControls;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
@@ -30,14 +29,14 @@ namespace SiteServer.CMS.StlParser.Model
         private bool _isVideo;
         private bool _isFile;
 
-        public static ListInfo GetListInfoByXmlNode(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, EContextType contextType)
+        public static ListInfo GetListInfoByXmlNode(PageInfo pageInfo, ContextInfo contextInfo, EContextType contextType)
         {
             var listInfo = new ListInfo
             {
                 _contextType = contextType
             };
 
-            var innerXml = node.InnerXml;
+            var innerXml = contextInfo.InnerXml;
             var itemTemplate = string.Empty;
 
             if (!string.IsNullOrEmpty(innerXml))
@@ -157,238 +156,233 @@ namespace SiteServer.CMS.StlParser.Model
                 listInfo.ItemTemplate = itemTemplate;
             }
 
-            var ie = node.Attributes.GetEnumerator();
             var isSetDirection = false;//是否设置了direction属性
 
-            while (ie.MoveNext())
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var attr = (XmlAttribute)ie.Current;
+                var value = contextInfo.Attributes[name];
 
-                if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeChannelIndex))
+                if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeChannelIndex))
                 {
-                    listInfo.ChannelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                    listInfo.ChannelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeChannelName))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeChannelName))
                 {
-                    listInfo.ChannelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                    listInfo.ChannelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeUpLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeUpLevel))
                 {
-                    listInfo.UpLevel = TranslateUtils.ToInt(attr.Value);
+                    listInfo.UpLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeTopLevel))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeTopLevel))
                 {
-                    listInfo.TopLevel = TranslateUtils.ToInt(attr.Value);
+                    listInfo.TopLevel = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeScope))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeScope))
                 {
-                    listInfo.Scope = EScopeTypeUtils.GetEnumType(attr.Value);
+                    listInfo.Scope = EScopeTypeUtils.GetEnumType(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeIsTop))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeIsTop))
                 {
-                    listInfo.IsTop = TranslateUtils.ToBool(attr.Value);
+                    listInfo.IsTop = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeIsRecommend))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeIsRecommend))
                 {
-                    listInfo.IsRecommend = TranslateUtils.ToBool(attr.Value);
+                    listInfo.IsRecommend = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeIsHot))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeIsHot))
                 {
-                    listInfo.IsHot = TranslateUtils.ToBool(attr.Value);
+                    listInfo.IsHot = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeIsColor))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeIsColor))
                 {
-                    listInfo.IsColor = TranslateUtils.ToBool(attr.Value);
+                    listInfo.IsColor = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeWhere))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeWhere))
                 {
-                    listInfo.Where = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                    listInfo.Where = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeIsDynamic))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeTotalNum))
                 {
-                    listInfo.IsDynamic = TranslateUtils.ToBool(attr.Value);
+                    listInfo.TotalNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo));
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeTotalNum))
+                else if (StringUtils.EqualsIgnoreCase(name, StlPageContents.AttributePageNum))
                 {
-                    listInfo.TotalNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo));
+                    listInfo.PageNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo));
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlPageContents.AttributePageNum))
+                else if (StringUtils.EqualsIgnoreCase(name, StlPageContents.AttributeMaxPage))
                 {
-                    listInfo.PageNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo));
+                    listInfo.MaxPage = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo));
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlPageContents.AttributeMaxPage))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeTitleWordNum))
                 {
-                    listInfo.MaxPage = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo));
+                    listInfo.TitleWordNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo));
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeTitleWordNum))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeStartNum))
                 {
-                    listInfo.TitleWordNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo));
+                    listInfo.StartNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo));
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeStartNum))
-                {
-                    listInfo.StartNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo));
-                }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeOrder))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeOrder))
                 {
                     if (contextType == EContextType.Content)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
+                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
                     }
                     else if (contextType == EContextType.Channel)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.Channel, ETaxisType.OrderByTaxis, pageInfo.Guid);
+                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.Channel, ETaxisType.OrderByTaxis, pageInfo.Guid);
                     }
                     else if (contextType == EContextType.InputContent)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
+                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
                     }
                     else
                     {
-                        listInfo.OrderByString = attr.Value;
+                        listInfo.OrderByString = value;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeGroupChannel))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeGroupChannel))
                 {
-                    listInfo.GroupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                    listInfo.GroupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (string.IsNullOrEmpty(listInfo.GroupChannel))
                     {
                         listInfo.GroupChannel = "__Empty__";
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeGroupChannelNot))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeGroupChannelNot))
                 {
-                    listInfo.GroupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                    listInfo.GroupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (string.IsNullOrEmpty(listInfo.GroupChannelNot))
                     {
                         listInfo.GroupChannelNot = "__Empty__";
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeGroupContent) || StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeGroup))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeGroupContent) || StringUtils.EqualsIgnoreCase(name, StlContents.AttributeGroup))
                 {
-                    listInfo.GroupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                    listInfo.GroupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (string.IsNullOrEmpty(listInfo.GroupContent))
                     {
                         listInfo.GroupContent = "__Empty__";
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeGroupContentNot) || StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeGroupNot))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeGroupContentNot) || StringUtils.EqualsIgnoreCase(name, StlContents.AttributeGroupNot))
                 {
-                    listInfo.GroupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                    listInfo.GroupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (string.IsNullOrEmpty(listInfo.GroupContentNot))
                     {
                         listInfo.GroupContentNot = "__Empty__";
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeTags))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeTags))
                 {
-                    listInfo.Tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+                    listInfo.Tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeColumns))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeColumns))
                 {
-                    listInfo.Columns = TranslateUtils.ToInt(attr.Value);
+                    listInfo.Columns = TranslateUtils.ToInt(value);
                     listInfo.Layout = ELayout.Table;
                     if (listInfo.Columns > 1 && isSetDirection == false)
                     {
                         listInfo.Direction = RepeatDirection.Horizontal;
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeDirection))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeDirection))
                 {
                     listInfo.Layout = ELayout.Table;
-                    listInfo.Direction = Converter.ToRepeatDirection(attr.Value);
+                    listInfo.Direction = Converter.ToRepeatDirection(value);
                     isSetDirection = true;
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeHeight))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeHeight))
                 {
                     try
                     {
-                        listInfo.Height = Unit.Parse(attr.Value);
+                        listInfo.Height = Unit.Parse(value);
                     }
                     catch
                     {
                         // ignored
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeWidth))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeWidth))
                 {
                     try
                     {
-                        listInfo.Width = Unit.Parse(attr.Value);
+                        listInfo.Width = Unit.Parse(value);
                     }
                     catch
                     {
                         // ignored
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeAlign))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeAlign))
                 {
-                    listInfo.Align = attr.Value;
+                    listInfo.Align = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeItemHeight))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeItemHeight))
                 {
                     try
                     {
-                        listInfo.ItemHeight = Unit.Parse(attr.Value);
+                        listInfo.ItemHeight = Unit.Parse(value);
                     }
                     catch
                     {
                         // ignored
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeItemWidth))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeItemWidth))
                 {
                     try
                     {
-                        listInfo.ItemWidth = Unit.Parse(attr.Value);
+                        listInfo.ItemWidth = Unit.Parse(value);
                     }
                     catch
                     {
                         // ignored
                     }
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeItemAlign))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeItemAlign))
                 {
-                    listInfo.ItemAlign = attr.Value;
+                    listInfo.ItemAlign = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeItemVerticalAlign))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeItemVerticalAlign))
                 {
-                    listInfo.ItemVerticalAlign = attr.Value;
+                    listInfo.ItemVerticalAlign = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeItemClass))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeItemClass))
                 {
-                    listInfo.ItemClass = attr.Value;
+                    listInfo.ItemClass = value;
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeIsImage))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeIsImage))
                 {
-                    listInfo.IsImage = TranslateUtils.ToBool(attr.Value);
+                    listInfo.IsImage = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeIsVideo))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeIsVideo))
                 {
-                    listInfo.IsVideo = TranslateUtils.ToBool(attr.Value);
+                    listInfo.IsVideo = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeIsFile))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeIsFile))
                 {
-                    listInfo.IsFile = TranslateUtils.ToBool(attr.Value);
+                    listInfo.IsFile = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeIsNoDup))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeIsNoDup))
                 {
-                    listInfo.IsNoDup = TranslateUtils.ToBool(attr.Value);
+                    listInfo.IsNoDup = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeIsRelatedContents))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeIsRelatedContents))
                 {
-                    listInfo.IsRelatedContents = TranslateUtils.ToBool(attr.Value);
+                    listInfo.IsRelatedContents = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(attr.Name, StlContents.AttributeLayout))
+                else if (StringUtils.EqualsIgnoreCase(name, StlContents.AttributeLayout))
                 {
-                    listInfo.Layout = ELayoutUtils.GetEnumType(attr.Value);
+                    listInfo.Layout = ELayoutUtils.GetEnumType(value);
                 }
-                else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(attr.Name, StlSqlContents.AttributeConnectionString))
+                else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.AttributeConnectionString))
                 {
-                    listInfo.ConnectionString = attr.Value;
+                    listInfo.ConnectionString = value;
                 }
-                else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(attr.Name, StlSqlContents.AttributeConnectionStringName))
+                else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.AttributeConnectionStringName))
                 {
-                    listInfo.ConnectionString = WebConfigUtils.GetConnectionStringByName(attr.Value);
+                    listInfo.ConnectionString = WebConfigUtils.GetConnectionStringByName(value);
                     if (string.IsNullOrEmpty(listInfo.ConnectionString))
                     {
                         listInfo.ConnectionString = WebConfigUtils.ConnectionString;
@@ -396,7 +390,7 @@ namespace SiteServer.CMS.StlParser.Model
                 }
                 else
                 {
-                    listInfo.Others.Set(attr.Name, attr.Value);
+                    listInfo.Others.Set(name, value);
                 }
             }
 
@@ -621,8 +615,6 @@ namespace SiteServer.CMS.StlParser.Model
         public bool IsColorExists { get; private set; }
 
         public string Where { get; set; } = string.Empty;
-
-        public bool IsDynamic { get; set; }
 
         public LowerNameValueCollection Others { get; set; } = new LowerNameValueCollection();
     }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web.UI;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Controllers.Stl;
@@ -25,15 +24,13 @@ namespace SiteServer.CMS.StlParser.StlElement
         private const string AttributeOperate = "operate";				                            //测试操作
         private const string AttributeValue = "value";				                                //测试值
         private const string AttributeContext = "context";                                          //所处上下文
-        private const string AttributeIsDynamic = "isDynamic";                                      //是否动态显示
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeType, "测试类型"},
             {AttributeOperate, "测试操作"},
             {AttributeValue, "测试值"},
-            {AttributeContext, "所处上下文"},
-            {AttributeIsDynamic, "是否动态显示"}
+            {AttributeContext, "所处上下文"}
         };
 
         public const string TypeIsUserLoggin = "IsUserLoggin";                                      //用户是否已登录
@@ -99,63 +96,43 @@ namespace SiteServer.CMS.StlParser.StlElement
         };
 
 
-        internal static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
+        internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            var contextInfo = contextInfoRef.Clone();
-            try
-            {
-                var testTypeStr = string.Empty;
-                var testOperate = OperateEquals;
-                var testValue = string.Empty;
-                var isDynamic = false;
+            var testTypeStr = string.Empty;
+            var testOperate = OperateEquals;
+            var testValue = string.Empty;
 
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+            foreach (var name in contextInfo.Attributes.Keys)
+            {
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeType) || StringUtils.EqualsIgnoreCase(name, "testType"))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType) || StringUtils.EqualsIgnoreCase(attr.Name, "testType"))
-                        {
-                            testTypeStr = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeOperate) || StringUtils.EqualsIgnoreCase(attr.Name, "testOperate"))
-                        {
-                            testOperate = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeValue) || StringUtils.EqualsIgnoreCase(attr.Name, "testValue"))
-                        {
-                            testValue = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeContext))
-                        {
-                            contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                    }
+                    testTypeStr = value;
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, testTypeStr, testOperate, testValue);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeOperate) || StringUtils.EqualsIgnoreCase(name, "testOperate"))
+                {
+                    testOperate = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeValue) || StringUtils.EqualsIgnoreCase(name, "testValue"))
+                {
+                    testValue = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
+                {
+                    contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
+                }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, testTypeStr, testOperate, testValue);
         }
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string testType, string testOperate, string testValue)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testOperate, string testValue)
         {
             string successTemplateString;
             string failureTemplateString;
 
-            StlInnerUtility.GetYesNo(node, pageInfo, out successTemplateString, out failureTemplateString);
+            StlInnerUtility.GetYesNo(pageInfo, contextInfo.InnerXml, out successTemplateString, out failureTemplateString);
 
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) ||
                 StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) ||

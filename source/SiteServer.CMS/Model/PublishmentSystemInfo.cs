@@ -1,6 +1,5 @@
 using System;
 using System.Xml.Serialization;
-using BaiRong.Core.Model.Enumerations;
 
 namespace SiteServer.CMS.Model
 {

@@ -47,7 +47,7 @@ namespace SiteServer.API.Controllers.Files
                                     errorMessage = "上传图片格式不正确！";
                                     break;
                                 }
-                                else if (!PathUtility.IsImageSizeAllowed(publishmentSystemInfo, postedFile.ContentLength))
+                                if (!PathUtility.IsImageSizeAllowed(publishmentSystemInfo, postedFile.ContentLength))
                                 {
                                     errorMessage = "上传失败，上传图片超出规定文件大小！";
                                     break;

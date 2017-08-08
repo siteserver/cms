@@ -505,13 +505,13 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (elementName == StlChannels.ElementName)
             {
-                var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Channel);
+                var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Channel);
 
                 return StlChannels.GetDataSource(pageInfo, contextInfo, listInfo);
             }
             if (elementName == StlContents.ElementName)
             {
-                var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Content);
+                var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Content);
 
                 return StlContents.GetDataSource(pageInfo, contextInfo, listInfo);
             }

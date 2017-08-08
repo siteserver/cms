@@ -37,12 +37,34 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             _stlPageCommentsElement = stlPageCommentsElement;
             _pageInfo = pageInfo;
-            _contextInfo = contextInfo;
             var xmlDocument = StlParserUtility.GetXmlDocument(_stlPageCommentsElement, isXmlContent);
             _node = xmlDocument.DocumentElement;
             _node = _node?.FirstChild;
 
-            ListInfo = ListInfo.GetListInfoByXmlNode(_node, _pageInfo, _contextInfo, EContextType.Comment);
+            var attributes = new Dictionary<string, string>();
+            var ie = _node?.Attributes?.GetEnumerator();
+            if (ie != null)
+            {
+                while (ie.MoveNext())
+                {
+                    var attr = (XmlAttribute)ie.Current;
+
+                    var key = attr.Name;
+                    if (!string.IsNullOrEmpty(key))
+                    {
+                        var value = attr.Value;
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            value = string.Empty;
+                        }
+                        attributes[key] = value;
+                    }
+                }
+            }
+
+            _contextInfo = contextInfo.Clone(stlPageCommentsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
+
+            ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Comment);
 
             _dataSet = StlDataUtility.GetPageCommentsDataSet(_pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, null, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.IsRecommend, ListInfo.OrderByString, ListInfo.Where, _pageInfo.Guid);
         }

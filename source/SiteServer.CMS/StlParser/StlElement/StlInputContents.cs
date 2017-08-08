@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
@@ -62,21 +60,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeItemClass, "项Css类"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
-            {
-                var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.InputContent);
+            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.InputContent);
 
-                parsedContent = listInfo.IsDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, listInfo);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
-
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, listInfo);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)

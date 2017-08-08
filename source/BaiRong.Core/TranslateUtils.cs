@@ -749,6 +749,25 @@ namespace BaiRong.Core
             return builder.ToString();
         }
 
+        public static string ToAttributesString(Dictionary<string, string> attributes)
+        {
+            var builder = new StringBuilder();
+            if (attributes != null && attributes.Count > 0)
+            {
+                foreach (var key in attributes.Keys)
+                {
+                    var value = attributes[key];
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        value = value.Replace("\"", "'");
+                    }
+                    builder.Append($@"{key}=""{value}"" ");
+                }
+                builder.Length--;
+            }
+            return builder.ToString();
+        }
+
         public static NameValueCollection ParseJsonStringToNameValueCollection(string jsonString)
         {
             var nameValueCollection = new NameValueCollection();

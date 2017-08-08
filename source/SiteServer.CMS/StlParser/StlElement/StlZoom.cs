@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.HtmlControls;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -17,63 +15,41 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public const string AttributeZoomId = "zoomId";
         public const string AttributeFontSize = "fontSize";
-        public const string AttributeIsDynamic = "isDynamic";
 
 	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
 	    {
 	        {AttributeZoomId, "页面HTML中缩放对象的ID属性"},
-	        {AttributeFontSize, "缩放字体大小"},
-	        {AttributeIsDynamic, "是否动态显示"}
+	        {AttributeFontSize, "缩放字体大小"}
 	    };
 
-        //对“文字缩放”（stl:zoom）元素进行解析
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			string parsedContent;
-			try
-			{
-                var zoomId = string.Empty;
-                var fontSize = 16;
-                var isDynamic = false;
-                var stlAnchor = new HtmlAnchor();
+		    var zoomId = string.Empty;
+            var fontSize = 16;
+            var stlAnchor = new HtmlAnchor();
 
-                var ie = node.Attributes?.GetEnumerator();
-			    if (ie != null)
-			    {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeZoomId))
-                        {
-                            zoomId = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeFontSize))
-                        {
-                            fontSize = TranslateUtils.ToInt(attr.Value, 16);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else
-                        {
-                            ControlUtils.AddAttributeIfNotExists(stlAnchor, attr.Name, attr.Value);
-                        }
-                    }
-                }		    
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, stlAnchor, zoomId, fontSize);
-			}
-            catch (Exception ex)
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeZoomId))
+                {
+                    zoomId = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeFontSize))
+                {
+                    fontSize = TranslateUtils.ToInt(value, 16);
+                }
+                else
+                {
+                    ControlUtils.AddAttributeIfNotExists(stlAnchor, name, value);
+                }
             }
 
-			return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, stlAnchor, zoomId, fontSize);
 		}
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string zoomId, int fontSize)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string zoomId, int fontSize)
         {
             if (string.IsNullOrEmpty(zoomId))
             {
@@ -98,13 +74,13 @@ function stlDoZoom(zoomId, size){
 </script>
 ");
 
-            if (node.InnerXml.Trim().Length == 0)
+            if (string.IsNullOrEmpty(contextInfo.InnerXml))
             {
                 stlAnchor.InnerHtml = "缩放";
             }
             else
             {
-                var innerBuilder = new StringBuilder(node.InnerXml);
+                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                 stlAnchor.InnerHtml = innerBuilder.ToString();
             }

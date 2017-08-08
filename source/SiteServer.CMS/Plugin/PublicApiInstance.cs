@@ -161,5 +161,20 @@ namespace SiteServer.CMS.Plugin
             var body = new RequestBody();
             return PermissionsManager.HasAdministratorPermissions(body.AdministratorName, _metadata.Id + siteId);
         }
+
+        public string GetUploadFilePath(int siteId, string fileName)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var localDirectoryPath = PathUtility.GetUploadDirectoryPath(publishmentSystemInfo, PathUtils.GetExtension(fileName));
+            var localFileName = PathUtility.GetUploadFileName(publishmentSystemInfo, fileName);
+            return PathUtils.Combine(localDirectoryPath, localFileName);
+        }
+
+        public string GetUrlByFilePath(string filePath)
+        {
+            var siteId = GetSiteIdByFilePath(filePath);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath);
+        }
     }
 }

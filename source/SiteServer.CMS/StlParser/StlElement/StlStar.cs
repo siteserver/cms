@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Cache;
@@ -24,7 +23,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeFailureMessage = "failureMessage";
         public const string AttributeTheme = "theme";
         public const string AttributeIsTextOnly = "isTextOnly";
-        public const string AttributeIsDynamic = "isDynamic";
 
 	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
 	    {
@@ -33,75 +31,55 @@ namespace SiteServer.CMS.StlParser.StlElement
 	        {AttributeSuccessMessage, "评分成功提示信息"},
 	        {AttributeFailureMessage, "评分失败提示信息"},
 	        {AttributeTheme, "主题样式"},
-	        {AttributeIsTextOnly, "仅显示评分数"},
-	        {AttributeIsDynamic, "是否动态显示"}
+	        {AttributeIsTextOnly, "仅显示评分数"}
 	    };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			string parsedContent;
-			try
-			{
-                var totalStar = 10;
-                var initStar = 0;
-                var successMessage = string.Empty;
-                var failureMessage = "对不起，不能重复操作!";
-                var theme = "style1";
-                var isTextOnly = false;
-                var isDynamic = false;
+		    var totalStar = 10;
+            var initStar = 0;
+            var successMessage = string.Empty;
+            var failureMessage = "对不起，不能重复操作!";
+            var theme = "style1";
+            var isTextOnly = false;
 
-                var ie = node.Attributes?.GetEnumerator();
-			    if (ie != null)
-			    {
-			        while (ie.MoveNext())
-			        {
-			            var attr = (XmlAttribute) ie.Current;
-
-			            if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTotalStar))
-			            {
-			                totalStar = TranslateUtils.ToInt(attr.Value, totalStar);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeInitStar))
-			            {
-			                initStar = TranslateUtils.ToInt(attr.Value, 0);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSuccessMessage))
-			            {
-			                successMessage = attr.Value;
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeFailureMessage))
-			            {
-			                failureMessage = attr.Value;
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTheme))
-			            {
-			                theme = attr.Value;
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsTextOnly))
-			            {
-			                isTextOnly = TranslateUtils.ToBool(attr.Value);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-			            {
-			                isDynamic = TranslateUtils.ToBool(attr.Value);
-			            }
-			        }
-			    }
-
-			    pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, totalStar, initStar, successMessage, failureMessage, theme, isTextOnly);
-			}
-            catch (Exception ex)
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeTotalStar))
+                {
+                    totalStar = TranslateUtils.ToInt(value, totalStar);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeInitStar))
+                {
+                    initStar = TranslateUtils.ToInt(value, 0);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeSuccessMessage))
+                {
+                    successMessage = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeFailureMessage))
+                {
+                    failureMessage = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTheme))
+                {
+                    theme = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTextOnly))
+                {
+                    isTextOnly = TranslateUtils.ToBool(value);
+                }
             }
 
-			return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, totalStar, initStar, successMessage, failureMessage, theme, isTextOnly);
 		}
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, int totalStar, int initStar, string successMessage, string failureMessage, string theme, bool isTextOnly)
         {
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+
             var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
             var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
             var contentId = ContentUtility.GetRealContentId(tableStyle, tableName, contextInfo.ContentId);

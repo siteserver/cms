@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
@@ -30,16 +31,7 @@ namespace SiteServer.CMS.StlParser.Parser
                     var startIndex = parsedBuilder.ToString().IndexOf(stlElement, StringComparison.Ordinal);
                     if (startIndex == -1) continue;
 
-                    //DateTime start = DateTime.Now;
                     var parsedContent = ParseStlElement(stlElement, pageInfo, contextInfo);
-                    //DateTime end = DateTime.Now;
-                    //int retval = DateDiff(end, start);
-                    //if (retval > 5)
-                    //{
-                    //    resultContent += $@"
-                    //<!-- {stlElement} --><!-- {DateDiff(end, start)} -->
-                    //";
-                    //}
                     parsedBuilder.Replace(stlElement, parsedContent, startIndex, stlElement.Length);
                 }
                 catch
@@ -49,24 +41,7 @@ namespace SiteServer.CMS.StlParser.Parser
             }
         }
 
-        //private static int DateDiff(DateTime DateTime1, DateTime DateTime2)
-        //{
-        //    int retval = 0;
-        //    try
-        //    {
-        //        TimeSpan ts1 = new TimeSpan(DateTime1.Ticks);
-        //        TimeSpan ts2 = new TimeSpan(DateTime2.Ticks);
-        //        TimeSpan ts = ts1.Subtract(ts2).Duration();
-        //        retval = ts.Milliseconds;                
-        //    }
-        //    catch
-        //    {
-
-        //    }
-        //    return retval;
-        //}
-
-        private static readonly Dictionary<string, Func<string, XmlNode, PageInfo, ContextInfo, string>> ElementsToParseDic = new Dictionary<string, Func<string, XmlNode, PageInfo, ContextInfo, string>>
+        private static readonly Dictionary<string, Func<PageInfo, ContextInfo, string>> ElementsToParseDic = new Dictionary<string, Func<PageInfo, ContextInfo, string>>
         {
             {StlA.ElementName.ToLower(), StlA.Parse},
             {StlAction.ElementName.ToLower(), StlAction.Parse},
@@ -127,11 +102,11 @@ namespace SiteServer.CMS.StlParser.Parser
 
         private static readonly Dictionary<string, Func<string, string>> ElementsToTranslateDic = new Dictionary<string, Func<string, string>>
         {
-            {StlPageContents.ElementName.ToLower(), StlPageContents.Translate},
-            {StlPageChannels.ElementName.ToLower(), StlPageChannels.Translate},
-            {StlPageSqlContents.ElementName.ToLower(), StlPageSqlContents.Translate},
-            {StlPageInputContents.ElementName.ToLower(), StlPageInputContents.Translate},
-            {StlPageItems.ElementName.ToLower(), StlPageItems.Translate}
+            {StlPageContents.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
+            {StlPageChannels.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
+            {StlPageSqlContents.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
+            {StlPageInputContents.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
+            {StlPageItems.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey}
         };
 
         internal static string ParseStlElement(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)
@@ -160,10 +135,56 @@ namespace SiteServer.CMS.StlParser.Parser
                     }
                     else if (ElementsToParseDic.ContainsKey(elementName))
                     {
-                        Func<string, XmlNode, PageInfo, ContextInfo, string> func;
-                        if (ElementsToParseDic.TryGetValue(elementName, out func))
+                        var isDynamic = false;
+                        var attributes = new Dictionary<string, string>();
+                        var innerXml = StringUtils.Trim(node.InnerXml);
+                        var childNodes = node.ChildNodes;
+
+                        var ie = node.Attributes?.GetEnumerator();
+                        if (ie != null)
+                        {   
+                            while (ie.MoveNext())
+                            {
+                                var attr = (XmlAttribute)ie.Current;
+
+                                if (StringUtils.EqualsIgnoreCase(attr.Name, "isDynamic"))
+                                {
+                                    isDynamic = TranslateUtils.ToBool(attr.Value, false);
+                                }
+                                else
+                                {
+                                    var key = attr.Name;
+                                    if (!string.IsNullOrEmpty(key))
+                                    {
+                                        var value = attr.Value;
+                                        if (string.IsNullOrEmpty(StringUtils.Trim(value)))
+                                        {
+                                            value = string.Empty;
+                                        }
+                                        attributes[key] = value;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (isDynamic)
                         {
-                            parsedContent = func(stlElement, node, pageInfo, contextInfo);
+                            parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                Func<PageInfo, ContextInfo, string> func;
+                                if (ElementsToParseDic.TryGetValue(elementName, out func))
+                                {
+                                    parsedContent = func(pageInfo, contextInfo.Clone(stlElement, attributes, innerXml, childNodes));
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                parsedContent = StlParserUtility.GetStlErrorMessage(elementName, stlElement, ex);
+                            }
                         }
                     }
                 }

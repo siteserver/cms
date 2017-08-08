@@ -26,7 +26,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeStyle = "style";
         public const string AttributeAddNum = "addNum";
         public const string AttributeSince = "since";
-        public const string AttributeIsDynamic = "isDynamic";
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
@@ -37,8 +36,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeIsAverage, "是否显示日均量"},
             {AttributeStyle, "显示样式"},
             {AttributeAddNum, "添加数目"},
-            {AttributeSince, "时间段"},
-            {AttributeIsDynamic, "是否动态显示"}
+            {AttributeSince, "时间段"}
         };
 
         public static readonly string TypePageView = "PageView";
@@ -61,85 +59,66 @@ namespace SiteServer.CMS.StlParser.StlElement
             {ScopePage, "统计页面"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
+            var isGetUrlFromAttribute = false;
+            var channelIndex = string.Empty;
+            var channelName = string.Empty;
+
+            var type = TypePageView;
+            var scope = ScopePage;
+            var isAverage = false;
+            var style = string.Empty;
+            var addNum = 0;
+            var since = string.Empty;
+
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var ie = node.Attributes?.GetEnumerator();
+                var value = contextInfo.Attributes[name];
 
-                var isGetUrlFromAttribute = false;
-                var channelIndex = string.Empty;
-                var channelName = string.Empty;
-
-                var type = TypePageView;
-                var scope = ScopePage;
-                var isAverage = false;
-                var style = string.Empty;
-                var addNum = 0;
-                var since = string.Empty;
-                var isDynamic = false;
-
-                if (ie != null)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
                 {
-                    while (ie.MoveNext())
+                    channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    if (!string.IsNullOrEmpty(channelIndex))
                     {
-                        var attr = (XmlAttribute)ie.Current;
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
-                        {
-                            channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                            if (!string.IsNullOrEmpty(channelIndex))
-                            {
-                                isGetUrlFromAttribute = true;
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
-                        {
-                            channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                            if (!string.IsNullOrEmpty(channelName))
-                            {
-                                isGetUrlFromAttribute = true;
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeScope))
-                        {
-                            scope = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsAverage))
-                        {
-                            isAverage = TranslateUtils.ToBool(attr.Value, false);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeStyle))
-                        {
-                            style = ETrackerStyleUtils.GetValue(ETrackerStyleUtils.GetEnumType(attr.Value));
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeAddNum))
-                        {
-                            addNum = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSince))
-                        {
-                            since = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
+                        isGetUrlFromAttribute = true;
                     }
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, isGetUrlFromAttribute, channelIndex, channelName, type, scope, isAverage, style, addNum, since);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                {
+                    channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    if (!string.IsNullOrEmpty(channelName))
+                    {
+                        isGetUrlFromAttribute = true;
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                {
+                    type = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeScope))
+                {
+                    scope = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsAverage))
+                {
+                    isAverage = TranslateUtils.ToBool(value, false);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeStyle))
+                {
+                    style = ETrackerStyleUtils.GetValue(ETrackerStyleUtils.GetEnumType(value));
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeAddNum))
+                {
+                    addNum = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeSince))
+                {
+                    since = value;
+                }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, isGetUrlFromAttribute, channelIndex, channelName, type, scope, isAverage, style, addNum, since);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, bool isGetUrlFromAttribute, string channelIndex, string channelName , string type, string scope, bool isAverage, string style, int addNum, string since)

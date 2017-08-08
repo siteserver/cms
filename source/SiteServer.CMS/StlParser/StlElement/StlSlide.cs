@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -16,46 +13,10 @@ namespace SiteServer.CMS.StlParser.StlElement
 	{
         private StlSlide() { }
 		public const string ElementName = "stl:slide";
-		
-        public const string AttributeIsDynamic = "isDynamic";
 
-	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
-	    {
-	        {AttributeIsDynamic, "是否动态显示"}
-	    };
+        public static SortedList<string, string> AttributeList => null;
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
-		{
-			string parsedContent;
-            try
-            {
-                var isDynamic = false;
-
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
-                {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute) ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                    }
-                }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
-
-			return parsedContent;
-		}
-
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
             pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcSwfObject);

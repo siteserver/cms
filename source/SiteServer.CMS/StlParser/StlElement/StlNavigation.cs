@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.HtmlControls;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Cache;
@@ -21,7 +19,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeEmptyText = "emptyText";
         public const string AttributeTipText = "tipText";
         public const string AttributeWordNum = "wordNum";
-        public const string AttributeIsDynamic = "isDynamic";
         public const string AttributeIsKeyboard = "isKeyboard";
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
@@ -30,7 +27,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeEmptyText, "当无内容时显示的信息"},
             {AttributeTipText, "导航提示信息"},
             {AttributeWordNum, "显示字数"},
-            {AttributeIsDynamic, "是否动态显示"},
             {AttributeIsKeyboard, "是否开启键盘，↑↓←→键分别为上下左右"}
         };
 
@@ -47,75 +43,55 @@ namespace SiteServer.CMS.StlParser.StlElement
             {TypeNextContent, "下一内容链接"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            var contextInfo = contextInfoRef.Clone();
-            try
-            {
-                var stlAnchor = new HtmlAnchor();
-                var type = TypeNextContent;
-                var emptyText = string.Empty;
-                var tipText = string.Empty;
-                var wordNum = 0;
-                var isDynamic = false;
-                var isKeyboard = false;
+            var stlAnchor = new HtmlAnchor();
+            var type = TypeNextContent;
+            var emptyText = string.Empty;
+            var tipText = string.Empty;
+            var wordNum = 0;
+            var isKeyboard = false;
 
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+            foreach (var name in contextInfo.Attributes.Keys)
+            {
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeEmptyText))
-                        {
-                            emptyText = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTipText))
-                        {
-                            tipText = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWordNum))
-                        {
-                            wordNum = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsKeyboard))
-                        {
-                            isKeyboard = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else
-                        {
-                            ControlUtils.AddAttributeIfNotExists(stlAnchor, attr.Name, attr.Value);
-                        }
-                    }
+                    type = value;
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, stlAnchor, type, emptyText, tipText, wordNum, isKeyboard);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeEmptyText))
+                {
+                    emptyText = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTipText))
+                {
+                    tipText = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeWordNum))
+                {
+                    wordNum = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsKeyboard))
+                {
+                    isKeyboard = TranslateUtils.ToBool(value);
+                }
+                else
+                {
+                    ControlUtils.AddAttributeIfNotExists(stlAnchor, name, value);
+                }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, stlAnchor, type, emptyText, tipText, wordNum, isKeyboard);
         }
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string type, string emptyText, string tipText, int wordNum, bool isKeyboard)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string type, string emptyText, string tipText, int wordNum, bool isKeyboard)
         {
             string parsedContent;
 
             string successTemplateString;
             string failureTemplateString;
-            StlInnerUtility.GetYesNo(node, pageInfo, out successTemplateString, out failureTemplateString);
+            StlInnerUtility.GetYesNo(pageInfo, contextInfo.InnerXml, out successTemplateString, out failureTemplateString);
 
             if (string.IsNullOrEmpty(successTemplateString))
             {
@@ -137,7 +113,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         stlAnchor.HRef = url;
 
-                        if (string.IsNullOrEmpty(node.InnerXml))
+                        if (string.IsNullOrEmpty(contextInfo.InnerXml))
                         {
                             stlAnchor.InnerHtml = NodeManager.GetNodeName(pageInfo.PublishmentSystemId, siblingNodeId);
                             if (wordNum > 0)
@@ -148,7 +124,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else
                         {
                             contextInfo.ChannelId = siblingNodeId;
-                            var innerBuilder = new StringBuilder(node.InnerXml);
+                            var innerBuilder = new StringBuilder(contextInfo.InnerXml);
                             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                             stlAnchor.InnerHtml = innerBuilder.ToString();
                         }
@@ -190,7 +166,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 pageInfo.SetPageScripts(nextOrPrevious, scriptContent.ToString(), true);
                             }
 
-                            if (string.IsNullOrEmpty(node.InnerXml))
+                            if (string.IsNullOrEmpty(contextInfo.InnerXml))
                             {
                                 stlAnchor.InnerHtml = siblingContentInfo.Title;
                                 if (wordNum > 0)
@@ -200,7 +176,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             }
                             else
                             {
-                                var innerBuilder = new StringBuilder(node.InnerXml);
+                                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
                                 contextInfo.ContentId = siblingContentId;
                                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                                 stlAnchor.InnerHtml = innerBuilder.ToString();

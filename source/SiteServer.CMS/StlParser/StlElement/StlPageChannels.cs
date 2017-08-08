@@ -36,21 +36,38 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
         }
 
-        public static string Translate(string stlElement)
-        {
-            return TranslateUtils.EncryptStringBySecretKey(stlElement);
-        }
-
         public StlPageChannels(string stlPageChannelsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
         {
             _stlPageChannelsElement = stlPageChannelsElement;
             _pageInfo = pageInfo;
-            _contextInfo = contextInfo;
             var xmlDocument = StlParserUtility.GetXmlDocument(_stlPageChannelsElement, isXmlContent);
             _node = xmlDocument.DocumentElement;
             _node = _node?.FirstChild;
 
-            DisplayInfo = ListInfo.GetListInfoByXmlNode(_node, pageInfo, _contextInfo, EContextType.Channel);
+            var attributes = new Dictionary<string, string>();
+            var ie = _node?.Attributes?.GetEnumerator();
+            if (ie != null)
+            {
+                while (ie.MoveNext())
+                {
+                    var attr = (XmlAttribute)ie.Current;
+
+                    var key = attr.Name;
+                    if (!string.IsNullOrEmpty(key))
+                    {
+                        var value = attr.Value;
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            value = string.Empty;
+                        }
+                        attributes[key] = value;
+                    }
+                }
+            }
+
+            _contextInfo = contextInfo.Clone(stlPageChannelsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
+
+            DisplayInfo = ListInfo.GetListInfoByXmlNode(pageInfo, _contextInfo, EContextType.Channel);
 
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, _contextInfo.ChannelId, DisplayInfo.UpLevel, DisplayInfo.TopLevel);
 

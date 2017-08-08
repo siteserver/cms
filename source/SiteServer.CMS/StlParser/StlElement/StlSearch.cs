@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Controllers.Stl;
@@ -55,128 +53,121 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeIsDefaultDisplay, "是否默认显示"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
+            var isAllSites = false;
+            var siteName = string.Empty;
+            var siteDir = string.Empty;
+            var siteIds = string.Empty;
+            var channelIndex = string.Empty;
+            var channelName = string.Empty;
+            var channelIds = string.Empty;
+            var type = ContentAttribute.Title;
+            var word = string.Empty;
+            var dateAttribute = ContentAttribute.AddDate;
+            var dateFrom = string.Empty;
+            var dateTo = string.Empty;
+            var since = string.Empty;
+            var pageNum = 0;
+            var isHighlight = false;
+            var isDefaultDisplay = false;
+
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var isAllSites = false;
-                var siteName = string.Empty;
-                var siteDir = string.Empty;
-                var siteIds = string.Empty;
-                var channelIndex = string.Empty;
-                var channelName = string.Empty;
-                var channelIds = string.Empty;
-                var type = ContentAttribute.Title;
-                var word = string.Empty;
-                var dateAttribute = ContentAttribute.AddDate;
-                var dateFrom = string.Empty;
-                var dateTo = string.Empty;
-                var since = string.Empty;
-                var pageNum = 0;
-                var isHighlight = false;
-                var isDefaultDisplay = false;
+                var value = contextInfo.Attributes[name];
 
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeIsAllSites))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsAllSites))
-                        {
-                            isAllSites = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSiteName))
-                        {
-                            siteName = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSiteDir))
-                        {
-                            siteDir = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSiteIds))
-                        {
-                            siteIds = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
-                        {
-                            channelIndex = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
-                        {
-                            channelName = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIds))
-                        {
-                            channelIds = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWord))
-                        {
-                            word = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeDateAttribute))
-                        {
-                            dateAttribute = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeDateFrom))
-                        {
-                            dateFrom = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeDateTo))
-                        {
-                            dateTo = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSince))
-                        {
-                            since = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributePageNum))
-                        {
-                            pageNum = TranslateUtils.ToInt(attr.Value, 0);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsHighlight))
-                        {
-                            isHighlight = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDefaultDisplay))
-                        {
-                            isDefaultDisplay = TranslateUtils.ToBool(attr.Value);
-                        }
-                    }
+                    isAllSites = TranslateUtils.ToBool(value);
                 }
-
-                string loading;
-                string yes;
-                string no;
-                StlInnerUtility.GetLoadingYesNo(node, pageInfo, out loading, out yes, out no);
-
-                if (string.IsNullOrEmpty(loading))
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeSiteName))
                 {
-                    loading = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
+                    siteName = value;
                 }
-                if (string.IsNullOrEmpty(yes))
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeSiteDir))
                 {
-                    yes = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
+                    siteDir = value;
                 }
-                if (string.IsNullOrEmpty(no))
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeSiteIds))
                 {
-                    no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
+                    siteIds = value;
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                {
+                    channelIndex = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                {
+                    channelName = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIds))
+                {
+                    channelIds = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                {
+                    type = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeWord))
+                {
+                    word = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeDateAttribute))
+                {
+                    dateAttribute = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeDateFrom))
+                {
+                    dateFrom = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeDateTo))
+                {
+                    dateTo = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeSince))
+                {
+                    since = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributePageNum))
+                {
+                    pageNum = TranslateUtils.ToInt(value, 0);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsHighlight))
+                {
+                    isHighlight = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsDefaultDisplay))
+                {
+                    isDefaultDisplay = TranslateUtils.ToBool(value);
+                }
+            }
 
-                pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+            string loading;
+            string yes;
+            string no;
+            StlInnerUtility.GetLoadingYesNo(pageInfo, contextInfo.InnerXml, out loading, out yes, out no);
 
-                var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-                var apiUrl = ActionsSearch.GetUrl(pageInfo.PublishmentSystemInfo.Additional.ApiUrl);
-                var apiParameters = ActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.PublishmentSystemId, ajaxDivId, yes);
+            if (string.IsNullOrEmpty(loading))
+            {
+                loading = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
+            }
+            if (string.IsNullOrEmpty(yes))
+            {
+                yes = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
+            }
+            if (string.IsNullOrEmpty(no))
+            {
+                no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
+            }
 
-                var builder = new StringBuilder();
-                builder.Append($@"
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+
+            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
+            var apiUrl = ActionsSearch.GetUrl(pageInfo.PublishmentSystemInfo.Additional.ApiUrl);
+            var apiParameters = ActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.PublishmentSystemId, ajaxDivId, yes);
+
+            var builder = new StringBuilder();
+            builder.Append($@"
 <div id=""{ajaxDivId}"">
     <div class=""stl_loading"">{loading}</div>
     <div class=""stl_yes"" style=""display:none""></div>
@@ -184,7 +175,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 </div>
 ");
 
-                builder.Append($@"
+            builder.Append($@"
 <script type=""text/javascript"" language=""javascript"">
 jQuery(document).ready(function(){{
     var url = '{apiUrl}';
@@ -262,16 +253,7 @@ function stlJump{ajaxDivId}(selObj)
 </script>
 ");
 
-                parsedContent = builder.ToString();
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
-
-            return parsedContent;
+            return builder.ToString();
         }
-
-
     }
 }

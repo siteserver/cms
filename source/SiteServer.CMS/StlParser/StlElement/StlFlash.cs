@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
@@ -30,7 +27,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeAltSrc = "altSrc";
 		public const string AttributeWidth = "width";
 		public const string AttributeHeight = "height";
-        public const string AttributeIsDynamic = "isDynamic";
 
 	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
@@ -43,117 +39,92 @@ namespace SiteServer.CMS.StlParser.StlElement
 	        {AttributeSrc, "显示的flash地址"},
 	        {AttributeAltSrc, "当指定的flash不存在时显示的flash地址"},
 	        {AttributeWidth, "宽度"},
-	        {AttributeHeight, "高度"},
-	        {AttributeIsDynamic, "是否动态显示"}
+	        {AttributeHeight, "高度"}
 	    };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			string parsedContent;
-			try
-			{
-                var isGetPicUrlFromAttribute = false;
-                var channelIndex = string.Empty;
-                var channelName = string.Empty;
-                var upLevel = 0;
-                var topLevel = -1;
-                var type = BackgroundContentAttribute.ImageUrl;
-                var src = string.Empty;
-                var altSrc = string.Empty;
-                var width = "100%";
-                var height = "180";
-                var isDynamic = false;
-                var parameters = new NameValueCollection();
+		    var isGetPicUrlFromAttribute = false;
+            var channelIndex = string.Empty;
+            var channelName = string.Empty;
+            var upLevel = 0;
+            var topLevel = -1;
+            var type = BackgroundContentAttribute.ImageUrl;
+            var src = string.Empty;
+            var altSrc = string.Empty;
+            var width = "100%";
+            var height = "180";
 
-                var ie = node.Attributes?.GetEnumerator();
-			    if (ie != null)
-			    {
-                    while (ie.MoveNext())
+		    foreach (var name in contextInfo.Attributes.Keys)
+		    {
+		        var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                {
+                    channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    if (!string.IsNullOrEmpty(channelIndex))
                     {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
-                        {
-                            channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                            if (!string.IsNullOrEmpty(channelIndex))
-                            {
-                                isGetPicUrlFromAttribute = true;
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
-                        {
-                            channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                            if (!string.IsNullOrEmpty(channelName))
-                            {
-                                isGetPicUrlFromAttribute = true;
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeParent))
-                        {
-                            if (TranslateUtils.ToBool(attr.Value))
-                            {
-                                upLevel = 1;
-                                isGetPicUrlFromAttribute = true;
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeUpLevel))
-                        {
-                            upLevel = TranslateUtils.ToInt(attr.Value);
-                            if (upLevel > 0)
-                            {
-                                isGetPicUrlFromAttribute = true;
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTopLevel))
-                        {
-                            topLevel = TranslateUtils.ToInt(attr.Value);
-                            if (topLevel >= 0)
-                            {
-                                isGetPicUrlFromAttribute = true;
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSrc))
-                        {
-                            src = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeAltSrc))
-                        {
-                            altSrc = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWidth))
-                        {
-                            width = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeHeight))
-                        {
-                            height = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value, false);
-                        }
-                        else
-                        {
-                            parameters.Add(attr.Name, attr.Value);
-                        }
+                        isGetPicUrlFromAttribute = true;
                     }
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(stlElement, node, pageInfo, contextInfo, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, src, altSrc, width, height, parameters);
-			}
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                {
+                    channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    if (!string.IsNullOrEmpty(channelName))
+                    {
+                        isGetPicUrlFromAttribute = true;
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeParent))
+                {
+                    if (TranslateUtils.ToBool(value))
+                    {
+                        upLevel = 1;
+                        isGetPicUrlFromAttribute = true;
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeUpLevel))
+                {
+                    upLevel = TranslateUtils.ToInt(value);
+                    if (upLevel > 0)
+                    {
+                        isGetPicUrlFromAttribute = true;
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTopLevel))
+                {
+                    topLevel = TranslateUtils.ToInt(value);
+                    if (topLevel >= 0)
+                    {
+                        isGetPicUrlFromAttribute = true;
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                {
+                    type = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeSrc))
+                {
+                    src = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeAltSrc))
+                {
+                    altSrc = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeWidth))
+                {
+                    width = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeHeight))
+                {
+                    height = value;
+                }
             }
 
-			return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, src, altSrc, width, height);
 		}
 
-        private static string ParseImpl(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height, NameValueCollection parameters)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height)
         {
             var parsedContent = string.Empty;
 
@@ -208,11 +179,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var extension = PathUtils.GetExtension(picUrl);
                 if (EFileSystemTypeUtils.IsImage(extension))
                 {
-                    parsedContent = StlImage.Parse(stlElement, node, pageInfo, contextInfo);
+                    parsedContent = StlImage.Parse(pageInfo, contextInfo);
                 }
                 else if (EFileSystemTypeUtils.IsPlayer(extension))
                 {
-                    parsedContent = StlPlayer.Parse(stlElement, node, pageInfo, contextInfo);
+                    parsedContent = StlPlayer.Parse(pageInfo, contextInfo);
                 }
                 else
                 {
@@ -220,19 +191,19 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     picUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, picUrl);
 
-                    if (string.IsNullOrEmpty(parameters["quality"]))
+                    if (!contextInfo.Attributes.ContainsKey("quality"))
                     {
-                        parameters["quality"] = "high";
+                        contextInfo.Attributes["quality"] = "high";
                     }
-                    if (string.IsNullOrEmpty(parameters["wmode"]))
+                    if (!contextInfo.Attributes.ContainsKey("wmode"))
                     {
-                        parameters["wmode"] = "transparent";
+                        contextInfo.Attributes["wmode"] = "transparent";
                     }
                     var paramBuilder = new StringBuilder();
                     var uniqueId = pageInfo.UniqueId;
-                    foreach (string key in parameters.Keys)
+                    foreach (var key in contextInfo.Attributes.Keys)
                     {
-                        paramBuilder.Append($@"    so_{uniqueId}.addParam(""{key}"", ""{parameters[key]}"");").Append(StringUtils.Constants.ReturnAndNewline);
+                        paramBuilder.Append($@"    so_{uniqueId}.addParam(""{key}"", ""{contextInfo.Attributes[key]}"");").Append(StringUtils.Constants.ReturnAndNewline);
                     }
 
                     parsedContent = $@"

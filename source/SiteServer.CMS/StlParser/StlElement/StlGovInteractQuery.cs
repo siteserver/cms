@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -33,56 +31,42 @@ namespace SiteServer.CMS.StlParser.StlElement
 	        {AttributeInteractName, "互动交流名称"}
 	    };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
+            var channelId = string.Empty;
+            var channelIndex = string.Empty;
+            var channelName = string.Empty;
+            var interactName = string.Empty;
+
+            string inputTemplateString;
+            string loadingTemplateString;
+            string successTemplateString;
+            string failureTemplateString;
+            StlInnerUtility.GetTemplateLoadingYesNo(pageInfo, contextInfo.InnerXml, out inputTemplateString, out loadingTemplateString, out successTemplateString, out failureTemplateString);
+
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var channelId = string.Empty;
-                var channelIndex = string.Empty;
-                var channelName = string.Empty;
-                var interactName = string.Empty;
+                var value = contextInfo.Attributes[name];
 
-                string inputTemplateString;
-                string loadingTemplateString;
-                string successTemplateString;
-                string failureTemplateString;
-                StlInnerUtility.GetTemplateLoadingYesNo(node, pageInfo, out inputTemplateString, out loadingTemplateString, out successTemplateString, out failureTemplateString);
-
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelId))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelId))
-                        {
-                            channelId = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
-                        {
-                            channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
-                        {
-                            channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeInteractName))
-                        {
-                            interactName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                    }
+                    channelId = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-
-                parsedContent = ParseImpl(pageInfo, contextInfo, TranslateUtils.ToInt(channelId), channelIndex, channelName, interactName, inputTemplateString, successTemplateString, failureTemplateString);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                {
+                    channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                {
+                    channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeInteractName))
+                {
+                    interactName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, TranslateUtils.ToInt(channelId), channelIndex, channelName, interactName, inputTemplateString, successTemplateString, failureTemplateString);
         }
 
         public static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, int channelId, string channelIndex, string channelName, string interactName, string inputTemplateString, string successTemplateString, string failureTemplateString)

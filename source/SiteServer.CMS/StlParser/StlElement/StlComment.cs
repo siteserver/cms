@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Xml;
+﻿using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.Data;
 using SiteServer.CMS.StlParser.Cache;
@@ -30,7 +27,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeIsReturnToBr = "isReturnToBr";
         public const string AttributeIsLower = "isLower";
         public const string AttributeIsUpper = "isUpper";
-        public const string AttributeIsDynamic = "isDynamic";
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
@@ -47,8 +43,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeIsClearTags, "是否清除标签信息"},
             {AttributeIsReturnToBr, "是否将回车替换为HTML换行标签"},
             {AttributeIsLower, "是否转换为小写"},
-            {AttributeIsUpper, "是否转换为大写"},
-            {AttributeIsDynamic, "是否动态显示"}
+            {AttributeIsUpper, "是否转换为大写"}
         };
 
         public static readonly string TypeId = "Id";
@@ -68,111 +63,88 @@ namespace SiteServer.CMS.StlParser.StlElement
             {TypeContent, "评论内容"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			string parsedContent;
-            if (contextInfo.ItemContainer?.CommentItem == null) return string.Empty;
-			try
-			{
-                var ie = node.Attributes?.GetEnumerator();
-				var attributes = new StringDictionary();
-                var leftText = string.Empty;
-                var rightText = string.Empty;
-                var formatString = string.Empty;
-                var startIndex = 0;
-                var length = 0;
-				var wordNum = 0;
-                var ellipsis = StringUtils.Constants.Ellipsis;
-                var replace = string.Empty;
-                var to = string.Empty;
-                var isClearTags = false;
-                var isReturnToBr = false;
-                var isLower = false;
-                var isUpper = false;
-                var type = "content";
-                var isDynamic = false;
+		    if (contextInfo.ItemContainer?.CommentItem == null) return string.Empty;
 
-			    if (ie != null)
-			    {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
+            var leftText = string.Empty;
+            var rightText = string.Empty;
+            var formatString = string.Empty;
+            var startIndex = 0;
+            var length = 0;
+            var wordNum = 0;
+            var ellipsis = StringUtils.Constants.Ellipsis;
+            var replace = string.Empty;
+            var to = string.Empty;
+            var isClearTags = false;
+            var isReturnToBr = false;
+            var isLower = false;
+            var isUpper = false;
+            var type = "content";
 
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLeftText))
-                        {
-                            leftText = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeRightText))
-                        {
-                            rightText = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeFormatString))
-                        {
-                            formatString = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeStartIndex))
-                        {
-                            startIndex = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLength))
-                        {
-                            length = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWordNum))
-                        {
-                            wordNum = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeEllipsis))
-                        {
-                            ellipsis = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeReplace))
-                        {
-                            replace = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTo))
-                        {
-                            to = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsClearTags))
-                        {
-                            isClearTags = TranslateUtils.ToBool(attr.Value, false);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsReturnToBr))
-                        {
-                            isReturnToBr = TranslateUtils.ToBool(attr.Value, false);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsLower))
-                        {
-                            isLower = TranslateUtils.ToBool(attr.Value, true);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsUpper))
-                        {
-                            isUpper = TranslateUtils.ToBool(attr.Value, true);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else
-                        {
-                            attributes.Add(attr.Name, attr.Value);
-                        }
-                    }
+		    foreach (var name in contextInfo.Attributes.Keys)
+		    {
+		        var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                {
+                    type = value;
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
-			}
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeLeftText))
+                {
+                    leftText = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeRightText))
+                {
+                    rightText = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeFormatString))
+                {
+                    formatString = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeStartIndex))
+                {
+                    startIndex = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeLength))
+                {
+                    length = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeWordNum))
+                {
+                    wordNum = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeEllipsis))
+                {
+                    ellipsis = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeReplace))
+                {
+                    replace = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTo))
+                {
+                    to = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsClearTags))
+                {
+                    isClearTags = TranslateUtils.ToBool(value, false);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsReturnToBr))
+                {
+                    isReturnToBr = TranslateUtils.ToBool(value, false);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsLower))
+                {
+                    isLower = TranslateUtils.ToBool(value, true);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsUpper))
+                {
+                    isUpper = TranslateUtils.ToBool(value, true);
+                }
             }
 
-			return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, leftText, rightText, formatString, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, type);
 		}
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string formatString, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string type)

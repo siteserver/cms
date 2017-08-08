@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using BaiRong.Core.Model.Enumerations;
@@ -59,123 +58,109 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeIsColor, "仅显示醒目内容"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
-            {
-                var title = string.Empty;
-                var description = string.Empty;
-                var scopeTypeString = string.Empty;
-                var groupChannel = string.Empty;
-                var groupChannelNot = string.Empty;
-                var groupContent = string.Empty;
-                var groupContentNot = string.Empty;
-                var tags = string.Empty;
-                var channelIndex = string.Empty;
-                var channelName = string.Empty;
-                var totalNum = 0;
-                var startNum = 1;
-                var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
-                var isTop = false;
-                var isTopExists = false;
-                var isRecommend = false;
-                var isRecommendExists = false;
-                var isHot = false;
-                var isHotExists = false;
-                var isColor = false;
-                var isColorExists = false;
+            var title = string.Empty;
+            var description = string.Empty;
+            var scopeTypeString = string.Empty;
+            var groupChannel = string.Empty;
+            var groupChannelNot = string.Empty;
+            var groupContent = string.Empty;
+            var groupContentNot = string.Empty;
+            var tags = string.Empty;
+            var channelIndex = string.Empty;
+            var channelName = string.Empty;
+            var totalNum = 0;
+            var startNum = 1;
+            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
+            var isTop = false;
+            var isTopExists = false;
+            var isRecommend = false;
+            var isRecommendExists = false;
+            var isHot = false;
+            var isHotExists = false;
+            var isColor = false;
+            var isColorExists = false;
 
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+            foreach (var name in contextInfo.Attributes.Keys)
+            {
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeTitle))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTitle))
-                        {
-                            title = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeDescription))
-                        {
-                            description = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeScope))
-                        {
-                            scopeTypeString = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
-                        {
-                            channelIndex = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
-                        {
-                            channelName = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupChannel))
-                        {
-                            groupChannel = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupChannelNot))
-                        {
-                            groupChannelNot = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupContent))
-                        {
-                            groupContent = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupContentNot))
-                        {
-                            groupContentNot = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTags))
-                        {
-                            tags = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTotalNum))
-                        {
-                            totalNum = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeStartNum))
-                        {
-                            startNum = TranslateUtils.ToInt(attr.Value, 1);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeOrder))
-                        {
-                            orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsTop))
-                        {
-                            isTopExists = true;
-                            isTop = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsRecommend))
-                        {
-                            isRecommendExists = true;
-                            isRecommend = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsHot))
-                        {
-                            isHotExists = true;
-                            isHot = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsColor))
-                        {
-                            isColorExists = true;
-                            isColor = TranslateUtils.ToBool(attr.Value);
-                        }
-                    }
+                    title = value;
                 }
-
-                parsedContent = ParseImpl(pageInfo, contextInfo, title, description, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, channelIndex, channelName, totalNum, startNum, orderByString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeDescription))
+                {
+                    description = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeScope))
+                {
+                    scopeTypeString = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
+                {
+                    channelIndex = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                {
+                    channelName = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannel))
+                {
+                    groupChannel = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannelNot))
+                {
+                    groupChannelNot = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContent))
+                {
+                    groupContent = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContentNot))
+                {
+                    groupContentNot = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTags))
+                {
+                    tags = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTotalNum))
+                {
+                    totalNum = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeStartNum))
+                {
+                    startNum = TranslateUtils.ToInt(value, 1);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
+                {
+                    orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTop))
+                {
+                    isTopExists = true;
+                    isTop = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsRecommend))
+                {
+                    isRecommendExists = true;
+                    isRecommend = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsHot))
+                {
+                    isHotExists = true;
+                    isHot = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsColor))
+                {
+                    isColorExists = true;
+                    isColor = TranslateUtils.ToBool(value);
+                }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, title, description, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, channelIndex, channelName, totalNum, startNum, orderByString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string title, string description, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string channelIndex, string channelName, int totalNum, int startNum, string orderByString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists)

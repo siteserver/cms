@@ -35,5 +35,9 @@ namespace SiteServer.Plugin
         bool IsAuthorized();
 
         bool IsSiteAuthorized(int siteId);
+
+        string GetUploadFilePath(int siteId, string filePath);
+
+        string GetUrlByFilePath(string filePath);
     }
 }

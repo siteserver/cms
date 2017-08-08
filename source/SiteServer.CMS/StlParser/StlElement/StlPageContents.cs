@@ -38,11 +38,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
         }
 
-        public static string Translate(string stlElement)
-        {
-            return TranslateUtils.EncryptStringBySecretKey(stlElement);
-        }
-
         public StlPageContents(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
         {
             _pageInfo = pageInfo;
@@ -54,7 +49,30 @@ namespace SiteServer.CMS.StlParser.StlElement
                 _stlPageContentsElement = _node.InnerXml;
                 _node = _node.FirstChild;
 
-                ListInfo = ListInfo.GetListInfoByXmlNode(_node, _pageInfo, _contextInfo, EContextType.Content);
+                var attributes = new Dictionary<string, string>();
+                var ie = _node?.Attributes?.GetEnumerator();
+                if (ie != null)
+                {
+                    while (ie.MoveNext())
+                    {
+                        var attr = (XmlAttribute)ie.Current;
+
+                        var key = attr.Name;
+                        if (!string.IsNullOrEmpty(key))
+                        {
+                            var value = attr.Value;
+                            if (string.IsNullOrEmpty(value))
+                            {
+                                value = string.Empty;
+                            }
+                            attributes[key] = value;
+                        }
+                    }
+                }
+
+                _contextInfo = contextInfo.Clone(stlPageContentsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
+
+                ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
             }
 
             _contextInfo.TitleWordNum = ListInfo.TitleWordNum;
@@ -77,7 +95,30 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 _node = _node.FirstChild;
 
-                ListInfo = ListInfo.GetListInfoByXmlNode(_node, _pageInfo, _contextInfo, EContextType.Content);
+                var attributes = new Dictionary<string, string>();
+                var ie = _node?.Attributes?.GetEnumerator();
+                if (ie != null)
+                {
+                    while (ie.MoveNext())
+                    {
+                        var attr = (XmlAttribute)ie.Current;
+
+                        var key = attr.Name;
+                        if (!string.IsNullOrEmpty(key))
+                        {
+                            var value = attr.Value;
+                            if (string.IsNullOrEmpty(value))
+                            {
+                                value = string.Empty;
+                            }
+                            attributes[key] = value;
+                        }
+                    }
+                }
+
+                _contextInfo = contextInfo.Clone(stlPageContentsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
+
+                ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Content);
             }
             ListInfo.Scope = EScopeType.All;
 

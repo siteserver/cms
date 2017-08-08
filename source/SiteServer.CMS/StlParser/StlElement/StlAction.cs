@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.HtmlControls;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
@@ -19,13 +17,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public const string AttributeType = "type";
         public const string AttributeReturnUrl = "returnUrl";
-        public const string AttributeIsDynamic = "isDynamic";
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeType, StringUtils.SortedListToAttributeValueString("动作类型", TypeList)},
-            {AttributeReturnUrl, "动作完成后的返回地址"},
-            {AttributeIsDynamic, "是否动态显示"}
+            {AttributeReturnUrl, "动作完成后的返回地址"}
         };
 
         public const string TypeLogin = "Login";
@@ -47,67 +43,62 @@ namespace SiteServer.CMS.StlParser.StlElement
             {TypeClose, "关闭页面"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            var contextInfo = contextInfoRef.Clone();
+            var type = string.Empty;
+            var returnUrl = string.Empty;
 
-            try
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var attributes = new NameValueCollection();
-                var ie = node.Attributes?.GetEnumerator();
-                var type = string.Empty;
-                var returnUrl = string.Empty;
-                var isDynamic = false;
-
-                if (ie != null)
+                var value = contextInfo.Attributes[name];
+                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeReturnUrl))
-                        {
-                            returnUrl = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value, false);
-                        }
-                        else
-                        {
-                            attributes.Add(attr.Name, attr.Value);
-                        }
-                    }
+                    type = value;
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, node, attributes, type, returnUrl);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeReturnUrl))
+                {
+                    returnUrl = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
             }
 
-            return parsedContent;
+            //var ie = node.Attributes?.GetEnumerator();
+            //if (ie != null)
+            //{
+            //    while (ie.MoveNext())
+            //    {
+            //        var attr = (XmlAttribute)ie.Current;
+
+            //        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
+            //        {
+            //            type = attr.Value;
+            //        }
+            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeReturnUrl))
+            //        {
+            //            returnUrl = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+            //        }
+            //        else
+            //        {
+            //            attributes.Add(attr.Name, attr.Value);
+            //        }
+            //    }
+            //}
+
+            return ParseImpl(pageInfo, contextInfo, type, returnUrl);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, XmlNode node, NameValueCollection attributes, string type, string returnUrl)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string returnUrl)
         {
             var stlAnchor = new HtmlAnchor();
 
-            foreach (string attributeName in attributes.Keys)
+            foreach (var attributeName in contextInfo.Attributes.Keys)
             {
-                stlAnchor.Attributes.Add(attributeName, attributes[attributeName]);
+                stlAnchor.Attributes.Add(attributeName, contextInfo.Attributes[attributeName]);
             }
 
             var url = PageUtils.UnclickedUrl;
             var onclick = string.Empty;
 
-            var innerBuilder = new StringBuilder(node.InnerXml);
+            var innerBuilder = new StringBuilder(contextInfo.InnerXml);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
             stlAnchor.InnerHtml = innerBuilder.ToString();
 

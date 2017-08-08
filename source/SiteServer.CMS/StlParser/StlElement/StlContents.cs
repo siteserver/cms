@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
@@ -42,7 +40,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeIsNoDup = "isNoDup";
         public const string AttributeIsRelatedContents = "isRelatedContents";
         public const string AttributeWhere = "where";
-        public const string AttributeIsDynamic = "isDynamic";
         public const string AttributeCellPadding = "cellPadding";
         public const string AttributeCellSpacing = "cellSpacing";
         public const string AttributeClass = "class";
@@ -86,7 +83,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeIsNoDup, "不显示重复标题的内容"},
             {AttributeIsRelatedContents, "显示相关内容列表"},
             {AttributeWhere, "获取内容列表的条件判断"},
-            {AttributeIsDynamic, "是否动态显示"},
             {AttributeCellPadding, "填充"},
             {AttributeCellSpacing, "间距"},
             {AttributeClass, "Css类"},
@@ -103,21 +99,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeItemClass, "项Css类"},
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
-            {
-                var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Content);
+            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Content);
 
-                parsedContent = listInfo.IsDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, listInfo);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
-
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, listInfo);
         }
 
         public static IEnumerable GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)

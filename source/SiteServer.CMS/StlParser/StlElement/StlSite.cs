@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -20,63 +18,44 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public const string AttributeSiteName = "siteName";
         public const string AttributeSiteDir = "siteDir";
-        public const string AttributeIsDynamic = "isDynamic";
 
 	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
 	    {
 	        {AttributeSiteName, "站点名称"},
-	        {AttributeSiteDir, "站点文件夹"},
-	        {AttributeIsDynamic, "是否动态显示"}
+	        {AttributeSiteDir, "站点文件夹"}
 	    };
 
         //循环解析型标签
-        internal static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
+        internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
 			var parsedContent = string.Empty;
-            
-			try
-			{
-                if (!string.IsNullOrEmpty(node.InnerXml))
-                {
-                    var contextInfo = contextInfoRef.Clone();
-                    var siteName = string.Empty;
-                    var siteDir = string.Empty;
-                    var isDynamic = false;
 
-                    var ie = node.Attributes?.GetEnumerator();
-                    if (ie != null)
-                    {
-                        while (ie.MoveNext())
-                        {
-                            var attr = (XmlAttribute)ie.Current;
-
-                            if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSiteName))
-                            {
-                                siteName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSiteDir))
-                            {
-                                siteDir = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                            {
-                                isDynamic = TranslateUtils.ToBool(attr.Value);
-                            }
-                        }
-                    }
-
-                    parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, siteName, siteDir);
-                }
-			}
-            catch (Exception ex)
+            if (!string.IsNullOrEmpty(contextInfo.InnerXml))
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                var siteName = string.Empty;
+                var siteDir = string.Empty;
+
+                foreach (var name in contextInfo.Attributes.Keys)
+                {
+                    var value = contextInfo.Attributes[name];
+
+                    if (StringUtils.EqualsIgnoreCase(name, AttributeSiteName))
+                    {
+                        siteName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(name, AttributeSiteDir))
+                    {
+                        siteDir = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    }
+                }
+
+                parsedContent = ParseImpl(pageInfo, contextInfo, siteName, siteDir);
             }
 
-			return parsedContent;
+            return parsedContent;
 		}
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string siteName, string siteDir)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string siteName, string siteDir)
         {
             PublishmentSystemInfo publishmentSystemInfo = null;
 
@@ -106,7 +85,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             pageInfo.ChangeSite(publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, 0, contextInfo);
 
-            var innerBuilder = new StringBuilder(node.InnerXml);
+            var innerBuilder = new StringBuilder(contextInfo.InnerXml);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
             var parsedContent = innerBuilder.ToString();
 

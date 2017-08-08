@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -21,43 +19,26 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeContext, "所处上下文"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var parsedContent = string.Empty;
+            if (string.IsNullOrEmpty(contextInfo.InnerXml)) return string.Empty;
 
-            var contextInfo = contextInfoRef.Clone();
-            try
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeContext))
-                        {
-                            contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
-                        }
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(node.InnerXml))
-                {
-                    var innerHtml = RegexUtils.GetInnerContent(ElementName, stlElement);
-
-                    var builder = new StringBuilder(innerHtml);
-                    StlParserManager.ParseInnerContent(builder, pageInfo, contextInfo);
-
-                    parsedContent = builder.ToString();
+                    contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
 
-            return parsedContent;
+            var innerHtml = RegexUtils.GetInnerContent(ElementName, contextInfo.StlElement);
+
+            var builder = new StringBuilder(innerHtml);
+            StlParserManager.ParseInnerContent(builder, pageInfo, contextInfo);
+
+            return builder.ToString();
         }
     }
 }
