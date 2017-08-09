@@ -205,6 +205,20 @@ namespace SiteServer.BackgroundPages.Cms
                         displayName = attributeName;
                     }
 
+                    if (_tableStyle == ETableStyle.Site)
+                    {
+                        if (string.IsNullOrEmpty(attributeName))
+                        {
+                            FailMessage("操作失败，字段名不能为空！");
+                            return false;
+                        }
+                        else if (StringUtils.StartsWithIgnoreCase(attributeName, "Site"))
+                        {
+                            FailMessage("操作失败，字段名不能以site开始！");
+                            return false;
+                        }
+                    }
+
                     if (TableStyleManager.IsExists(relatedIdentity, _tableName, attributeName) || TableStyleManager.IsExistsInParents(_relatedIdentities, _tableName, attributeName))
                     {
                         FailMessage($@"显示样式添加失败：字段名""{attributeName}""已存在");

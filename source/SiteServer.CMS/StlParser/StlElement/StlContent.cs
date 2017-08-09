@@ -634,6 +634,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     }
                                 }
                             }
+
+                            if (!string.IsNullOrEmpty(parsedContent))
+                            {
+                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent);
+                            }
                         }
                         else
                         {
@@ -766,9 +771,17 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, contentInfo.NodeId);
                             var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
                             var styleInfo = TableStyleManager.GetTableStyleInfo(tableStyle, tableName, type, relatedIdentities);
-                            var num = TranslateUtils.ToInt(no);
-                            parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.PublishmentSystemInfo, tableStyle, styleInfo, formatString, num, attributes, node.InnerXml, false);
-                            parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
+                            if (styleInfo.IsVisible)
+                            {
+                                var num = TranslateUtils.ToInt(no);
+                                parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.PublishmentSystemInfo, tableStyle, styleInfo, formatString, num, attributes, node.InnerXml, false);
+                                parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            }
+                            else
+                            {
+                                parsedContent = string.Empty;
+                            }
                         }
                         else
                         {

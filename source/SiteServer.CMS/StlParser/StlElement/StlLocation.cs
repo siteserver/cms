@@ -22,15 +22,17 @@ namespace SiteServer.CMS.StlParser.StlElement
 		public const string AttributeLinkClass = "linkClass";
         public const string AttributeWordNum = "wordNum";
         public const string AttributeIsDynamic = "isDynamic";
+        public const string AttributeIsContainSelf = "isContainSelf";
 
-	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
 	    {
 	        {AttributeSeparator, "当前位置分隔符"},
 	        {AttributeTarget, "打开窗口的目标"},
 	        {AttributeLinkClass, "链接CSS样式"},
 	        {AttributeWordNum, "链接字数"},
-	        {AttributeIsDynamic, "是否动态显示"}
-	    };
+	        {AttributeIsDynamic, "是否动态显示"},
+            {AttributeIsContainSelf, "是否包含当前栏目"}
+        };
 
 
         //对“当前位置”（stl:location）元素进行解析
@@ -44,7 +46,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 				var linkClass = string.Empty;
                 var wordNum = 0;
                 var isDynamic = false;
-				var attributes = new StringDictionary();
+                var isContainSelf = true;
+                var attributes = new StringDictionary();
 
                 var ie = node.Attributes?.GetEnumerator();
 			    if (ie != null)
@@ -73,6 +76,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             isDynamic = TranslateUtils.ToBool(attr.Value);
                         }
+                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsContainSelf))
+                        {
+                            isContainSelf = TranslateUtils.ToBool(attr.Value);
+                        }
                         else
                         {
                             attributes.Add(attr.Name, attr.Value);
@@ -80,7 +87,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, separator, target, linkClass, wordNum, attributes);
+                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, separator, target, linkClass, wordNum, isContainSelf, attributes);
 			}
             catch (Exception ex)
             {
@@ -90,7 +97,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 			return parsedContent;
 		}
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string separator, string target, string linkClass, int wordNum, StringDictionary attributes)
+        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string separator, string target, string linkClass, int wordNum, bool isContainSelf, StringDictionary attributes)
         {
             if (!string.IsNullOrEmpty(node.InnerXml))
             {
@@ -105,8 +112,14 @@ namespace SiteServer.CMS.StlParser.StlElement
             var parentsCount = nodeInfo.ParentsCount;
             if (parentsPath.Length != 0)
             {
-                var nodePath = parentsPath + "," + contextInfo.ChannelId;
+                var nodePath = parentsPath;
+                if(isContainSelf)
+                {
+                    nodePath = nodePath + "," + contextInfo.ChannelId;
+                }
+                
                 var nodeIdArrayList = TranslateUtils.StringCollectionToStringList(nodePath);
+                var lastId = int.Parse(nodeIdArrayList[nodeIdArrayList.Count - 1]);
                 foreach (var nodeIdStr in nodeIdArrayList)
                 {
                     var currentId = int.Parse(nodeIdStr);
@@ -134,33 +147,10 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                         builder.Append(ControlUtils.GetControlRenderHtml(stlAnchor));
 
-                        if (parentsCount > 0)
+                        if (currentId != lastId)
                         {
                             builder.Append(separator);
                         }
-                    }
-                    else if (currentId == contextInfo.ChannelId)
-                    {
-                        var stlAnchor = new HtmlAnchor();
-                        if (!string.IsNullOrEmpty(target))
-                        {
-                            stlAnchor.Target = target;
-                        }
-                        if (!string.IsNullOrEmpty(linkClass))
-                        {
-                            stlAnchor.Attributes.Add("class", linkClass);
-                        }
-                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo, pageInfo.Guid);
-                        if (url.Equals(PageUtils.UnclickedUrl))
-                        {
-                            stlAnchor.Target = string.Empty;
-                        }
-                        stlAnchor.HRef = url;
-                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.NodeName, wordNum);
-
-                        ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-
-                        builder.Append(ControlUtils.GetControlRenderHtml(stlAnchor));
                     }
                     else
                     {
@@ -185,7 +175,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                         builder.Append(ControlUtils.GetControlRenderHtml(stlAnchor));
 
-                        if (parentsCount > 0)
+                        if (currentId != lastId)
                         {
                             builder.Append(separator);
                         }

@@ -259,7 +259,7 @@ namespace SiteServer.BackgroundPages.Cms
                         return;
                     }
                 }
-            }
+            }  
 
             if (_styleInfo.TableStyleId == 0 && _styleInfo.RelatedIdentity == 0)//数据库中没有此项及父项的表样式
             {
@@ -356,6 +356,20 @@ namespace SiteServer.BackgroundPages.Cms
             var isChanged = false;
 
             var relatedIdentity = _relatedIdentities[0];
+
+            if (_tableStyle == ETableStyle.Site)
+            {
+                if (string.IsNullOrEmpty(TbAttributeName.Text))
+                {
+                    FailMessage("操作失败，字段名不能为空！");
+                    return false;
+                }
+                else if (StringUtils.StartsWithIgnoreCase(TbAttributeName.Text, "Site"))
+                {
+                    FailMessage("操作失败，字段名不能以site开始！");
+                    return false;
+                }
+            }
 
             if (TableStyleManager.IsExists(relatedIdentity, _tableName, TbAttributeName.Text))
             //|| TableStyleManager.IsExistsInParents(this.relatedIdentities, this.tableName, this.tbAttributeName.Text)      
