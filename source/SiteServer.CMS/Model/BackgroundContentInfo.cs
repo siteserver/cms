@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;

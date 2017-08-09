@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Xml;
-using BaiRong.Core;
+﻿using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 
@@ -8,13 +6,13 @@ namespace SiteServer.CMS.StlParser.Utility
 {
     public class StlInnerUtility
     {
-        public static void GetYesNo(XmlNode node, PageInfo pageInfo, out string yes, out string no)
+        public static void GetYesNo(PageInfo pageInfo, string innerXml, out string yes, out string no)
         {
             yes = string.Empty;
             no = string.Empty;
-            if (string.IsNullOrEmpty(node.InnerXml)) return;
+            if (string.IsNullOrEmpty(innerXml)) return;
 
-            var stlElementList = StlParserUtility.GetStlElementList(node.InnerXml);
+            var stlElementList = StlParserUtility.GetStlElementList(innerXml);
             if (stlElementList.Count > 0)
             {
                 foreach (var theStlElement in stlElementList)
@@ -32,21 +30,21 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (string.IsNullOrEmpty(yes) && string.IsNullOrEmpty(no))
             {
-                yes = node.InnerXml;
+                yes = innerXml;
             }
 
             yes = StringUtils.Trim(yes);
             no = StringUtils.Trim(no);
         }
 
-        public static void GetLoadingYesNo(XmlNode node, PageInfo pageInfo, out string loading, out string yes, out string no)
+        public static void GetLoadingYesNo(PageInfo pageInfo, string innerXml, out string loading, out string yes, out string no)
         {
             loading = string.Empty;
             yes = string.Empty;
             no = string.Empty;
-            if (string.IsNullOrEmpty(node.InnerXml)) return;
+            if (string.IsNullOrEmpty(innerXml)) return;
 
-            var stlElementList = StlParserUtility.GetStlElementList(node.InnerXml);
+            var stlElementList = StlParserUtility.GetStlElementList(innerXml);
             if (stlElementList.Count > 0)
             {
                 foreach (var theStlElement in stlElementList)
@@ -68,7 +66,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (string.IsNullOrEmpty(loading) && string.IsNullOrEmpty(yes) && string.IsNullOrEmpty(no))
             {
-                yes = node.InnerXml;
+                yes = innerXml;
             }
 
             loading = StringUtils.Trim(loading);
@@ -76,15 +74,15 @@ namespace SiteServer.CMS.StlParser.Utility
             no = StringUtils.Trim(no);
         }
 
-        public static void GetTemplateLoadingYesNo(XmlNode node, PageInfo pageInfo, out string template, out string loading, out string yes, out string no)
+        public static void GetTemplateLoadingYesNo(PageInfo pageInfo, string innerXml, out string template, out string loading, out string yes, out string no)
         {
             template = string.Empty;
             loading = string.Empty;
             yes = string.Empty;
             no = string.Empty;
-            if (string.IsNullOrEmpty(node.InnerXml)) return;
+            if (string.IsNullOrEmpty(innerXml)) return;
 
-            var stlElementList = StlParserUtility.GetStlElementList(node.InnerXml);
+            var stlElementList = StlParserUtility.GetStlElementList(innerXml);
             if (stlElementList.Count > 0)
             {
                 foreach (var theStlElement in stlElementList)
@@ -110,7 +108,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (string.IsNullOrEmpty(template) && string.IsNullOrEmpty(loading) && string.IsNullOrEmpty(yes) && string.IsNullOrEmpty(no))
             {
-                template = node.InnerXml;
+                template = innerXml;
             }
 
             template = StringUtils.Trim(template);

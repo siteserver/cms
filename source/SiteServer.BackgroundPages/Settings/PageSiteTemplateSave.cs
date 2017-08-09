@@ -9,6 +9,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin.Data;
 
 namespace SiteServer.BackgroundPages.Settings
 {

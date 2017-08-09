@@ -34,23 +34,40 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
         }
 
-        public static string Translate(string stlElement)
-        {
-            return TranslateUtils.EncryptStringBySecretKey(stlElement);
-        }
-
         public StlPageSqlContents(string stlPageSqlContentsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent, bool isLoadData)
         {
             _stlPageSqlContentsElement = stlPageSqlContentsElement;
             _pageInfo = pageInfo;
-            _contextInfo = contextInfo;
             try
             {
                 var xmlDocument = StlParserUtility.GetXmlDocument(_stlPageSqlContentsElement, isXmlContent);
                 _node = xmlDocument.DocumentElement;
                 _node = _node?.FirstChild;
 
-                _listInfo = ListInfo.GetListInfoByXmlNode(_node, _pageInfo, _contextInfo, EContextType.SqlContent);
+                var attributes = new Dictionary<string, string>();
+                var ie = _node?.Attributes?.GetEnumerator();
+                if (ie != null)
+                {
+                    while (ie.MoveNext())
+                    {
+                        var attr = (XmlAttribute)ie.Current;
+
+                        var key = attr.Name;
+                        if (!string.IsNullOrEmpty(key))
+                        {
+                            var value = attr.Value;
+                            if (string.IsNullOrEmpty(value))
+                            {
+                                value = string.Empty;
+                            }
+                            attributes[key] = value;
+                        }
+                    }
+                }
+
+                _contextInfo = contextInfo.Clone(stlPageSqlContentsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
+
+                _listInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.SqlContent);
                 if (isLoadData)
                 {
                     _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _pageInfo.Guid);
@@ -65,14 +82,36 @@ namespace SiteServer.CMS.StlParser.StlElement
         public StlPageSqlContents(string stlPageSqlContentsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
         {
             _pageInfo = pageInfo;
-            _contextInfo = contextInfo;
             try
             {
                 var xmlDocument = StlParserUtility.GetXmlDocument(stlPageSqlContentsElement, isXmlContent);
                 _node = xmlDocument.DocumentElement;
                 _node = _node?.FirstChild;
 
-                _listInfo = ListInfo.GetListInfoByXmlNode(_node, _pageInfo, _contextInfo, EContextType.SqlContent);
+                var attributes = new Dictionary<string, string>();
+                var ie = _node?.Attributes?.GetEnumerator();
+                if (ie != null)
+                {
+                    while (ie.MoveNext())
+                    {
+                        var attr = (XmlAttribute)ie.Current;
+
+                        var key = attr.Name;
+                        if (!string.IsNullOrEmpty(key))
+                        {
+                            var value = attr.Value;
+                            if (string.IsNullOrEmpty(value))
+                            {
+                                value = string.Empty;
+                            }
+                            attributes[key] = value;
+                        }
+                    }
+                }
+
+                _contextInfo = contextInfo.Clone(stlPageSqlContentsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
+
+                _listInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.SqlContent);
                 _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _pageInfo.Guid);
             }
             catch

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 
-namespace BaiRong.Core.Model
+namespace SiteServer.Plugin.Data
 {
 	[Serializable]
 	public abstract class Copyable

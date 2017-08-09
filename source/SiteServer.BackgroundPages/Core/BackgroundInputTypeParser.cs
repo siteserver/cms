@@ -17,6 +17,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.GovInteract;
 using SiteServer.CMS.Wcm.Model;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Data;
 
 namespace SiteServer.BackgroundPages.Core
 {

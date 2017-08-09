@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -17,49 +15,28 @@ namespace SiteServer.CMS.StlParser.StlElement
 		public const string ElementName = "stl:include";
 
 		public const string AttributeFile = "file";
-        public const string AttributeIsDynamic = "isDynamic";
 
 	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-	        {AttributeFile, "文件路径"},
-	        {AttributeIsDynamic, "是否动态显示"}
+	        {AttributeFile, "文件路径"}
 	    };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-            string parsedContent;
-			try
-			{
-                var file = string.Empty;
-                var isDynamic = false;
+		    var file = string.Empty;
 
-                var ie = node.Attributes?.GetEnumerator();
-			    if (ie != null)
-			    {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeFile))
-                        {
-                            file = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                            file = PageUtility.AddVirtualToUrl(file);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                    }
-                }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, file);
-			}
-            catch (Exception ex)
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeFile))
+                {
+                    file = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    file = PageUtility.AddVirtualToUrl(file);
+                }
             }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, file);
 		}
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string file)

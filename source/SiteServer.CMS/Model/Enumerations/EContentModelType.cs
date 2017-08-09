@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.Plugin;
@@ -19,10 +18,6 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EContentModelType type)
 		{
-		    if (type == EContentModelType.Content)
-			{
-                return "Content";
-			}
 		    if (type == EContentModelType.GovPublic)
 		    {
 		        return "GovPublic";
@@ -39,15 +34,11 @@ namespace SiteServer.CMS.Model.Enumerations
 		    {
 		        return "Job";
 		    }
-		    throw new Exception();
-		}
+            return "Content";
+        }
 
 		public static string GetText(EContentModelType type)
 		{
-		    if (type == EContentModelType.Content)
-			{
-                return "内容";
-			}
 		    if (type == EContentModelType.GovPublic)
 		    {
 		        return "信息公开";
@@ -64,18 +55,14 @@ namespace SiteServer.CMS.Model.Enumerations
 		    {
 		        return "招聘";
 		    }
-		    throw new Exception();
-		}
+            return "内容";
+        }
 
 		public static EContentModelType GetEnumType(string typeStr)
 		{
 			var retval = EContentModelType.Content;
 
-            if (Equals(EContentModelType.Content, typeStr))
-			{
-                retval = EContentModelType.Content;
-			}
-            else if (Equals(EContentModelType.GovPublic, typeStr))
+            if (Equals(EContentModelType.GovPublic, typeStr))
             {
                 retval = EContentModelType.GovPublic;
             }

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
@@ -28,11 +26,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeGroupChannelNot = "groupChannelNot";	    //指定不显示的栏目组
         public const string AttributeTotalNum = "totalNum";					    //显示栏目数目
         public const string AttributeStartNum = "startNum";					    //从第几条信息开始显示
-        public const string AttributeTitleWordNum = "titleWordNum";			    //
         public const string AttributeOrder = "order";						    //排序
         public const string AttributeIsImage = "isImage";					    //仅显示图片栏目
         public const string AttributeWhere = "where";                           //获取栏目列表的条件判断
-        public const string AttributeIsDynamic = "isDynamic";                   //是否动态显示
         public const string AttributeCellPadding = "cellPadding";
         public const string AttributeCellSpacing = "cellSpacing";
         public const string AttributeClass = "class";
@@ -60,11 +56,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeGroupChannelNot, "指定不显示的栏目组"},
             {AttributeTotalNum, "显示栏目数目"},
             {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeTitleWordNum, "栏目名称文字数量"},
             {AttributeOrder, "排序"},
             {AttributeIsImage, "仅显示图片栏目"},
             {AttributeWhere, "获取栏目列表的条件判断"},
-            {AttributeIsDynamic, "是否动态显示"},            
             {AttributeCellPadding, "填充"},
             {AttributeCellSpacing, "间距"},
             {AttributeClass, "Css类"},
@@ -81,21 +75,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeItemClass, "项Css类"},
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
-            {
-                var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Channel);
+            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Channel);
 
-                parsedContent = listInfo.IsDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, listInfo);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
-
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, listInfo);
         }
 
         public static IEnumerable GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
@@ -117,8 +101,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var parsedContent = string.Empty;
-
-            contextInfo.TitleWordNum = listInfo.TitleWordNum;
 
             var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
 

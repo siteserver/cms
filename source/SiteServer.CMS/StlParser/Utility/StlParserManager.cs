@@ -68,7 +68,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     var stlElement = labelString;
                     var pageHtml = StlPageElementParser.ParseStlPageInContentPage(stlElement, pageInfo, nodeId, contentId, currentPageIndex, pageCount);
-                    parsedBuilder.Replace(StlPageItems.Translate(stlElement), pageHtml);
+                    parsedBuilder.Replace(TranslateUtils.EncryptStringBySecretKey(stlElement), pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
@@ -88,7 +88,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     var stlElement = labelString;
                     var pageHtml = StlPageElementParser.ParseStlPageInChannelPage(stlElement, pageInfo, nodeId, currentPageIndex, pageCount, totalNum);
-                    parsedBuilder.Replace(StlPageItems.Translate(stlElement), pageHtml);
+                    parsedBuilder.Replace(TranslateUtils.EncryptStringBySecretKey(stlElement), pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {

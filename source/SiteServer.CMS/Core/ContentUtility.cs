@@ -371,7 +371,7 @@ namespace SiteServer.CMS.Core
             var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
             if (string.IsNullOrEmpty(contentModelInfo.PluginId)) return isTranslated;
 
-            var hook = PluginManager.GetHook<IContentModel>(contentModelInfo.PluginId);
+            var hook = PluginCache.GetHook<IContentModel>(contentModelInfo.PluginId);
             if (hook == null) return isTranslated;
 
             try
@@ -433,7 +433,7 @@ namespace SiteServer.CMS.Core
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginManager.GetHook<IContentModel>(contentModelInfo.PluginId);
+                    var hook = PluginCache.GetHook<IContentModel>(contentModelInfo.PluginId);
                     try
                     {
                         hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
@@ -468,7 +468,7 @@ namespace SiteServer.CMS.Core
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginManager.GetHook<IContentModel>(contentModelInfo.PluginId);
+                    var hook = PluginCache.GetHook<IContentModel>(contentModelInfo.PluginId);
                     try
                     {
                         hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, newContentId);
@@ -513,7 +513,7 @@ namespace SiteServer.CMS.Core
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginManager.GetHook<IContentModel>(contentModelInfo.PluginId);
+                    var hook = PluginCache.GetHook<IContentModel>(contentModelInfo.PluginId);
                     try
                     {
                         hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);

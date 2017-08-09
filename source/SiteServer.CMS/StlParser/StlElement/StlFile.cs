@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -25,7 +23,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeType = "type";
         public const string AttributeLeftText = "leftText";
         public const string AttributeRightText = "rightText";
-        public const string AttributeIsDynamic = "isDynamic";
 
 	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
@@ -35,89 +32,63 @@ namespace SiteServer.CMS.StlParser.StlElement
 	        {AttributeIsCount, "是否记录文件下载次数"},
 	        {AttributeType, "指定存储附件的字段"},
 	        {AttributeLeftText, "显示在信息前的文字"},
-	        {AttributeRightText, "显示在信息后的文字"},
-	        {AttributeIsDynamic, "是否动态显示"}
+	        {AttributeRightText, "显示在信息后的文字"}
 	    };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
+            var no = 0;
+            var src = string.Empty;
+            var isFilesize = false;
+            var isCount = true;
+            var type = BackgroundContentAttribute.FileUrl;
+            var leftText = string.Empty;
+            var rightText = string.Empty;
+
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var no = 0;
-                var src = string.Empty;
-                var isFilesize = false;
-                var isCount = true;
-                var type = BackgroundContentAttribute.FileUrl;
-                var leftText = string.Empty;
-                var rightText = string.Empty;
-                var isDynamic = false;
+                var value = contextInfo.Attributes[name];
 
-                var attributes = new StringDictionary();
-
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeNo))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeNo))
-                        {
-                            no = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeSrc))
-                        {
-                            src = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsFilesize))
-                        {
-                            isFilesize = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsCount))
-                        {
-                            isCount = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeLeftText))
-                        {
-                            leftText = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeRightText))
-                        {
-                            rightText = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else
-                        {
-                            attributes[attr.Name] = attr.Value;
-                        }
-                    }
+                    no = TranslateUtils.ToInt(value);
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, type, no, src, isFilesize, isCount, leftText, rightText, attributes);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeSrc))
+                {
+                    src = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsFilesize))
+                {
+                    isFilesize = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsCount))
+                {
+                    isCount = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                {
+                    type = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeLeftText))
+                {
+                    leftText = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeRightText))
+                {
+                    rightText = value;
+                }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, type, no, src, isFilesize, isCount, leftText, rightText);
         }
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string type, int no, string src, bool isFilesize, bool isCount, string leftText, string rightText, StringDictionary attributes)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, int no, string src, bool isFilesize, bool isCount, string leftText, string rightText)
         {
-            if (!string.IsNullOrEmpty(node.InnerXml))
+            if (!string.IsNullOrEmpty(contextInfo.InnerXml))
             {
-                var innerBuilder = new StringBuilder(node.InnerXml);
+                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                node.InnerXml = innerBuilder.ToString();
+                contextInfo.InnerXml = innerBuilder.ToString();
             }
 
             var fileUrl = string.Empty;
@@ -171,7 +142,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            var parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, attributes, node.InnerXml, false);
+            var parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, false);
 
             if (isFilesize)
             {
@@ -182,11 +153,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (isCount && contextInfo.ContentInfo != null)
                 {
-                    parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.PublishmentSystemInfo, contextInfo.ContentInfo.NodeId, contextInfo.ContentInfo.Id, fileUrl, attributes, node.InnerXml, false);
+                    parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.PublishmentSystemInfo, contextInfo.ContentInfo.NodeId, contextInfo.ContentInfo.Id, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, false);
                 }
                 else
                 {
-                    parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, attributes, node.InnerXml, false);
+                    parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, false);
                 }                
             }
 

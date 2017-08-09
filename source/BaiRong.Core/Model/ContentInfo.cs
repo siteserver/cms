@@ -1,11 +1,114 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using BaiRong.Core.Model.Attributes;
+using SiteServer.Plugin.Data;
 
 namespace BaiRong.Core.Model
 {
-    public class ContentInfo : ExtendedAttributes
+    public class ContentAttribute
+    {
+        protected ContentAttribute()
+        {
+        }
+
+        public const string Id = nameof(Id);
+        public const string NodeId = nameof(NodeId);
+        public const string PublishmentSystemId = nameof(PublishmentSystemId);
+        public const string AddUserName = nameof(AddUserName);
+        public const string LastEditUserName = nameof(LastEditUserName);
+        public const string WritingUserName = nameof(WritingUserName);
+        public const string LastEditDate = nameof(LastEditDate);
+        public const string Taxis = nameof(Taxis);
+        public const string ContentGroupNameCollection = nameof(ContentGroupNameCollection);
+        public const string Tags = nameof(Tags);
+        public const string SourceId = nameof(SourceId);
+        public const string ReferenceId = nameof(ReferenceId);
+        public const string IsChecked = nameof(IsChecked);
+        public const string CheckedLevel = nameof(CheckedLevel);
+        public const string Comments = nameof(Comments);
+        public const string Photos = nameof(Photos);
+        public const string Hits = nameof(Hits);
+        public const string HitsByDay = nameof(HitsByDay);
+        public const string HitsByWeek = nameof(HitsByWeek);
+        public const string HitsByMonth = nameof(HitsByMonth);
+        public const string LastHitsDate = nameof(LastHitsDate);
+        public const string SettingsXml = nameof(SettingsXml);
+
+        //具体类中实现
+        public const string Title = nameof(Title);
+        public const string IsTop = nameof(IsTop);
+        public const string AddDate = nameof(AddDate);
+
+        //不存在
+        public static string GetFormatStringAttributeName(string attributeName)
+        {
+            return attributeName + "FormatString";
+        }
+
+        public static string GetExtendAttributeName(string attributeName)
+        {
+            return attributeName + "_Extend";
+        }
+
+        public const string CheckIsAdmin = "Check_IsAdmin";              //审核者是否为管理员
+        public const string CheckUserName = "Check_UserName";            //审核者
+        public const string CheckCheckDate = "Check_CheckDate";          //审核时间
+        public const string CheckReasons = "Check_Reasons";              //审核原因
+
+        public const string TranslateContentType = "TranslateContentType";    //转移内容类型
+
+        private static List<string> _hiddenAttributes;
+        public static List<string> HiddenAttributes => _hiddenAttributes ?? (_hiddenAttributes = new List<string>
+        {
+            Id.ToLower(),
+            NodeId.ToLower(),
+            PublishmentSystemId.ToLower(),
+            AddUserName.ToLower(),
+            LastEditUserName.ToLower(),
+            WritingUserName.ToLower(),
+            LastEditDate.ToLower(),
+            Taxis.ToLower(),
+            ContentGroupNameCollection.ToLower(),
+            Tags.ToLower(),
+            SourceId.ToLower(),
+            ReferenceId.ToLower(),
+            IsChecked.ToLower(),
+            CheckedLevel.ToLower(),
+            Comments.ToLower(),
+            Photos.ToLower(),
+            Hits.ToLower(),
+            HitsByDay.ToLower(),
+            HitsByWeek.ToLower(),
+            HitsByMonth.ToLower(),
+            LastHitsDate.ToLower(),
+            SettingsXml.ToLower()
+        });
+
+        public static List<string> AllAttributes
+        {
+            get
+            {
+                var arraylist = new List<string>(HiddenAttributes);
+                arraylist.AddRange(SystemAttributes);
+                return arraylist;
+            }
+        }
+
+        private static List<string> _systemAttributes;
+        public static List<string> SystemAttributes => _systemAttributes ?? (_systemAttributes = new List<string>
+        {
+            Title.ToLower(),
+            IsTop.ToLower(),
+            AddDate.ToLower()
+        });
+
+        private static List<string> _excludeAttributes;
+        public static List<string> ExcludeAttributes => _excludeAttributes ?? (_excludeAttributes = new List<string>
+        {
+            IsTop.ToLower()
+        });
+    }
+
+    public class ContentInfo : ExtendedAttributes, IContentInfo
 	{
 		public ContentInfo()
 		{
@@ -189,5 +292,7 @@ namespace BaiRong.Core.Model
         {
             return ContentAttribute.AllAttributes;
         }
+
+	    public ExtendedAttributes Extended => this;
 	}
 }

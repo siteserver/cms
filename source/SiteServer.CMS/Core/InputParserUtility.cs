@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Web.UI.HtmlControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Core
             return string.Empty;
         }
 
-        public static string GetContentByTableStyle(string content, string separator, PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, TableStyleInfo styleInfo, string formatString, StringDictionary attributes, string innerXml, bool isStlEntity)
+        public static string GetContentByTableStyle(string content, string separator, PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, TableStyleInfo styleInfo, string formatString, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
         {
             var parsedContent = content;
 
@@ -104,7 +104,7 @@ namespace SiteServer.CMS.Core
             return parsedContent;
         }
 
-        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, TableStyleInfo styleInfo, string formatString, int no, StringDictionary attributes, string innerXml, bool isStlEntity)
+        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, TableStyleInfo styleInfo, string formatString, int no, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
         {
             var value = contentInfo.GetExtendedAttribute(styleInfo.AttributeName);
             var parsedContent = string.Empty;
@@ -238,15 +238,7 @@ namespace SiteServer.CMS.Core
             return parsedContent;
         }
 
-        
-
-        
-
-        
-
-        
-
-        public static string GetImageOrFlashHtml(PublishmentSystemInfo publishmentSystemInfo, string imageUrl, StringDictionary attributes, bool isStlEntity)
+        public static string GetImageOrFlashHtml(PublishmentSystemInfo publishmentSystemInfo, string imageUrl, Dictionary<string, string> attributes, bool isStlEntity)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
@@ -307,7 +299,7 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetVideoHtml(PublishmentSystemInfo publishmentSystemInfo, string videoUrl, StringDictionary attributes, bool isStlEntity)
+        public static string GetVideoHtml(PublishmentSystemInfo publishmentSystemInfo, string videoUrl, Dictionary<string, string> attributes, bool isStlEntity)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
@@ -328,7 +320,7 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetFileHtmlWithCount(PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, string fileUrl, StringDictionary attributes, string innerXml, bool isStlEntity)
+        public static string GetFileHtmlWithCount(PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, string fileUrl, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
         {
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(fileUrl))
@@ -350,7 +342,7 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
-        public static string GetFileHtmlWithoutCount(PublishmentSystemInfo publishmentSystemInfo, string fileUrl, StringDictionary attributes, string innerXml, bool isStlEntity)
+        public static string GetFileHtmlWithoutCount(PublishmentSystemInfo publishmentSystemInfo, string fileUrl, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
         {
             if (publishmentSystemInfo != null)
             {

@@ -6,7 +6,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.ImportExport.Components
 {

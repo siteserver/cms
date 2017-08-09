@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
@@ -31,69 +29,55 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeInputName, "提交表单名称"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
+            var inputName = string.Empty;
+
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var inputName = string.Empty;
+                var value = contextInfo.Attributes[name];
 
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeInputName))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeInputName))
-                        {
-                            inputName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                    }
+                    inputName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-
-                //var inputId = DataProvider.InputDao.GetInputIdAsPossible(inputName, pageInfo.PublishmentSystemId);
-                var inputId = Input.GetInputIdAsPossible(inputName, pageInfo.PublishmentSystemId, pageInfo.Guid);
-                if (inputId <= 0) return string.Empty;
-
-                //var inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
-                var inputInfo = Input.GetInputInfo(inputId, pageInfo.Guid);
-                var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, pageInfo.PublishmentSystemId, inputInfo.InputId);
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, relatedIdentities);
-                var pageScripts = new NameValueCollection();
-                var attributesHtml = GetAttributesHtml(pageScripts, pageInfo.PublishmentSystemInfo, styleInfoList);
-
-                string template;
-                string loading;
-                string yes;
-                string no;
-                StlInnerUtility.GetTemplateLoadingYesNo(node, pageInfo, out template, out loading, out yes, out no);
-
-                if (string.IsNullOrEmpty(template))
-                {
-                    template = attributesHtml + TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.TemplatePath);
-                }
-                if (string.IsNullOrEmpty(loading))
-                {
-                    loading = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.LoadingPath);
-                }
-                if (string.IsNullOrEmpty(yes))
-                {
-                    yes = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.YesPath);
-                }
-                if (string.IsNullOrEmpty(no))
-                {
-                    no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.NoPath);
-                }
-
-                parsedContent = ParseImpl(pageInfo, contextInfo, inputInfo, pageScripts, styleInfoList, template, loading, yes, no);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
-            return parsedContent;
+            //var inputId = DataProvider.InputDao.GetInputIdAsPossible(inputName, pageInfo.PublishmentSystemId);
+            var inputId = Input.GetInputIdAsPossible(inputName, pageInfo.PublishmentSystemId, pageInfo.Guid);
+            if (inputId <= 0) return string.Empty;
+
+            //var inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
+            var inputInfo = Input.GetInputInfo(inputId, pageInfo.Guid);
+            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, pageInfo.PublishmentSystemId, inputInfo.InputId);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, relatedIdentities);
+            var pageScripts = new NameValueCollection();
+            var attributesHtml = GetAttributesHtml(pageScripts, pageInfo.PublishmentSystemInfo, styleInfoList);
+
+            string template;
+            string loading;
+            string yes;
+            string no;
+            StlInnerUtility.GetTemplateLoadingYesNo(pageInfo, contextInfo.InnerXml, out template, out loading, out yes, out no);
+
+            if (string.IsNullOrEmpty(template))
+            {
+                template = attributesHtml + TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.TemplatePath);
+            }
+            if (string.IsNullOrEmpty(loading))
+            {
+                loading = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.LoadingPath);
+            }
+            if (string.IsNullOrEmpty(yes))
+            {
+                yes = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.YesPath);
+            }
+            if (string.IsNullOrEmpty(no))
+            {
+                no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Input.NoPath);
+            }
+
+            return ParseImpl(pageInfo, contextInfo, inputInfo, pageScripts, styleInfoList, template, loading, yes, no);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, InputInfo inputInfo, NameValueCollection pageScripts, List<TableStyleInfo> styleInfoList, string template, string loading, string yes, string no)

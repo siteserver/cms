@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
@@ -17,48 +15,17 @@ namespace SiteServer.CMS.StlParser.StlElement
         private StlVote() { }
         public const string ElementName = "stl:vote";
 
-        public const string AttributeIsDynamic = "isDynamic";
+        public static SortedList<string, string> AttributeList => null;
 
-        public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            {AttributeIsDynamic, "是否动态显示"}
-        };
+            string inputTemplateString;
+            string loadingTemplateString;
+            string successTemplateString;
+            string failureTemplateString;
+            StlInnerUtility.GetTemplateLoadingYesNo(pageInfo, contextInfo.InnerXml, out inputTemplateString, out loadingTemplateString, out successTemplateString, out failureTemplateString);
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
-        {
-            string parsedContent;
-            try
-            {
-                var isDynamic = false;
-
-                string inputTemplateString;
-                string loadingTemplateString;
-                string successTemplateString;
-                string failureTemplateString;
-                StlInnerUtility.GetTemplateLoadingYesNo(node, pageInfo, out inputTemplateString, out loadingTemplateString, out successTemplateString, out failureTemplateString);
-
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
-                {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute) ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                    }
-                }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, inputTemplateString);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
-
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, inputTemplateString);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string inputTemplateString)

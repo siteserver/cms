@@ -1,4 +1,4 @@
-namespace BaiRong.Core
+namespace SiteServer.Plugin.Data
 {
 	/// <summary>
 	/// Container for get/set data from the CS datastore

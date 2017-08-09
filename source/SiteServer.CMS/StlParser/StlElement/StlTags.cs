@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
@@ -21,7 +19,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeIsOrderByCount = "isOrderByCount";
         public const string AttributeTheme = "theme";
         public const string AttributeContext = "context";
-        public const string AttributeIsDynamic = "isDynamic";
 
 	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
 	    {
@@ -29,78 +26,52 @@ namespace SiteServer.CMS.StlParser.StlElement
 	        {AttributeTotalNum, "显示标签数目"},
 	        {AttributeIsOrderByCount, "是否按引用次数排序"},
 	        {AttributeTheme, "主题样式"},
-	        {AttributeContext, "所处上下文"},
-	        {AttributeIsDynamic, "是否动态显示"}
+	        {AttributeContext, "所处上下文"}
 	    };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			string parsedContent;
-            var contextInfo = contextInfoRef.Clone();
-			try
-			{
-                var tagLevel = 1;
-                var totalNum = 0;
-                var isOrderByCount = false;
-                var theme = "default";
-                var isDynamic = false;
-                var isInnerXml = !string.IsNullOrEmpty(node.InnerXml);
-                var attributes = new LowerNameValueCollection();
+		    var tagLevel = 1;
+            var totalNum = 0;
+            var isOrderByCount = false;
+            var theme = "default";
+            var isInnerXml = !string.IsNullOrEmpty(contextInfo.InnerXml);
 
-                var ie = node.Attributes?.GetEnumerator();
-			    if (ie != null)
-			    {
-			        while (ie.MoveNext())
-			        {
-			            var attr = (XmlAttribute) ie.Current;
+		    foreach (var name in contextInfo.Attributes.Keys)
+		    {
+		        var value = contextInfo.Attributes[name];
 
-			            if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTagLevel))
-			            {
-			                tagLevel = TranslateUtils.ToInt(attr.Value);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTotalNum))
-			            {
-			                totalNum = TranslateUtils.ToInt(attr.Value);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsOrderByCount))
-			            {
-			                isOrderByCount = TranslateUtils.ToBool(attr.Value);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTheme))
-			            {
-			                theme = attr.Value;
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeContext))
-			            {
-			                contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
-			            }
-			            else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-			            {
-			                isDynamic = TranslateUtils.ToBool(attr.Value);
-			            }
-			            else
-			            {
-			                attributes.Set(attr.Name, attr.Value);
-			            }
-			        }
-			    }
-
-			    parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(stlElement, isInnerXml, pageInfo, contextInfo, tagLevel, totalNum, isOrderByCount, theme);
-			}
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                if (StringUtils.EqualsIgnoreCase(name, AttributeTagLevel))
+                {
+                    tagLevel = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTotalNum))
+                {
+                    totalNum = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsOrderByCount))
+                {
+                    isOrderByCount = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTheme))
+                {
+                    theme = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
+                {
+                    contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
+                }
             }
 
-			return parsedContent;
+            return ParseImpl(isInnerXml, pageInfo, contextInfo, tagLevel, totalNum, isOrderByCount, theme);
 		}
 
-        private static string ParseImpl(string stlElement, bool isInnerXml, PageInfo pageInfo, ContextInfo contextInfo, int tagLevel, int totalNum, bool isOrderByCount, string theme)
+        private static string ParseImpl(bool isInnerXml, PageInfo pageInfo, ContextInfo contextInfo, int tagLevel, int totalNum, bool isOrderByCount, string theme)
         {
             var innerHtml = string.Empty;
             if (isInnerXml)
             {
-                innerHtml = StringUtils.StripTags(stlElement, ElementName);
+                innerHtml = StringUtils.StripTags(contextInfo.StlElement, ElementName);
             }
 
             var tagsBuilder = new StringBuilder();

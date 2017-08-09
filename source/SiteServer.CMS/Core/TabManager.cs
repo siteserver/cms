@@ -91,7 +91,7 @@ namespace SiteServer.CMS.Core
             var menus = new Dictionary<string, PluginMenu>();
             if (publishmentSystemId > 0 && topId == string.Empty)
             {
-                var siteMenus = PluginManager.GetSiteMenus(publishmentSystemId);
+                var siteMenus = PluginCache.GetSiteMenus(publishmentSystemId);
                 if (siteMenus != null)
                 {
                     foreach (var siteMenu in siteMenus)
@@ -102,10 +102,10 @@ namespace SiteServer.CMS.Core
             }
             else if (topId == "Settings")
             {
-                var topMenus = PluginManager.GetTopMenus();
+                var topMenus = PluginCache.GetTopMenus();
                 if (topMenus != null)
                 {
-                    foreach (var topMenu in PluginManager.GetTopMenus())
+                    foreach (var topMenu in topMenus)
                     {
                         menus.Add(topMenu.Key, topMenu.Value);
                     }

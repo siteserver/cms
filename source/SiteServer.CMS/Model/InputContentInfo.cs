@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
+using SiteServer.Plugin.Data;
 
 namespace SiteServer.CMS.Model
 {

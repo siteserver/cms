@@ -12,6 +12,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
 using System.Threading.Tasks;
+using BaiRong.Core.Model;
 
 namespace SiteServer.CMS.StlParser
 {
@@ -160,7 +161,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
-                var stlElementTranslated = StlPageContents.Translate(stlElement);
+                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
 
                 var pageContentsElementParser = new StlPageContents(stlElement, pageInfo, contextInfo, false);
                 int totalNum;
@@ -193,7 +194,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlLabelList);
-                var stlElementTranslated = StlPageChannels.Translate(stlElement);
+                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
 
                 var pageChannelsElementParser = new StlPageChannels(stlElement, pageInfo, contextInfo, false);
                 int totalNum;
@@ -217,7 +218,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
-                var stlElementTranslated = StlPageSqlContents.Translate(stlElement);
+                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
 
                 var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo, false);
                 int totalNum;
@@ -241,7 +242,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageInputContents.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageInputContents.ElementName, stlLabelList);
-                var stlElementTranslated = StlPageInputContents.Translate(stlElement);
+                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
 
                 var pageInputContentsElementParser = new StlPageInputContents(stlElement, pageInfo, contextInfo, true);
                 int totalNum;
@@ -349,7 +350,7 @@ namespace SiteServer.CMS.StlParser
             if (StlParserUtility.IsStlContentElementWithTypePageContent(stlLabelList))//内容存在
             {
                 var stlElement = StlParserUtility.GetStlContentElementWithTypePageContent(stlLabelList);
-                var stlElementTranslated = StlPageContents.Translate(stlElement);
+                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
                 contentBuilder.Replace(stlElement, stlElementTranslated);
 
                 var innerBuilder = new StringBuilder(stlElement);
@@ -383,7 +384,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
-                var stlElementTranslated = StlPageContents.Translate(stlElement);
+                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
 
                 var pageContentsElementParser = new StlPageContents(stlElement, pageInfo, contextInfo, false);
                 int totalNum;
@@ -407,7 +408,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlLabelList);
-                var stlElementTranslated = StlPageChannels.Translate(stlElement);
+                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
 
                 var pageChannelsElementParser = new StlPageChannels(stlElement, pageInfo, contextInfo, false);
                 int totalNum;
@@ -431,7 +432,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
-                var stlElementTranslated = StlPageSqlContents.Translate(stlElement);
+                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
 
                 var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo, false);
                 int totalNum;

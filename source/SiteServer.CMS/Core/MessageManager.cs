@@ -9,6 +9,7 @@ using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
 using System.Collections.Generic;
+using SiteServer.Plugin.Data;
 
 namespace SiteServer.CMS.Core
 {

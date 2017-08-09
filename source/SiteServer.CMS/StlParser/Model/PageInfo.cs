@@ -294,15 +294,7 @@ wnd_frame.src=url;}}
 
         public bool IsPageScriptsExists(string pageJsName, bool isAfterBody)
         {
-            if (isAfterBody)
-            {
-                return _pageAfterBodyScripts.ContainsKey(pageJsName);
-            }
-            else
-            {
-                return _pageBeforeBodyScripts.ContainsKey(pageJsName);
-            }
-
+            return isAfterBody ? _pageAfterBodyScripts.ContainsKey(pageJsName) : _pageBeforeBodyScripts.ContainsKey(pageJsName);
         }
 
         public void AddPageScriptsIfNotExists(string pageJsName)
@@ -365,14 +357,7 @@ wnd_frame.src=url;}}
 
         public string GetPageScripts(string pageJsName, bool isAfterBody)
         {
-            if (isAfterBody)
-            {
-                return _pageAfterBodyScripts[pageJsName];
-            }
-            else
-            {
-                return _pageBeforeBodyScripts[pageJsName];
-            }
+            return isAfterBody ? _pageAfterBodyScripts[pageJsName] : _pageBeforeBodyScripts[pageJsName];
         }
 
         public ICollection PageEndScriptKeys => _pageEndScripts.Keys;

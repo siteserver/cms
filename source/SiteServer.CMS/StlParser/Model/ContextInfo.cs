@@ -1,8 +1,9 @@
+using System.Collections.Generic;
+using System.Xml;
 using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
-using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -18,16 +19,6 @@ namespace SiteServer.CMS.StlParser.Model
             Guid = pageInfo.Guid;
         }
 
-        public ContextInfo(EContextType contextType, PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, ContentInfo contentInfo, string guid)
-        {
-            ContextType = contextType;
-            PublishmentSystemInfo = publishmentSystemInfo;
-            ChannelId = channelId;
-            ContentId = contentId;
-            _contentInfo = contentInfo;
-            Guid = guid;
-        }
-
         //用于clone
         private ContextInfo(ContextInfo contextInfo)
         {
@@ -40,11 +31,26 @@ namespace SiteServer.CMS.StlParser.Model
 
             IsInnerElement = contextInfo.IsInnerElement;
             IsCurlyBrace = contextInfo.IsCurlyBrace;
-            TitleWordNum = contextInfo.TitleWordNum;
             PageItemIndex = contextInfo.PageItemIndex;
-            TotalNum = contextInfo.TotalNum;
             ItemContainer = contextInfo.ItemContainer;
             ContainerClientId = contextInfo.ContainerClientId;
+
+            StlElement = contextInfo.StlElement;
+            Attributes = contextInfo.Attributes;
+            InnerXml = contextInfo.InnerXml;
+            ChildNodes = contextInfo.ChildNodes;
+        }
+
+        public ContextInfo Clone(string stlElement, Dictionary<string, string> attributes, string innerXml, XmlNodeList childNodes)
+        {
+            var contextInfo = new ContextInfo(this)
+            {
+                StlElement = stlElement,
+                Attributes = attributes,
+                InnerXml = innerXml,
+                ChildNodes = childNodes
+            };
+            return contextInfo;
         }
 
         public ContextInfo Clone()
@@ -62,6 +68,14 @@ namespace SiteServer.CMS.StlParser.Model
         public int ContentId { get; set; }
 
         public string Guid { get; set; }
+
+        public string StlElement { get; set; }
+
+        public Dictionary<string, string> Attributes { get; set; }
+
+        public string InnerXml { get; set; }
+
+        public XmlNodeList ChildNodes { get; set; }
 
         public ContentInfo ContentInfo
         {
@@ -82,10 +96,6 @@ namespace SiteServer.CMS.StlParser.Model
         public bool IsInnerElement { get; set; }
 
         public bool IsCurlyBrace { get; set; }
-
-        public int TitleWordNum { get; set; }
-
-        public int TotalNum { get; set; }
 
         public int PageItemIndex { get; set; }
 

@@ -49,6 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataType.cs" />
+    <Compile Include="Data\Copyable.cs" />
+    <Compile Include="Data\ExtendedAttributes.cs" />
+    <Compile Include="Data\IContentInfo.cs" />
+    <Compile Include="Data\INodeInfo.cs" />
+    <Compile Include="Data\IPublishmentSystemInfo.cs" />
+    <Compile Include="Data\Serializer.cs" />
+    <Compile Include="Data\SerializerData.cs" />
+    <Compile Include="Hooks\IParser.cs" />
     <Compile Include="Hooks\ITable.cs" />
     <Compile Include="Hooks\IPageAdmin.cs" />
     <Compile Include="IPlugin.cs" />
@@ -63,6 +71,7 @@
     <Compile Include="IPublicApi.cs" />
     <Compile Include="PluginEnvironment.cs" />
     <Compile Include="PluginContentLink.cs" />
+    <Compile Include="PluginParserContext.cs" />
     <Compile Include="PluginMenu.cs" />
     <Compile Include="PluginConstants.cs" />
     <Compile Include="PluginTableColumn.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Controls;

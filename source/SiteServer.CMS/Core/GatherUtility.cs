@@ -10,6 +10,7 @@ using BaiRong.Core.Net;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using System.Collections.Generic;
+using BaiRong.Core.Model;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core

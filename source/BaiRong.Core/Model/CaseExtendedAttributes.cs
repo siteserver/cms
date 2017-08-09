@@ -2,6 +2,7 @@ using System;
 using System.Collections.Specialized;
 using System.Collections;
 using BaiRong.Core.Data;
+using SiteServer.Plugin.Data;
 
 namespace BaiRong.Core.Model
 {

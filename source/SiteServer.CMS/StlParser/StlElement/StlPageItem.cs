@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
@@ -90,7 +89,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var lStr = string.Empty;
                 var rStr = string.Empty;
                 var alwaysA = true;
-                var attributes = new StringDictionary();
+                var attributes = new Dictionary<string, string>();
 
                 var ie = node?.Attributes?.GetEnumerator();
                 if (ie != null)
@@ -152,7 +151,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 string successTemplateString;
                 string failureTemplateString;
-                StlInnerUtility.GetYesNo(node, pageInfo, out successTemplateString, out failureTemplateString);
+                StlInnerUtility.GetYesNo(pageInfo, node.InnerXml, out successTemplateString, out failureTemplateString);
                 if (!string.IsNullOrEmpty(node.InnerXml) && string.IsNullOrEmpty(failureTemplateString))
                 {
                     failureTemplateString = successTemplateString;
@@ -572,7 +571,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var lStr = string.Empty;
                 var rStr = string.Empty;
                 var alwaysA = true;
-                var attributes = new StringDictionary();
+                var attributes = new Dictionary<string, string>();
 
                 var ie = node?.Attributes?.GetEnumerator();
                 if (ie != null)
@@ -1058,7 +1057,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var lStr = string.Empty;
                 var rStr = string.Empty;
                 var alwaysA = true;
-                var attributes = new StringDictionary();
+                var attributes = new Dictionary<string, string>();
 
                 var ie = node?.Attributes?.GetEnumerator();
                 if (ie != null)

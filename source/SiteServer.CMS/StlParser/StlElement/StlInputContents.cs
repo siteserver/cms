@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
@@ -21,7 +19,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeOrder = "order";
         public const string AttributeIsReply = "isReply";
         public const string AttributeWhere = "where";
-        public const string AttributeIsDynamic = "isDynamic";
         public const string AttributeCellPadding = "cellPadding";
         public const string AttributeCellSpacing = "cellSpacing";
         public const string AttributeClass = "class";
@@ -45,7 +42,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeStartNum, "从第几条信息开始显示"},
             {AttributeOrder, "排序"},
             {AttributeWhere, "获取内容列表的条件判断"},
-            {AttributeIsDynamic, "是否动态显示"},
             {AttributeCellPadding, "填充"},
             {AttributeCellSpacing, "间距"},
             {AttributeClass, "Css类"},
@@ -62,28 +58,17 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeItemClass, "项Css类"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
-            {
-                var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.InputContent);
+            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.InputContent);
 
-                parsedContent = listInfo.IsDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, listInfo);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
-
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, listInfo);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var parsedContent = string.Empty;
 
-            contextInfo.TitleWordNum = 0;
             //var inputId = DataProvider.InputDao.GetInputIdAsPossible(listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId);
             var inputId = Input.GetInputIdAsPossible(listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId, pageInfo.Guid);
 

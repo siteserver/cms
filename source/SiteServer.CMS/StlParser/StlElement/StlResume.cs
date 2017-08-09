@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.CMS.StlTemplates;
-using System.Text;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -23,39 +20,25 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeStyleName, "样式名称"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
+            var styleName = string.Empty;
+
+            string yes;
+            string no;
+            StlInnerUtility.GetYesNo(pageInfo, contextInfo.InnerXml, out yes, out no);
+
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var styleName = string.Empty;
+                var value = contextInfo.Attributes[name];
 
-                string yes;
-                string no;
-                StlInnerUtility.GetYesNo(node, pageInfo, out yes, out no);
-
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeStyleName))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeStyleName))
-                        {
-                            styleName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                    }
+                    styleName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                 }
-
-                parsedContent = ParseImpl(pageInfo, contextInfo, styleName, yes, no);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, styleName, yes, no);
         }
 
         public static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string styleName, string yes, string no)

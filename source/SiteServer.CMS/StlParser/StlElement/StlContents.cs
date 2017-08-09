@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using System.Xml;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -34,7 +33,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeIsColor = "isColor";
         public const string AttributeTotalNum = "totalNum";
         public const string AttributeStartNum = "startNum";
-        public const string AttributeTitleWordNum = "titleWordNum";
         public const string AttributeOrder = "order";
         public const string AttributeIsImage = "isImage";
         public const string AttributeIsVideo = "isVideo";
@@ -42,7 +40,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeIsNoDup = "isNoDup";
         public const string AttributeIsRelatedContents = "isRelatedContents";
         public const string AttributeWhere = "where";
-        public const string AttributeIsDynamic = "isDynamic";
         public const string AttributeCellPadding = "cellPadding";
         public const string AttributeCellSpacing = "cellSpacing";
         public const string AttributeClass = "class";
@@ -78,7 +75,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeIsColor, "仅显示醒目内容"},
             {AttributeTotalNum, "显示内容数目"},
             {AttributeStartNum, "从第几条信息开始显示"},
-            {AttributeTitleWordNum, "内容标题文字数量"},
             {AttributeOrder, "排序"},
             {AttributeIsImage, "仅显示图片内容"},
             {AttributeIsVideo, "仅显示视频内容"},
@@ -86,7 +82,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeIsNoDup, "不显示重复标题的内容"},
             {AttributeIsRelatedContents, "显示相关内容列表"},
             {AttributeWhere, "获取内容列表的条件判断"},
-            {AttributeIsDynamic, "是否动态显示"},
             {AttributeCellPadding, "填充"},
             {AttributeCellSpacing, "间距"},
             {AttributeClass, "Css类"},
@@ -103,21 +98,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeItemClass, "项Css类"},
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
-            {
-                var listInfo = ListInfo.GetListInfoByXmlNode(node, pageInfo, contextInfo, EContextType.Content);
+            var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Content);
 
-                parsedContent = listInfo.IsDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, listInfo);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
-
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, listInfo);
         }
 
         public static IEnumerable GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
@@ -132,9 +117,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var parsedContent = string.Empty;
-
-            var titleWordNum = contextInfo.TitleWordNum;
-            contextInfo.TitleWordNum = listInfo.TitleWordNum;
 
             var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
 
@@ -206,8 +188,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
                 }
             }
-
-            contextInfo.TitleWordNum = titleWordNum;
 
             return parsedContent;
         }

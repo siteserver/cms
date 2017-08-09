@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.HtmlControls;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
@@ -46,7 +44,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeBgColor = "bgColor";
         public const string AttributeIsShowText = "isShowText";
         public const string AttributeIsTopText = "isTopText";
-        public const string AttributeIsDynamic = "isDynamic";
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
@@ -74,8 +71,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeHeight, "图片高度"},
             {AttributeBgColor, "背景色"},
             {AttributeIsShowText, "是否显示文字标题"},
-            {AttributeIsTopText, "是否文字显示在顶端"},
-            {AttributeIsDynamic, "是否动态显示"}
+            {AttributeIsTopText, "是否文字显示在顶端"}
         };
 
         public const string ThemeStyle1 = "Style1";
@@ -92,174 +88,155 @@ namespace SiteServer.CMS.StlParser.StlElement
         };
 
         //对“flash滚动焦点图”（stl:focusViewer）元素进行解析
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            try
+            var channelIndex = string.Empty;
+            var channelName = string.Empty;
+            var scopeType = EScopeType.Self;
+            var groupChannel = string.Empty;
+            var groupChannelNot = string.Empty;
+            var groupContent = string.Empty;
+            var groupContentNot = string.Empty;
+            var tags = string.Empty;
+            var orderByString = ETaxisTypeUtils.GetOrderByString(ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
+            var startNum = 1;
+            var totalNum = 0;
+            var isShowText = true;
+            var isTopText = string.Empty;
+            var titleWordNum = 0;
+            var where = string.Empty;
+
+            var isTop = false;
+            var isTopExists = false;
+            var isRecommend = false;
+            var isRecommendExists = false;
+            var isHot = false;
+            var isHotExists = false;
+            var isColor = false;
+            var isColorExists = false;
+
+            var theme = string.Empty;
+            var imageWidth = 260;
+            var imageHeight = 182;
+            var textHeight = 25;
+            var bgColor = string.Empty;
+            var genericControl = new HtmlGenericControl("div");
+
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var channelIndex = string.Empty;
-                var channelName = string.Empty;
-                var scopeType = EScopeType.Self;
-                var groupChannel = string.Empty;
-                var groupChannelNot = string.Empty;
-                var groupContent = string.Empty;
-                var groupContentNot = string.Empty;
-                var tags = string.Empty;
-                var orderByString = ETaxisTypeUtils.GetOrderByString(ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
-                var startNum = 1;
-                var totalNum = 0;
-                var isShowText = true;
-                var isTopText = string.Empty;
-                var titleWordNum = 0;
-                var where = string.Empty;
+                var value = contextInfo.Attributes[name];
 
-                var isTop = false;
-                var isTopExists = false;
-                var isRecommend = false;
-                var isRecommendExists = false;
-                var isHot = false;
-                var isHotExists = false;
-                var isColor = false;
-                var isColorExists = false;
-
-                var theme = string.Empty;
-                var imageWidth = 260;
-                var imageHeight = 182;
-                var textHeight = 25;
-                var bgColor = string.Empty;
-                var isDynamic = false;
-                var genericControl = new HtmlGenericControl("div");
-
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
-                        {
-                            channelIndex = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
-                        {
-                            channelName = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeScope))
-                        {
-                            scopeType = EScopeTypeUtils.GetEnumType(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupChannel))
-                        {
-                            groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupChannelNot))
-                        {
-                            groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupContent))
-                        {
-                            groupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeGroupContentNot))
-                        {
-                            groupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTags))
-                        {
-                            tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeOrder))
-                        {
-                            orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeStartNum))
-                        {
-                            startNum = TranslateUtils.ToInt(attr.Value, 1);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTotalNum))
-                        {
-                            totalNum = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTitleWordNum))
-                        {
-                            titleWordNum = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWhere))
-                        {
-                            where = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsTop))
-                        {
-                            isTopExists = true;
-                            isTop = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsRecommend))
-                        {
-                            isRecommendExists = true;
-                            isRecommend = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsHot))
-                        {
-                            isHotExists = true;
-                            isHot = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsColor))
-                        {
-                            isColorExists = true;
-                            isColor = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTheme))
-                        {
-                            theme = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWidth))
-                        {
-                            if (StringUtils.EndsWithIgnoreCase(attr.Value, "px"))
-                            {
-                                attr.Value = attr.Value.Substring(0, attr.Value.Length - 2);
-                            }
-                            imageWidth = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeHeight))
-                        {
-                            if (StringUtils.EndsWithIgnoreCase(attr.Value, "px"))
-                            {
-                                attr.Value = attr.Value.Substring(0, attr.Value.Length - 2);
-                            }
-                            imageHeight = TranslateUtils.ToInt(attr.Value);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeBgColor))
-                        {
-                            bgColor = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsShowText))
-                        {
-                            isShowText = TranslateUtils.ToBool(attr.Value, true);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsTopText))
-                        {
-                            isTopText = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else
-                        {
-                            genericControl.Attributes[attr.Name] = attr.Value;
-                        }
-                    }
+                    channelIndex = value;
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, genericControl, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                {
+                    channelName = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeScope))
+                {
+                    scopeType = EScopeTypeUtils.GetEnumType(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannel))
+                {
+                    groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannelNot))
+                {
+                    groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContent))
+                {
+                    groupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContentNot))
+                {
+                    groupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTags))
+                {
+                    tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
+                {
+                    orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeStartNum))
+                {
+                    startNum = TranslateUtils.ToInt(value, 1);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTotalNum))
+                {
+                    totalNum = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTitleWordNum))
+                {
+                    titleWordNum = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeWhere))
+                {
+                    where = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTop))
+                {
+                    isTopExists = true;
+                    isTop = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsRecommend))
+                {
+                    isRecommendExists = true;
+                    isRecommend = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsHot))
+                {
+                    isHotExists = true;
+                    isHot = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsColor))
+                {
+                    isColorExists = true;
+                    isColor = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTheme))
+                {
+                    theme = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeWidth))
+                {
+                    if (StringUtils.EndsWithIgnoreCase(value, "px"))
+                    {
+                        value = value.Substring(0, value.Length - 2);
+                    }
+                    imageWidth = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeHeight))
+                {
+                    if (StringUtils.EndsWithIgnoreCase(value, "px"))
+                    {
+                        value = value.Substring(0, value.Length - 2);
+                    }
+                    imageHeight = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeBgColor))
+                {
+                    bgColor = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsShowText))
+                {
+                    isShowText = TranslateUtils.ToBool(value, true);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTopText))
+                {
+                    isTopText = value;
+                }
+                else
+                {
+                    genericControl.Attributes[name] = value;
+                }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
-            }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, genericControl, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlGenericControl genericControl, string channelIndex, string channelName, EScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, string where, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)

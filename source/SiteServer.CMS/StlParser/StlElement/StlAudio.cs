@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Xml;
+﻿using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -22,7 +18,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeIsAutoPlay = "isAutoPlay";
         public const string AttributeIsPreLoad = "isPreload";
         public const string AttributeIsLoop = "isLoop";
-        public const string AttributeIsDynamic = "isDynamic";
 
 		public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
@@ -31,68 +26,43 @@ namespace SiteServer.CMS.StlParser.StlElement
 		    {AttributeIsAutoPlay, "是否自动播放"},
 		    {AttributeIsPreLoad, "是否预载入"},
 		    {AttributeIsLoop, "是否循环播放"},
-		    {AttributeIsDynamic, "是否动态显示"}
 		};
 
-	    public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+	    public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			string parsedContent;
-			try
-			{
-				var ie = node.Attributes?.GetEnumerator();
-                var type = BackgroundContentAttribute.VideoUrl;
-				var playUrl = string.Empty;
-                var isAutoPlay = false;
-                var isPreLoad = true;
-                var isLoop = false;
-                var isDynamic = false;
-                var parameters = new NameValueCollection();
+            var type = BackgroundContentAttribute.VideoUrl;
+            var playUrl = string.Empty;
+            var isAutoPlay = false;
+            var isPreLoad = true;
+            var isLoop = false;
 
-			    if (ie != null)
-			    {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributePlayUrl))
-                        {
-                            playUrl = attr.Value;
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsAutoPlay))
-                        {
-                            isAutoPlay = TranslateUtils.ToBool(attr.Value, false);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsPreLoad))
-                        {
-                            isPreLoad = TranslateUtils.ToBool(attr.Value, true);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsLoop))
-                        {
-                            isLoop = TranslateUtils.ToBool(attr.Value, false);
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else
-                        {
-                            parameters.Add(attr.Name, attr.Value);
-                        }
-                    }
-                }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, type, playUrl, isAutoPlay, isPreLoad, isLoop);
-			}
-            catch (Exception ex)
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                {
+                    type = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributePlayUrl))
+                {
+                    playUrl = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsAutoPlay))
+                {
+                    isAutoPlay = TranslateUtils.ToBool(value, false);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsPreLoad))
+                {
+                    isPreLoad = TranslateUtils.ToBool(value, true);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsLoop))
+                {
+                    isLoop = TranslateUtils.ToBool(value, false);
+                }
             }
 
-			return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, type, playUrl, isAutoPlay, isPreLoad, isLoop);
 		}
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, bool isAutoPlay, bool isPreLoad, bool isLoop)

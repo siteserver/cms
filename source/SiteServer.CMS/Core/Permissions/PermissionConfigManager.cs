@@ -157,8 +157,8 @@ namespace SiteServer.CMS.Core.Permissions
 		        }
 		    }
 
-            GeneralPermissions.AddRange(PluginManager.GetTopPermissions());
-            WebsitePermissions.AddRange(PluginManager.GetSitePermissions(0));
+            GeneralPermissions.AddRange(PluginCache.GetTopPermissions());
+            WebsitePermissions.AddRange(PluginCache.GetSitePermissions(0));
 		}
 
         private static void GetPermissions(XmlNode node, List<PermissionConfig> list) 

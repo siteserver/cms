@@ -214,7 +214,6 @@
     <Compile Include="Core\Permissions\PermissionConfigManager.cs" />
     <Compile Include="Core\Permissions\PermissionManager.cs" />
     <Compile Include="Plugin\PluginCache.cs" />
-    <Compile Include="Plugin\AllPlugins.cs" />
     <Compile Include="Plugin\PluginUtils.cs" />
     <Compile Include="Core\TabManager.cs" />
     <Compile Include="Model\ContentModelInfo.cs" />

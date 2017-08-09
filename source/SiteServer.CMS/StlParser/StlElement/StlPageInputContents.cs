@@ -35,21 +35,38 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
         }
 
-        public static string Translate(string stlElement)
-        {
-            return TranslateUtils.EncryptStringBySecretKey(stlElement);
-        }
-
         public StlPageInputContents(string stlPageInputContentsElement, PageInfo pageInfo, ContextInfo contextInfo, bool isXmlContent)
         {
             _stlPageInputContentsElement = stlPageInputContentsElement;
             _pageInfo = pageInfo;
-            _contextInfo = contextInfo;
             var xmlDocument = StlParserUtility.GetXmlDocument(_stlPageInputContentsElement, isXmlContent);
             _node = xmlDocument.DocumentElement;
             _node = _node?.FirstChild;
 
-            _listInfo = ListInfo.GetListInfoByXmlNode(_node, _pageInfo, _contextInfo, EContextType.InputContent);
+            var attributes = new Dictionary<string, string>();
+            var ie = _node?.Attributes?.GetEnumerator();
+            if (ie != null)
+            {
+                while (ie.MoveNext())
+                {
+                    var attr = (XmlAttribute)ie.Current;
+
+                    var key = attr.Name;
+                    if (!string.IsNullOrEmpty(key))
+                    {
+                        var value = attr.Value;
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            value = string.Empty;
+                        }
+                        attributes[key] = value;
+                    }
+                }
+            }
+
+            _contextInfo = contextInfo.Clone(stlPageInputContentsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
+
+            _listInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.InputContent);
 
             //var inputId = DataProvider.InputDao.GetInputIdAsPossible(_listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId);
             var inputId = Input.GetInputIdAsPossible(_listInfo.Others.Get(AttributeInputName), _pageInfo.PublishmentSystemId, _pageInfo.Guid);

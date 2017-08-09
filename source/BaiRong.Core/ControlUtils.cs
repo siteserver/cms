@@ -56,11 +56,11 @@ namespace BaiRong.Core
 		/// </summary>
 		/// <param name="accessor">控件</param>
 		/// <param name="attributes">属性集合</param>
-		public static void AddAttributesIfNotExists(IAttributeAccessor accessor, StringDictionary attributes)
+		public static void AddAttributesIfNotExists(IAttributeAccessor accessor, Dictionary<string, string> attributes)
 		{
 			if (accessor != null && attributes != null)
 			{
-				foreach (string key in attributes.Keys)
+				foreach (var key in attributes.Keys)
 				{
 					if (accessor.GetAttribute(key) == null)
 					{

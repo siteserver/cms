@@ -2,6 +2,7 @@
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin.Data;
 
 namespace SiteServer.CMS.Model
 {
@@ -87,7 +88,7 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("TransIsAutomatic", value.ToString()); }
         }
 
-        //夸张转发操作类型：复制 引用地址 引用内容
+        //跨站转发操作类型：复制 引用地址 引用内容
         public ETranslateContentType TransDoneType
         {
             get { return ETranslateContentTypeUtils.GetEnumType(GetExtendedAttribute("TransDoneType")); }

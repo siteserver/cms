@@ -8,6 +8,7 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin.Data;
 
 namespace SiteServer.BackgroundPages.Cms
 {

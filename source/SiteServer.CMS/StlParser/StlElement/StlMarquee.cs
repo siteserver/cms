@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -18,15 +16,13 @@ namespace SiteServer.CMS.StlParser.StlElement
 		public const string AttributeDirection = "direction";
 		public const string AttributeWidth = "width";
 		public const string AttributeHeight = "height";
-        public const string AttributeIsDynamic = "isDynamic";
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeScrollDelay, "滚动延迟时间（毫秒）"},
             {AttributeDirection, StringUtils.SortedListToAttributeValueString("滚动方向", DirectionList)},
             {AttributeWidth, "宽度"},
-            {AttributeHeight, "高度"},
-            {AttributeIsDynamic, "是否动态显示"}
+            {AttributeHeight, "高度"}
         };
 
         public const string DirectionVertical = "vertical";         //垂直
@@ -38,86 +34,67 @@ namespace SiteServer.CMS.StlParser.StlElement
             {DirectionHorizontal, "水平"}
         };
 
-        internal static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			string parsedContent;
-			try
-			{
-                if (string.IsNullOrEmpty(node.InnerXml.Trim())) return string.Empty;
+            if (string.IsNullOrEmpty(contextInfo.InnerXml)) return string.Empty;
 
-			    var innerBuilder = new StringBuilder(node.InnerXml);
-			    StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-			    var scrollHtml = innerBuilder.ToString();
+            var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+            var scrollHtml = innerBuilder.ToString();
 
-                var scrollDelay = 40;
-				var direction = DirectionVertical;
-                var width = "width:100%;";
-				var height = string.Empty;
-                var isDynamic = false;
+            var scrollDelay = 40;
+            var direction = DirectionVertical;
+            var width = "width:100%;";
+            var height = string.Empty;
 
-                var ie = node.Attributes?.GetEnumerator();
-			    if (ie != null)
-			    {
-                    while (ie.MoveNext())
+            foreach (var name in contextInfo.Attributes.Keys)
+            {
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeScrollDelay))
+                {
+                    scrollDelay = TranslateUtils.ToInt(value, 40);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeDirection))
+                {
+                    if (value.ToLower().Equals(DirectionHorizontal.ToLower()))
                     {
-                        var attr = (XmlAttribute)ie.Current;
-
-                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeScrollDelay))
+                        direction = DirectionHorizontal;
+                    }
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeWidth))
+                {
+                    value = value.Trim();
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        if (char.IsDigit(value[value.Length - 1]))
                         {
-                            scrollDelay = TranslateUtils.ToInt(attr.Value, 40);
+                            width = "width:" + value + "px;";
                         }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeDirection))
+                        else
                         {
-                            if (attr.Value.ToLower().Equals(DirectionHorizontal.ToLower()))
-                            {
-                                direction = DirectionHorizontal;
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeWidth))
-                        {
-                            attr.Value = attr.Value.Trim();
-                            if (!string.IsNullOrEmpty(attr.Value))
-                            {
-                                if (char.IsDigit(attr.Value[attr.Value.Length - 1]))
-                                {
-                                    width = "width:" + attr.Value + "px;";
-                                }
-                                else
-                                {
-                                    width = "width:" + attr.Value + ";";
-                                }
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeHeight))
-                        {
-                            attr.Value = attr.Value.Trim();
-                            if (!string.IsNullOrEmpty(attr.Value))
-                            {
-                                if (char.IsDigit(attr.Value[attr.Value.Length - 1]))
-                                {
-                                    height = "height:" + attr.Value + "px;";
-                                }
-                                else
-                                {
-                                    height = "height:" + attr.Value + ";";
-                                }
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
+                            width = "width:" + value + ";";
                         }
                     }
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, scrollHtml, scrollDelay, direction, width, height);
-			}
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeHeight))
+                {
+                    value = value.Trim();
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        if (char.IsDigit(value[value.Length - 1]))
+                        {
+                            height = "height:" + value + "px;";
+                        }
+                        else
+                        {
+                            height = "height:" + value + ";";
+                        }
+                    }
+                }
             }
 
-			return parsedContent;
+            return ParseImpl(pageInfo, scrollHtml, scrollDelay, direction, width, height);
 		}
 
         private static string ParseImpl(PageInfo pageInfo, string scrollHtml, int scrollDelay, string direction, string width, string height)
