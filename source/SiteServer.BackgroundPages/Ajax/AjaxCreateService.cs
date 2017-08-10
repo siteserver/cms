@@ -155,9 +155,9 @@ namespace SiteServer.BackgroundPages.Ajax
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
             var cacheMessageKey = userKeyPrefix + CacheMessage;
 
-            CacheUtils.Max(cacheTotalCountKey, "3");//存储需要的页面总数
-            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+            CacheUtils.Insert(cacheTotalCountKey, "3");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”、“错误信息”及“执行JS脚本”的字符串数组
             NameValueCollection retval;
@@ -165,20 +165,20 @@ namespace SiteServer.BackgroundPages.Ajax
             try
             {
 
-                CacheUtils.Max(cacheCurrentCountKey, "1");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "正在创建站点...");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
 
 
-                CacheUtils.Max(cacheCurrentCountKey, "2");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "正在导入数据...");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
                 if (isUseSiteTemplate && !string.IsNullOrEmpty(siteTemplateDir))
                 {
                     SiteTemplateManager.Instance.ImportSiteTemplateToEmptyPublishmentSystem(publishmentSystemId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
                 }
 
-                CacheUtils.Max(cacheCurrentCountKey, "3");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "创建成功！");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 if (!string.IsNullOrEmpty(returnUrl))
                 {
                     returnUrl = PageUtils.AddQueryString(StringUtils.ValueFromUrl(returnUrl), "PublishmentSystemID", publishmentSystemId.ToString());
@@ -202,7 +202,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
             CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
-            CacheUtils.Clear();
+            CacheUtils.ClearAll();
 
             return retval;
         }
@@ -213,25 +213,22 @@ namespace SiteServer.BackgroundPages.Ajax
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
             var cacheMessageKey = userKeyPrefix + CacheMessage;
 
-            CacheUtils.Max(cacheTotalCountKey, "3");//存储需要的页面总数
-            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+            CacheUtils.Insert(cacheTotalCountKey, "3");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”、“错误信息”及“执行JS脚本”的字符串数组
             NameValueCollection retval;
 
             try
             {
-                CacheUtils.Max(cacheCurrentCountKey, "1");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "正在创建站点...");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
 
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
 
-
-
-
-                CacheUtils.Max(cacheCurrentCountKey, "2");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "正在导入数据...");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
                 if (isUseSiteTemplate && !string.IsNullOrEmpty(siteTemplateDir))
                 {
                     SiteTemplateManager.Instance.ImportSiteTemplateToEmptyPublishmentSystem(publishmentSystemId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
@@ -239,8 +236,8 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 CreateManager.CreateAll(publishmentSystemId, userKeyPrefix);
 
-                CacheUtils.Max(cacheCurrentCountKey, "3");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "创建成功！");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 if (!string.IsNullOrEmpty(returnUrl))
                 {
                     returnUrl = PageUtils.AddQueryString(StringUtils.ValueFromUrl(returnUrl), "PublishmentSystemID", publishmentSystemId.ToString());
@@ -267,7 +264,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
             CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
-            CacheUtils.Clear();
+            CacheUtils.ClearAll();
 
             return retval;
         }

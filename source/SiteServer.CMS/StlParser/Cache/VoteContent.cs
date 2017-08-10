@@ -7,12 +7,12 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         public static VoteContentInfo GetContentInfo(string tableName, int contentId, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(VoteContent), nameof(GetContentInfo), guid, tableName, contentId.ToString());
-            var retval = Utils.GetCache<VoteContentInfo>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(VoteContent), nameof(GetContentInfo), tableName, contentId.ToString());
+            var retval = StlCacheUtils.GetCache<VoteContentInfo>(cacheKey);
             if (retval != null) return retval;
 
             retval = DataProvider.VoteContentDao.GetContentInfo(tableName, contentId);
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
     }

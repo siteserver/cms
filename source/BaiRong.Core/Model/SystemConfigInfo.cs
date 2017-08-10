@@ -13,7 +13,7 @@ namespace BaiRong.Core.Model
 
         public override string ToString()
         {
-            return TranslateUtils.NameValueCollectionToString(Attributes);
+            return TranslateUtils.NameValueCollectionToString(NameValues);
         }
 
         public string Cipherkey

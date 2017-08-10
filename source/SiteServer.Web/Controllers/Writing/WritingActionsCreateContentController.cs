@@ -38,7 +38,7 @@ namespace SiteServer.API.Controllers.Writing
 
                 var postCollection = body.GetPostCollection();
 
-                InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, postCollection, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, postCollection, contentInfo.NameValues, ContentAttribute.HiddenAttributes);
 
                 contentInfo.IsChecked = false;
                 contentInfo.PublishmentSystemId = publishmentSystemId;

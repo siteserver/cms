@@ -7,12 +7,12 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         public static StlTagInfo GetStlTagInfo(int publishmentSystemId, string tagName, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(StlTag), nameof(GetStlTagInfo), guid, publishmentSystemId.ToString(), tagName);
-            var retval = Utils.GetCache<StlTagInfo>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(StlTag), nameof(GetStlTagInfo), publishmentSystemId.ToString(), tagName);
+            var retval = StlCacheUtils.GetCache<StlTagInfo>(cacheKey);
             if (retval != null) return retval;
 
             retval = DataProvider.StlTagDao.GetStlTagInfo(publishmentSystemId, tagName);
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
     }

@@ -6,12 +6,12 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         public static int GetPublishmentSystemIdByIsHeadquarters(string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(PublishmentSystem), nameof(GetPublishmentSystemIdByIsHeadquarters), guid);
-            var retval = Utils.GetIntCache(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(PublishmentSystem), nameof(GetPublishmentSystemIdByIsHeadquarters));
+            var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
 
             retval = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
     }

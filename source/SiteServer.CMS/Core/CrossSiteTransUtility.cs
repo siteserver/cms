@@ -271,7 +271,7 @@ namespace SiteServer.CMS.Core
             //复制
             if (Equals(nodeInfo.Additional.TransDoneType, ETranslateContentType.Copy))
             {
-                contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
+                contentInfo.NameValues.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
             }
             //引用地址
             else if (Equals(nodeInfo.Additional.TransDoneType, ETranslateContentType.Reference))
@@ -280,7 +280,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = nodeInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
+                contentInfo.NameValues.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
             }
             //引用内容
             else if (Equals(nodeInfo.Additional.TransDoneType, ETranslateContentType.ReferenceContent))
@@ -289,7 +289,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = nodeInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
+                contentInfo.NameValues.Add(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
             }
 
             if (!string.IsNullOrEmpty(targetTableName))

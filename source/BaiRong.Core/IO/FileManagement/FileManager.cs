@@ -1,14 +1,9 @@
 using System.IO;
-using System.Web.Caching;
 
 namespace BaiRong.Core.IO.FileManagement
 {
 	public class FileManager
 	{
-		public FileManager()
-		{
-		}
-
 		public static FileSystemInfoExtendCollection GetFileSystemInfoExtendCollection(string rootPath, bool reflesh)
 		{
 			FileSystemInfoExtendCollection retval = null;
@@ -21,7 +16,7 @@ namespace BaiRong.Core.IO.FileManagement
 					var files = currentRoot.GetFileSystemInfos();
 					var fsies = new FileSystemInfoExtendCollection(files);
 
-					CacheUtils.Max(cacheKey, fsies, new CacheDependency(rootPath));
+					CacheUtils.Insert(cacheKey, fsies, rootPath);
 				}
 
 				retval = CacheUtils.Get(cacheKey) as FileSystemInfoExtendCollection ;

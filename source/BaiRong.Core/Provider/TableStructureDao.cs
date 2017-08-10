@@ -102,53 +102,6 @@ namespace BaiRong.Core.Provider
             return sortedlist;
         }
 
-        public bool IsTableExists(string tableName)
-        {
-            //var exists = false;
-            //string sqlString;
-            //if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
-            //{
-            //    sqlString = $@"show tables like ""{tableName}""";
-            //}
-            //else
-            //{
-            //    sqlString =
-            //    $"select * from dbo.sysobjects where id = object_id(N'{tableName}') and OBJECTPROPERTY(id, N'IsUserTable') = 1";
-            //}
-
-            //using (var rdr = ExecuteReader(sqlString))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        exists = true;
-            //    }
-            //    rdr.Close();
-            //}
-
-            bool exists;
-
-            try
-            {
-                // ANSI SQL way.  Works in PostgreSQL, MSSQL, MySQL.  
-                exists = (int)ExecuteScalar($"select case when exists((select * from information_schema.tables where table_name = '{tableName}')) then 1 else 0 end") == 1;
-            }
-            catch
-            {
-                try
-                {
-                    // Other RDBMS.  Graceful degradation
-                    exists = true;
-                    ExecuteNonQuery($"select 1 from {tableName} where 1 = 0");
-                }
-                catch
-                {
-                    exists = false;
-                }
-            }
-
-            return exists;
-        }
-
         public string GetTableId(string connectionString, string databaseName, string tableName)
         {
             if (WebConfigUtils.DatabaseType == EDatabaseType.MySql) return tableName;

@@ -2,7 +2,6 @@
 using BaiRong.Core;
 using SiteServer.CMS.Model;
 using System.Collections.Generic;
-using System.Web.Caching;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
 
@@ -200,7 +199,7 @@ namespace SiteServer.CMS.Core
             if (dictionary == null)
             {
                 dictionary = new Dictionary<int, Dictionary<int, TemplateInfo>>();
-                CacheUtils.Insert(CacheKey, dictionary, null, CacheUtils.DayFactor);
+                CacheUtils.InsertHours(CacheKey, dictionary, 24);
             }
             return dictionary;
         }
@@ -352,7 +351,7 @@ namespace SiteServer.CMS.Core
                     content = FileUtils.ReadText(filePath, charset);
                 }
 
-                CacheUtils.Insert(filePath, content, new CacheDependency(filePath));
+                CacheUtils.Insert(filePath, content, TimeSpan.FromHours(12), filePath);
                 return content;
             }
             catch

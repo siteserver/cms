@@ -102,7 +102,7 @@ namespace BaiRong.Core
                 if (CacheUtils.Get(CacheKey) == null)
                 {
                     var list = BaiRongDataProvider.DepartmentDao.GetDepartmentInfoKeyValuePair();
-                    CacheUtils.Max(CacheKey, list);
+                    CacheUtils.Insert(CacheKey, list);
                     return list;
                 }
                 return CacheUtils.Get(CacheKey) as List<KeyValuePair<int, DepartmentInfo>>;

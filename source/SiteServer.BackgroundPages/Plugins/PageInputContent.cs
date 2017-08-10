@@ -169,7 +169,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 {
                     if (styleInfo.IsVisibleInList)
                     {
-                        var value = contentInfo.Attributes.Get(styleInfo.AttributeName);
+                        var value = contentInfo.NameValues.Get(styleInfo.AttributeName);
 
                         if (!string.IsNullOrEmpty(value))
                         {

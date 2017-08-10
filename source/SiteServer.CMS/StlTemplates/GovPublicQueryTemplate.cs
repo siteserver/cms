@@ -131,7 +131,7 @@ function stlQueryCallback(jsonString){
             if (isSuccess && applyInfo != null)
             {
                 jsonAttributes.Add("isOrg", applyInfo.IsOrganization.ToString().ToLower());
-                foreach (string attributeName in applyInfo.Attributes.Keys)
+                foreach (string attributeName in applyInfo.NameValues.Keys)
                 {
                     jsonAttributes.Add(attributeName, applyInfo.GetExtendedAttribute(attributeName));
                 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SiteServer.Plugin.Hooks
+namespace SiteServer.Plugin.Features
 {
     public interface IPageAdmin : IPlugin
     {

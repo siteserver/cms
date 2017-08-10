@@ -343,7 +343,7 @@ namespace SiteServer.CMS.Core
                 ht.Remove(publishmentSystemId);
             }
 
-            CacheManager.UpdateTemporaryCacheFile(CacheFileName);
+            CacheUtils.UpdateTemporaryCacheFile(CacheFileName);
         }
 
         private const string CacheKey = "SiteServer.CMS.Core.NodeManager";
@@ -358,7 +358,7 @@ namespace SiteServer.CMS.Core
             if (ht != null) return ht;
 
             ht = new Hashtable();
-            CacheUtils.Insert(CacheKey, ht, null, CacheUtils.DayFactor);
+            CacheUtils.InsertHours(CacheKey, ht, 24);
             return ht;
         }
 

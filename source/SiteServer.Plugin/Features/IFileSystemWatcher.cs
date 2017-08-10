@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace SiteServer.Plugin.Hooks
+namespace SiteServer.Plugin.Features
 {
     public interface IFileSystemWatcher : IPlugin
     {

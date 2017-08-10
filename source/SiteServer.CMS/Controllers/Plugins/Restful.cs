@@ -2,9 +2,11 @@
 
 namespace SiteServer.CMS.Controllers.Plugins
 {
-    public class Root
+    public class Restful
     {
-        public const string Route = "plugins/{pluginId}";
+        public const string Route = "plugins/restful/{pluginId}";
+        public const string RouteName = "plugins/restful/{pluginId}/{name}";
+        public const string RouteNameAndId = "plugins/restful/{pluginId}/{name}/{id}";
 
         public static string GetUrl(string apiUrl, string pluginId)
         {

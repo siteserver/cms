@@ -22,75 +22,75 @@ namespace SiteServer.CMS.Core
 
         static ServiceManager()
         {
-            statusCacheFileWatcher = new FileWatcherClass(CacheManager.GetCacheFilePath(CacheFileNameStatus));
+            statusCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameStatus));
             statusCacheFileWatcher.OnFileChange += StatusCache_OnFileChange;
 
-            taskCacheFileWatcher = new FileWatcherClass(CacheManager.GetCacheFilePath(CacheFileNameTaskCache));
+            taskCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameTaskCache));
             taskCacheFileWatcher.OnFileChange += TaskCache_OnFileChange;
 
-            isPendingCreateCacheFileWatcher = new FileWatcherClass(CacheManager.GetCacheFilePath(CacheFileNameIsPendingCreate));
+            isPendingCreateCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameIsPendingCreate));
             isPendingCreateCacheFileWatcher.OnFileChange += IsPendingCreateCache_OnFileChange;
         }
 
         private static void StatusCache_OnFileChange(object sender, EventArgs e)
         {
-            CacheManager.RemoveCache(CacheKeyStatus);
+            CacheUtils.Remove(CacheKeyStatus);
         }
 
         private static void TaskCache_OnFileChange(object sender, EventArgs e)
         {
-            CacheManager.RemoveCache(CacheKeyAllTaskInfoList);
+            CacheUtils.Remove(CacheKeyAllTaskInfoList);
         }
 
         private static void IsPendingCreateCache_OnFileChange(object sender, EventArgs e)
         {
-            CacheManager.RemoveCache(CacheKeyIsPendingCreate);
+            CacheUtils.Remove(CacheKeyIsPendingCreate);
         }
 
         public static List<TaskInfo> GetAllTaskInfoList()
         {
-            if (CacheManager.IsCache(CacheKeyAllTaskInfoList))
+            if (CacheUtils.IsCache(CacheKeyAllTaskInfoList))
             {
-                return CacheManager.GetCache(CacheKeyAllTaskInfoList) as List<TaskInfo>;
+                return CacheUtils.Get<List<TaskInfo>>(CacheKeyAllTaskInfoList);
             }
             var list = DataProvider.TaskDao.GetAllTaskInfoList();
-            CacheManager.SetCache(CacheKeyAllTaskInfoList, list);
+            CacheUtils.Insert(CacheKeyAllTaskInfoList, list);
             return list;
         }
 
         public static bool IsPendingCreateTask()
         {
-            if (CacheManager.IsCache(CacheKeyIsPendingCreate))
+            if (CacheUtils.IsCache(CacheKeyIsPendingCreate))
             {
-                return (bool)CacheManager.GetCache(CacheKeyIsPendingCreate);
+                return (bool)CacheUtils.Get(CacheKeyIsPendingCreate);
             }
             var isPendingTask = DataProvider.CreateTaskDao.IsPendingTask();
-            CacheManager.SetCache(CacheKeyIsPendingCreate, isPendingTask);
+            CacheUtils.Insert(CacheKeyIsPendingCreate, isPendingTask);
             return isPendingTask;
         }
 
         public static void ClearStatusCache()
         {
-            if (!CacheManager.IsCache(CacheKeyStatus)) return;
+            if (!CacheUtils.IsCache(CacheKeyStatus)) return;
 
-            CacheManager.RemoveCache(CacheKeyStatus);
-            CacheManager.UpdateTemporaryCacheFile(CacheFileNameStatus);
+            CacheUtils.Remove(CacheKeyStatus);
+            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameStatus);
         }
 
         public static void ClearTaskCache()
         {
-            if (!CacheManager.IsCache(CacheKeyAllTaskInfoList)) return;
+            if (!CacheUtils.IsCache(CacheKeyAllTaskInfoList)) return;
 
-            CacheManager.RemoveCache(CacheKeyAllTaskInfoList);
-            CacheManager.UpdateTemporaryCacheFile(CacheFileNameTaskCache);
+            CacheUtils.Remove(CacheKeyAllTaskInfoList);
+            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameTaskCache);
         }
 
         public static void ClearIsPendingCreateCache()
         {
-            if (!CacheManager.IsCache(CacheKeyIsPendingCreate)) return;
+            if (!CacheUtils.IsCache(CacheKeyIsPendingCreate)) return;
 
-            CacheManager.RemoveCache(CacheKeyIsPendingCreate);
-            CacheManager.UpdateTemporaryCacheFile(CacheFileNameIsPendingCreate);
+            CacheUtils.Remove(CacheKeyIsPendingCreate);
+            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameIsPendingCreate);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace SiteServer.CMS.Core
         /// <returns></returns>
         public static bool IsServiceOnline()
         {
-            var cacheValue = CacheManager.GetCache(CacheKeyStatus) as string;
+            var cacheValue = CacheUtils.Get<string>(CacheKeyStatus);
             if (TranslateUtils.ToBool(cacheValue))
             {
                 return true;
@@ -107,7 +107,7 @@ namespace SiteServer.CMS.Core
 
             var retval = true;
             
-            var value = DbCacheManager.GetValue(CacheKeyStatus);
+            var value = CacheDbUtils.GetValue(CacheKeyStatus);
             if (string.IsNullOrEmpty(value))
             {
                 retval = false;
@@ -121,13 +121,13 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    CacheManager.SetCache(CacheKeyStatus, true.ToString(), DateTime.Now.AddMinutes(10));
+                    CacheUtils.InsertMinutes(CacheKeyStatus, true.ToString(), 10);
                 }
             }
 
             if (!retval)
             {
-                CacheManager.SetCache(CacheKeyStatus, false.ToString(), DateTime.Now.AddMinutes(10));
+                CacheUtils.InsertMinutes(CacheKeyStatus, false.ToString(), 10);
             }
             
             return retval;
@@ -137,15 +137,15 @@ namespace SiteServer.CMS.Core
         {
             if (isOnline)
             {
-                var cacheValue = CacheManager.GetCache(CacheKeyStatus) as string;
+                var cacheValue = CacheUtils.Get<string>(CacheKeyStatus);
                 if (TranslateUtils.ToBool(cacheValue)) return;
 
-                DbCacheManager.RemoveAndInsert(CacheKeyStatus, DateTime.Now.ToString(CultureInfo.InvariantCulture));
-                CacheManager.SetCache(CacheKeyStatus, true.ToString(), DateTime.Now.AddMinutes(10));
+                CacheDbUtils.RemoveAndInsert(CacheKeyStatus, DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                CacheUtils.InsertMinutes(CacheKeyStatus, true.ToString(), 10);
             }
             else
             {
-                DbCacheManager.GetValueAndRemove(CacheKeyStatus);
+                CacheDbUtils.GetValueAndRemove(CacheKeyStatus);
                 ClearStatusCache();
                 ClearIsPendingCreateCache();
                 ClearTaskCache();

@@ -15,7 +15,7 @@ namespace SiteServer.API.Controllers.Users
             var mobile = body.GetPostString("mobile");
             var code = body.GetPostString("code");
 
-            var dbCode = DbCacheManager.GetValue($"SiteServer.API.Controllers.Users.SendSms.{mobile}.Code");
+            var dbCode = CacheDbUtils.GetValue($"SiteServer.API.Controllers.Users.SendSms.{mobile}.Code");
 
             var isCorrect = code == dbCode;
             var token = string.Empty;

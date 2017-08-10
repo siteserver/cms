@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     var contentInfo = DataProvider.InputContentDao.GetContentInfo(_contentId);
                     if (contentInfo != null)
                     {
-                        ContentControl.SetParameters(contentInfo.Attributes, PublishmentSystemInfo, 0, _relatedIdentities, ETableStyle.InputContent, DataProvider.InputContentDao.TableName, true, IsPostBack);
+                        ContentControl.SetParameters(contentInfo.NameValues, PublishmentSystemInfo, 0, _relatedIdentities, ETableStyle.InputContent, DataProvider.InputContentDao.TableName, true, IsPostBack);
                     }
                 }
                 else
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Plugins
 				{
                     var contentInfo = DataProvider.InputContentDao.GetContentInfo(_contentId);
 
-                    InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, contentInfo.Attributes);
+                    InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, contentInfo.NameValues);
 
                     DataProvider.InputContentDao.Update(contentInfo);
 
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                     var contentInfo = new InputContentInfo(0, _inputInfo.InputId, 0, true, string.Empty, ipAddress, DateTime.Now, string.Empty);
 
-                    InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, contentInfo.Attributes);
+                    InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, contentInfo.NameValues);
 
                     DataProvider.InputContentDao.Insert(contentInfo);
 

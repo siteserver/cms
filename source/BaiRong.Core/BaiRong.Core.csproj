@@ -217,7 +217,6 @@
     <Compile Include="ThirdParty\Compression\Zip\ZipNameTransform.cs" />
     <Compile Include="ThirdParty\Compression\Zip\ZipOutputStream.cs" />
     <Compile Include="AreaManager.cs" />
-    <Compile Include="CacheManager.cs" />
     <Compile Include="AppManager.cs" />
     <Compile Include="SmsManager.cs" />
     <Compile Include="DepartmentManager.cs" />
@@ -879,7 +878,7 @@
     <Compile Include="ControlUtils.cs" />
     <Compile Include="CookieUtils.cs" />
     <Compile Include="CountManager.cs" />
-    <Compile Include="DbCacheManager.cs" />
+    <Compile Include="CacheDbUtils.cs" />
     <Compile Include="Net\SmtpMail\MailUtils.cs" />
     <Compile Include="MessageUtils.cs" />
     <Compile Include="PageUtils.cs" />

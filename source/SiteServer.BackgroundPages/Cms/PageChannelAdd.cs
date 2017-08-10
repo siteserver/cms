@@ -244,8 +244,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                     var extendedAttributes = new ExtendedAttributes();
                     var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.Attributes);
-                    var attributes = extendedAttributes.Attributes;
+                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.NameValues);
+                    var attributes = extendedAttributes.NameValues;
                     foreach (string key in attributes)
                     {
                         nodeInfo.Additional.SetExtendedAttribute(key, attributes[key]);

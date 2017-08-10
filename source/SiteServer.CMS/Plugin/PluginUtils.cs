@@ -10,6 +10,7 @@ using BaiRong.Core.Model.Enumerations;
 using Newtonsoft.Json;
 using SiteServer.CMS.Controllers.Plugins;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Features;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -108,7 +109,7 @@ namespace SiteServer.CMS.Plugin
                 menu.Href = PageUtils.GetPluginDirectoryUrl(pluginId, menu.Href);
                 menu.Href = PageUtils.AddQueryString(menu.Href, new NameValueCollection
                 {
-                    {"apiUrl", Root.GetUrl(apiUrl, pluginId)},
+                    {"apiUrl", Restful.GetUrl(apiUrl, pluginId)},
                     {"siteId", siteId.ToString()},
                     {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
                 });

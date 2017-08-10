@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages
 
             string errorMessage;
             var code = StringUtils.GetRandomInt(1111, 9999);
-            DbCacheManager.RemoveAndInsert($"BaiRong.BackgroundPages.FrameworkFindPwd.{userName}.Code", code.ToString());
+            CacheDbUtils.RemoveAndInsert($"BaiRong.BackgroundPages.FrameworkFindPwd.{userName}.Code", code.ToString());
             var isSend = SmsManager.SendVerify(mobile, code, ConfigManager.SystemConfigInfo.FindPasswordSmsTplId, out errorMessage);
             if (!isSend)
             {
@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages
         {
             var smsCode = TbSmsCode.Text;
             var userName = ViewState["UserName"];
-            var code = DbCacheManager.GetValueAndRemove($"BaiRong.BackgroundPages.FrameworkFindPwd.{userName}.Code");
+            var code = CacheDbUtils.GetValueAndRemove($"BaiRong.BackgroundPages.FrameworkFindPwd.{userName}.Code");
 
             if (smsCode != code)
             {

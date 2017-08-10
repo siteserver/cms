@@ -781,7 +781,7 @@ function {functionName}(pageNum)
             }
             else
             {
-                theValue = channel.Additional.Attributes[testTypeStr];
+                theValue = channel.Additional.NameValues[testTypeStr];
             }
             return theValue;
         }

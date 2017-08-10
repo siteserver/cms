@@ -32,7 +32,7 @@ namespace SiteServer.API
                 return 0;
             }
 
-            var pendingTask = CreateTaskManager.Instance.GetLastPendingTask(publishmentSystemId);
+            var pendingTask = CreateTaskManager.Instance.GetAndRemoveLastPendingTask(publishmentSystemId);
             if (pendingTask == null) return 0;
 
             try
@@ -48,7 +48,7 @@ namespace SiteServer.API
                 CreateTaskManager.Instance.AddFailureLog(pendingTask, ex);
             }
 
-            CreateTaskManager.Instance.RemoveTask(publishmentSystemId, pendingTask);
+            //CreateTaskManager.Instance.RemoveTask(publishmentSystemId, pendingTask);
 
             return CreateTaskManager.Instance.GetPendingTaskCount(publishmentSystemId);
         }
@@ -61,6 +61,8 @@ namespace SiteServer.API
                 {
                     var summary = CreateTaskManager.Instance.GetTaskSummary(publishmentSystemId);
                     Clients.Client(Context.ConnectionId).show(true, summary.Current, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
+
+                    Execute(publishmentSystemId);
                 }
                 else
                 {

@@ -170,7 +170,7 @@ namespace SiteServer.BackgroundPages.Cms
                         //{
                         //    displayAttributes = TranslateUtils.StringCollectionToStringList(PublishmentSystemInfo.Additional.ChannelEditAttributes);
                         //}
-                        channelControl.SetParameters(nodeInfo.Additional.Attributes, true, IsPostBack);
+                        channelControl.SetParameters(nodeInfo.Additional.NameValues, true, IsPostBack);
                     }
 
                     if (LinkTypeRow.Visible)
@@ -330,10 +330,10 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var extendedAttributes = new ExtendedAttributes();
                         var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-                        BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.Attributes);
-                        if (extendedAttributes.Attributes.Count > 0)
+                        BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.NameValues);
+                        if (extendedAttributes.NameValues.Count > 0)
                         {
-                            nodeInfo.Additional.SetExtendedAttribute(extendedAttributes.Attributes);
+                            nodeInfo.Additional.SetExtendedAttribute(extendedAttributes.NameValues);
                         }
                     }
 

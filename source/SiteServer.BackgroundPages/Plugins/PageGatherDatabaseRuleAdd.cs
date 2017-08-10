@@ -588,12 +588,12 @@ namespace SiteServer.BackgroundPages.Plugins
 
         private static void SaveColumnsMap(NameValueCollection columnsMap)
         {
-            DbCacheManager.RemoveAndInsert("SiteServer.BackgroundPages.Cms.BackgroundGatherDatabaseRuleAdd.TableMatchColumnsMap", TranslateUtils.NameValueCollectionToString(columnsMap));
+            CacheDbUtils.RemoveAndInsert("SiteServer.BackgroundPages.Cms.BackgroundGatherDatabaseRuleAdd.TableMatchColumnsMap", TranslateUtils.NameValueCollectionToString(columnsMap));
         }
 
         private static NameValueCollection GetColumnsMap()
         {
-            var columnsMap = TranslateUtils.ToNameValueCollection(DbCacheManager.GetValue("SiteServer.BackgroundPages.Cms.BackgroundGatherDatabaseRuleAdd.TableMatchColumnsMap"));
+            var columnsMap = TranslateUtils.ToNameValueCollection(CacheDbUtils.GetValue("SiteServer.BackgroundPages.Cms.BackgroundGatherDatabaseRuleAdd.TableMatchColumnsMap"));
             return columnsMap;
         }
 

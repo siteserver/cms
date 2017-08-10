@@ -206,6 +206,6 @@ namespace SiteServer.CMS.Model
         private NodeInfoExtend _additional;
         public NodeInfoExtend Additional => _additional ?? (_additional = new NodeInfoExtend(_extendValues));
 
-        public ExtendedAttributes Extended => Additional;
+        public ExtendedAttributes Attributes => Additional;
     }
 }

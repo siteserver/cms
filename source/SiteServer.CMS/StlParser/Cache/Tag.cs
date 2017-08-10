@@ -8,12 +8,12 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         public static List<int> GetContentIdListByTagCollection(StringCollection tagCollection, int publishmentSystemId, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(Tag), nameof(GetContentIdListByTagCollection), guid, TranslateUtils.ObjectCollectionToString(tagCollection), publishmentSystemId.ToString());
-            var retval = Utils.GetCache<List<int>>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Tag), nameof(GetContentIdListByTagCollection), TranslateUtils.ObjectCollectionToString(tagCollection), publishmentSystemId.ToString());
+            var retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
             if (retval != null) return retval;
 
             retval = BaiRongDataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemId);
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
     }

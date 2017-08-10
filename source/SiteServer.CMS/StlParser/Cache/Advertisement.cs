@@ -8,23 +8,23 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         public static List<string> GetAdvertisementNameList(int publishmentSystemId, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(Advertisement), nameof(GetAdvertisementNameList), guid, publishmentSystemId.ToString());
-            var retval = Utils.GetCache<List<string>>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Advertisement), nameof(GetAdvertisementNameList), publishmentSystemId.ToString());
+            var retval = StlCacheUtils.GetCache<List<string>>(cacheKey);
             if (retval != null) return retval;
 
             retval = DataProvider.AdvertisementDao.GetAdvertisementNameList(publishmentSystemId);
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
 
         public static AdvertisementInfo GetAdvertisementInfo(string advertisementName, int publishmentSystemId, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(Advertisement), nameof(GetAdvertisementInfo), guid, advertisementName, publishmentSystemId.ToString());
-            var retval = Utils.GetCache<AdvertisementInfo>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Advertisement), nameof(GetAdvertisementInfo), advertisementName, publishmentSystemId.ToString());
+            var retval = StlCacheUtils.GetCache<AdvertisementInfo>(cacheKey);
             if (retval != null) return retval;
 
             retval = DataProvider.AdvertisementDao.GetAdvertisementInfo(advertisementName, publishmentSystemId);
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
 

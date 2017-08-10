@@ -31,7 +31,7 @@ namespace SiteServer.CMS.Core
                 if (CacheUtils.Get(cacheKey) == null)
                 {
                     var tagStyleInfo = DataProvider.TagStyleDao.GetTagStyleInfo(publishmentSystemID, elementName, styleName);
-                    CacheUtils.Insert(cacheKey, tagStyleInfo, 30);
+                    CacheUtils.InsertMinutes(cacheKey, tagStyleInfo, 30);
                     return tagStyleInfo;
                 }
                 return CacheUtils.Get(cacheKey) as TagStyleInfo;

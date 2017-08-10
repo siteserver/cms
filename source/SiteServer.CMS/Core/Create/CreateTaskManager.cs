@@ -12,9 +12,11 @@ namespace SiteServer.CMS.Core.Create
 
         int GetPendingTaskCount(int publishmentSystemId);
 
-        CreateTaskInfo GetLastPendingTask(int publishmentSystemId);
+        CreateTaskInfo GetAndRemoveLastPendingTask(int publishmentSystemId);
 
-        void RemoveTask(int publishmentSystemId, CreateTaskInfo taskInfo);
+        //CreateTaskInfo GetLastPendingTask(int publishmentSystemId);
+
+        //void RemoveTask(int publishmentSystemId, CreateTaskInfo taskInfo);
 
         void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan);
 
@@ -43,6 +45,7 @@ namespace SiteServer.CMS.Core.Create
     {
         private static readonly Dictionary<int, List<CreateTaskInfo>> PendingTaskDict = new Dictionary<int, List<CreateTaskInfo>>();
         private static readonly Dictionary<int, List<CreateTaskLogInfo>> TaskLogDict = new Dictionary<int, List<CreateTaskLogInfo>>();
+        private static readonly object LockObject = new object();
 
         /// <summary>
         /// 获取某个站点的所有任务
@@ -88,6 +91,20 @@ namespace SiteServer.CMS.Core.Create
         {
             var pendingTasks = GetPendingTasks(publishmentSystemId);
             return pendingTasks.Count == 0 ? 0 : pendingTasks.Sum(taskInfo => taskInfo.PageCount);
+        }
+
+        public CreateTaskInfo GetAndRemoveLastPendingTask(int publishmentSystemId)
+        {
+            lock (LockObject)
+            {
+                var pendingTasks = GetPendingTasks(publishmentSystemId);
+                if (pendingTasks.Count <= 0) return null;
+
+                var taskInfo = pendingTasks[0];
+                pendingTasks.Remove(taskInfo);
+
+                return taskInfo;
+            }
         }
 
         public CreateTaskInfo GetLastPendingTask(int publishmentSystemId)
@@ -196,6 +213,8 @@ namespace SiteServer.CMS.Core.Create
 
     internal class CreateTaskManagerForDb: ICreateTaskManager
     {
+        private static readonly object LockObject = new object();
+
         public void AddPendingTask(CreateTaskInfo task)
         {
             if (!DataProvider.CreateTaskDao.IsExists(task))
@@ -207,6 +226,17 @@ namespace SiteServer.CMS.Core.Create
         public CreateTaskInfo GetLastPendingTask(int publishmentSystemId)
         {
             return DataProvider.CreateTaskDao.GetLastPendingTask();
+        }
+
+        public CreateTaskInfo GetAndRemoveLastPendingTask(int publishmentSystemId)
+        {
+            lock (LockObject)
+            {
+                var taskInfo = DataProvider.CreateTaskDao.GetLastPendingTask();
+                DataProvider.CreateTaskDao.Delete(taskInfo.Id);
+
+                return taskInfo;
+            }
         }
 
         //public List<CreateTaskInfo> GetLastPendingTasks(int publishmentSystemId, int topNum)

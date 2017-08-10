@@ -82,7 +82,7 @@ namespace SiteServer.BackgroundPages
 
         public bool IsNeedUpgrade(Page page)
         {
-            CacheUtils.Clear();
+            CacheUtils.ClearAll();
 
             if (BaiRongDataProvider.ConfigDao.GetDatabaseVersion() == AppManager.Version)
             {

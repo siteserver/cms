@@ -161,7 +161,7 @@ namespace SiteServer.BackgroundPages.Settings
                 SetTaxis();
             }
 
-            _tableIsRealCreated = BaiRongDataProvider.TableStructureDao.IsTableExists(_tableName);
+            _tableIsRealCreated = BaiRongDataProvider.DatabaseDao.IsTableExists(_tableName);
 
             _usedNum = BaiRongDataProvider.TableCollectionDao.GetTableUsedNum(_tableName, tableInfo.AuxiliaryTableType);
 

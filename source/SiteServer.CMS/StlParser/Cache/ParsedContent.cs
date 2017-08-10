@@ -19,7 +19,7 @@ namespace SiteServer.CMS.StlParser.Cache
         public static void SetParsedContent(string stlElement, PageInfo pageInfo, ContextInfo contextInfo, string parsedContent)
         {
             var cacheKey = GetCacheKey(stlElement, pageInfo, contextInfo);
-            CacheUtils.Insert(cacheKey, parsedContent, CacheUtils.MinuteFactor * 10);
+            CacheUtils.InsertMinutes(cacheKey, parsedContent, 10);
         }
     }
 }

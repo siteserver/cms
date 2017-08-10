@@ -52,6 +52,6 @@ namespace SiteServer.Plugin.Data
 
         DateTime AddDate { get; set; }
 
-        ExtendedAttributes Extended { get; }
+        ExtendedAttributes Attributes { get; }
     }
 }

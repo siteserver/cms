@@ -7,34 +7,34 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         public static int GetMenuDisplayIdByName(int publishmentSystemId, string styleName, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(MenuDisplay), nameof(GetMenuDisplayIdByName), guid, publishmentSystemId.ToString(), styleName);
-            var retval = Utils.GetIntCache(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(MenuDisplay), nameof(GetMenuDisplayIdByName), publishmentSystemId.ToString(), styleName);
+            var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
 
             retval = DataProvider.MenuDisplayDao.GetMenuDisplayIdByName(publishmentSystemId, styleName);
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
 
         public static MenuDisplayInfo GetDefaultMenuDisplayInfo(int publishmentSystemId, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(MenuDisplay), nameof(GetDefaultMenuDisplayInfo), guid, publishmentSystemId.ToString());
-            var retval = Utils.GetCache<MenuDisplayInfo>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(MenuDisplay), nameof(GetDefaultMenuDisplayInfo), publishmentSystemId.ToString());
+            var retval = StlCacheUtils.GetCache<MenuDisplayInfo>(cacheKey);
             if (retval != null) return retval;
 
             retval = DataProvider.MenuDisplayDao.GetDefaultMenuDisplayInfo(publishmentSystemId);
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
 
         public static MenuDisplayInfo GetMenuDisplayInfo(int menuDisplayId, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(MenuDisplay), nameof(GetMenuDisplayInfo), guid, menuDisplayId.ToString());
-            var retval = Utils.GetCache<MenuDisplayInfo>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(MenuDisplay), nameof(GetMenuDisplayInfo), menuDisplayId.ToString());
+            var retval = StlCacheUtils.GetCache<MenuDisplayInfo>(cacheKey);
             if (retval != null) return retval;
 
             retval = DataProvider.MenuDisplayDao.GetMenuDisplayInfo(menuDisplayId);
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
     }

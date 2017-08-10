@@ -15,7 +15,7 @@ namespace BaiRong.Core
                 if (configInfo != null) return configInfo;
 
                 configInfo = BaiRongDataProvider.ConfigDao.GetConfigInfo();
-                CacheUtils.Max(CacheKey, configInfo);
+                CacheUtils.Insert(CacheKey, configInfo);
                 return configInfo;
             }
         }

@@ -3,15 +3,15 @@ using BaiRong.Core;
 
 namespace SiteServer.CMS.StlParser.Cache
 {
-    public class Utils
+    public class StlCacheUtils
     {
-        private Utils()
+        private StlCacheUtils()
         {
         }
 
-        public static string GetCacheKey(string nameofClass, string nameofMethod, string guid, params string[] values)
+        public static string GetCacheKeyByGuid(string guid, string nameofClass, string nameofMethod, params string[] values)
         {
-            var key = $"SiteServer.CMS.StlParser.Utility.DatabaseCache.{nameofClass}.{nameofMethod}.{guid}";
+            var key = $"SiteServer.CMS.StlParser.Utility.DatabaseCache.{nameofClass}.{nameofMethod}";
             if (values == null || values.Length <= 0) return key;
             for (var i = 1; i < values.Length; i++)
             {
@@ -37,7 +37,7 @@ namespace SiteServer.CMS.StlParser.Cache
 
         public static void SetCache(string cacheKey, object value)
         {
-            CacheUtils.Insert(cacheKey, value, CacheUtils.MinuteFactor * 30);
+            CacheUtils.InsertMinutes(cacheKey, value, 2);
         }
     }
 }

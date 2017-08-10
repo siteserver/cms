@@ -54,7 +54,7 @@ namespace SiteServer.CMS.Core.Office
 
                     foreach (var tableStyleInfo in tableStyleInfoList)
                     {
-                        var value = contentInfo.Attributes.Get(tableStyleInfo.AttributeName);
+                        var value = contentInfo.NameValues.Get(tableStyleInfo.AttributeName);
 
                         if (!string.IsNullOrEmpty(value))
                         {

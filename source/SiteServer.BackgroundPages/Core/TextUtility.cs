@@ -257,7 +257,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (modelInfo?.Links != null && modelInfo.Links.Count > 0)
             {
-                var apiUrl = Root.GetUrl(PageUtility.GetInnerApiUrl(publishmentSystemInfo), modelInfo.ModelId);
+                var apiUrl = Restful.GetUrl(PageUtility.GetInnerApiUrl(publishmentSystemInfo), modelInfo.ModelId);
                 apiUrl = PageUtils.AddProtocolToUrl(apiUrl);
                 foreach (var link in modelInfo.Links)
                 {

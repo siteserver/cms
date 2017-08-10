@@ -34,7 +34,7 @@ namespace SiteServer.CMS.ImportExport
         public NameValueCollection GetTableNameCache()
         {
             NameValueCollection nameValueCollection = null;
-            var cacheValue = DbCacheManager.GetValue(GetTableNameNameValueCollectionDbCacheKey());
+            var cacheValue = CacheDbUtils.GetValue(GetTableNameNameValueCollectionDbCacheKey());
             if (!string.IsNullOrEmpty(cacheValue))
             {
                 nameValueCollection = TranslateUtils.ToNameValueCollection(cacheValue);
@@ -48,14 +48,14 @@ namespace SiteServer.CMS.ImportExport
             {
                 var cacheKey = GetTableNameNameValueCollectionDbCacheKey();
                 var cacheValue = TranslateUtils.NameValueCollectionToString(nameValueCollection);
-                DbCacheManager.RemoveAndInsert(cacheKey, cacheValue);
+                CacheDbUtils.RemoveAndInsert(cacheKey, cacheValue);
             }
         }
 
         public void RemoveDbCache()
         {
             var cacheKey = GetTableNameNameValueCollectionDbCacheKey();
-            DbCacheManager.GetValueAndRemove(cacheKey);
+            CacheDbUtils.GetValueAndRemove(cacheKey);
         }
 
         public void ImportFiles(string siteTemplatePath, bool isOverride)

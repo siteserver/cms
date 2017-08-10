@@ -6,12 +6,12 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         public static string GetDisplayName(string userName, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(User), nameof(GetDisplayName), guid, userName);
-            var retval = Utils.GetCache<string>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(User), nameof(GetDisplayName), userName);
+            var retval = StlCacheUtils.GetCache<string>(cacheKey);
             if (retval != null) return retval;
 
             retval = BaiRongDataProvider.UserDao.GetDisplayName(userName);
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
     }

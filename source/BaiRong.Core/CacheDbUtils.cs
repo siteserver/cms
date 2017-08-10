@@ -1,8 +1,8 @@
 namespace BaiRong.Core
 {
-	public class DbCacheManager
+	public class CacheDbUtils
 	{
-		private DbCacheManager()
+		private CacheDbUtils()
 		{
 		}
 

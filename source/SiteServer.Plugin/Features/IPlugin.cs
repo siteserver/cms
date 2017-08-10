@@ -1,4 +1,4 @@
-﻿namespace SiteServer.Plugin
+﻿namespace SiteServer.Plugin.Features
 {
     public interface IPlugin
     {

@@ -293,6 +293,6 @@ namespace BaiRong.Core.Model
             return ContentAttribute.AllAttributes;
         }
 
-	    public ExtendedAttributes Extended => this;
+	    public ExtendedAttributes Attributes => this;
 	}
 }

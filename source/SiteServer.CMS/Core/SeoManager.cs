@@ -188,7 +188,7 @@ namespace SiteServer.CMS.Core
                 if (CacheUtils.Get(cacheKey) == null)
                 {
                     var lists = DataProvider.SeoMetaDao.GetSeoMetaLists(publishmentSystemId);
-                    CacheUtils.Insert(cacheKey, lists, 30);
+                    CacheUtils.InsertMinutes(cacheKey, lists, 30);
                     return lists;
                 }
                 return CacheUtils.Get(cacheKey) as List<int>[];

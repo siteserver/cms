@@ -7,7 +7,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Hooks;
+using SiteServer.Plugin.Features;
 
 namespace siteserver.commands
 {
@@ -88,7 +88,7 @@ namespace siteserver.commands
                 {
                     _watcher.EnableRaisingEvents = false;
 
-                    foreach (var watcher in PluginCache.GetHooks<IFileSystemWatcher>())
+                    foreach (var watcher in PluginCache.GetFeatures<IFileSystemWatcher>())
                     {
                         try
                         {

@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
+using BaiRong.Core.Data;
 using BaiRong.Core.IO;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Net;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
-using SiteServer.CMS.Model;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Hooks;
+using SiteServer.Plugin.Features;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -147,12 +145,26 @@ namespace SiteServer.CMS.Plugin
             {
                 foreach (var tableName in table.Tables.Keys)
                 {
-                    if (BaiRongDataProvider.DatabaseDao.IsTableExists(tableName)) continue;
-
                     var tableColumns = table.Tables[tableName];
-                    if (tableColumns != null && tableColumns.Count > 0)
+                    if (tableColumns == null || tableColumns.Count <= 0) continue;
+
+                    if (!BaiRongDataProvider.DatabaseDao.IsTableExists(tableName))
                     {
                         BaiRongDataProvider.DatabaseDao.CreatePluginTable(tableName, tableColumns);
+                    }
+                    else
+                    {
+                        var columnNameList = BaiRongDataProvider.TableStructureDao.GetColumnNameList(tableName, true);
+                        foreach (var tableColumn in tableColumns)
+                        {
+                            if (!columnNameList.Contains(tableColumn.AttributeName.ToLower()))
+                            {
+                                var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+                                string sqlString = $"ALTER TABLE {tableName} ADD {columnSqlString}";
+
+                                BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
+                            }
+                        }
                     }
                 }
             }

@@ -52,6 +52,6 @@ namespace SiteServer.Plugin.Data
 
         string Description { get; set; }
 
-        ExtendedAttributes Extended { get; }
+        ExtendedAttributes Attributes { get; }
     }
 }

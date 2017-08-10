@@ -42,7 +42,7 @@ namespace SiteServer.API.Controllers.Stl
                         throw new Exception("请先登录系统!");
                     }
 
-                    InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, publishmentSystemInfo, relatedIdentities, HttpContext.Current.Request.Form, contentInfo.Attributes, false);
+                    InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, publishmentSystemInfo, relatedIdentities, HttpContext.Current.Request.Form, contentInfo.NameValues, false);
 
                     if (HttpContext.Current.Request.Files.Count > 0)
                     {

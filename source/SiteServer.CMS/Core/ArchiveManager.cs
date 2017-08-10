@@ -8,13 +8,16 @@ namespace SiteServer.CMS.Core
 	{
         public static void CreateArchiveTableIfNotExists(PublishmentSystemInfo publishmentSystemInfo, string tableName)
         {
-            if (!BaiRongDataProvider.TableStructureDao.IsTableExists(TableManager.GetTableNameOfArchive(tableName)))
+            if (!BaiRongDataProvider.DatabaseDao.IsTableExists(TableManager.GetTableNameOfArchive(tableName)))
             {
                 try
                 {
                     BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTableOfArchive(tableName);
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
         }
 	}

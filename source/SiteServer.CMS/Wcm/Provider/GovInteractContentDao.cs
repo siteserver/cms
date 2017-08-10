@@ -93,7 +93,7 @@ namespace SiteServer.CMS.Wcm.Provider
             contentInfo.AddDate = DateTime.Now;
 
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeId);
-            InputTypeParser.AddValuesToAttributes(ETableStyle.GovInteractContent, publishmentSystemInfo.AuxiliaryTableForGovInteract, publishmentSystemInfo, relatedIdentities, form, contentInfo.Attributes);
+            InputTypeParser.AddValuesToAttributes(ETableStyle.GovInteractContent, publishmentSystemInfo.AuxiliaryTableForGovInteract, publishmentSystemInfo, relatedIdentities, form, contentInfo.NameValues);
 
             //foreach (string name in form.AllKeys)
             //{

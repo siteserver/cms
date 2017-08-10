@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Web.Caching;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 
@@ -61,7 +60,7 @@ namespace SiteServer.CMS.Core.Permissions
                                 _permissionList = BaiRongDataProvider.PermissionsInRolesDao.GetGeneralPermissionList(Roles);
                             }
 
-                            CacheUtils.Insert(_permissionListKey, _permissionList, 30 * CacheUtils.MinuteFactor, CacheItemPriority.Normal);
+                            CacheUtils.InsertMinutes(_permissionListKey, _permissionList, 30);
                         }
                     }
                 }
@@ -84,7 +83,7 @@ namespace SiteServer.CMS.Core.Permissions
                         else
                         {
                             _roles = BaiRongDataProvider.RoleDao.GetRolesForUser(UserName);
-                            CacheUtils.Insert(_rolesKey, _roles, 30 * CacheUtils.MinuteFactor, CacheItemPriority.Normal);
+                            CacheUtils.InsertMinutes(_rolesKey, _roles, 30);
                         }
                     }
                 }

@@ -319,7 +319,7 @@ namespace SiteServer.CMS.Core
         public static void ClearCache()
         {
             CacheUtils.Remove(CacheKey);
-            CacheManager.UpdateTemporaryCacheFile(CacheFileName);
+            CacheUtils.UpdateTemporaryCacheFile(CacheFileName);
         }
 
         public static List<KeyValuePair<int, PublishmentSystemInfo>> GetPublishmentSystemInfoKeyValuePairList()
@@ -336,7 +336,7 @@ namespace SiteServer.CMS.Core
                 publishmentSystemInfo.PublishmentSystemDir = GetPublishmentSystemDir(list, publishmentSystemInfo);
                 sl.Add(pair);
             }
-            CacheUtils.Max(CacheKey, sl);
+            CacheUtils.Insert(CacheKey, sl);
             return sl;
         }
 

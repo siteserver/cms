@@ -7,7 +7,6 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Text;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using MySql.Data.MySqlClient;
 using SiteServer.Plugin;
@@ -678,7 +677,9 @@ SELECT * FROM (
                     ? @"PRIMARY KEY (Id)"
                     : $@"CONSTRAINT PK_{tableName} PRIMARY KEY (Id)").AppendLine();
 
-                sqlBuilder.Append(")");
+                sqlBuilder.Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                    ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8"
+                    : ")");
 
                 ExecuteNonQuery(sqlBuilder.ToString());
             }

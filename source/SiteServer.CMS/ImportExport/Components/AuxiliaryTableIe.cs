@@ -124,7 +124,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 if (!string.IsNullOrEmpty(tableNameToInsert))//需要添加
                 {
-                    if (!BaiRongDataProvider.TableStructureDao.IsTableExists(tableNameToInsert))
+                    if (!BaiRongDataProvider.DatabaseDao.IsTableExists(tableNameToInsert))
                     {
                         tableInfo = new AuxiliaryTableInfo
                         {

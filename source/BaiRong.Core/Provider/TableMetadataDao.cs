@@ -571,7 +571,7 @@ namespace BaiRong.Core.Provider
 
         public void DeleteAuxiliaryTable(string tableEnName)
         {
-            if (BaiRongDataProvider.TableStructureDao.IsTableExists(tableEnName))
+            if (BaiRongDataProvider.DatabaseDao.IsTableExists(tableEnName))
             {
                 string dropTableSqlString = $"DROP TABLE [{tableEnName}]";
 
@@ -609,7 +609,7 @@ namespace BaiRong.Core.Provider
         {
             var defaultTableMetadataInfoList = BaiRongDataProvider.AuxiliaryTableDataDao.GetDefaultTableMetadataInfoList(tableEnName, tableType);
 
-            if (BaiRongDataProvider.TableStructureDao.IsTableExists(tableEnName))
+            if (BaiRongDataProvider.DatabaseDao.IsTableExists(tableEnName))
             {
                 var updateParms = new IDataParameter[]
 				{

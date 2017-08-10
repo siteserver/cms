@@ -152,7 +152,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     ControlUtils.SelectListItemsIgnoreCase(rblIsVotedView, contentInfo.IsVotedView.ToString());
                     tbHiddenContent.Text = contentInfo.HiddenContent;
 
-                    acAttributes.SetParameters(contentInfo.Attributes, PublishmentSystemInfo, nodeID, relatedIdentities, tableStyle, tableName, true, IsPostBack);
+                    acAttributes.SetParameters(contentInfo.NameValues, PublishmentSystemInfo, nodeID, relatedIdentities, tableStyle, tableName, true, IsPostBack);
                 }
 
                 Submit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm"));
@@ -181,7 +181,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     var contentInfo = new VoteContentInfo();
                     try
                     {
-                        BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                        BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, Request.Form, contentInfo.NameValues, ContentAttribute.HiddenAttributes);
 
                         contentInfo.NodeId = nodeID;
                         contentInfo.PublishmentSystemId = PublishmentSystemId;
@@ -253,7 +253,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     var contentInfo = DataProvider.VoteContentDao.GetContentInfo(PublishmentSystemInfo.AuxiliaryTableForVote, contentID);
                     try
                     {                        
-                        BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                        BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, Request.Form, contentInfo.NameValues, ContentAttribute.HiddenAttributes);
 
                         contentInfo.LastEditUserName = Body.AdministratorName;
                         contentInfo.LastEditDate = DateTime.Now;

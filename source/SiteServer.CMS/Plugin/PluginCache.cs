@@ -7,7 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Hooks;
+using SiteServer.Plugin.Features;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -29,7 +29,7 @@ namespace SiteServer.CMS.Plugin
 
         private static void SetCache<T>(string cacheName, T obj) where T : class
         {
-            CacheUtils.Max(CacheKeyPrefix + cacheName, obj);
+            CacheUtils.Insert(CacheKeyPrefix + cacheName, obj);
         }
 
         private static readonly SortedList<string, PluginPair> PluginSortedList = new SortedList<string, PluginPair>();
@@ -137,7 +137,7 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static T GetHook<T>(string pluginId) where T : IPlugin
+        public static T GetFeature<T>(string pluginId) where T : IPlugin
         {
             lock (AllPluginsLock)
             {
@@ -152,7 +152,7 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static List<T> GetHooks<T>() where T : IPlugin
+        public static List<T> GetFeatures<T>() where T : IPlugin
         {
             lock (AllPluginsLock)
             {
@@ -314,7 +314,7 @@ namespace SiteServer.CMS.Plugin
 
             parsers = new Dictionary<string, Func<PluginParserContext, string>>();
 
-            var plugins = GetHooks<IParser>();
+            var plugins = GetFeatures<IParser>();
             if (plugins != null && plugins.Count > 0)
             {
                 foreach (var plugin in plugins)

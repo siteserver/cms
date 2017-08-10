@@ -7,12 +7,12 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         public static GovInteractReplyInfo GetReplyInfoByContentId(int publishmentSystemId, int contentId, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(GovInteractReply), nameof(GetReplyInfoByContentId), guid, publishmentSystemId.ToString(), contentId.ToString());
-            var retval = Utils.GetCache<GovInteractReplyInfo>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(GovInteractReply), nameof(GetReplyInfoByContentId), publishmentSystemId.ToString(), contentId.ToString());
+            var retval = StlCacheUtils.GetCache<GovInteractReplyInfo>(cacheKey);
             if (retval != null) return retval;
 
             retval = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(publishmentSystemId, contentId);
-            Utils.SetCache(cacheKey, retval);
+            StlCacheUtils.SetCache(cacheKey, retval);
             return retval;
         }
     }

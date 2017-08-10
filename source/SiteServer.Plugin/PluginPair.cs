@@ -1,4 +1,6 @@
-﻿namespace SiteServer.Plugin
+﻿using SiteServer.Plugin.Features;
+
+namespace SiteServer.Plugin
 {
     public class PluginPair
     {

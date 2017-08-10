@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Core
         public static string GetContentTitle(PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, string pageUrl)
         {
             string url;
-            var title = ContentUtility.FormatTitle(contentInfo.Attributes[BackgroundContentAttribute.TitleFormatString], contentInfo.Title);
+            var title = ContentUtility.FormatTitle(contentInfo.NameValues[BackgroundContentAttribute.TitleFormatString], contentInfo.Title);
 
             var displayString = TranslateUtils.ToBool(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.IsColor)) ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
 
