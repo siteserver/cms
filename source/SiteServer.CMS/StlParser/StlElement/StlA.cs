@@ -25,7 +25,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeContext = "context";
         public const string AttributeHref = "href";
         public const string AttributeHost = "host";
-        public const string AttributeQueryString = "queryString";
+        public const string AttributeQueryString = "queryString"; 
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
@@ -38,7 +38,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeContext, "所处上下文"},
             {AttributeHref, "链接地址"},
             {AttributeHost, "链接域名"},
-            {AttributeQueryString, "链接参数"}
+            {AttributeQueryString, "链接参数"} 
         };
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
@@ -52,7 +52,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             const bool removeTarget = false;
             var href = string.Empty;
             var queryString = string.Empty;
-            var host = string.Empty;
+            var host = string.Empty; 
 
             foreach (var name in contextInfo.Attributes.Keys)
             {
@@ -116,89 +116,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeHost))
                 {
                     host = value;
-                }
+                } 
                 else
                 {
                     ControlUtils.AddAttributeIfNotExists(stlAnchor, name, value);
                 }
-            }
-
-            //var ie = node.Attributes?.GetEnumerator();
-            //if (ie != null)
-            //{
-            //    while (ie.MoveNext())
-            //    {
-            //        var attr = (XmlAttribute)ie.Current;
-            //        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeId))
-            //        {
-            //            htmlId = attr.Value;
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelIndex))
-            //        {
-            //            channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-            //            if (!string.IsNullOrEmpty(channelIndex))
-            //            {
-            //                contextInfo.ContextType = EContextType.Channel;
-            //            }
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeChannelName))
-            //        {
-            //            channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-            //            if (!string.IsNullOrEmpty(channelName))
-            //            {
-            //                contextInfo.ContextType = EContextType.Channel;
-            //            }
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeParent))
-            //        {
-            //            if (TranslateUtils.ToBool(attr.Value))
-            //            {
-            //                upLevel = 1;
-            //                contextInfo.ContextType = EContextType.Channel;
-            //            }
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeUpLevel))
-            //        {
-            //            upLevel = TranslateUtils.ToInt(attr.Value);
-            //            if (upLevel > 0)
-            //            {
-            //                contextInfo.ContextType = EContextType.Channel;
-            //            }
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeTopLevel))
-            //        {
-            //            topLevel = TranslateUtils.ToInt(attr.Value);
-            //            if (topLevel >= 0)
-            //            {
-            //                contextInfo.ContextType = EContextType.Channel;
-            //            }
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeContext))
-            //        {
-            //            contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeHref))
-            //        {
-            //            href = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeQueryString))
-            //        {
-            //            queryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeIsDynamic))
-            //        {
-            //            isDynamic = TranslateUtils.ToBool(attr.Value, false);
-            //        }
-            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeHost))
-            //        {
-            //            host = attr.Value;
-            //        }
-            //        else
-            //        {
-            //            ControlUtils.AddAttributeIfNotExists(stlAnchor, attr.Name, attr.Value);
-            //        }
-            //    }
-            //}
+            } 
 
             var parsedContent = ParseImpl(pageInfo, contextInfo, stlAnchor, htmlId, channelIndex, channelName, upLevel, topLevel, removeTarget, href, queryString, host);
 
@@ -297,17 +220,25 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             stlAnchor.HRef = url;
 
-            if (!string.IsNullOrEmpty(onclick))
+            // 如果是实体标签，则只返回url
+            if(contextInfo.IsCurlyBrace)
             {
-                stlAnchor.Attributes.Add("onclick", onclick);
+                return stlAnchor.HRef;
             }
-
-            if (removeTarget)
+            else
             {
-                stlAnchor.Target = string.Empty;
-            }
+                if (!string.IsNullOrEmpty(onclick))
+                {
+                    stlAnchor.Attributes.Add("onclick", onclick);
+                }
 
-            return ControlUtils.GetControlRenderHtml(stlAnchor);
+                if (removeTarget)
+                {
+                    stlAnchor.Target = string.Empty;
+                }
+
+                return ControlUtils.GetControlRenderHtml(stlAnchor);
+            } 
         }
     }
 }
