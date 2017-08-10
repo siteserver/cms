@@ -225,7 +225,6 @@
     <Compile Include="StlParser\Cache\Advertisement.cs" />
     <Compile Include="StlParser\Cache\SeoMeta.cs" />
     <Compile Include="StlParser\Cache\TableStructure.cs" />
-    <Compile Include="StlParser\Cache\ParsedContent.cs" />
     <Compile Include="StlParser\Cache\Tag.cs" />
     <Compile Include="StlParser\Cache\VoteContent.cs" />
     <Compile Include="StlParser\Cache\StlTag.cs" />

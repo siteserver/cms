@@ -5,36 +5,69 @@ namespace SiteServer.CMS.StlParser.Cache
 {
     public class Comment
     {
+        private static readonly object LockObject = new object();
+
         public static int GetCountChecked(int publishmentSystemId, int channelId, int contentId, string guid)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Comment), nameof(GetCountChecked), publishmentSystemId.ToString(), channelId.ToString(), contentId.ToString());
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Comment), nameof(GetCountChecked),
+                       publishmentSystemId.ToString(), channelId.ToString(), contentId.ToString());
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
 
-            retval = DataProvider.CommentDao.GetCountChecked(publishmentSystemId, channelId, contentId);
-            StlCacheUtils.SetCache(cacheKey, retval);
+            lock (LockObject)
+            {
+                retval = StlCacheUtils.GetIntCache(cacheKey);
+                if (retval == -1)
+                {
+                    retval = DataProvider.CommentDao.GetCountChecked(publishmentSystemId, channelId, contentId);
+                    StlCacheUtils.SetCache(cacheKey, retval);
+                }
+            }
+
             return retval;
         }
 
         public static List<int> GetContentIdListByCount(int publishmentSystemId, string guid)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Comment), nameof(GetContentIdListByCount), publishmentSystemId.ToString());
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Comment), nameof(GetContentIdListByCount),
+                    publishmentSystemId.ToString());
             var retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
             if (retval != null) return retval;
 
-            retval = DataProvider.CommentDao.GetContentIdListByCount(publishmentSystemId);
-            StlCacheUtils.SetCache(cacheKey, retval);
+            lock (LockObject)
+            {
+                retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
+                if (retval == null)
+                {
+                    retval = DataProvider.CommentDao.GetContentIdListByCount(publishmentSystemId);
+                    StlCacheUtils.SetCache(cacheKey, retval);
+                }
+            }
+
             return retval;
         }
 
-        public static string GetSelectSqlStringWithChecked(int publishmentSystemId, int nodeId, int contentId, int startNum, int totalNum, bool isRecommend, string whereString, string orderByString, string guid)
+        public static string GetSelectSqlStringWithChecked(int publishmentSystemId, int nodeId, int contentId,
+            int startNum, int totalNum, bool isRecommend, string whereString, string orderByString, string guid)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Comment), nameof(GetSelectSqlStringWithChecked), publishmentSystemId.ToString(), nodeId.ToString(), contentId.ToString(), startNum.ToString(), totalNum.ToString(), isRecommend.ToString(), whereString, orderByString);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Comment),
+                    nameof(GetSelectSqlStringWithChecked), publishmentSystemId.ToString(), nodeId.ToString(),
+                    contentId.ToString(), startNum.ToString(), totalNum.ToString(), isRecommend.ToString(), whereString,
+                    orderByString);
             var retval = StlCacheUtils.GetCache<string>(cacheKey);
             if (retval != null) return retval;
 
-            retval = DataProvider.CommentDao.GetSelectSqlStringWithChecked(publishmentSystemId, nodeId, contentId, startNum, totalNum, isRecommend, whereString, orderByString);
-            StlCacheUtils.SetCache(cacheKey, retval);
+            lock (LockObject)
+            {
+                retval = StlCacheUtils.GetCache<string>(cacheKey);
+                if (retval == null)
+                {
+                    retval = DataProvider.CommentDao.GetSelectSqlStringWithChecked(publishmentSystemId, nodeId, contentId,
+                       startNum, totalNum, isRecommend, whereString, orderByString);
+                    StlCacheUtils.SetCache(cacheKey, retval);
+                }
+            }
+
             return retval;
         }
     }

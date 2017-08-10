@@ -103,7 +103,7 @@ namespace SiteServer.CMS.Core.User
         {
             var list = new List<KeyValuePair<int, int>>();
 
-            var tableEnNameList = BaiRongDataProvider.TableCollectionDao.GetTableEnNameListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent, EAuxiliaryTableType.GovPublicContent, EAuxiliaryTableType.GovInteractContent, EAuxiliaryTableType.VoteContent, EAuxiliaryTableType.JobContent);
+            var tableEnNameList = BaiRongDataProvider.TableCollectionDao.GetTableEnNameListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent);
 
             foreach (var tableEnName in tableEnNameList)
             {

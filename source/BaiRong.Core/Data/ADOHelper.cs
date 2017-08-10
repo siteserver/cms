@@ -28,6 +28,8 @@ using System.Data.Common;
 using System.Reflection;
 using System.Xml;
 using System.Diagnostics;
+using System.Text;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 
 namespace BaiRong.Core.Data
@@ -1245,8 +1247,24 @@ namespace BaiRong.Core.Data
 			// Create a reader
 			IDataReader dataReader;
 
-			// Call ExecuteReader with the appropriate CommandBehavior
-			if (connectionOwnership == AdoConnectionOwnership.External)
+            //if (!command.CommandText.Contains("bairong_ErrorLog"))
+            //{
+            //    var builder = new StringBuilder();
+            //    for (var i = 0; i < command.Parameters.Count; i++)
+            //    {
+            //        var commandParameter = command.Parameters[i] as IDataParameter;
+            //        if (commandParameter != null)
+            //        {
+            //            builder.Append(commandParameter.ParameterName + "=" + commandParameter.Value + "<br />").AppendLine();
+            //        }
+            //    }
+
+            //    var logInfo = new ErrorLogInfo(0, DateTime.Now, string.Empty, command.CommandText, builder.ToString());
+            //    BaiRongDataProvider.ErrorLogDao.Insert(logInfo);
+            //}
+
+            // Call ExecuteReader with the appropriate CommandBehavior
+            if (connectionOwnership == AdoConnectionOwnership.External)
 			{
 				dataReader = command.ExecuteReader();
 			}

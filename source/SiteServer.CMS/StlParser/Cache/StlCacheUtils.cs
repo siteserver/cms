@@ -11,7 +11,7 @@ namespace SiteServer.CMS.StlParser.Cache
 
         public static string GetCacheKeyByGuid(string guid, string nameofClass, string nameofMethod, params string[] values)
         {
-            var key = $"SiteServer.CMS.StlParser.Utility.DatabaseCache.{nameofClass}.{nameofMethod}";
+            var key = $"SiteServer.CMS.StlParser.Cache.{nameofClass}.{nameofMethod}";
             if (values == null || values.Length <= 0) return key;
             for (var i = 1; i < values.Length; i++)
             {

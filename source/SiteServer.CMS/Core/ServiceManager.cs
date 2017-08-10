@@ -16,20 +16,20 @@ namespace SiteServer.CMS.Core
         private const string CacheKeyIsPendingCreate = "SiteServer.CMS.Core.ServiceCacheManager.CacheKeyIsPendingCreateTask";
         private const string CacheFileNameIsPendingCreate = "ServiceIsPendingCreateCache.txt";
 
-        private static readonly FileWatcherClass statusCacheFileWatcher;
-        private static readonly FileWatcherClass taskCacheFileWatcher;
-        private static readonly FileWatcherClass isPendingCreateCacheFileWatcher;
+        protected static readonly FileWatcherClass StatusCacheFileWatcher;
+        protected static readonly FileWatcherClass TaskCacheFileWatcher;
+        protected static readonly FileWatcherClass IsPendingCreateCacheFileWatcher;
 
         static ServiceManager()
         {
-            statusCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameStatus));
-            statusCacheFileWatcher.OnFileChange += StatusCache_OnFileChange;
+            StatusCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameStatus));
+            StatusCacheFileWatcher.OnFileChange += StatusCache_OnFileChange;
 
-            taskCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameTaskCache));
-            taskCacheFileWatcher.OnFileChange += TaskCache_OnFileChange;
+            TaskCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameTaskCache));
+            TaskCacheFileWatcher.OnFileChange += TaskCache_OnFileChange;
 
-            isPendingCreateCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameIsPendingCreate));
-            isPendingCreateCacheFileWatcher.OnFileChange += IsPendingCreateCache_OnFileChange;
+            IsPendingCreateCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameIsPendingCreate));
+            IsPendingCreateCacheFileWatcher.OnFileChange += IsPendingCreateCache_OnFileChange;
         }
 
         private static void StatusCache_OnFileChange(object sender, EventArgs e)
@@ -100,9 +100,9 @@ namespace SiteServer.CMS.Core
         public static bool IsServiceOnline()
         {
             var cacheValue = CacheUtils.Get<string>(CacheKeyStatus);
-            if (TranslateUtils.ToBool(cacheValue))
+            if (cacheValue != null)
             {
-                return true;
+                return TranslateUtils.ToBool(cacheValue);
             }
 
             var retval = true;
@@ -119,17 +119,10 @@ namespace SiteServer.CMS.Core
                 {
                     retval = false;
                 }
-                else
-                {
-                    CacheUtils.InsertMinutes(CacheKeyStatus, true.ToString(), 10);
-                }
             }
 
-            if (!retval)
-            {
-                CacheUtils.InsertMinutes(CacheKeyStatus, false.ToString(), 10);
-            }
-            
+            CacheUtils.InsertMinutes(CacheKeyStatus, retval.ToString(), 10);
+
             return retval;
         }
 
