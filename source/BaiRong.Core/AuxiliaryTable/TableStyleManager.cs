@@ -18,7 +18,7 @@ namespace BaiRong.Core.AuxiliaryTable
         public static PairList GetAllTableStyleInfoPairs()
         {
             lock (LockObject)
-            {
+            { 
                 if (_async || CacheUtils.Get(CacheKey) == null)
                 {
                     var entries = BaiRongDataProvider.TableStyleDao.GetAllTableStyleInfoPairs();
