@@ -274,15 +274,9 @@ namespace SiteServer.CMS.StlParser
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
             var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
-            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
-            //var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, nodeId, orderByString);
+            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc); 
             var contentIdList = Content.GetContentIdListChecked(tableName, nodeId, orderByString, guid);
-
-            //foreach (var contentId in contentIdList)
-            //{
-            //    CreateContent(tableStyle, tableName, nodeId, contentId); 
-            //}
-
+             
             if (PublishmentSystemInfo.Additional.IsCreateMultiThread) // 多线程并发生成页面
             {
                 for (var i = 0; i < contentIdList.Count; i = i + 3)
@@ -313,10 +307,12 @@ namespace SiteServer.CMS.StlParser
 
         private void CreateContent(ETableStyle tableStyle, string tableName, int nodeId, int contentId, string guid)
         {
-            //var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
             var contentInfo = Content.GetContentInfo(tableStyle, tableName, contentId, guid);
 
-            if (contentInfo == null) return;
+            if (contentInfo == null)
+            { 
+                return;
+            }
             //引用链接，不需要生成内容页；引用内容，需要生成内容页；
             if (contentInfo.ReferenceId > 0 && ETranslateContentTypeUtils.GetEnumType(contentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType)) != ETranslateContentType.ReferenceContent)
             {
