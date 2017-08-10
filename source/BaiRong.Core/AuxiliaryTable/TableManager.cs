@@ -146,7 +146,7 @@ namespace BaiRong.Core.AuxiliaryTable
                 if (_async || CacheUtils.Get(CacheKey) == null)
                 {
                     var tableHashtable = BaiRongDataProvider.TableMetadataDao.GetTableEnNameAndTableMetadataInfoListHashtable();
-                    CacheUtils.Max(CacheKey, tableHashtable);
+                    CacheUtils.Insert(CacheKey, tableHashtable);
                     _async = false;
                     return tableHashtable;
                 }

@@ -103,7 +103,7 @@ namespace BaiRong.Core
                             sl.Add(pair);
                         }
                     }
-                    CacheUtils.Max(CacheKey, sl);
+                    CacheUtils.Insert(CacheKey, sl);
                     return sl;
                 }
                 return CacheUtils.Get(CacheKey) as List<KeyValuePair<int, AreaInfo>>;

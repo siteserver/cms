@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SiteServer.Plugin.Hooks
+namespace SiteServer.Plugin.Features
 {
     public interface IContentModel: IPlugin
     {

@@ -1,4 +1,4 @@
-﻿namespace SiteServer.Plugin.Hooks
+﻿namespace SiteServer.Plugin.Features
 {
     public interface IMenu : IPlugin
     {

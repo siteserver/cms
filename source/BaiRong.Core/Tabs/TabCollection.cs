@@ -1,6 +1,5 @@
 using System;
 using System.Web;
-using System.Web.Caching;
 using System.Xml.Serialization;
 using SiteServer.Plugin.Data;
 
@@ -48,7 +47,7 @@ namespace BaiRong.Core.Tabs
 		    if (tc != null) return tc;
 
 		    tc = (TabCollection)Serializer.ConvertFileToObject(filePath,typeof(TabCollection));
-		    CacheUtils.Max(filePath,tc,new CacheDependency(filePath));
+		    CacheUtils.Insert(filePath, tc, filePath);
 		    return tc;
 		}
     }

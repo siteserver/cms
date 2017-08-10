@@ -550,22 +550,26 @@ namespace SiteServer.CMS.Core
                         }
                         else if (nodeInfo.LinkType == ELinkType.LinkToLastAddChannel)
                         {
-                            var lastAddNodeInfo = DataProvider.NodeDao.GetNodeInfoByLastAddDate(nodeInfo.NodeId);
+                            //var lastAddNodeInfo = DataProvider.NodeDao.GetNodeInfoByLastAddDate(nodeInfo.NodeId);
+                            var lastAddNodeInfo = Node.GetNodeInfoByLastAddDate(nodeInfo.NodeId, guid);
                             url = lastAddNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, lastAddNodeInfo, isFromBackground, guid) : GetChannelUrlNotComputed(publishmentSystemInfo, nodeInfo.NodeId, nodeInfo.NodeType, isFromBackground);
                         }
                         else if (nodeInfo.LinkType == ELinkType.LinkToFirstChannel)
                         {
-                            var firstNodeInfo = DataProvider.NodeDao.GetNodeInfoByTaxis(nodeInfo.NodeId);
+                            //var firstNodeInfo = DataProvider.NodeDao.GetNodeInfoByTaxis(nodeInfo.NodeId);
+                            var firstNodeInfo = Node.GetNodeInfoByTaxis(nodeInfo.NodeId, guid);
                             url = firstNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, firstNodeInfo, isFromBackground, guid) : GetChannelUrlNotComputed(publishmentSystemInfo, nodeInfo.NodeId, nodeInfo.NodeType, isFromBackground);
                         }
                         else if (nodeInfo.LinkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
                         {
-                            var lastAddNodeInfo = DataProvider.NodeDao.GetNodeInfoByLastAddDate(nodeInfo.NodeId);
+                            //var lastAddNodeInfo = DataProvider.NodeDao.GetNodeInfoByLastAddDate(nodeInfo.NodeId);
+                            var lastAddNodeInfo = Node.GetNodeInfoByLastAddDate(nodeInfo.NodeId, guid);
                             url = lastAddNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, lastAddNodeInfo, isFromBackground, guid) : PageUtils.UnclickedUrl;
                         }
                         else if (nodeInfo.LinkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
                         {
-                            var firstNodeInfo = DataProvider.NodeDao.GetNodeInfoByTaxis(nodeInfo.NodeId);
+                            //var firstNodeInfo = DataProvider.NodeDao.GetNodeInfoByTaxis(nodeInfo.NodeId);
+                            var firstNodeInfo = Node.GetNodeInfoByTaxis(nodeInfo.NodeId, guid);
                             url = firstNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, firstNodeInfo, isFromBackground, guid) : PageUtils.UnclickedUrl;
                         }
                     }

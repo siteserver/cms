@@ -22,6 +22,6 @@
 
         int Taxis { get; set; }
 
-        ExtendedAttributes Extended { get; }
+        ExtendedAttributes Attributes { get; }
     }
 }

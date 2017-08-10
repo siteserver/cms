@@ -164,9 +164,8 @@
     <Compile Include="Controllers\Files\ActionsUploadAvatarResize.cs" />
     <Compile Include="Controllers\Files\ActionsUploadSiteFiles.cs" />
     <Compile Include="Controllers\Files\UEditor.cs" />
-    <Compile Include="Controllers\Plugins\NameAndId.cs" />
-    <Compile Include="Controllers\Plugins\Name.cs" />
-    <Compile Include="Controllers\Plugins\Root.cs" />
+    <Compile Include="Controllers\Plugins\Http.cs" />
+    <Compile Include="Controllers\Plugins\Restful.cs" />
     <Compile Include="Controllers\Stl\ActionsRelatedField.cs" />
     <Compile Include="Controllers\Stl\ActionsUpload.cs" />
     <Compile Include="Controllers\Stl\ActionsLoadingChannels.cs" />
@@ -226,7 +225,6 @@
     <Compile Include="StlParser\Cache\Advertisement.cs" />
     <Compile Include="StlParser\Cache\SeoMeta.cs" />
     <Compile Include="StlParser\Cache\TableStructure.cs" />
-    <Compile Include="StlParser\Cache\ParsedContent.cs" />
     <Compile Include="StlParser\Cache\Tag.cs" />
     <Compile Include="StlParser\Cache\VoteContent.cs" />
     <Compile Include="StlParser\Cache\StlTag.cs" />
@@ -253,7 +251,7 @@
     <Compile Include="StlParser\Model\ContentItemInfo.cs" />
     <Compile Include="StlParser\Model\StlAttribute.cs" />
     <Compile Include="StlParser\StlElement\StlTemplate.cs" />
-    <Compile Include="StlParser\Cache\Utils.cs" />
+    <Compile Include="StlParser\Cache\StlCacheUtils.cs" />
     <Compile Include="StlParser\Utility\StlInnerUtility.cs" />
     <Compile Include="Wcm\GovInteract\GovInteractApplyManager.cs" />
     <Compile Include="Wcm\GovInteract\GovInteractManager.cs" />

@@ -6,14 +6,25 @@ namespace SiteServer.CMS.StlParser.Cache
 {
     public class InnerLink
     {
+        private static readonly object LockObject = new object();
+
         public static List<InnerLinkInfo> GetInnerLinkInfoList(int publishmentSystemId, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(InnerLink), nameof(GetInnerLinkInfoList), guid, publishmentSystemId.ToString());
-            var retval = Utils.GetCache<List<InnerLinkInfo>>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(InnerLink), nameof(GetInnerLinkInfoList),
+                       publishmentSystemId.ToString());
+            var retval = StlCacheUtils.GetCache<List<InnerLinkInfo>>(cacheKey);
             if (retval != null) return retval;
 
-            retval = DataProvider.InnerLinkDao.GetInnerLinkInfoList(publishmentSystemId);
-            Utils.SetCache(cacheKey, retval);
+            lock (LockObject)
+            {
+                retval = StlCacheUtils.GetCache<List<InnerLinkInfo>>(cacheKey);
+                if (retval == null)
+                {
+                    retval = DataProvider.InnerLinkDao.GetInnerLinkInfoList(publishmentSystemId);
+                    StlCacheUtils.SetCache(cacheKey, retval);
+                }
+            }
+
             return retval;
         }
     }

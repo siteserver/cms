@@ -18,7 +18,7 @@ namespace SiteServer.API.Controllers.Users
             var password = body.GetPostString("password");
             var code = body.GetPostString("code");
 
-            var dbCode = DbCacheManager.GetValue($"SiteServer.API.Controllers.Users.SendSms.{mobile}.Code");
+            var dbCode = CacheDbUtils.GetValue($"SiteServer.API.Controllers.Users.SendSms.{mobile}.Code");
 
             var isRegister = false;
             string errorMessage;

@@ -25,7 +25,7 @@ namespace SiteServer.CMS.Provider
             info.Taxis = GetMaxTaxis(info.InputId) + 1;
             info.BeforeExecuteNonQuery();
             IDataParameter[] parms;
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(info.Attributes, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(info.NameValues, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.Provider
         {
             info.BeforeExecuteNonQuery();
             IDataParameter[] parms;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(info.Attributes, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(info.NameValues, TableName, out parms);
 
             ExecuteNonQuery(sqlUpdate, parms);
         }

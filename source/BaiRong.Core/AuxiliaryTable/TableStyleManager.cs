@@ -22,7 +22,7 @@ namespace BaiRong.Core.AuxiliaryTable
                 if (_async || CacheUtils.Get(CacheKey) == null)
                 {
                     var entries = BaiRongDataProvider.TableStyleDao.GetAllTableStyleInfoPairs();
-                    CacheUtils.Max(CacheKey, entries);
+                    CacheUtils.Insert(CacheKey, entries);
                     _async = false;
                     return entries;
                 }

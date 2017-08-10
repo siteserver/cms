@@ -166,7 +166,7 @@ namespace SiteServer.CMS.ImportExport
             }
             importObject.RemoveDbCache();
 
-            CacheUtils.Clear();
+            CacheUtils.ClearAll();
         }
     }
 }

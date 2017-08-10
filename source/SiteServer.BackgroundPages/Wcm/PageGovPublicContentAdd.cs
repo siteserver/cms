@@ -378,9 +378,9 @@ $('#Tags').keyup(function (e) {
                     dtbAbolitionDate.DateTime = contentInfo.AbolitionDate;
                     tbDescription.Text = contentInfo.Description;
 
-                    ascTitle.SetParameters(PublishmentSystemInfo, _nodeInfo.NodeId, _tableStyle, _tableName, ContentAttribute.Title, contentInfo.Attributes, true, IsPostBack);
+                    ascTitle.SetParameters(PublishmentSystemInfo, _nodeInfo.NodeId, _tableStyle, _tableName, ContentAttribute.Title, contentInfo.NameValues, true, IsPostBack);
 
-                    acAttributes.SetParameters(contentInfo.Attributes, PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities, _tableStyle, _tableName, true, IsPostBack);
+                    acAttributes.SetParameters(contentInfo.NameValues, PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities, _tableStyle, _tableName, true, IsPostBack);
                     Tags.Text = contentInfo.Tags;
                 }
 
@@ -466,7 +466,7 @@ $('#Tags').keyup(function (e) {
                 var contentInfo = new GovPublicContentInfo();
                 try
                 {
-                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.NameValues, ContentAttribute.HiddenAttributes);
 
                     contentInfo.NodeId = categoryChannelId;
                     contentInfo.Description = tbDescription.Text;
@@ -554,7 +554,7 @@ $('#Tags').keyup(function (e) {
                     }
 
                     var identifier = contentInfo.Identifier;
-                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.NameValues, ContentAttribute.HiddenAttributes);
 
                     contentInfo.DepartmentId = categoryDepartmentId;
                     SetCategoryAttributes(contentInfo, categoryClassInfoArrayList);

@@ -24,7 +24,7 @@ namespace SiteServer.API.Controllers.Users
             if (ConfigManager.UserConfigInfo.RegisterVerifyType == EUserVerifyType.Mobile)
             {
                 var code = StringUtils.GetRandomInt(1111, 9999);
-                DbCacheManager.RemoveAndInsert($"SiteServer.API.Controllers.Users.SendSms.{mobile}.Code", code.ToString());
+                CacheDbUtils.RemoveAndInsert($"SiteServer.API.Controllers.Users.SendSms.{mobile}.Code", code.ToString());
                 isSms = SmsManager.SendVerify(mobile, code, ConfigManager.UserConfigInfo.RegisterSmsTplId, out errorMessage);
             }
             

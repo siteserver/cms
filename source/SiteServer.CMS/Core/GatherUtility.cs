@@ -134,7 +134,7 @@ namespace SiteServer.CMS.Core
             {
                 if (isCache)
                 {
-                    CacheUtils.Max(cacheMessageKey, "获取链接" + gatherUrl);//存储消息
+                    CacheUtils.Insert(cacheMessageKey, "获取链接" + gatherUrl);//存储消息
                 }
                 contentUrls.AddRange(GetContentUrls(gatherUrl, gatherRuleInfo.Charset, gatherRuleInfo.CookieString, regexListArea, regexUrlInclude, errorBuilder));
             }
@@ -604,7 +604,7 @@ namespace SiteServer.CMS.Core
 
                 if (isCache)
                 {
-                    CacheUtils.Max(cacheMessageKey, "采集内容：" + title);//存储消息
+                    CacheUtils.Insert(cacheMessageKey, "采集内容：" + title);//存储消息
                 }
                 return true;
             }
@@ -699,9 +699,9 @@ namespace SiteServer.CMS.Core
 
             if (isCache)
             {
-                CacheUtils.Max(cacheTotalCountKey, "0");//存储需要的页面总数
-                CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "开始获取链接...");//存储消息
+                CacheUtils.Insert(cacheTotalCountKey, "0");//存储需要的页面总数
+                CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "开始获取链接...");//存储消息
             }
 
             var currentCount = 0;
@@ -740,9 +740,9 @@ namespace SiteServer.CMS.Core
 
             if (isCache)
             {
-                CacheUtils.Max(cacheTotalCountKey, totalCount.ToString());//存储需要的页面总数
-                CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "开始采集内容...");//存储消息
+                CacheUtils.Insert(cacheTotalCountKey, totalCount.ToString());//存储需要的页面总数
+                CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "开始采集内容...");//存储消息
             }
 
             var contentTitleHashtable = new Hashtable();
@@ -758,7 +758,7 @@ namespace SiteServer.CMS.Core
                     currentCount++;
                     if (isCache)
                     {
-                        CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                        CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
                     }
                 }
                 if (currentCount == totalCount) break;
@@ -800,9 +800,9 @@ namespace SiteServer.CMS.Core
 
             if (isCache)
             {
-                CacheUtils.Max(cacheTotalCountKey, "0");//存储需要的页面总数
-                CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "开始连接数据库...");//存储消息
+                CacheUtils.Insert(cacheTotalCountKey, "0");//存储需要的页面总数
+                CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "开始连接数据库...");//存储消息
             }
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
@@ -832,9 +832,9 @@ namespace SiteServer.CMS.Core
 
                 if (isCache)
                 {
-                    CacheUtils.Max(cacheTotalCountKey, totalCount.ToString());//存储需要的页面总数
-                    CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
-                    CacheUtils.Max(cacheMessageKey, "开始采集内容...");//存储消息
+                    CacheUtils.Insert(cacheTotalCountKey, totalCount.ToString());//存储需要的页面总数
+                    CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                    CacheUtils.Insert(cacheMessageKey, "开始采集内容...");//存储消息
                 }
 
                 var nodeIdAndContentIdList = new List<int[]>();
@@ -888,7 +888,7 @@ namespace SiteServer.CMS.Core
                                 currentCount++;
                                 if (isCache)
                                 {
-                                    CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                                    CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
                                 }
                             }
                         }
@@ -937,9 +937,9 @@ namespace SiteServer.CMS.Core
 
             if (isCache)
             {
-                CacheUtils.Max(cacheTotalCountKey, "0");//存储需要的页面总数
-                CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "开始获取内容...");//存储消息
+                CacheUtils.Insert(cacheTotalCountKey, "0");//存储需要的页面总数
+                CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "开始获取内容...");//存储消息
             }
 
             try
@@ -979,8 +979,8 @@ namespace SiteServer.CMS.Core
                         totalCount = originalCssHrefs.Count + originalScriptSrcs.Count + originalImageSrcs.Count + originalFlashSrcs.Count + originalStyleImageUrls.Count + originalBackgroundImageSrcs.Count;
                         if (isCache)
                         {
-                            CacheUtils.Max(cacheTotalCountKey, totalCount.ToString());//存储需要的页面总数
-                            CacheUtils.Max(cacheMessageKey, "保存文件：" + gatherFileRuleInfo.FilePath);//存储消息
+                            CacheUtils.Insert(cacheTotalCountKey, totalCount.ToString());//存储需要的页面总数
+                            CacheUtils.Insert(cacheMessageKey, "保存文件：" + gatherFileRuleInfo.FilePath);//存储消息
                         }
 
                         var cssHrefs = RegexUtils.GetCssHrefs(gatherFileRuleInfo.GatherUrl, fileContent);
@@ -996,8 +996,8 @@ namespace SiteServer.CMS.Core
                                 currentCount++;
                                 if (isCache)
                                 {
-                                    CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
-                                    CacheUtils.Max(cacheMessageKey, "保存Css样式文件：" + PathUtils.GetFileName(cssHref));//存储消息
+                                    CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                                    CacheUtils.Insert(cacheMessageKey, "保存Css样式文件：" + PathUtils.GetFileName(cssHref));//存储消息
                                 }
 
                                 //string originalLinkHref = (string)originalCssHrefs[i];
@@ -1031,8 +1031,8 @@ namespace SiteServer.CMS.Core
                                 //currentCount++;
                                 //if (isCache)
                                 //{
-                                //    CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
-                                //    CacheUtils.Max(cacheMessageKey, "保存Css样式文件：" + fileName);//存储消息
+                                //    CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                                //    CacheUtils.Insert(cacheMessageKey, "保存Css样式文件：" + fileName);//存储消息
                                 //}
                             }
                             catch
@@ -1057,8 +1057,8 @@ namespace SiteServer.CMS.Core
                                 currentCount++;
                                 if (isCache)
                                 {
-                                    CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
-                                    CacheUtils.Max(cacheMessageKey, "保存Js脚本文件：" + fileName);//存储消息
+                                    CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                                    CacheUtils.Insert(cacheMessageKey, "保存Js脚本文件：" + fileName);//存储消息
                                 }
                             }
                             catch
@@ -1083,8 +1083,8 @@ namespace SiteServer.CMS.Core
                                 currentCount++;
                                 if (isCache)
                                 {
-                                    CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
-                                    CacheUtils.Max(cacheMessageKey, "保存图片文件：" + fileName);//存储消息
+                                    CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                                    CacheUtils.Insert(cacheMessageKey, "保存图片文件：" + fileName);//存储消息
                                 }
                             }
                             catch
@@ -1109,8 +1109,8 @@ namespace SiteServer.CMS.Core
                                 currentCount++;
                                 if (isCache)
                                 {
-                                    CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
-                                    CacheUtils.Max(cacheMessageKey, "保存Flash文件：" + fileName);//存储消息
+                                    CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                                    CacheUtils.Insert(cacheMessageKey, "保存Flash文件：" + fileName);//存储消息
                                 }
                             }
                             catch
@@ -1135,8 +1135,8 @@ namespace SiteServer.CMS.Core
                                 currentCount++;
                                 if (isCache)
                                 {
-                                    CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
-                                    CacheUtils.Max(cacheMessageKey, "保存图片文件：" + fileNameJ);//存储消息
+                                    CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                                    CacheUtils.Insert(cacheMessageKey, "保存图片文件：" + fileNameJ);//存储消息
                                 }
                             }
                             catch
@@ -1161,8 +1161,8 @@ namespace SiteServer.CMS.Core
                                 currentCount++;
                                 if (isCache)
                                 {
-                                    CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
-                                    CacheUtils.Max(cacheMessageKey, "保存图片文件：" + fileNameJ);//存储消息
+                                    CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                                    CacheUtils.Insert(cacheMessageKey, "保存图片文件：" + fileNameJ);//存储消息
                                 }
                             }
                             catch
@@ -1176,7 +1176,7 @@ namespace SiteServer.CMS.Core
                         totalCount = 1;
                         if (isCache)
                         {
-                            CacheUtils.Max(cacheTotalCountKey, totalCount.ToString());//存储需要的页面总数
+                            CacheUtils.Insert(cacheTotalCountKey, totalCount.ToString());//存储需要的页面总数
                         }
                     }
 
@@ -1202,9 +1202,9 @@ namespace SiteServer.CMS.Core
 
                     if (isCache)
                     {
-                        CacheUtils.Max(cacheTotalCountKey, totalCount.ToString());//存储需要的页面总数
-                        CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
-                        CacheUtils.Max(cacheMessageKey, "开始采集内容...");//存储消息
+                        CacheUtils.Insert(cacheTotalCountKey, totalCount.ToString());//存储需要的页面总数
+                        CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                        CacheUtils.Insert(cacheMessageKey, "开始采集内容...");//存储消息
                     }
 
                     var contentTitleHashtable = new Hashtable();
@@ -1216,7 +1216,7 @@ namespace SiteServer.CMS.Core
                         currentCount++;
                         if (isCache)
                         {
-                            CacheUtils.Max(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
+                            CacheUtils.Insert(cacheCurrentCountKey, currentCount.ToString());//存储当前的页面总数
                         }
                     }
 

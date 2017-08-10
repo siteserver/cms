@@ -101,7 +101,7 @@ namespace BaiRong.Core
             if (ht != null) return ht;
 
             ht = new Hashtable();
-            CacheUtils.Insert(CacheKey, ht, null, CacheUtils.HourFactor * 12);
+            CacheUtils.InsertHours(CacheKey, ht, 12);
             return ht;
         }
 

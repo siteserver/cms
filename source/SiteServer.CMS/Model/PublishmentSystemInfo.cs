@@ -182,6 +182,6 @@ namespace SiteServer.CMS.Model
 
         public PublishmentSystemInfoExtend Additional => _additional ?? (_additional = new PublishmentSystemInfoExtend(PublishmentSystemUrl, _settingsXml));
 
-	    public ExtendedAttributes Extended => Additional;
+	    public ExtendedAttributes Attributes => Additional;
 	}
 }

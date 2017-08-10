@@ -254,40 +254,40 @@ namespace BaiRong.Core.Data
             switch (dataType)
             {
                 case DataType.Char:
-                    retval = $"{attributeName} VARCHAR({length})";
+                    retval = $"`{attributeName}` varchar({length})";
                     break;
                 case DataType.DateTime:
-                    retval = $"{attributeName} DATETIME";
+                    retval = $"`{attributeName}` datetime";
                     break;
                 case DataType.Decimal:
-                    retval = $"{attributeName} DECIMAL(18, 2)";
+                    retval = $"`{attributeName}` decimal(18, 2)";
                     break;
                 case DataType.Float:
-                    retval = $"{attributeName} FLOAT(18, 2)";
+                    retval = $"`{attributeName}` float(18, 2)";
                     break;
                 case DataType.Integer:
-                    retval = $"{attributeName} INT";
+                    retval = $"`{attributeName}` int";
                     break;
                 case DataType.NChar:
-                    retval = $"{attributeName} VARCHAR({length})";
+                    retval = $"`{attributeName}` varchar({length})";
                     break;
                 case DataType.NText:
-                    retval = $"{attributeName} LONGTEXT";
+                    retval = $"`{attributeName}` longtext";
                     break;
                 case DataType.NVarChar:
-                    retval = $"{attributeName} VARCHAR({length})";
+                    retval = $"`{attributeName}` varchar({length})";
                     break;
                 case DataType.Text:
-                    retval = $"{attributeName} LONGTEXT";
+                    retval = $"`{attributeName}` longtext";
                     break;
                 case DataType.VarChar:
-                    retval = $"{attributeName} VARCHAR({length})";
+                    retval = $"`{attributeName}` varchar({length})";
                     break;
                 case DataType.Bit:
-                    retval = $"{attributeName} TINYINT(1)";
+                    retval = $"`{attributeName}` tinyint(1)";
                     break;
                 default:
-                    retval = $"{attributeName} VARCHAR({length})";
+                    retval = $"`{attributeName}` varchar({length})";
                     break;
             }
             return retval;
@@ -742,13 +742,13 @@ namespace BaiRong.Core.Data
         private static string Cache_GetTableStructureCacheString(string connectionString, string databaseName, string tableId)
         {
             return
-                $"BaiRong.Core.Data.SqlUtils.GetTableStructureCacheString.{connectionString}.{databaseName}.{tableId}";
+                $"BaiRong.Core.Data.SqlUtils.GetTableStructureCacheString.{TranslateUtils.EncryptStringBySecretKey($"{connectionString}.{databaseName}.{tableId}")}";
         }
 
         public static void Cache_CacheTableColumnInfoList(string connectionString, string databaseName, string tableId, List<TableColumnInfo> tableColumnInfoList)
         {
             var cacheKey = Cache_GetTableStructureCacheString(connectionString, databaseName, tableId);
-            CacheUtils.Max(cacheKey, tableColumnInfoList);
+            CacheUtils.Insert(cacheKey, tableColumnInfoList);
         }
 
         public static List<TableColumnInfo> Cache_GetTableColumnInfoListCache(string connectionString, string databaseName, string tableId)
@@ -765,7 +765,7 @@ namespace BaiRong.Core.Data
         public static void Cache_CacheTableID(string databaseName, string tableName, string tableId)
         {
             var cacheKey = Cache_GetTableIDCacheString(databaseName, tableName);
-            CacheUtils.Max(cacheKey, tableId);
+            CacheUtils.Insert(cacheKey, tableId);
         }
 
         public static string Cache_GetTableIDCache(string databaseName, string tableName)

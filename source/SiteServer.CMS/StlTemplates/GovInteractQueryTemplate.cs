@@ -225,7 +225,7 @@ function stlQueryCallback(jsonString){
             jsonAttributes.Add("isSuccess", isSuccess.ToString().ToLower());
             if (isSuccess && contentInfo != null)
             {
-                foreach (string attributeName in contentInfo.Attributes.Keys)
+                foreach (string attributeName in contentInfo.NameValues.Keys)
                 {
                     jsonAttributes.Add(attributeName, contentInfo.GetExtendedAttribute(attributeName));
                 }

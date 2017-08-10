@@ -59,9 +59,9 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
-            foreach (string attributeName in contentInfo.Attributes)
+            foreach (string attributeName in contentInfo.NameValues)
             {
-                AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, contentInfo.Attributes[attributeName]);
+                AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, contentInfo.NameValues[attributeName]);
             }
 
 			return entry;

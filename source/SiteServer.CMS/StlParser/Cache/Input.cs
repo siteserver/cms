@@ -5,25 +5,45 @@ namespace SiteServer.CMS.StlParser.Cache
 {
     public class Input
     {
+        private static readonly object LockObject = new object();
+
         public static InputInfo GetInputInfo(int inputId, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(Input), nameof(GetInputInfo), guid, inputId.ToString());
-            var retval = Utils.GetCache<InputInfo>(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Input), nameof(GetInputInfo),
+                    inputId.ToString());
+            var retval = StlCacheUtils.GetCache<InputInfo>(cacheKey);
             if (retval != null) return retval;
 
-            retval = DataProvider.InputDao.GetInputInfo(inputId);
-            Utils.SetCache(cacheKey, retval);
+            lock (LockObject)
+            {
+                retval = StlCacheUtils.GetCache<InputInfo>(cacheKey);
+                if (retval == null)
+                {
+                    retval = DataProvider.InputDao.GetInputInfo(inputId);
+                    StlCacheUtils.SetCache(cacheKey, retval);
+                }
+            }
+
             return retval;
         }
 
         public static int GetInputIdAsPossible(string inputName, int publishmentSystemId, string guid)
         {
-            var cacheKey = Utils.GetCacheKey(nameof(Input), nameof(GetInputIdAsPossible), guid, inputName, publishmentSystemId.ToString());
-            var retval = Utils.GetIntCache(cacheKey);
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Input), nameof(GetInputIdAsPossible),
+                    inputName, publishmentSystemId.ToString());
+            var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
 
-            retval = DataProvider.InputDao.GetInputIdAsPossible(inputName, publishmentSystemId);
-            Utils.SetCache(cacheKey, retval);
+            lock (LockObject)
+            {
+                retval = StlCacheUtils.GetIntCache(cacheKey);
+                if (retval == -1)
+                {
+                    retval = DataProvider.InputDao.GetInputIdAsPossible(inputName, publishmentSystemId);
+                    StlCacheUtils.SetCache(cacheKey, retval);
+                }
+            }
+
             return retval;
         }
     }

@@ -223,24 +223,24 @@ namespace SiteServer.BackgroundPages.Ajax
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
             var cacheMessageKey = userKeyPrefix + CacheMessage;
 
-            CacheUtils.Max(cacheTotalCountKey, "5");//存储需要的页面总数
-            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+            CacheUtils.Insert(cacheTotalCountKey, "5");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
 
             try
             {
-                CacheUtils.Max(cacheCurrentCountKey, "1");
-                CacheUtils.Max(cacheMessageKey, "开始下载模板压缩包，可能需要几分钟，请耐心等待");
+                CacheUtils.Insert(cacheCurrentCountKey, "1");
+                CacheUtils.Insert(cacheMessageKey, "开始下载模板压缩包，可能需要几分钟，请耐心等待");
 
                 var filePath = PathUtility.GetSiteTemplatesPath(directoryName + ".zip");
                 FileUtils.DeleteFileIfExists(filePath);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
 
-                CacheUtils.Max(cacheCurrentCountKey, "4");
-                CacheUtils.Max(cacheMessageKey, "模板压缩包下载成功，开始解压缩");
+                CacheUtils.Insert(cacheCurrentCountKey, "4");
+                CacheUtils.Insert(cacheMessageKey, "模板压缩包下载成功，开始解压缩");
 
                 var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
                 if (!DirectoryUtils.IsDirectoryExists(directoryPath))
@@ -248,8 +248,8 @@ namespace SiteServer.BackgroundPages.Ajax
                     ZipUtils.UnpackFiles(filePath, directoryPath);
                 }
 
-                CacheUtils.Max(cacheCurrentCountKey, "5");
-                CacheUtils.Max(cacheMessageKey, string.Empty);
+                CacheUtils.Insert(cacheCurrentCountKey, "5");
+                CacheUtils.Insert(cacheMessageKey, string.Empty);
 
                 retval = AjaxManager.GetProgressTaskNameValueCollection("站点模板下载成功，请到站点模板管理中查看。", string.Empty);
             }
@@ -272,30 +272,30 @@ namespace SiteServer.BackgroundPages.Ajax
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
             var cacheMessageKey = userKeyPrefix + CacheMessage;
 
-            CacheUtils.Max(cacheTotalCountKey, "5");//存储需要的页面总数
-            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+            CacheUtils.Insert(cacheTotalCountKey, "5");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
 
             try
             {
-                CacheUtils.Max(cacheCurrentCountKey, "1");
-                CacheUtils.Max(cacheMessageKey, "开始下载插件压缩包，可能需要几分钟，请耐心等待");
+                CacheUtils.Insert(cacheCurrentCountKey, "1");
+                CacheUtils.Insert(cacheMessageKey, "开始下载插件压缩包，可能需要几分钟，请耐心等待");
 
                 var fileName = PageUtils.GetFileNameFromUrl(downloadUrl);
                 var filePath = PathUtils.GetPluginsPath(fileName);
                 FileUtils.DeleteFileIfExists(filePath);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
 
-                CacheUtils.Max(cacheCurrentCountKey, "4");
-                CacheUtils.Max(cacheMessageKey, "插件压缩包下载成功，开始安装");
+                CacheUtils.Insert(cacheCurrentCountKey, "4");
+                CacheUtils.Insert(cacheMessageKey, "插件压缩包下载成功，开始安装");
 
                 ZipUtils.UnpackFiles(filePath, PathUtils.GetPluginsPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
 
-                CacheUtils.Max(cacheCurrentCountKey, "5");
-                CacheUtils.Max(cacheMessageKey, string.Empty);
+                CacheUtils.Insert(cacheCurrentCountKey, "5");
+                CacheUtils.Insert(cacheMessageKey, string.Empty);
 
                 retval = AjaxManager.GetProgressTaskNameValueCollection("插件安装成功，请刷新页面查看。", string.Empty);
             }
@@ -318,9 +318,9 @@ namespace SiteServer.BackgroundPages.Ajax
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
             var cacheMessageKey = userKeyPrefix + CacheMessage;
 
-            CacheUtils.Max(cacheTotalCountKey, "1");//存储需要的页面总数
-            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+            CacheUtils.Insert(cacheTotalCountKey, "1");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
@@ -336,7 +336,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 ZipUtils.PackFiles(filePath, directoryPath);
 
-                CacheUtils.Max(cacheCurrentCountKey, "1");//存储当前的页面总数
+                CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
 
                 retval = AjaxManager.GetProgressTaskNameValueCollection(
                     $"站点模板压缩成功，<a href='{PageUtility.GetSiteTemplatesUrl(fileName)}' target=_blank>点击下载</a>。", string.Empty);
@@ -360,9 +360,9 @@ namespace SiteServer.BackgroundPages.Ajax
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
             var cacheMessageKey = userKeyPrefix + CacheMessage;
 
-            CacheUtils.Max(cacheTotalCountKey, "1");//存储需要的页面总数
-            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+            CacheUtils.Insert(cacheTotalCountKey, "1");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
@@ -374,7 +374,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 ZipUtils.UnpackFiles(zipFilePath, directoryPath);
 
-                CacheUtils.Max(cacheCurrentCountKey, "1");//存储当前的页面总数
+                CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
 
                 retval = AjaxManager.GetProgressTaskNameValueCollection("站点模板解压成功", string.Empty);
             }

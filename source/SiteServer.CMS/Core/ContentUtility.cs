@@ -14,7 +14,7 @@ using SiteServer.CMS.Wcm.Model;
 using BaiRong.Core.AuxiliaryTable;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Hooks;
+using SiteServer.Plugin.Features;
 
 namespace SiteServer.CMS.Core
 {
@@ -371,7 +371,7 @@ namespace SiteServer.CMS.Core
             var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
             if (string.IsNullOrEmpty(contentModelInfo.PluginId)) return isTranslated;
 
-            var hook = PluginCache.GetHook<IContentModel>(contentModelInfo.PluginId);
+            var hook = PluginCache.GetFeature<IContentModel>(contentModelInfo.PluginId);
             if (hook == null) return isTranslated;
 
             try
@@ -426,14 +426,14 @@ namespace SiteServer.CMS.Core
                 contentInfo.PublishmentSystemId = targetPublishmentSystemId;
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
-                contentInfo.Attributes[ContentAttribute.TranslateContentType] = ETranslateContentType.Copy.ToString();
+                contentInfo.NameValues[ContentAttribute.TranslateContentType] = ETranslateContentType.Copy.ToString();
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginCache.GetHook<IContentModel>(contentModelInfo.PluginId);
+                    var hook = PluginCache.GetFeature<IContentModel>(contentModelInfo.PluginId);
                     try
                     {
                         hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
@@ -456,7 +456,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.PublishmentSystemId = targetPublishmentSystemId;
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
-                contentInfo.Attributes[ContentAttribute.TranslateContentType] = ETranslateContentType.Cut.ToString();
+                contentInfo.NameValues[ContentAttribute.TranslateContentType] = ETranslateContentType.Cut.ToString();
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
 
                 var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
@@ -468,7 +468,7 @@ namespace SiteServer.CMS.Core
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginCache.GetHook<IContentModel>(contentModelInfo.PluginId);
+                    var hook = PluginCache.GetFeature<IContentModel>(contentModelInfo.PluginId);
                     try
                     {
                         hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, newContentId);
@@ -493,7 +493,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.Attributes[ContentAttribute.TranslateContentType] = ETranslateContentType.Reference.ToString();
+                contentInfo.NameValues[ContentAttribute.TranslateContentType] = ETranslateContentType.Reference.ToString();
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
                 DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
             }
@@ -507,13 +507,13 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.Attributes[ContentAttribute.TranslateContentType] = ETranslateContentType.ReferenceContent.ToString();
+                contentInfo.NameValues[ContentAttribute.TranslateContentType] = ETranslateContentType.ReferenceContent.ToString();
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginCache.GetHook<IContentModel>(contentModelInfo.PluginId);
+                    var hook = PluginCache.GetFeature<IContentModel>(contentModelInfo.PluginId);
                     try
                     {
                         hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);

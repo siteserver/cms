@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
                     $@"<a class=""btn btn-success"" href=""{PageTableStyle.GetRedirectUrl(PublishmentSystemId,
                         ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemId)}"">设置站点属性</a>";
 
-                AcAttributes.SetParameters(PublishmentSystemInfo.Additional.Attributes, PublishmentSystemInfo, 0, _relatedIdentities, ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, true, IsPostBack);
+                AcAttributes.SetParameters(PublishmentSystemInfo.Additional.NameValues, PublishmentSystemInfo, 0, _relatedIdentities, ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, true, IsPostBack);
 
                 BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm"));
             }
@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
                 
 				try
 				{
-                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, PublishmentSystemInfo.Additional.Attributes);
+                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, PublishmentSystemInfo.Additional.NameValues);
 
                     DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
 

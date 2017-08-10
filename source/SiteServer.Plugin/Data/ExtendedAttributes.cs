@@ -15,7 +15,7 @@ namespace SiteServer.Plugin.Data
         private readonly object _dataItem;
         private NameValueCollection _extendedAttributes = new NameValueCollection();
 
-        public virtual NameValueCollection Attributes => _extendedAttributes;
+        public virtual NameValueCollection NameValues => _extendedAttributes;
 
         public ExtendedAttributes()
         {
@@ -228,7 +228,7 @@ namespace SiteServer.Plugin.Data
         //将数据保存至数据库前执行
         public void BeforeExecuteNonQuery()
         {
-            var attributes = new NameValueCollection(Attributes);
+            var attributes = new NameValueCollection(NameValues);
 
             foreach (var attributeName in GetDefaultAttributesNames())
             {

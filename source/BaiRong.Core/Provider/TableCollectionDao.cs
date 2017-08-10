@@ -133,7 +133,7 @@ namespace BaiRong.Core.Provider
 
 		public void Delete(string tableEnName)
 		{
-            var isTableExists = BaiRongDataProvider.TableStructureDao.IsTableExists(tableEnName);
+            var isTableExists = BaiRongDataProvider.DatabaseDao.IsTableExists(tableEnName);
 			var parms = new IDataParameter[]
 			{
 				GetParameter(ParmTableEnname, DataType.VarChar, 50, tableEnName),

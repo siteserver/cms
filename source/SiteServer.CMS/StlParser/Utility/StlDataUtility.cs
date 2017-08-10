@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Xml;
 using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -317,7 +316,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
         public static string GetStlPageContentsSqlString(PublishmentSystemInfo publishmentSystemInfo, int channelId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, string guid)
         {
-            if (!DataProvider.NodeDao.IsExists(channelId)) return string.Empty;
+            if (!NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, channelId)) return string.Empty;
 
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId);
             var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
@@ -338,64 +337,59 @@ namespace SiteServer.CMS.StlParser.Utility
 
         public static IEnumerable GetContentsDataSource(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, LowerNameValueCollection others, string guid)
         {
-            IEnumerable ie = null;
+            if (!NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, channelId)) return null;
 
-            if (DataProvider.NodeDao.IsExists(channelId))
+            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId);
+            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
+            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+
+            if (isRelatedContents && contentId > 0)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId);
-                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-                var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-
-                if (isRelatedContents && contentId > 0)
+                var isTags = false;
+                var tagCollection = Content.GetValue(tableName, contentId, ContentAttribute.Tags, guid);
+                if (!string.IsNullOrEmpty(tagCollection))
                 {
-                    var isTags = false;
-                    var tagCollection = Content.GetValue(tableName, contentId, ContentAttribute.Tags, guid);
-                    if (!string.IsNullOrEmpty(tagCollection))
+                    var contentIdList = Tag.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringCollection(tagCollection), publishmentSystemInfo.PublishmentSystemId, guid);
+                    if (contentIdList.Count > 0)
                     {
-                        var contentIdList = Tag.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringCollection(tagCollection), publishmentSystemInfo.PublishmentSystemId, guid);
-                        if (contentIdList.Count > 0)
-                        {
-                            contentIdList.Remove(contentId);
-                            isTags = true;
-                            if (string.IsNullOrEmpty(where))
-                            {
-                                where =
-                                    $"ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
-                            }
-                            else
-                            {
-                                where +=
-                                    $" AND (ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)}))";
-                            }
-                        }
-                    }
-
-                    if (!isTags)
-                    {
+                        contentIdList.Remove(contentId);
+                        isTags = true;
                         if (string.IsNullOrEmpty(where))
                         {
-                            where = $"ID <> {contentId}";
+                            where =
+                                $"ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
                         }
                         else
                         {
-                            where += $" AND (ID <> {contentId})";
+                            where +=
+                                $" AND (ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)}))";
                         }
                     }
                 }
 
-                string sqlWhereString;
-                if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovPublicContent)
+                if (!isTags)
                 {
-                    sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate, guid);
+                    if (string.IsNullOrEmpty(where))
+                    {
+                        where = $"ID <> {contentId}";
+                    }
+                    else
+                    {
+                        where += $" AND (ID <> {contentId})";
+                    }
                 }
-                else
-                {
-                    sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where, guid);
-                }
-                ie = DataProvider.ContentDao.GetStlDataSourceChecked(tableName, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot, isNoDup, others);
             }
 
-            return ie;
+            string sqlWhereString;
+            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovPublicContent)
+            {
+                sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate, guid);
+            }
+            else
+            {
+                sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where, guid);
+            }
+            return DataProvider.ContentDao.GetStlDataSourceChecked(tableName, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot, isNoDup, others);
         }
 
         public static IEnumerable GetCommentsDataSource(int publishmentSystemId, int channelId, int contentId, DbItemContainer itemContainer, int startNum, int totalNum, bool isRecommend, string orderByString, string where, string guid)

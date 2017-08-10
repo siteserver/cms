@@ -115,7 +115,7 @@ namespace BaiRong.Core
                             sl.Add(pair);
                         }
                     }
-                    CacheUtils.Max(cacheKey, sl);
+                    CacheUtils.Insert(cacheKey, sl);
                     return sl;
                 }
                 return CacheUtils.Get(cacheKey) as List<KeyValuePair<int, UserGroupInfo>>;

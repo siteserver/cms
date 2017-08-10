@@ -152,9 +152,8 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\Plugins\NameAndIdController.cs" />
-    <Compile Include="Controllers\Plugins\NameController.cs" />
-    <Compile Include="Controllers\Plugins\RootController.cs" />
+    <Compile Include="Controllers\Plugins\HttpController.cs" />
+    <Compile Include="Controllers\Plugins\RestfulController.cs" />
     <Compile Include="Controllers\Stl\StlActionsRelatedFieldController.cs" />
     <Compile Include="ErrorRedirectModule.cs" />
     <Compile Include="Global.cs" />

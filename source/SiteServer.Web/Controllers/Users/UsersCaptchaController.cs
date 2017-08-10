@@ -55,7 +55,7 @@ namespace SiteServer.API.Controllers.Users
                 ms = new MemoryStream();
                 validateimage.Save(ms, ImageFormat.Png);
 
-                CacheUtils.Insert($"users/captcha/{code}", ms, 600);
+                CacheUtils.InsertMinutes($"users/captcha/{code}", ms, 10);
             }
 
             HttpContext.Current.Response.BufferOutput = true;  //特别注意

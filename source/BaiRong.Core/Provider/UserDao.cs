@@ -56,7 +56,7 @@ namespace BaiRong.Core.Provider
             {
                 return true;
             }
-            var obj = CacheManager.GetCache($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}");
+            var obj = CacheUtils.Get($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}");
             return obj == null;
         }
 
@@ -64,7 +64,7 @@ namespace BaiRong.Core.Provider
         {
             if (ConfigManager.UserConfigInfo.RegisterMinMinutesOfIpAddress > 0 && !string.IsNullOrEmpty(ipAddress))
             {
-                CacheManager.SetCache($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, DateTime.Now.AddMinutes(ConfigManager.UserConfigInfo.RegisterMinMinutesOfIpAddress));
+                CacheUtils.InsertMinutes($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, ConfigManager.UserConfigInfo.RegisterMinMinutesOfIpAddress);
             }
         }
 

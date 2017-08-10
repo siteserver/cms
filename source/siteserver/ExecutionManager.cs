@@ -4,6 +4,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser;
+using SiteServer.CMS.StlParser.Cache;
 
 namespace siteserver
 {
@@ -18,14 +19,11 @@ namespace siteserver
         {
             try
             {
-                if (!ServiceManager.IsPendingCreateTask())
-                {
-                    return false;
-                }
+                if (!ServiceManager.IsPendingCreateTask()) return false;
 
                 while (true)
                 {
-                    var taskInfo = CreateTaskManager.Instance.GetLastPendingTask(0);
+                    var taskInfo = CreateTaskManager.Instance.GetAndRemoveLastPendingTask(0);
                     if (taskInfo == null)
                     {
                         ServiceManager.ClearIsPendingCreateCache();
@@ -45,7 +43,7 @@ namespace siteserver
                         CreateTaskManager.Instance.AddFailureLog(taskInfo, ex);
                     }
 
-                    CreateTaskManager.Instance.RemoveTask(taskInfo.PublishmentSystemId, taskInfo);
+                    //CreateTaskManager.Instance.RemoveTask(taskInfo.PublishmentSystemId, taskInfo);
                 }
             }
             catch (Exception ex)

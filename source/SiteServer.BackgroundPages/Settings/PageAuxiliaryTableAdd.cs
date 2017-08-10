@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Settings
                     {
                         FailMessage("辅助表添加失败，辅助表标识已存在！");
                     }
-                    else if (BaiRongDataProvider.TableStructureDao.IsTableExists(TableENName.Text))
+                    else if (BaiRongDataProvider.DatabaseDao.IsTableExists(TableENName.Text))
                     {
                         FailMessage("辅助表添加失败，数据库中已存在此表！");
                     }

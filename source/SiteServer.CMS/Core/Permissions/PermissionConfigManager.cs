@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Web.Caching;
 using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Plugin;
@@ -41,7 +40,7 @@ namespace SiteServer.CMS.Core.Permissions
 			        permissionManager.LoadValuesFromConfigurationXml(doc);
 			    }
 
-			    CacheUtils.Max(CacheKey, permissionManager, new CacheDependency(path));
+			    CacheUtils.Insert(CacheKey, permissionManager, path);
 			    return permissionManager;
 			}
 		}

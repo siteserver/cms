@@ -10,38 +10,31 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class PageLogAdmin : BasePage
     {
-        public Literal ltlState;
-        public TextBox UserName;
-        public TextBox Keyword;
-        public DateTimeTextBox DateFrom;
-        public DateTimeTextBox DateTo;
+        public Literal LtlState;
+        public TextBox TbUserName;
+        public TextBox TbKeyword;
+        public DateTimeTextBox TbDateFrom;
+        public DateTimeTextBox TbDateTo;
 
-        public Repeater rptContents;
-        public SqlPager spContents;
+        public Repeater RptContents;
+        public SqlPager SpContents;
 
-		public Button Delete;
-		public Button DeleteAll;
-        public Button Setting;
+		public Button BtnDelete;
+		public Button BtnDeleteAll;
+        public Button BtnSetting;
 
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            spContents.ControlToPaginate = rptContents;
-            spContents.ItemsPerPage = StringUtils.Constants.PageSize;
+            SpContents.ControlToPaginate = RptContents;
+            SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            if (!Body.IsQueryExists("Keyword"))
-            {
-                spContents.SelectCommand = BaiRongDataProvider.LogDao.GetSelectCommend();
-            }
-            else
-            {
-                spContents.SelectCommand = BaiRongDataProvider.LogDao.GetSelectCommend(Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
-            }
+            SpContents.SelectCommand = !Body.IsQueryExists("Keyword") ? BaiRongDataProvider.LogDao.GetSelectCommend() : BaiRongDataProvider.LogDao.GetSelectCommend(Body.GetQueryString("UserName"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
 
-            spContents.SortField = "ID";
-            spContents.SortMode = SortMode.DESC;
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            SpContents.SortField = "ID";
+            SpContents.SortMode = SortMode.DESC;
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
 
 			if(!IsPostBack)
 			{
@@ -49,10 +42,10 @@ namespace SiteServer.BackgroundPages.Settings
 
                 if (Body.IsQueryExists("Keyword"))
                 {
-                    UserName.Text = Body.GetQueryString("UserName");
-                    Keyword.Text = Body.GetQueryString("Keyword");
-                    DateFrom.Text = Body.GetQueryString("DateFrom");
-                    DateTo.Text = Body.GetQueryString("DateTo");
+                    TbUserName.Text = Body.GetQueryString("UserName");
+                    TbKeyword.Text = Body.GetQueryString("Keyword");
+                    TbDateFrom.Text = Body.GetQueryString("DateFrom");
+                    TbDateTo.Text = Body.GetQueryString("DateTo");
                 }
 
                 if (Body.IsQueryExists("Delete"))
@@ -94,20 +87,20 @@ namespace SiteServer.BackgroundPages.Settings
                     }
                 }
 
-                Delete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
+                BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
                 {
                     {"Delete", "True" }
                 }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
 
-                DeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
+                BtnDeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
                 {
                     {"DeleteAll", "True" }
                 }), "此操作将删除所有日志信息，确定吗？"));
 
                 if (ConfigManager.SystemConfigInfo.IsLogAdmin)
                 {
-                    Setting.Text = "禁用记录日志功能";
-                    Setting.Attributes.Add("onclick",
+                    BtnSetting.Text = "禁用记录日志功能";
+                    BtnSetting.Attributes.Add("onclick",
                         PageUtils.GetRedirectStringWithConfirm(
                             PageUtils.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
                             {
@@ -116,9 +109,9 @@ namespace SiteServer.BackgroundPages.Settings
                 }
                 else
                 {
-                    ltlState.Text = " (管理员日志当前处于禁用状态，将不会记录相关操作！)";
-                    Setting.Text = "启用记录日志功能";
-                    Setting.Attributes.Add("onclick",
+                    LtlState.Text = " (管理员日志当前处于禁用状态，将不会记录相关操作！)";
+                    BtnSetting.Text = "启用记录日志功能";
+                    BtnSetting.Attributes.Add("onclick",
                         PageUtils.GetRedirectStringWithConfirm(
                             PageUtils.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
                             {
@@ -126,7 +119,7 @@ namespace SiteServer.BackgroundPages.Settings
                             }), "此操作将启用管理员日志记录功能，确定吗？"));
                 }
 
-                spContents.DataBind();
+                SpContents.DataBind();
 			}
 		}
 
@@ -136,13 +129,13 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var ltlUserName = (Literal)e.Item.FindControl("ltlUserName");
                 var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
-                var ltlIPAddress = (Literal)e.Item.FindControl("ltlIPAddress");
+                var ltlIpAddress = (Literal)e.Item.FindControl("ltlIpAddress");
                 var ltlAction = (Literal)e.Item.FindControl("ltlAction");
                 var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
                 ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, "UserName");
-                ltlAddDate.Text = SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate").ToString();
-                ltlIPAddress.Text = SqlUtils.EvalString(e.Item.DataItem, "IPAddress");
+                ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
+                ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, "IPAddress");
                 ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, "Action");
                 ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
             }
@@ -155,10 +148,10 @@ namespace SiteServer.BackgroundPages.Settings
 
 	    private string PageUrl => PageUtils.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
 	    {
-	        {"UserName", UserName.Text},
-	        {"Keyword", Keyword.Text},
-	        {"DateFrom", DateFrom.Text},
-	        {"DateTo", DateTo.Text}
+	        {"UserName", TbUserName.Text},
+	        {"Keyword", TbKeyword.Text},
+	        {"DateFrom", TbDateFrom.Text},
+	        {"DateTo", TbDateTo.Text}
 	    });
 	}
 }
