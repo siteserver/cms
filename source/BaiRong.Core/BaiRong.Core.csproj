@@ -143,6 +143,7 @@
     <Compile Include="Collection\Pair.cs" />
     <Compile Include="Model\Attributes\JobContentAttribute.cs" />
     <Compile Include="Model\Enumerations\EDatabaseType.cs" />
+    <Compile Include="Provider\RecordDao.cs" />
     <Compile Include="RoleManager.cs" />
     <Compile Include="SiteFilesAssets.cs" />
     <Compile Include="SiteServerAssets.cs" />

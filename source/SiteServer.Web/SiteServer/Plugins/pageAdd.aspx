@@ -14,7 +14,7 @@
 <body class="fixed-left">
   <div id="wrapper">
 
-    <div class="row" style="margin-top: 100px" v-bind:style="{ display: featuredPlugins && popularPlugins && recentlyPlugins ? 'none' : '' }">
+    <div class="row" style="margin-top: 100px" v-bind:style="{ display: recentlyPlugins ? 'none' : '' }">
       <div class="col-sm-4"></div>
       <div class="col-sm-4">
         <div class="card-box">
@@ -30,7 +30,7 @@
       <div class="col-sm-4"></div>
     </div>
 
-    <div class="topbar" v-bind:style="{ display: featuredPlugins && popularPlugins && recentlyPlugins ? '' : 'none' }">
+    <div class="topbar" v-bind:style="{ display: recentlyPlugins ? '' : 'none' }">
       <div class="navbar navbar-default" role="navigation">
         <div class="container">
           <form role="search" class="navbar-left app-search pull-left" style="width: 40%">
@@ -59,12 +59,12 @@
         <div class="row">
           <div class="col-sm-6 col-lg-4" v-for="plugin in searchPlugins">
             <div class="card-box widget-user">
-              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '.' + plugin.name">
-                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '.' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
+              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name">
+                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
                   <div class="wid-u-info">
                     <h4 class="m-t-0 m-b-5">
                       {{ plugin.displayName }}
-                      <code>{{ plugin.publisher + '.' + plugin.name }}</code>
+                      <code>{{ plugin.publisher + '-' + plugin.name }}</code>
                     </h4>
                     <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
                     <span title="插件安装量">
@@ -99,12 +99,12 @@
         <div class="row">
           <div class="col-sm-6 col-lg-4" v-for="plugin in featuredPlugins">
             <div class="card-box widget-user">
-              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '.' + plugin.name">
-                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '.' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
+              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name">
+                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
                   <div class="wid-u-info">
                     <h4 class="m-t-0 m-b-5">
                       {{ plugin.displayName }}
-                      <code>{{ plugin.publisher + '.' + plugin.name }}</code>
+                      <code>{{ plugin.publisher + '-' + plugin.name }}</code>
                     </h4>
                     <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
                     <span title="插件安装量">
@@ -139,12 +139,12 @@
         <div class="row">
           <div class="col-sm-6 col-lg-4" v-for="plugin in popularPlugins">
             <div class="card-box widget-user">
-              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '.' + plugin.name">
-                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '.' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
+              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name">
+                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
                   <div class="wid-u-info">
                     <h4 class="m-t-0 m-b-5">
                       {{ plugin.displayName }}
-                      <code>{{ plugin.publisher + '.' + plugin.name }}</code>
+                      <code>{{ plugin.publisher + '-' + plugin.name }}</code>
                     </h4>
                     <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
                     <span title="插件安装量">
@@ -180,12 +180,12 @@
         <div class="row">
           <div class="col-sm-6 col-lg-4" v-for="plugin in recentlyPlugins">
             <div class="card-box widget-user">
-              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '.' + plugin.name">
-                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '.' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
+              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name">
+                  <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
                   <div class="wid-u-info">
                     <h4 class="m-t-0 m-b-5">
                       {{ plugin.displayName }}
-                      <code>{{ plugin.publisher + '.' + plugin.name }}</code>
+                      <code>{{ plugin.publisher + '-' + plugin.name }}</code>
                     </h4>
                     <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
                     <span title="插件安装量">
@@ -217,7 +217,8 @@
 <script src="../assets/vue/vue.min.js"></script>
 <script src="../assets/cloudUtils.js"></script>
 <script>
-  var api = new cloudUtils.Api('http://localhost:5000/api');
+  // var api = new cloudUtils.Api('http://localhost:5000/api');
+  var api = new cloudUtils.Api('http://cloud.siteserver.cn/api');
 
   var data = {
     searching: false,
@@ -231,7 +232,7 @@
   api.get({
     name: 'featured'
   }, function (err, res) {
-    if (!err && res) {
+    if (!err && res && res.length > 0) {
       data.featuredPlugins = res
     }
   }, 'plugins');
@@ -239,7 +240,7 @@
   api.get({
     name: 'popular'
   }, function (err, res) {
-    if (!err && res) {
+    if (!err && res && res.length > 0) {
       data.popularPlugins = res
     }
   }, 'plugins');
@@ -247,7 +248,7 @@
   api.get({
     name: 'recently'
   }, function (err, res) {
-    if (!err && res) {
+    if (!err && res && res.length > 0) {
       data.recentlyPlugins = res
     }
   }, 'plugins');

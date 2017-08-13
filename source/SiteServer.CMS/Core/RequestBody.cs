@@ -73,7 +73,7 @@ namespace SiteServer.CMS.Core
 
                 if (!string.IsNullOrEmpty(AdministratorName))
                 {
-                    _administratorInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(AdministratorName);
+                    _administratorInfo = AdminManager.GetAdminInfo(AdministratorName);
                 }
                 return _administratorInfo ?? (_administratorInfo = new AdministratorInfo());
             }

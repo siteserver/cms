@@ -178,11 +178,25 @@ namespace SiteServer.CMS.Plugin
             return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath);
         }
 
-        public string GetPluginUrl(int siteId, string relatedUrl)
+        public string GetPluginUrl(int siteId, string relatedUrl = "")
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
             var apiUrl = PageUtility.GetOuterApiUrl(publishmentSystemInfo);
             return PageUtility.GetSiteFilesUrl(apiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
+        }
+
+        public string GetPluginRestfulApiUrl(int siteId, string name = "", int id = 0)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var apiUrl = PageUtility.GetOuterApiUrl(publishmentSystemInfo);
+            return Controllers.Plugins.Restful.GetUrl(apiUrl, _metadata.Id, name, id);
+        }
+
+        public string GetPluginHttpApiUrl(int siteId, string name = "", int id = 0)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var apiUrl = PageUtility.GetOuterApiUrl(publishmentSystemInfo);
+            return Controllers.Plugins.Http.GetUrl(apiUrl, _metadata.Id, name, id);
         }
 
         public IPublishmentSystemInfo GetPublishmentSystemInfo(int siteId)

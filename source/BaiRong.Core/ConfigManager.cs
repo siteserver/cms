@@ -12,15 +12,20 @@ namespace BaiRong.Core
         {
             get
             {
+                var retval = CacheUtils.Get<ConfigInfo>(CacheKey);
+                if (retval != null) return retval;
+
                 lock (LockObject)
                 {
-                    var configInfo = CacheUtils.Get(CacheKey) as ConfigInfo;
-                    if (configInfo != null) return configInfo;
-
-                    configInfo = BaiRongDataProvider.ConfigDao.GetConfigInfo();
-                    CacheUtils.Insert(CacheKey, configInfo);
-                    return configInfo;
+                    retval = CacheUtils.Get<ConfigInfo>(CacheKey);
+                    if (retval == null)
+                    {
+                        retval = BaiRongDataProvider.ConfigDao.GetConfigInfo();
+                        CacheUtils.Insert(CacheKey, retval);
+                    }
                 }
+
+                return retval;
             }
         }
 

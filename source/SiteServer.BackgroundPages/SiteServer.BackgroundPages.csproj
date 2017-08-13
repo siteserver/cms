@@ -136,6 +136,9 @@
     <Compile Include="Plugins\PageView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Settings\PageRecord.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Users\PageRoleAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

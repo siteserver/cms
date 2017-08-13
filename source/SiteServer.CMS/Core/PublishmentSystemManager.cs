@@ -322,22 +322,34 @@ namespace SiteServer.CMS.Core
             CacheUtils.UpdateTemporaryCacheFile(CacheFileName);
         }
 
+        private static readonly object LockObject = new object();
+
         public static List<KeyValuePair<int, PublishmentSystemInfo>> GetPublishmentSystemInfoKeyValuePairList()
         {
-            if (CacheUtils.Get(CacheKey) != null) return CacheUtils.Get(CacheKey) as List<KeyValuePair<int, PublishmentSystemInfo>>;
+            var retval = CacheUtils.Get<List<KeyValuePair<int, PublishmentSystemInfo>>>(CacheKey);
+            if (retval != null) return retval;
 
-            var list = DataProvider.PublishmentSystemDao.GetPublishmentSystemInfoKeyValuePairList();
-            var sl = new List<KeyValuePair<int, PublishmentSystemInfo>>();
-            foreach (var pair in list)
+            lock (LockObject)
             {
-                var publishmentSystemInfo = pair.Value;
-                if (publishmentSystemInfo == null) continue;
+                retval = CacheUtils.Get<List<KeyValuePair<int, PublishmentSystemInfo>>>(CacheKey);
+                if (retval == null)
+                {
+                    var list = DataProvider.PublishmentSystemDao.GetPublishmentSystemInfoKeyValuePairList();
+                    retval = new List<KeyValuePair<int, PublishmentSystemInfo>>();
+                    foreach (var pair in list)
+                    {
+                        var publishmentSystemInfo = pair.Value;
+                        if (publishmentSystemInfo == null) continue;
 
-                publishmentSystemInfo.PublishmentSystemDir = GetPublishmentSystemDir(list, publishmentSystemInfo);
-                sl.Add(pair);
+                        publishmentSystemInfo.PublishmentSystemDir = GetPublishmentSystemDir(list, publishmentSystemInfo);
+                        retval.Add(pair);
+                    }
+
+                    CacheUtils.Insert(CacheKey, retval);
+                }
             }
-            CacheUtils.Insert(CacheKey, sl);
-            return sl;
+
+            return retval;
         }
 
         private static string GetPublishmentSystemDir(List<KeyValuePair<int, PublishmentSystemInfo>> listFromDb, PublishmentSystemInfo publishmentSystemInfo)

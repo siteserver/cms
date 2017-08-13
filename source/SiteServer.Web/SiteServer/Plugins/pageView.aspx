@@ -82,12 +82,11 @@
         <div class="col-sm-12">
           <div class="card-box m-t-20">
             <div class="widget-user" style="min-height: auto">
-              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '.' + plugin.name">
-                <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '.' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
+                <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
                 <div class="wid-u-info">
                   <h4 class="m-t-0 m-b-5">
                     {{ plugin.displayName }}
-                    <code>{{ plugin.publisher + '.' + plugin.name }}</code>
+                    <code>{{ plugin.publisher + '-' + plugin.name }}</code>
                   </h4>
                   <p class="text-muted m-b-5 font-13" v-bind:title="plugin.description">{{ plugin.description }}</p>
                   <span title="插件安装量">
@@ -103,7 +102,6 @@
                     <i class="ion-ios-star-outline" style="color: #ffb900;font-size: 18px"></i>
                   </span>
                 </div>
-              </a>
             </div>
             <hr>
 
@@ -134,9 +132,9 @@
 <script src="../assets/vue/vue.min.js"></script>
 <script src="../assets/cloudUtils.js"></script>
 <script>
-  var api = new cloudUtils.Api('http://localhost:5000/api');
+  // var api = new cloudUtils.Api('http://localhost:5000/api');
+  var api = new cloudUtils.Api('http://cloud.siteserver.cn/api');
   var pluginId = api.getQueryStringByName('pluginId');
-  console.log(pluginId);
 
   var data = {
     plugin: null,

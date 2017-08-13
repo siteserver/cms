@@ -49,14 +49,14 @@ namespace BaiRong.Core.Model
         /// </summary>
         public bool IsViewContentOnlySelf
         {
-            get { return GetBool("IsViewContentOnlySelf", false); }
+            get { return GetBool("IsViewContentOnlySelf"); }
             set { SetExtendedAttribute("IsViewContentOnlySelf", value.ToString()); }
         }
 
         // 是否开启时间阈值
         public bool IsTimeThreshold
         {
-            get { return GetBool("IsTimeThreshold", false); }
+            get { return GetBool("IsTimeThreshold"); }
             set { SetExtendedAttribute("IsTimeThreshold", value.ToString()); }
         }
 
@@ -69,7 +69,7 @@ namespace BaiRong.Core.Model
         // 是否开启条数阈值
         public bool IsCounterThreshold
         {
-            get { return GetBool("IsCounterThreshold", false); }
+            get { return GetBool("IsCounterThreshold"); }
             set { SetExtendedAttribute("IsCounterThreshold", value.ToString()); }
         }
 
@@ -81,7 +81,7 @@ namespace BaiRong.Core.Model
 
         public int LoginUserNameMinLength
         {
-            get { return GetInt("LoginUserNameMinLength", 0); }
+            get { return GetInt("LoginUserNameMinLength"); }
             set { SetExtendedAttribute("LoginUserNameMinLength", value.ToString()); }
         }
 
@@ -99,7 +99,7 @@ namespace BaiRong.Core.Model
 
         public bool IsLoginFailToLock
         {
-            get { return GetBool("IsLoginFailToLock", false); }
+            get { return GetBool("IsLoginFailToLock"); }
             set { SetExtendedAttribute("IsLoginFailToLock", value.ToString()); }
         }
 
@@ -123,7 +123,7 @@ namespace BaiRong.Core.Model
 
         public bool IsFindPassword
         {
-            get { return GetBool("IsFindPassword", false); }
+            get { return GetBool("IsFindPassword"); }
             set { SetExtendedAttribute("IsFindPassword", value.ToString()); }
         }
 

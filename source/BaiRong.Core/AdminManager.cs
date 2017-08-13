@@ -7,33 +7,27 @@ namespace BaiRong.Core
 {
     public class AdminManager
     {
+        private static readonly object LockObject = new object();
+
         private AdminManager()
         {
         }
 
         public static AdministratorInfo GetAdminInfo(string userName)
         {
-            return GetAdminInfo(userName, false);
-        }
-
-        public static AdministratorInfo GetAdminInfo(string userName, bool flush)
-        {
             var ht = GetActiveAdminInfo();
 
-            AdministratorInfo adminInfo = null;
+            var adminInfo = ht[userName] as AdministratorInfo;
+            if (adminInfo != null) return adminInfo;
 
-            if (!flush)
+            lock (LockObject)
             {
                 adminInfo = ht[userName] as AdministratorInfo;
-            }
 
-            if (adminInfo == null)
-            {
-                adminInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(userName);
-
-                if (adminInfo != null)
+                if (adminInfo == null)
                 {
-                    UpdateAdminInfoCache(ht, adminInfo, userName);
+                    adminInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(userName);
+                    ht[userName] = adminInfo;
                 }
             }
 
@@ -70,14 +64,6 @@ namespace BaiRong.Core
             return string.Empty;
         }
 
-        private static void UpdateAdminInfoCache(Hashtable ht, AdministratorInfo adminInfo, string userName)
-        {
-            lock (ht.SyncRoot)
-            {
-                ht[userName] = adminInfo;
-            }
-        }
-
         public static void RemoveCache(string userName)
         {
             var ht = GetActiveAdminInfo();
@@ -97,12 +83,20 @@ namespace BaiRong.Core
 
         public static Hashtable GetActiveAdminInfo()
         {
-            var ht = CacheUtils.Get(CacheKey) as Hashtable;
-            if (ht != null) return ht;
+            var retval = CacheUtils.Get<Hashtable>(CacheKey);
+            if (retval != null) return retval;
 
-            ht = new Hashtable();
-            CacheUtils.InsertHours(CacheKey, ht, 12);
-            return ht;
+            lock (LockObject)
+            {
+                retval = CacheUtils.Get<Hashtable>(CacheKey);
+                if (retval == null)
+                {
+                    retval = new Hashtable();
+                    CacheUtils.Insert(CacheKey, retval);
+                }
+            }
+
+            return retval;
         }
 
         public static bool CreateAdministrator(AdministratorInfo administratorInfo, out string errorMessage)
@@ -128,8 +122,6 @@ namespace BaiRong.Core
         }
 
         public const string AnonymousUserName = "Anonymous";
-
-        
 
         public static string GetRolesHtml(string userName)
         {

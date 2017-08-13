@@ -112,13 +112,22 @@
     
     $('#frmMain').height($(window).height() - 70);
 
+    // $('.waves-primary').click(function () {
+    //   if ($(this).hasClass('subdrop')) {
+    //     $(this).removeClass('subdrop');
+    //     $(this).siblings('ul').hide();
+    //   } else {
+    //     $('.waves-primary').removeClass('subdrop');
+    //     $('.list-unstyled').hide();
+    //     $(this).addClass('subdrop');
+    //     $(this).siblings('ul').show();
+    //   }
+    // });
     $('.waves-primary').click(function () {
       if ($(this).hasClass('subdrop')) {
         $(this).removeClass('subdrop');
         $(this).siblings('ul').hide();
       } else {
-        $('.waves-primary').removeClass('subdrop');
-        $('.list-unstyled').hide();
         $(this).addClass('subdrop');
         $(this).siblings('ul').show();
       }

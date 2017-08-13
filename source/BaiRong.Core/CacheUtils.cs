@@ -114,13 +114,21 @@ namespace BaiRong.Core
         public static int GetInt(string key, int notFound)
         {
             var retval = Get(key);
-            return (int?) retval ?? notFound;
+            if (retval == null)
+            {
+                return notFound;
+            }
+            return (int) retval;
         }
 
         public static DateTime GetDateTime(string key, DateTime notFound)
         {
             var retval = Get(key);
-            return (DateTime?)retval ?? notFound;
+            if (retval == null)
+            {
+                return notFound;
+            }
+            return (DateTime)retval;
         }
 
         public static T Get<T>(string key) where T : class

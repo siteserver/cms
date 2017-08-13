@@ -901,7 +901,11 @@ namespace BaiRong.Core.Data
 			
 			if (command == null) throw new ArgumentNullException("command");
 
-			int returnVal = command.ExecuteNonQuery();
+#if (DEBUG)
+            BaiRongDataProvider.RecordDao.RecordCommandExecute(command, nameof(ExecuteNonQuery));
+#endif
+
+            int returnVal = command.ExecuteNonQuery();
 			
 			if (mustCloseConnection)
 			{
@@ -1210,9 +1214,9 @@ namespace BaiRong.Core.Data
 			}
 		}
 
-		#endregion ExecuteNonQuery
+#endregion ExecuteNonQuery
 
-		#region ExecuteReader
+#region ExecuteReader
 		/// <summary>
 		/// Execute an IDbCommand (that returns a resultset) against the database specified in 
 		/// the connection string. 
@@ -1247,21 +1251,9 @@ namespace BaiRong.Core.Data
 			// Create a reader
 			IDataReader dataReader;
 
-            //if (!command.CommandText.Contains("bairong_ErrorLog"))
-            //{
-            //    var builder = new StringBuilder();
-            //    for (var i = 0; i < command.Parameters.Count; i++)
-            //    {
-            //        var commandParameter = command.Parameters[i] as IDataParameter;
-            //        if (commandParameter != null)
-            //        {
-            //            builder.Append(commandParameter.ParameterName + "=" + commandParameter.Value + "<br />").AppendLine();
-            //        }
-            //    }
-
-            //    var logInfo = new ErrorLogInfo(0, DateTime.Now, string.Empty, command.CommandText, builder.ToString());
-            //    BaiRongDataProvider.ErrorLogDao.Insert(logInfo);
-            //}
+#if (DEBUG)
+            BaiRongDataProvider.RecordDao.RecordCommandExecute(command, nameof(ExecuteReader));
+#endif
 
             // Call ExecuteReader with the appropriate CommandBehavior
             if (connectionOwnership == AdoConnectionOwnership.External)
@@ -1628,9 +1620,9 @@ namespace BaiRong.Core.Data
 			}
 		}
 
-		#endregion ExecuteReader
+#endregion ExecuteReader
 
-		#region ExecuteScalar
+#region ExecuteScalar
 		/// <summary>
 		/// Execute an IDbCommand (that returns a 1x1 resultset) against the database specified in 
 		/// the connection string. 
@@ -1651,8 +1643,12 @@ namespace BaiRong.Core.Data
 				mustCloseConnection = true;
 			}
 
-			// Execute the command & return the results
-			var retval = command.ExecuteScalar();
+#if (DEBUG)
+            BaiRongDataProvider.RecordDao.RecordCommandExecute(command, nameof(ExecuteScalar));
+#endif
+
+            // Execute the command & return the results
+            var retval = command.ExecuteScalar();
     			
 			// Detach the IDataParameters from the command object, so they can be used again
 			// don't do this...screws up output params -- cjbreisch
@@ -1995,9 +1991,9 @@ namespace BaiRong.Core.Data
 			}
 		}
 
-		#endregion ExecuteScalar	
+#endregion ExecuteScalar	
 
-		#region ExecuteXmlReader
+#region ExecuteXmlReader
 		/// <summary>
 		/// Execute an IDbCommand (that returns a resultset and takes no parameters) against the provided IDbConnection. 
 		/// </summary>
@@ -2211,9 +2207,9 @@ namespace BaiRong.Core.Data
 			}
 		}
 
-		#endregion ExecuteXmlReader
+#endregion ExecuteXmlReader
 
-		#region ExecuteXmlReaderTypedParams
+#region ExecuteXmlReaderTypedParams
 		/// <summary>
 		/// Execute a stored procedure via an IDbCommand (that returns a resultset) against the specified IDbConnection 
 		/// using the dataRow column values as the stored procedure's parameters values.
@@ -2319,9 +2315,9 @@ namespace BaiRong.Core.Data
 				return ExecuteXmlReader(transaction, CommandType.StoredProcedure, spName);
 			}
 		}
-		#endregion
+#endregion
 
-		#region FillDataset
+#region FillDataset
 		/// <summary>
 		/// Execute an IDbCommand (that returns a resultset) against the database specified in 
 		/// the connection string. 
@@ -2750,9 +2746,9 @@ namespace BaiRong.Core.Data
 			if( mustCloseConnection )
 				connection.Close();
 		}
-		#endregion
+#endregion
 
-		#region UpdateDataset
+#region UpdateDataset
 		/// <summary>
 		/// This method consumes the RowUpdatingEvent and passes it on to the consumer specifed in the call to UpdateDataset
 		/// </summary>
@@ -2897,9 +2893,9 @@ namespace BaiRong.Core.Data
 				if( id != null ) id.Dispose();
 			}
 		}
-		#endregion
+#endregion
 
-		#region CreateCommand
+#region CreateCommand
 		/// <summary>
 		/// Simplify the creation of an IDbCommand object by allowing
 		/// a stored procedure and optional parameters to be provided
@@ -3010,9 +3006,9 @@ namespace BaiRong.Core.Data
 
 			return cmd;
 		}
-		#endregion
+#endregion
 
-		#region ExecuteNonQueryTypedParams
+#region ExecuteNonQueryTypedParams
 		/// <summary>
 		/// Execute a stored procedure via an IDbCommand (that returns no resultset) 
 		/// against the database specified in the connection string using the 
@@ -3149,9 +3145,9 @@ namespace BaiRong.Core.Data
 				return ExecuteNonQuery(transaction, CommandType.StoredProcedure, spName);
 			}
 		}
-		#endregion
+#endregion
 
-		#region ExecuteDatasetTypedParams
+#region ExecuteDatasetTypedParams
 		/// <summary>
 		/// Execute a stored procedure via an IDbCommand (that returns a resultset) against the database specified in 
 		/// the connection string using the dataRow column values as the stored procedure's parameters values.
@@ -3289,9 +3285,9 @@ namespace BaiRong.Core.Data
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region ExecuteReaderTypedParams
+#region ExecuteReaderTypedParams
 		/// <summary>
 		/// Execute a stored procedure via an IDbCommand (that returns a resultset) against the database specified in 
 		/// the connection string using the dataRow column values as the stored procedure's parameters values.
@@ -3427,9 +3423,9 @@ namespace BaiRong.Core.Data
 				return ExecuteReader(transaction, CommandType.StoredProcedure, spName);
 			}
 		}
-		#endregion
+#endregion
 
-		#region ExecuteScalarTypedParams
+#region ExecuteScalarTypedParams
 		/// <summary>
 		/// Execute a stored procedure via an IDbCommand (that returns a 1x1 resultset) against the database specified in 
 		/// the connection string using the dataRow column values as the stored procedure's parameters values.
@@ -3564,9 +3560,9 @@ namespace BaiRong.Core.Data
 				return ExecuteScalar(transaction, CommandType.StoredProcedure, spName);
 			}
 		}
-		#endregion
+#endregion
 
-		#region Parameter Discovery Functions
+#region Parameter Discovery Functions
 
 		/// <summary>
 		/// Checks for the existence of a return value parameter in the parametervalues
@@ -3870,10 +3866,10 @@ namespace BaiRong.Core.Data
 			return discoveredParameters;
 		}
         
-		#endregion Parameter Discovery Functions
+#endregion Parameter Discovery Functions
 
 	}
-	#region ParameterCache
+#region ParameterCache
 	/// <summary>
 	/// ADOHelperParameterCache provides functions to leverage a static cache of procedure parameters, and the
 	/// ability to discover parameters for stored procedures at run-time.
@@ -3899,7 +3895,7 @@ namespace BaiRong.Core.Data
 			return clonedParameters;
 		}
 
-		#region caching functions
+#region caching functions
 
 		/// <summary>
 		/// Add parameter array to the cache
@@ -3945,7 +3941,7 @@ namespace BaiRong.Core.Data
 			}
 		}
 
-		#endregion caching functions
+#endregion caching functions
 	}
-	#endregion
+#endregion
 }

@@ -35,22 +35,29 @@ namespace SiteServer.BackgroundPages.Settings
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
+
+            var key = (string) e.Item.DataItem;
+            var value = CacheUtils.Get(key);
+
+            if (value == null) return;
+            var valueType = value.GetType().FullName;
+
+            var ltlKey = (Literal)e.Item.FindControl("ltlKey");
+            var ltlValue = (Literal)e.Item.FindControl("ltlValue");
+
+            ltlKey.Text = key;
+                
+            if (valueType == "System.String")
             {
-                var key = (string) e.Item.DataItem;
-                var value = CacheUtils.Get(key);
-
-                if (value == null) return;
-
-                var ltlKey = (Literal)e.Item.FindControl("ltlKey");
-                var ltlValue = (Literal)e.Item.FindControl("ltlValue");
-
-                ltlKey.Text = key;
-                ltlValue.Text = value.GetType().FullName;
-                if (ltlValue.Text == "System.String")
-                {
-                    ltlValue.Text += $"（{value.ToString().Length}）";
-                }
+                ltlValue.Text = $"string, length:{value.ToString().Length}";
+            } else if (valueType == "System.Int32")
+            {
+                ltlValue.Text = value.ToString();
+            }
+            else
+            {
+                ltlValue.Text = valueType;
             }
         }
 

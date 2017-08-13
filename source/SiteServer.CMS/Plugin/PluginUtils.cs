@@ -30,7 +30,7 @@ namespace SiteServer.CMS.Plugin
 
         internal static string GetDownloadUrl(string pluginId)
         {
-            return $@"http://download.siteserver.cn/plugins/{pluginId}.zip";
+            return $@"http://plugins.siteserver.cn/download/{pluginId}.zip";
         }
 
         /// <summary>

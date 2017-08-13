@@ -41,7 +41,11 @@ namespace SiteServer.Plugin
 
         string GetUrlByFilePath(string filePath);
 
-        string GetPluginUrl(int siteId, string relatedUrl);
+        string GetPluginUrl(int siteId, string relatedUrl = "");
+
+        string GetPluginRestfulApiUrl(int siteId, string action = "", int id = 0);
+
+        string GetPluginHttpApiUrl(int siteId, string action = "", int id = 0);
 
         IPublishmentSystemInfo GetPublishmentSystemInfo(int siteId);
 
