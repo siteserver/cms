@@ -140,10 +140,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return GetAnalysisValue(pageInfo, channelId, contentId, ETemplateTypeUtils.GetValue(templateType), type, scope, isAverage, style, addNum, since, string.Empty);
+            return GetAnalysisValue(pageInfo, contextInfo, channelId, contentId, ETemplateTypeUtils.GetValue(templateType), type, scope, isAverage, style, addNum, since, string.Empty);
         }
 
-        private static string GetAnalysisValue(PageInfo pageInfo, int channelId, int contentId, string templateType, string type, string scope, bool isAverage, string style, int addNum, string since, string referrer)
+        private static string GetAnalysisValue(PageInfo pageInfo, ContextInfo contextInfo, int channelId, int contentId, string templateType, string type, string scope, bool isAverage, string style, int addNum, string since, string referrer)
         {
             var publishmentSystemInfo = pageInfo.PublishmentSystemInfo;
             if (publishmentSystemInfo == null) return string.Empty;
@@ -225,24 +225,32 @@ namespace SiteServer.CMS.StlParser.StlElement
             accessNum = accessNum + addNum;
             if (accessNum == 0) accessNum = 1;
 
-            if (eStyle == ETrackerStyle.Number)
+            // 如果是实体标签，则只返回数字
+            if (contextInfo.IsCurlyBrace)
             {
-                html = accessNum.ToString();
+                return accessNum.ToString();
             }
             else
             {
-                var numString = accessNum.ToString();
-                var htmlBuilder = new StringBuilder();
-                string imgFolder = $"{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Tracker.DirectoryName)}/{ETrackerStyleUtils.GetValue(eStyle)}";
-                foreach (var t in numString)
+                if (eStyle == ETrackerStyle.Number)
                 {
-                    string imgHtml = $"<img src='{imgFolder}/{t}.gif' align=absmiddle border=0>";
-                    htmlBuilder.Append(imgHtml);
+                    html = accessNum.ToString();
                 }
-                html = htmlBuilder.ToString();
-            }
+                else
+                {
+                    var numString = accessNum.ToString();
+                    var htmlBuilder = new StringBuilder();
+                    string imgFolder = $"{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Tracker.DirectoryName)}/{ETrackerStyleUtils.GetValue(eStyle)}";
+                    foreach (var t in numString)
+                    {
+                        string imgHtml = $"<img src='{imgFolder}/{t}.gif' align=absmiddle border=0>";
+                        htmlBuilder.Append(imgHtml);
+                    }
+                    html = htmlBuilder.ToString();
+                }
 
-            return html;
+                return html;
+            }
         }
 	}
 }
