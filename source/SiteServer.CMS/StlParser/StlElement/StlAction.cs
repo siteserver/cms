@@ -226,7 +226,15 @@ translateInitilization();
                 stlAnchor.Attributes.Add("onclick", onclick);
             }
 
-            return ControlUtils.GetControlRenderHtml(stlAnchor);
+            // 如果是实体标签，则只返回url
+            if (contextInfo.IsCurlyBrace)
+            {
+                return stlAnchor.HRef;
+            }
+            else
+            {
+                return ControlUtils.GetControlRenderHtml(stlAnchor);
+            }
         }
     }
 }

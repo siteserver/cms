@@ -113,10 +113,17 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             playUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, playUrl);
 
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcMediaElement);
+            // 如果是实体标签，则只返回数字
+            if (contextInfo.IsCurlyBrace)
+            {
+                return playUrl;
+            }
+            else
+            { 
+                pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+                pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcMediaElement);
 
-            return $@"
+                return $@"
 <audio src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>
     <object width=""460"" height=""40"" type=""application/x-shockwave-flash"" data=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"">
         <param name=""movie"" value=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"" />
@@ -125,6 +132,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 </audio>
 <script>$('audio').mediaelementplayer();</script>
 ";
+            }
         }
-	}
+    }
 }
