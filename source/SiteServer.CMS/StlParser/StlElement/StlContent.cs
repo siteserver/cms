@@ -463,7 +463,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var sbParsedContent = new StringBuilder();
                         //第一条
-                        sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, false));
+                        sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsCurlyBrace));
 
                         //第n条
                         var extendAttributeName = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.VideoUrl);
@@ -473,7 +473,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                             {
 
-                                sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, extendValue, contextInfo.Attributes, false));
+                                sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, extendValue, contextInfo.Attributes, contextInfo.IsCurlyBrace));
 
                             }
                         }
@@ -485,7 +485,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no, 0);
                         if (num <= 1)
                         {
-                            parsedContent = InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, false);
+                            parsedContent = InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsCurlyBrace);
                         }
                         else
                         {
@@ -498,7 +498,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 {
                                     if (index == num)
                                     {
-                                        parsedContent = InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, extendValue, contextInfo.Attributes, false);
+                                        parsedContent = InputParserUtility.GetVideoHtml(pageInfo.PublishmentSystemInfo, extendValue, contextInfo.Attributes, contextInfo.IsCurlyBrace);
                                         break;
                                     }
                                     index++;

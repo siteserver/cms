@@ -73,7 +73,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return parsedContent;
+            // 如果是实体标签，返回empty
+            if (contextInfo.IsCurlyBrace)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return parsedContent;
+            }
         }
     }
 }

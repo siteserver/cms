@@ -55,6 +55,12 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
+            // 如果是实体标签则返回空
+            if (contextInfo.IsCurlyBrace)
+            {
+                return string.Empty;
+            }
+
             var listInfo = ListInfo.GetListInfoByXmlNode(pageInfo, contextInfo, EContextType.Comment);
 
             return ParseImpl(pageInfo, contextInfo, listInfo);

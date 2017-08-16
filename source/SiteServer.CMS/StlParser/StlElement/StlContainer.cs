@@ -21,7 +21,16 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            if (string.IsNullOrEmpty(contextInfo.InnerXml)) return string.Empty;
+            // 如果是实体标签则返回空
+            if (contextInfo.IsCurlyBrace)
+            {
+                return string.Empty;
+            }
+
+            if (string.IsNullOrEmpty(contextInfo.InnerXml))
+            {
+                return string.Empty;
+            }
 
             foreach (var name in contextInfo.Attributes.Keys)
             {

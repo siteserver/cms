@@ -176,7 +176,15 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeGoodCount))
             {
-                parsedContent = $"<span id='commentsDigg_{commentId}_{true}'>{goodCount}</span>";
+                // 实体标签的话只返回数值
+                if (contextInfo.IsCurlyBrace)
+                {
+                    parsedContent = goodCount.ToString();
+                }
+                else
+                {
+                    parsedContent = $"<span id='commentsDigg_{commentId}_{true}'>{goodCount}</span>";
+                }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeContent))
             {

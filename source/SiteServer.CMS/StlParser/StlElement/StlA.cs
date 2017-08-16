@@ -220,25 +220,25 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             stlAnchor.HRef = url;
 
+            if (!string.IsNullOrEmpty(onclick))
+            {
+                stlAnchor.Attributes.Add("onclick", onclick);
+            }
+
+            if (removeTarget)
+            {
+                stlAnchor.Target = string.Empty;
+            }
+
             // 如果是实体标签，则只返回url
-            if(contextInfo.IsCurlyBrace)
+            if (contextInfo.IsCurlyBrace)
             {
                 return stlAnchor.HRef;
             }
             else
             {
-                if (!string.IsNullOrEmpty(onclick))
-                {
-                    stlAnchor.Attributes.Add("onclick", onclick);
-                }
-
-                if (removeTarget)
-                {
-                    stlAnchor.Target = string.Empty;
-                }
-
                 return ControlUtils.GetControlRenderHtml(stlAnchor);
-            } 
+            }
         }
     }
 }

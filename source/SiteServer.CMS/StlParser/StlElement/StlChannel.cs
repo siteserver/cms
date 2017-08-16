@@ -285,8 +285,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = DateUtils.Format(channel.AddDate, formatString);
                 }
                 else if (type.ToLower().Equals(NodeAttribute.ImageUrl.ToLower()))
-                {
-                    parsedContent = InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo, channel.ImageUrl, contextInfo.Attributes, false);
+                { 
+                    parsedContent = InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo, channel.ImageUrl, contextInfo.Attributes, contextInfo.IsCurlyBrace); // contextInfo.IsCurlyBrace = true 表示实体标签
                 }
                 else if (type.ToLower().Equals(NodeAttribute.Id.ToLower()))
                 {
@@ -306,8 +306,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = channel.ContentNum.ToString();
                 }
                 else if (type.ToLower().Equals(NodeAttribute.CountOfImageContents.ToLower()))
-                {
-                    //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId);
+                { 
                     var count = Content.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId, pageInfo.Guid);
                     parsedContent = count.ToString();
                 }
