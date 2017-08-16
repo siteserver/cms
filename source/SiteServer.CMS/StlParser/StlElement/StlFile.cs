@@ -142,7 +142,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            var parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, false);
+            var parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsCurlyBrace);
 
             if (isFilesize)
             {
@@ -153,11 +153,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (isCount && contextInfo.ContentInfo != null)
                 {
-                    parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.PublishmentSystemInfo, contextInfo.ContentInfo.NodeId, contextInfo.ContentInfo.Id, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, false);
+                    parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.PublishmentSystemInfo, contextInfo.ContentInfo.NodeId, contextInfo.ContentInfo.Id, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsCurlyBrace);
                 }
                 else
                 {
-                    parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, false);
+                    parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.PublishmentSystemInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerXml, contextInfo.IsCurlyBrace);
                 }                
             }
 
