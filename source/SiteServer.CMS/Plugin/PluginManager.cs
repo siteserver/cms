@@ -179,21 +179,29 @@ namespace SiteServer.CMS.Plugin
             return true;
         }
 
-        public static bool Install(string pluginId, out string errorMessage)
+        public static bool Install(string pluginId, string version, out string errorMessage)
         {
             errorMessage = string.Empty;
             if (string.IsNullOrEmpty(pluginId)) return false;
 
             try
             {
-                var zipFilePath = PathUtility.GetSiteTemplatesPath(pluginId + ".zip");
+                if (PluginCache.IsExists(pluginId))
+                {
+                    errorMessage = "插件已存在";
+                    return false;
+                }
+                var directoryPath = PathUtils.GetPluginsPath(pluginId);
+                DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
+
+                var zipFilePath = PathUtility.GetTemporaryFilesPath(pluginId + ".zip");
                 FileUtils.DeleteFileIfExists(zipFilePath);
 
-                var downloadUrl = PluginUtils.GetDownloadUrl(pluginId);
+                var downloadUrl = PluginUtils.GetDownloadUrl(pluginId, version);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, zipFilePath);
-
-                var directoryPath = PathUtils.GetPluginsPath(pluginId);
+                
                 ZipUtils.UnpackFiles(zipFilePath, directoryPath);
+                FileUtils.DeleteFileIfExists(zipFilePath);
 
                 var jsonPath = PathUtils.Combine(directoryPath, PluginUtils.PluginConfigName);
                 if (!FileUtils.IsFileExists(jsonPath))
@@ -202,28 +210,18 @@ namespace SiteServer.CMS.Plugin
                     return false;
                 }
 
-                var plugin = PluginUtils.GetMetadataFromJson(directoryPath);
-                if (plugin == null)
+                var metadata = PluginUtils.GetMetadataFromJson(directoryPath);
+                if (metadata == null)
                 {
                     errorMessage = "插件配置文件不正确";
                     return false;
                 }
 
-                if (PluginCache.IsExists(plugin.Id))
-                {
-                    errorMessage = "插件已存在";
-                    return false;
-                    //errorMessage = $"Do you want to update following plugin?{Environment.NewLine}{Environment.NewLine}" +
-                    //          $"Name: {plugin.Name}{Environment.NewLine}" +
-                    //          $"Old Version: {existingPlugin.Metadata.Version}" +
-                    //          $"{Environment.NewLine}New Version: {plugin.Version}" +
-                    //          $"{Environment.NewLine}Author: {plugin.Author}";
-                }
+                metadata.Disabled = false;
+                metadata.DatabaseType = string.Empty;
+                metadata.ConnectionString = string.Empty;
 
-                ZipUtils.UnpackFiles(zipFilePath, PathUtils.GetPluginsPath(pluginId));
-
-                FileUtils.DeleteFileIfExists(zipFilePath);
-                DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
+                Update(metadata);
             }
             catch (Exception e)
             {
@@ -248,30 +246,42 @@ namespace SiteServer.CMS.Plugin
             return metadata;
         }
 
-        public static PluginMetadata Enable(string pluginId)
+        public static PluginMetadata UpdateDisabled(string pluginId, bool isDisabled)
         {
             var metadata = PluginCache.GetMetadata(pluginId);
             if (metadata != null)
             {
-                metadata.Disabled = false;
-                PluginCache.SetMetadata(metadata);
-                PluginUtils.SaveMetadataToJson(metadata);
+                metadata.Disabled = isDisabled;
+                Update(metadata);
             }
-            Thread.Sleep(1200);
             return metadata;
         }
 
-        public static PluginMetadata Disable(string pluginId)
+        public static PluginMetadata UpdateDatabase(string pluginId, string databaseType, string connectionString)
         {
             var metadata = PluginCache.GetMetadata(pluginId);
             if (metadata != null)
             {
-                metadata.Disabled = true;
-                PluginCache.SetMetadata(metadata);
-                PluginUtils.SaveMetadataToJson(metadata);
+                if (WebConfigUtils.IsProtectData && !string.IsNullOrEmpty(databaseType))
+                {
+                    databaseType = TranslateUtils.EncryptStringBySecretKey(databaseType);
+                }
+                if (WebConfigUtils.IsProtectData && !string.IsNullOrEmpty(connectionString))
+                {
+                    connectionString = TranslateUtils.EncryptStringBySecretKey(connectionString);
+                }
+                metadata.DatabaseType = databaseType;
+                metadata.ConnectionString = connectionString;
+                Update(metadata);
             }
-            Thread.Sleep(1200);
             return metadata;
+        }
+
+        private static void Update(PluginMetadata metadata)
+        {
+            PluginCache.SetMetadata(metadata);
+            PluginUtils.SaveMetadataToJson(metadata);
+            Thread.Sleep(1200);
         }
     }
 }

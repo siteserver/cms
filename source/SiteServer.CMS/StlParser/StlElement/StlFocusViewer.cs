@@ -257,7 +257,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource)
+                    foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new BackgroundContentInfo(dataItem);
                         if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
@@ -270,6 +270,20 @@ namespace SiteServer.CMS.StlParser.StlElement
                             }
                         }
                     }
+
+                    //foreach (var dataItem in dataSource)
+                    //{
+                    //    var contentInfo = new BackgroundContentInfo(dataItem);
+                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                    //    {
+                    //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
+                    //        {
+                    //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl)));
+                    //        }
+                    //    }
+                    //}
 
                     if (string.IsNullOrEmpty(bgColor))
                     {
@@ -328,7 +342,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource)
+                    foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new BackgroundContentInfo(dataItem);
                         if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
@@ -341,6 +355,20 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             }
                         }
                     }
+
+                    //foreach (var dataItem in dataSource)
+                    //{
+                    //    var contentInfo = new BackgroundContentInfo(dataItem);
+                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                    //    {
+                    //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
+                    //        {
+                    //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl)));
+                    //        }
+                    //    }
+                    //}
 
                     var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
                     var paramBuilder = new StringBuilder();
@@ -373,7 +401,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     var imageUrls = new StringCollection();
                     var navigationUrls = new StringCollection();
 
-                    foreach (var dataItem in dataSource)
+                    foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new BackgroundContentInfo(dataItem);
                         if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
@@ -382,6 +410,16 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl));
                         }
                     }
+
+                    //foreach (var dataItem in dataSource)
+                    //{
+                    //    var contentInfo = new BackgroundContentInfo(dataItem);
+                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                    //    {
+                    //        navigationUrls.Add(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo));
+                    //        imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl));
+                    //    }
+                    //}
 
                     var imageBuilder = new StringBuilder();
                     var numBuilder = new StringBuilder();
@@ -480,7 +518,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource)
+                    foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new BackgroundContentInfo(dataItem);
                         if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
@@ -495,6 +533,22 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             }
                         }
                     }
+
+                    //foreach (var dataItem in dataSource)
+                    //{
+                    //    var contentInfo = new BackgroundContentInfo(dataItem);
+                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                    //    {
+                    //        //这里使用png图片不管用
+                    //        //||contentInfo.ImageUrl.ToLower().EndsWith(".png")||contentInfo.ImageUrl.ToLower().EndsWith(".pneg")
+                    //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg"))
+                    //        {
+                    //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl)));
+                    //        }
+                    //    }
+                    //}
 
                     if (string.IsNullOrEmpty(bgColor))
                     {

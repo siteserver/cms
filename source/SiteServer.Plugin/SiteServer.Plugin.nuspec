@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>SiteServer.Plugin</id>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <title>SiteServer.Plugin</title>
     <authors>SiteServer CMS</authors>
     <licenseUrl>https://github.com/siteserver/cms/blob/master/LICENSE</licenseUrl>

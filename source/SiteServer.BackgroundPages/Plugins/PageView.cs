@@ -14,12 +14,14 @@ namespace SiteServer.BackgroundPages.Plugins
         public Literal LtlErrorMessage;
 
         private string _pluginId;
+        private string _version;
 
-        public static string GetRedirectUrl(int type)
+        public static string GetRedirectUrl(string pluginId, string version)
         {
-            return PageUtils.GetPluginsUrl(nameof(PageManagement), new NameValueCollection
+            return PageUtils.GetPluginsUrl(nameof(PageView), new NameValueCollection
             {
-                {"type", type.ToString()}
+                {"pluginId", pluginId},
+                {"version", version}
             });
         }
 
@@ -28,10 +30,11 @@ namespace SiteServer.BackgroundPages.Plugins
             if (IsForbidden) return;
 
             _pluginId = Body.GetQueryString("pluginId");
+            _version = Body.GetQueryString("version");
 
             if (Page.IsPostBack) return;
 
-            BreadCrumbPlugins("插件查看", AppManager.Permissions.Plugins.Add);
+            BreadCrumbPlugins("插件查看", AppManager.Permissions.Plugins.Management);
 
             if (PluginCache.IsExists(_pluginId))
             {
@@ -43,7 +46,7 @@ namespace SiteServer.BackgroundPages.Plugins
         public void BtnInstall_Click(object sender, EventArgs e)
         {
             string errorMessage;
-            var isSuccess = PluginManager.Install(_pluginId, out errorMessage);
+            var isSuccess = PluginManager.Install(_pluginId, _version, out errorMessage);
             if (isSuccess)
             {
                 PhSuccess.Visible = true;

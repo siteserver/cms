@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
@@ -82,7 +83,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return ParseImpl(pageInfo, contextInfo, listInfo);
         }
 
-        public static IEnumerable GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        public static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 

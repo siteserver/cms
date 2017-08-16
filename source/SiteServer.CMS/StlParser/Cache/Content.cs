@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using BaiRong.Core;
 using BaiRong.Core.Model;
@@ -32,6 +33,28 @@ namespace SiteServer.CMS.StlParser.Cache
 
             return retval;
         }
+
+        public static DataSet GetStlDataSourceChecked(List<int> nodeIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others, string guid)
+        {
+            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetStlDataSourceChecked),
+                    TranslateUtils.ObjectCollectionToString(nodeIdList), tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString, isNoDup.ToString(), TranslateUtils.NameValueCollectionToString(others));
+            var retval = StlCacheUtils.GetCache<DataSet>(cacheKey);
+            if (retval != null) return retval;
+
+            lock (LockObject)
+            {
+                retval = StlCacheUtils.GetCache<DataSet>(cacheKey);
+                if (retval == null)
+                {
+                    retval = DataProvider.ContentDao.GetStlDataSourceChecked(nodeIdList, tableName, startNum, totalNum, orderByString, whereString, isNoDup, others);
+                    StlCacheUtils.SetCache(cacheKey, retval);
+                }
+            }
+
+            return retval;
+        }
+
+        
 
         public static ContentInfo GetContentInfo(ETableStyle tableStyle, string tableName, int contentId, string guid)
         {
@@ -301,7 +324,8 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ContentDao.GetStlSqlStringChecked(tableName, publishmentSystemId, nodeId, startNum,
+                    var nodeIdList = Node.GetNodeIdListByScopeType(nodeId, scopeType, groupChannel, groupChannelNot, guid);
+                    retval = DataProvider.ContentDao.GetStlSqlStringChecked(nodeIdList, tableName, publishmentSystemId, nodeId, startNum,
                     totalNum, orderByString, whereString, scopeType, groupChannel, groupChannelNot, isNoDup);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }

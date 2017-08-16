@@ -579,7 +579,6 @@
     <Compile Include="Model\NodeInfoExtend.cs" />
     <Compile Include="Model\PublishmentSystemInfo.cs" />
     <Compile Include="Model\PublishmentSystemInfoExtend.cs" />
-    <Compile Include="Core\ChannelManager.cs" />
     <Compile Include="Core\MessageManager.cs" />
     <Compile Include="Model\SitePageInfo.cs" />
     <Compile Include="Core\SystemData\BaseTable.cs" />

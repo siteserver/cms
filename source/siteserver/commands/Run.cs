@@ -88,7 +88,7 @@ namespace siteserver.commands
                 {
                     _watcher.EnableRaisingEvents = false;
 
-                    foreach (var watcher in PluginCache.GetFeatures<IFileSystemWatcher>())
+                    foreach (var watcher in PluginCache.GetEnabledFeatures<IFileSystemWatcher>())
                     {
                         try
                         {

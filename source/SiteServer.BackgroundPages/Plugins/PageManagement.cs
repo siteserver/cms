@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                 try
                 {
-                    var metadata = PluginManager.Enable(pluginId);
+                    var metadata = PluginManager.UpdateDisabled(pluginId, false);
                     Body.AddAdminLog("启用插件", $"插件:{metadata.DisplayName}");
                     SuccessMessage("成功启用插件");
                 }
@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                 try
                 {
-                    var metadata = PluginManager.Disable(pluginId);
+                    var metadata = PluginManager.UpdateDisabled(pluginId, true);
                     Body.AddAdminLog("禁用插件", $"插件:{metadata.DisplayName}");
                     SuccessMessage("成功禁用插件");
                 }
@@ -161,7 +161,10 @@ Version： {pluginPair.Metadata.Version}
 
             var ableText = pluginPair.Metadata.Disabled ? "启用" : "禁用";
             ltlCmd.Text =
-                $@"<a href=""{PageUtils.GetPluginsUrl(nameof(PageManagement), new NameValueCollection
+                $@"
+<a href=""{PageConfig.GetRedirectUrl(pluginPair.Metadata.Id)}"">配置</a>
+&nbsp;&nbsp;
+<a href=""{PageUtils.GetPluginsUrl(nameof(PageManagement), new NameValueCollection
                 {
                     {pluginPair.Metadata.Disabled ? "enable" : "disable", true.ToString()},
                     {"pluginId", pluginPair.Metadata.Id}

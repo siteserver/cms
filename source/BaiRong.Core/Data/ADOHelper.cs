@@ -182,7 +182,11 @@ namespace BaiRong.Core.Data
 		{
 			var parameter = GetParameter();
 			parameter.ParameterName = name;
-			parameter.Value = value;
+            if (value is DateTime && (DateTime)value < DateUtils.SqlMinValue)
+            {
+                value = DateUtils.SqlMinValue;
+            }
+            parameter.Value = value;
 
 			return parameter;
 		}

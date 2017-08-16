@@ -1088,7 +1088,7 @@ group by tmp.userName";
             return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
         }
 
-        public IEnumerable GetStlDataSourceChecked(string tableName, List<int> nodeIdList, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
+        public DataSet GetStlDataSourceChecked(string tableName, List<int> nodeIdList, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
         {
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
@@ -1237,26 +1237,26 @@ group by tmp.userName";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private IEnumerable GetStlDataSourceByContentNumAndWhereString(string tableName, int totalNum, string whereString, string orderByString)
+        private DataSet GetStlDataSourceByContentNumAndWhereString(string tableName, int totalNum, string whereString, string orderByString)
         {
-            IEnumerable enumerable = null;
+            DataSet dataset = null;
             if (!string.IsNullOrEmpty(tableName))
             {
                 var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, totalNum, StlColumns, whereString, orderByString);
-                enumerable = (IEnumerable)ExecuteReader(sqlSelect);
+                dataset = ExecuteDataset(sqlSelect);
             }
-            return enumerable;
+            return dataset;
         }
 
-        private IEnumerable GetStlDataSourceByStartNum(string tableName, int startNum, int totalNum, string whereString, string orderByString)
+        private DataSet GetStlDataSourceByStartNum(string tableName, int startNum, int totalNum, string whereString, string orderByString)
         {
-            IEnumerable enumerable = null;
+            DataSet dataset = null;
             if (!string.IsNullOrEmpty(tableName))
             {
                 var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, StlColumns, whereString, orderByString);
-                enumerable = (IEnumerable)ExecuteReader(sqlSelect);
+                dataset = ExecuteDataset(sqlSelect);
             }
-            return enumerable;
+            return dataset;
         }
 
         public string StlColumns => $"{ContentAttribute.Id}, {ContentAttribute.NodeId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";

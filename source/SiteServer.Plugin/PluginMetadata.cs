@@ -19,7 +19,11 @@ namespace SiteServer.Plugin
         public string Homepage { get; set; }
         public string ExecuteFileName { get; set; }
         public List<string> Includes { get; set; }
+
+        //后台配置选项
         public bool Disabled { get; set; }
+        public string DatabaseType { get; set; }
+        public string ConnectionString { get; set; }
 
         private string _directoryPath;
         [JsonIgnore]

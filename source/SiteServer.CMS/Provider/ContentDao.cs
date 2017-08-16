@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
@@ -234,32 +235,34 @@ namespace SiteServer.CMS.Provider
             return BaiRongDataProvider.ContentDao.GetCountOfContentUpdate(tableName, publishmentSystemId, nodeIdList, begin, end, userName);
         }
 
-        public List<int> GetContentIdArrayListChecked(string tableName, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, int totalNum, string orderByString, string whereString, EScopeType scopeType)
-        {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, string.Empty, string.Empty);
+        //public List<int> GetContentIdArrayListChecked(string tableName, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, int totalNum, string orderByString, string whereString, EScopeType scopeType)
+        //{
+        //    var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, string.Empty, string.Empty);
 
-            var theList = new List<int>();
-            foreach (int theNodeId in nodeIdList)
-            {
-                if (isSystemAdministrator || owningNodeIdList.Contains(theNodeId))
-                {
-                    theList.Add(theNodeId);
-                }
-            }
+        //    var theList = new List<int>();
+        //    foreach (int theNodeId in nodeIdList)
+        //    {
+        //        if (isSystemAdministrator || owningNodeIdList.Contains(theNodeId))
+        //        {
+        //            theList.Add(theNodeId);
+        //        }
+        //    }
 
-            return BaiRongDataProvider.ContentDao.GetContentIdListChecked(tableName, theList, totalNum, orderByString, whereString);
-        }
+        //    return BaiRongDataProvider.ContentDao.GetContentIdListChecked(tableName, theList, totalNum, orderByString, whereString);
+        //}
 
-        public List<int> GetContentIdListChecked(string tableName, int nodeId, int totalNum, string orderByString, string whereString, EScopeType scopeType)
-        {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, string.Empty, string.Empty);
-
-            return BaiRongDataProvider.ContentDao.GetContentIdListChecked(tableName, nodeIdList, totalNum, orderByString, whereString);
-        }
+        //public List<int> GetContentIdListChecked(List<int> nodeIdList, string tableName, int totalNum, string orderByString, string whereString)
+        //{
+        //    return BaiRongDataProvider.ContentDao.GetContentIdListChecked(tableName, nodeIdList, totalNum, orderByString, whereString);
+        //}
 
         public List<int> GetContentIdListChecked(string tableName, int nodeId, int totalNum, string orderByFormatString, string whereString)
         {
-            return GetContentIdListChecked(tableName, nodeId, totalNum, orderByFormatString, whereString, EScopeType.Self);
+            var nodeIdList = new List<int>
+            {
+                nodeId
+            };
+            return BaiRongDataProvider.ContentDao.GetContentIdListChecked(tableName, nodeIdList, totalNum, orderByFormatString, whereString);
         }
 
         public List<int> GetContentIdListChecked(string tableName, int nodeId, string orderByFormatString, string whereString)
@@ -700,13 +703,12 @@ namespace SiteServer.CMS.Provider
             return sqlString;
         }
 
-        public IEnumerable GetStlDataSourceChecked(string tableName, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup, LowerNameValueCollection others)
+        public DataSet GetStlDataSourceChecked(List<int> nodeIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
         {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, groupChannel, groupChannelNot);
             return BaiRongDataProvider.ContentDao.GetStlDataSourceChecked(tableName, nodeIdList, startNum, totalNum, orderByString, whereString, isNoDup, others);
         }
 
-        public string GetStlSqlStringChecked(string tableName, int publishmentSystemId, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup)
+        public string GetStlSqlStringChecked(List<int> nodeIdList, string tableName, int publishmentSystemId, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup)
         {
             string sqlWhereString;
 
@@ -717,7 +719,6 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, groupChannel, groupChannelNot);
                 if (nodeIdList == null || nodeIdList.Count == 0)
                 {
                     return string.Empty;

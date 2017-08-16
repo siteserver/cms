@@ -16,14 +16,38 @@ namespace BaiRong.Core.Provider
         private const string ParmSource = "@Source";
         private const string ParmAddDate = "@AddDate";
 
+        /**
+sqlserver
+
+CREATE TABLE bairong_Record(
+    Id            int              IDENTITY(1,1),
+    Text    nvarchar(2000)            NULL,
+    Summary    nvarchar(2000)            NULL,
+    Source       nvarchar(200)    NULL,
+    AddDate       datetime         NULL,
+    CONSTRAINT PK_bairong_Record PRIMARY KEY CLUSTERED (Id)
+)
+
+mysql
+
+CREATE TABLE bairong_ErrorLog(
+    Id            INT                      AUTO_INCREMENT,
+    Text    NATIONAL VARCHAR(2000),
+    Summary       NATIONAL VARCHAR(2000),
+    Source        NATIONAL VARCHAR(200),
+    AddDate       DATETIME,
+    PRIMARY KEY (Id)
+)ENGINE=INNODB
+    **/
+
         private void Insert(string text, string summary, string source)
         {
             var sqlString = $"INSERT INTO {TableName} (Text, Summary, Source, AddDate) VALUES (@Text, @Summary, @Source, @AddDate)";
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmText, DataType.NText, text),
-                GetParameter(ParmSummary, DataType.NText, summary),
+                GetParameter(ParmText, DataType.NVarChar, 2000, text),
+                GetParameter(ParmSummary, DataType.NVarChar, 2000, summary),
                 GetParameter(ParmSource, DataType.NVarChar, 200, source),
                 GetParameter(ParmAddDate, DataType.DateTime, DateTime.Now)
             };

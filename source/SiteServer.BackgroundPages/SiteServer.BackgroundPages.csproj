@@ -133,6 +133,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Plugins\PageConfig.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Plugins\PageView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

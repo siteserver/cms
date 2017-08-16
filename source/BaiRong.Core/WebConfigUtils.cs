@@ -18,6 +18,7 @@ namespace BaiRong.Core
         /// </summary>
         public static string PhysicalApplicationPath { get; private set; }
 
+        public static bool IsProtectData { get; private set; }
         public static EDatabaseType DatabaseType { get; private set; }
         public static string ConnectionString { get; private set; }
 
@@ -124,6 +125,7 @@ namespace BaiRong.Core
                 // ignored
             }
 
+            IsProtectData = isProtectData;
             DatabaseType = EDatabaseTypeUtils.GetEnumType(databaseType);
             ConnectionString = connectionString;
             if (string.IsNullOrEmpty(AdminDirectory))
@@ -222,6 +224,7 @@ namespace BaiRong.Core
                 writer.Close();
             }
 
+            IsProtectData = isProtectData;
             DatabaseType = databaseType;
             ConnectionString = connectionString;
             _helper = null;

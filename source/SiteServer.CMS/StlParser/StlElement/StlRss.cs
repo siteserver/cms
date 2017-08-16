@@ -197,24 +197,24 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (dataSource != null)
             {
-                foreach (var dataItem in dataSource)
-                {
-                    var item = new RssItem();
+                //foreach (var dataItem in dataSource)
+                //{
+                //    var item = new RssItem();
 
-                    var contentInfo = new BackgroundContentInfo(dataItem);
-                    item.Title = StringUtils.Replace("&", contentInfo.Title, "&amp;");
-                    item.Description = contentInfo.Summary;
-                    if (string.IsNullOrEmpty(item.Description))
-                    {
-                        item.Description = StringUtils.StripTags(contentInfo.Content);
-                        item.Description = string.IsNullOrEmpty(item.Description) ? contentInfo.Title : StringUtils.MaxLengthText(item.Description, 200);
-                    }
-                    item.Description = StringUtils.Replace("&", item.Description, "&amp;");
-                    item.PubDate = contentInfo.AddDate;
-                    item.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo)));
+                //    var contentInfo = new BackgroundContentInfo(dataItem);
+                //    item.Title = StringUtils.Replace("&", contentInfo.Title, "&amp;");
+                //    item.Description = contentInfo.Summary;
+                //    if (string.IsNullOrEmpty(item.Description))
+                //    {
+                //        item.Description = StringUtils.StripTags(contentInfo.Content);
+                //        item.Description = string.IsNullOrEmpty(item.Description) ? contentInfo.Title : StringUtils.MaxLengthText(item.Description, 200);
+                //    }
+                //    item.Description = StringUtils.Replace("&", item.Description, "&amp;");
+                //    item.PubDate = contentInfo.AddDate;
+                //    item.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo)));
 
-                    channel.Items.Add(item);
-                }
+                //    channel.Items.Add(item);
+                //}
             }
 
             feed.Channels.Add(channel);

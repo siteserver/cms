@@ -16,7 +16,7 @@ namespace SiteServer.CMS.Plugin
 {
     internal static class PluginUtils
     {
-        internal const string PluginConfigName = "plugin.json";
+        internal const string PluginConfigName = "plugin.config";
 
         //static PluginUtils()
         //{
@@ -28,9 +28,9 @@ namespace SiteServer.CMS.Plugin
         //    return AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(anAssembly => anAssembly.FullName == args.Name);
         //}
 
-        internal static string GetDownloadUrl(string pluginId)
+        internal static string GetDownloadUrl(string pluginId, string version)
         {
-            return $@"http://plugins.siteserver.cn/download/{pluginId}.zip";
+            return $@"http://plugins.siteserver.cn/download/{pluginId}.zip?version={version}";
         }
 
         /// <summary>

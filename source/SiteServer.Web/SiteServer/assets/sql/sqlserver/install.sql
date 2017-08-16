@@ -801,7 +801,15 @@ CREATE TABLE siteserver_NodeGroup(
 )
 go
 
-
+CREATE TABLE siteserver_PluginConfig(
+    Id             int              IDENTITY(1,1),
+    PluginId       nvarchar(50)     NULL,
+    SiteId         int              NULL,
+    ConfigName     nvarchar(200)    NULL,
+    ConfigValue    ntext            NULL,
+    CONSTRAINT PK_siteserver_PluginConfig PRIMARY KEY CLUSTERED (Id)
+)
+go
 
 CREATE TABLE siteserver_Photo(
     Id                     int             IDENTITY(1,1),

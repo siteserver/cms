@@ -9,6 +9,10 @@ namespace SiteServer.Plugin
     /// </summary>
     public interface IPublicApi
     {
+        string DatabaseType { get; }
+
+        string ConnectionString { get; }
+
         IDbHelper DbHelper { get; }
 
         bool SetGlobalConfig(string name, object config);

@@ -5,11 +5,11 @@
 <html>
 <head>
 <meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
+<!--#include file="./inc/header.aspx"-->
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
+<!--#include file="./inc/openWindow.html"-->
 <form class="form-inline" runat="server">
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />

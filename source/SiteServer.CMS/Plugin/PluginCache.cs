@@ -137,7 +137,7 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static T GetFeature<T>(string pluginId) where T : IPlugin
+        public static T GetEnabledFeature<T>(string pluginId) where T : IPlugin
         {
             lock (AllPluginsLock)
             {
@@ -152,7 +152,7 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static List<T> GetFeatures<T>() where T : IPlugin
+        public static List<T> GetEnabledFeatures<T>() where T : IPlugin
         {
             lock (AllPluginsLock)
             {
@@ -314,7 +314,7 @@ namespace SiteServer.CMS.Plugin
 
             parsers = new Dictionary<string, Func<PluginParserContext, string>>();
 
-            var plugins = GetFeatures<IParser>();
+            var plugins = GetEnabledFeatures<IParser>();
             if (plugins != null && plugins.Count > 0)
             {
                 foreach (var plugin in plugins)

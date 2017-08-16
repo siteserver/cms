@@ -286,7 +286,7 @@ selObj.selectedIndex=0;
 
                 if (dataSource != null)
                 {
-                    foreach (var dataItem in dataSource)
+                    foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new BackgroundContentInfo(dataItem);
                         if (contentInfo != null)
@@ -301,6 +301,21 @@ selObj.selectedIndex=0;
                             selectControl.Items.Add(listitem);
                         }
                     }
+                    //foreach (var dataItem in dataSource)
+                    //{
+                    //    var contentInfo = new BackgroundContentInfo(dataItem);
+                    //    if (contentInfo != null)
+                    //    {
+                    //        var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
+                    //        var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo);
+                    //        if (!string.IsNullOrEmpty(queryString))
+                    //        {
+                    //            url = PageUtils.AddQueryString(url, queryString);
+                    //        }
+                    //        var listitem = new ListItem(title, url);
+                    //        selectControl.Items.Add(listitem);
+                    //    }
+                    //}
                 }
             }
 

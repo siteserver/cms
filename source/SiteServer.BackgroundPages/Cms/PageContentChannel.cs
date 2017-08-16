@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.IsQueryTotalCount = false;
             SpContents.TotalCount = _nodeInfo.ContentNum;
 
-            RptChannels.DataSource = DataProvider.NodeDao.GetNodeIdListByScopeType(_nodeInfo.NodeId, _nodeInfo.ChildrenCount, EScopeType.Children, string.Empty, string.Empty);
+            RptChannels.DataSource = DataProvider.NodeDao.GetNodeIdListByScopeType(_nodeInfo.NodeId, _nodeInfo.ChildrenCount, EScopeType.Children, string.Empty, string.Empty, string.Empty);
             RptChannels.ItemDataBound += rptChannels_ItemDataBound;
 
             if (!IsPostBack)

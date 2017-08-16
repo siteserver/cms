@@ -59,7 +59,7 @@
         <div class="row">
           <div class="col-sm-6 col-lg-4" v-for="plugin in searchPlugins">
             <div class="card-box widget-user">
-              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name">
+              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
                   <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
                   <div class="wid-u-info">
                     <h4 class="m-t-0 m-b-5">
@@ -99,7 +99,7 @@
         <div class="row">
           <div class="col-sm-6 col-lg-4" v-for="plugin in featuredPlugins">
             <div class="card-box widget-user">
-              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name">
+              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
                   <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
                   <div class="wid-u-info">
                     <h4 class="m-t-0 m-b-5">
@@ -139,7 +139,7 @@
         <div class="row">
           <div class="col-sm-6 col-lg-4" v-for="plugin in popularPlugins">
             <div class="card-box widget-user">
-              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name">
+              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
                   <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
                   <div class="wid-u-info">
                     <h4 class="m-t-0 m-b-5">
@@ -180,7 +180,7 @@
         <div class="row">
           <div class="col-sm-6 col-lg-4" v-for="plugin in recentlyPlugins">
             <div class="card-box widget-user">
-              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name">
+              <a v-bind:href="'pageView.aspx?pluginId=' + plugin.publisher + '-' + plugin.name + '&version=' + plugin.version">
                   <img v-bind:src="'http://plugins.siteserver.cn/files/' + plugin.publisher + '-' + plugin.name + '/' + plugin.icon" class="img-responsive" alt="user">
                   <div class="wid-u-info">
                     <h4 class="m-t-0 m-b-5">

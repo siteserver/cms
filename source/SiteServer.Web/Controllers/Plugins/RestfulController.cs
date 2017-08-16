@@ -15,7 +15,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -37,7 +37,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -59,7 +59,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -81,7 +81,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -103,7 +103,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -125,7 +125,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -147,7 +147,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -169,7 +169,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -191,7 +191,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -213,7 +213,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -235,7 +235,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -257,7 +257,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -279,7 +279,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -301,7 +301,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {
@@ -323,7 +323,7 @@ namespace SiteServer.API.Controllers.Plugins
         {
             try
             {
-                var restful = PluginCache.GetFeature<IRestful>(pluginId);
+                var restful = PluginCache.GetEnabledFeature<IRestful>(pluginId);
 
                 if (restful == null)
                 {

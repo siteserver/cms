@@ -1354,9 +1354,8 @@ ORDER BY Taxis";
             return list;
         }
 
-        public List<int> GetNodeIdList(int nodeId, int totalNum, string orderByString, string whereString, EScopeType scopeType, string group, string groupNot)
+        public List<int> GetNodeIdListByTotalNum(List<int> nodeIdList, int totalNum, string orderByString, string whereString)
         {
-            var nodeIdList = GetNodeIdListByScopeType(nodeId, scopeType, group, groupNot);
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
                 return nodeIdList;
@@ -1477,16 +1476,6 @@ ORDER BY Taxis";
             }
 
             return list;
-        }
-
-        private List<int> GetNodeIdListByScopeType(int nodeId, int childrenCount, EScopeType scopeType)
-        {
-            return GetNodeIdListByScopeType(nodeId, childrenCount, scopeType, string.Empty, string.Empty, string.Empty);
-        }
-
-        public List<int> GetNodeIdListByScopeType(int nodeId, int childrenCount, EScopeType scopeType, string group, string groupNot)
-        {
-            return GetNodeIdListByScopeType(nodeId, childrenCount, scopeType, group, groupNot, string.Empty);
         }
 
         public List<int> GetNodeIdListByScopeType(int nodeId, int childrenCount, EScopeType scopeType, string group, string groupNot, string contentModelId)
@@ -1754,10 +1743,8 @@ ORDER BY Taxis";
 
         public string SqlColumns => $"{NodeAttribute.NodeId}, {NodeAttribute.AddDate}, {NodeAttribute.Taxis}";
 
-        public IEnumerable GetStlDataSource(int nodeId, int childrenCount, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
+        public IEnumerable GetStlDataSource(List<int> nodeIdList, int startNum, int totalNum, string whereString, string orderByString)
         {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, childrenCount, scopeType, string.Empty, string.Empty);
-
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
                 return null;
@@ -1771,18 +1758,17 @@ ORDER BY Taxis";
             return (IEnumerable)ExecuteReader(sqlSelect);
         }
 
-        public IEnumerable GetStlDataSourceByPublishmentSystemId(int publishmentSystemId, int startNum, int totalNum, string whereString, string orderByString)
+        public DataSet GetStlDataSourceByPublishmentSystemId(int publishmentSystemId, int startNum, int totalNum, string whereString, string orderByString)
         {
             string sqlWhereString = $"WHERE (PublishmentSystemID = {publishmentSystemId} {whereString})";
 
             var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
 
-            return (IEnumerable)ExecuteReader(sqlSelect);
+            return ExecuteDataset(sqlSelect);
         }
 
-        public DataSet GetStlDataSet(int nodeId, int childrenCount, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
+        public DataSet GetStlDataSet(List<int> nodeIdList, int startNum, int totalNum, string whereString, string orderByString)
         {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, childrenCount, scopeType, string.Empty, string.Empty);
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
                 return null;
@@ -1830,7 +1816,7 @@ ORDER BY Taxis";
 
         public List<NodeInfo> GetNodeInfoList(int nodeId, int childrenCount, int totalNum, string whereString, EScopeType scopeType, string orderByString)
         {
-            var nodeIdList = GetNodeIdListByScopeType(nodeId, childrenCount, scopeType);
+            var nodeIdList = GetNodeIdListByScopeType(nodeId, childrenCount, scopeType, string.Empty, string.Empty, string.Empty);
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
                 return null;

@@ -63,7 +63,8 @@ namespace SiteServer.CMS.StlParser.Utility
         public static List<int> GetNodeIdList(int publishmentSystemId, int channelId, string groupContent, string groupContentNot, string orderByString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isImageExists, bool isImage, int totalNum, string where, string guid)
         {
             var whereString = Node.GetWhereString(publishmentSystemId, groupContent, groupContentNot, isImageExists, isImage, where, guid);
-            return Node.GetNodeIdList(channelId, totalNum, orderByString, whereString, scopeType, groupChannel, groupChannelNot, guid);
+            var nodeIdList = Node.GetNodeIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot, guid);
+            return Node.GetNodeIdListByTotalNum(nodeIdList, totalNum, orderByString, whereString, guid);
         }
 
         //public static int GetNodeIDByChannelIDOrChannelIndexOrChannelName(int publishmentSystemID, int channelID, string channelIndex, string channelName)
@@ -335,7 +336,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return sqlString;
         }
 
-        public static IEnumerable GetContentsDataSource(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, LowerNameValueCollection others, string guid)
+        public static DataSet GetContentsDataSource(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, LowerNameValueCollection others, string guid)
         {
             if (!NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, channelId)) return null;
 
@@ -389,7 +390,8 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where, guid);
             }
-            return DataProvider.ContentDao.GetStlDataSourceChecked(tableName, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot, isNoDup, others);
+            var nodeIdList = Node.GetNodeIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot, guid);
+            return Content.GetStlDataSourceChecked(nodeIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup, others, guid);
         }
 
         public static IEnumerable GetCommentsDataSource(int publishmentSystemId, int channelId, int contentId, DbItemContainer itemContainer, int startNum, int totalNum, bool isRecommend, string orderByString, string where, string guid)
@@ -420,14 +422,14 @@ namespace SiteServer.CMS.StlParser.Utility
             return BaiRongDataProvider.DatabaseDao.GetDataSet(sqlString);
         }
 
-        public static IEnumerable GetChannelsDataSource(int publishmentSystemId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where, string guid)
+        public static DataSet GetChannelsDataSource(int publishmentSystemId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where, string guid)
         {
-            IEnumerable ie;
+            DataSet ie;
 
             if (isTotal)//从所有栏目中选择
             {
                 var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where, guid);
-                ie = DataProvider.NodeDao.GetStlDataSourceByPublishmentSystemId(publishmentSystemId, startNum, totalNum, sqlWhereString, orderByString);
+                ie = Node.GetStlDataSourceByPublishmentSystemId(publishmentSystemId, startNum, totalNum, sqlWhereString, orderByString, guid);
             }
             else
             {
@@ -435,7 +437,10 @@ namespace SiteServer.CMS.StlParser.Utility
                 if (nodeInfo == null) return null;
 
                 var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where, guid);
-                ie = DataProvider.NodeDao.GetStlDataSource(nodeInfo.NodeId, nodeInfo.ChildrenCount, startNum, totalNum, sqlWhereString, scopeType, orderByString);
+                var nodeIdList = Node.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scopeType,
+                    string.Empty, string.Empty, guid);
+                //ie = DataProvider.NodeDao.GetStlDataSource(nodeIdList, startNum, totalNum, sqlWhereString, orderByString);
+                ie = Node.GetStlDataSet(nodeIdList, startNum, totalNum, sqlWhereString, orderByString, guid);
             }
 
             return ie;
@@ -456,7 +461,8 @@ namespace SiteServer.CMS.StlParser.Utility
                 if (nodeInfo == null) return null;
 
                 var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where, guid);
-                dataSet = DataProvider.NodeDao.GetStlDataSet(nodeInfo.NodeId, nodeInfo.ChildrenCount, startNum, totalNum, sqlWhereString, scopeType, orderByString);
+                var nodeIdList = Node.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scopeType, string.Empty, string.Empty, string.Empty);
+                dataSet = DataProvider.NodeDao.GetStlDataSet(nodeIdList, startNum, totalNum, sqlWhereString, orderByString);
             }
             return dataSet;
         }
@@ -483,7 +489,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return DataProvider.PhotoDao.GetStlDataSource(publishmentSystemInfo.PublishmentSystemId, contentId, startNum, totalNum);
         }
 
-        public static IEnumerable GetDataSourceByStlElement(PublishmentSystemInfo publishmentSystemInfo, int templateId, string elementName, string stlElement, string guid)
+        public static DataSet GetDataSourceByStlElement(PublishmentSystemInfo publishmentSystemInfo, int templateId, string elementName, string stlElement, string guid)
         {
             var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, false);
             XmlNode node = xmlDocument.DocumentElement;

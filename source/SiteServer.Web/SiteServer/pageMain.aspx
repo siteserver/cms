@@ -44,8 +44,8 @@
               <asp:Literal ID="LtlUserName" runat="server" />
             </a>
             <ul class="dropdown-menu">
-              <li><a href="platform/pageUserProfile.aspx" target="right"><i class="ion-person m-r-5"></i> 修改资料</a></li>
-              <li><a href="platform/pageUserPassword.aspx" target="right"><i class="ion-ios-refresh-outline m-r-5"></i> 更改密码</a></li>
+              <li><a href="pageUserProfile.aspx" target="right"><i class="ion-person m-r-5"></i> 修改资料</a></li>
+              <li><a href="pageUserPassword.aspx" target="right"><i class="ion-ios-refresh-outline m-r-5"></i> 更改密码</a></li>
               <li><a href="logout.aspx"><i class="ion-log-out m-r-5"></i> 退出系统</a></li>
             </ul>
           </li>

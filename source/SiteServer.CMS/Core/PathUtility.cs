@@ -469,6 +469,12 @@ namespace SiteServer.CMS.Core
             return content;
         }
 
+        public static string GetTemporaryFilesPath(string relatedPath)
+        {
+            relatedPath = PathUtils.RemoveParentPath(relatedPath);
+            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
+        }
+
         public static string GetSiteTemplatesPath(string relatedPath)
         {
             relatedPath = PathUtils.RemoveParentPath(relatedPath);

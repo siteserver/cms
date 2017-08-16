@@ -33,6 +33,8 @@ namespace SiteServer.BackgroundPages
 
         public PlaceHolder PhSql1;
         public TextBox TbSqlServer;
+        public DropDownList DdlIsTrustedConnection;
+	    public PlaceHolder PhSqlUserNamePassword;
         public TextBox TbSqlUserName;
         public TextBox TbSqlPassword;
         public HtmlInputHidden HihSqlHiddenPassword;
@@ -136,10 +138,19 @@ namespace SiteServer.BackgroundPages
                     Text = "MySql",
                     Value = "MySql"
                 });
+
+                EBooleanUtils.AddListItems(DdlIsTrustedConnection, "Windows 身份验证", "用户名密码验证");
+                ControlUtils.SelectListItemsIgnoreCase(DdlIsTrustedConnection, false.ToString());
+
                 EBooleanUtils.AddListItems(DdlIsProtectData, "加密", "不加密");
                 ControlUtils.SelectListItemsIgnoreCase(DdlIsProtectData, true.ToString());
             }
 		}
+
+        protected void DdlIsTrustedConnection_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhSqlUserNamePassword.Visible = !TranslateUtils.ToBool(DdlIsTrustedConnection.SelectedValue);
+        }
 
         protected void btnStep1_Click(object sender, EventArgs e)
         {
@@ -213,10 +224,15 @@ Disallow: /home/");
                 bool isConnectValid;
                 string errorMessage;
                 List<string> databaseNameList = new List<string>();
-                if (string.IsNullOrEmpty(TbSqlServer.Text) || string.IsNullOrEmpty(TbSqlUserName.Text))
+                if (string.IsNullOrEmpty(TbSqlServer.Text))
                 {
                     isConnectValid = false;
-                    errorMessage = "数据库主机及数据库用户必须填写。";
+                    errorMessage = "数据库主机必须填写。";
+                }
+                else if (PhSqlUserNamePassword.Visible && string.IsNullOrEmpty(TbSqlUserName.Text))
+                {
+                    isConnectValid = false;
+                    errorMessage = "数据库用户必须填写。";
                 }
                 else
                 {
@@ -302,10 +318,18 @@ Disallow: /home/");
 
         private string GetConnectionString(bool isDatabaseName)
         {
-            string connectionString = $"server={TbSqlServer.Text};uid={TbSqlUserName.Text};pwd={HihSqlHiddenPassword.Value}";
+            string connectionString = $"server={TbSqlServer.Text};";
+            if (TranslateUtils.ToBool(DdlIsTrustedConnection.SelectedValue))
+            {
+                connectionString += "Trusted_Connection=True;";
+            }
+            else
+            {
+                connectionString += $"uid={TbSqlUserName.Text};pwd={HihSqlHiddenPassword.Value};";
+            }
             if (isDatabaseName)
             {
-                connectionString += $";database={DdlSqlDatabaseName.SelectedValue}";
+                connectionString += $"database={DdlSqlDatabaseName.SelectedValue};";
             }
             return connectionString;
         }
