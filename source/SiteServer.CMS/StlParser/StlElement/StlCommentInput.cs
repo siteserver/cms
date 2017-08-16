@@ -25,6 +25,12 @@ namespace SiteServer.CMS.StlParser.StlElement
             var pageNum = 10;
             var isAnonymous = true;
 
+            // 实体标签的话不解析
+            if(contextInfo.IsCurlyBrace)
+            {
+                return string.Empty;
+            }
+
             foreach (var name in contextInfo.Attributes.Keys)
             {
                 var value = contextInfo.Attributes[name];

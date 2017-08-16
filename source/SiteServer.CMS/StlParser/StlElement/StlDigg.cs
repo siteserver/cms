@@ -70,7 +70,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, EDiggType diggType, string goodText, string badText, string theme, bool isNumber)
         {
-            if (isNumber)
+            // 如果是单独显示数值或实体标签 都只返回数值
+            if (isNumber || contextInfo.IsCurlyBrace)
             {
                 int count;
 

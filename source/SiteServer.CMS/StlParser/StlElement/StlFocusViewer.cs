@@ -90,6 +90,12 @@ namespace SiteServer.CMS.StlParser.StlElement
         //对“flash滚动焦点图”（stl:focusViewer）元素进行解析
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
+            // 如果是实体标签则返回空
+            if (contextInfo.IsCurlyBrace)
+            {
+                return string.Empty;
+            }
+
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var scopeType = EScopeType.Self;

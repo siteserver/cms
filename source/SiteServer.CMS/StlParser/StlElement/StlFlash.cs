@@ -13,38 +13,38 @@ namespace SiteServer.CMS.StlParser.StlElement
 {
     [Stl(Usage = "显示Flash", Description = "通过 stl:flash 标签在模板中获取并显示栏目或内容的Flash")]
     public class StlFlash
-	{
-		private StlFlash(){}
-		public const string ElementName = "stl:flash";
+    {
+        private StlFlash() { }
+        public const string ElementName = "stl:flash";
 
-		public const string AttributeChannelIndex = "channelIndex";
-		public const string AttributeChannelName = "channelName";
-		public const string AttributeParent = "parent";
-		public const string AttributeUpLevel = "upLevel";
+        public const string AttributeChannelIndex = "channelIndex";
+        public const string AttributeChannelName = "channelName";
+        public const string AttributeParent = "parent";
+        public const string AttributeUpLevel = "upLevel";
         public const string AttributeTopLevel = "topLevel";
         public const string AttributeType = "type";
-		public const string AttributeSrc = "src";
+        public const string AttributeSrc = "src";
         public const string AttributeAltSrc = "altSrc";
-		public const string AttributeWidth = "width";
-		public const string AttributeHeight = "height";
+        public const string AttributeWidth = "width";
+        public const string AttributeHeight = "height";
 
-	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-	        {AttributeChannelIndex, "栏目索引"},
-	        {AttributeChannelName, "栏目名称"},
-	        {AttributeParent, "显示父栏目"},
-	        {AttributeUpLevel, "上级栏目的级别"},
-	        {AttributeTopLevel, "从首页向下的栏目级别"},
-	        {AttributeType, "指定存储flash的字段"},
-	        {AttributeSrc, "显示的flash地址"},
-	        {AttributeAltSrc, "当指定的flash不存在时显示的flash地址"},
-	        {AttributeWidth, "宽度"},
-	        {AttributeHeight, "高度"}
-	    };
+            {AttributeChannelIndex, "栏目索引"},
+            {AttributeChannelName, "栏目名称"},
+            {AttributeParent, "显示父栏目"},
+            {AttributeUpLevel, "上级栏目的级别"},
+            {AttributeTopLevel, "从首页向下的栏目级别"},
+            {AttributeType, "指定存储flash的字段"},
+            {AttributeSrc, "显示的flash地址"},
+            {AttributeAltSrc, "当指定的flash不存在时显示的flash地址"},
+            {AttributeWidth, "宽度"},
+            {AttributeHeight, "高度"}
+        };
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-		    var isGetPicUrlFromAttribute = false;
+        {
+            var isGetPicUrlFromAttribute = false;
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var upLevel = 0;
@@ -55,9 +55,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             var width = "100%";
             var height = "180";
 
-		    foreach (var name in contextInfo.Attributes.Keys)
-		    {
-		        var value = contextInfo.Attributes[name];
+            foreach (var name in contextInfo.Attributes.Keys)
+            {
+                var value = contextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
                 {
@@ -122,7 +122,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             return ParseImpl(pageInfo, contextInfo, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, src, altSrc, width, height);
-		}
+        }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height)
         {
@@ -174,6 +174,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 picUrl = altSrc;
             }
 
+            // 如果是实体标签则返回空
+            if (contextInfo.IsCurlyBrace)
+            {
+                return picUrl;
+            }
+
             if (!string.IsNullOrEmpty(picUrl))
             {
                 var extension = PathUtils.GetExtension(picUrl);
@@ -221,5 +227,5 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             return parsedContent;
         }
-	}
+    }
 }
