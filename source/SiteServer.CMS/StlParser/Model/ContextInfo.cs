@@ -16,7 +16,6 @@ namespace SiteServer.CMS.StlParser.Model
             PublishmentSystemInfo = pageInfo.PublishmentSystemInfo;
             ChannelId = pageInfo.PageNodeId;
             ContentId = pageInfo.PageContentId;
-            Guid = pageInfo.Guid;
         }
 
         //用于clone
@@ -27,7 +26,6 @@ namespace SiteServer.CMS.StlParser.Model
             ChannelId = contextInfo.ChannelId;
             ContentId = contextInfo.ContentId;
             _contentInfo = contextInfo._contentInfo;
-            Guid = contextInfo.Guid;
 
             IsInnerElement = contextInfo.IsInnerElement;
             IsCurlyBrace = contextInfo.IsCurlyBrace;
@@ -67,8 +65,6 @@ namespace SiteServer.CMS.StlParser.Model
 
         public int ContentId { get; set; }
 
-        public string Guid { get; set; }
-
         public string StlElement { get; set; }
 
         public Dictionary<string, string> Attributes { get; set; }
@@ -87,7 +83,7 @@ namespace SiteServer.CMS.StlParser.Model
                 var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
                 //_contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, ContentId);
-                _contentInfo = Content.GetContentInfo(tableStyle, tableName, ContentId, Guid);
+                _contentInfo = Content.GetContentInfo(tableStyle, tableName, ContentId);
                 return _contentInfo;
             }
             set { _contentInfo = value; }

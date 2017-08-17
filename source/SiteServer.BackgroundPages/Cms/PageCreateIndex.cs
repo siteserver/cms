@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                CreateManager.CreateChannel(PublishmentSystemId, PublishmentSystemId, StringUtils.GetShortGuid()); // 创建任务
+                CreateManager.CreateChannel(PublishmentSystemId, PublishmentSystemId); // 创建任务
                 PageCreateStatus.Redirect(PublishmentSystemId); // 转到查询任务进度页面
             }
         }

@@ -136,7 +136,6 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    var guid = StringUtils.GetShortGuid();
                     foreach (var nodeId in _idsDictionary.Keys)
                     {
                         var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
@@ -181,7 +180,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 }
                             }
 
-                            CreateManager.CreateContentTrigger(PublishmentSystemId, nodeId, guid);
+                            CreateManager.CreateContentTrigger(PublishmentSystemId, nodeId);
                         }
                         else
                         {

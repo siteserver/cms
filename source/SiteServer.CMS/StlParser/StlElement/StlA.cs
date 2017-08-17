@@ -7,7 +7,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -185,10 +184,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 else if (contextInfo.ContextType == EContextType.Channel)//获取栏目Url
                 {
                     contextInfo.ChannelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
-                    contextInfo.ChannelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName, pageInfo.Guid);
+                    contextInfo.ChannelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
                     var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
 
-                    url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, channel, pageInfo.Guid);
+                    url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, channel);
                     if (contextInfo.InnerXml.Trim().Length == 0)
                     {
                         stlAnchor.InnerHtml = channel.NodeName;

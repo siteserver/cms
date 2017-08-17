@@ -70,7 +70,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 _listInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.SqlContent);
                 if (isLoadData)
                 {
-                    _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _pageInfo.Guid);
+                    _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString);
                 }
             }
             catch
@@ -112,7 +112,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 _contextInfo = contextInfo.Clone(stlPageSqlContentsElement, attributes, _node?.InnerXml, _node?.ChildNodes);
 
                 _listInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.SqlContent);
-                _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _pageInfo.Guid);
+                _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString);
             }
             catch
             {
@@ -122,7 +122,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public void LoadData()
         {
-            _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _pageInfo.Guid);
+            _dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString);
         }
 
         public int GetPageCount(out int contentNum)

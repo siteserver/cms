@@ -6,10 +6,8 @@ using BaiRong.Core.IO;
 using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Rss;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -136,7 +134,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
                 {
-                    orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
+                    orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTop))
                 {
@@ -179,7 +177,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var scopeType = !string.IsNullOrEmpty(scopeTypeString) ? EScopeTypeUtils.GetEnumType(scopeTypeString) : EScopeType.All;
 
-            var channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName, pageInfo.Guid);
+            var channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
 
             var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
             if (string.IsNullOrEmpty(channel.Title))
@@ -191,9 +189,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 channel.Description = nodeInfo.Content;
                 channel.Description = string.IsNullOrEmpty(channel.Description) ? nodeInfo.NodeName : StringUtils.MaxLengthText(channel.Description, 200);
             }
-            channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo, pageInfo.Guid)));
+            channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo)));
 
-            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null, pageInfo.Guid);
+            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
 
             if (dataSource != null)
             {

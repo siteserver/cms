@@ -7,9 +7,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static GovInteractReplyInfo GetReplyInfoByContentId(int publishmentSystemId, int contentId, string guid)
+        public static GovInteractReplyInfo GetReplyInfoByContentId(int publishmentSystemId, int contentId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(GovInteractReply),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(GovInteractReply),
                     nameof(GetReplyInfoByContentId), publishmentSystemId.ToString(), contentId.ToString());
             var retval = StlCacheUtils.GetCache<GovInteractReplyInfo>(cacheKey);
             if (retval != null) return retval;

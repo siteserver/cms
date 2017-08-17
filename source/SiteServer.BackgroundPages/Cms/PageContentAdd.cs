@@ -319,7 +319,7 @@ $('#TbTags').keyup(function (e) {
             DataBind();
         }
 
-        private int SaveContentInfo(bool isPreview, string guid, out string errorMessage)
+        private int SaveContentInfo(bool isPreview, out string errorMessage)
         {
             int savedContentId;
             errorMessage = string.Empty;
@@ -398,13 +398,13 @@ $('#TbTags').keyup(function (e) {
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, guid);
+                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id);
                 }
 
                 Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, "添加内容",
                     $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
 
-                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName, guid);
+                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName);
 
                 PageUtils.Redirect(PageContentAddAfter.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
                         ReturnUrl));
@@ -450,7 +450,7 @@ $('#TbTags').keyup(function (e) {
                         TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, PublishmentSystemId, contentId);
                     }
 
-                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName, guid);
+                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName);
 
                     //更新引用该内容的信息
                     //如果不是异步自动保存，那么需要将引用此内容的content修改
@@ -528,7 +528,7 @@ $('#TbTags').keyup(function (e) {
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentId, guid);
+                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentId);
                 }
 
                 Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentId, "修改内容",
@@ -545,9 +545,8 @@ $('#TbTags').keyup(function (e) {
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                var guid = StringUtils.GetShortGuid();
                 string errorMessage;
-                var savedContentId = SaveContentInfo(false, guid, out errorMessage);
+                var savedContentId = SaveContentInfo(false, out errorMessage);
                 if (savedContentId == 0)
                 {
                     FailMessage(errorMessage);

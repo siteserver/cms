@@ -119,7 +119,7 @@ namespace SiteServer.BackgroundPages.Core
                     var showPopWinString = ModalTemplateFilePathRule.GetOpenWindowString(nodeInfo.PublishmentSystemId, nodeInfo.NodeId);
                     editLink = $"<a href=\"javascript:;\" onclick=\"{showPopWinString}\">更改</a>";
                 }
-                var filePath = PageUtility.GetInputChannelUrl(publishmentSystemInfo, nodeInfo, StringUtils.GetShortGuid());
+                var filePath = PageUtility.GetInputChannelUrl(publishmentSystemInfo, nodeInfo);
 
                 rowHtml = $@"
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">

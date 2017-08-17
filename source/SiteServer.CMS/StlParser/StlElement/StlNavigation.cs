@@ -102,11 +102,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
                     //var siblingNodeId = DataProvider.NodeDao.GetNodeIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    var siblingNodeId = Node.GetNodeIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel, pageInfo.Guid);
+                    var siblingNodeId = Node.GetNodeIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingNodeId != 0)
                     {
                         var siblingNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, siblingNodeId);
-                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, siblingNodeInfo, pageInfo.Guid);
+                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, siblingNodeInfo);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
@@ -139,11 +139,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
                         var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
                         //var siblingContentId = BaiRongDataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
-                        var siblingContentId = Content.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent, pageInfo.Guid);
+                        var siblingContentId = Content.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
-                            var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId, pageInfo.Guid);
+                            var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId);
                             var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo);
                             if (url.Equals(PageUtils.UnclickedUrl))
                             {
@@ -199,7 +199,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
                     //var siblingNodeId = DataProvider.NodeDao.GetNodeIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    var siblingNodeId = Node.GetNodeIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel, pageInfo.Guid);
+                    var siblingNodeId = Node.GetNodeIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingNodeId != 0)
                     {
                         isSuccess = true;
@@ -215,7 +215,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
                         var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
                         //var siblingContentId = BaiRongDataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
-                        var siblingContentId = Content.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent, pageInfo.Guid);
+                        var siblingContentId = Content.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             isSuccess = true;

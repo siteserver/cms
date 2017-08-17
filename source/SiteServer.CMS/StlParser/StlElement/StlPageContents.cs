@@ -5,7 +5,6 @@ using System.Web.UI.WebControls;
 using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Stl;
 using SiteServer.CMS.Model.Enumerations;
@@ -78,9 +77,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var channelId = StlDataUtility.GetNodeIdByLevel(_pageInfo.PublishmentSystemId, _contextInfo.ChannelId, ListInfo.UpLevel, ListInfo.TopLevel);
 
-            channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(_pageInfo.PublishmentSystemId, channelId, ListInfo.ChannelIndex, ListInfo.ChannelName, _pageInfo.Guid);
+            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(_pageInfo.PublishmentSystemId, channelId, ListInfo.ChannelIndex, ListInfo.ChannelName);
 
-            SqlString = StlDataUtility.GetStlPageContentsSqlString(_pageInfo.PublishmentSystemInfo, channelId, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot, _pageInfo.Guid);
+            SqlString = StlDataUtility.GetStlPageContentsSqlString(_pageInfo.PublishmentSystemInfo, channelId, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
         }
 
         //API StlActionsSearchController调用
@@ -127,7 +126,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 ListInfo.PageNum = pageNum;
             }
 
-            SqlString = StlDataUtility.GetPageContentsSqlStringBySearch(tableName, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot, _pageInfo.Guid);
+            SqlString = StlDataUtility.GetPageContentsSqlStringBySearch(tableName, ListInfo.GroupContent, ListInfo.GroupContentNot, ListInfo.Tags, ListInfo.IsImageExists, ListInfo.IsImage, ListInfo.IsVideoExists, ListInfo.IsVideo, ListInfo.IsFileExists, ListInfo.IsFile, ListInfo.IsNoDup, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.OrderByString, ListInfo.IsTopExists, ListInfo.IsTop, ListInfo.IsRecommendExists, ListInfo.IsRecommend, ListInfo.IsHotExists, ListInfo.IsHot, ListInfo.IsColorExists, ListInfo.IsColor, ListInfo.Where, ListInfo.Scope, ListInfo.GroupChannel, ListInfo.GroupChannelNot);
         }
 
         public int GetPageCount(out int totalNum)
@@ -137,7 +136,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             try
             {
                 //totalNum = BaiRongDataProvider.DatabaseDao.GetPageTotalCount(SqlString);
-                totalNum = Database.GetPageTotalCount(SqlString, _pageInfo.Guid);
+                totalNum = Database.GetPageTotalCount(SqlString);
                 if (ListInfo.PageNum != 0 && ListInfo.PageNum < totalNum)//需要翻页
                 {
                     pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(ListInfo.PageNum)));//需要生成的总页数
@@ -180,7 +179,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (!string.IsNullOrEmpty(SqlString))
                     {
                         //var pageSqlString = BaiRongDataProvider.DatabaseDao.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-                        var pageSqlString = Database.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex, _pageInfo.Guid);
+                        var pageSqlString = Database.GetStlPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
 
                         var datasource = BaiRongDataProvider.DatabaseDao.GetDataSource(pageSqlString);
 

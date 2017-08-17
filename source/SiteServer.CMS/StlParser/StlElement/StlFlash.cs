@@ -151,7 +151,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var tableName = NodeManager.GetTableName(contextInfo.PublishmentSystemInfo, nodeInfo);
 
                         //picUrl = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, type);
-                        picUrl = Content.GetValue(tableName, contentId, type, pageInfo.Guid);
+                        picUrl = Content.GetValue(tableName, contentId, type);
                     }
                     else
                     {
@@ -162,7 +162,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-                    channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
+                    channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
                     var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
                     picUrl = channel.ImageUrl;

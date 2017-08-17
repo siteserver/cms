@@ -536,7 +536,6 @@ CREATE TABLE siteserver_CreateTask(
     ChannelId              int            NULL,
     ContentId              int            NULL,
     TemplateId             int            NULL,
-    Guid                   varchar(50)     NULL,
     CONSTRAINT PK_siteserver_CreateTask PRIMARY KEY NONCLUSTERED (Id)
 )
 go
@@ -547,6 +546,9 @@ CREATE TABLE siteserver_CreateTaskLog(
     Id                     int              IDENTITY(1,1),
     CreateType             varchar(50)      NULL,
     PublishmentSystemId    int              NULL,
+    ChannelId              int              NULL,
+    ContentId              int              NULL,
+    TemplateId             int              NULL,
     TaskName               nvarchar(50)     NULL,
     TimeSpan               nvarchar(50)     NULL,
     IsSuccess              varchar(18)      NULL,

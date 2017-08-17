@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Core
             {
                 htmlBuilder.Append(
                     _nodeInfo.NodeId > 0
-                        ? $@"<a href=""{PageActions.GetRedirectUrl(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId)}"" target=""_blank"" title=""浏览页面""><img align=""absmiddle"" border=""0"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" /></a>"
+                        ? $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId)}"" target=""_blank"" title=""浏览页面""><img align=""absmiddle"" border=""0"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" /></a>"
                         : $@"<img align=""absmiddle"" src=""{_iconFolderUrl}"" style=""max-height: 22px; max-width: 22px"" />");
             }
 

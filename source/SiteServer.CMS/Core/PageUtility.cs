@@ -310,7 +310,7 @@ namespace SiteServer.CMS.Core
         {
             var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+            var contentInfo = Content.GetContentInfo(tableStyle, tableName, contentId);
             return GetContentUrlById(publishmentSystemInfo, contentInfo, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl), isFromBackground);
         }
 
@@ -336,13 +336,13 @@ namespace SiteServer.CMS.Core
                 if (sourceId > 0 && (NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, sourceId) || NodeManager.IsExists(sourceId)))
                 {
                     var targetNodeId = sourceId;
-                    var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
+                    var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId);
                     var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
                     var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
 
                     var tableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeInfo);
                     var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, referenceId);
+                    var contentInfo = Content.GetContentInfo(tableStyle, tableName, referenceId);
                     if (contentInfo == null || contentInfo.NodeId <= 0)
                     {
                         return PageUtils.UnclickedUrl;
@@ -357,13 +357,13 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-                    nodeId = BaiRongDataProvider.ContentDao.GetNodeId(tableName, referenceId);
-                    linkUrl = BaiRongDataProvider.ContentDao.GetValue(tableName, referenceId, BackgroundContentAttribute.LinkUrl);
+                    nodeId = Content.GetNodeId(tableName, referenceId);
+                    linkUrl = Content.GetValue(tableName, referenceId, BackgroundContentAttribute.LinkUrl);
                     if (NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, nodeId))
                     {
                         return GetContentUrlById(publishmentSystemInfo, nodeId, referenceId, 0, 0, linkUrl, isFromBackground);
                     }
-                    var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(nodeId);
+                    var targetPublishmentSystemId = Node.GetPublishmentSystemId(nodeId);
                     var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
                     return GetContentUrlById(targetPublishmentSystemInfo, nodeId, referenceId, 0, 0, linkUrl, isFromBackground);
                 }
@@ -381,20 +381,20 @@ namespace SiteServer.CMS.Core
         {
             var tableStyleCurrent = NodeManager.GetTableStyle(publishmentSystemInfo, nodeId);
             var tableNameCurrent = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-            var contentInfoCurrent = DataProvider.ContentDao.GetContentInfo(tableStyleCurrent, tableNameCurrent, contentId);
+            var contentInfoCurrent = Content.GetContentInfo(tableStyleCurrent, tableNameCurrent, contentId);
 
             if (referenceId > 0 && contentInfoCurrent.GetExtendedAttribute(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
                 if (sourceId > 0 && (NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, sourceId) || NodeManager.IsExists(sourceId)))
                 {
                     var targetNodeId = sourceId;
-                    var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
+                    var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId);
                     var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
                     var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
 
                     var tableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeInfo);
                     var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, referenceId);
+                    var contentInfo = Content.GetContentInfo(tableStyle, tableName, referenceId);
                     if (contentInfo == null || contentInfo.NodeId <= 0)
                     {
                         return PageUtils.UnclickedUrl;
@@ -409,8 +409,8 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-                    nodeId = BaiRongDataProvider.ContentDao.GetNodeId(tableName, referenceId);
-                    linkUrl = BaiRongDataProvider.ContentDao.GetValue(tableName, referenceId, BackgroundContentAttribute.LinkUrl);
+                    nodeId = Content.GetNodeId(tableName, referenceId);
+                    linkUrl = Content.GetValue(tableName, referenceId, BackgroundContentAttribute.LinkUrl);
                     return GetContentUrlById(publishmentSystemInfo, nodeId, referenceId, 0, 0, linkUrl, isFromBackground);
                 }
             }
@@ -453,13 +453,13 @@ namespace SiteServer.CMS.Core
             return ParseNavigationUrl(publishmentSystemInfo, linkUrl, isFromBackground);
         }
 
-        public static string GetChannelUrl(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string guid)
+        public static string GetChannelUrl(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
         {
-            return GetChannelUrl(publishmentSystemInfo, nodeInfo, false, guid);
+            return GetChannelUrl(publishmentSystemInfo, nodeInfo, false);
         }
 
         //得到栏目经过计算后的连接地址
-        public static string GetChannelUrl(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, bool isFromBackground, string guid)
+        public static string GetChannelUrl(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, bool isFromBackground)
         {
             var url = string.Empty;
             if (nodeInfo != null)
@@ -490,7 +490,7 @@ namespace SiteServer.CMS.Core
                             {
                                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
                                 //var contentId = StlCacheManager.FirstContentId.GetValue(publishmentSystemInfo, nodeInfo);
-                                var contentId = Content.GetContentId(tableName, nodeInfo.NodeId, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)), guid);
+                                var contentId = Content.GetContentId(tableName, nodeInfo.NodeId, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)));
                                 url = GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, isFromBackground);
                             }
                             else
@@ -507,7 +507,7 @@ namespace SiteServer.CMS.Core
                             else if (nodeInfo.ContentNum == 1)
                             {
                                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                                var contentId = Content.GetContentId(tableName, nodeInfo.NodeId, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)), guid);
+                                var contentId = Content.GetContentId(tableName, nodeInfo.NodeId, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)));
                                 //var contentId = StlCacheManager.FirstContentId.GetValue(publishmentSystemInfo, nodeInfo);
                                 url = GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, isFromBackground);
                             }
@@ -521,7 +521,7 @@ namespace SiteServer.CMS.Core
                             if (nodeInfo.ContentNum >= 1)
                             {
                                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                                var contentId = Content.GetContentId(tableName, nodeInfo.NodeId, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)), guid);
+                                var contentId = Content.GetContentId(tableName, nodeInfo.NodeId, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)));
                                 //var contentId = StlCacheManager.FirstContentId.GetValue(publishmentSystemInfo, nodeInfo);
                                 url = GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, isFromBackground);
                             }
@@ -535,7 +535,7 @@ namespace SiteServer.CMS.Core
                             if (nodeInfo.ContentNum >= 1)
                             {
                                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                                var contentId = Content.GetContentId(tableName, nodeInfo.NodeId, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)), guid);
+                                var contentId = Content.GetContentId(tableName, nodeInfo.NodeId, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(nodeInfo.Additional.DefaultTaxisType)));
                                 //var contentId = StlCacheManager.FirstContentId.GetValue(publishmentSystemInfo, nodeInfo);
                                 url = GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, isFromBackground);
                             }
@@ -550,27 +550,23 @@ namespace SiteServer.CMS.Core
                         }
                         else if (nodeInfo.LinkType == ELinkType.LinkToLastAddChannel)
                         {
-                            //var lastAddNodeInfo = DataProvider.NodeDao.GetNodeInfoByLastAddDate(nodeInfo.NodeId);
-                            var lastAddNodeInfo = Node.GetNodeInfoByLastAddDate(nodeInfo.NodeId, guid);
-                            url = lastAddNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, lastAddNodeInfo, isFromBackground, guid) : GetChannelUrlNotComputed(publishmentSystemInfo, nodeInfo.NodeId, nodeInfo.NodeType, isFromBackground);
+                            var lastAddNodeInfo = Node.GetNodeInfoByLastAddDate(nodeInfo.NodeId);
+                            url = lastAddNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, lastAddNodeInfo, isFromBackground) : GetChannelUrlNotComputed(publishmentSystemInfo, nodeInfo.NodeId, nodeInfo.NodeType, isFromBackground);
                         }
                         else if (nodeInfo.LinkType == ELinkType.LinkToFirstChannel)
                         {
-                            //var firstNodeInfo = DataProvider.NodeDao.GetNodeInfoByTaxis(nodeInfo.NodeId);
-                            var firstNodeInfo = Node.GetNodeInfoByTaxis(nodeInfo.NodeId, guid);
-                            url = firstNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, firstNodeInfo, isFromBackground, guid) : GetChannelUrlNotComputed(publishmentSystemInfo, nodeInfo.NodeId, nodeInfo.NodeType, isFromBackground);
+                            var firstNodeInfo = Node.GetNodeInfoByTaxis(nodeInfo.NodeId);
+                            url = firstNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, firstNodeInfo, isFromBackground) : GetChannelUrlNotComputed(publishmentSystemInfo, nodeInfo.NodeId, nodeInfo.NodeType, isFromBackground);
                         }
                         else if (nodeInfo.LinkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
                         {
-                            //var lastAddNodeInfo = DataProvider.NodeDao.GetNodeInfoByLastAddDate(nodeInfo.NodeId);
-                            var lastAddNodeInfo = Node.GetNodeInfoByLastAddDate(nodeInfo.NodeId, guid);
-                            url = lastAddNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, lastAddNodeInfo, isFromBackground, guid) : PageUtils.UnclickedUrl;
+                            var lastAddNodeInfo = Node.GetNodeInfoByLastAddDate(nodeInfo.NodeId);
+                            url = lastAddNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, lastAddNodeInfo, isFromBackground) : PageUtils.UnclickedUrl;
                         }
                         else if (nodeInfo.LinkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
                         {
-                            //var firstNodeInfo = DataProvider.NodeDao.GetNodeInfoByTaxis(nodeInfo.NodeId);
-                            var firstNodeInfo = Node.GetNodeInfoByTaxis(nodeInfo.NodeId, guid);
-                            url = firstNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, firstNodeInfo, isFromBackground, guid) : PageUtils.UnclickedUrl;
+                            var firstNodeInfo = Node.GetNodeInfoByTaxis(nodeInfo.NodeId);
+                            url = firstNodeInfo != null ? GetChannelUrl(publishmentSystemInfo, firstNodeInfo, isFromBackground) : PageUtils.UnclickedUrl;
                         }
                     }
                 }
@@ -578,9 +574,9 @@ namespace SiteServer.CMS.Core
             return url;
         }
 
-        public static string GetInputChannelUrl(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string guid)
+        public static string GetInputChannelUrl(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
         {
-            var channelUrl = GetChannelUrl(publishmentSystemInfo, nodeInfo, guid);
+            var channelUrl = GetChannelUrl(publishmentSystemInfo, nodeInfo);
             if (string.IsNullOrEmpty(channelUrl)) return channelUrl;
 
             channelUrl = StringUtils.ReplaceStartsWith(channelUrl, publishmentSystemInfo.PublishmentSystemUrl, string.Empty);

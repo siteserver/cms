@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
@@ -147,35 +146,16 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public ContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId)
-        {
-            ContentInfo info = null;
-            if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
-            {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
-                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
+        //public ContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId)
+        //{
+        //    if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
-                if (!string.IsNullOrEmpty(tableName))
-                {
-                    string sqlWhere = $"WHERE ID = {contentId}";
-                    var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+        //    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+        //    var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
+        //    var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
 
-                    using (var rdr = ExecuteReader(sqlSelect))
-                    {
-                        if (rdr.Read())
-                        {
-                            info = ContentUtility.GetContentInfo(tableStyle);
-                            BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
-                        }
-                        rdr.Close();
-                    }
-                }
-            }
-
-            info?.AfterExecuteReader();
-            return info;
-        }
+        //    return GetContentInfo(tableStyle, tableName, contentId);
+        //}
 
         public ContentInfo GetContentInfo(ETableStyle tableStyle, string tableName, int contentId)
         {
@@ -203,25 +183,25 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public ContentInfo GetContentInfo(ETableStyle tableStyle, string sqlString)
-        {
-            ContentInfo info = null;
-            if (!string.IsNullOrEmpty(sqlString))
-            {
-                using (var rdr = ExecuteReader(sqlString))
-                {
-                    if (rdr.Read())
-                    {
-                        info = ContentUtility.GetContentInfo(tableStyle);
-                        BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
-                    }
-                    rdr.Close();
-                }
-            }
+        //public ContentInfo GetContentInfo(ETableStyle tableStyle, string sqlString)
+        //{
+        //    ContentInfo info = null;
+        //    if (!string.IsNullOrEmpty(sqlString))
+        //    {
+        //        using (var rdr = ExecuteReader(sqlString))
+        //        {
+        //            if (rdr.Read())
+        //            {
+        //                info = ContentUtility.GetContentInfo(tableStyle);
+        //                BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
+        //            }
+        //            rdr.Close();
+        //        }
+        //    }
 
-            info?.AfterExecuteReader();
-            return info;
-        }
+        //    info?.AfterExecuteReader();
+        //    return info;
+        //}
 
         public int GetCountOfContentAdd(string tableName, int publishmentSystemId, int nodeId, EScopeType scope, DateTime begin, DateTime end, string userName)
         {

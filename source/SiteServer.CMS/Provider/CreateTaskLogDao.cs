@@ -13,7 +13,10 @@ namespace SiteServer.CMS.Provider
     public class CreateTaskLogDao : DataProviderBase
     {
         private const string ParmCreateType = "@CreateType";
-        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
+        private const string ParmPublishmentSystemId = "@PublishmentSystemId";
+        private const string ParmChannelId = "@ChannelId";
+        private const string ParmContentId = "@ContentId";
+        private const string ParmTemplateId = "@TemplateId";
         private const string ParmTaskName = "@TaskName";
         private const string ParmTimeSpan = "@TimeSpan";
         private const string ParmIsSuccess = "@IsSuccess";
@@ -24,12 +27,15 @@ namespace SiteServer.CMS.Provider
         {
             DeleteExcess90Days();
 
-            var sqlString = "INSERT INTO siteserver_CreateTaskLog(CreateType, PublishmentSystemID, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate) VALUES (@CreateType, @PublishmentSystemID, @TaskName, @TimeSpan, @IsSuccess, @ErrorMessage, @AddDate)";
+            const string sqlString = "INSERT INTO siteserver_CreateTaskLog(CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate) VALUES (@CreateType, @PublishmentSystemId, @ChannelId, @ContentId, @TemplateId, @TaskName, @TimeSpan, @IsSuccess, @ErrorMessage, @AddDate)";
 
             var parms = new IDataParameter[]
             {
                 GetParameter(ParmCreateType, DataType.NVarChar, 50, ECreateTypeUtils.GetValue(log.CreateType)),
-                GetParameter(ParmPublishmentSystemId, DataType.Integer, log.PublishmentSystemID),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, log.PublishmentSystemId),
+                GetParameter(ParmChannelId, DataType.Integer, log.ChannelId),
+                GetParameter(ParmContentId, DataType.Integer, log.ContentId),
+                GetParameter(ParmTemplateId, DataType.Integer, log.TemplateId),
                 GetParameter(ParmTaskName, DataType.NVarChar, 50, log.TaskName),
                 GetParameter(ParmTimeSpan, DataType.NVarChar, 50, log.TimeSpan),
                 GetParameter(ParmIsSuccess, DataType.VarChar, 18, log.IsSuccess.ToString()),
@@ -42,13 +48,12 @@ namespace SiteServer.CMS.Provider
 
         public void Delete(List<int> idList)
         {
-            if (idList != null && idList.Count > 0)
-            {
-                string sqlString =
-                    $"DELETE FROM siteserver_CreateTaskLog WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+            if (idList == null || idList.Count <= 0) return;
 
-                ExecuteNonQuery(sqlString);
-            }
+            string sqlString =
+                $"DELETE FROM siteserver_CreateTaskLog WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+
+            ExecuteNonQuery(sqlString);
         }
 
         public void DeleteExcess90Days()
@@ -69,9 +74,7 @@ namespace SiteServer.CMS.Provider
 
             if (publishmentSystemId > 0)
             {
-                //string sqlString =
-                //    $"SELECT TOP {totalNum} ID, CreateType, PublishmentSystemID, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate FROM siteserver_CreateTaskLog WHERE PublishmentSystemID = @PublishmentSystemID";
-                string sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTaskLog", "ID, CreateType, PublishmentSystemID, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", "WHERE PublishmentSystemID = @PublishmentSystemID", totalNum);
+                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTaskLog", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", "WHERE PublishmentSystemId = @PublishmentSystemId", totalNum);
 
                 var parms = new IDataParameter[]
                 {
@@ -83,7 +86,7 @@ namespace SiteServer.CMS.Provider
                     while (rdr.Read())
                     {
                         var i = 0;
-                        var info = new CreateTaskLogInfo(GetInt(rdr, i++), ECreateTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i));
+                        var info = new CreateTaskLogInfo(GetInt(rdr, i++), ECreateTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i));
                         list.Add(info);
                     }
                     rdr.Close();
@@ -91,16 +94,14 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                //string sqlString =
-                //    $"SELECT TOP {totalNum} ID, CreateType, PublishmentSystemID, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate FROM siteserver_CreateTaskLog";
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTaskLog", "ID, CreateType, PublishmentSystemID, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", string.Empty, totalNum);
+                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTaskLog", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", string.Empty, totalNum);
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
                     while (rdr.Read())
                     {
                         var i = 0;
-                        var info = new CreateTaskLogInfo(GetInt(rdr, i++), ECreateTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i));
+                        var info = new CreateTaskLogInfo(GetInt(rdr, i++), ECreateTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i));
                         list.Add(info);
                     }
                     rdr.Close();
@@ -112,7 +113,7 @@ namespace SiteServer.CMS.Provider
 
         public string GetSelectCommend()
         {
-            return "SELECT ID, CreateType, PublishmentSystemID, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate FROM siteserver_CreateTaskLog";
+            return "SELECT Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate FROM siteserver_CreateTaskLog";
         }
 
         public string GetSelectCommend(ETriState successState, string keyword, string dateFrom, string dateTo)
@@ -145,7 +146,7 @@ namespace SiteServer.CMS.Provider
                 whereString.AppendFormat("(AddDate <= '{0}')", dateTo);
             }
 
-            return "SELECT ID, CreateType, PublishmentSystemID, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate FROM siteserver_CreateTaskLog " + whereString;
+            return "SELECT Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate FROM siteserver_CreateTaskLog " + whereString;
         }
     }
 }

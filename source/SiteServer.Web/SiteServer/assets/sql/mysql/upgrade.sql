@@ -8,6 +8,8 @@ CREATE TABLE siteserver_PluginConfig(
 )ENGINE=INNODB
 GO
 
-ALTER TABLE siteserver_CreateTask ADD
-    Guid           VARCHAR(50)
+ALTER TABLE siteserver_CreateTaskLog ADD
+    ChannelId              INT,
+    ContentId              INT,
+    TemplateId             INT
 GO

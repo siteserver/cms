@@ -14,7 +14,6 @@ namespace siteserver
             var taskCreateInfo = new TaskCreateInfo(taskInfo.ServiceParameters);
             if (string.IsNullOrEmpty(taskCreateInfo.CreateTypes)) return true;
 
-            var guid = StringUtils.GetShortGuid();
             var createTypeArrayList = TranslateUtils.StringCollectionToStringList(taskCreateInfo.CreateTypes);
             var createChannel = createTypeArrayList.Contains(ECreateTypeUtils.GetValue(ECreateType.Channel));
             var createContent = createTypeArrayList.Contains(ECreateTypeUtils.GetValue(ECreateType.Content));
@@ -23,7 +22,7 @@ namespace siteserver
             {
                 var nodeIdList = taskCreateInfo.IsCreateAll ? DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(taskInfo.PublishmentSystemID) : TranslateUtils.StringCollectionToIntList(taskCreateInfo.ChannelIDCollection);
 
-                Create(createChannel, createContent, createFile, taskInfo, taskInfo.PublishmentSystemID, nodeIdList, guid);
+                Create(createChannel, createContent, createFile, taskInfo, taskInfo.PublishmentSystemID, nodeIdList);
             }
             else
             {
@@ -31,14 +30,14 @@ namespace siteserver
                 foreach (var publishmentSystemId in publishmentSystemIdList)
                 {
                     var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemId);
-                    Create(createChannel, createContent, createFile, taskInfo, publishmentSystemId, nodeIdList, guid);
+                    Create(createChannel, createContent, createFile, taskInfo, publishmentSystemId, nodeIdList);
                 }
             }
 
             return true;
         }
 
-        private static void Create(bool createChannel, bool createContent, bool createFile, TaskInfo taskInfo, int publishmentSystemId, List<int> nodeIdList, string guid)
+        private static void Create(bool createChannel, bool createContent, bool createFile, TaskInfo taskInfo, int publishmentSystemId, List<int> nodeIdList)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             if (publishmentSystemInfo == null) return;
@@ -49,14 +48,14 @@ namespace siteserver
                 {
                     foreach (var nodeId in nodeIdList)
                     {
-                        CreateManager.CreateChannel(publishmentSystemId, nodeId, guid);
+                        CreateManager.CreateChannel(publishmentSystemId, nodeId);
                     }
                 }
                 if (createContent)
                 {
                     foreach (var nodeId in nodeIdList)
                     {
-                        CreateManager.CreateAllContent(publishmentSystemId, nodeId, guid);
+                        CreateManager.CreateAllContent(publishmentSystemId, nodeId);
                     }
                 }
             }
@@ -66,7 +65,7 @@ namespace siteserver
                 var templateIdList = DataProvider.TemplateDao.GetTemplateIdListByType(publishmentSystemId, ETemplateType.FileTemplate);
                 foreach (var templateId in templateIdList)
                 {
-                    CreateManager.CreateFile(publishmentSystemId, templateId, guid);
+                    CreateManager.CreateFile(publishmentSystemId, templateId);
                 }
             }
 

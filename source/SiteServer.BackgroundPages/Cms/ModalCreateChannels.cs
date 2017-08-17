@@ -33,26 +33,24 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var guid = StringUtils.GetShortGuid();
-
             var isIncludeChildren = TranslateUtils.ToBool(IsIncludeChildren.SelectedValue);
             var isCreateContents = TranslateUtils.ToBool(IsCreateContents.SelectedValue);
 
             foreach (var channelId in TranslateUtils.StringCollectionToIntList(_channelIdCollection))
             {
-                CreateManager.CreateChannel(PublishmentSystemId, channelId, guid);
+                CreateManager.CreateChannel(PublishmentSystemId, channelId);
                 if (isCreateContents)
                 {
-                    CreateManager.CreateAllContent(PublishmentSystemId, channelId, guid);
+                    CreateManager.CreateAllContent(PublishmentSystemId, channelId);
                 }
                 if (isIncludeChildren)
                 {
                     foreach (var childChannelId in DataProvider.NodeDao.GetNodeIdListForDescendant(channelId))
                     {
-                        CreateManager.CreateChannel(PublishmentSystemId, childChannelId, guid);
+                        CreateManager.CreateChannel(PublishmentSystemId, childChannelId);
                         if (isCreateContents)
                         {
-                            CreateManager.CreateAllContent(PublishmentSystemId, channelId, guid);
+                            CreateManager.CreateAllContent(PublishmentSystemId, channelId);
                         }
                     }
                 }

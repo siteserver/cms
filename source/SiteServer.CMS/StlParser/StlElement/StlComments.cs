@@ -93,7 +93,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 rptContents.ItemTemplate = new RepeaterTemplate(listInfo.ItemTemplate, null, null, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
 
-                rptContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ItemContainer, listInfo.StartNum, listInfo.TotalNum, listInfo.IsRecommend, listInfo.OrderByString, listInfo.Where, pageInfo.Guid);
+                rptContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ItemContainer, listInfo.StartNum, listInfo.TotalNum, listInfo.IsRecommend, listInfo.OrderByString, listInfo.Where);
 
                 rptContents.DataBind();
 
@@ -126,7 +126,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, null, null, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Comment, contextInfo);
                 }
 
-                pdlContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ItemContainer, listInfo.StartNum, listInfo.TotalNum, listInfo.IsRecommend, listInfo.OrderByString, listInfo.Where, pageInfo.Guid);
+                pdlContents.DataSource = StlDataUtility.GetCommentsDataSource(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ItemContainer, listInfo.StartNum, listInfo.TotalNum, listInfo.IsRecommend, listInfo.OrderByString, listInfo.Where);
                 pdlContents.DataBind();
 
                 if (pdlContents.Items.Count > 0)

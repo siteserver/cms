@@ -113,7 +113,6 @@ namespace BaiRong.Core.Provider
         public List<TagInfo> GetTagInfoList(int publishmentSystemId, int contentId, bool isOrderByCount, int totalNum)
         {
             var list = new List<TagInfo>();
-            string sqlString;
 
             var whereString = GetWhereString(null, publishmentSystemId, contentId);
             var orderString = string.Empty;
@@ -122,19 +121,7 @@ namespace BaiRong.Core.Provider
                 orderString = "ORDER BY UseNum DESC";
             }
 
-            //            if (totalNum > 0)
-            //            {
-            //                sqlString = $@"
-            //SELECT TOP {totalNum} TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum FROM bairong_Tags {whereString} {orderString}
-            //            ";
-            //            }
-            //            else
-            //            {
-            //                sqlString = $@"
-            //SELECT TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum FROM bairong_Tags {whereString} {orderString}
-            //            ";
-            //            }
-            sqlString = SqlUtils.GetTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString + " " + orderString, totalNum);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString + " " + orderString, totalNum);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -151,15 +138,6 @@ namespace BaiRong.Core.Provider
 
         public List<string> GetTagListByStartString(int publishmentSystemId, string startString, int totalNum)
         {
-            //var totalString = string.Empty;
-            //if (totalNum > 0)
-            //{
-            //    totalString = " TOP " + totalNum + " ";
-            //}
-
-            //string sqlString =
-            //    $"SELECT DISTINCT {totalString} Tag, UseNum FROM bairong_Tags WHERE PublishmentSystemID = {publishmentSystemId} AND CHARINDEX('{PageUtils.FilterSql(startString)}',Tag) > 0  ORDER BY UseNum DESC";
-
             var sqlString = SqlUtils.GetDistinctTopSqlString("bairong_Tags", "Tag, UseNum", $"WHERE PublishmentSystemID = {publishmentSystemId} AND {SqlUtils.GetInStr("Tag", PageUtils.FilterSql(startString))} ORDER BY UseNum DESC", totalNum);
             return BaiRongDataProvider.DatabaseDao.GetStringList(sqlString);
         }

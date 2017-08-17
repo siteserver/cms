@@ -66,7 +66,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             ListInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.Comment);
 
-            _dataSet = StlDataUtility.GetPageCommentsDataSet(_pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, null, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.IsRecommend, ListInfo.OrderByString, ListInfo.Where, _pageInfo.Guid);
+            _dataSet = StlDataUtility.GetPageCommentsDataSet(_pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, null, ListInfo.StartNum, ListInfo.TotalNum, ListInfo.IsRecommend, ListInfo.OrderByString, ListInfo.Where);
         }
 
 

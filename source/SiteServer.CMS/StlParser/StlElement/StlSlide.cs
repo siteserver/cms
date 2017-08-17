@@ -24,10 +24,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             //var contentInfo = contextInfo.ContentInfo ??
             //                  DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId);
             var contentInfo = contextInfo.ContentInfo ??
-                              Content.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId, pageInfo.Guid);
+                              Content.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId);
 
             //var photoInfoList = DataProvider.PhotoDao.GetPhotoInfoList(pageInfo.PublishmentSystemId, contextInfo.ContentId);
-            var photoInfoList = Photo.GetPhotoInfoList(pageInfo.PublishmentSystemId, contextInfo.ContentId, pageInfo.Guid);
+            var photoInfoList = Photo.GetPhotoInfoList(pageInfo.PublishmentSystemId, contextInfo.ContentId);
 
             var builder = new StringBuilder();
 
@@ -66,7 +66,7 @@ var slide_data = {
 ");
 
             //var siblingContentId = BaiRongDataProvider.ContentDao.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, true);
-            var siblingContentId = Content.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, true, pageInfo.Guid);
+            var siblingContentId = Content.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, true);
 
             if (siblingContentId > 0)
             {
@@ -74,11 +74,11 @@ var slide_data = {
                 var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
                 //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
-                var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId, pageInfo.Guid);
+                var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId);
                 var title = siblingContentInfo.Title;
                 var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo);
                 //var photoInfo = DataProvider.PhotoDao.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
-                var photoInfo = Photo.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId, pageInfo.Guid);
+                var photoInfo = Photo.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
                 var previewUrl = photoInfo != null ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl) : SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FileS);
                 builder.Append($@"
     ""next_album"":{{""title"":""{StringUtils.ToJsString(title)}"",""url"":""{StringUtils.ToJsString(url)}"",""previewUrl"":""{StringUtils.ToJsString(previewUrl)}""}},
@@ -92,7 +92,7 @@ var slide_data = {
             }
 
             //siblingContentId = BaiRongDataProvider.ContentDao.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, false);
-            siblingContentId = Content.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, false, pageInfo.Guid);
+            siblingContentId = Content.GetContentId(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentInfo.NodeId, contentInfo.Taxis, false);
 
             if (siblingContentId > 0)
             {
@@ -100,12 +100,12 @@ var slide_data = {
                 var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
                 //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
-                var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId, pageInfo.Guid);
+                var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId);
                 var title = siblingContentInfo.Title;
                 var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo);
 
                 //var photoInfo = DataProvider.PhotoDao.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
-                var photoInfo = Photo.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId, pageInfo.Guid);
+                var photoInfo = Photo.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
                 var previewUrl = photoInfo != null ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl) : SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FileS);
                 builder.Append($@"
     ""prev_album"":{{""title"":""{StringUtils.ToJsString(title)}"",""url"":""{StringUtils.ToJsString(url)}"",""previewUrl"":""{StringUtils

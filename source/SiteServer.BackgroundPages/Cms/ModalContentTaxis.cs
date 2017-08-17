@@ -87,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            CreateManager.CreateContentTrigger(PublishmentSystemId, _nodeId, StringUtils.GetShortGuid());
+            CreateManager.CreateContentTrigger(PublishmentSystemId, _nodeId);
 
             Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "对内容排序", string.Empty);
 

@@ -263,7 +263,13 @@ namespace SiteServer.CMS.Plugin
 
         public IContentInfo GetContentInfo(int siteId, int channelId, int contentId)
         {
-            return DataProvider.ContentDao.GetContentInfo(siteId, channelId, contentId);
+            if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
+
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
+            var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
+
+            return DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
         }
     }
 }

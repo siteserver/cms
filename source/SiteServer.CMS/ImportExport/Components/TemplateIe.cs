@@ -79,7 +79,6 @@ namespace SiteServer.CMS.ImportExport.Components
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
 		    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(_publishmentSystemId);
-		    var guid = StringUtils.GetShortGuid();
 			foreach (AtomEntry entry in feed.Entries)
 			{
 				var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, "TemplateName");
@@ -129,7 +128,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
 			    if (templateInfo.TemplateType == ETemplateType.FileTemplate)
 			    {
-			        CreateManager.CreateFile(_publishmentSystemId, templateId, guid);
+			        CreateManager.CreateFile(_publishmentSystemId, templateId);
 			    }
 			}
 		}

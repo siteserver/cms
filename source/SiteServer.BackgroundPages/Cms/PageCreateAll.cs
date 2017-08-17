@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                CreateManager.CreateAll(PublishmentSystemId, StringUtils.GetShortGuid());
+                CreateManager.CreateAll(PublishmentSystemId);
                 PageCreateStatus.Redirect(PublishmentSystemId);
             }
         }

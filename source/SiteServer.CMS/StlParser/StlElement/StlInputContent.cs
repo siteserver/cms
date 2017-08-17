@@ -173,7 +173,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var id = SqlUtils.EvalInt(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.Id);
                 //var inputContentInfo = DataProvider.InputContentDao.GetContentInfo(id);
-                var inputContentInfo = InputContent.GetContentInfo(id, pageInfo.Guid);
+                var inputContentInfo = InputContent.GetContentInfo(id);
                 if (inputContentInfo != null)
                 {
                     parsedContent = inputContentInfo.GetExtendedAttribute(type);

@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             DataProvider.ContentDao.DeleteContents(PublishmentSystemId, tableName, _contentIdList, _nodeId);
 
-            CreateManager.CreateContentTrigger(PublishmentSystemId, _nodeId, StringUtils.GetShortGuid());
+            CreateManager.CreateContentTrigger(PublishmentSystemId, _nodeId);
 
             Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "归档内容", string.Empty);
 

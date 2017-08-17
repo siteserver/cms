@@ -14,10 +14,10 @@ namespace SiteServer.CMS.StlParser.Utility
         {
         }
 
-        public static string ParsePreviewContent(PublishmentSystemInfo publishmentSystemInfo, string content, string guid)
+        public static string ParsePreviewContent(PublishmentSystemInfo publishmentSystemInfo, string content)
         {
             var templateInfo = new TemplateInfo();
-            var pageInfo = new PageInfo(guid, publishmentSystemInfo.PublishmentSystemId, 0, publishmentSystemInfo, templateInfo, null);
+            var pageInfo = new PageInfo(publishmentSystemInfo.PublishmentSystemId, 0, publishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo);
 
             var parsedBuilder = new StringBuilder(content);

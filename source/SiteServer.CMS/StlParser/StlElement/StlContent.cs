@@ -191,14 +191,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var targetNodeId = contentInfo.SourceId;
                     //var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
-                    var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId, pageInfo.Guid);
+                    var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId);
                     var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
                     var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
 
                     var tableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeInfo);
                     var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                    var targetContentInfo = Content.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId, pageInfo.Guid);
+                    var targetContentInfo = Content.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.NodeId > 0)
                     {
                         //标题可以使用自己的
@@ -629,7 +629,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
                         //var displayName = BaiRongDataProvider.AdministratorDao.GetDisplayName(contentInfo.AddUserName);
-                        var displayName = Administrator.GetDisplayName(contentInfo.AddUserName, pageInfo.Guid);
+                        var displayName = Administrator.GetDisplayName(contentInfo.AddUserName);
                         parsedContent = string.IsNullOrEmpty(displayName) ? contentInfo.AddUserName : displayName;
                     }
                 }
@@ -651,7 +651,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.Reply))
                         {
                             //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id, pageInfo.Guid);
+                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
                             if (replyInfo != null)
                             {
                                 parsedContent = replyInfo.Reply;
@@ -664,7 +664,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyDepartment))
                         {
                             //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id, pageInfo.Guid);
+                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
                             if (replyInfo != null)
                             {
                                 parsedContent = DepartmentManager.GetDepartmentName(replyInfo.DepartmentID);
@@ -673,7 +673,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyUserName))
                         {
                             //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id, pageInfo.Guid);
+                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
                             if (replyInfo != null)
                             {
                                 parsedContent = replyInfo.UserName;
@@ -682,7 +682,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyDate))
                         {
                             //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id, pageInfo.Guid);
+                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
                             if (replyInfo != null)
                             {
                                 var addDate = replyInfo.AddDate;
@@ -692,7 +692,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyFileUrl))
                         {
                             //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id, pageInfo.Guid);
+                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
                             if (replyInfo != null)
                             {
                                 parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, replyInfo.FileUrl);

@@ -37,7 +37,7 @@ namespace SiteServer.CMS.WeiXin.Utils
                 }
                 else if (channelId > 0)
                 {
-                    navigationUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId), StringUtils.GetShortGuid());
+                    navigationUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId));
                 }
             }
 

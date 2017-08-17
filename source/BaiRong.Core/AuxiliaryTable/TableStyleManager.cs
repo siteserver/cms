@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Collection;
@@ -34,9 +33,9 @@ namespace BaiRong.Core.AuxiliaryTable
         {
             relatedIdentities = GetRelatedIdentities(relatedIdentities);
 
-            var sortedlist = new Dictionary<string, TableStyleInfo>();
-            var allAttributeNames = new ArrayList();
-            var arraylist = new List<TableStyleInfo>();
+            var dict = new Dictionary<string, TableStyleInfo>();
+            var allAttributeNames = new List<string>();
+            var styleInfoList = new List<TableStyleInfo>();
 
             var entries = GetAllTableStyleInfoPairs();
             var attributeNames = TableManager.GetAttributeNameList(tableStyle, tableName);
@@ -47,8 +46,8 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 //if (ETableStyleUtils.IsContent(tableStyle)) continue;
                 var startKey = GetCacheKeyStart(relatedIdentity, tableName);
-                var keyArrayList = entries.GetKeys(startKey);
-                foreach (string key in keyArrayList)
+                var keyList = entries.GetKeys(startKey);
+                foreach (var key in keyList)
                 {
                     var styleInfo = entries.GetValue(key) as TableStyleInfo;
                     if (styleInfo == null || allAttributeNames.Contains(styleInfo.AttributeName)) continue;
@@ -56,17 +55,17 @@ namespace BaiRong.Core.AuxiliaryTable
                     allAttributeNames.Add(styleInfo.AttributeName);
                     if (styleInfo.Taxis <= 0 && attributeNames.Contains(styleInfo.AttributeName))//数据库字段
                     {
-                        sortedlist.Add(styleInfo.AttributeName, styleInfo);
+                        dict.Add(styleInfo.AttributeName, styleInfo);
                     }
                     else if (styleInfo.Taxis > 0)                       //排序字段
                     {
                         var iStr = relatedIdentity + styleInfo.Taxis.ToString().PadLeft(3, '0');
-                        sortedlist.Add("1" + iStr + "_" + styleInfo.AttributeName, styleInfo);
+                        dict.Add("1" + iStr + "_" + styleInfo.AttributeName, styleInfo);
                     }
                     else                                                //未排序字段
                     {
                         var iStr = relatedIdentity + i.ToString().PadLeft(3, '0');
-                        sortedlist.Add("0" + iStr + "_" + styleInfo.AttributeName, styleInfo);
+                        dict.Add("0" + iStr + "_" + styleInfo.AttributeName, styleInfo);
                         i = i - 1;
                     }
                 }
@@ -81,7 +80,7 @@ namespace BaiRong.Core.AuxiliaryTable
 
                     if (tableStyle == ETableStyle.BackgroundContent)
                     {
-                        styleInfo = GetBackgroundContentTableStyleInfo(tableName, attributeName);
+                        styleInfo = GetBackgroundContentTableStyleInfo(entries, tableName, attributeName);
                     }
                     else if (tableStyle == ETableStyle.GovPublicContent)
                     {
@@ -108,27 +107,27 @@ namespace BaiRong.Core.AuxiliaryTable
                         styleInfo = GetDefaultTableStyleInfo(tableName, attributeName);
                     }
 
-                    arraylist.Add(styleInfo);
+                    styleInfoList.Add(styleInfo);
                 }
-                else if (sortedlist.ContainsKey(attributeName))
+                else if (dict.ContainsKey(attributeName))
                 {
-                    styleInfo = sortedlist[attributeName];
+                    styleInfo = dict[attributeName];
                     if (styleInfo != null && styleInfo.Taxis <= 0 && attributeNames.Contains(styleInfo.AttributeName))
                     {
-                        arraylist.Add(styleInfo);
+                        styleInfoList.Add(styleInfo);
                     }
                 }
             }
 
-            foreach (var key in sortedlist.Keys)
+            foreach (var key in dict.Keys)
             {
                 if (!attributeNames.Contains(key))
                 {
-                    arraylist.Add(sortedlist[key]);
+                    styleInfoList.Add(dict[key]);
                 }
             }
 
-            return arraylist;
+            return styleInfoList;
         }
 
         public static bool IsExistsInParents(List<int> relatedIdentities, string tableName, string attributeName)
@@ -215,7 +214,7 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 if (tableStyle == ETableStyle.BackgroundContent)
                 {
-                    styleInfo = GetBackgroundContentTableStyleInfo(tableName, attributeName);
+                    styleInfo = GetBackgroundContentTableStyleInfo(entries, tableName, attributeName);
                 }
                 else if (tableStyle == ETableStyle.GovPublicContent)
                 {
@@ -295,7 +294,7 @@ namespace BaiRong.Core.AuxiliaryTable
             }
         }
 
-        public static void DeleteAndInsertStyleItems(int tableStyleId, ArrayList styleItems)
+        public static void DeleteAndInsertStyleItems(int tableStyleId, List<TableStyleItemInfo> styleItems)
         {
             if (styleItems == null || styleItems.Count <= 0) return;
 
@@ -407,7 +406,7 @@ namespace BaiRong.Core.AuxiliaryTable
 
         public const string Current = "{Current}";
 
-        public static TableStyleInfo GetBackgroundContentTableStyleInfo(string tableName, string attributeName)
+        public static TableStyleInfo GetBackgroundContentTableStyleInfo(PairList entries, string tableName, string attributeName)
         {
             var lowerAttributeName = attributeName.ToLower();
             if (ContentAttribute.HiddenAttributes.Contains(lowerAttributeName))
@@ -493,7 +492,16 @@ namespace BaiRong.Core.AuxiliaryTable
             }
             else if (!string.IsNullOrEmpty(attributeName))
             {
-                var tableStyleInfo = BaiRongDataProvider.TableStyleDao.GetTableStyleInfo(0, tableName, attributeName);
+                TableStyleInfo tableStyleInfo = null;
+                foreach (var key in entries.Keys)
+                {
+                    if (key == GetCacheKey(0, tableName, attributeName))
+                    {
+                        tableStyleInfo = (TableStyleInfo)entries.GetValue(key);
+                        break;
+                    }
+                }
+                //var tableStyleInfo = BaiRongDataProvider.TableStyleDao.GetTableStyleInfo(0, tableName, attributeName);
                 if (tableStyleInfo != null)
                 {
                     //styleInfo.DisplayName = attributeName;

@@ -5,11 +5,14 @@ namespace SiteServer.CMS.Model
 {
     public class CreateTaskLogInfo
     {
-        public CreateTaskLogInfo(int id, ECreateType createType, int publishmentSystemID, string taskName, string timeSpan, bool isSuccess, string errorMessage, DateTime addDate)
+        public CreateTaskLogInfo(int id, ECreateType createType, int publishmentSystemId, int channelId, int contentId, int templateId, string taskName, string timeSpan, bool isSuccess, string errorMessage, DateTime addDate)
         {
-            ID = id;
+            Id = id;
             CreateType = createType;
-            PublishmentSystemID = publishmentSystemID;
+            PublishmentSystemId = publishmentSystemId;
+            ChannelId = channelId;
+            ContentId = contentId;
+            TemplateId = templateId;
             TaskName = taskName;
             TimeSpan = timeSpan;
             IsSuccess = isSuccess;
@@ -17,9 +20,12 @@ namespace SiteServer.CMS.Model
             AddDate = addDate;
         }
 
-        public int ID { get; set; }
+        public int Id { get; set; }
         public ECreateType CreateType { get; set; }
-        public int PublishmentSystemID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int ChannelId { get; set; }
+        public int ContentId { get; set; }
+        public int TemplateId { get; set; }
         public string TaskName { get; set; }
         public string TimeSpan { get; set; }
 

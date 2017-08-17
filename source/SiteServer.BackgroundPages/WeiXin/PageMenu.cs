@@ -162,7 +162,6 @@ namespace SiteServer.BackgroundPages.WeiXin
                 {
                     var isSync = false;
                     var errorMessage = string.Empty;
-                    var guid = StringUtils.GetShortGuid();
 
                     var accountInfo = WeiXinManager.GetAccountInfo(PublishmentSystemId);
 
@@ -211,7 +210,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                                             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, subMenuInfo.ChannelId);
                                             if (nodeInfo != null)
                                             {
-                                                pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo, guid);
+                                                pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo);
                                             }
                                         }
 
@@ -273,7 +272,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                                         var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, menuInfo.ChannelId);
                                         if (nodeInfo != null)
                                         {
-                                            pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo, guid);
+                                            pageUrl = PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo);
                                         }
                                     }
 

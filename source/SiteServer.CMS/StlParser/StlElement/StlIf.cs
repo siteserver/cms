@@ -193,7 +193,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
                     //var groupContents = TranslateUtils.StringCollectionToStringList(BaiRongDataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
-                    var groupContents = TranslateUtils.StringCollectionToStringList(Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection, pageInfo.Guid));
+                    var groupContents = TranslateUtils.StringCollectionToStringList(Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
                     isSuccess = TestTypeValues(testOperate, testValue, groupContents);
                 }
             }
@@ -465,7 +465,7 @@ function {functionName}(pageNum)
                 foreach (var channelIndex in channelIndexes)
                 {
                     //var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
-                    var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex, pageInfo.Guid);
+                    var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
                     if (NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
                     {
                         isIn = true;
@@ -484,7 +484,7 @@ function {functionName}(pageNum)
                 foreach (var channelIndex in channelIndexes)
                 {
                     //var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
-                    var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex, pageInfo.Guid);
+                    var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
                     if (NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
                     {
                         isIn = true;
@@ -511,7 +511,7 @@ function {functionName}(pageNum)
                     foreach (var channelIndex in channelIndexes)
                     {
                         //var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
-                        var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex, pageInfo.Guid);
+                        var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
                         if (NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
                         {
                             isSuccess = true;
@@ -534,7 +534,7 @@ function {functionName}(pageNum)
                 foreach (var channelIndex in channelIndexes)
                 {
                     //var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
-                    var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex, pageInfo.Guid);
+                    var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
                     if (parentId != pageInfo.PageNodeId &&
                         NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
                     {
@@ -563,7 +563,7 @@ function {functionName}(pageNum)
                     foreach (var channelIndex in channelIndexes)
                     {
                         //var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
-                        var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex, pageInfo.Guid);
+                        var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
                         if (parentId != pageInfo.PageNodeId &&
                             NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
                         {
@@ -772,7 +772,7 @@ function {functionName}(pageNum)
             else if (StringUtils.EqualsIgnoreCase(NodeAttribute.CountOfImageContents, testTypeStr))
             {
                 //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId);
-                var count = Content.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId, pageInfo.Guid);
+                var count = Content.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(NodeAttribute.LinkUrl, testTypeStr))
@@ -794,7 +794,7 @@ function {functionName}(pageNum)
             {
                 var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
                 //theValue = BaiRongDataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, testTypeStr);
-                theValue = Content.GetValue(tableName, contextInfo.ContentId, testTypeStr, pageInfo.Guid);
+                theValue = Content.GetValue(tableName, contextInfo.ContentId, testTypeStr);
             }
             else
             {
@@ -814,7 +814,7 @@ function {functionName}(pageNum)
                 {
                     var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
                     //addDate = BaiRongDataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentId);
-                    addDate = Content.GetAddDate(tableName, contextInfo.ContentId, pageInfo.Guid);
+                    addDate = Content.GetAddDate(tableName, contextInfo.ContentId);
                 }
                 else
                 {
@@ -872,7 +872,7 @@ function {functionName}(pageNum)
                     {
                         var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
                         //addDate = BaiRongDataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentId);
-                        addDate = Content.GetAddDate(tableName, contextInfo.ContentId, pageInfo.Guid);
+                        addDate = Content.GetAddDate(tableName, contextInfo.ContentId);
                     }
                     else
                     {
@@ -899,7 +899,7 @@ function {functionName}(pageNum)
                 {
                     var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
                     //lastEditDate = BaiRongDataProvider.ContentDao.GetLastEditDate(tableName, contextInfo.ContentId);
-                    lastEditDate = Content.GetLastEditDate(tableName, contextInfo.ContentId, pageInfo.Guid);
+                    lastEditDate = Content.GetLastEditDate(tableName, contextInfo.ContentId);
                 }
                 else
                 {

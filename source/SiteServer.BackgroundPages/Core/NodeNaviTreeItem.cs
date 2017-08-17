@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Core
@@ -153,7 +152,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (_nodeId > 0)
                 {
                     htmlBuilder.Append(
-                        $"<a href=\"{PageActions.GetRedirectUrl(_publishmentSystemId, _nodeId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
+                        $"<a href=\"{PageRedirect.GetRedirectUrlToChannel(_publishmentSystemId, _nodeId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
                 }
                 else
                 {
@@ -252,7 +251,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (_nodeId > 0)
                 {
                     htmlBuilder.Append(
-                        $"<a href=\"{PageActions.GetRedirectUrl(_publishmentSystemId, _nodeId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
+                        $"<a href=\"{PageRedirect.GetRedirectUrlToChannel(_publishmentSystemId, _nodeId)}\" target=\"_blank\" title='浏览页面'><img align=\"absmiddle\" border=\"0\" src=\"{_iconFolderUrl}\"/></a>");
                 }
                 else
                 {

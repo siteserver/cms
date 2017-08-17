@@ -8,7 +8,6 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -218,11 +217,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                 scopeType = isChannel ? EScopeType.Children : EScopeType.Self;
             }
 
-            var orderByString = isChannel ? StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, order, ETableStyle.Channel, ETaxisType.OrderByTaxis, pageInfo.Guid) : StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, order, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, pageInfo.Guid);
+            var orderByString = isChannel ? StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, order, ETableStyle.Channel, ETaxisType.OrderByTaxis) : StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, order, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
 
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
+            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
 
             var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
@@ -258,7 +257,7 @@ selObj.selectedIndex=0;
 
             if (isChannel)
             {
-                var nodeIdList = StlDataUtility.GetNodeIdList(pageInfo.PublishmentSystemId, channel.NodeId, groupContent, groupContentNot, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where, pageInfo.Guid);
+                var nodeIdList = StlDataUtility.GetNodeIdList(pageInfo.PublishmentSystemId, channel.NodeId, groupContent, groupContentNot, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where);
 
                 if (nodeIdList != null && nodeIdList.Count > 0)
                 {
@@ -269,7 +268,7 @@ selObj.selectedIndex=0;
                         if (nodeInfo != null)
                         {
                             var title = StringUtils.MaxLengthText(nodeInfo.NodeName, titleWordNum);
-                            var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo, pageInfo.Guid);
+                            var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo);
                             if (!string.IsNullOrEmpty(queryString))
                             {
                                 url = PageUtils.AddQueryString(url, queryString);
@@ -282,7 +281,7 @@ selObj.selectedIndex=0;
             }
             else
             {
-                var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null, pageInfo.Guid);
+                var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
 
                 if (dataSource != null)
                 {

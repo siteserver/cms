@@ -70,7 +70,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             else
             {
                 //var siteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
-                var siteId = PublishmentSystem.GetPublishmentSystemIdByIsHeadquarters(pageInfo.Guid);
+                var siteId = PublishmentSystem.GetPublishmentSystemIdByIsHeadquarters();
                 if (siteId > 0)
                 {
                     publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);

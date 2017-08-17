@@ -7,9 +7,9 @@ namespace SiteServer.CMS.StlParser.Cache
         private static readonly object LockObject = new object();
 
         public static string GetSelectSqlStringByQueryString(string connectionString, string queryString, int startNum,
-            int totalNum, string orderByString, string guid)
+            int totalNum, string orderByString)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(TableStructure),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(TableStructure),
                        nameof(GetSelectSqlStringByQueryString), connectionString, queryString, startNum.ToString(),
                        totalNum.ToString(), orderByString);
             var retval = StlCacheUtils.GetCache<string>(cacheKey);

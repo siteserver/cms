@@ -45,7 +45,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (contentInfo == null && contextInfo.ContentId > 0)
             {
                 //contentInfo = DataProvider.VoteContentDao.GetContentInfo(pageInfo.PublishmentSystemInfo.AuxiliaryTableForVote, contextInfo.ContentId);
-                contentInfo = VoteContent.GetContentInfo(pageInfo.PublishmentSystemInfo.AuxiliaryTableForVote, contextInfo.ContentId, pageInfo.Guid);
+                contentInfo = VoteContent.GetContentInfo(pageInfo.PublishmentSystemInfo.AuxiliaryTableForVote, contextInfo.ContentId);
             }
 
             if (contentInfo != null)

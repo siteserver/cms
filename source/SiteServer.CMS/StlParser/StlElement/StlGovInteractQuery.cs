@@ -82,11 +82,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (!string.IsNullOrEmpty(interactName))
             {
                 //nodeId = DataProvider.GovInteractChannelDao.GetNodeIdByInteractName(pageInfo.PublishmentSystemId, interactName);
-                nodeId = GovInteractChannel.GetNodeIdByInteractName(pageInfo.PublishmentSystemId, interactName, pageInfo.Guid);
+                nodeId = GovInteractChannel.GetNodeIdByInteractName(pageInfo.PublishmentSystemId, interactName);
             }
             if (nodeId == 0)
             {
-                nodeId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, pageInfo.PublishmentSystemId, channelIndex, channelName, pageInfo.Guid);
+                nodeId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, pageInfo.PublishmentSystemId, channelIndex, channelName);
             }
             var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId);
             if (nodeInfo == null || !EContentModelTypeUtils.Equals(nodeInfo.ContentModelId, EContentModelType.GovInteract))
@@ -96,7 +96,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             if (nodeInfo != null)
             {
                 //var queryStyleId = DataProvider.GovInteractChannelDao.GetQueryStyleId(nodeInfo.PublishmentSystemId, nodeInfo.NodeId);
-                var queryStyleId = GovInteractChannel.GetQueryStyleId(nodeInfo.PublishmentSystemId, nodeInfo.NodeId, pageInfo.Guid);
+                var queryStyleId = GovInteractChannel.GetQueryStyleId(nodeInfo.PublishmentSystemId, nodeInfo.NodeId);
 
                 var styleInfo = TagStyleManager.GetTagStyleInfo(queryStyleId) ?? new TagStyleInfo();
 

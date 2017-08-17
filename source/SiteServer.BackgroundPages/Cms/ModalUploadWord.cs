@@ -65,7 +65,6 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                var guid = StringUtils.GetShortGuid();
                 var fileCount = TranslateUtils.ToInt(Request.Form["File_Count"]);
                 if (fileCount == 1)
                 {
@@ -108,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                                 if (contentInfo.IsChecked)
                                 {
-                                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, guid);
+                                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id);
                                 }
                             }
                         }

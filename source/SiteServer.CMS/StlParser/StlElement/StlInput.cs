@@ -44,11 +44,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             //var inputId = DataProvider.InputDao.GetInputIdAsPossible(inputName, pageInfo.PublishmentSystemId);
-            var inputId = Input.GetInputIdAsPossible(inputName, pageInfo.PublishmentSystemId, pageInfo.Guid);
+            var inputId = Input.GetInputIdAsPossible(inputName, pageInfo.PublishmentSystemId);
             if (inputId <= 0) return string.Empty;
 
             //var inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
-            var inputInfo = Input.GetInputInfo(inputId, pageInfo.Guid);
+            var inputInfo = Input.GetInputInfo(inputId);
             var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, pageInfo.PublishmentSystemId, inputInfo.InputId);
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, relatedIdentities);
             var pageScripts = new NameValueCollection();

@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Core
             else if (contentInfo.IsChecked)
             {
                 url =
-                    $"<a href='{PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo, true)}' target='blank'>{displayString}</a>";
+                    $"<a href='{PageRedirect.GetRedirectUrlToContent(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id)}' target='blank'>{displayString}</a>";
             }
             else
             {

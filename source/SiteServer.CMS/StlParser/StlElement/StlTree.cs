@@ -125,7 +125,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
+            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
 
             var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
@@ -136,7 +136,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             htmlBuilder.Append(@"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;"">");
 
             //var theNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
-            var theNodeIdList = Node.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot, pageInfo.Guid);
+            var theNodeIdList = Node.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
             var isLastNodeArray = new bool[theNodeIdList.Count];
             var nodeIdArrayList = new List<int>();
 
@@ -169,7 +169,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 var hasChildren = (nodeInfo.ChildrenCount != 0);
 
-                var linkUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo, pageInfo.Guid);
+                var linkUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo);
                 var level = theNodeInfo.ParentsCount - channel.ParentsCount;
                 var item = new StlTreeItemNotAjax(isDisplay, selected, pageInfo, nodeInfo, hasChildren, linkUrl, target, isShowTreeLine, isShowContentNum, isLastNodeArray, currentFormatString, channelId, level);
 
@@ -571,7 +571,7 @@ var stltree_isNodeTree = {isNodeTree};
 
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
+            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
 
             var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
@@ -582,7 +582,7 @@ var stltree_isNodeTree = {isNodeTree};
             htmlBuilder.Append(@"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;"">");
 
             //var theNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
-            var theNodeIdList = Node.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot, pageInfo.Guid);
+            var theNodeIdList = Node.GetNodeIdListByScopeType(channel.NodeId, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
 
             foreach (var theNodeId in theNodeIdList)
             {
@@ -593,7 +593,7 @@ var stltree_isNodeTree = {isNodeTree};
                     nodeInfo.NodeName = title;
                 }
 
-                var rowHtml = GetChannelRowHtml(pageInfo.PublishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageNodeId, pageInfo.Guid);
+                var rowHtml = GetChannelRowHtml(pageInfo.PublishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageNodeId);
 
                 htmlBuilder.Append(rowHtml);
             }
@@ -605,9 +605,9 @@ var stltree_isNodeTree = {isNodeTree};
             return htmlBuilder.ToString();
         }
 
-        public static string GetChannelRowHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeId, int topParantsCount, int currentNodeId, string guid)
+        public static string GetChannelRowHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeId, int topParantsCount, int currentNodeId)
         {
-            var nodeTreeItem = new StlTreeItemAjax(publishmentSystemInfo, nodeInfo, target, isShowContentNum, currentFormatString, topNodeId, topParantsCount, currentNodeId, guid);
+            var nodeTreeItem = new StlTreeItemAjax(publishmentSystemInfo, nodeInfo, target, isShowContentNum, currentFormatString, topNodeId, topParantsCount, currentNodeId);
             var title = nodeTreeItem.GetItemHtml();
 
             string rowHtml = $@"
@@ -638,11 +638,11 @@ var stltree_isNodeTree = {isNodeTree};
             private readonly int _level;
             private readonly int _currentNodeId;
 
-            public StlTreeItemAjax(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topNodeId, int topParentsCount, int currentNodeId, string guid)
+            public StlTreeItemAjax(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topNodeId, int topParentsCount, int currentNodeId)
             {
                 _nodeInfo = nodeInfo;
                 _hasChildren = nodeInfo.ChildrenCount != 0;
-                _linkUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, guid);
+                _linkUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
                 _target = target;
                 _isShowContentNum = isShowContentNum;
                 _currentFormatString = currentFormatString;

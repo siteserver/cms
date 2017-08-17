@@ -185,7 +185,6 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 			if (Page.IsPostBack)
 			{
-			    var guid = StringUtils.GetShortGuid();
 				var targetNodeId = int.Parse(NodeIDTo.SelectedValue);
 
 				var targetPublishmentSystemId = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
@@ -259,7 +258,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (translateType == ETranslateType.Content)//转移内容
                         {
-                            TranslateContent(targetPublishmentSystemInfo, nodeId, targetNodeId, isChecked, checkedLevel, guid);
+                            TranslateContent(targetPublishmentSystemInfo, nodeId, targetNodeId, isChecked, checkedLevel);
                         }
                     }
 
@@ -288,7 +287,7 @@ namespace SiteServer.BackgroundPages.Cms
                             nodeInfoList.Add(nodeInfo);
                         }
 
-                        TranslateChannelAndContent(nodeInfoList, targetPublishmentSystemId, targetNodeId, translateType, isChecked, checkedLevel, null, null, guid);
+                        TranslateChannelAndContent(nodeInfoList, targetPublishmentSystemId, targetNodeId, translateType, isChecked, checkedLevel, null, null);
 
                         if (IsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(IsDeleteAfterTranslate.SelectedValue, EBoolean.True))
                         {
@@ -340,7 +339,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 		}
 
-		private void TranslateChannelAndContent(List<NodeInfo> nodeInfoList, int targetPublishmentSystemId, int parentId, ETranslateType translateType, bool isChecked, int checkedLevel, List<string> nodeIndexNameList, List<string> filePathList, string guid)
+		private void TranslateChannelAndContent(List<NodeInfo> nodeInfoList, int targetPublishmentSystemId, int parentId, ETranslateType translateType, bool isChecked, int checkedLevel, List<string> nodeIndexNameList, List<string> filePathList)
 		{
 			if (nodeInfoList == null || nodeInfoList.Count == 0)
 			{
@@ -397,7 +396,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (translateType == ETranslateType.All)
                 {
-                    TranslateContent(targetPublishmentSystemInfo, oldNodeInfo.NodeId, insertedNodeId, isChecked, checkedLevel, guid);
+                    TranslateContent(targetPublishmentSystemInfo, oldNodeInfo.NodeId, insertedNodeId, isChecked, checkedLevel);
                 }
 
                 if (insertedNodeId != 0)
@@ -406,18 +405,18 @@ namespace SiteServer.BackgroundPages.Cms
                     var childrenNodeInfoList = DataProvider.NodeDao.GetNodeInfoList(oldNodeInfo.NodeId, oldNodeInfo.ChildrenCount, 0, "", EScopeType.Children, orderByString);
                     if (childrenNodeInfoList != null && childrenNodeInfoList.Count > 0)
                     {
-                        TranslateChannelAndContent(childrenNodeInfoList, targetPublishmentSystemId, insertedNodeId, translateType, isChecked, checkedLevel, nodeIndexNameList, filePathList, guid);
+                        TranslateChannelAndContent(childrenNodeInfoList, targetPublishmentSystemId, insertedNodeId, translateType, isChecked, checkedLevel, nodeIndexNameList, filePathList);
                     }
 
                     if (isChecked)
                     {
-                        CreateManager.CreateChannel(targetPublishmentSystemInfo.PublishmentSystemId, insertedNodeId, guid);
+                        CreateManager.CreateChannel(targetPublishmentSystemInfo.PublishmentSystemId, insertedNodeId);
                     }
                 }
 			}
 		}
 
-		private void TranslateContent(PublishmentSystemInfo targetPublishmentSystemInfo, int nodeId, int targetNodeId, bool isChecked, int checkedLevel, string guid)
+		private void TranslateContent(PublishmentSystemInfo targetPublishmentSystemInfo, int nodeId, int targetNodeId, bool isChecked, int checkedLevel)
 		{
             var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeId);
             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
@@ -440,7 +439,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 				if (contentInfo.IsChecked)
 				{
-                    CreateManager.CreateContentAndTrigger(targetPublishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, theContentId, guid);
+                    CreateManager.CreateContentAndTrigger(targetPublishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, theContentId);
 				}
 			}
 

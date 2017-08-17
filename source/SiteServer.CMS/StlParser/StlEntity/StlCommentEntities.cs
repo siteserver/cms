@@ -70,7 +70,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 else if (StringUtils.EqualsIgnoreCase(type, DisplayName))
                 {
                     //parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : BaiRongDataProvider.UserDao.GetDisplayName(userName);
-                    parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : User.GetDisplayName(userName, pageInfo.Guid);
+                    parsedContent = string.IsNullOrEmpty(userName) ? "匿名" : User.GetDisplayName(userName);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, GoodCount))
                 {

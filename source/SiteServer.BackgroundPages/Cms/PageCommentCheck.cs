@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -127,7 +126,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var linkUrl = PageActions.GetRedirectUrl(PublishmentSystemId, commentInfo.NodeId,
+                    var linkUrl = BackgroundPages.PageRedirect.GetRedirectUrlToContent(PublishmentSystemId, commentInfo.NodeId,
                         commentInfo.ContentId);
                     var tableName = NodeManager.GetTableName(PublishmentSystemInfo,
                         NodeManager.GetNodeInfo(PublishmentSystemId, PublishmentSystemId));

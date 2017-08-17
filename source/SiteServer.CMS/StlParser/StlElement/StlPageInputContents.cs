@@ -69,9 +69,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             _listInfo = ListInfo.GetListInfoByXmlNode(_pageInfo, _contextInfo, EContextType.InputContent);
 
             //var inputId = DataProvider.InputDao.GetInputIdAsPossible(_listInfo.Others.Get(AttributeInputName), pageInfo.PublishmentSystemId);
-            var inputId = Input.GetInputIdAsPossible(_listInfo.Others.Get(AttributeInputName), _pageInfo.PublishmentSystemId, _pageInfo.Guid);
+            var inputId = Input.GetInputIdAsPossible(_listInfo.Others.Get(AttributeInputName), _pageInfo.PublishmentSystemId);
 
-            _dataSet = StlDataUtility.GetPageInputContentsDataSet(_pageInfo.PublishmentSystemId, inputId, _listInfo, _pageInfo.Guid);
+            _dataSet = StlDataUtility.GetPageInputContentsDataSet(_pageInfo.PublishmentSystemId, inputId, _listInfo);
         }
 
 

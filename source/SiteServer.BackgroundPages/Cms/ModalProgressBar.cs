@@ -216,10 +216,9 @@ namespace SiteServer.BackgroundPages.Cms
             //----------------------------------------------------------------------------------------//
             else if (Body.IsQueryExists("CreateChannelsOneByOne") && Body.IsQueryExists("ChannelIDCollection"))
             {
-                var guid = StringUtils.Guid();
                 foreach (var channelId in TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection")))
                 {
-                    CreateManager.CreateChannel(PublishmentSystemId, channelId, guid);
+                    CreateManager.CreateChannel(PublishmentSystemId, channelId);
                 }
 
                 PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString("已成功将栏目放入生成队列"));
@@ -227,31 +226,28 @@ namespace SiteServer.BackgroundPages.Cms
             else if (Body.IsQueryExists("CreateContentsOneByOne") && Body.IsQueryExists("NodeID") &&
                      Body.IsQueryExists("ContentIDCollection"))
             {
-                var guid = StringUtils.Guid();
                 foreach (var contentId in TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection")))
                 {
                     CreateManager.CreateContent(PublishmentSystemId, Body.GetQueryInt("NodeID"),
-                        contentId, guid);
+                        contentId);
                 }
 
                 PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString("已成功将内容放入生成队列"));
             }
             else if (Body.IsQueryExists("CreateByTemplate") && Body.IsQueryExists("templateID"))
             {
-                var guid = StringUtils.Guid();
-                CreateManager.CreateFile(PublishmentSystemId, Body.GetQueryInt("templateID"), guid);
+                CreateManager.CreateFile(PublishmentSystemId, Body.GetQueryInt("templateID"));
 
                 PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString("已成功将文件放入生成队列"));
             }
             else if (Body.IsQueryExists("CreateByIDsCollection") && Body.IsQueryExists("IDsCollection"))
             {
-                var guid = StringUtils.Guid();
                 foreach (var nodeIdContentId in
                     TranslateUtils.StringCollectionToStringCollection(Body.GetQueryString("IDsCollection")))
                 {
                     var pair = nodeIdContentId.Split('_');
                     CreateManager.CreateContent(PublishmentSystemId, TranslateUtils.ToInt(pair[0]),
-                        TranslateUtils.ToInt(pair[1]), guid);
+                        TranslateUtils.ToInt(pair[1]));
                 }
 
                 PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString("已成功将文件放入生成队列"));

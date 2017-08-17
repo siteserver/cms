@@ -1,6 +1,5 @@
 ﻿using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 
@@ -53,7 +52,7 @@ namespace SiteServer.CMS.Core.Create
             return name;
         }
 
-        public static void CreateChannel(int publishmentSystemId, int channelId, string guid)
+        public static void CreateChannel(int publishmentSystemId, int channelId)
         {
             if (publishmentSystemId <= 0 || channelId <= 0) return;
 
@@ -61,11 +60,11 @@ namespace SiteServer.CMS.Core.Create
             var taskName = GetTaskName(ECreateType.Channel, publishmentSystemId, channelId, 0, 0, out pageCount);
             if (pageCount == 0) return;
 
-            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Channel, publishmentSystemId, channelId, 0, 0, pageCount, guid);
+            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Channel, publishmentSystemId, channelId, 0, 0, pageCount);
             CreateTaskManager.Instance.AddPendingTask(taskInfo);
         }
 
-        public static void CreateContent(int publishmentSystemId, int channelId, int contentId, string guid)
+        public static void CreateContent(int publishmentSystemId, int channelId, int contentId)
         {
             if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return;
 
@@ -73,11 +72,11 @@ namespace SiteServer.CMS.Core.Create
             var taskName = GetTaskName(ECreateType.Content, publishmentSystemId, channelId, contentId, 0, out pageCount);
             if (pageCount == 0) return;
 
-            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Content, publishmentSystemId, channelId, contentId, 0, pageCount, guid);
+            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Content, publishmentSystemId, channelId, contentId, 0, pageCount);
             CreateTaskManager.Instance.AddPendingTask(taskInfo);
         }
 
-        public static void CreateAllContent(int publishmentSystemId, int channelId, string guid)
+        public static void CreateAllContent(int publishmentSystemId, int channelId)
         {
             if (publishmentSystemId <= 0 || channelId <= 0) return;
 
@@ -85,11 +84,11 @@ namespace SiteServer.CMS.Core.Create
             var taskName = GetTaskName(ECreateType.AllContent, publishmentSystemId, channelId, 0, 0, out pageCount);
             if (pageCount == 0) return;
 
-            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.AllContent, publishmentSystemId, channelId, 0, 0, pageCount, guid);
+            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.AllContent, publishmentSystemId, channelId, 0, 0, pageCount);
             CreateTaskManager.Instance.AddPendingTask(taskInfo);
         }
 
-        public static void CreateFile(int publishmentSystemId, int templateId, string guid)
+        public static void CreateFile(int publishmentSystemId, int templateId)
         {
             if (publishmentSystemId <= 0 || templateId <= 0) return;
 
@@ -97,45 +96,45 @@ namespace SiteServer.CMS.Core.Create
             var taskName = GetTaskName(ECreateType.File, publishmentSystemId, 0, 0, templateId, out pageCount);
             if (pageCount == 0) return;
 
-            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.File, publishmentSystemId, 0, 0, templateId, pageCount, guid);
+            var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.File, publishmentSystemId, 0, 0, templateId, pageCount);
             CreateTaskManager.Instance.AddPendingTask(taskInfo);
         }
 
-        public static void CreateAll(int publishmentSystemId, string guid)
+        public static void CreateAll(int publishmentSystemId)
         {
             CreateTaskManager.Instance.ClearAllTask(publishmentSystemId);
 
             var dic = NodeManager.GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId);
             foreach (var nodeInfo in dic.Values)
             {
-                CreateChannel(publishmentSystemId, nodeInfo.NodeId, guid);
-                CreateAllContent(publishmentSystemId, nodeInfo.NodeId, guid);
+                CreateChannel(publishmentSystemId, nodeInfo.NodeId);
+                CreateAllContent(publishmentSystemId, nodeInfo.NodeId);
             }
 
             foreach (var templateId in TemplateManager.GetAllFileTemplateIdList(publishmentSystemId))
             {
-                CreateFile(publishmentSystemId, templateId, guid);
+                CreateFile(publishmentSystemId, templateId);
             }
         }
 
-        public static void CreateContentTrigger(int publishmentSystemId, int channelId, string guid)
+        public static void CreateContentTrigger(int publishmentSystemId, int channelId)
         {
             if (channelId > 0)
             {
-                ContentTrigger(publishmentSystemId, channelId, guid);
+                ContentTrigger(publishmentSystemId, channelId);
             }
         }
 
-        public static void CreateContentAndTrigger(int publishmentSystemId, int channelId, int contentId, string guid)
+        public static void CreateContentAndTrigger(int publishmentSystemId, int channelId, int contentId)
         {
             if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return;
 
-            CreateContent(publishmentSystemId, channelId, contentId, guid);
+            CreateContent(publishmentSystemId, channelId, contentId);
 
-            ContentTrigger(publishmentSystemId, channelId, guid);
+            ContentTrigger(publishmentSystemId, channelId);
         }
 
-        private static void ContentTrigger(int publishmentSystemId, int channelId, string guid)
+        private static void ContentTrigger(int publishmentSystemId, int channelId)
         {
             if (publishmentSystemId <= 0 || channelId <= 0) return;
 
@@ -147,7 +146,7 @@ namespace SiteServer.CMS.Core.Create
             }
             foreach (var theNodeId in nodeIdList)
             {
-                CreateChannel(publishmentSystemId, theNodeId, guid);
+                CreateChannel(publishmentSystemId, theNodeId);
             }
         }
     }

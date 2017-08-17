@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Plugins
 			    var stlElement = StlInput.GetDefaultStlInputStlElement(PublishmentSystemInfo, _inputInfo);
                 LtlInputCode.Text = StringUtils.ReplaceNewlineToBr(StringUtils.HtmlEncode(stlElement));
 
-                LtlForm.Text = StlParserManager.ParsePreviewContent(PublishmentSystemInfo, stlElement, StringUtils.GetShortGuid());
+                LtlForm.Text = StlParserManager.ParsePreviewContent(PublishmentSystemInfo, stlElement);
 
                 InfoMessage("预览提交表单无法提交信息，如需提交信息请到提交表单管理中进行操作");
                 

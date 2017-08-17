@@ -101,11 +101,11 @@ namespace SiteServer.CMS.WeiXin.MP
                                 }
                                 else if (resourceInfo.ChannelId > 0)
                                 {
-                                    pageUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, resourceInfo.ChannelId, StringUtils.GetShortGuid());
+                                    pageUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, resourceInfo.ChannelId);
                                 }
                                 else
                                 {
-                                    pageUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, StringUtils.GetShortGuid());
+                                    pageUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId);
                                 }
                             }
                             else if (resourceInfo.ResourceType == EResourceType.Content)

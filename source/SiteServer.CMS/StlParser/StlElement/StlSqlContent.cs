@@ -196,7 +196,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
 
                 //parsedContent = BaiRongDataProvider.DatabaseDao.GetString(connectionString, queryString);
-                parsedContent = Database.GetString(connectionString, queryString, pageInfo.Guid);
+                parsedContent = Database.GetString(connectionString, queryString);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))

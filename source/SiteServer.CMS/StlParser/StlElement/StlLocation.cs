@@ -131,7 +131,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo, pageInfo.Guid);
+                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
@@ -154,7 +154,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
-                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo, pageInfo.Guid);
+                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, currentNodeInfo);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;

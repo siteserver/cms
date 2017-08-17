@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
@@ -13,10 +12,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static List<int> GetContentIdListChecked(string tableName, int nodeId, string orderByFormatString,
-            string guid)
+        public static List<int> GetContentIdListChecked(string tableName, int nodeId, string orderByFormatString)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetContentIdListChecked),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetContentIdListChecked),
                     tableName, nodeId.ToString(), orderByFormatString);
             var retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
             if (retval != null) return retval;
@@ -34,9 +32,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static DataSet GetStlDataSourceChecked(List<int> nodeIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others, string guid)
+        public static DataSet GetStlDataSourceChecked(List<int> nodeIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetStlDataSourceChecked),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlDataSourceChecked),
                     TranslateUtils.ObjectCollectionToString(nodeIdList), tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString, isNoDup.ToString(), TranslateUtils.NameValueCollectionToString(others));
             var retval = StlCacheUtils.GetCache<DataSet>(cacheKey);
             if (retval != null) return retval;
@@ -54,11 +52,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        
-
-        public static ContentInfo GetContentInfo(ETableStyle tableStyle, string tableName, int contentId, string guid)
+        public static ContentInfo GetContentInfo(ETableStyle tableStyle, string tableName, int contentId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetContentInfo),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetContentInfo),
                     ETableStyleUtils.GetValue(tableStyle), tableName, contentId.ToString());
             var retval = StlCacheUtils.GetCache<ContentInfo>(cacheKey);
             if (retval != null) return retval;
@@ -76,29 +72,20 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static ContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId, string guid)
+        public static ContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetContentInfo),
-                       publishmentSystemId.ToString(), channelId.ToString(), contentId.ToString());
-            var retval = StlCacheUtils.GetCache<ContentInfo>(cacheKey);
-            if (retval != null) return retval;
+            if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
-            lock (LockObject)
-            {
-                retval = StlCacheUtils.GetCache<ContentInfo>(cacheKey);
-                if (retval == null)
-                {
-                    retval = DataProvider.ContentDao.GetContentInfo(publishmentSystemId, channelId, contentId);
-                    StlCacheUtils.SetCache(cacheKey, retval);
-                }
-            }
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
+            var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
 
-            return retval;
+            return GetContentInfo(tableStyle, tableName, contentId);
         }
 
-        public static string GetValue(string tableName, int contentId, string type, string guid)
+        public static string GetValue(string tableName, int contentId, string type)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetValue), tableName,
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetValue), tableName,
                        contentId.ToString(), type);
             var retval = StlCacheUtils.GetCache<string>(cacheKey);
             if (retval != null) return retval;
@@ -116,9 +103,29 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetCountCheckedImage(int publishmentSystemId, int nodeId, string guid)
+        public static int GetSequence(string tableName, int nodeId, int contentId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetCountCheckedImage),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetSequence),
+                    tableName, nodeId.ToString(), contentId.ToString());
+            var retval = StlCacheUtils.GetIntCache(cacheKey);
+            if (retval != -1) return retval;
+
+            lock (LockObject)
+            {
+                retval = StlCacheUtils.GetIntCache(cacheKey);
+                if (retval == -1)
+                {
+                    retval = BaiRongDataProvider.ContentDao.GetSequence(tableName, nodeId, contentId);
+                    StlCacheUtils.SetCache(cacheKey, retval);
+                }
+            }
+
+            return retval;
+        }
+
+        public static int GetCountCheckedImage(int publishmentSystemId, int nodeId)
+        {
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetCountCheckedImage),
                     publishmentSystemId.ToString(), nodeId.ToString());
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -137,11 +144,11 @@ namespace SiteServer.CMS.StlParser.Cache
         }
 
         public static int GetCountOfContentAdd(string tableName, int publishmentSystemId, int nodeId, EScopeType scope,
-            DateTime begin, DateTime end, string userName, string guid)
+            DateTime begin, DateTime end, string userName)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetCountOfContentAdd),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetCountOfContentAdd),
                     publishmentSystemId.ToString(), nodeId.ToString(), EScopeTypeUtils.GetValue(scope),
-                    begin.ToString(CultureInfo.InvariantCulture), end.ToString(CultureInfo.InvariantCulture), userName);
+                    DateUtils.GetDateString(begin), DateUtils.GetDateString(end), userName);
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
 
@@ -159,9 +166,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static DateTime GetAddDate(string tableName, int contentId, string guid)
+        public static DateTime GetAddDate(string tableName, int contentId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetAddDate), tableName,
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetAddDate), tableName,
                        contentId.ToString());
             var retval = StlCacheUtils.GetDateTimeCache(cacheKey);
             if (retval != DateTime.MinValue) return retval;
@@ -179,9 +186,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static DateTime GetLastEditDate(string tableName, int contentId, string guid)
+        public static DateTime GetLastEditDate(string tableName, int contentId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetLastEditDate), tableName,
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetLastEditDate), tableName,
                        contentId.ToString());
             var retval = StlCacheUtils.GetDateTimeCache(cacheKey);
             if (retval != DateTime.MinValue) return retval;
@@ -199,9 +206,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetContentId(string tableName, int nodeId, int taxis, bool isNextContent, string guid)
+        public static int GetContentId(string tableName, int nodeId, int taxis, bool isNextContent)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetContentId), tableName,
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetContentId), tableName,
                        nodeId.ToString(), taxis.ToString(), isNextContent.ToString());
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -219,9 +226,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetContentId(string tableName, int nodeId, string orderByString, string guid)
+        public static int GetContentId(string tableName, int nodeId, string orderByString)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetContentId), tableName,
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetContentId), tableName,
                     nodeId.ToString(), orderByString);
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -239,9 +246,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }        
 
-        public static int GetNodeId(string tableName, int contentId, string guid)
+        public static int GetNodeId(string tableName, int contentId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetNodeId), tableName,
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetNodeId), tableName,
                        contentId.ToString());
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -259,9 +266,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlWhereString(int publishmentSystemId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, bool isCreateSearchDuplicate, string guid)
+        public static string GetStlWhereString(int publishmentSystemId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, bool isCreateSearchDuplicate)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetStlWhereString),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlWhereString),
                     publishmentSystemId.ToString(), tableName, group, groupNot,
                     tags, isImageExists.ToString(), isImage.ToString(), isVideoExists.ToString(), isVideo.ToString(),
                     isFileExists.ToString(), isFile.ToString(), isTopExists.ToString(), isTop.ToString(),
@@ -288,9 +295,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlWhereString(int publishmentSystemId, string group, string groupNot, string tags, bool isTopExists, bool isTop, string where, string guid)
+        public static string GetStlWhereString(int publishmentSystemId, string group, string groupNot, string tags, bool isTopExists, bool isTop, string where)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetStlWhereString),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlWhereString),
                     publishmentSystemId.ToString(), group, groupNot, tags, isTopExists.ToString(), isTop.ToString(),
                     where);
             var retval = StlCacheUtils.GetCache<string>(cacheKey);
@@ -310,9 +317,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlSqlStringChecked(string tableName, int publishmentSystemId, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup, string guid)
+        public static string GetStlSqlStringChecked(string tableName, int publishmentSystemId, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetStlSqlStringChecked),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlSqlStringChecked),
                     tableName, publishmentSystemId.ToString(), nodeId.ToString(), startNum.ToString(),
                     totalNum.ToString(), orderByString, whereString, EScopeTypeUtils.GetValue(scopeType), groupChannel,
                     groupChannelNot, isNoDup.ToString());
@@ -324,7 +331,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    var nodeIdList = Node.GetNodeIdListByScopeType(nodeId, scopeType, groupChannel, groupChannelNot, guid);
+                    var nodeIdList = Node.GetNodeIdListByScopeType(nodeId, scopeType, groupChannel, groupChannelNot);
                     retval = DataProvider.ContentDao.GetStlSqlStringChecked(nodeIdList, tableName, publishmentSystemId, nodeId, startNum,
                     totalNum, orderByString, whereString, scopeType, groupChannel, groupChannelNot, isNoDup);
                     StlCacheUtils.SetCache(cacheKey, retval);
@@ -334,9 +341,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlWhereStringBySearch(string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, string guid)
+        public static string GetStlWhereStringBySearch(string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content), nameof(GetStlWhereStringBySearch),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlWhereStringBySearch),
                     tableName, group, groupNot, tags, isImageExists.ToString(), isImage.ToString(),
                     isVideoExists.ToString(), isVideo.ToString(), isFileExists.ToString(), isFile.ToString(),
                     isTopExists.ToString(), isTop.ToString(), isRecommendExists.ToString(), isRecommend.ToString(),
@@ -359,9 +366,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, string guid)
+        public static string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Content),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content),
                        nameof(GetStlSqlStringCheckedBySearch),
                        tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString, isNoDup.ToString());
             var retval = StlCacheUtils.GetCache<string>(cacheKey);

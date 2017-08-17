@@ -6,7 +6,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -221,9 +220,8 @@ $(document).ready(function() {
             });
 
             ltlNodeTitle.Text =
-                $@"<a href=""{PageActions.GetRedirectUrl(PublishmentSystemId, nodeId)}"" title=""浏览页面"" target=""_blank""><img src=""{SiteServerAssets.GetIconUrl("tree/folder.gif")}"" border=""0"" align=""absMiddle"" /></a>&nbsp;<A title=""进入栏目"" href=""{url}"">{nodeInfo
-                    .NodeName}</A>&nbsp;{NodeManager.GetNodeTreeLastImageHtml(PublishmentSystemInfo, nodeInfo)}&nbsp;<SPAN class=""gray"" style=""FONT-SIZE: 8pt; FONT-FAMILY: arial"">({nodeInfo
-                    .ContentNum})</SPAN>";
+                $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(PublishmentSystemId, nodeId)}"" title=""浏览页面"" target=""_blank""><img src=""{SiteServerAssets.GetIconUrl("tree/folder.gif")}"" border=""0"" align=""absMiddle"" /></a>&nbsp;<a title=""进入栏目"" href=""{url}"">{nodeInfo
+                    .NodeName}</a>&nbsp;{NodeManager.GetNodeTreeLastImageHtml(PublishmentSystemInfo, nodeInfo)}&nbsp;<span class=""gray"" style=""FONT-SIZE: 8pt; FONT-FAMILY: arial"">({nodeInfo.ContentNum})</span>";
 
             ltlNodeIndexName.Text = nodeInfo.NodeIndexName;
 

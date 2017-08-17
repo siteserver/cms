@@ -49,7 +49,7 @@ namespace SiteServer.API.Controllers.Stl
 
                 var templateInfo = new TemplateInfo(0, publishmentSystemId, string.Empty, ETemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var pageInfo = new PageInfo(StringUtils.GetShortGuid(), publishmentSystemId, 0, publishmentSystemInfo, templateInfo, body.UserInfo);
+                var pageInfo = new PageInfo(publishmentSystemId, 0, publishmentSystemInfo, templateInfo, body.UserInfo);
                 var contextInfo = new ContextInfo(pageInfo);
                 var contentBuilder = new StringBuilder(StlRequestEntities.ParseRequestEntities(form, template));
 

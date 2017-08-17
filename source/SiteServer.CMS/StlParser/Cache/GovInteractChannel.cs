@@ -6,9 +6,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static int GetNodeIdByInteractName(int publishmentSystemId, string interactName, string guid)
+        public static int GetNodeIdByInteractName(int publishmentSystemId, string interactName)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(GovInteractChannel),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(GovInteractChannel),
                        nameof(GetNodeIdByInteractName), publishmentSystemId.ToString(), interactName);
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -26,9 +26,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetApplyStyleId(int publishmentSystemId, int nodeId, string guid)
+        public static int GetApplyStyleId(int publishmentSystemId, int nodeId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(GovInteractChannel), nameof(GetApplyStyleId),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(GovInteractChannel), nameof(GetApplyStyleId),
                     publishmentSystemId.ToString(), nodeId.ToString());
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -46,9 +46,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetQueryStyleId(int publishmentSystemId, int nodeId, string guid)
+        public static int GetQueryStyleId(int publishmentSystemId, int nodeId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(GovInteractChannel), nameof(GetQueryStyleId),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(GovInteractChannel), nameof(GetQueryStyleId),
                     publishmentSystemId.ToString(), nodeId.ToString());
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;

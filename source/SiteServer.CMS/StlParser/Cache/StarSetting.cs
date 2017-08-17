@@ -6,9 +6,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static object[] GetTotalCountAndPointAverage(int publishmentSystemId, int contentId, string guid)
+        public static object[] GetTotalCountAndPointAverage(int publishmentSystemId, int contentId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(StarSetting),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(StarSetting),
                        nameof(GetTotalCountAndPointAverage), publishmentSystemId.ToString(), contentId.ToString());
             var retval = StlCacheUtils.GetCache<object[]>(cacheKey);
             if (retval != null) return retval;

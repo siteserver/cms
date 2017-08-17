@@ -770,7 +770,7 @@ namespace SiteServer.CMS.Core
                 {
                     try
                     {
-                        CreateManager.CreateContentAndTrigger(publishmentSystemId, nodeIdAndContentId[0], nodeIdAndContentId[1], userKeyPrefix);
+                        CreateManager.CreateContentAndTrigger(publishmentSystemId, nodeIdAndContentId[0], nodeIdAndContentId[1]);
                     }
                     catch
                     {
@@ -905,7 +905,7 @@ namespace SiteServer.CMS.Core
                 {
                     foreach (var nodeIdAndContentId in nodeIdAndContentIdList)
                     {
-                        CreateManager.CreateContentAndTrigger(publishmentSystemId, nodeIdAndContentId[0], nodeIdAndContentId[1], userKeyPrefix);
+                        CreateManager.CreateContentAndTrigger(publishmentSystemId, nodeIdAndContentId[0], nodeIdAndContentId[1]);
                     }
                 }
 
@@ -1224,7 +1224,7 @@ namespace SiteServer.CMS.Core
                     {
                         foreach (var nodeIdAndContentId in nodeIdAndContentIdList)
                         {
-                            CreateManager.CreateContentAndTrigger(publishmentSystemId, nodeIdAndContentId[0], nodeIdAndContentId[1], userKeyPrefix);
+                            CreateManager.CreateContentAndTrigger(publishmentSystemId, nodeIdAndContentId[0], nodeIdAndContentId[1]);
                         }
                     }
 

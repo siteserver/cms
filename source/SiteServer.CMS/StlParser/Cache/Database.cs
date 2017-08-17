@@ -6,9 +6,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static int GetPageTotalCount(string sqlString, string guid)
+        public static int GetPageTotalCount(string sqlString)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Database), nameof(GetPageTotalCount),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Database), nameof(GetPageTotalCount),
                     sqlString);
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -26,9 +26,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetStlPageSqlString(string sqlString, string orderByString, int totalNum, int pageNum, int currentPageIndex, string guid)
+        public static string GetStlPageSqlString(string sqlString, string orderByString, int totalNum, int pageNum, int currentPageIndex)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Database), nameof(GetStlPageSqlString),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Database), nameof(GetStlPageSqlString),
                        sqlString, orderByString, totalNum.ToString(), pageNum.ToString(), currentPageIndex.ToString());
             var retval = StlCacheUtils.GetCache<string>(cacheKey);
             if (retval != null) return retval;
@@ -47,9 +47,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetString(string connectionString, string queryString, string guid)
+        public static string GetString(string connectionString, string queryString)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Database), nameof(GetString),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Database), nameof(GetString),
                        connectionString, queryString);
             var retval = StlCacheUtils.GetCache<string>(cacheKey);
             if (retval != null) return retval;

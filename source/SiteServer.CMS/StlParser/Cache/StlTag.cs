@@ -7,9 +7,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static StlTagInfo GetStlTagInfo(int publishmentSystemId, string tagName, string guid)
+        public static StlTagInfo GetStlTagInfo(int publishmentSystemId, string tagName)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(StlTag), nameof(GetStlTagInfo),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(StlTag), nameof(GetStlTagInfo),
                        publishmentSystemId.ToString(), tagName);
             var retval = StlCacheUtils.GetCache<StlTagInfo>(cacheKey);
             if (retval != null) return retval;

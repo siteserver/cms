@@ -38,7 +38,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             //var adAreaInfo = DataProvider.AdAreaDao.GetAdAreaInfo(area, pageInfo.PublishmentSystemId);
-            var adAreaInfo = AdArea.GetAdAreaInfo(area, pageInfo.PublishmentSystemId, pageInfo.Guid);
+            var adAreaInfo = AdArea.GetAdAreaInfo(area, pageInfo.PublishmentSystemId);
             if (adAreaInfo != null)
             {
                 if (adAreaInfo.IsEnabled)

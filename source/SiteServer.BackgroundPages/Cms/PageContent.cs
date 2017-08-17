@@ -6,7 +6,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -20,14 +19,14 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageContent : BasePageCms
     {
-        public Repeater rptContents;
-        public SqlPager spContents;
-        public Literal ltlColumnHeadRows;
-        public Literal ltlCommandHeadRows;
-        public Literal ltlContentButtons;
-        public DateTimeTextBox DateFrom;
-        public DropDownList SearchType;
-        public TextBox Keyword;
+        public Repeater RptContents;
+        public SqlPager SpContents;
+        public Literal LtlColumnHeadRows;
+        public Literal LtlCommandHeadRows;
+        public Literal LtlContentButtons;
+        public DateTimeTextBox TbDateFrom;
+        public DropDownList DdlSearchType;
+        public TextBox TbKeyword;
 
         private NodeInfo _nodeInfo;
         private ETableStyle _tableStyle;
@@ -85,9 +84,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             //this.attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(this.nodeInfo.Additional.ContentAttributesOfDisplay);
 
-            spContents.ControlToPaginate = rptContents;
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
-            spContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
+            SpContents.ControlToPaginate = RptContents;
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
+            SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
             var administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdministratorName, PublishmentSystemId, nodeId)
                     ? Body.AdministratorName
@@ -99,29 +98,29 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     nodeId
                 };
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableStyle, _tableName, PublishmentSystemId, nodeId, permissions.IsSystemAdministrator, owningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), string.Empty, false, ETriState.All, false, false, false, administratorName);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableStyle, _tableName, PublishmentSystemId, nodeId, permissions.IsSystemAdministrator, owningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), string.Empty, false, ETriState.All, false, false, false, administratorName);
             }
             else
             {
-                spContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectCommend(_tableName, nodeId, ETriState.All, administratorName);
+                SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectCommend(_tableName, nodeId, ETriState.All, administratorName);
             }
 
             //spContents.SortField = BaiRongDataProvider.ContentDao.GetSortFieldName();
             //spContents.SortMode = SortMode.DESC;
             //spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisType.OrderByTaxisDesc);
-            spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisTypeUtils.GetEnumType(_nodeInfo.Additional.DefaultTaxisType));
+            SpContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisTypeUtils.GetEnumType(_nodeInfo.Additional.DefaultTaxisType));
 
             //分页的时候，不去查询总条数，直接使用栏目的属性：ContentNum
-            spContents.IsQueryTotalCount = false;
-            spContents.TotalCount = _nodeInfo.ContentNum;
+            SpContents.IsQueryTotalCount = false;
+            SpContents.TotalCount = _nodeInfo.ContentNum;
 
             if (!IsPostBack)
             {
                 var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId);
                 BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdContent, "内容管理", nodeName, string.Empty);
 
-                ltlContentButtons.Text = WebUtils.GetContentCommands(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, PageUrl, GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId), false);
-                spContents.DataBind();
+                LtlContentButtons.Text = WebUtils.GetContentCommands(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, PageUrl, GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId), false);
+                SpContents.DataBind();
 
                 if (_styleInfoList != null)
                 {
@@ -130,23 +129,23 @@ namespace SiteServer.BackgroundPages.Cms
                         if (styleInfo.IsVisible)
                         {
                             var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                            SearchType.Items.Add(listitem);
+                            DdlSearchType.Items.Add(listitem);
                         }
                     }
                 }
 
                 //添加隐藏属性
-                SearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
-                SearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
-                SearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
-                SearchType.Items.Add(new ListItem("内容组", ContentAttribute.ContentGroupNameCollection));
+                DdlSearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
+                DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
+                DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
+                DdlSearchType.Items.Add(new ListItem("内容组", ContentAttribute.ContentGroupNameCollection));
 
                 if (Body.IsQueryExists("SearchType"))
                 {
-                    DateFrom.Text = Body.GetQueryString("DateFrom");
-                    ControlUtils.SelectListItems(SearchType, Body.GetQueryString("SearchType"));
-                    Keyword.Text = Body.GetQueryString("Keyword");
-                    ltlContentButtons.Text += @"
+                    TbDateFrom.Text = Body.GetQueryString("DateFrom");
+                    ControlUtils.SelectListItems(DdlSearchType, Body.GetQueryString("SearchType"));
+                    TbKeyword.Text = Body.GetQueryString("Keyword");
+                    LtlContentButtons.Text += @"
 <script>
 $(document).ready(function() {
 	$('#contentSearch').show();
@@ -155,8 +154,8 @@ $(document).ready(function() {
 ";
                 }
 
-                ltlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_styleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                ltlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _modelInfo);
+                LtlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_styleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
+                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _modelInfo);
             }
         }
 
@@ -208,9 +207,9 @@ $(document).ready(function() {
                     {
                         {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"NodeID", _nodeInfo.NodeId.ToString()},
-                        {"DateFrom", DateFrom.Text},
-                        {"SearchType", SearchType.SelectedValue},
-                        {"Keyword", Keyword.Text},
+                        {"DateFrom", TbDateFrom.Text},
+                        {"SearchType", DdlSearchType.SelectedValue},
+                        {"Keyword", TbKeyword.Text},
                         {"page", Body.GetQueryInt("page", 1).ToString()}
                     });
                 }

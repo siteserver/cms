@@ -106,14 +106,7 @@ namespace BaiRong.Core
             {
                 foreach (var tag in tags)
                 {
-                    if (tag.Trim().IndexOf(",", StringComparison.Ordinal) != -1)
-                    {
-                        tagsBuilder.Append($"\"{tag}\"");
-                    }
-                    else
-                    {
-                        tagsBuilder.Append(tag);
-                    }
+                    tagsBuilder.Append(tag.Trim().IndexOf(",", StringComparison.Ordinal) != -1 ? $"\"{tag}\"" : tag);
                     tagsBuilder.Append(" ");
                 }
                 --tagsBuilder.Length;
@@ -165,15 +158,13 @@ namespace BaiRong.Core
             return stringCollection;
         }
 
-        public static List<TagInfo> GetTagInfoList(int publishmentSystemId)
+        public static List<TagInfo> GetTagInfoList(List<TagInfo> tagInfoList)
         {
-            return GetTagInfoList(publishmentSystemId, 0, 0, false, 0);
+            return GetTagInfoList(tagInfoList, 0, 0);
         }
 
-        public static List<TagInfo> GetTagInfoList(int publishmentSystemId, int contentId, int totalNum, bool isOrderByCount, int tagLevel)
+        public static List<TagInfo> GetTagInfoList(List<TagInfo> tagInfoList, int totalNum, int tagLevel)
         {
-            var tagInfoList = BaiRongDataProvider.TagDao.GetTagInfoList(publishmentSystemId, contentId, isOrderByCount, totalNum);
-
             var list = new List<TagInfo>();
             var sortedlist = new SortedList();
             foreach (var tagInfo in tagInfoList)

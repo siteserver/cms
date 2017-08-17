@@ -10,9 +10,9 @@ namespace SiteServer.CMS.StlParser.Cache
         private static readonly object LockObject = new object();
 
         public static int GetTotalAccessNumByPageInfo(int publishmentSystemId, int channelId, int contentId,
-            DateTime sinceDate, string guid)
+            DateTime sinceDate)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Tracking),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Tracking),
                        nameof(GetTotalAccessNumByPageInfo), publishmentSystemId.ToString(), channelId.ToString(),
                        contentId.ToString(), sinceDate.ToString(CultureInfo.InvariantCulture));
             var retval = StlCacheUtils.GetIntCache(cacheKey);
@@ -32,10 +32,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetTotalAccessNumByPageUrl(int publishmentSystemId, string referrer, DateTime sinceDate,
-            string guid)
+        public static int GetTotalAccessNumByPageUrl(int publishmentSystemId, string referrer, DateTime sinceDate)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Tracking),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Tracking),
                        nameof(GetTotalAccessNumByPageUrl), publishmentSystemId.ToString(), referrer,
                        sinceDate.ToString(CultureInfo.InvariantCulture));
             var retval = StlCacheUtils.GetIntCache(cacheKey);
@@ -54,9 +53,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetTotalAccessNum(int publishmentSystemId, DateTime sinceDate, string guid)
+        public static int GetTotalAccessNum(int publishmentSystemId, DateTime sinceDate)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Tracking), nameof(GetTotalAccessNum),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Tracking), nameof(GetTotalAccessNum),
                        publishmentSystemId.ToString(), sinceDate.ToString(CultureInfo.InvariantCulture));
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -75,9 +74,9 @@ namespace SiteServer.CMS.StlParser.Cache
         }
 
         public static int GetTotalUniqueAccessNumByPageInfo(int publishmentSystemId, int channelId, int contentId,
-            DateTime sinceDate, string guid)
+            DateTime sinceDate)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Tracking),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Tracking),
                        nameof(GetTotalUniqueAccessNumByPageInfo), publishmentSystemId.ToString(), channelId.ToString(),
                        contentId.ToString(), sinceDate.ToString(CultureInfo.InvariantCulture));
             var retval = StlCacheUtils.GetIntCache(cacheKey);
@@ -97,10 +96,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetTotalUniqueAccessNumByPageUrl(int publishmentSystemId, string referrer, DateTime sinceDate,
-            string guid)
+        public static int GetTotalUniqueAccessNumByPageUrl(int publishmentSystemId, string referrer, DateTime sinceDate)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Tracking),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Tracking),
                        nameof(GetTotalUniqueAccessNumByPageUrl), publishmentSystemId.ToString(), referrer,
                        sinceDate.ToString(CultureInfo.InvariantCulture));
             var retval = StlCacheUtils.GetIntCache(cacheKey);
@@ -120,9 +118,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetTotalUniqueAccessNum(int publishmentSystemId, DateTime sinceDate, string guid)
+        public static int GetTotalUniqueAccessNum(int publishmentSystemId, DateTime sinceDate)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Tracking), nameof(GetTotalUniqueAccessNum),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Tracking), nameof(GetTotalUniqueAccessNum),
                        publishmentSystemId.ToString(), sinceDate.ToString(CultureInfo.InvariantCulture));
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -140,9 +138,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetCurrentVisitorNum(int publishmentSystemId, int trackerCurrentMinute, string guid)
+        public static int GetCurrentVisitorNum(int publishmentSystemId, int trackerCurrentMinute)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Tracking), nameof(GetCurrentVisitorNum),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Tracking), nameof(GetCurrentVisitorNum),
                        publishmentSystemId.ToString(), trackerCurrentMinute.ToString());
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -160,9 +158,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static List<int> GetPageNodeIdListByAccessNum(int publishmentSystemId, string guid)
+        public static List<int> GetPageNodeIdListByAccessNum(int publishmentSystemId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Tracking),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Tracking),
                        nameof(GetPageNodeIdListByAccessNum), publishmentSystemId.ToString());
             var retval = StlCacheUtils.GetCache<List<int>>(cacheKey);
             if (retval != null) return retval;

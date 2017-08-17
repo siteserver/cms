@@ -34,15 +34,15 @@ namespace SiteServer.CMS.WeiXin.IO
             return PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentID, isFromBackground));
         }
 
-        public static string GetChannelUrl(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string guid)
+        public static string GetChannelUrl(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
         {
-            return PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, false, guid));
+            return PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, false));
         }
 
-        public static string GetChannelUrl(PublishmentSystemInfo publishmentSystemInfo, int channelID, string guid)
+        public static string GetChannelUrl(PublishmentSystemInfo publishmentSystemInfo, int channelID)
         {
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelID);
-            return GetChannelUrl(publishmentSystemInfo, nodeInfo, guid);
+            return GetChannelUrl(publishmentSystemInfo, nodeInfo);
         }
 
         #region Vote

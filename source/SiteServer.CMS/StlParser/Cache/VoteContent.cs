@@ -7,9 +7,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static VoteContentInfo GetContentInfo(string tableName, int contentId, string guid)
+        public static VoteContentInfo GetContentInfo(string tableName, int contentId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(VoteContent), nameof(GetContentInfo),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(VoteContent), nameof(GetContentInfo),
                        tableName, contentId.ToString());
             var retval = StlCacheUtils.GetCache<VoteContentInfo>(cacheKey);
             if (retval != null) return retval;

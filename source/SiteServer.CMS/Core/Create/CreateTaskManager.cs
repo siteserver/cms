@@ -118,7 +118,7 @@ namespace SiteServer.CMS.Core.Create
         public void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
         {
             var taskLogs = GetTaskLogs(taskInfo.PublishmentSystemId);
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.Name, timeSpan, true, string.Empty, DateTime.Now);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Name, timeSpan, true, string.Empty, DateTime.Now);
             if (taskLogs.Count > 20)
             {
                 taskLogs.RemoveAt(20);
@@ -129,7 +129,7 @@ namespace SiteServer.CMS.Core.Create
         public void AddFailureLog(CreateTaskInfo taskInfo, Exception ex)
         {
             var taskLogs = GetTaskLogs(taskInfo.PublishmentSystemId);
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.Name, string.Empty, false, ex.Message, DateTime.Now);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Name, string.Empty, false, ex.Message, DateTime.Now);
             if (taskLogs.Count > 20)
             {
                 taskLogs.RemoveAt(20);
@@ -187,12 +187,13 @@ namespace SiteServer.CMS.Core.Create
             var count = pendingTasks.Count >= 11 ? 11 : pendingTasks.Count;
             if (count > 0)
             {
-                current = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(pendingTasks[0].CreateType), pendingTasks[0].Name, string.Empty, false, false, string.Empty);
+                var pendingTask = pendingTasks[0];
+                current = new CreateTaskSummaryItem(pendingTask, string.Empty, false, false, string.Empty);
 
                 for (var i = 1; i < count; i++)
                 {
                     var taskInfo = pendingTasks[i];
-                    var summaryItem = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(taskInfo.CreateType), taskInfo.Name, string.Empty, false, false, string.Empty);
+                    var summaryItem = new CreateTaskSummaryItem(taskInfo, string.Empty, false, false, string.Empty);
                     list.Add(summaryItem);
                 }
             }
@@ -201,7 +202,7 @@ namespace SiteServer.CMS.Core.Create
             for (var i = 1; i <= count; i++)
             {
                 var logInfo = taskLogs[taskLogs.Count - i];
-                var summaryItem = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(logInfo.CreateType), logInfo.TaskName, logInfo.TimeSpan, true, logInfo.IsSuccess, logInfo.ErrorMessage);
+                var summaryItem = new CreateTaskSummaryItem(logInfo, true);
                 list.Add(summaryItem);
             }
 
@@ -246,13 +247,13 @@ namespace SiteServer.CMS.Core.Create
 
         public void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
         {
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.Name, timeSpan, true, string.Empty, DateTime.Now);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Name, timeSpan, true, string.Empty, DateTime.Now);
             DataProvider.CreateTaskLogDao.Insert(taskLog);
         }
 
         public void AddFailureLog(CreateTaskInfo taskInfo, Exception ex)
         {
-            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.Name, string.Empty, false, ex.Message, DateTime.Now);
+            var taskLog = new CreateTaskLogInfo(0, taskInfo.CreateType, taskInfo.PublishmentSystemId, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId, taskInfo.Name, string.Empty, false, ex.Message, DateTime.Now);
             DataProvider.CreateTaskLogDao.Insert(taskLog);
         }
 
@@ -282,17 +283,18 @@ namespace SiteServer.CMS.Core.Create
             {
                 if (i == 0)
                 {
-                    current = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(pendingTasks[0].CreateType), pendingTasks[0].Name, string.Empty, false, false, string.Empty);
+                    var pendingTask = pendingTasks[0];
+                    current = new CreateTaskSummaryItem(pendingTask, string.Empty, false, false, string.Empty);
                 }
                 var taskInfo = pendingTasks[i];
-                var summaryItem = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(taskInfo.CreateType), taskInfo.Name, string.Empty, false, false, string.Empty);
+                var summaryItem = new CreateTaskSummaryItem(taskInfo, string.Empty, false, false, string.Empty);
                 list.Add(summaryItem);
             }
 
             for (var i = taskLogs.Count - 1; i >= 0; i--)
             {
                 var logInfo = taskLogs[i];
-                var summaryItem = new CreateTaskSummaryItem(ECreateTypeUtils.GetText(logInfo.CreateType), logInfo.TaskName, logInfo.TimeSpan, true, logInfo.IsSuccess, logInfo.ErrorMessage);
+                var summaryItem = new CreateTaskSummaryItem(logInfo, true);
                 list.Add(summaryItem);
             }
 

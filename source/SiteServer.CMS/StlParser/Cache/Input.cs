@@ -7,9 +7,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static InputInfo GetInputInfo(int inputId, string guid)
+        public static InputInfo GetInputInfo(int inputId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Input), nameof(GetInputInfo),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Input), nameof(GetInputInfo),
                     inputId.ToString());
             var retval = StlCacheUtils.GetCache<InputInfo>(cacheKey);
             if (retval != null) return retval;
@@ -27,9 +27,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static int GetInputIdAsPossible(string inputName, int publishmentSystemId, string guid)
+        public static int GetInputIdAsPossible(string inputName, int publishmentSystemId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Input), nameof(GetInputIdAsPossible),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Input), nameof(GetInputIdAsPossible),
                     inputName, publishmentSystemId.ToString());
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
@@ -268,11 +267,11 @@ namespace SiteServer.BackgroundPages.Settings
             _styleInfo.Additional.Width = tbWidth.Text;
             _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(rblIsFormatString.SelectedValue);
 
-            ArrayList styleItems = null;
+            List<TableStyleItemInfo> styleItems = null;
 
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
-                styleItems = new ArrayList();
+                styleItems = new List<TableStyleItemInfo>();
 
                 var isRapid = TranslateUtils.ToBool(ddlItemType.SelectedValue);
                 if (isRapid)

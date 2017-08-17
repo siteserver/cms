@@ -44,8 +44,6 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var guid = StringUtils.GetShortGuid();
-
             var nodeIdList = new List<int>();
             var selectedNodeIdArrayList = ControlUtils.GetSelectedListControlValueArrayList(NodeIDCollectionToCreate);
 
@@ -97,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var nodeId in nodeIdList)
             {
-                CreateManager.CreateChannel(PublishmentSystemId, nodeId, guid);
+                CreateManager.CreateChannel(PublishmentSystemId, nodeId);
             }
 
             PageCreateStatus.Redirect(PublishmentSystemId);

@@ -6,9 +6,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static int GetPublishmentSystemIdByIsHeadquarters(string guid)
+        public static int GetPublishmentSystemIdByIsHeadquarters()
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(PublishmentSystem),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(PublishmentSystem),
                        nameof(GetPublishmentSystemIdByIsHeadquarters));
             var retval = StlCacheUtils.GetIntCache(cacheKey);
             if (retval != -1) return retval;
@@ -25,5 +25,29 @@ namespace SiteServer.CMS.StlParser.Cache
 
             return retval;
         }
+
+        public static int GetPublishmentSystemIdByPublishmentSystemDir(string publishmentSystemDir)
+        {
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(PublishmentSystem),
+                       nameof(GetPublishmentSystemIdByPublishmentSystemDir), publishmentSystemDir);
+            var retval = StlCacheUtils.GetIntCache(cacheKey);
+            if (retval != -1) return retval;
+
+            lock (LockObject)
+            {
+                retval = StlCacheUtils.GetIntCache(cacheKey);
+                if (retval == -1)
+                {
+                    retval =
+                        DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByPublishmentSystemDir(
+                            publishmentSystemDir);
+                    StlCacheUtils.SetCache(cacheKey, retval);
+                }
+            }
+
+            return retval;
+        }
+
+        
     }
 }

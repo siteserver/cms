@@ -6,9 +6,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static string GetDisplayName(string userName, string guid)
+        public static string GetDisplayName(string userName)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Administrator), nameof(GetDisplayName),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Administrator), nameof(GetDisplayName),
                        userName);
             var retval = StlCacheUtils.GetCache<string>(cacheKey);
             if (retval != null) return retval;

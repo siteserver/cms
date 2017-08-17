@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ltlElement.Text = StringUtils.HtmlEncode(stlElement);
 
-                ltlForm.Text = StlParserManager.ParsePreviewContent(PublishmentSystemInfo, stlElement, StringUtils.GetShortGuid());
+                ltlForm.Text = StlParserManager.ParsePreviewContent(PublishmentSystemInfo, stlElement);
 			}
 		}
 	}

@@ -17,11 +17,10 @@ namespace SiteServer.CMS.Provider
         private const string ParmChannelId = "@ChannelId";
         private const string ParmContentId = "@ContentId";
         private const string ParmTemplateId = "@TemplateId";
-        private const string ParmGuid = "@Guid";
 
         public void Insert(CreateTaskInfo info)
         {
-            const string sqlString = "INSERT INTO siteserver_CreateTask (CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, Guid) VALUES (@CreateType, @PublishmentSystemId, @ChannelId, @ContentId, @TemplateId, @Guid)";
+            const string sqlString = "INSERT INTO siteserver_CreateTask (CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId) VALUES (@CreateType, @PublishmentSystemId, @ChannelId, @ContentId, @TemplateId)";
 
             var parms = new IDataParameter[]
 			{
@@ -29,8 +28,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
                 GetParameter(ParmChannelId, DataType.Integer, info.ChannelId),
                 GetParameter(ParmContentId, DataType.Integer, info.ContentId),
-                GetParameter(ParmTemplateId, DataType.Integer, info.TemplateId),
-                GetParameter(ParmGuid, DataType.VarChar, 50, info.Guid)
+                GetParameter(ParmTemplateId, DataType.Integer, info.TemplateId)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -108,7 +106,7 @@ namespace SiteServer.CMS.Provider
             {
                 //string sqlString =
                 //    $"SELECT TOP {totalNum} Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId FROM siteserver_CreateTask WHERE PublishmentSystemId = @PublishmentSystemId ORDER BY Id DESC";
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, Guid", "WHERE PublishmentSystemId = @PublishmentSystemId ORDER BY Id DESC", totalNum);
+                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", "WHERE PublishmentSystemId = @PublishmentSystemId ORDER BY Id DESC", totalNum);
 
                 var parms = new IDataParameter[]
                 {
@@ -126,13 +124,12 @@ namespace SiteServer.CMS.Provider
                         var publishmentSystemId = GetInt(rdr, i++);
                         var channelId = GetInt(rdr, i++);
                         var contentId = GetInt(rdr, i++);
-                        var templateId = GetInt(rdr, i++);
-                        var guid = GetString(rdr, i);
+                        var templateId = GetInt(rdr, i);
                         int pageCount;
                         var name = CreateManager.GetTaskName(createType, publishmentSystemId, channelId, contentId,
                             templateId, out pageCount);
 
-                        var info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount, guid);
+                        var info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount);
                         list.Add(info);
                     }
                     rdr.Close();
@@ -142,7 +139,7 @@ namespace SiteServer.CMS.Provider
             {
                 //string sqlString =
                 //    $"SELECT TOP {totalNum} Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId FROM siteserver_CreateTask ORDER BY Id DESC";
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, Guid", "ORDER BY Id DESC", totalNum);
+                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", "ORDER BY Id DESC", totalNum);
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
@@ -155,13 +152,12 @@ namespace SiteServer.CMS.Provider
                         var publishmentSystemId = GetInt(rdr, i++);
                         var channelId = GetInt(rdr, i++);
                         var contentId = GetInt(rdr, i++);
-                        var templateId = GetInt(rdr, i++);
-                        var guid = GetString(rdr, i);
+                        var templateId = GetInt(rdr, i);
                         int pageCount;
                         var name = CreateManager.GetTaskName(createType, publishmentSystemId, channelId, contentId,
                             templateId, out pageCount);
 
-                        var info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount, guid);
+                        var info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount);
                         list.Add(info);
                     }
                     rdr.Close();
@@ -176,7 +172,7 @@ namespace SiteServer.CMS.Provider
             CreateTaskInfo info = null;
 
             //var sqlString = "SELECT TOP 1 Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId FROM siteserver_CreateTask ORDER BY Id";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, Guid", "ORDER BY Id", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", "ORDER BY Id", 1);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -188,13 +184,12 @@ namespace SiteServer.CMS.Provider
                     var publishmentSystemId = GetInt(rdr, i++);
                     var channelId = GetInt(rdr, i++);
                     var contentId = GetInt(rdr, i++);
-                    var templateId = GetInt(rdr, i++);
-                    var guid = GetString(rdr, i);
+                    var templateId = GetInt(rdr, i);
                     int pageCount;
                     var name = CreateManager.GetTaskName(createType, publishmentSystemId, channelId, contentId,
                         templateId, out pageCount);
 
-                    info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount, guid);
+                    info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount);
                 }
                 rdr.Close();
             }
@@ -210,7 +205,7 @@ namespace SiteServer.CMS.Provider
         {
             var list = new List<CreateTaskInfo>();
 
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, Guid", "ORDER BY Id", topNum);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", "ORDER BY Id", topNum);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -222,12 +217,11 @@ namespace SiteServer.CMS.Provider
                     var publishmentSystemId = GetInt(rdr, i++);
                     var channelId = GetInt(rdr, i++);
                     var contentId = GetInt(rdr, i++);
-                    var templateId = GetInt(rdr, i++);
-                    var guid = GetString(rdr, i);
+                    var templateId = GetInt(rdr, i);
                     int pageCount;
                     var name = CreateManager.GetTaskName(createType, publishmentSystemId, channelId, contentId,
                         templateId, out pageCount);
-                    var info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount, guid);
+                    var info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount);
 
                     list.Add(info);
                 }

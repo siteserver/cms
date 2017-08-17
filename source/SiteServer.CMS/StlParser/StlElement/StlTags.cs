@@ -5,6 +5,7 @@ using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -93,7 +94,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 contentId = contextInfo.ContentId;
             }
 
-            var tagInfoList = TagUtils.GetTagInfoList(pageInfo.PublishmentSystemId, contentId, totalNum, isOrderByCount, tagLevel);
+            var tagInfoList = Tag.GetTagInfoList(pageInfo.PublishmentSystemId, contentId, isOrderByCount, totalNum);
+            tagInfoList = TagUtils.GetTagInfoList(tagInfoList, totalNum, tagLevel);
             if (contextInfo.ContextType == EContextType.Content && contextInfo.ContentInfo != null)
             {
                 var tagInfoList2 = new List<TagInfo>();

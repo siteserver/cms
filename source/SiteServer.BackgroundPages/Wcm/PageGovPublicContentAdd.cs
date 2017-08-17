@@ -443,8 +443,6 @@ $('#Tags').keyup(function (e) {
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var guid = StringUtils.GetShortGuid();
-
             var categoryChannelId = TranslateUtils.ToInt(Request["categoryChannelID"]);
             var categoryDepartmentId = TranslateUtils.ToInt(Request["categoryDepartmentID"]);
             if (categoryChannelId == 0)
@@ -522,7 +520,7 @@ $('#Tags').keyup(function (e) {
 
                     if (contentInfo.IsChecked)
                     {
-                        CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, guid);
+                        CreateManager.CreateContentAndTrigger(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id);
                     }
 
                     contentInfo.Id = contentId;
@@ -537,7 +535,7 @@ $('#Tags').keyup(function (e) {
                 Body.AddSiteLog(PublishmentSystemId, categoryChannelId, contentInfo.Id, "添加内容",
                     $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
 
-                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue), Body.AdministratorName, guid);
+                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue), Body.AdministratorName);
 
                 PageUtils.Redirect(PageGovPublicContentAddAfter.GetRedirectUrl(PublishmentSystemId, categoryChannelId, contentInfo.Id, Request.QueryString["ReturnUrl"]));
             }
@@ -611,7 +609,7 @@ $('#Tags').keyup(function (e) {
                         TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, PublishmentSystemId, _contentId);
                     }
 
-                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue), Body.AdministratorName, guid);
+                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(ddlTranslateType.SelectedValue), Body.AdministratorName);
 
                     //更新分类内容数
                     foreach (GovPublicCategoryClassInfo categoryClassInfo in categoryClassInfoArrayList)
@@ -647,7 +645,7 @@ $('#Tags').keyup(function (e) {
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, categoryChannelId, _contentId, guid);
+                    CreateManager.CreateContentAndTrigger(PublishmentSystemId, categoryChannelId, _contentId);
                 }
 
                 Body.AddSiteLog(PublishmentSystemId, categoryChannelId, _contentId, "修改内容",

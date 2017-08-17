@@ -180,8 +180,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     //var stlTagInfo = DataProvider.StlTagDao.GetStlTagInfo(pageInfo.PublishmentSystemId, type) ??
                     //                 DataProvider.StlTagDao.GetStlTagInfo(0, type);
-                    var stlTagInfo = StlTag.GetStlTagInfo(pageInfo.PublishmentSystemId, type, pageInfo.Guid) ??
-                                     StlTag.GetStlTagInfo(0, type, pageInfo.Guid);
+                    var stlTagInfo = StlTag.GetStlTagInfo(pageInfo.PublishmentSystemId, type) ??
+                                     StlTag.GetStlTagInfo(0, type);
                     if (!string.IsNullOrEmpty(stlTagInfo?.TagContent))
                     {
                         var innerBuilder = new StringBuilder(stlTagInfo.TagContent);

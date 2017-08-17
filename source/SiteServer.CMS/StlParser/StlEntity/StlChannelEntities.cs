@@ -65,7 +65,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 if (!string.IsNullOrEmpty(channelIndex))
                 {
                     //channelId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
-                    channelId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex, pageInfo.Guid);
+                    channelId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
                     if (channelId == 0)
                     {
                         channelId = contextInfo.ChannelId;
@@ -121,7 +121,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(NavigationUrl, attributeName))//栏目链接地址
                 {
-                    parsedContent = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo, pageInfo.Guid);
+                    parsedContent = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(ImageUrl, attributeName))//栏目图片地址
                 {

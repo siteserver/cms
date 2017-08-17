@@ -7,9 +7,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static AdAreaInfo GetAdAreaInfo(string area, int publishmentSystemId, string guid)
+        public static AdAreaInfo GetAdAreaInfo(string area, int publishmentSystemId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(AdArea), nameof(GetAdAreaInfo), area, publishmentSystemId.ToString());
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(AdArea), nameof(GetAdAreaInfo), area, publishmentSystemId.ToString());
             var retval = StlCacheUtils.GetCache<AdAreaInfo>(cacheKey);
             if (retval != null) return retval;
 

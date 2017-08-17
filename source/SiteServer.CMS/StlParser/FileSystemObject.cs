@@ -42,26 +42,26 @@ namespace SiteServer.CMS.StlParser
 
         public bool IsHeadquarters { get; }
 
-        public void Execute(ECreateType createType, int channelId, int contentId, int templateId, string guid)
+        public void Execute(ECreateType createType, int channelId, int contentId, int templateId)
         {
             if (createType == ECreateType.Channel)
             {
-                CreateChannel(channelId, guid);
+                CreateChannel(channelId);
             }
             else if (createType == ECreateType.Content)
             {
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, channelId);
                 var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
-                CreateContent(tableStyle, tableName, channelId, contentId, guid);
+                CreateContent(tableStyle, tableName, channelId, contentId);
             }
             else if (createType == ECreateType.AllContent)
             {
-                CreateContents(channelId, guid);
+                CreateContents(channelId);
             }
             else if (createType == ECreateType.File)
             {
-                CreateFile(templateId, guid);
+                CreateFile(templateId);
             }
         }
 
@@ -94,7 +94,7 @@ namespace SiteServer.CMS.StlParser
         //    GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
         //}
 
-        private void CreateChannel(int nodeId, string guid)
+        private void CreateChannel(int nodeId)
         {
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
             if (nodeInfo == null) return;
@@ -115,7 +115,7 @@ namespace SiteServer.CMS.StlParser
 
             var templateInfo = nodeId == PublishmentSystemId ? TemplateManager.GetTemplateInfo(PublishmentSystemId, 0, ETemplateType.IndexPageTemplate) : TemplateManager.GetTemplateInfo(PublishmentSystemId, nodeId, ETemplateType.ChannelTemplate);
             var filePath = PathUtility.GetChannelPageFilePath(PublishmentSystemInfo, nodeId, 0);
-            var pageInfo = new PageInfo(guid, nodeId, 0, PublishmentSystemInfo, templateInfo, null);
+            var pageInfo = new PageInfo(nodeId, 0, PublishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo);
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(PublishmentSystemInfo, templateInfo));
 
@@ -140,7 +140,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                     var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
                     var length = index == -1 ? contentAttributeHtml.Length : index;
                     var pagedContentAttributeHtml = contentAttributeHtml.Substring(0, length);
@@ -171,7 +171,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId,
+                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId,
                         pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                     var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
                     var pagedBuilder =
@@ -204,7 +204,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                     var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -228,7 +228,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                     var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -252,7 +252,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                     var pageHtml = pageInputContentsElementParser.Parse(currentPageIndex, pageCount);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -269,13 +269,13 @@ namespace SiteServer.CMS.StlParser
             }
         }
 
-        private void CreateContents(int nodeId, string guid)
+        private void CreateContents(int nodeId)
         {
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
             var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc); 
-            var contentIdList = Content.GetContentIdListChecked(tableName, nodeId, orderByString, guid);
+            var contentIdList = Content.GetContentIdListChecked(tableName, nodeId, orderByString);
              
             if (PublishmentSystemInfo.Additional.IsCreateMultiThread) // 多线程并发生成页面
             {
@@ -293,21 +293,21 @@ namespace SiteServer.CMS.StlParser
                     {
                         list.Add(contentIdList[i + 2]);
                     }
-                    Parallel.ForEach(list, contentId => CreateContent(tableStyle, tableName, nodeId, contentId, guid));
+                    Parallel.ForEach(list, contentId => CreateContent(tableStyle, tableName, nodeId, contentId));
                 }
             }
             else  // 单线程生成页面
             {
                 foreach (var contentId in contentIdList)
                 {
-                    CreateContent(tableStyle, tableName, nodeId, contentId, guid);
+                    CreateContent(tableStyle, tableName, nodeId, contentId);
                 } 
             }
         }
 
-        private void CreateContent(ETableStyle tableStyle, string tableName, int nodeId, int contentId, string guid)
+        private void CreateContent(ETableStyle tableStyle, string tableName, int nodeId, int contentId)
         {
-            var contentInfo = Content.GetContentInfo(tableStyle, tableName, contentId, guid);
+            var contentInfo = Content.GetContentInfo(tableStyle, tableName, contentId);
 
             if (contentInfo == null)
             { 
@@ -332,7 +332,7 @@ namespace SiteServer.CMS.StlParser
             }
 
             var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, nodeId, ETemplateType.ContentTemplate);
-            var pageInfo = new PageInfo(guid, nodeId, contentId, PublishmentSystemInfo, templateInfo, null);
+            var pageInfo = new PageInfo(nodeId, contentId, PublishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo)
             {
                 ContentInfo = contentInfo
@@ -358,7 +358,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
 
                     var index = pageContentHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
                     var length = index == -1 ? pageContentHtml.Length : index;
@@ -390,7 +390,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                     var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -414,7 +414,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                     var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -438,7 +438,7 @@ namespace SiteServer.CMS.StlParser
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
-                    var thePageInfo = new PageInfo(guid, pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
                     var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -455,14 +455,14 @@ namespace SiteServer.CMS.StlParser
             }
         }
 
-        private void CreateFile(int templateId, string guid)
+        private void CreateFile(int templateId)
         {
             var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
             if (templateInfo == null || templateInfo.TemplateType != ETemplateType.FileTemplate)
             {
                 return;
             }
-            var pageInfo = new PageInfo(guid, PublishmentSystemId, 0, PublishmentSystemInfo, templateInfo, null);
+            var pageInfo = new PageInfo(PublishmentSystemId, 0, PublishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo);
             var filePath = PathUtility.MapPath(PublishmentSystemInfo, templateInfo.CreatedFileFullName);
 

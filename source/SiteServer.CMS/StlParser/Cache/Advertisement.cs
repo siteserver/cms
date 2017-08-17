@@ -8,9 +8,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static List<string> GetAdvertisementNameList(int publishmentSystemId, string guid)
+        public static List<string> GetAdvertisementNameList(int publishmentSystemId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Advertisement),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Advertisement),
                     nameof(GetAdvertisementNameList), publishmentSystemId.ToString());
             var retval = StlCacheUtils.GetCache<List<string>>(cacheKey);
             if (retval != null) return retval;
@@ -28,10 +28,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static AdvertisementInfo GetAdvertisementInfo(string advertisementName, int publishmentSystemId,
-            string guid)
+        public static AdvertisementInfo GetAdvertisementInfo(string advertisementName, int publishmentSystemId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(Advertisement), nameof(GetAdvertisementInfo),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Advertisement), nameof(GetAdvertisementInfo),
                     advertisementName, publishmentSystemId.ToString());
             var retval = StlCacheUtils.GetCache<AdvertisementInfo>(cacheKey);
             if (retval != null) return retval;

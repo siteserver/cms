@@ -175,7 +175,6 @@ namespace SiteServer.BackgroundPages.Plugins
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                var guid = StringUtils.GetShortGuid();
                 if (this.contentID == 0)
                 {
                     var contentInfo = new VoteContentInfo();
@@ -240,7 +239,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                     if (contentInfo.IsChecked)
                     {
-                        CreateManager.CreateContentAndTrigger(PublishmentSystemId, nodeID, contentInfo.Id, guid);
+                        CreateManager.CreateContentAndTrigger(PublishmentSystemId, nodeID, contentInfo.Id);
                     }
 
                     Body.AddSiteLog(PublishmentSystemId, nodeID, contentInfo.Id, "添加投票",
@@ -290,7 +289,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                     if (contentInfo.IsChecked)
                     {
-                        CreateManager.CreateContentAndTrigger(PublishmentSystemId, nodeID, contentID, guid);
+                        CreateManager.CreateContentAndTrigger(PublishmentSystemId, nodeID, contentID);
                     }
 
                     Body.AddSiteLog(PublishmentSystemId, nodeID, contentID, "修改投票",

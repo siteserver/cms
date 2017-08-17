@@ -15,6 +15,34 @@ namespace SiteServer.CMS.StlParser.Utility
 {
     public class StlDataUtility
     {
+        public static int GetNodeIdByChannelIdOrChannelIndexOrChannelName(int publishmentSystemId, int channelId, string channelIndex, string channelName)
+        {
+            var retval = channelId;
+
+            if (!string.IsNullOrEmpty(channelIndex))
+            {
+                var theNodeId = Node.GetNodeIdByNodeIndexName(publishmentSystemId, channelIndex);
+                if (theNodeId != 0)
+                {
+                    retval = theNodeId;
+                }
+            }
+            if (!string.IsNullOrEmpty(channelName))
+            {
+                var theNodeId = Node.GetNodeIdByParentIdAndNodeName(publishmentSystemId, retval, channelName, true);
+                if (theNodeId == 0)
+                {
+                    theNodeId = Node.GetNodeIdByParentIdAndNodeName(publishmentSystemId, publishmentSystemId, channelName, true);
+                }
+                if (theNodeId != 0)
+                {
+                    retval = theNodeId;
+                }
+            }
+
+            return retval;
+        }
+
         public static int GetNodeIdByLevel(int publishmentSystemId, int nodeId, int upLevel, int topLevel)
         {
             var theNodeId = nodeId;
@@ -60,11 +88,11 @@ namespace SiteServer.CMS.StlParser.Utility
             return theNodeId;
         }
 
-        public static List<int> GetNodeIdList(int publishmentSystemId, int channelId, string groupContent, string groupContentNot, string orderByString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isImageExists, bool isImage, int totalNum, string where, string guid)
+        public static List<int> GetNodeIdList(int publishmentSystemId, int channelId, string groupContent, string groupContentNot, string orderByString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isImageExists, bool isImage, int totalNum, string where)
         {
-            var whereString = Node.GetWhereString(publishmentSystemId, groupContent, groupContentNot, isImageExists, isImage, where, guid);
-            var nodeIdList = Node.GetNodeIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot, guid);
-            return Node.GetNodeIdListByTotalNum(nodeIdList, totalNum, orderByString, whereString, guid);
+            var whereString = Node.GetWhereString(publishmentSystemId, groupContent, groupContentNot, isImageExists, isImage, where);
+            var nodeIdList = Node.GetNodeIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot);
+            return Node.GetNodeIdListByTotalNum(nodeIdList, totalNum, orderByString, whereString);
         }
 
         //public static int GetNodeIDByChannelIDOrChannelIndexOrChannelName(int publishmentSystemID, int channelID, string channelIndex, string channelName)
@@ -168,7 +196,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return taxisType;
         }
 
-        public static string GetOrderByString(int publishmentSystemId, string orderValue, ETableStyle tableStyle, ETaxisType defaultType, string guid)
+        public static string GetOrderByString(int publishmentSystemId, string orderValue, ETableStyle tableStyle, ETaxisType defaultType)
         {
             var taxisType = defaultType;
             var orderByString = string.Empty;
@@ -297,25 +325,25 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 if (tableStyle == ETableStyle.Channel)
                 {
-                    orderedContentIdList = Tracking.GetPageNodeIdListByAccessNum(publishmentSystemId, guid);
+                    orderedContentIdList = Tracking.GetPageNodeIdListByAccessNum(publishmentSystemId);
                 }
             }
             else if (taxisType == ETaxisType.OrderByStars)
             {
-                orderedContentIdList = Star.GetContentIdListByPoint(publishmentSystemId, guid);
+                orderedContentIdList = Star.GetContentIdListByPoint(publishmentSystemId);
             }
             else if (taxisType == ETaxisType.OrderByDigg)
             {
-                orderedContentIdList = Digg.GetRelatedIdentityListByTotal(publishmentSystemId, guid);
+                orderedContentIdList = Digg.GetRelatedIdentityListByTotal(publishmentSystemId);
             }
             else if (taxisType == ETaxisType.OrderByComments)
             {
-                orderedContentIdList = Comment.GetContentIdListByCount(publishmentSystemId, guid);
+                orderedContentIdList = Comment.GetContentIdListByCount(publishmentSystemId);
             }
             return ETaxisTypeUtils.GetOrderByString(tableStyle, taxisType, orderByString, orderedContentIdList);
         }
 
-        public static string GetStlPageContentsSqlString(PublishmentSystemInfo publishmentSystemInfo, int channelId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, string guid)
+        public static string GetStlPageContentsSqlString(PublishmentSystemInfo publishmentSystemInfo, int channelId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
         {
             if (!NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, channelId)) return string.Empty;
 
@@ -323,20 +351,20 @@ namespace SiteServer.CMS.StlParser.Utility
             var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
-            var sqlWhereString = tableStyle == ETableStyle.BackgroundContent ? Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate, guid) : Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where, guid);
+            var sqlWhereString = tableStyle == ETableStyle.BackgroundContent ? Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate) : Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where);
 
-            return Content.GetStlSqlStringChecked(tableName, publishmentSystemInfo.PublishmentSystemId, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot, isNoDup, guid);
+            return Content.GetStlSqlStringChecked(tableName, publishmentSystemInfo.PublishmentSystemId, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot, isNoDup);
         }
 
-        public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, string guid)
+        public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
         {
-            var sqlWhereString = Content.GetStlWhereStringBySearch(tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, guid);
-            var sqlString = Content.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup, guid);
+            var sqlWhereString = Content.GetStlWhereStringBySearch(tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
+            var sqlString = Content.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup);
 
             return sqlString;
         }
 
-        public static DataSet GetContentsDataSource(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, LowerNameValueCollection others, string guid)
+        public static DataSet GetContentsDataSource(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, LowerNameValueCollection others)
         {
             if (!NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, channelId)) return null;
 
@@ -347,10 +375,10 @@ namespace SiteServer.CMS.StlParser.Utility
             if (isRelatedContents && contentId > 0)
             {
                 var isTags = false;
-                var tagCollection = Content.GetValue(tableName, contentId, ContentAttribute.Tags, guid);
+                var tagCollection = Content.GetValue(tableName, contentId, ContentAttribute.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
-                    var contentIdList = Tag.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringCollection(tagCollection), publishmentSystemInfo.PublishmentSystemId, guid);
+                    var contentIdList = Tag.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringCollection(tagCollection), publishmentSystemInfo.PublishmentSystemId);
                     if (contentIdList.Count > 0)
                     {
                         contentIdList.Remove(contentId);
@@ -384,75 +412,75 @@ namespace SiteServer.CMS.StlParser.Utility
             string sqlWhereString;
             if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovPublicContent)
             {
-                sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate, guid);
+                sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate);
             }
             else
             {
-                sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where, guid);
+                sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where);
             }
-            var nodeIdList = Node.GetNodeIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot, guid);
-            return Content.GetStlDataSourceChecked(nodeIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup, others, guid);
+            var nodeIdList = Node.GetNodeIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot);
+            return Content.GetStlDataSourceChecked(nodeIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup, others);
         }
 
-        public static IEnumerable GetCommentsDataSource(int publishmentSystemId, int channelId, int contentId, DbItemContainer itemContainer, int startNum, int totalNum, bool isRecommend, string orderByString, string where, string guid)
+        public static IEnumerable GetCommentsDataSource(int publishmentSystemId, int channelId, int contentId, DbItemContainer itemContainer, int startNum, int totalNum, bool isRecommend, string orderByString, string where)
         {
-            var sqlString = Comment.GetSelectSqlStringWithChecked(publishmentSystemId, channelId, contentId, startNum, totalNum, isRecommend, where, orderByString, guid);
+            var sqlString = Comment.GetSelectSqlStringWithChecked(publishmentSystemId, channelId, contentId, startNum, totalNum, isRecommend, where, orderByString);
             return BaiRongDataProvider.DatabaseDao.GetDataSource(sqlString);
         }
 
-        public static DataSet GetPageCommentsDataSet(int publishmentSystemId, int channelId, int contentId, DbItemContainer itemContainer, int startNum, int totalNum, bool isRecommend, string orderByString, string where, string guid)
+        public static DataSet GetPageCommentsDataSet(int publishmentSystemId, int channelId, int contentId, DbItemContainer itemContainer, int startNum, int totalNum, bool isRecommend, string orderByString, string where)
         {
-            var sqlString = Comment.GetSelectSqlStringWithChecked(publishmentSystemId, channelId, contentId, startNum, totalNum, isRecommend, where, orderByString, guid);
+            var sqlString = Comment.GetSelectSqlStringWithChecked(publishmentSystemId, channelId, contentId, startNum, totalNum, isRecommend, where, orderByString);
             return BaiRongDataProvider.DatabaseDao.GetDataSet(sqlString);
         }
 
-        public static IEnumerable GetInputContentsDataSource(int publishmentSystemId, int inputId, ListInfo listInfo, string guid)
+        public static IEnumerable GetInputContentsDataSource(int publishmentSystemId, int inputId, ListInfo listInfo)
         {
             var isReplyExists = listInfo.Others.Get(StlInputContents.AttributeIsReply) != null;
             var isReply = TranslateUtils.ToBool(listInfo.Others.Get(StlInputContents.AttributeIsReply));
-            var sqlString = InputContent.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others, guid);
+            var sqlString = InputContent.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others);
             return BaiRongDataProvider.DatabaseDao.GetDataSource(sqlString);
         }
 
-        public static DataSet GetPageInputContentsDataSet(int publishmentSystemId, int inputId, ListInfo listInfo, string guid)
+        public static DataSet GetPageInputContentsDataSet(int publishmentSystemId, int inputId, ListInfo listInfo)
         {
             var isReplyExists = listInfo.Others.Get(StlInputContents.AttributeIsReply) != null;
             var isReply = TranslateUtils.ToBool(listInfo.Others.Get(StlInputContents.AttributeIsReply));
-            var sqlString = InputContent.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others, guid);
+            var sqlString = InputContent.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others);
             return BaiRongDataProvider.DatabaseDao.GetDataSet(sqlString);
         }
 
-        public static DataSet GetChannelsDataSource(int publishmentSystemId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where, string guid)
+        public static DataSet GetChannelsDataSource(int publishmentSystemId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where)
         {
             DataSet ie;
 
             if (isTotal)//从所有栏目中选择
             {
-                var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where, guid);
-                ie = Node.GetStlDataSourceByPublishmentSystemId(publishmentSystemId, startNum, totalNum, sqlWhereString, orderByString, guid);
+                var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where);
+                ie = Node.GetStlDataSourceByPublishmentSystemId(publishmentSystemId, startNum, totalNum, sqlWhereString, orderByString);
             }
             else
             {
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
                 if (nodeInfo == null) return null;
 
-                var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where, guid);
+                var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where);
                 var nodeIdList = Node.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scopeType,
-                    string.Empty, string.Empty, guid);
+                    string.Empty, string.Empty);
                 //ie = DataProvider.NodeDao.GetStlDataSource(nodeIdList, startNum, totalNum, sqlWhereString, orderByString);
-                ie = Node.GetStlDataSet(nodeIdList, startNum, totalNum, sqlWhereString, orderByString, guid);
+                ie = Node.GetStlDataSet(nodeIdList, startNum, totalNum, sqlWhereString, orderByString);
             }
 
             return ie;
         }
 
-        public static DataSet GetPageChannelsDataSet(int publishmentSystemId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where, string guid)
+        public static DataSet GetPageChannelsDataSet(int publishmentSystemId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where)
         {
             DataSet dataSet;
 
             if (isTotal)//从所有栏目中选择
             {
-                var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where, guid);
+                var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where);
                 dataSet = DataProvider.NodeDao.GetStlDataSetByPublishmentSystemId(publishmentSystemId, startNum, totalNum, sqlWhereString, orderByString);
             }
             else
@@ -460,36 +488,36 @@ namespace SiteServer.CMS.StlParser.Utility
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
                 if (nodeInfo == null) return null;
 
-                var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where, guid);
-                var nodeIdList = Node.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scopeType, string.Empty, string.Empty, string.Empty);
+                var sqlWhereString = Node.GetWhereString(publishmentSystemId, group, groupNot, isImageExists, isImage, where);
+                var nodeIdList = Node.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scopeType, string.Empty, string.Empty);
                 dataSet = DataProvider.NodeDao.GetStlDataSet(nodeIdList, startNum, totalNum, sqlWhereString, orderByString);
             }
             return dataSet;
         }
 
-        public static IEnumerable GetSqlContentsDataSource(string connectionString, string queryString, int startNum, int totalNum, string orderByString, string guid)
+        public static IEnumerable GetSqlContentsDataSource(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
         {
-            var sqlString = TableStructure.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString, guid);
+            var sqlString = TableStructure.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
             return BaiRongDataProvider.DatabaseDao.GetDataSource(connectionString, sqlString);
         }
 
-        public static DataSet GetPageSqlContentsDataSet(string connectionString, string queryString, int startNum, int totalNum, string orderByString, string guid)
+        public static DataSet GetPageSqlContentsDataSet(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
         {
-            var sqlString = TableStructure.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString, guid);
+            var sqlString = TableStructure.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
             return BaiRongDataProvider.DatabaseDao.GetDataSet(connectionString, sqlString);
         }
 
-        public static IEnumerable GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since, string guid)
+        public static IEnumerable GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString, string since)
         {
             return DataProvider.PublishmentSystemDao.GetStlDataSource(siteName, siteDir, startNum, totalNum, whereString, scopeType, orderByString, since);
         }
 
-        public static IEnumerable GetPhotosDataSource(PublishmentSystemInfo publishmentSystemInfo, int contentId, int startNum, int totalNum, string guid)
+        public static IEnumerable GetPhotosDataSource(PublishmentSystemInfo publishmentSystemInfo, int contentId, int startNum, int totalNum)
         {
             return DataProvider.PhotoDao.GetStlDataSource(publishmentSystemInfo.PublishmentSystemId, contentId, startNum, totalNum);
         }
 
-        public static DataSet GetDataSourceByStlElement(PublishmentSystemInfo publishmentSystemInfo, int templateId, string elementName, string stlElement, string guid)
+        public static DataSet GetDataSourceByStlElement(PublishmentSystemInfo publishmentSystemInfo, int templateId, string elementName, string stlElement)
         {
             var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, false);
             XmlNode node = xmlDocument.DocumentElement;
@@ -498,7 +526,7 @@ namespace SiteServer.CMS.StlParser.Utility
             node = node.FirstChild;
 
             var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemInfo.PublishmentSystemId, templateId);
-            var pageInfo = new PageInfo(guid, publishmentSystemInfo.PublishmentSystemId, 0, publishmentSystemInfo, templateInfo, null);
+            var pageInfo = new PageInfo(publishmentSystemInfo.PublishmentSystemId, 0, publishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo);
 
             if (node?.Name == null) return null;

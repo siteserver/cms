@@ -281,7 +281,6 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                var guid = StringUtils.GetShortGuid();
                 var isChanged = false;
 
                 try
@@ -412,7 +411,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (isChanged)
                 {
-                    CreateManager.CreateChannel(PublishmentSystemId, _nodeId, guid);
+                    CreateManager.CreateChannel(PublishmentSystemId, _nodeId);
 
                     if (string.IsNullOrEmpty(_returnUrl))
                     {

@@ -386,7 +386,7 @@ namespace SiteServer.CMS.Core
             return isTranslated;
         }
 
-        public static void Translate(PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, string translateCollection, ETranslateContentType translateType, string administratorName, string guid)
+        public static void Translate(PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, string translateCollection, ETranslateContentType translateType, string administratorName)
         {
             var translateArrayList = TranslateUtils.StringCollectionToStringList(translateCollection);
             foreach (var translate in translateArrayList)
@@ -399,11 +399,11 @@ namespace SiteServer.CMS.Core
                 var targetPublishmentSystemId = TranslateUtils.ToInt(translates[0]);
                 var targetNodeId = TranslateUtils.ToInt(translates[1]);
 
-                Translate(administratorName, publishmentSystemInfo, nodeId, contentId, targetPublishmentSystemId, targetNodeId, translateType, guid);
+                Translate(administratorName, publishmentSystemInfo, nodeId, contentId, targetPublishmentSystemId, targetNodeId, translateType);
             }
         }
 
-        public static void Translate(string administratorName, PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, int targetPublishmentSystemId, int targetNodeId, ETranslateContentType translateType, string guid)
+        public static void Translate(string administratorName, PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, int targetPublishmentSystemId, int targetNodeId, ETranslateContentType translateType)
         {
             if (publishmentSystemInfo == null || nodeId <= 0 || contentId <= 0 || targetPublishmentSystemId <= 0 || targetNodeId <= 0) return;
 
@@ -446,7 +446,7 @@ namespace SiteServer.CMS.Core
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(targetPublishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, theContentId, guid);
+                    CreateManager.CreateContentAndTrigger(targetPublishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, theContentId);
                 }
             }
             else if (translateType == ETranslateContentType.Cut)
@@ -482,7 +482,7 @@ namespace SiteServer.CMS.Core
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(targetPublishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, newContentId, guid);
+                    CreateManager.CreateContentAndTrigger(targetPublishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, newContentId);
                 }
             }
             else if (translateType == ETranslateContentType.Reference)
@@ -526,7 +526,7 @@ namespace SiteServer.CMS.Core
 
                 if (contentInfo.IsChecked)
                 {
-                    CreateManager.CreateContentAndTrigger(targetPublishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, theContentId, guid);
+                    CreateManager.CreateContentAndTrigger(targetPublishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, theContentId);
                 }
             }
         }

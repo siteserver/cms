@@ -314,16 +314,15 @@ namespace SiteServer.BackgroundPages.Cms
 
         private void CreatePages(TemplateInfo templateInfo)
         {
-            var guid = StringUtils.GetShortGuid();
             if (templateInfo.TemplateType == ETemplateType.FileTemplate)
             {
-                CreateManager.CreateFile(PublishmentSystemId, templateInfo.TemplateId, guid);
+                CreateManager.CreateFile(PublishmentSystemId, templateInfo.TemplateId);
             }
             else if (templateInfo.TemplateType == ETemplateType.IndexPageTemplate)
             {
                 if (templateInfo.IsDefault)
                 {
-                    CreateManager.CreateChannel(PublishmentSystemId, PublishmentSystemId, guid);
+                    CreateManager.CreateChannel(PublishmentSystemId, PublishmentSystemId);
                 }
             }
         }

@@ -15,8 +15,6 @@ namespace SiteServer.CMS.StlParser.Model
         private readonly SortedDictionary<string, string> _pageBeforeBodyScripts;
         private readonly SortedDictionary<string, string> _pageEndScripts;
 
-        public string Guid { get; }
-
         public PublishmentSystemInfo PublishmentSystemInfo { get; private set; }
 
         public string ApiUrl => PublishmentSystemInfo.Additional.ApiUrl;
@@ -90,9 +88,8 @@ namespace SiteServer.CMS.StlParser.Model
             public const string StlClient = "StlClient";
         }
 
-        public PageInfo(string guid, int pageNodeId, int pageContentId, PublishmentSystemInfo publishmentSystemInfo, TemplateInfo templateInfo, UserInfo userInfo)
+        public PageInfo(int pageNodeId, int pageContentId, PublishmentSystemInfo publishmentSystemInfo, TemplateInfo templateInfo, UserInfo userInfo)
         {
-            Guid = guid;
             TemplateInfo = templateInfo;
             PublishmentSystemId = publishmentSystemInfo.PublishmentSystemId;
             PageNodeId = pageNodeId;
@@ -491,7 +488,7 @@ wnd_frame.src=url;}}
         {
             get
             {
-                var list = InnerLink.GetInnerLinkInfoList(PublishmentSystemId, Guid);
+                var list = InnerLink.GetInnerLinkInfoList(PublishmentSystemId);
 
                 var innerLinkNameList = new List<string>();
                 foreach (var innerLinkInfo in list)
@@ -505,7 +502,7 @@ wnd_frame.src=url;}}
                     {
                         if (innerLinkNameList.Contains(nodeInfo.NodeName)) continue;
 
-                        var innerLinkInfo = new InnerLinkInfo(nodeInfo.NodeName, PublishmentSystemId, PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo, Guid));
+                        var innerLinkInfo = new InnerLinkInfo(nodeInfo.NodeName, PublishmentSystemId, PageUtility.GetChannelUrl(PublishmentSystemInfo, nodeInfo));
                         list.Add(innerLinkInfo);
                         innerLinkNameList.Add(nodeInfo.NodeName);
                     }

@@ -139,7 +139,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             string parsedContent;
 
-            var channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName, pageInfo.Guid);
+            var channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
             var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
             var innerHtml = nodeInfo.NodeName.Trim();
@@ -153,7 +153,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var nodeInfoArrayList = new ArrayList();//需要显示的栏目列表
 
             //var childNodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, EScopeType.Children, groupChannel, groupChannelNot);
-            var childNodeIdList = Node.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, EScopeType.Children, groupChannel, groupChannelNot, pageInfo.Guid);
+            var childNodeIdList = Node.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, EScopeType.Children, groupChannel, groupChannelNot);
             if (childNodeIdList != null && childNodeIdList.Count > 0)
             {
                 foreach (int childNodeId in childNodeIdList)
@@ -170,14 +170,14 @@ namespace SiteServer.CMS.StlParser.StlElement
             else
             {
                 //var menuDisplayId = DataProvider.MenuDisplayDao.GetMenuDisplayIdByName(pageInfo.PublishmentSystemId, styleName);
-                var menuDisplayId = MenuDisplay.GetMenuDisplayIdByName(pageInfo.PublishmentSystemId, styleName, pageInfo.Guid);
+                var menuDisplayId = MenuDisplay.GetMenuDisplayIdByName(pageInfo.PublishmentSystemId, styleName);
                 //var menuDisplayInfo = menuDisplayId == 0 ? DataProvider.MenuDisplayDao.GetDefaultMenuDisplayInfo(pageInfo.PublishmentSystemId) : DataProvider.MenuDisplayDao.GetMenuDisplayInfo(menuDisplayId);
-                var menuDisplayInfo = menuDisplayId == 0 ? MenuDisplay.GetDefaultMenuDisplayInfo(pageInfo.PublishmentSystemId, pageInfo.Guid) : MenuDisplay.GetMenuDisplayInfo(menuDisplayId, pageInfo.Guid);
+                var menuDisplayInfo = menuDisplayId == 0 ? MenuDisplay.GetDefaultMenuDisplayInfo(pageInfo.PublishmentSystemId) : MenuDisplay.GetMenuDisplayInfo(menuDisplayId);
                 var level2MenuDisplayInfo = menuDisplayInfo;
                 if (isShowChildren && !string.IsNullOrEmpty(childMenuDisplay))
                 {
-                    var childMenuDisplayId = MenuDisplay.GetMenuDisplayIdByName(pageInfo.PublishmentSystemId, childMenuDisplay, pageInfo.Guid);
-                    level2MenuDisplayInfo = childMenuDisplayId == 0 ? MenuDisplay.GetDefaultMenuDisplayInfo(pageInfo.PublishmentSystemId, pageInfo.Guid) : MenuDisplay.GetMenuDisplayInfo(childMenuDisplayId, pageInfo.Guid);
+                    var childMenuDisplayId = MenuDisplay.GetMenuDisplayIdByName(pageInfo.PublishmentSystemId, childMenuDisplay);
+                    level2MenuDisplayInfo = childMenuDisplayId == 0 ? MenuDisplay.GetDefaultMenuDisplayInfo(pageInfo.PublishmentSystemId) : MenuDisplay.GetMenuDisplayInfo(childMenuDisplayId);
                 }
 
                 if (string.IsNullOrEmpty(menuWidth)) menuWidth = menuDisplayInfo.MenuWidth.ToString();
@@ -208,7 +208,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var level2NodeInfoArrayList = new ArrayList();
 
                         //var level2NodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(theNodeInfo.NodeId, theNodeInfo.ChildrenCount, EScopeType.Children, groupChannel, groupChannelNot);
-                        var level2NodeIdList = Node.GetNodeIdListByScopeType(theNodeInfo.NodeId, theNodeInfo.ChildrenCount, EScopeType.Children, groupChannel, groupChannelNot, pageInfo.Guid);
+                        var level2NodeIdList = Node.GetNodeIdListByScopeType(theNodeInfo.NodeId, theNodeInfo.ChildrenCount, EScopeType.Children, groupChannel, groupChannelNot);
                         if (level2NodeIdList != null && level2NodeIdList.Count > 0)
                         {
                             foreach (int level2NodeId in level2NodeIdList)
@@ -225,7 +225,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                                 foreach (NodeInfo level2NodeInfo in level2NodeInfoArrayList)
                                 {
-                                    var level2NodeUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, level2NodeInfo, pageInfo.Guid);
+                                    var level2NodeUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, level2NodeInfo);
                                     if (PageUtils.UnclickedUrl.Equals(level2NodeUrl))
                                     {
                                         level2ChildMenuBuilder.Append(
@@ -289,7 +289,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         menuName = "\"" + theNodeInfo.NodeName.Trim() + "\"";
                     }
 
-                    var nodeUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo, pageInfo.Guid);
+                    var nodeUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo);
                     if (PageUtils.UnclickedUrl.Equals(nodeUrl))
                     {
                         menuBuilder.Append($@"  mm_menu_{menuId}.addMenuItem({menuName}, ""location='{nodeUrl}'"");");

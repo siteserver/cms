@@ -57,10 +57,9 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                var guid = StringUtils.GetShortGuid();
                 foreach (var templateId in templateIdList)
                 {
-                    CreateManager.CreateFile(PublishmentSystemId, templateId, guid);
+                    CreateManager.CreateFile(PublishmentSystemId, templateId);
                 }
 
                 PageCreateStatus.Redirect(PublishmentSystemId);

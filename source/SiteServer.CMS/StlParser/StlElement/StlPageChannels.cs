@@ -8,7 +8,6 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -71,7 +70,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, _contextInfo.ChannelId, DisplayInfo.UpLevel, DisplayInfo.TopLevel);
 
-            channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, DisplayInfo.ChannelIndex, DisplayInfo.ChannelName, pageInfo.Guid);
+            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, DisplayInfo.ChannelIndex, DisplayInfo.ChannelName);
 
             var isTotal = TranslateUtils.ToBool(DisplayInfo.Others.Get(AttributeIsTotal));
 
@@ -80,7 +79,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 DisplayInfo.Scope = EScopeType.Descendant;
             }
 
-            _dataSet = StlDataUtility.GetPageChannelsDataSet(pageInfo.PublishmentSystemId, channelId, DisplayInfo.GroupChannel, DisplayInfo.GroupChannelNot, DisplayInfo.IsImageExists, DisplayInfo.IsImage, DisplayInfo.StartNum, DisplayInfo.TotalNum, DisplayInfo.OrderByString, DisplayInfo.Scope, isTotal, DisplayInfo.Where, pageInfo.Guid);
+            _dataSet = StlDataUtility.GetPageChannelsDataSet(pageInfo.PublishmentSystemId, channelId, DisplayInfo.GroupChannel, DisplayInfo.GroupChannelNot, DisplayInfo.IsImageExists, DisplayInfo.IsImage, DisplayInfo.StartNum, DisplayInfo.TotalNum, DisplayInfo.OrderByString, DisplayInfo.Scope, isTotal, DisplayInfo.Where);
         }
 
 

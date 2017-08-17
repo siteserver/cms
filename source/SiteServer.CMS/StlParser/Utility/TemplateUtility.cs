@@ -30,7 +30,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             if (contentItemInfo == null) return string.Empty;
             var contentInfo = Cache.Content.GetContentInfo(pageInfo.PublishmentSystemId, contentItemInfo.ChannelId,
-                contentItemInfo.ContentId, pageInfo.Guid);
+                contentItemInfo.ContentId);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;

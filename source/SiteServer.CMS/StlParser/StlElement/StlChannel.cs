@@ -184,7 +184,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-            channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
+            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
             var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
             if (!string.IsNullOrEmpty(formatString))
@@ -307,7 +307,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (type.ToLower().Equals(NodeAttribute.CountOfImageContents.ToLower()))
                 { 
-                    var count = Content.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId, pageInfo.Guid);
+                    var count = Content.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId);
                     parsedContent = count.ToString();
                 }
                 else if (type.ToLower().Equals(NodeAttribute.Keywords.ToLower()))

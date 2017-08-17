@@ -9,9 +9,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static InputContentInfo GetContentInfo(int id, string guid)
+        public static InputContentInfo GetContentInfo(int id)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(InputContent), nameof(GetContentInfo),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(InputContent), nameof(GetContentInfo),
                     id.ToString());
             var retval = StlCacheUtils.GetCache<InputContentInfo>(cacheKey);
             if (retval != null) return retval;
@@ -29,9 +29,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static string GetSelectSqlStringWithChecked(int publishmentSystemId, int inputId, bool isReplyExists, bool isReply, int startNum, int totalNum, string whereString, string orderByString, LowerNameValueCollection others, string guid)
+        public static string GetSelectSqlStringWithChecked(int publishmentSystemId, int inputId, bool isReplyExists, bool isReply, int startNum, int totalNum, string whereString, string orderByString, LowerNameValueCollection others)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(InputContent),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(InputContent),
                     nameof(GetSelectSqlStringWithChecked), publishmentSystemId.ToString(), inputId.ToString(),
                     isReplyExists.ToString(), isReply.ToString(), startNum.ToString(), totalNum.ToString(), whereString,
                     orderByString, TranslateUtils.NameValueCollectionToString(others));

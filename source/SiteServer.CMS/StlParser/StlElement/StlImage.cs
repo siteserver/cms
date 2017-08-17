@@ -168,14 +168,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             var targetNodeId = contentInfo.SourceId;
                             //var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
-                            var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId, pageInfo.Guid);
+                            var targetPublishmentSystemId = Node.GetPublishmentSystemId(targetNodeId);
                             var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
                             var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
 
                             var tableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeInfo);
                             var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                            var targetContentInfo = Content.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId, pageInfo.Guid);
+                            var targetContentInfo = Content.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.NodeId > 0)
                             {
                                 contentInfo = targetContentInfo;
@@ -186,7 +186,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (contentInfo == null)
                     {
                         //contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId);
-                        contentInfo = Content.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, pageInfo.Guid);
+                        contentInfo = Content.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId);
                     }
 
                     if (contentInfo != null)
@@ -219,7 +219,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
-                    channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName, pageInfo.Guid);
+                    channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
 
                     var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 

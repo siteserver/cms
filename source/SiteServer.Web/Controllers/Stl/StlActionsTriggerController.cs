@@ -22,8 +22,6 @@ namespace SiteServer.API.Controllers.Stl
 
             try
             {
-                var guid = StringUtils.GetShortGuid();
-
                 var channelId = body.GetQueryInt("channelId");
                 if (channelId == 0)
                 {
@@ -40,19 +38,19 @@ namespace SiteServer.API.Controllers.Stl
 
                 if (fileTemplateId != 0)
                 {
-                    fso.Execute(ECreateType.File, 0, 0, fileTemplateId, guid);
+                    fso.Execute(ECreateType.File, 0, 0, fileTemplateId);
                 }
                 else if (contentId != 0)
                 {
-                    fso.Execute(ECreateType.Content, channelId, contentId, 0, guid);
+                    fso.Execute(ECreateType.Content, channelId, contentId, 0);
                 }
                 else if (channelId != 0)
                 {
-                    fso.Execute(ECreateType.Channel, channelId, 0, 0, guid);
+                    fso.Execute(ECreateType.Channel, channelId, 0, 0);
                 }
                 else if (publishmentSystemId != 0)
                 {
-                    fso.Execute(ECreateType.Channel, publishmentSystemId, 0, 0, guid);
+                    fso.Execute(ECreateType.Channel, publishmentSystemId, 0, 0);
                 }
 
                 if (isRedirect)
@@ -69,7 +67,7 @@ namespace SiteServer.API.Controllers.Stl
                     }
                     else if (channelId != 0)
                     {
-                        redirectUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true, StringUtils.GetShortGuid());
+                        redirectUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true);
                     }
                     else if (publishmentSystemId != 0)
                     {

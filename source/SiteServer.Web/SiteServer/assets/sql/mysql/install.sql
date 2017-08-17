@@ -535,7 +535,6 @@ CREATE TABLE siteserver_CreateTask(
     ChannelId              INT,
     ContentId              INT,
     TemplateId             INT,
-    Guid                   VARCHAR(50),
     PRIMARY KEY (Id)
 )ENGINE=INNODB
 GO
@@ -546,6 +545,9 @@ CREATE TABLE siteserver_CreateTaskLog(
     Id                     INT                      AUTO_INCREMENT,
     CreateType             VARCHAR(50),
     PublishmentSystemId    INT,
+    ChannelId              INT,
+    ContentId              INT,
+    TemplateId             INT,
     TaskName               NATIONAL VARCHAR(50),
     TimeSpan               NATIONAL VARCHAR(50),
     IsSuccess              VARCHAR(18),

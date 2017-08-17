@@ -201,7 +201,6 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                var guid = StringUtils.GetShortGuid();
                 NodeInfo nodeInfo;
                 try
                 {
@@ -323,7 +322,7 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                CreateManager.CreateChannel(PublishmentSystemId, nodeInfo.NodeId, guid);
+                CreateManager.CreateChannel(PublishmentSystemId, nodeInfo.NodeId);
 
                 Body.AddSiteLog(PublishmentSystemId, "修改栏目", $"栏目:{TbNodeName.Text}");
 

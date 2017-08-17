@@ -36,7 +36,7 @@ namespace SiteServer.API.Controllers.Stl
                 {
                     var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
 
-                    builder.Append(StlTree.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, TranslateUtils.DecryptStringBySecretKey(currentFormatString), topNodeId, topParentsCount, currentNodeId, StringUtils.GetShortGuid()));
+                    builder.Append(StlTree.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, TranslateUtils.DecryptStringBySecretKey(currentFormatString), topNodeId, topParentsCount, currentNodeId));
                 }
             }
             catch

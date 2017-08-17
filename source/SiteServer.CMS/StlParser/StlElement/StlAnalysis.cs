@@ -7,6 +7,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parser;
+using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -121,7 +122,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, bool isGetUrlFromAttribute, string channelIndex, string channelName , string type, string scope, bool isAverage, string style, int addNum, string since)
         {
-            var channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName, pageInfo.Guid);
+            var channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
 
             var contentId = 0;
             //判断是否链接地址由标签属性获得
@@ -173,12 +174,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (StringUtils.EqualsIgnoreCase(scope, ScopePage))
                 {
                     //accessNum = eTemplateType != ETemplateType.FileTemplate ? DataProvider.TrackingDao.GetTotalAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate) : DataProvider.TrackingDao.GetTotalAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
-                    accessNum = eTemplateType != ETemplateType.FileTemplate ? Tracking.GetTotalAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate, pageInfo.Guid) : Tracking.GetTotalAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate, pageInfo.Guid);
+                    accessNum = eTemplateType != ETemplateType.FileTemplate ? Tracking.GetTotalAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate) : Tracking.GetTotalAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
                 }
                 else
                 {
                     //accessNum = DataProvider.TrackingDao.GetTotalAccessNum(pageInfo.PublishmentSystemId, sinceDate);
-                    accessNum = Tracking.GetTotalAccessNum(pageInfo.PublishmentSystemId, sinceDate, pageInfo.Guid);
+                    accessNum = Tracking.GetTotalAccessNum(pageInfo.PublishmentSystemId, sinceDate);
                     accessNum = accessNum + publishmentSystemInfo.Additional.TrackerPageView;
                 }
                 if (isAverage)
@@ -199,12 +200,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (StringUtils.EqualsIgnoreCase(scope, ScopePage))
                 {
                     //accessNum = eTemplateType != ETemplateType.FileTemplate ? DataProvider.TrackingDao.GetTotalUniqueAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate) : DataProvider.TrackingDao.GetTotalUniqueAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
-                    accessNum = eTemplateType != ETemplateType.FileTemplate ? Tracking.GetTotalUniqueAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate, pageInfo.Guid) : Tracking.GetTotalUniqueAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate, pageInfo.Guid);
+                    accessNum = eTemplateType != ETemplateType.FileTemplate ? Tracking.GetTotalUniqueAccessNumByPageInfo(pageInfo.PublishmentSystemId, channelId, contentId, sinceDate) : Tracking.GetTotalUniqueAccessNumByPageUrl(pageInfo.PublishmentSystemId, referrer, sinceDate);
                 }
                 else
                 {
                     //accessNum = DataProvider.TrackingDao.GetTotalUniqueAccessNum(pageInfo.PublishmentSystemId, sinceDate);
-                    accessNum = Tracking.GetTotalUniqueAccessNum(pageInfo.PublishmentSystemId, sinceDate, pageInfo.Guid);
+                    accessNum = Tracking.GetTotalUniqueAccessNum(pageInfo.PublishmentSystemId, sinceDate);
                     accessNum = accessNum + publishmentSystemInfo.Additional.TrackerUniqueVisitor;
                 }
                 if (isAverage)
@@ -219,7 +220,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             else if (StringUtils.EqualsIgnoreCase(type, TypeCurrentVisitor))
             {
                 //accessNum = DataProvider.TrackingDao.GetCurrentVisitorNum(pageInfo.PublishmentSystemId, publishmentSystemInfo.Additional.TrackerCurrentMinute);
-                accessNum = Tracking.GetCurrentVisitorNum(pageInfo.PublishmentSystemId, publishmentSystemInfo.Additional.TrackerCurrentMinute, pageInfo.Guid);
+                accessNum = Tracking.GetCurrentVisitorNum(pageInfo.PublishmentSystemId, publishmentSystemInfo.Additional.TrackerCurrentMinute);
             }
 
             accessNum = accessNum + addNum;

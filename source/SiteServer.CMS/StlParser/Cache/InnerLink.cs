@@ -8,9 +8,9 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
-        public static List<InnerLinkInfo> GetInnerLinkInfoList(int publishmentSystemId, string guid)
+        public static List<InnerLinkInfo> GetInnerLinkInfoList(int publishmentSystemId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKeyByGuid(guid, nameof(InnerLink), nameof(GetInnerLinkInfoList),
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(InnerLink), nameof(GetInnerLinkInfoList),
                        publishmentSystemId.ToString());
             var retval = StlCacheUtils.GetCache<List<InnerLinkInfo>>(cacheKey);
             if (retval != null) return retval;

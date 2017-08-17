@@ -962,7 +962,7 @@ namespace SiteServer.CMS.Provider
                 if (publishmentSystemId == parentId)
                 {
                     sqlString =
-                        $"SELECT NodeID FROM siteserver_Node WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeName = '{nodeName}') ORDER BY Taxis";
+                        $"SELECT NodeID FROM siteserver_Node WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeName = '{PageUtils.FilterSql(nodeName)}') ORDER BY Taxis";
                 }
                 else
                 {
@@ -979,7 +979,7 @@ ORDER BY Taxis";
             else
             {
                 sqlString =
-                    $"SELECT NodeID FROM siteserver_Node WHERE (ParentID = {parentId} AND NodeName = '{nodeName}') ORDER BY Taxis";
+                    $"SELECT NodeID FROM siteserver_Node WHERE (ParentID = {parentId} AND NodeName = '{PageUtils.FilterSql(nodeName)}') ORDER BY Taxis";
             }
 
             using (var rdr = ExecuteReader(sqlString))

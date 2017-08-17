@@ -27,6 +27,8 @@ namespace SiteServer.BackgroundPages.Settings
             PageUtils.Redirect(pageUrl);
         }
 
+        public string SiteUrl => PageRedirect.GetRedirectUrl(PublishmentSystemId);
+
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;

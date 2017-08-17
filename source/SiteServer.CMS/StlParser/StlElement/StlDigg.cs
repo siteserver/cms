@@ -82,7 +82,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
 
                 //var counts = BaiRongDataProvider.DiggDao.GetCount(pageInfo.PublishmentSystemId, relatedIdentity);
-                var counts = Cache.Digg.GetCount(pageInfo.PublishmentSystemId, relatedIdentity, pageInfo.Guid);
+                var counts = Cache.Digg.GetCount(pageInfo.PublishmentSystemId, relatedIdentity);
                 var goodNum = counts[0];
                 var badNum = counts[1];
 

@@ -123,6 +123,8 @@ CREATE TABLE siteserver_PluginConfig(
 )
 GO
 
-ALTER TABLE siteserver_CreateTask ADD
-    Guid           varchar(50)     NULL
+ALTER TABLE siteserver_CreateTaskLog ADD
+    ChannelId              int              NULL,
+    ContentId              int              NULL,
+    TemplateId             int              NULL
 GO

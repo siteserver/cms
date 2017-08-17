@@ -51,7 +51,7 @@ namespace SiteServer.CMS.WeiXin.MP
                 if (nodeInfo != null)
                 {
                     var nodeNames = NodeManager.GetNodeNameNavigation(publishmentSystemInfo.PublishmentSystemId, nodeID);
-                    var pageUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, nodeInfo, StringUtils.GetShortGuid());
+                    var pageUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, nodeInfo);
                     return $@"栏目页：{nodeNames}&nbsp;<a href=""{pageUrl}"" target=""blank"">查看</a>";
                 }
             }
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.WeiXin.MP
                 else if (nodeID > 0)
                 {
                     var nodeNames = NodeManager.GetNodeNameNavigation(publishmentSystemInfo.PublishmentSystemId, nodeID);
-                    var pageUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, nodeInfo, StringUtils.GetShortGuid());
+                    var pageUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, nodeInfo);
                     return $"selectChannel('{nodeNames}', '{nodeID}', '{pageUrl}');";
                 }
             }

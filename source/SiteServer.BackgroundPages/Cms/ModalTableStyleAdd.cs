@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
@@ -299,11 +298,11 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.Additional.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
             _styleInfo.Additional.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
 
-            ArrayList styleItems = null;
+            List<TableStyleItemInfo> styleItems = null;
 
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
-                styleItems = new ArrayList();
+                styleItems = new List<TableStyleItemInfo>();
 
                 var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
                 if (isRapid)

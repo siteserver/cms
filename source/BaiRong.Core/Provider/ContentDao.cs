@@ -405,31 +405,39 @@ namespace BaiRong.Core.Provider
             return referenceId;
         }
 
-        public virtual int GetCountOfContentAdd(string tableName, int publishmentSystemId, List<int> nodeIdList, DateTime begin, DateTime end, string userName)
+        public int GetCountOfContentAdd(string tableName, int publishmentSystemId, List<int> nodeIdList, DateTime begin, DateTime end, string userName)
         {
             string sqlString;
             if (string.IsNullOrEmpty(userName))
             {
-                sqlString = nodeIdList.Count == 1 ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')" : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')";
+                sqlString = nodeIdList.Count == 1
+                    ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')"
+                    : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')";
             }
             else
             {
-                sqlString = nodeIdList.Count == 1 ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')" : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')";
+                sqlString = nodeIdList.Count == 1
+                    ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')"
+                    : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')";
             }
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public virtual int GetCountOfContentUpdate(string tableName, int publishmentSystemId, List<int> nodeIdList, DateTime begin, DateTime end, string userName)
+        public int GetCountOfContentUpdate(string tableName, int publishmentSystemId, List<int> nodeIdList, DateTime begin, DateTime end, string userName)
         {
             string sqlString;
             if (string.IsNullOrEmpty(userName))
             {
-                sqlString = nodeIdList.Count == 1 ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)" : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)";
+                sqlString = nodeIdList.Count == 1
+                    ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)"
+                    : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)";
             }
             else
             {
-                sqlString = nodeIdList.Count == 1 ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')" : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
+                sqlString = nodeIdList.Count == 1
+                    ? $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')"
+                    : $"SELECT COUNT(ID) AS Num FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
             }
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);

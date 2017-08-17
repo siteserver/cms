@@ -39,7 +39,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.ChannelTemplate)
             {
-                currentUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId), pageInfo.Guid);
+                currentUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId));
             }
             else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.FileTemplate)
             {
@@ -240,23 +240,23 @@ namespace SiteServer.CMS.StlParser.Utility
                 int seoMetaId;
                 if (pageInfo.PageContentId != 0)
                 {
-                    seoMetaId = SeoMeta.GetSeoMetaIdByNodeId(pageInfo.PageNodeId, false, pageInfo.Guid);
+                    seoMetaId = SeoMeta.GetSeoMetaIdByNodeId(pageInfo.PageNodeId, false);
                     if (seoMetaId == 0)
                     {
-                        seoMetaId = SeoMeta.GetDefaultSeoMetaId(pageInfo.PublishmentSystemId, pageInfo.Guid);
+                        seoMetaId = SeoMeta.GetDefaultSeoMetaId(pageInfo.PublishmentSystemId);
                     }
                 }
                 else
                 {
-                    seoMetaId = SeoMeta.GetSeoMetaIdByNodeId(pageInfo.PageNodeId, true, pageInfo.Guid);
+                    seoMetaId = SeoMeta.GetSeoMetaIdByNodeId(pageInfo.PageNodeId, true);
                     if (seoMetaId == 0)
                     {
-                        seoMetaId = SeoMeta.GetDefaultSeoMetaId(pageInfo.PublishmentSystemId, pageInfo.Guid);
+                        seoMetaId = SeoMeta.GetDefaultSeoMetaId(pageInfo.PublishmentSystemId);
                     }
                 }
                 if (seoMetaId != 0)
                 {
-                    var seoMetaInfo = SeoMeta.GetSeoMetaInfo(seoMetaId, pageInfo.Guid);
+                    var seoMetaInfo = SeoMeta.GetSeoMetaInfo(seoMetaId);
                     var seoMetaInfoFromTemplate = SeoManager.GetSeoMetaInfo(contentBuilder.ToString());
                     if (!string.IsNullOrEmpty(seoMetaInfoFromTemplate.PageTitle)) seoMetaInfo.PageTitle = string.Empty;
                     if (!string.IsNullOrEmpty(seoMetaInfoFromTemplate.Keywords)) seoMetaInfo.Keywords = string.Empty;
@@ -286,11 +286,11 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             if (!IsAdvertisementExists(pageInfo)) return;
 
-            var advertisementNameList = Advertisement.GetAdvertisementNameList(pageInfo.PublishmentSystemId, pageInfo.Guid);
+            var advertisementNameList = Advertisement.GetAdvertisementNameList(pageInfo.PublishmentSystemId);
 
             foreach (var advertisementName in advertisementNameList)
             {
-                var adInfo = Advertisement.GetAdvertisementInfo(advertisementName, pageInfo.PublishmentSystemId, pageInfo.Guid);
+                var adInfo = Advertisement.GetAdvertisementInfo(advertisementName, pageInfo.PublishmentSystemId);
                 if (adInfo.IsDateLimited)
                 {
                     if (DateTime.Now < adInfo.StartDate || DateTime.Now > adInfo.EndDate)
@@ -361,12 +361,12 @@ namespace SiteServer.CMS.StlParser.Utility
             }
         }
 
-        public static string ParseDynamicContent(int publishmentSystemId, int channelId, int contentId, int templateId, bool isPageRefresh, string templateContent, string pageUrl, int pageIndex, string ajaxDivId, NameValueCollection queryString, string guid, UserInfo userInfo)
+        public static string ParseDynamicContent(int publishmentSystemId, int channelId, int contentId, int templateId, bool isPageRefresh, string templateContent, string pageUrl, int pageIndex, string ajaxDivId, NameValueCollection queryString, UserInfo userInfo)
         {
             var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemId, templateId);
             //TemplateManager.GetTemplateInfo(publishmentSystemID, channelID, templateType);
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var pageInfo = new PageInfo(guid, channelId, contentId, publishmentSystemInfo, templateInfo, userInfo);
+            var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, templateInfo, userInfo);
             pageInfo.SetUniqueId(1000);
             var contextInfo = new ContextInfo(pageInfo);
 

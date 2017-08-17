@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -8,7 +7,6 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -92,7 +90,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
-            channelId = Node.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, listInfo.ChannelIndex, listInfo.ChannelName, pageInfo.Guid);
+            channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
             var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(AttributeIsTotal));
 
@@ -101,7 +99,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 listInfo.Scope = EScopeType.Descendant;
             }
 
-            return StlDataUtility.GetChannelsDataSource(pageInfo.PublishmentSystemId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where, pageInfo.Guid);
+            return StlDataUtility.GetChannelsDataSource(pageInfo.PublishmentSystemId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)

@@ -12,8 +12,9 @@ namespace BaiRong.Core.Provider
 {
     public class TableStyleDao : DataProviderBase
     {
-        // Static constants
         private const string SqlSelectTableStyle = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
+
+        private const string SqlSelectTableStyleId = "SELECT TableStyleID FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
 
         private const string SqlSelectTableStyleByTableStyleId = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE TableStyleID = @TableStyleID";
 
@@ -203,7 +204,7 @@ namespace BaiRong.Core.Provider
             }
         }
 
-        public void InsertStyleItems(ArrayList styleItems)
+        public void InsertStyleItems(List<TableStyleItemInfo> styleItems)
         {
             var sqlInsertStyleItem = GetInsertTableStyleItemSqlString();
 
@@ -214,8 +215,7 @@ namespace BaiRong.Core.Provider
                 {
                     try
                     {
-
-                        foreach (TableStyleItemInfo itemInfo in styleItems)
+                        foreach (var itemInfo in styleItems)
                         {
                             var insertItemParms = new IDataParameter[]
 							{
@@ -348,9 +348,9 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectTableStyle, parms))
+            using (var rdr = ExecuteReader(SqlSelectTableStyleId, parms))
             {
-                if (rdr.Read())
+                if (rdr.Read() && !rdr.IsDBNull(0))
                 {
                     exists = true;
                 }

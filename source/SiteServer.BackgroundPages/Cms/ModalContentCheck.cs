@@ -120,7 +120,6 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var guid = StringUtils.GetShortGuid();
             var checkedLevel = TranslateUtils.ToIntWithNagetive(rblCheckType.SelectedValue);
 
             var isChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
@@ -152,7 +151,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (contentInfo.IsChecked)
                         {
-                            CreateManager.CreateContentAndTrigger(PublishmentSystemId, contentInfo.NodeId, contentId, guid);
+                            CreateManager.CreateContentAndTrigger(PublishmentSystemId, contentInfo.NodeId, contentId);
                         }
 
                     }
@@ -198,7 +197,7 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 foreach (var contentId in contentIdList)
                                 {
-                                    CreateManager.CreateContent(PublishmentSystemId, nodeId, contentId, guid);
+                                    CreateManager.CreateContent(PublishmentSystemId, nodeId, contentId);
                                 }
                             }
                         }
