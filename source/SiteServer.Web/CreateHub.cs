@@ -38,8 +38,7 @@ namespace SiteServer.API
             try
             {
                 var start = DateTime.Now;
-                var fso = new FileSystemObject(pendingTask.PublishmentSystemId);
-                fso.Execute(pendingTask.CreateType, pendingTask.ChannelId, pendingTask.ContentId, pendingTask.TemplateId);
+                FileSystemObject.Execute(pendingTask.PublishmentSystemId, pendingTask.CreateType, pendingTask.ChannelId, pendingTask.ContentId, pendingTask.TemplateId);
                 var timeSpan = DateUtils.GetRelatedDateTimeString(start);
                 CreateTaskManager.Instance.AddSuccessLog(pendingTask, timeSpan);
             }

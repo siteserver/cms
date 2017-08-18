@@ -18,92 +18,104 @@ namespace SiteServer.CMS.StlParser
 {
     public class FileSystemObject
     {
-        public FileSystemObject(int publishmentSystemId)
-        {
-            PublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            if (PublishmentSystemInfo == null)
-            {
-                throw new ArgumentException(publishmentSystemId + " 不是正确的发布系统ID！");
-            }
-            PublishmentSystemId = PublishmentSystemInfo.PublishmentSystemId;
-            PublishmentSystemDir = PublishmentSystemInfo.PublishmentSystemDir;
-            PublishmentSystemPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, PublishmentSystemInfo.PublishmentSystemDir);
-            IsHeadquarters = PublishmentSystemInfo.IsHeadquarters;
-            DirectoryUtils.CreateDirectoryIfNotExists(PublishmentSystemPath);
-        }
+        //public FileSystemObject(int publishmentSystemId)
+        //{
+        //    PublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+        //    if (PublishmentSystemInfo == null)
+        //    {
+        //        throw new ArgumentException(publishmentSystemId + " 不是正确的发布系统ID！");
+        //    }
+        //    PublishmentSystemId = PublishmentSystemInfo.PublishmentSystemId;
+        //    PublishmentSystemDir = PublishmentSystemInfo.PublishmentSystemDir;
+        //    PublishmentSystemPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, PublishmentSystemInfo.PublishmentSystemDir);
+        //    IsHeadquarters = PublishmentSystemInfo.IsHeadquarters;
+        //    DirectoryUtils.CreateDirectoryIfNotExists(PublishmentSystemPath);
+        //}
 
-        public PublishmentSystemInfo PublishmentSystemInfo { get; }
-
-        public int PublishmentSystemId { get; }
-
-        public string PublishmentSystemDir { get; }
-
-        public string PublishmentSystemPath { get; }
-
-        public bool IsHeadquarters { get; }
-
-        public void Execute(ECreateType createType, int channelId, int contentId, int templateId)
+        public static void Execute(int publishmentSystemId, ECreateType createType, int channelId, int contentId, int templateId)
         {
             if (createType == ECreateType.Channel)
             {
-                CreateChannel(channelId);
+                CreateChannel(publishmentSystemId, channelId);
             }
             else if (createType == ECreateType.Content)
             {
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, channelId);
-                var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
-                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
-                CreateContent(tableStyle, tableName, channelId, contentId);
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
+                var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+                CreateContent(publishmentSystemInfo, tableStyle, tableName, channelId, contentId);
             }
             else if (createType == ECreateType.AllContent)
             {
-                CreateContents(channelId);
+                CreateContents(publishmentSystemId, channelId);
             }
             else if (createType == ECreateType.File)
             {
-                CreateFile(templateId);
+                CreateFile(publishmentSystemId, templateId);
             }
         }
 
-        //public void CreateAll()
-        //{
-        //    var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
-        //    foreach (var nodeId in nodeIdList)
-        //    {
-        //        CreateChannel(nodeId);
-        //        CreateContents(nodeId);
-        //    }
-        //    var templateIdList = DataProvider.TemplateDao.GetTemplateIdListByType(PublishmentSystemId, ETemplateType.FileTemplate);
-        //    foreach (var templateId in templateIdList)
-        //    {
-        //        CreateFile(templateId);
-        //    }
-        //}
-
-        //public void CreateIndex()
-        //{
-        //    var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, 0, ETemplateType.IndexPageTemplate);
-        //    if (templateInfo == null) return;
-
-        //    var pageInfo = new PageInfo(PublishmentSystemId, 0, PublishmentSystemInfo, templateInfo, null);
-        //    var contextInfo = new ContextInfo(pageInfo);
-        //    var filePath = PathUtility.GetIndexPageFilePath(PublishmentSystemInfo, templateInfo.CreatedFileFullName, IsHeadquarters);
-
-        //    var contentBuilder = new StringBuilder(StlCacheManager.FileContent.GetTemplateContent(PublishmentSystemInfo, templateInfo));
-        //    StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
-        //    GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
-        //}
-
-        private void CreateChannel(int nodeId)
+        private static void CreateContents(int publishmentSystemId, int nodeId)
         {
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
+            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
+            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
+            var contentIdList = Content.GetContentIdListChecked(tableName, nodeId, orderByString);
+
+            if (publishmentSystemInfo.Additional.IsCreateMultiThread) // 多线程并发生成页面
+            {
+                for (var i = 0; i < contentIdList.Count; i = i + 3)
+                {
+                    var list = new List<int>
+                    {
+                        contentIdList[i]
+                    };
+                    if (i < contentIdList.Count - 1)
+                    {
+                        list.Add(contentIdList[i + 1]);
+                    }
+                    if (i < contentIdList.Count - 2)
+                    {
+                        list.Add(contentIdList[i + 2]);
+                    }
+                    Parallel.ForEach(list, contentId =>
+                    {
+                        try
+                        {
+                            CreateContent(publishmentSystemInfo, tableStyle, tableName, nodeId, contentId);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogUtils.AddErrorLog(ex, "CreateContent");
+                        }
+                    });
+                }
+            }
+            else  // 单线程生成页面
+            {
+                foreach (var contentId in contentIdList)
+                {
+                    try
+                    {
+                        CreateContent(publishmentSystemInfo, tableStyle, tableName, nodeId, contentId);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddErrorLog(ex, "CreateContent");
+                    }
+                }
+            }
+        }
+
+        private static void CreateChannel(int publishmentSystemId, int nodeId)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
             if (nodeInfo == null) return;
 
-            //if (nodeId == PublishmentSystemId)
-            //{
-            //    CreateIndex();
-            //    return;
-            //}
             if (!string.IsNullOrEmpty(nodeInfo.LinkUrl))
             {
                 return;
@@ -113,11 +125,11 @@ namespace SiteServer.CMS.StlParser
                 return;
             }
 
-            var templateInfo = nodeId == PublishmentSystemId ? TemplateManager.GetTemplateInfo(PublishmentSystemId, 0, ETemplateType.IndexPageTemplate) : TemplateManager.GetTemplateInfo(PublishmentSystemId, nodeId, ETemplateType.ChannelTemplate);
-            var filePath = PathUtility.GetChannelPageFilePath(PublishmentSystemInfo, nodeId, 0);
-            var pageInfo = new PageInfo(nodeId, 0, PublishmentSystemInfo, templateInfo, null);
+            var templateInfo = nodeId == publishmentSystemId ? TemplateManager.GetTemplateInfo(publishmentSystemId, 0, ETemplateType.IndexPageTemplate) : TemplateManager.GetTemplateInfo(publishmentSystemId, nodeId, ETemplateType.ChannelTemplate);
+            var filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, nodeId, 0);
+            var pageInfo = new PageInfo(nodeId, 0, publishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo);
-            var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(PublishmentSystemInfo, templateInfo));
+            var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, templateInfo));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
             var stlPageContentElement = string.Empty;
@@ -136,7 +148,7 @@ namespace SiteServer.CMS.StlParser
                 var contentAttributeHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, contentAttributeHtml) + 1;//一共需要的页数
 
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -147,7 +159,7 @@ namespace SiteServer.CMS.StlParser
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageContentElement, pagedContentAttributeHtml));
                     StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageNodeId, currentPageIndex, pageCount, 0);
 
-                    filePath = PathUtility.GetChannelPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
+                    filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
 
                     GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
 
@@ -167,7 +179,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -180,7 +192,7 @@ namespace SiteServer.CMS.StlParser
                     StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList,
                         thePageInfo.PageNodeId, currentPageIndex, pageCount, totalNum);
 
-                    filePath = PathUtility.GetChannelPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId,
+                    filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId,
                         currentPageIndex);
                     thePageInfo.AddLastPageScript(pageInfo);
 
@@ -200,7 +212,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -210,7 +222,7 @@ namespace SiteServer.CMS.StlParser
 
                     StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageNodeId, currentPageIndex, pageCount, totalNum);
 
-                    filePath = PathUtility.GetChannelPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
+                    filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
                     GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
                 }
             }
@@ -224,7 +236,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -234,7 +246,7 @@ namespace SiteServer.CMS.StlParser
 
                     StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageNodeId, currentPageIndex, pageCount, totalNum);
 
-                    filePath = PathUtility.GetChannelPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
+                    filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
                     GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
                 }
             }
@@ -248,7 +260,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageInputContentsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -258,54 +270,18 @@ namespace SiteServer.CMS.StlParser
 
                     StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageNodeId, currentPageIndex, pageCount, totalNum);
 
-                    filePath = PathUtility.GetChannelPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
+                    filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
                     GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
                 }
             }
             else
             {
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
                 GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
             }
         }
 
-        private void CreateContents(int nodeId)
-        {
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
-            var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
-            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
-            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc); 
-            var contentIdList = Content.GetContentIdListChecked(tableName, nodeId, orderByString);
-             
-            if (PublishmentSystemInfo.Additional.IsCreateMultiThread) // 多线程并发生成页面
-            {
-                for (var i = 0; i < contentIdList.Count; i = i + 3)
-                {
-                    var list = new List<int>
-                    {
-                        contentIdList[i]
-                    };
-                    if (i < contentIdList.Count - 1)
-                    {
-                        list.Add(contentIdList[i + 1]);
-                    }
-                    if (i < contentIdList.Count - 2)
-                    {
-                        list.Add(contentIdList[i + 2]);
-                    }
-                    Parallel.ForEach(list, contentId => CreateContent(tableStyle, tableName, nodeId, contentId));
-                }
-            }
-            else  // 单线程生成页面
-            {
-                foreach (var contentId in contentIdList)
-                {
-                    CreateContent(tableStyle, tableName, nodeId, contentId);
-                } 
-            }
-        }
-
-        private void CreateContent(ETableStyle tableStyle, string tableName, int nodeId, int contentId)
+        private static void CreateContent(PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, string tableName, int nodeId, int contentId)
         {
             var contentInfo = Content.GetContentInfo(tableStyle, tableName, contentId);
 
@@ -326,19 +302,19 @@ namespace SiteServer.CMS.StlParser
             {
                 return;
             }
-            if (PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate && contentInfo.AddDate < PublishmentSystemInfo.Additional.CreateStaticContentAddDate)
+            if (publishmentSystemInfo.Additional.IsCreateStaticContentByAddDate && contentInfo.AddDate < publishmentSystemInfo.Additional.CreateStaticContentAddDate)
             {
                 return;
             }
 
-            var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, nodeId, ETemplateType.ContentTemplate);
-            var pageInfo = new PageInfo(nodeId, contentId, PublishmentSystemInfo, templateInfo, null);
+            var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemInfo.PublishmentSystemId, nodeId, ETemplateType.ContentTemplate);
+            var pageInfo = new PageInfo(nodeId, contentId, publishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo)
             {
                 ContentInfo = contentInfo
             };
-            var filePath = PathUtility.GetContentPageFilePath(PublishmentSystemInfo, pageInfo.PageNodeId, contentInfo, 0);
-            var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(PublishmentSystemInfo, templateInfo));
+            var filePath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, pageInfo.PageNodeId, contentInfo, 0);
+            var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, templateInfo));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
 
@@ -354,7 +330,7 @@ namespace SiteServer.CMS.StlParser
                 var pageContentHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, pageContentHtml) + 1;//一共需要的页数
                 
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -367,7 +343,7 @@ namespace SiteServer.CMS.StlParser
                     var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
                     StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList, nodeId, contentId, currentPageIndex, pageCount);
 
-                    filePath = PathUtility.GetContentPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, contentInfo, currentPageIndex);
+                    filePath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId, contentInfo, currentPageIndex);
                     GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
 
                     if (index != -1)
@@ -386,7 +362,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -396,7 +372,7 @@ namespace SiteServer.CMS.StlParser
 
                     StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList, nodeId, contentId, currentPageIndex, pageCount);
 
-                    filePath = PathUtility.GetContentPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, contentInfo, currentPageIndex);
+                    filePath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId, contentInfo, currentPageIndex);
                     GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
                 }
             }
@@ -410,7 +386,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -420,7 +396,7 @@ namespace SiteServer.CMS.StlParser
 
                     StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList, nodeId, contentId, currentPageIndex, pageCount);
 
-                    filePath = PathUtility.GetContentPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, contentInfo, currentPageIndex);
+                    filePath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId, contentInfo, currentPageIndex);
                     GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
                 }
             }
@@ -434,7 +410,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -444,27 +420,28 @@ namespace SiteServer.CMS.StlParser
 
                     StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList, nodeId, contentId, currentPageIndex, pageCount);
 
-                    filePath = PathUtility.GetContentPageFilePath(PublishmentSystemInfo, thePageInfo.PageNodeId, contentInfo, currentPageIndex);
+                    filePath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId, contentInfo, currentPageIndex);
                     GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
                 }
             }
             else//无翻页
             {
-                StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
                 GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
             }
         }
 
-        private void CreateFile(int templateId)
+        private static void CreateFile(int publishmentSystemId, int templateId)
         {
-            var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemId, templateId);
             if (templateInfo == null || templateInfo.TemplateType != ETemplateType.FileTemplate)
             {
                 return;
             }
-            var pageInfo = new PageInfo(PublishmentSystemId, 0, PublishmentSystemInfo, templateInfo, null);
+            var pageInfo = new PageInfo(publishmentSystemId, 0, publishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo);
-            var filePath = PathUtility.MapPath(PublishmentSystemInfo, templateInfo.CreatedFileFullName);
+            var filePath = PathUtility.MapPath(publishmentSystemInfo, templateInfo.CreatedFileFullName);
 
             //if (publishmentSystemInfo.Additional.VisualType == EVisualType.Dynamic)
             //{
@@ -474,8 +451,8 @@ namespace SiteServer.CMS.StlParser
             //    return;
             //}
 
-            var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(PublishmentSystemInfo, templateInfo));
-            StlUtility.ParseStl(PublishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+            var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, templateInfo));
+            StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
             GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
         }
 
@@ -502,7 +479,7 @@ namespace SiteServer.CMS.StlParser
         /// <summary>
         /// 在操作系统中创建文件，如果文件存在，重新创建此文件
         /// </summary>
-        private void GenerateFile(string filePath, ECharset charset, StringBuilder contentBuilder)
+        private static void GenerateFile(string filePath, ECharset charset, StringBuilder contentBuilder)
         {
             if (string.IsNullOrEmpty(filePath)) return;
 

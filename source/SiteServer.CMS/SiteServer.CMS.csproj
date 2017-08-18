@@ -208,6 +208,9 @@
     <Compile Include="Controllers\Writing\ActionsGetTableStyles.cs" />
     <Compile Include="Controllers\Writing\ActionsGetContents.cs" />
     <Compile Include="Controllers\Writing\ActionsGetContent.cs" />
+    <Compile Include="Core\Create\CreateTaskManagerForDb.cs" />
+    <Compile Include="Core\Create\CreateTaskManagerForMomery.cs" />
+    <Compile Include="Core\Create\ICreateTaskManager.cs" />
     <Compile Include="Core\Permissions\AdministratorWithPermissions.cs" />
     <Compile Include="Core\Permissions\PermissionConfig.cs" />
     <Compile Include="Core\Permissions\PermissionConfigManager.cs" />

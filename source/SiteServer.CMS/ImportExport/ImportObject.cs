@@ -12,23 +12,24 @@ using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.ImportExport.Components;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.StlParser;
 
 namespace SiteServer.CMS.ImportExport
 {
     public class ImportObject
     {
-        public FileSystemObject Fso;
+        private readonly PublishmentSystemInfo _publishmentSystemInfo;
+        private readonly string _publishmentSystemPath;
 
         public ImportObject(int publishmentSystemId)
         {
-            Fso = new FileSystemObject(publishmentSystemId);
+            _publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            _publishmentSystemPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, _publishmentSystemInfo.PublishmentSystemDir);
         }
 
         //获取保存辅助表名称对应集合数据库缓存键
         private string GetTableNameNameValueCollectionDbCacheKey()
         {
-            return "SiteServer.CMS.Core.ImportObject.TableNameNameValueCollection_" + Fso.PublishmentSystemId;
+            return "SiteServer.CMS.Core.ImportObject.TableNameNameValueCollection_" + _publishmentSystemInfo.PublishmentSystemId;
         }
 
         public NameValueCollection GetTableNameCache()
@@ -92,12 +93,12 @@ namespace SiteServer.CMS.ImportExport
             //}
             //string siteTemplateMetadataPath = PathUtils.Combine(FSO.PublishmentSystemPath, DirectoryUtility.SiteTemplates.SiteTemplateMetadata);
             //DirectoryUtils.DeleteDirectoryIfExists(siteTemplateMetadataPath);
-            DirectoryUtility.ImportPublishmentSystemFiles(Fso.PublishmentSystemInfo, siteTemplatePath, isOverride);
+            DirectoryUtility.ImportPublishmentSystemFiles(_publishmentSystemInfo, siteTemplatePath, isOverride);
         }
 
         public void ImportSiteContent(string siteContentDirectoryPath, string filePath, bool isImportContents)
         {
-            var siteContentIe = new SiteContentIe(Fso.PublishmentSystemInfo, siteContentDirectoryPath);
+            var siteContentIe = new SiteContentIe(_publishmentSystemInfo, siteContentDirectoryPath);
             siteContentIe.ImportChannelsAndContents(filePath, isImportContents, false, 0);
         }
 
@@ -107,7 +108,7 @@ namespace SiteServer.CMS.ImportExport
         /// </summary>
         public void ImportTemplates(string filePath, bool overwrite, string administratorName)
         {
-            var templateIe = new TemplateIe(Fso.PublishmentSystemId, filePath);
+            var templateIe = new TemplateIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
             templateIe.ImportTemplates(overwrite, administratorName);
         }
 
@@ -118,13 +119,13 @@ namespace SiteServer.CMS.ImportExport
         /// <param name="overwrite">是否覆盖原有菜单显示方式</param>
         public void ImportMenuDisplay(string filePath, bool overwrite)
         {
-            var menuDisplayIe = new MenuDisplayIe(Fso.PublishmentSystemId, filePath);
+            var menuDisplayIe = new MenuDisplayIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
             menuDisplayIe.ImportMenuDisplay(overwrite);
         }
 
         public void ImportTagStyle(string filePath, bool overwrite)
         {
-            var tagStyleIe = new TagStyleIe(Fso.PublishmentSystemId, filePath);
+            var tagStyleIe = new TagStyleIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
             tagStyleIe.ImportTagStyle(overwrite);
         }
 
@@ -136,7 +137,7 @@ namespace SiteServer.CMS.ImportExport
         /// <param name="overwrite">是否覆盖原有固定广告</param>
         public void ImportAd(string filePath, bool overwrite)
         {
-            var adIe = new AdvIe(Fso.PublishmentSystemId, filePath);
+            var adIe = new AdvIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
             adIe.ImportAd(overwrite);
         }
 
@@ -147,7 +148,7 @@ namespace SiteServer.CMS.ImportExport
         /// <param name="overwrite">是否覆盖原有搜索引擎</param>
         public void ImportSeo(string filePath, bool overwrite)
         {
-            var seoIe = new SeoIe(Fso.PublishmentSystemId, filePath);
+            var seoIe = new SeoIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
             seoIe.ImportSeo(overwrite);
         }
 
@@ -158,7 +159,7 @@ namespace SiteServer.CMS.ImportExport
         /// <param name="overwrite">是否覆盖原有自定义模板语言</param>
         public void ImportStlTag(string filePath, bool overwrite)
         {
-            var stlTagIe = new StlTagIe(Fso.PublishmentSystemId, filePath);
+            var stlTagIe = new StlTagIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
             stlTagIe.ImportStlTag(overwrite);
         }
 
@@ -169,7 +170,7 @@ namespace SiteServer.CMS.ImportExport
         /// <param name="overwrite">是否覆盖原有菜单显示方式</param>
         public void ImportGatherRule(string filePath, bool overwrite)
         {
-            var gatherRuleIe = new GatherRuleIe(Fso.PublishmentSystemId, filePath);
+            var gatherRuleIe = new GatherRuleIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
             gatherRuleIe.ImportGatherRule(overwrite);
         }
 
@@ -178,7 +179,7 @@ namespace SiteServer.CMS.ImportExport
         {
             if (DirectoryUtils.IsDirectoryExists(inputDirectoryPath))
             {
-                var inputIe = new InputIe(Fso.PublishmentSystemId, inputDirectoryPath);
+                var inputIe = new InputIe(_publishmentSystemInfo.PublishmentSystemId, inputDirectoryPath);
                 inputIe.ImportInput(overwrite);
             }
         }
@@ -191,7 +192,7 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.UnpackFiles(zipFilePath, directoryPath);
 
-            var inputIe = new InputIe(Fso.PublishmentSystemId, directoryPath);
+            var inputIe = new InputIe(_publishmentSystemInfo.PublishmentSystemId, directoryPath);
             inputIe.ImportInput(overwrite);
         }
 
@@ -203,7 +204,7 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.UnpackFiles(zipFilePath, directoryPath);
 
-            var relatedFieldIe = new RelatedFieldIe(Fso.PublishmentSystemId, directoryPath);
+            var relatedFieldIe = new RelatedFieldIe(_publishmentSystemInfo.PublishmentSystemId, directoryPath);
             relatedFieldIe.ImportRelatedField(overwrite);
         }
 
@@ -213,7 +214,7 @@ namespace SiteServer.CMS.ImportExport
             if (DirectoryUtils.IsDirectoryExists(tableDirectoryPath))
             {
                 var tableIe = new AuxiliaryTableIe(tableDirectoryPath);
-                nameValueCollection = tableIe.ImportAuxiliaryTables(Fso.PublishmentSystemId, isUseTables);
+                nameValueCollection = tableIe.ImportAuxiliaryTables(_publishmentSystemInfo.PublishmentSystemId, isUseTables);
             }
             SaveTableNameCache(nameValueCollection);
         }
@@ -224,7 +225,7 @@ namespace SiteServer.CMS.ImportExport
             if (DirectoryUtils.IsDirectoryExists(tableDirectoryPath))
             {
                 var tableStyleIe = new TableStyleIe(tableDirectoryPath);
-                tableStyleIe.ImportTableStyles(Fso.PublishmentSystemId);
+                tableStyleIe.ImportTableStyles(_publishmentSystemInfo.PublishmentSystemId);
             }
         }
 
@@ -241,7 +242,7 @@ namespace SiteServer.CMS.ImportExport
 
         public void ImportConfiguration(string configurationFilePath)
         {
-            var configIe = new ConfigurationIe(Fso.PublishmentSystemId, configurationFilePath);
+            var configIe = new ConfigurationIe(_publishmentSystemInfo.PublishmentSystemId, configurationFilePath);
             configIe.Import();
         }
 
@@ -256,33 +257,32 @@ namespace SiteServer.CMS.ImportExport
 
             ImportChannelsAndContentsFromZip(parentId, siteContentDirectoryPath, isOverride);
 
-            DataProvider.NodeDao.UpdateContentNum(Fso.PublishmentSystemInfo);
+            DataProvider.NodeDao.UpdateContentNum(_publishmentSystemInfo);
 
-            string filePath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName, BackupUtility.UploadFileName);
-            var UploadFolderPath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName);
-            var UploadFilePath = PathUtils.Combine(UploadFolderPath, BackupUtility.UploadFileName);
-            if (!FileUtils.IsFileExists(UploadFilePath))
+            var uploadFolderPath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName);
+            var uploadFilePath = PathUtils.Combine(uploadFolderPath, BackupUtility.UploadFileName);
+            if (!FileUtils.IsFileExists(uploadFilePath))
             {
                 return;
             }
-            var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(UploadFilePath));
+            var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(uploadFilePath));
             if (feed != null)
             {
                 AtomEntry entry = feed.Entries[0];
                 string imageUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ImageUploadDirectoryName");
                 if(imageUploadDirectoryPath != null)
                 {
-                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, imageUploadDirectoryPath), PathUtils.Combine(Fso.PublishmentSystemPath, Fso.PublishmentSystemInfo.Additional.ImageUploadDirectoryName), isOverride); 
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, imageUploadDirectoryPath), PathUtils.Combine(_publishmentSystemPath, _publishmentSystemInfo.Additional.ImageUploadDirectoryName), isOverride); 
                 }
                 string videoUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "VideoUploadDirectoryName");
                 if (videoUploadDirectoryPath != null)
                 {
-                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, videoUploadDirectoryPath), PathUtils.Combine(Fso.PublishmentSystemPath, Fso.PublishmentSystemInfo.Additional.VideoUploadDirectoryName), isOverride);
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, videoUploadDirectoryPath), PathUtils.Combine(_publishmentSystemPath, _publishmentSystemInfo.Additional.VideoUploadDirectoryName), isOverride);
                 }
                 string fileUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "FileUploadDirectoryName");
                 if (fileUploadDirectoryPath != null)
                 {
-                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, fileUploadDirectoryPath), PathUtils.Combine(Fso.PublishmentSystemPath, Fso.PublishmentSystemInfo.Additional.FileUploadDirectoryName), isOverride);
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, fileUploadDirectoryPath), PathUtils.Combine(_publishmentSystemPath, _publishmentSystemInfo.Additional.FileUploadDirectoryName), isOverride);
                 }
             }
         }
@@ -291,7 +291,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var filePathArrayList = GetSiteContentFilePathArrayList(siteContentDirectoryPath);
 
-            var siteContentIe = new SiteContentIe(Fso.PublishmentSystemInfo, siteContentDirectoryPath);
+            var siteContentIe = new SiteContentIe(_publishmentSystemInfo, siteContentDirectoryPath);
 
             Hashtable levelHashtable = null;
             foreach (string filePath in filePathArrayList)
@@ -319,7 +319,7 @@ namespace SiteServer.CMS.ImportExport
         {
             var filePathArrayList = GetSiteContentFilePathArrayList(siteContentDirectoryPath);
 
-            var siteContentIe = new SiteContentIe(Fso.PublishmentSystemInfo, siteContentDirectoryPath);
+            var siteContentIe = new SiteContentIe(_publishmentSystemInfo, siteContentDirectoryPath);
 
             var parentOrderString = "none";
             //int parentID = 0;
@@ -349,19 +349,19 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.UnpackFiles(zipFilePath, siteContentDirectoryPath);
 
-            var tableName = NodeManager.GetTableName(Fso.PublishmentSystemInfo, nodeInfo);
+            var tableName = NodeManager.GetTableName(_publishmentSystemInfo, nodeInfo);
 
             var taxis = BaiRongDataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.NodeId, false);
 
             ImportContents(nodeInfo, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
 
-            DataProvider.NodeDao.UpdateContentNum(Fso.PublishmentSystemInfo);
+            DataProvider.NodeDao.UpdateContentNum(_publishmentSystemInfo);
         }
 
         public void ImportContentsByAccessFile(int nodeId, string excelFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var nodeInfo = NodeManager.GetNodeInfo(Fso.PublishmentSystemId, nodeId);
-            var contentInfoArrayList = AccessObject.GetContentsByAccessFile(excelFilePath, Fso.PublishmentSystemInfo, nodeInfo);
+            var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, nodeId);
+            var contentInfoArrayList = AccessObject.GetContentsByAccessFile(excelFilePath, _publishmentSystemInfo, nodeInfo);
 
             if (importStart > 1 || importCount > 0)
             {
@@ -396,7 +396,7 @@ namespace SiteServer.CMS.ImportExport
                 contentInfoArrayList = theArrayList;
             }
 
-            var tableName = NodeManager.GetTableName(Fso.PublishmentSystemInfo, nodeInfo);
+            var tableName = NodeManager.GetTableName(_publishmentSystemInfo, nodeInfo);
 
             foreach (BackgroundContentInfo contentInfo in contentInfoArrayList)
             {
@@ -412,25 +412,25 @@ namespace SiteServer.CMS.ImportExport
                         foreach (int id in existsIDs)
                         {
                             contentInfo.Id = id;
-                            DataProvider.ContentDao.Update(tableName, Fso.PublishmentSystemInfo, contentInfo);
+                            DataProvider.ContentDao.Update(tableName, _publishmentSystemInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, Fso.PublishmentSystemInfo, contentInfo);
+                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _publishmentSystemInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, Fso.PublishmentSystemInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _publishmentSystemInfo, contentInfo);
                 }
             }
         }
 
         public void ImportContentsByCsvFile(int nodeId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var nodeInfo = NodeManager.GetNodeInfo(Fso.PublishmentSystemId, nodeId);
-            var contentInfoList = ExcelObject.GetContentsByCsvFile(csvFilePath, Fso.PublishmentSystemInfo, nodeInfo);
+            var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, nodeId);
+            var contentInfoList = ExcelObject.GetContentsByCsvFile(csvFilePath, _publishmentSystemInfo, nodeInfo);
             contentInfoList.Reverse();
 
             if (importStart > 1 || importCount > 0)
@@ -466,7 +466,7 @@ namespace SiteServer.CMS.ImportExport
                 contentInfoList = theList;
             }
 
-            var tableName = NodeManager.GetTableName(Fso.PublishmentSystemInfo, nodeInfo);
+            var tableName = NodeManager.GetTableName(_publishmentSystemInfo, nodeInfo);
 
             foreach (var contentInfo in contentInfoList)
             {
@@ -480,17 +480,17 @@ namespace SiteServer.CMS.ImportExport
                         foreach (int id in existsIDs)
                         {
                             contentInfo.Id = id;
-                            DataProvider.ContentDao.Update(tableName, Fso.PublishmentSystemInfo, contentInfo);
+                            DataProvider.ContentDao.Update(tableName, _publishmentSystemInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, Fso.PublishmentSystemInfo, contentInfo);
+                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _publishmentSystemInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, Fso.PublishmentSystemInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _publishmentSystemInfo, contentInfo);
                 }
                 //this.FSO.AddContentToWaitingCreate(contentInfo.NodeID, contentID);
             }
@@ -504,9 +504,9 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.UnpackFiles(zipFilePath, directoryPath);
 
-            var nodeInfo = NodeManager.GetNodeInfo(Fso.PublishmentSystemId, nodeId);
+            var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, nodeId);
 
-            var contentInfoArrayList = TxtObject.GetContentsByTxtFile(directoryPath, Fso.PublishmentSystemInfo, nodeInfo);
+            var contentInfoArrayList = TxtObject.GetContentsByTxtFile(directoryPath, _publishmentSystemInfo, nodeInfo);
 
             if (importStart > 1 || importCount > 0)
             {
@@ -541,7 +541,7 @@ namespace SiteServer.CMS.ImportExport
                 contentInfoArrayList = theArrayList;
             }
 
-            var tableName = NodeManager.GetTableName(Fso.PublishmentSystemInfo, nodeInfo);
+            var tableName = NodeManager.GetTableName(_publishmentSystemInfo, nodeInfo);
 
             foreach (BackgroundContentInfo contentInfo in contentInfoArrayList)
             {
@@ -558,17 +558,17 @@ namespace SiteServer.CMS.ImportExport
                         foreach (int id in existsIDs)
                         {
                             contentInfo.Id = id;
-                            DataProvider.ContentDao.Update(tableName, Fso.PublishmentSystemInfo, contentInfo);
+                            DataProvider.ContentDao.Update(tableName, _publishmentSystemInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, Fso.PublishmentSystemInfo, contentInfo);
+                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _publishmentSystemInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, Fso.PublishmentSystemInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _publishmentSystemInfo, contentInfo);
                 }
 
                 //this.FSO.AddContentToWaitingCreate(contentInfo.NodeID, contentID);
@@ -579,18 +579,18 @@ namespace SiteServer.CMS.ImportExport
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
 
-            var siteContentIe = new SiteContentIe(Fso.PublishmentSystemInfo, siteContentDirectoryPath);
+            var siteContentIe = new SiteContentIe(_publishmentSystemInfo, siteContentDirectoryPath);
 
             siteContentIe.ImportContents(filePath, isOverride, nodeInfo, taxis, importStart, importCount, isChecked, checkedLevel);
 
             FileUtils.DeleteFileIfExists(filePath);
 
-            DirectoryUtils.MoveDirectory(siteContentDirectoryPath, Fso.PublishmentSystemPath, isOverride);
+            DirectoryUtils.MoveDirectory(siteContentDirectoryPath, _publishmentSystemPath, isOverride);
         }
 
         public void ImportInputContentsByCsvFile(InputInfo inputInfo, string excelFilePath, int importStart, int importCount, bool isChecked)
         {
-            var contentInfoList = ExcelObject.GetInputContentsByCsvFile(excelFilePath, Fso.PublishmentSystemInfo, inputInfo);
+            var contentInfoList = ExcelObject.GetInputContentsByCsvFile(excelFilePath, _publishmentSystemInfo, inputInfo);
             contentInfoList.Reverse();
 
             if (importStart > 1 || importCount > 0)

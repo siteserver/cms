@@ -31,26 +31,25 @@ namespace SiteServer.API.Controllers.Stl
                 var fileTemplateId = body.GetQueryInt("fileTemplateId");
                 var isRedirect = TranslateUtils.ToBool(body.GetQueryString("isRedirect"));
 
-                var fso = new FileSystemObject(publishmentSystemId);
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
                 var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
                 if (fileTemplateId != 0)
                 {
-                    fso.Execute(ECreateType.File, 0, 0, fileTemplateId);
+                    FileSystemObject.Execute(publishmentSystemId, ECreateType.File, 0, 0, fileTemplateId);
                 }
                 else if (contentId != 0)
                 {
-                    fso.Execute(ECreateType.Content, channelId, contentId, 0);
+                    FileSystemObject.Execute(publishmentSystemId, ECreateType.Content, channelId, contentId, 0);
                 }
                 else if (channelId != 0)
                 {
-                    fso.Execute(ECreateType.Channel, channelId, 0, 0);
+                    FileSystemObject.Execute(publishmentSystemId, ECreateType.Channel, channelId, 0, 0);
                 }
                 else if (publishmentSystemId != 0)
                 {
-                    fso.Execute(ECreateType.Channel, publishmentSystemId, 0, 0);
+                    FileSystemObject.Execute(publishmentSystemId, ECreateType.Channel, publishmentSystemId, 0, 0);
                 }
 
                 if (isRedirect)

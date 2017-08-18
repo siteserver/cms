@@ -15,17 +15,21 @@ namespace SiteServer.Plugin
 
         IDbHelper DbHelper { get; }
 
+        bool SetGlobalConfig(object config);
+
         bool SetGlobalConfig(string name, object config);
 
-        T GetGlobalConfig<T>(string name);
+        T GetGlobalConfig<T>(string name = "");
 
-        bool RemoveGlobalConfig(string name);
+        bool RemoveGlobalConfig(string name = "");
 
         bool SetConfig(int siteId, string name, object config);
 
-        T GetConfig<T>(int siteId, string name);
+        bool SetConfig(int siteId, object config);
 
-        bool RemoveConfig(int siteId, string name);
+        T GetConfig<T>(int siteId, string name = "");
+
+        bool RemoveConfig(int siteId, string name = "");
 
         int GetSiteIdByFilePath(string path);
 

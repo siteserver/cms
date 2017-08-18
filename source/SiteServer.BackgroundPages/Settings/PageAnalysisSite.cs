@@ -124,7 +124,7 @@ yArrayRemark.push('{yValueRemark}');";
             var ltlNewRemarkNum = (Literal)e.Item.FindControl("ltlNewRemarkNum");
             var ltlTotalNum = (Literal)e.Item.FindControl("ltlTotalNum");
 
-            ltlPublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
+            ltlPublishmentSystemName.Text = $@"<a href=""{PageAnalysisAdminWork.GetRedirectUrl(publishmentSystemId, GetRedirectUrl(string.Empty))}"">{publishmentSystemInfo.PublishmentSystemName}</a>";
             ltlNewContentNum.Text = GetYHashtable(publishmentSystemId, YTypeNew);
             ltlUpdateContentNum.Text = GetYHashtable(publishmentSystemId, YTypeUpdate);
             ltlNewRemarkNum.Text = GetYHashtable(publishmentSystemId, YTypeRemrk);

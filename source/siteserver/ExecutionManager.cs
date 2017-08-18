@@ -33,8 +33,7 @@ namespace siteserver
                     try
                     {
                         var start = DateTime.Now;
-                        var fso = new FileSystemObject(taskInfo.PublishmentSystemId);
-                        fso.Execute(taskInfo.CreateType, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId);
+                        FileSystemObject.Execute(taskInfo.PublishmentSystemId, taskInfo.CreateType, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId);
                         var timeSpan = DateUtils.GetRelatedDateTimeString(start);
                         CreateTaskManager.Instance.AddSuccessLog(taskInfo, timeSpan);
                     }

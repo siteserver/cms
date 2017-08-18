@@ -23,10 +23,6 @@ namespace SiteServer.BackgroundPages.Cms
 
         public DropDownList DdlCharset;
         public TextBox TbPageSize;
-        public RadioButtonList RblIsCountHits;
-        public PlaceHolder PhIsCountHitsByDay;
-        public RadioButtonList RblIsCountHitsByDay;
-        public RadioButtonList RblIsCountDownload;
         public RadioButtonList RblIsCreateDoubleClick;
 
 		public void Page_Load(object sender, EventArgs e)
@@ -59,19 +55,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                 TbPageSize.Text = PublishmentSystemInfo.Additional.PageSize.ToString();
 
-                EBooleanUtils.AddListItems(RblIsCountHits, "统计", "不统计");
-                ControlUtils.SelectListItemsIgnoreCase(RblIsCountHits, PublishmentSystemInfo.Additional.IsCountHits.ToString());
-
-                EBooleanUtils.AddListItems(RblIsCountHitsByDay, "统计", "不统计");
-                ControlUtils.SelectListItemsIgnoreCase(RblIsCountHitsByDay, PublishmentSystemInfo.Additional.IsCountHitsByDay.ToString());
-
-                EBooleanUtils.AddListItems(RblIsCountDownload, "统计", "不统计");
-                ControlUtils.SelectListItemsIgnoreCase(RblIsCountDownload, PublishmentSystemInfo.Additional.IsCountDownload.ToString());
-
                 EBooleanUtils.AddListItems(RblIsCreateDoubleClick, "启用双击生成", "不启用");
                 ControlUtils.SelectListItemsIgnoreCase(RblIsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
-
-                RblIsCountHits_SelectedIndexChanged(null, EventArgs.Empty);
             }
 		}
 
@@ -79,11 +64,6 @@ namespace SiteServer.BackgroundPages.Cms
         {
             PhMulti.Visible = TranslateUtils.ToBool(DdlIsMultiDeployment.SelectedValue);
             PhSingle.Visible = !PhMulti.Visible;
-        }
-
-        public void RblIsCountHits_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            PhIsCountHitsByDay.Visible = TranslateUtils.ToBool(RblIsCountHits.SelectedValue);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -108,9 +88,6 @@ namespace SiteServer.BackgroundPages.Cms
 		    }
 
 		    PublishmentSystemInfo.Additional.PageSize = TranslateUtils.ToInt(TbPageSize.Text, PublishmentSystemInfo.Additional.PageSize);
-		    PublishmentSystemInfo.Additional.IsCountHits = TranslateUtils.ToBool(RblIsCountHits.SelectedValue);
-		    PublishmentSystemInfo.Additional.IsCountHitsByDay = TranslateUtils.ToBool(RblIsCountHitsByDay.SelectedValue);
-		    PublishmentSystemInfo.Additional.IsCountDownload = TranslateUtils.ToBool(RblIsCountDownload.SelectedValue);
 		    PublishmentSystemInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(RblIsCreateDoubleClick.SelectedValue);
                 
 		    try

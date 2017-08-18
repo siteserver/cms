@@ -19,7 +19,24 @@
     
       <table class="table noborder table-hover">
         <tr>
-          <td width="200">是否统计页面访问量：</td>
+          <td width="260">是否统计内容总点击量：</td>
+          <td>
+            <asp:RadioButtonList ID="RblIsCountHits" AutoPostBack="true" OnSelectedIndexChanged="RblIsCountHits_SelectedIndexChanged" RepeatDirection="Horizontal" class="radiobuttonlist" runat="server"></asp:RadioButtonList>
+            <span>需要重新生成页面</span>
+          </td>
+        </tr>
+        <asp:PlaceHolder ID="PhIsCountHitsByDay" runat="server">
+          <tr>
+            <td>是否统计内容详细点击量（日/周/月）：</td>
+            <td><asp:RadioButtonList ID="RblIsCountHitsByDay" RepeatDirection="Horizontal" class="radiobuttonlist" runat="server"></asp:RadioButtonList></td>
+          </tr>
+        </asp:PlaceHolder>
+        <tr>
+          <td>是否统计文件下载量：</td>
+          <td><asp:RadioButtonList ID="RblIsCountDownload" RepeatDirection="Horizontal" class="radiobuttonlist" runat="server"></asp:RadioButtonList></td>
+        </tr>
+        <tr>
+          <td>是否统计页面访问量：</td>
           <td><asp:RadioButtonList ID="IsTracker" RepeatDirection="Horizontal" class="noborder" runat="server"></asp:RadioButtonList>
             <span>需要重新生成页面</span>
           </td>

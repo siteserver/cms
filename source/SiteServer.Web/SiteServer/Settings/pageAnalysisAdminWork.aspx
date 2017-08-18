@@ -19,6 +19,7 @@
             结束时间：
             <bairong:DateTimeTextBox ID="TbEndDate" class="input-small" Columns="30" runat="server" />
             <asp:Button class="btn" style="margin-bottom: 0px;" OnClick="Analysis_OnClick" Text="分 析" runat="server" />
+            <input class="btn" type="button" onclick="location.href='pageAnalysisSite.aspx';return false;" value="返 回" />
         </div>
 
         <div class="popover popover-static">

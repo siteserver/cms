@@ -43,6 +43,8 @@ namespace SiteServer.BackgroundPages.Settings
         private DateTime _begin;
         private DateTime _end;
 
+        protected override bool IsSinglePage => true;
+
         public static string GetRedirectUrl(int publishmentSystemId, string returnUrl)
         {
             return PageUtils.GetSettingsUrl(nameof(PageAnalysisAdminWork), new NameValueCollection
@@ -77,10 +79,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            if (PublishmentSystemId == 0)
-            {
-                BreadCrumbSettings("管理员工作量统计", AppManager.Permissions.Settings.Chart);
-            }
+            BreadCrumbSettings($@"站点数据统计（<a href=""{PageRedirect.GetRedirectUrl(PublishmentSystemId)}"" target=""_blank"">{PublishmentSystemInfo.PublishmentSystemName}</a>）", AppManager.Permissions.Settings.Chart);
 
             TbStartDate.Text = DateUtils.GetDateAndTimeString(_begin);
             TbEndDate.Text = DateUtils.GetDateAndTimeString(_end);

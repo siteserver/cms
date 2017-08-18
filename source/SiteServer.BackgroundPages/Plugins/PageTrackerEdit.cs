@@ -8,6 +8,10 @@ namespace SiteServer.BackgroundPages.Plugins
 {
 	public class PageTrackerEdit : BasePageCms
     {
+        public RadioButtonList RblIsCountHits;
+        public PlaceHolder PhIsCountHitsByDay;
+        public RadioButtonList RblIsCountHitsByDay;
+        public RadioButtonList RblIsCountDownload;
         public RadioButtonList IsTracker;
 
         public TextBox TrackerDays;
@@ -23,6 +27,17 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (!IsPostBack)
             {
+                EBooleanUtils.AddListItems(RblIsCountHits, "统计", "不统计");
+                ControlUtils.SelectListItemsIgnoreCase(RblIsCountHits, PublishmentSystemInfo.Additional.IsCountHits.ToString());
+
+                EBooleanUtils.AddListItems(RblIsCountHitsByDay, "统计", "不统计");
+                ControlUtils.SelectListItemsIgnoreCase(RblIsCountHitsByDay, PublishmentSystemInfo.Additional.IsCountHitsByDay.ToString());
+
+                EBooleanUtils.AddListItems(RblIsCountDownload, "统计", "不统计");
+                ControlUtils.SelectListItemsIgnoreCase(RblIsCountDownload, PublishmentSystemInfo.Additional.IsCountDownload.ToString());
+
+                RblIsCountHits_SelectedIndexChanged(null, EventArgs.Empty);
+
                 EBooleanUtils.AddListItems(IsTracker, "统计", "不统计");
                 ControlUtils.SelectListItemsIgnoreCase(IsTracker, PublishmentSystemInfo.Additional.IsTracker.ToString());
 
@@ -33,10 +48,19 @@ namespace SiteServer.BackgroundPages.Plugins
             }
 		}
 
+        public void RblIsCountHits_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhIsCountHitsByDay.Visible = TranslateUtils.ToBool(RblIsCountHits.SelectedValue);
+        }
+
         public override void Submit_OnClick(object sender, EventArgs e)
 		{
 			if (Page.IsPostBack && Page.IsValid)
 			{
+                PublishmentSystemInfo.Additional.IsCountHits = TranslateUtils.ToBool(RblIsCountHits.SelectedValue);
+                PublishmentSystemInfo.Additional.IsCountHitsByDay = TranslateUtils.ToBool(RblIsCountHitsByDay.SelectedValue);
+                PublishmentSystemInfo.Additional.IsCountDownload = TranslateUtils.ToBool(RblIsCountDownload.SelectedValue);
+
                 PublishmentSystemInfo.Additional.IsTracker = TranslateUtils.ToBool(IsTracker.SelectedValue);
 
                 PublishmentSystemInfo.Additional.TrackerDays = int.Parse(TrackerDays.Text);

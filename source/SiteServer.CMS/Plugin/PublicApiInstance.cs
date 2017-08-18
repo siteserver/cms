@@ -101,9 +101,14 @@ namespace SiteServer.CMS.Plugin
             return PublishmentSystemManager.GetPublishmentSystemIdList();
         }
 
+        public bool SetConfig(int siteId, object config)
+        {
+            return SetConfig(siteId, string.Empty, config);
+        }
+
         public bool SetConfig(int siteId, string name, object config)
         {
-            if (string.IsNullOrEmpty(name)) return false;
+            if (name == null) name = string.Empty;
 
             try
             {
@@ -136,9 +141,9 @@ namespace SiteServer.CMS.Plugin
             return true;
         }
 
-        public T GetConfig<T>(int siteId, string name)
+        public T GetConfig<T>(int siteId, string name = "")
         {
-            if (string.IsNullOrEmpty(name)) return default(T);
+            if (name == null) name = string.Empty;
 
             try
             {
@@ -155,9 +160,9 @@ namespace SiteServer.CMS.Plugin
             return default(T);
         }
 
-        public bool RemoveConfig(int siteId, string name)
+        public bool RemoveConfig(int siteId, string name = "")
         {
-            if (string.IsNullOrEmpty(name)) return false;
+            if (name == null) name = string.Empty;
 
             try
             {
@@ -171,13 +176,19 @@ namespace SiteServer.CMS.Plugin
             return true;
         }
 
+        public bool SetGlobalConfig(object config)
+        {
+            return SetConfig(0, string.Empty, config);
+        }
+
         public bool SetGlobalConfig(string name, object config)
         {
             return SetConfig(0, name, config);
         }
 
-        public T GetGlobalConfig<T>(string name)
+        public T GetGlobalConfig<T>(string name = "")
         {
+            if (name == null) name = string.Empty;
             return GetConfig<T>(0, name);
         }
 
