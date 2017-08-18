@@ -71,8 +71,8 @@ namespace SiteServer.CMS.Core.Create
             {
                 var pendingTasks = GetPendingTasks(publishmentSystemId);
                 if (pendingTasks.Count <= 0) return null;
-
-                pendingTasks.TryDequeue(out CreateTaskInfo taskInfo);
+                CreateTaskInfo taskInfo;
+                pendingTasks.TryDequeue(out taskInfo);
 
                 return taskInfo;
             }
