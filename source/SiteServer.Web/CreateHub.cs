@@ -32,24 +32,29 @@ namespace SiteServer.API
                 return 0;
             }
 
-            var pendingTask = CreateTaskManager.Instance.GetAndRemoveLastPendingTask(publishmentSystemId);
+            var instance = CreateTaskManager.Instance;
+
+            var pendingTask = instance.GetAndRemoveLastPendingTask(publishmentSystemId);
             if (pendingTask == null) return 0;
 
             try
             {
                 var start = DateTime.Now;
-                FileSystemObject.Execute(pendingTask.PublishmentSystemId, pendingTask.CreateType, pendingTask.ChannelId, pendingTask.ContentId, pendingTask.TemplateId);
+                FileSystemObject.Execute(pendingTask.PublishmentSystemId, pendingTask.CreateType, pendingTask.ChannelId,
+                    pendingTask.ContentId, pendingTask.TemplateId);
                 var timeSpan = DateUtils.GetRelatedDateTimeString(start);
-                CreateTaskManager.Instance.AddSuccessLog(pendingTask, timeSpan);
+                instance.AddSuccessLog(pendingTask, timeSpan);
             }
             catch (Exception ex)
             {
-                CreateTaskManager.Instance.AddFailureLog(pendingTask, ex);
+                instance.AddFailureLog(pendingTask, ex);
+            }
+            finally
+            {
+                instance.RemoveCurrent(publishmentSystemId, pendingTask);
             }
 
-            //CreateTaskManager.Instance.RemoveTask(publishmentSystemId, pendingTask);
-
-            return CreateTaskManager.Instance.GetPendingTaskCount(publishmentSystemId);
+            return instance.GetPendingTaskCount(publishmentSystemId);
         }
 
         public void GetTasks(int publishmentSystemId)
@@ -59,7 +64,7 @@ namespace SiteServer.API
                 if (publishmentSystemId > 0)
                 {
                     var summary = CreateTaskManager.Instance.GetTaskSummary(publishmentSystemId);
-                    Clients.Client(Context.ConnectionId).show(true, summary.Current, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
+                    Clients.Client(Context.ConnectionId).show(true, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
 
                     Execute(publishmentSystemId);
                 }
@@ -68,11 +73,11 @@ namespace SiteServer.API
                     if (ServiceManager.IsServiceOnline())
                     {
                         var summary = CreateTaskManager.Instance.GetTaskSummary(publishmentSystemId);
-                        Clients.Client(Context.ConnectionId).show(true, summary.Current, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
+                        Clients.Client(Context.ConnectionId).show(true, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);
                     }
                     else
                     {
-                        Clients.Client(Context.ConnectionId).show(false, null, null, 0, 0, 0, 0);
+                        Clients.Client(Context.ConnectionId).show(false, null, 0, 0, 0, 0);
                     }
                 }
             }

@@ -24,7 +24,7 @@
     
     $(function () {
         var create = $.connection.createHub;
-        create.client.show = function(isOnline, current, tasks, channelsCount, contentsCount, filesCount) {
+        create.client.show = function(isOnline, tasks, channelsCount, contentsCount, filesCount) {
           if (!isOnline) {
             $('#online').hide();
             $('#offline').show();
@@ -37,31 +37,26 @@
           contentsCount ? $('#contentsCount').css('color', '#fa0') : $('#contentsCount').css('color', '#00b19d');
           $('#filesCount').text(filesCount);
           filesCount ? $('#filesCount').css('color', '#fa0') : $('#filesCount').css('color', '#00b19d');
-          var isPending = false;
-          if (current) {
-            isPending = true;
-            $('#tasks').append('<div class="form-group"><label for="range_01" class="col-sm-2 control-label">' + current.type + '<span class="font-normal text-muted clearfix">正在生成...</span></label><div class="col-sm-10"><div class="progress progress-lg m-b-5" style="margin-top: 18px"><div class="progress-bar progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">' + current.name + '</div></div></div></div>');
-          }
           if (tasks && tasks.length > 0) {
             for (var i = 0; i < tasks.length; i++) {
               var task = tasks[i];
-              if (task.isOver) {
+              if (task.isExecuting) {
+                $('#tasks').append('<div class="form-group"><label for="range_01" class="col-sm-2 control-label">' + task.type + '<span class="font-normal text-muted clearfix">正在生成...</span></label><div class="col-sm-10"><div class="progress progress-lg m-b-5" style="margin-top: 18px"><div class="progress-bar progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">' + task.name + '</div></div></div></div>');
+              } else if (task.isPending) {
+                $('#tasks').append('<div class="form-group"><label for="range_01" class="col-sm-2 control-label">' + task.type + '<span class="font-normal text-muted clearfix">等待中</span></label><div class="col-sm-10"><div class="progress progress-lg m-b-5" style="margin-top: 18px"><div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">' + task.name + '</div></div></div></div>');
+              } else {
                 if (task.isSuccess) {
                   $('#tasks').append('<div class="form-group"><label for="range_01" class="col-sm-2 control-label">' + task.type + '<span class="font-normal text-muted clearfix">生成成功</span></label><div class="col-sm-10"><div class="progress progress-lg m-b-5" style="margin-top: 18px"><div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100" style="width: 100%;"><a href="<%=SiteUrl%>&channelId=' + task.channelId + '&contentId=' + task.contentId + '&templateId=' + task.templateId + '" target="_blank" style="color:#fff;">' + task.name + '（用时：' + task.timeSpan + '）' + '</a></div></div></div></div>');
                 } else {
                   $('#tasks').append('<div class="form-group"><label for="range_01" class="col-sm-2 control-label">' + task.type + '<span class="font-normal text-muted clearfix">生成失败</span></label><div class="col-sm-10"><div class="progress progress-lg m-b-5" style="margin-top: 18px"><div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">' + task.name + '（错误：' + task.errorMessage + '）' + '</div></div></div></div>');
                 }
-              } else {
-                $('#tasks').append('<div class="form-group"><label for="range_01" class="col-sm-2 control-label">' + task.type + '<span class="font-normal text-muted clearfix">等待中</span></label><div class="col-sm-10"><div class="progress progress-lg m-b-5" style="margin-top: 18px"><div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">' + task.name + '</div></div></div></div>');
               }
             }
           }
 
-          if (isPending) {
-            setTimeout(function() {
-              create.server.getTasks(siteId);
-            }, 3000);
-          }
+          setTimeout(function() {
+            create.server.getTasks(siteId);
+          }, 3000);
         };
         create.client.next = function (total) {
           if (total) {

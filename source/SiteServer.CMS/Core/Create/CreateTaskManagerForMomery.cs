@@ -10,6 +10,7 @@ namespace SiteServer.CMS.Core.Create
     internal class CreateTaskManagerForMomery : ICreateTaskManager
     {
         private static readonly ConcurrentDictionary<int, ConcurrentQueue<CreateTaskInfo>> PendingTaskDict = new ConcurrentDictionary<int, ConcurrentQueue<CreateTaskInfo>>();
+        private static readonly ConcurrentDictionary<int, List<CreateTaskInfo>> ExecutingTaskDict = new ConcurrentDictionary<int, List<CreateTaskInfo>>();
         private static readonly ConcurrentDictionary<int, List<CreateTaskLogInfo>> TaskLogDict = new ConcurrentDictionary<int, List<CreateTaskLogInfo>>();
         private static readonly object LockObject = new object();
 
@@ -27,6 +28,18 @@ namespace SiteServer.CMS.Core.Create
                     PendingTaskDict.TryAdd(publishmentSystemId, new ConcurrentQueue<CreateTaskInfo>());
                 }
                 return PendingTaskDict[publishmentSystemId];
+            }
+        }
+
+        private static List<CreateTaskInfo> GetExecutingTasks(int publishmentSystemId)
+        {
+            lock (LockObject)
+            {
+                if (!ExecutingTaskDict.ContainsKey(publishmentSystemId))
+                {
+                    ExecutingTaskDict.TryAdd(publishmentSystemId, new List<CreateTaskInfo>());
+                }
+                return ExecutingTaskDict[publishmentSystemId];
             }
         }
 
@@ -70,11 +83,25 @@ namespace SiteServer.CMS.Core.Create
             lock (LockObject)
             {
                 var pendingTasks = GetPendingTasks(publishmentSystemId);
-                if (pendingTasks.Count <= 0) return null;
                 CreateTaskInfo taskInfo;
                 pendingTasks.TryDequeue(out taskInfo);
 
+                if (taskInfo != null)
+                {
+                    var executingTasks = GetExecutingTasks(publishmentSystemId);
+                    executingTasks.Add(taskInfo);
+                }
+
                 return taskInfo;
+            }
+        }
+
+        public void RemoveCurrent(int publishmentSystemId, CreateTaskInfo taskInfo)
+        {
+            lock (LockObject)
+            {
+                var executingTasks = GetExecutingTasks(publishmentSystemId);
+                executingTasks.Remove(taskInfo);
             }
         }
 
@@ -115,6 +142,7 @@ namespace SiteServer.CMS.Core.Create
 
         public CreateTaskSummary GetTaskSummary(int publishmentSystemId)
         {
+            var executingTasks = GetExecutingTasks(publishmentSystemId);
             var pendingTasks = GetPendingTasks(publishmentSystemId);
             var taskLogs = GetTaskLogs(publishmentSystemId);
 
@@ -139,19 +167,24 @@ namespace SiteServer.CMS.Core.Create
                     filesCount += taskInfo.PageCount;
                 }
             }
-            
-            CreateTaskSummaryItem current = null;
-            var count = pendingTasks.Count >= 11 ? 11 : pendingTasks.Count;
+
+            if (executingTasks.Count > 0)
+            {
+                foreach (var taskInfo in executingTasks)
+                {
+                    var summaryItem = new CreateTaskSummaryItem(taskInfo, string.Empty, true, false, false, string.Empty);
+                    list.Add(summaryItem);
+                }
+            }
+
+            var count = pendingTasks.Count >= 10 ? 10 : pendingTasks.Count;
             if (count > 0)
             {
                 var pendingTaskList = pendingTasks.ToList();
-                var pendingTask = pendingTaskList[0];
-                current = new CreateTaskSummaryItem(pendingTask, string.Empty, false, false, string.Empty);
-
-                for (var i = 1; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     var taskInfo = pendingTaskList[i];
-                    var summaryItem = new CreateTaskSummaryItem(taskInfo, string.Empty, false, false, string.Empty);
+                    var summaryItem = new CreateTaskSummaryItem(taskInfo, string.Empty, false, true, false, string.Empty);
                     list.Add(summaryItem);
                 }
             }
@@ -160,11 +193,11 @@ namespace SiteServer.CMS.Core.Create
             for (var i = 1; i <= count; i++)
             {
                 var logInfo = taskLogs[taskLogs.Count - i];
-                var summaryItem = new CreateTaskSummaryItem(logInfo, true);
+                var summaryItem = new CreateTaskSummaryItem(logInfo);
                 list.Add(summaryItem);
             }
 
-            var summary = new CreateTaskSummary(current, list, channelsCount, contentsCount, filesCount);
+            var summary = new CreateTaskSummary(list, channelsCount, contentsCount, filesCount);
 
             return summary;
         }

@@ -11,9 +11,7 @@ namespace SiteServer.CMS.Core.Create
 
         CreateTaskInfo GetAndRemoveLastPendingTask(int publishmentSystemId);
 
-        //CreateTaskInfo GetLastPendingTask(int publishmentSystemId);
-
-        //void RemoveTask(int publishmentSystemId, CreateTaskInfo taskInfo);
+        void RemoveCurrent(int publishmentSystemId, CreateTaskInfo taskInfo);
 
         void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan);
 

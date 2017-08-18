@@ -4,7 +4,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser;
-using SiteServer.CMS.StlParser.Cache;
 
 namespace siteserver
 {
@@ -21,9 +20,11 @@ namespace siteserver
             {
                 if (!ServiceManager.IsPendingCreateTask()) return false;
 
+                var instance = CreateTaskManager.Instance;
+
                 while (true)
                 {
-                    var taskInfo = CreateTaskManager.Instance.GetAndRemoveLastPendingTask(0);
+                    var taskInfo = instance.GetAndRemoveLastPendingTask(0);
                     if (taskInfo == null)
                     {
                         ServiceManager.ClearIsPendingCreateCache();
@@ -33,16 +34,19 @@ namespace siteserver
                     try
                     {
                         var start = DateTime.Now;
-                        FileSystemObject.Execute(taskInfo.PublishmentSystemId, taskInfo.CreateType, taskInfo.ChannelId, taskInfo.ContentId, taskInfo.TemplateId);
+                        FileSystemObject.Execute(taskInfo.PublishmentSystemId, taskInfo.CreateType, taskInfo.ChannelId,
+                            taskInfo.ContentId, taskInfo.TemplateId);
                         var timeSpan = DateUtils.GetRelatedDateTimeString(start);
-                        CreateTaskManager.Instance.AddSuccessLog(taskInfo, timeSpan);
+                        instance.AddSuccessLog(taskInfo, timeSpan);
                     }
                     catch (Exception ex)
                     {
-                        CreateTaskManager.Instance.AddFailureLog(taskInfo, ex);
+                        instance.AddFailureLog(taskInfo, ex);
                     }
-
-                    //CreateTaskManager.Instance.RemoveTask(taskInfo.PublishmentSystemId, taskInfo);
+                    finally
+                    {
+                        instance.RemoveCurrent(taskInfo.PublishmentSystemId, taskInfo);
+                    }
                 }
             }
             catch (Exception ex)

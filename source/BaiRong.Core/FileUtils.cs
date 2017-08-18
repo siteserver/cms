@@ -29,10 +29,20 @@ namespace BaiRong.Core
 		{
 			DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-			var sw = new StreamWriter(filePath, false, ECharsetUtils.GetEncoding(charset));
-			sw.Write(content);
-			sw.Flush();
-			sw.Close();
+            var file = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
+            using (var writer = new StreamWriter(file, ECharsetUtils.GetEncoding(charset)))
+            {
+                writer.Write(content);
+                writer.Flush();
+                writer.Close();
+
+                file.Close();
+            }
+
+   //         var sw = new StreamWriter(filePath, false, ECharsetUtils.GetEncoding(charset));
+			//sw.Write(content);
+			//sw.Flush();
+			//sw.Close();
 		}
 
         public static void AppendText(string filePath, ECharset charset, string content)

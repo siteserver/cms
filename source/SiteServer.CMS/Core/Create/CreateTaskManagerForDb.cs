@@ -21,10 +21,18 @@ namespace SiteServer.CMS.Core.Create
             lock (LockObject)
             {
                 var taskInfo = DataProvider.CreateTaskDao.GetLastPendingTask();
-                DataProvider.CreateTaskDao.Delete(taskInfo.Id);
+                if (taskInfo != null)
+                {
+                    DataProvider.CreateTaskDao.Delete(taskInfo.Id);
+                }
 
                 return taskInfo;
             }
+        }
+
+        public void RemoveCurrent(int publishmentSystemId, CreateTaskInfo taskInfo)
+        {
+            
         }
 
         public void AddSuccessLog(CreateTaskInfo taskInfo, string timeSpan)
@@ -58,29 +66,23 @@ namespace SiteServer.CMS.Core.Create
             var pendingTasks = DataProvider.CreateTaskDao.GetList(publishmentSystemId, 10);
             var taskLogs = DataProvider.CreateTaskLogDao.GetList(publishmentSystemId, 20);
 
-            CreateTaskSummaryItem current = null;
             var list = new List<CreateTaskSummaryItem>();
 
             for (var i = pendingTasks.Count - 1; i >= 0; i--)
             {
-                if (i == 0)
-                {
-                    var pendingTask = pendingTasks[0];
-                    current = new CreateTaskSummaryItem(pendingTask, string.Empty, false, false, string.Empty);
-                }
                 var taskInfo = pendingTasks[i];
-                var summaryItem = new CreateTaskSummaryItem(taskInfo, string.Empty, false, false, string.Empty);
+                var summaryItem = new CreateTaskSummaryItem(taskInfo, string.Empty, false, true, false, string.Empty);
                 list.Add(summaryItem);
             }
 
             for (var i = taskLogs.Count - 1; i >= 0; i--)
             {
                 var logInfo = taskLogs[i];
-                var summaryItem = new CreateTaskSummaryItem(logInfo, true);
+                var summaryItem = new CreateTaskSummaryItem(logInfo);
                 list.Add(summaryItem);
             }
 
-            var summary = new CreateTaskSummary(current, list, channelsCount, contentsCount, filesCount);
+            var summary = new CreateTaskSummary(list, channelsCount, contentsCount, filesCount);
 
             return summary;
         }
