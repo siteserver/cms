@@ -8,6 +8,7 @@ using BaiRong.Core;
 using SiteServer.CMS.Controllers.Files;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.API.Controllers.Files
 {

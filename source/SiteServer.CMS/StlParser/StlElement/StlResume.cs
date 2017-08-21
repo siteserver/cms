@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Parser;
+using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.CMS.StlTemplates;
 

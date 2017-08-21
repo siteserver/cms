@@ -6,6 +6,7 @@ using BaiRong.Core;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Plugins
 {

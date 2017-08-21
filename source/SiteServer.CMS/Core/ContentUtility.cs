@@ -13,8 +13,8 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Wcm.Model;
 using BaiRong.Core.AuxiliaryTable;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Features;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
 {
@@ -371,12 +371,12 @@ namespace SiteServer.CMS.Core
             var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
             if (string.IsNullOrEmpty(contentModelInfo.PluginId)) return isTranslated;
 
-            var hook = PluginCache.GetEnabledFeature<IContentModel>(contentModelInfo.PluginId);
-            if (hook == null) return isTranslated;
+            var feature = PluginCache.GetEnabledFeature<IContentModel>(contentModelInfo.PluginId);
+            if (feature?.OnContentAdded == null) return isTranslated;
 
             try
             {
-                hook.AfterContentAdded(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId);
+                feature.OnContentAdded(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId);
             }
             catch (Exception ex)
             {
@@ -433,14 +433,18 @@ namespace SiteServer.CMS.Core
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginCache.GetEnabledFeature<IContentModel>(contentModelInfo.PluginId);
-                    try
+                    var feature = PluginCache.GetEnabledFeature<IContentModel>(contentModelInfo.PluginId);
+
+                    if (feature?.OnContentTranslated != null)
                     {
-                        hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogUtils.AddErrorLog(ex, $"插件：{contentModelInfo.PluginId} AfterContentTranslated");
+                        try
+                        {
+                            feature.OnContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogUtils.AddErrorLog(ex, $"插件：{contentModelInfo.PluginId} AfterContentTranslated");
+                        }
                     }
                 }
 
@@ -468,15 +472,31 @@ namespace SiteServer.CMS.Core
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginCache.GetEnabledFeature<IContentModel>(contentModelInfo.PluginId);
-                    try
+                    var feature = PluginCache.GetEnabledFeature<IContentModel>(contentModelInfo.PluginId);
+                    if (feature != null)
                     {
-                        hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, newContentId);
-                        hook?.AfterContentDeleted(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogUtils.AddErrorLog(ex, $"插件：{contentModelInfo.PluginId} AfterContentTranslated");
+                        if (feature.OnContentTranslated != null)
+                        {
+                            try
+                            {
+                                feature.OnContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, newContentId);
+                            }
+                            catch (Exception ex)
+                            {
+                                LogUtils.AddErrorLog(ex, $"插件：{contentModelInfo.PluginId} AfterContentTranslated");
+                            }
+                        }
+                        if (feature.OnContentDeleted != null)
+                        {
+                            try
+                            {
+                                feature.OnContentDeleted(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId);
+                            }
+                            catch (Exception ex)
+                            {
+                                LogUtils.AddErrorLog(ex, $"插件：{contentModelInfo.PluginId} AfterContentTranslated");
+                            }
+                        }
                     }
                 }
 
@@ -513,14 +533,17 @@ namespace SiteServer.CMS.Core
                 var contentModelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
                 if (!string.IsNullOrEmpty(contentModelInfo.PluginId))
                 {
-                    var hook = PluginCache.GetEnabledFeature<IContentModel>(contentModelInfo.PluginId);
-                    try
+                    var feature = PluginCache.GetEnabledFeature<IContentModel>(contentModelInfo.PluginId);
+                    if (feature?.OnContentTranslated != null)
                     {
-                        hook?.AfterContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogUtils.AddErrorLog(ex, $"插件：{contentModelInfo.PluginId} AfterContentTranslated");
+                        try
+                        {
+                            feature.OnContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogUtils.AddErrorLog(ex, $"插件：{contentModelInfo.PluginId} AfterContentTranslated");
+                        }
                     }
                 }
 

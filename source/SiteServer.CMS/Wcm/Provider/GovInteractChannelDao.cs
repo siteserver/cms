@@ -8,6 +8,7 @@ using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.Wcm.GovInteract;
 using SiteServer.CMS.Wcm.Model;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Wcm.Provider
 {

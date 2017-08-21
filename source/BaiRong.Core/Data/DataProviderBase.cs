@@ -5,6 +5,7 @@ using System.Data;
 using System.Text;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Data
 {

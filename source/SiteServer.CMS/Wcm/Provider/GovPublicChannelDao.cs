@@ -2,6 +2,7 @@ using System.Data;
 using BaiRong.Core.Data;
 using SiteServer.CMS.Wcm.Model;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Wcm.Provider
 {

@@ -8,6 +8,7 @@ using BaiRong.Core.Auth.JWT;
 using BaiRong.Core.Model;
 using Newtonsoft.Json.Linq;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
 {
@@ -41,7 +42,7 @@ namespace SiteServer.CMS.Core
 
         public bool IsAdministratorLoggin => !string.IsNullOrEmpty(AdministratorName);
 
-        public int SiteId => GetQueryInt("siteId");
+        public int PublishmentSystemId => GetQueryInt("publishmentSystemId");
 
         public int ChannelId => GetQueryInt("channelId");
 

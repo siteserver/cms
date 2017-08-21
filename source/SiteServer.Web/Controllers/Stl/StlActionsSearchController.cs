@@ -8,6 +8,7 @@ using SiteServer.CMS.Controllers.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.StlEntity;
@@ -98,12 +99,12 @@ namespace SiteServer.API.Controllers.Stl
                                 $"<span style='color:#cc0000'>{word}</span>"));
                         }
 
-                        StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, pagedBuilder, string.Empty, false);
+                        Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, pagedBuilder, string.Empty, false);
                         return Ok(pagedBuilder.ToString());
                     }
                 }
 
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, string.Empty, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, string.Empty, false);
                 return Ok(contentBuilder.ToString());
             }
             catch (Exception ex)

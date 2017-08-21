@@ -12,7 +12,7 @@ namespace SiteServer.Plugin.Features
         // 参数:
         //   e:
         //     一个 System.EventArgs，其中包含事件数据。
-        void OnPreLoad(EventArgs e);
+        Action<EventArgs> OnPageAdminPreLoad { get; }
 
         //
         // 摘要:
@@ -21,6 +21,6 @@ namespace SiteServer.Plugin.Features
         // 参数:
         //   e:
         //     一个 System.EventArgs，其中包含事件数据。
-        void OnLoadComplete(EventArgs e);
+        Action<EventArgs> OnPageAdminLoadComplete { get; }
     }
 }

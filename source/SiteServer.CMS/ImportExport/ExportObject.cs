@@ -8,7 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport.Components;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin.Data;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.ImportExport
 {

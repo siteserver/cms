@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                PhRunService.Visible = PublishmentSystemId > 0 && !ServiceManager.IsServiceOnline();
+                PhRunService.Visible = PublishmentSystemId > 0 && !ServiceManager.IsServiceOnline;
                 //base.BreadCrumb(AppManager.LeftMenu.ID_Utility, "生成队列", AppManager.Permission.Platform_Utility);
             }
 

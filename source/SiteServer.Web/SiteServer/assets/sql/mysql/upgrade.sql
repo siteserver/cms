@@ -9,7 +9,9 @@ CREATE TABLE siteserver_PluginConfig(
 GO
 
 ALTER TABLE siteserver_CreateTaskLog ADD
-    ChannelId              INT,
-    ContentId              INT,
-    TemplateId             INT
+(
+        ChannelId              INT,
+        ContentId              INT,
+        TemplateId             INT
+)
 GO

@@ -4,6 +4,7 @@ using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {

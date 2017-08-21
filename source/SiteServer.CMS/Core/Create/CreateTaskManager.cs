@@ -7,7 +7,7 @@
 
         private CreateTaskManager() { }
 
-        public static ICreateTaskManager Instance => ServiceManager.IsServiceOnline()
+        public static ICreateTaskManager Instance => ServiceManager.IsServiceOnline
             ? (ICreateTaskManager) CreateTaskManagerForDb
             : CreateTaskManagerForMomery;
     }

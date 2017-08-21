@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Data;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -77,17 +77,17 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public int GetSiteIdByFilePath(string path)
+        public int GetPublishmentSystemIdByFilePath(string path)
         {
             var publishmentSystemInfo = PathUtility.GetPublishmentSystemInfo(path);
             return publishmentSystemInfo?.PublishmentSystemId ?? 0;
         }
 
-        public string GetSiteDirectoryPath(int siteId)
+        public string GetPublishmentSystemPath(int publishmentSystemId)
         {
-            if (siteId <= 0) return null;
+            if (publishmentSystemId <= 0) return null;
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             return publishmentSystemInfo == null ? null : PathUtility.GetPublishmentSystemPath(publishmentSystemInfo);
         }
 
@@ -96,17 +96,17 @@ namespace SiteServer.CMS.Plugin
             LogUtils.AddErrorLog(ex, $"插件： {_metadata.Name}");
         }
 
-        public List<int> GetSiteIds()
+        public List<int> GetPublishmentSystemIds()
         {
             return PublishmentSystemManager.GetPublishmentSystemIdList();
         }
 
-        public bool SetConfig(int siteId, object config)
+        public bool SetConfig(int publishmentSystemId, object config)
         {
-            return SetConfig(siteId, string.Empty, config);
+            return SetConfig(publishmentSystemId, string.Empty, config);
         }
 
-        public bool SetConfig(int siteId, string name, object config)
+        public bool SetConfig(int publishmentSystemId, string name, object config)
         {
             if (name == null) name = string.Empty;
 
@@ -114,7 +114,7 @@ namespace SiteServer.CMS.Plugin
             {
                 if (config == null)
                 {
-                    DataProvider.PluginConfigDao.Delete(_metadata.Id, siteId, name);
+                    DataProvider.PluginConfigDao.Delete(_metadata.Id, publishmentSystemId, name);
                 }
                 else
                 {
@@ -123,13 +123,13 @@ namespace SiteServer.CMS.Plugin
                         NullValueHandling = NullValueHandling.Ignore
                     };
                     var json = JsonConvert.SerializeObject(config, Formatting.Indented, settings);
-                    if (DataProvider.PluginConfigDao.IsExists(_metadata.Id, siteId, name))
+                    if (DataProvider.PluginConfigDao.IsExists(_metadata.Id, publishmentSystemId, name))
                     {
-                        DataProvider.PluginConfigDao.Update(_metadata.Id, siteId, name, json);
+                        DataProvider.PluginConfigDao.Update(_metadata.Id, publishmentSystemId, name, json);
                     }
                     else
                     {
-                        DataProvider.PluginConfigDao.Insert(_metadata.Id, siteId, name, json);
+                        DataProvider.PluginConfigDao.Insert(_metadata.Id, publishmentSystemId, name, json);
                     }
                 }
             }
@@ -141,13 +141,13 @@ namespace SiteServer.CMS.Plugin
             return true;
         }
 
-        public T GetConfig<T>(int siteId, string name = "")
+        public T GetConfig<T>(int publishmentSystemId, string name = "")
         {
             if (name == null) name = string.Empty;
 
             try
             {
-                var value = DataProvider.PluginConfigDao.GetValue(_metadata.Id, siteId, name);
+                var value = DataProvider.PluginConfigDao.GetValue(_metadata.Id, publishmentSystemId, name);
                 if (!string.IsNullOrEmpty(value))
                 {
                     return JsonConvert.DeserializeObject<T>(value);
@@ -160,13 +160,13 @@ namespace SiteServer.CMS.Plugin
             return default(T);
         }
 
-        public bool RemoveConfig(int siteId, string name = "")
+        public bool RemoveConfig(int publishmentSystemId, string name = "")
         {
             if (name == null) name = string.Empty;
 
             try
             {
-                DataProvider.PluginConfigDao.Delete(_metadata.Id, siteId, name);
+                DataProvider.PluginConfigDao.Delete(_metadata.Id, publishmentSystemId, name);
             }
             catch (Exception ex)
             {
@@ -197,12 +197,12 @@ namespace SiteServer.CMS.Plugin
             return RemoveConfig(0, name);
         }
 
-        public void MoveFiles(int sourceSiteId, int targetSiteId, List<string> relatedUrls)
+        public void MoveFiles(int sourcePublishmentSystemId, int targetPublishmentSystemId, List<string> relatedUrls)
         {
-            if (sourceSiteId == targetSiteId) return;
+            if (sourcePublishmentSystemId == targetPublishmentSystemId) return;
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(sourceSiteId);
-            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetSiteId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(sourcePublishmentSystemId);
+            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
             if (publishmentSystemInfo == null || targetPublishmentSystemInfo == null) return;
 
             foreach (var relatedUrl in relatedUrls)
@@ -220,15 +220,15 @@ namespace SiteServer.CMS.Plugin
             return PermissionsManager.HasAdministratorPermissions(body.AdministratorName, _metadata.Id);
         }
 
-        public bool IsSiteAuthorized(int siteId)
+        public bool IsAuthorized(int publishmentSystemId)
         {
             var body = new RequestBody();
-            return PermissionsManager.HasAdministratorPermissions(body.AdministratorName, _metadata.Id + siteId);
+            return PermissionsManager.HasAdministratorPermissions(body.AdministratorName, _metadata.Id + publishmentSystemId);
         }
 
-        public string GetUploadFilePath(int siteId, string fileName)
+        public string GetUploadFilePath(int publishmentSystemId, string fileName)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var localDirectoryPath = PathUtility.GetUploadDirectoryPath(publishmentSystemInfo, PathUtils.GetExtension(fileName));
             var localFileName = PathUtility.GetUploadFileName(publishmentSystemInfo, fileName);
             return PathUtils.Combine(localDirectoryPath, localFileName);
@@ -236,47 +236,47 @@ namespace SiteServer.CMS.Plugin
 
         public string GetUrlByFilePath(string filePath)
         {
-            var siteId = GetSiteIdByFilePath(filePath);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var publishmentSystemId = GetPublishmentSystemIdByFilePath(filePath);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath);
         }
 
-        public string GetPluginUrl(int siteId, string relatedUrl = "")
+        public string GetPluginUrl(int publishmentSystemId, string relatedUrl = "")
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var apiUrl = PageUtility.GetOuterApiUrl(publishmentSystemInfo);
             return PageUtility.GetSiteFilesUrl(apiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
         }
 
-        public string GetPluginRestfulApiUrl(int siteId, string name = "", int id = 0)
+        public string GetPluginJsonApiUrl(int publishmentSystemId, string name = "", int id = 0)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var apiUrl = PageUtility.GetOuterApiUrl(publishmentSystemInfo);
-            return Controllers.Plugins.Restful.GetUrl(apiUrl, _metadata.Id, name, id);
+            return Controllers.Plugins.JsonApi.GetUrl(apiUrl, _metadata.Id, name, id);
         }
 
-        public string GetPluginHttpApiUrl(int siteId, string name = "", int id = 0)
+        public string GetPluginHttpApiUrl(int publishmentSystemId, string name = "", int id = 0)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var apiUrl = PageUtility.GetOuterApiUrl(publishmentSystemInfo);
-            return Controllers.Plugins.Http.GetUrl(apiUrl, _metadata.Id, name, id);
+            return Controllers.Plugins.HttpApi.GetUrl(apiUrl, _metadata.Id, name, id);
         }
 
-        public IPublishmentSystemInfo GetPublishmentSystemInfo(int siteId)
+        public IPublishmentSystemInfo GetPublishmentSystemInfo(int publishmentSystemId)
         {
-            return PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            return PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
         }
 
-        public INodeInfo GetNodeInfo(int siteId, int channelId)
+        public INodeInfo GetNodeInfo(int publishmentSystemId, int channelId)
         {
-            return NodeManager.GetNodeInfo(siteId, channelId);
+            return NodeManager.GetNodeInfo(publishmentSystemId, channelId);
         }
 
-        public IContentInfo GetContentInfo(int siteId, int channelId, int contentId)
+        public IContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId)
         {
-            if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
+            if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
 

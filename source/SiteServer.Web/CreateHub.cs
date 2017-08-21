@@ -24,10 +24,10 @@ namespace SiteServer.API
             Clients.Client(Context.ConnectionId).next(pendingTaskCount);
         }
 
-        private int ExecuteTask(int publishmentSystemId)
+        private static int ExecuteTask(int publishmentSystemId)
         {
             // 如果服务组件启用了的话，则通过服务组件生成
-            if (ServiceManager.IsServiceOnline())
+            if (ServiceManager.IsServiceOnline)
             {
                 return 0;
             }
@@ -70,7 +70,7 @@ namespace SiteServer.API
                 }
                 else
                 {
-                    if (ServiceManager.IsServiceOnline())
+                    if (ServiceManager.IsServiceOnline)
                     {
                         var summary = CreateTaskManager.Instance.GetTaskSummary(publishmentSystemId);
                         Clients.Client(Context.ConnectionId).show(true, summary.Tasks, summary.ChannelsCount, summary.ContentsCount, summary.FilesCount);

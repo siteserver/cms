@@ -1,8 +1,12 @@
-﻿namespace SiteServer.Plugin.Features
+﻿using System;
+using SiteServer.Plugin.Models;
+
+namespace SiteServer.Plugin.Features
 {
     public interface IMenu : IPlugin
     {
-        PluginMenu GetTopMenu();
-        PluginMenu GetSiteMenu(int siteId);
+        Func<PluginMenu> GlobalMenu { get; }
+
+        Func<int, PluginMenu> Menu { get; }
     }
 }

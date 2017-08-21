@@ -4,6 +4,7 @@ using BaiRong.Core;
 using BaiRong.Core.Tabs;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
 {

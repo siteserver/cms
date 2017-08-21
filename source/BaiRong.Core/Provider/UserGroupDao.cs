@@ -3,6 +3,7 @@ using System.Data;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {

@@ -2,6 +2,7 @@
 using System.Web.UI.WebControls;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model.Enumerations
 {

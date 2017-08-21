@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             BreadCrumbSettings("服务状态", AppManager.Permissions.Settings.Service);
 
-            if (ServiceManager.IsServiceOnline())
+            if (ServiceManager.IsServiceOnline)
             {
                 LtlMessage.Text = GetMessage(true, "siteserver.exe 服务组件已启动并处于正常运行状态");
 

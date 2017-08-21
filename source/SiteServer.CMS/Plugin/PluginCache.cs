@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
@@ -8,6 +9,7 @@ using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Plugin.Features;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -175,7 +177,7 @@ namespace SiteServer.CMS.Plugin
             foreach (var pluginPair in GetEnabledPluginPairs<IMenu>())
             {
                 var feature = (IMenu)pluginPair.Plugin;
-                var menu = feature.GetTopMenu();
+                var menu = feature.GlobalMenu;
                 if (menu != null)
                 {
                     permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"插件（{pluginPair.Metadata.DisplayName}）"));
@@ -195,7 +197,7 @@ namespace SiteServer.CMS.Plugin
             foreach (var pluginPair in pairs)
             {
                 var feature = (IMenu)pluginPair.Plugin;
-                var menu = feature.GetSiteMenu(siteId);
+                var menu = feature.Menu;
                 if (menu != null)
                 {
                     permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"插件（{pluginPair.Metadata.DisplayName}）"));
@@ -220,13 +222,12 @@ namespace SiteServer.CMS.Plugin
                 foreach (var pluginPair in pairs)
                 {
                     var feature = (IMenu)pluginPair.Plugin;
-
-                    var metadataMenu = feature.GetTopMenu();
+                    var metadataMenu = feature.GlobalMenu?.Invoke();
                     if (metadataMenu == null) continue;
 
-                    var menu = PluginUtils.GetMenu(pluginPair.Metadata.Id, metadataMenu, apiUrl, 0, 0);
+                    var pluginMenu = PluginUtils.GetMenu(pluginPair.Metadata.Id, metadataMenu, apiUrl, 0, 0);
 
-                    menus.Add(pluginPair.Metadata.Id, menu);
+                    menus.Add(pluginPair.Metadata.Id, pluginMenu);
                 }
             }
 
@@ -249,11 +250,11 @@ namespace SiteServer.CMS.Plugin
             {
                 var feature = (IMenu)pluginPair.Plugin;
 
-                var metadataMenu = feature.GetSiteMenu(siteId);
+                var metadataMenu = feature.Menu?.Invoke(siteId);
                 if (metadataMenu == null) continue;
-                var menu = PluginUtils.GetMenu(pluginPair.Metadata.Id, metadataMenu, apiUrl, siteId, 0);
+                var pluginMenu = PluginUtils.GetMenu(pluginPair.Metadata.Id, metadataMenu, apiUrl, siteId, 0);
 
-                menus.Add(pluginPair.Metadata.Id, menu);
+                menus.Add(pluginPair.Metadata.Id, pluginMenu);
             }
 
             return menus;
@@ -307,30 +308,127 @@ namespace SiteServer.CMS.Plugin
             return contentModels;
         }
 
-        public static Dictionary<string, Func<PluginParserContext, string>> GetParsers()
+        public static Dictionary<string, Func<PluginParseContext, string>> GetParses()
         {
-            var parsers = GetCache<Dictionary<string, Func<PluginParserContext, string>>>(nameof(GetParsers));
-            if (parsers != null) return parsers;
+            var elementsToParse = GetCache<Dictionary<string, Func<PluginParseContext, string>>>(nameof(GetParses));
+            if (elementsToParse != null) return elementsToParse;
 
-            parsers = new Dictionary<string, Func<PluginParserContext, string>>();
+            elementsToParse = new Dictionary<string, Func<PluginParseContext, string>>();
 
-            var plugins = GetEnabledFeatures<IParser>();
+            var plugins = GetEnabledFeatures<IParse>();
             if (plugins != null && plugins.Count > 0)
             {
                 foreach (var plugin in plugins)
                 {
-                    if (plugin.ElementNames == null || plugin.ElementNames.Count == 0) continue;
-
-                    foreach (var elementName in plugin.ElementNames)
+                    if (plugin.ElementsToParse != null && plugin.ElementsToParse.Count > 0)
                     {
-                        parsers[elementName.ToLower()] = plugin.Parse;
+                        foreach (var elementName in plugin.ElementsToParse.Keys)
+                        {
+                            elementsToParse[elementName.ToLower()] = plugin.ElementsToParse[elementName];
+                        }
                     }
                 }
             }
 
-            SetCache(nameof(GetParsers), parsers);
+            SetCache(nameof(GetParses), elementsToParse);
 
-            return parsers;
+            return elementsToParse;
+        }
+
+        public static List<Func<PluginRenderContext, string>> GetRenders()
+        {
+            var renders = GetCache<List<Func<PluginRenderContext, string>>>(nameof(GetRenders));
+            if (renders != null) return renders;
+
+            renders = new List<Func<PluginRenderContext, string>>();
+
+            var plugins = GetEnabledFeatures<IRender>();
+            if (plugins != null && plugins.Count > 0)
+            {
+                foreach (var plugin in plugins)
+                {
+                    if (plugin.Render != null)
+                    {
+                        renders.Add(plugin.Render);
+                    }
+                }
+            }
+
+            SetCache(nameof(GetRenders), renders);
+
+            return renders;
+        }
+
+        public static List<Action<object, FileSystemEventArgs>> GetFileSystemChangedActions()
+        {
+            var actions = GetCache<List<Action<object, FileSystemEventArgs>>>(nameof(GetFileSystemChangedActions));
+            if (actions != null) return actions;
+
+            actions = new List<Action<object, FileSystemEventArgs>>();
+
+            var plugins = GetEnabledFeatures<IFileSystem>();
+            if (plugins != null && plugins.Count > 0)
+            {
+                foreach (var plugin in plugins)
+                {
+                    if (plugin.OnFileSystemChanged != null)
+                    {
+                        actions.Add(plugin.OnFileSystemChanged);
+                    }
+                }
+            }
+
+            SetCache(nameof(GetFileSystemChangedActions), actions);
+
+            return actions;
+        }
+
+        public static List<Action<EventArgs>> GetPageAdminPreLoadActions()
+        {
+            var actions = GetCache<List<Action<EventArgs>>>(nameof(GetPageAdminPreLoadActions));
+            if (actions != null) return actions;
+
+            actions = new List<Action<EventArgs>>();
+
+            var plugins = GetEnabledFeatures<IPageAdmin>();
+            if (plugins != null && plugins.Count > 0)
+            {
+                foreach (var plugin in plugins)
+                {
+                    if (plugin.OnPageAdminPreLoad != null)
+                    {
+                        actions.Add(plugin.OnPageAdminPreLoad);
+                    }
+                }
+            }
+
+            SetCache(nameof(GetPageAdminPreLoadActions), actions);
+
+            return actions;
+        }
+
+        public static List<Action<EventArgs>> GetPageAdminLoadCompleteActions()
+        {
+            var actions = GetCache<List<Action<EventArgs>>>(nameof(GetPageAdminLoadCompleteActions));
+            if (actions != null) return actions;
+
+            actions = new List<Action<EventArgs>>();
+
+            var plugins = GetEnabledFeatures<IPageAdmin>();
+            if (plugins != null && plugins.Count > 0)
+            {
+                foreach (var plugin in plugins)
+                {
+                    if (plugin.OnPageAdminLoadComplete != null)
+                    {
+                        actions.Add(plugin.OnPageAdminLoadComplete);
+                    }
+                }
+            }
+
+            SetCache(nameof(GetPageAdminLoadCompleteActions), actions);
+
+            return actions;
         }
     }
 }

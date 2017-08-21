@@ -5,7 +5,7 @@ using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Parser;
+using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement

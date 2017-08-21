@@ -1,4 +1,4 @@
-﻿using SiteServer.Plugin.Data;
+﻿using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Model
 {

@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml;
 using MySql.Data.MySqlClient;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Data
 {

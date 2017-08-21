@@ -6,8 +6,7 @@ using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
-using SiteServer.Plugin.Features;
+using SiteServer.Plugin.Models;
 
 namespace siteserver.commands
 {
@@ -25,7 +24,7 @@ namespace siteserver.commands
 
                 while (true)
                 {
-                    ServiceManager.SetServiceOnline(true);
+                    ServiceManager.SetServiceOnline(DateTime.Now);
                     if (ExecutionManager.ExecutePendingCreate())
                     {
                         Console.WriteLine("Create Pages: " + DateUtils.GetDateAndTimeString(DateTime.Now));
@@ -88,11 +87,11 @@ namespace siteserver.commands
                 {
                     _watcher.EnableRaisingEvents = false;
 
-                    foreach (var watcher in PluginCache.GetEnabledFeatures<IFileSystemWatcher>())
+                    foreach (var action in PluginCache.GetFileSystemChangedActions())
                     {
                         try
                         {
-                            watcher.OnChanged(sender, e);
+                            action(sender, e);
                         }
                         catch
                         {
@@ -163,7 +162,7 @@ namespace siteserver.commands
         private static bool Handler(CtrlType sig)
         {
             //do your cleanup here
-            ServiceManager.SetServiceOnline(false);
+            ServiceManager.SetServiceOffline();
 
             Console.WriteLine("SiteServer Service is shutting down...");
 

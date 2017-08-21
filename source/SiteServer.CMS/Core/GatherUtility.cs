@@ -12,6 +12,7 @@ using SiteServer.CMS.Model;
 using System.Collections.Generic;
 using BaiRong.Core.Model;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
 {

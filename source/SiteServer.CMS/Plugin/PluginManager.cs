@@ -14,6 +14,7 @@ using BaiRong.Core.Net;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using SiteServer.Plugin.Features;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -91,7 +92,7 @@ namespace SiteServer.CMS.Plugin
 
         public static void DeactiveAndRemove(PluginPair pluginPair)
         {
-            pluginPair.Plugin.Deactive(pluginPair.Context);
+            pluginPair.Plugin.OnPluginDeactive?.Invoke(pluginPair.Context);
             PluginCache.Remove(pluginPair.Metadata.Id);
         }
 
@@ -102,7 +103,7 @@ namespace SiteServer.CMS.Plugin
             var s = Stopwatch.StartNew();
 
             var context = new PluginContext(Environment, metadata, new PublicApiInstance(metadata));
-            plugin.Active(context);
+            plugin.OnPluginActive?.Invoke(context);
 
             var contentTable = plugin as IContentModel;
             if (!string.IsNullOrEmpty(contentTable?.CustomContentTableName) && contentTable.CustomContentTableColumns != null)

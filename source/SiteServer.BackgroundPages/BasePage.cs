@@ -7,7 +7,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Share;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages
 {
@@ -39,9 +38,9 @@ namespace SiteServer.BackgroundPages
 
             try
             {
-                foreach (var pageAdmin in PluginCache.GetEnabledFeatures<IPageAdmin>())
+                foreach (var action in PluginCache.GetPageAdminLoadCompleteActions())
                 {
-                    pageAdmin.OnLoadComplete(e);
+                    action(e);
                 }
             }
             catch (Exception ex)
@@ -56,9 +55,9 @@ namespace SiteServer.BackgroundPages
 
             try
             {
-                foreach (var pageAdmin in PluginCache.GetEnabledFeatures<IPageAdmin>())
+                foreach (var action in PluginCache.GetPageAdminPreLoadActions())
                 {
-                    pageAdmin.OnPreLoad(e);
+                    action(e);
                 }
             }
             catch (Exception ex)

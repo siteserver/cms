@@ -143,8 +143,8 @@
     <Compile Include="Controllers\Files\ActionsUploadAvatarResize.cs" />
     <Compile Include="Controllers\Files\ActionsUploadSiteFiles.cs" />
     <Compile Include="Controllers\Files\UEditor.cs" />
-    <Compile Include="Controllers\Plugins\Http.cs" />
-    <Compile Include="Controllers\Plugins\Restful.cs" />
+    <Compile Include="Controllers\Plugins\HttpApi.cs" />
+    <Compile Include="Controllers\Plugins\JsonApi.cs" />
     <Compile Include="Controllers\Stl\ActionsRelatedField.cs" />
     <Compile Include="Controllers\Stl\ActionsUpload.cs" />
     <Compile Include="Controllers\Stl\ActionsLoadingChannels.cs" />
@@ -232,6 +232,7 @@
     <Compile Include="StlParser\Model\ChannelItemInfo.cs" />
     <Compile Include="StlParser\Model\ContentItemInfo.cs" />
     <Compile Include="StlParser\Model\StlAttribute.cs" />
+    <Compile Include="StlParser\Parser.cs" />
     <Compile Include="StlParser\StlElement\StlTemplate.cs" />
     <Compile Include="StlParser\Cache\StlCacheUtils.cs" />
     <Compile Include="StlParser\Utility\StlInnerUtility.cs" />
@@ -363,9 +364,9 @@
     <Compile Include="StlParser\Model\PageInfo.cs" />
     <Compile Include="StlParser\Model\ParsedDataList.cs" />
     <Compile Include="StlParser\Model\StlAll.cs" />
-    <Compile Include="StlParser\Parser\StlElementParser.cs" />
-    <Compile Include="StlParser\Parser\StlEntityParser.cs" />
-    <Compile Include="StlParser\Parser\StlPageElementParser.cs" />
+    <Compile Include="StlParser\Parsers\StlElementParser.cs" />
+    <Compile Include="StlParser\Parsers\StlEntityParser.cs" />
+    <Compile Include="StlParser\Parsers\StlPageElementParser.cs" />
     <Compile Include="Controllers\Stl\ActionsPageContents.cs" />
     <Compile Include="StlParser\StlElement\StlItemTemplate.cs" />
     <Compile Include="StlParser\StlElement\StlLoading.cs" />

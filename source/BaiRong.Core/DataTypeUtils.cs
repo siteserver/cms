@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using BaiRong.Core.Model.Enumerations;
 using MySql.Data.MySqlClient;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core
 {

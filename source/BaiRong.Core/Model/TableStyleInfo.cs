@@ -1,7 +1,7 @@
 ﻿using System;
 using BaiRong.Core.Model.Enumerations;
 using System.Collections.Generic;
-using SiteServer.Plugin.Data;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Model
 {
@@ -35,7 +35,7 @@ namespace BaiRong.Core.Model
             _isVisible = true;
             _isVisibleInList = false;
             _isSingleLine = true;
-            _inputType = InputTypeUtils.GetValue(SiteServer.Plugin.InputType.Text);
+            _inputType = InputTypeUtils.GetValue(SiteServer.Plugin.Models.InputType.Text);
             _defaultValue = string.Empty;
             _isHorizontal = true;
             _extendValues = string.Empty;

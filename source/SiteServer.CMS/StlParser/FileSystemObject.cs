@@ -148,7 +148,7 @@ namespace SiteServer.CMS.StlParser
                 var contentAttributeHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, contentAttributeHtml) + 1;//一共需要的页数
 
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -179,7 +179,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -212,7 +212,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -236,7 +236,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -260,7 +260,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageInputContentsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -276,7 +276,7 @@ namespace SiteServer.CMS.StlParser
             }
             else
             {
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
                 GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
             }
         }
@@ -329,8 +329,8 @@ namespace SiteServer.CMS.StlParser
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                 var pageContentHtml = innerBuilder.ToString();
                 var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, pageContentHtml) + 1;//一共需要的页数
-                
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -362,7 +362,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -386,7 +386,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -410,7 +410,7 @@ namespace SiteServer.CMS.StlParser
                 int totalNum;
                 var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -426,7 +426,7 @@ namespace SiteServer.CMS.StlParser
             }
             else//无翻页
             {
-                StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
                 GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
             }
         }
@@ -452,7 +452,7 @@ namespace SiteServer.CMS.StlParser
             //}
 
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, templateInfo));
-            StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+            Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
             GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
         }
 

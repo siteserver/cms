@@ -162,6 +162,12 @@ namespace BaiRong.Core
             FileUtils.WriteText(cacheFilePath, ECharset.utf_8, "cache chaged:" + DateUtils.GetDateAndTimeString(DateTime.Now));
         }
 
+        public static void DeleteTemporaryCacheFile(string cacheFileName)
+        {
+            var cacheFilePath = GetCacheFilePath(cacheFileName);
+            FileUtils.DeleteFileIfExists(cacheFilePath);
+        }
+
         public static string GetCacheFilePath(string cacheFileName)
         {
             return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, cacheFileName);

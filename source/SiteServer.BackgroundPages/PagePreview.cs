@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
@@ -364,7 +365,7 @@ namespace SiteServer.BackgroundPages
 
         private void WriteResponse(StringBuilder contentBuilder, PublishmentSystemInfo publishmentSystemInfo, PageInfo pageInfo, ContextInfo contextInfo, VisualInfo visualInfo)
         {
-            StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);//生成页面
+            Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);//生成页面
 
             Response.ContentEncoding = Encoding.GetEncoding(publishmentSystemInfo.Additional.Charset);
 

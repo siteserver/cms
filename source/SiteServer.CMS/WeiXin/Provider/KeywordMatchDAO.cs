@@ -5,6 +5,7 @@ using BaiRong.Core.Data;
 using SiteServer.CMS.WeiXin.Model;
 using SiteServer.CMS.WeiXin.Model.Enumerations;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {

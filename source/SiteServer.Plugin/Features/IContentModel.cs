@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.Plugin.Features
 {
@@ -6,12 +8,11 @@ namespace SiteServer.Plugin.Features
     {
         List<PluginContentLink> ContentLinks { get; }
 
-        void AfterContentAdded(int siteId, int channelId, int contentId);
+        Action<int, int, int> OnContentAdded { get; }
 
-        void AfterContentTranslated(int siteId, int channelId, int contentId, int targetSiteId, int targetChannelId,
-            int targetContentId);
+        Action<int, int, int, int, int, int> OnContentTranslated { get; }
 
-        void AfterContentDeleted(int siteId, int channelId, int contentId);
+        Action<int, int, int> OnContentDeleted { get; }
 
         bool IsCustomContentTable { get; }
 

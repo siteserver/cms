@@ -8,6 +8,7 @@ using BaiRong.Core.Data;
 using SiteServer.CMS.WeiXin.Data;
 using SiteServer.CMS.WeiXin.Model;
 using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.WeiXin.Provider
 {

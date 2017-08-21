@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using SiteServer.CMS.Model;
@@ -9,11 +8,11 @@ namespace SiteServer.CMS.Core
 {
     public class ServiceManager
     {
-        private const string CacheKeyStatus = "SiteServer.CMS.Core.ServiceCacheManager.Status";
+        private const string CacheKeyStatus = "SiteServer.CMS.Core.ServiceManager.Status";
         private const string CacheFileNameStatus = "ServiceStatusCache.txt";
-        private const string CacheKeyAllTaskInfoList = "SiteServer.CMS.Core.ServiceCacheManager.AllTaskInfoList";
+        private const string CacheKeyAllTaskInfoList = "SiteServer.CMS.Core.ServiceManager.AllTaskInfoList";
         private const string CacheFileNameTaskCache = "ServiceTaskCache.txt";
-        private const string CacheKeyIsPendingCreate = "SiteServer.CMS.Core.ServiceCacheManager.CacheKeyIsPendingCreateTask";
+        private const string CacheKeyIsPendingCreate = "SiteServer.CMS.Core.ServiceManager.CacheKeyIsPendingCreateTask";
         private const string CacheFileNameIsPendingCreate = "ServiceIsPendingCreateCache.txt";
 
         protected static readonly FileWatcherClass StatusCacheFileWatcher;
@@ -24,6 +23,7 @@ namespace SiteServer.CMS.Core
         {
             StatusCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameStatus));
             StatusCacheFileWatcher.OnFileChange += StatusCache_OnFileChange;
+            StatusCacheFileWatcher.OnFileDeleted += StatusCache_OnFileDeleted;
 
             TaskCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameTaskCache));
             TaskCacheFileWatcher.OnFileChange += TaskCache_OnFileChange;
@@ -33,6 +33,11 @@ namespace SiteServer.CMS.Core
         }
 
         private static void StatusCache_OnFileChange(object sender, EventArgs e)
+        {
+            CacheUtils.InsertMinutes(CacheKeyStatus, true.ToString(), 10);
+        }
+
+        private static void StatusCache_OnFileDeleted(object sender, EventArgs e)
         {
             CacheUtils.Remove(CacheKeyStatus);
         }
@@ -65,31 +70,17 @@ namespace SiteServer.CMS.Core
                 return (bool)CacheUtils.Get(CacheKeyIsPendingCreate);
             }
             var isPendingTask = DataProvider.CreateTaskDao.IsPendingTask();
-            CacheUtils.Insert(CacheKeyIsPendingCreate, isPendingTask);
+            CacheUtils.InsertMinutes(CacheKeyIsPendingCreate, isPendingTask, 5);
             return isPendingTask;
-        }
-
-        public static void ClearStatusCache()
-        {
-            if (!CacheUtils.IsCache(CacheKeyStatus)) return;
-
-            CacheUtils.Remove(CacheKeyStatus);
-            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameStatus);
         }
 
         public static void ClearTaskCache()
         {
-            if (!CacheUtils.IsCache(CacheKeyAllTaskInfoList)) return;
-
-            CacheUtils.Remove(CacheKeyAllTaskInfoList);
             CacheUtils.UpdateTemporaryCacheFile(CacheFileNameTaskCache);
         }
 
         public static void ClearIsPendingCreateCache()
         {
-            if (!CacheUtils.IsCache(CacheKeyIsPendingCreate)) return;
-
-            CacheUtils.Remove(CacheKeyIsPendingCreate);
             CacheUtils.UpdateTemporaryCacheFile(CacheFileNameIsPendingCreate);
         }
 
@@ -97,52 +88,30 @@ namespace SiteServer.CMS.Core
         /// 服务组件是否启用
         /// </summary>
         /// <returns></returns>
-        public static bool IsServiceOnline()
+        public static bool IsServiceOnline
         {
-            var cacheValue = CacheUtils.Get<string>(CacheKeyStatus);
-            if (cacheValue != null)
-            {
-                return TranslateUtils.ToBool(cacheValue);
-            }
-
-            var retval = true;
-            
-            var value = CacheDbUtils.GetValue(CacheKeyStatus);
-            if (string.IsNullOrEmpty(value))
-            {
-                retval = false;
-            }
-            else
-            {
-                var ts = DateTime.Now - TranslateUtils.ToDateTime(value);
-                if (ts.TotalMinutes > 30)
-                {
-                    retval = false;
-                }
-            }
-
-            CacheUtils.InsertMinutes(CacheKeyStatus, retval.ToString(), 10);
-
-            return retval;
-        }
-
-        public static void SetServiceOnline(bool isOnline)
-        {
-            if (isOnline)
+            get
             {
                 var cacheValue = CacheUtils.Get<string>(CacheKeyStatus);
-                if (TranslateUtils.ToBool(cacheValue)) return;
+                return TranslateUtils.ToBool(cacheValue);
+            }
+        }
 
-                CacheDbUtils.RemoveAndInsert(CacheKeyStatus, DateTime.Now.ToString(CultureInfo.InvariantCulture));
-                CacheUtils.InsertMinutes(CacheKeyStatus, true.ToString(), 10);
-            }
-            else
-            {
-                CacheDbUtils.GetValueAndRemove(CacheKeyStatus);
-                ClearStatusCache();
-                ClearIsPendingCreateCache();
-                ClearTaskCache();
-            }
+        private static DateTime _lastOnlineDateTime = DateTime.MinValue;
+
+        public static void SetServiceOnline(DateTime now)
+        {
+            var sp = now - _lastOnlineDateTime;
+            if (sp.Minutes <= 5) return;
+
+            _lastOnlineDateTime = now;
+            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameStatus);
+        }
+
+        public static void SetServiceOffline()
+        {
+            _lastOnlineDateTime = DateTime.MinValue;
+            CacheUtils.DeleteTemporaryCacheFile(CacheFileNameStatus);
         }
     }
 }
