@@ -48,7 +48,7 @@ namespace SiteServer.Plugin.Models
 
         string GetUrlByFilePath(string filePath);
 
-        string GetPluginUrl(int publishmentSystemId, string relatedUrl = "");
+        string GetPluginPageUrl(int publishmentSystemId, string relatedUrl = "");
 
         string GetPluginJsonApiUrl(int publishmentSystemId, string action = "", int id = 0);
 

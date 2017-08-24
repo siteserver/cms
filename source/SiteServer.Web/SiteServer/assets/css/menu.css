@@ -285,7 +285,7 @@ body.fixed-left .side-menu.left {
 #sidebar-menu ul ul a {
   color: #75767B;
   display: block;
-  padding: 10px 25px 10px 65px;
+  padding: 10px 10px 10px 45px;
 }
 #sidebar-menu ul ul a:hover {
   color: #00b19d;
@@ -300,7 +300,7 @@ body.fixed-left .side-menu.left {
   color: #565b5e;
   border-left: 2px solid transparent;
   display: block;
-  padding: 12px 25px;
+  padding: 12px 10px;
 }
 #sidebar-menu > ul > li > a:hover {
   background: #f5f5f5;

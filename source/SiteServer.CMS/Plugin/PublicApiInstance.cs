@@ -6,7 +6,6 @@ using BaiRong.Core.Model.Enumerations;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin
@@ -241,7 +240,7 @@ namespace SiteServer.CMS.Plugin
             return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath);
         }
 
-        public string GetPluginUrl(int publishmentSystemId, string relatedUrl = "")
+        public string GetPluginPageUrl(int publishmentSystemId, string relatedUrl = "")
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var apiUrl = PageUtility.GetOuterApiUrl(publishmentSystemInfo);

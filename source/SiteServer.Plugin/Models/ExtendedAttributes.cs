@@ -27,6 +27,11 @@ namespace SiteServer.Plugin.Models
             AfterExecuteReader();
         }
 
+        public ExtendedAttributes(string str)
+        {
+            _extendedAttributes = ToNameValueCollection(str);
+        }
+
         public virtual string GetExtendedAttribute(string name)
         {
             name = name.ToLower();
@@ -306,6 +311,11 @@ namespace SiteServer.Plugin.Models
             {
                 _extendedAttributes = ToNameValueCollection(str)
             };
+        }
+
+        public void Load(string str)
+        {
+            _extendedAttributes = ToNameValueCollection(str);
         }
 
         #region Utils
