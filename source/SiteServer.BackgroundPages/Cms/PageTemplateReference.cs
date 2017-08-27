@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "模板语言参考", AppManager.Permissions.WebSite.Template);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "STL语言参考", AppManager.Permissions.WebSite.Template);
 
                 var elementsDictionary = StlAll.StlElements.GetElementsNameDictionary();
                 var attributesDictionary = StlAll.StlElements.ElementsAttributesDictionary;

@@ -23,7 +23,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             string loadingTemplateString;
             string successTemplateString;
             string failureTemplateString;
-            StlInnerUtility.GetTemplateLoadingYesNo(pageInfo, contextInfo.InnerXml, out inputTemplateString, out loadingTemplateString, out successTemplateString, out failureTemplateString);
+            StlInnerUtility.GetTemplateLoadingYesNo(contextInfo.InnerXml, out inputTemplateString, out loadingTemplateString, out successTemplateString, out failureTemplateString);
 
             return ParseImpl(pageInfo, contextInfo, inputTemplateString);
         }

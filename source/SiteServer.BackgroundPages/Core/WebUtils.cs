@@ -6,12 +6,13 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Plugins;
-using SiteServer.BackgroundPages.Users;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.BackgroundPages.Wcm;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using ModalExportMessage = SiteServer.BackgroundPages.Cms.ModalExportMessage;
 
 namespace SiteServer.BackgroundPages.Core
 {

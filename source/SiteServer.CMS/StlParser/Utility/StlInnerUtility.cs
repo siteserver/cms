@@ -74,7 +74,7 @@ namespace SiteServer.CMS.StlParser.Utility
             no = StringUtils.Trim(no);
         }
 
-        public static void GetTemplateLoadingYesNo(PageInfo pageInfo, string innerXml, out string template, out string loading, out string yes, out string no)
+        public static void GetTemplateLoadingYesNo(string innerXml, out string template, out string loading, out string yes, out string no)
         {
             template = string.Empty;
             loading = string.Empty;

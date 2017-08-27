@@ -52,7 +52,7 @@ namespace SiteServer.CMS.Core.Permissions
                             {
                                 _permissionList = new List<string>
                                 {
-                                    AppManager.Permissions.Users.AdminManagement
+                                    AppManager.Permissions.Settings.AdminManagement
                                 };
                             }
                             else

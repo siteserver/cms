@@ -4,7 +4,7 @@ using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using SiteServer.BackgroundPages.Ajax;
-using SiteServer.BackgroundPages.Users;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.BackgroundPages.Wcm;
 
 namespace SiteServer.BackgroundPages.Core

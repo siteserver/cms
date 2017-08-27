@@ -827,11 +827,6 @@ namespace BaiRong.Core
             return AddQueryString(GetAdminDirectoryUrl(Combine("plugins", className.ToLower() + ".aspx")), queryString);
         }
 
-        public static string GetUsersUrl(string className, NameValueCollection queryString)
-        {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("users", className.ToLower() + ".aspx")), queryString);
-        }
-
         public static string GetSettingsUrl(string className, NameValueCollection queryString)
         {
             return AddQueryString(GetAdminDirectoryUrl(Combine("settings", className.ToLower() + ".aspx")), queryString);

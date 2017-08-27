@@ -139,17 +139,13 @@ namespace SiteServer.CMS.Plugin
         internal static void OnConfigOrDllChanged(object sender, FileSystemEventArgs e)
         {
             var directoryPath = DirectoryUtils.GetDirectoryPath(e.FullPath);
+            var pluginChanged = PluginCache.AllPluginPairs.FirstOrDefault(pluginPair => DirectoryUtils.IsInDirectory(pluginPair.Metadata.DirectoryPath, directoryPath));
 
-            foreach (var pluginPair in PluginCache.AllPluginPairs)
-            {
-                if (!PathUtils.IsEquals(pluginPair.Metadata.DirectoryPath, directoryPath)) continue;
-                PluginManager.DeactiveAndRemove(pluginPair);
-                break;
-            }
+            if (pluginChanged == null) return;
 
+            PluginManager.DeactiveAndRemove(pluginChanged);
             Thread.Sleep(1000);
-
-            ActivePlugin(directoryPath);
+            ActivePlugin(pluginChanged.Metadata.DirectoryPath);
         }
 
         internal static void ActivePlugin(string directoryPath)

@@ -220,20 +220,6 @@ $('.operation-area').hide();
             }
         }
 
-        public void BreadCrumbUsers(string pageTitle, string permission)
-        {
-            if (LtlBreadCrumb != null)
-            {
-                var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdUsers, pageUrl, pageTitle, string.Empty);
-            }
-
-            if (!string.IsNullOrEmpty(permission))
-            {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
-            }
-        }
-
         public void BreadCrumbSettings(string pageTitle, string permission)
         {
             if (LtlBreadCrumb != null)

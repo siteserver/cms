@@ -5,7 +5,7 @@ CREATE TABLE siteserver_PluginConfig(
     ConfigName     NATIONAL VARCHAR(200),
     ConfigValue    LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 ALTER TABLE siteserver_CreateTaskLog ADD

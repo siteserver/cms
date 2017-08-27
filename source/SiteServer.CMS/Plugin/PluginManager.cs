@@ -12,6 +12,7 @@ using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Net;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin.Apis;
 using SiteServer.Plugin;
 using SiteServer.Plugin.Features;
 using SiteServer.Plugin.Models;
@@ -102,7 +103,20 @@ namespace SiteServer.CMS.Plugin
             
             var s = Stopwatch.StartNew();
 
-            var context = new PluginContext(Environment, metadata, new PublicApiInstance(metadata));
+            var context = new PluginContext
+            {
+                Environment = Environment,
+                Metadata = metadata,
+                AuthApi = new AuthApi(metadata),
+                ConfigApi = new ConfigApi(metadata),
+                ContentApi = new ContentApi(),
+                DataApi = new DataApi(metadata),
+                FilesApi = new FilesApi(),
+                NodeApi = new NodeApi(),
+                ParseApi = new ParseApi(),
+                PluginApi = new PluginApi(metadata),
+                PublishmentSystemApi = new PublishmentSystemApi()
+            };
             plugin.OnPluginActive?.Invoke(context);
 
             var contentTable = plugin as IContentModel;
@@ -161,7 +175,7 @@ namespace SiteServer.CMS.Plugin
                             if (!columnNameList.Contains(tableColumn.AttributeName.ToLower()))
                             {
                                 var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
-                                string sqlString = $"ALTER TABLE {tableName} ADD {columnSqlString}";
+                                string sqlString = $"ALTER TABLE {tableName} ADD ({columnSqlString})";
 
                                 BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
                             }

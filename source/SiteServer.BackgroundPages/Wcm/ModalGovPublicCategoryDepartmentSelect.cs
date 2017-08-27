@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.BackgroundPages.Users;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Wcm.GovPublic;
 
 namespace SiteServer.BackgroundPages.Wcm

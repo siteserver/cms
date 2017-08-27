@@ -27,7 +27,7 @@ CREATE TABLE bairong_Administrator(
     Email                            NATIONAL VARCHAR(50),
     Mobile                           VARCHAR(20),
     PRIMARY KEY (UserName)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -36,7 +36,7 @@ CREATE TABLE bairong_AdministratorsInRoles(
     RoleName    NATIONAL VARCHAR(255)    NOT NULL,
     UserName    NATIONAL VARCHAR(255)    NOT NULL,
     PRIMARY KEY (RoleName, UserName)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -52,7 +52,7 @@ CREATE TABLE bairong_Area(
     Taxis            INT,
     CountOfAdmin     INT,
     PRIMARY KEY (AreaId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -65,7 +65,7 @@ CREATE TABLE bairong_Config(
     UpdateDate              DATETIME,
     UserConfig              LONGTEXT,
     SystemConfig            LONGTEXT
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -83,7 +83,7 @@ CREATE TABLE bairong_ContentCheck(
     CheckDate              DATETIME,
     Reasons                NATIONAL VARCHAR(255),
     PRIMARY KEY (CheckId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -98,7 +98,7 @@ CREATE TABLE bairong_ContentModel(
     IconUrl        VARCHAR(50),
     Description    NATIONAL VARCHAR(255),
     PRIMARY KEY (ModelId, SiteId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -110,7 +110,7 @@ CREATE TABLE bairong_Count(
     CountType           VARCHAR(50),
     CountNum            INT,
     PRIMARY KEY (CountId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -121,7 +121,7 @@ CREATE TABLE bairong_DbCache(
     CacheValue    NATIONAL VARCHAR(500),
     AddDate       DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -140,7 +140,7 @@ CREATE TABLE bairong_Department(
     Summary           NATIONAL VARCHAR(255),
     CountOfAdmin      INT,
     PRIMARY KEY (DepartmentId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -152,7 +152,7 @@ CREATE TABLE bairong_Digg(
     Good                   INT,
     Bad                    INT,
     PRIMARY KEY (DiggId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -164,7 +164,7 @@ CREATE TABLE bairong_ErrorLog(
     Stacktrace    LONGTEXT,
     Summary       LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -177,7 +177,7 @@ CREATE TABLE bairong_Log(
     Action       NATIONAL VARCHAR(255),
     Summary      NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -186,7 +186,7 @@ CREATE TABLE bairong_PermissionsInRoles(
     RoleName              NATIONAL VARCHAR(255)    NOT NULL,
     GeneralPermissions    TEXT,
     PRIMARY KEY (RoleName)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -196,7 +196,7 @@ CREATE TABLE bairong_Roles(
     CreatorUserName    NATIONAL VARCHAR(255),
     Description        NATIONAL VARCHAR(255),
     PRIMARY KEY (RoleName)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -211,7 +211,7 @@ CREATE TABLE bairong_TableCollection(
     IsDefault                    VARCHAR(18),
     Description                  LONGTEXT,
     PRIMARY KEY (TableEnName)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -224,7 +224,7 @@ CREATE TABLE bairong_TableMatch(
     TableNameToMatch           VARCHAR(200),
     ColumnsMap                 LONGTEXT,
     PRIMARY KEY (TableMatchId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -238,7 +238,7 @@ CREATE TABLE bairong_TableMetadata(
     Taxis                   INT,
     IsSystem                VARCHAR(18),
     PRIMARY KEY (TableMetadataId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -260,7 +260,7 @@ CREATE TABLE bairong_TableStyle(
     IsHorizontal       VARCHAR(18),
     ExtendValues       LONGTEXT,
     PRIMARY KEY (TableStyleId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -272,7 +272,7 @@ CREATE TABLE bairong_TableStyleItem(
     ItemValue           VARCHAR(255),
     IsSelected          VARCHAR(18),
     PRIMARY KEY (TableStyleItemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -284,7 +284,7 @@ CREATE TABLE bairong_Tags(
     Tag                    NATIONAL VARCHAR(255),
     UseNum                 INT,
     PRIMARY KEY (TagId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -298,7 +298,7 @@ CREATE TABLE bairong_ThirdLogin(
     Description       NATIONAL VARCHAR(255),
     SettingsXml       LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -308,7 +308,7 @@ CREATE TABLE bairong_UserBinding(
     ThirdLoginType      VARCHAR(50),
     ThirdLoginUserId    NATIONAL VARCHAR(200),
     PRIMARY KEY (UserId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -320,7 +320,7 @@ CREATE TABLE bairong_UserGroup(
     Description     NATIONAL VARCHAR(255),
     ExtendValues    LONGTEXT,
     PRIMARY KEY (GroupId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -333,7 +333,7 @@ CREATE TABLE bairong_UserLog(
     Action       NATIONAL VARCHAR(255),
     Summary      NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -372,7 +372,7 @@ CREATE TABLE bairong_Users(
     Signature                NATIONAL VARCHAR(255),
     ExtendValues             LONGTEXT,
     PRIMARY KEY (UserId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -387,7 +387,7 @@ CREATE TABLE siteserver_AdArea(
     IsEnabled              VARCHAR(18),
     AddDate                DATETIME,
     PRIMARY KEY (AdAreaId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -412,7 +412,7 @@ CREATE TABLE siteserver_AdMaterial(
     Weight                 INT,
     IsEnabled              VARCHAR(18),
     PRIMARY KEY (AdMaterialId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -437,7 +437,7 @@ CREATE TABLE siteserver_Adv(
     NodeIdCollectionToContent    NATIONAL VARCHAR(4000),
     FileTemplateIdCollection     NATIONAL VARCHAR(4000),
     PRIMARY KEY (AdvId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -456,7 +456,7 @@ CREATE TABLE siteserver_Advertisement(
     FileTemplateIdCollection     NATIONAL VARCHAR(255),
     Settings                     LONGTEXT,
     PRIMARY KEY (AdvertisementName, PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -476,7 +476,7 @@ CREATE TABLE siteserver_AdvImageClassify(
     Taxis                  INT,
     AddDate                DATETIME,
     PRIMARY KEY (ItemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -496,7 +496,7 @@ CREATE TABLE siteserver_AdvImageContent(
     ClassifyId             INT,
     AdvImagePath           NATIONAL VARCHAR(500),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -512,7 +512,7 @@ CREATE TABLE siteserver_Comment(
     AddDate                DATETIME,
     Content                NATIONAL VARCHAR(500),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -523,7 +523,7 @@ CREATE TABLE siteserver_ContentGroup(
     Taxis                  INT,
     Description            LONGTEXT,
     PRIMARY KEY (ContentGroupName, PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -536,7 +536,7 @@ CREATE TABLE siteserver_CreateTask(
     ContentId              INT,
     TemplateId             INT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -554,7 +554,7 @@ CREATE TABLE siteserver_CreateTaskLog(
     ErrorMessage           NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -575,7 +575,7 @@ CREATE TABLE siteserver_GatherDatabaseRule(
     IsOrderByDesc          VARCHAR(18),
     LastGatherDate         DATETIME,
     PRIMARY KEY (GatherRuleName, PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -607,7 +607,7 @@ CREATE TABLE siteserver_GatherFileRule(
     ContentAttributes                LONGTEXT,
     ContentAttributesXml             LONGTEXT,
     PRIMARY KEY (GatherRuleName, PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -647,7 +647,7 @@ CREATE TABLE siteserver_GatherRule(
     ContentAttributesXml             LONGTEXT,
     ExtendValues                     LONGTEXT,
     PRIMARY KEY (GatherRuleName, PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -657,7 +657,7 @@ CREATE TABLE siteserver_InnerLink(
     PublishmentSystemId    INT                      NOT NULL,
     LinkUrl                VARCHAR(200),
     PRIMARY KEY (InnerLinkName, PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -672,7 +672,7 @@ CREATE TABLE siteserver_Input(
     Taxis                  INT,
     SettingsXml            LONGTEXT,
     PRIMARY KEY (InputId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -688,7 +688,7 @@ CREATE TABLE siteserver_InputContent(
     Reply          LONGTEXT,
     SettingsXml    LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -699,7 +699,7 @@ CREATE TABLE siteserver_Keyword(
     Alternative    NATIONAL VARCHAR(50),
     Grade          NATIONAL VARCHAR(50),
     PRIMARY KEY (KeywordId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -715,7 +715,7 @@ CREATE TABLE siteserver_Log(
     Action                 NATIONAL VARCHAR(255),
     Summary                NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -754,7 +754,7 @@ CREATE TABLE siteserver_MenuDisplay(
     IsDefault              VARCHAR(18),
     Description            LONGTEXT,
     PRIMARY KEY (MenuDisplayId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -788,7 +788,7 @@ CREATE TABLE siteserver_Node(
     Description                NATIONAL VARCHAR(255),
     ExtendValues               LONGTEXT,
     PRIMARY KEY (NodeId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -799,7 +799,7 @@ CREATE TABLE siteserver_NodeGroup(
     Taxis                  INT,
     Description            LONGTEXT,
     PRIMARY KEY (NodeGroupName, PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -814,7 +814,7 @@ CREATE TABLE siteserver_Photo(
     Taxis                  INT,
     Description            VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -825,7 +825,7 @@ CREATE TABLE siteserver_PluginConfig(
     ConfigName     NATIONAL VARCHAR(200),
     ConfigValue    LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -847,7 +847,7 @@ CREATE TABLE siteserver_PublishmentSystem(
     Taxis                           INT,
     SettingsXml                     LONGTEXT,
     PRIMARY KEY (PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -860,7 +860,7 @@ CREATE TABLE siteserver_RelatedField(
     Prefixes               NATIONAL VARCHAR(255),
     Suffixes               NATIONAL VARCHAR(255),
     PRIMARY KEY (RelatedFieldId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -873,7 +873,7 @@ CREATE TABLE siteserver_RelatedFieldItem(
     ParentId          INT,
     Taxis             INT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -954,7 +954,7 @@ CREATE TABLE siteserver_ResumeContent(
     Cer_CertificationName    NATIONAL VARCHAR(255),
     Cer_EffectiveDate        NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -978,7 +978,7 @@ CREATE TABLE siteserver_SeoMeta(
     RevisitAfter           VARCHAR(50),
     Expires                VARCHAR(50),
     PRIMARY KEY (SeoMetaId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -989,7 +989,7 @@ CREATE TABLE siteserver_SeoMetasInNodes(
     SeoMetaId              INT            NOT NULL,
     PublishmentSystemId    INT,
     PRIMARY KEY (NodeId, IsChannel, SeoMetaId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1003,7 +1003,7 @@ CREATE TABLE siteserver_SigninLog(
     SigninDate             DATETIME,
     IpAddress              VARCHAR(50),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1021,7 +1021,7 @@ CREATE TABLE siteserver_SigninSetting(
     IsSignin               VARCHAR(18),
     SigninDate             DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1035,7 +1035,7 @@ CREATE TABLE siteserver_SigninUserContentId(
     NodeId                 INT,
     ContentIdCollection    TEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1050,7 +1050,7 @@ CREATE TABLE siteserver_Star(
     Message                NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (StarId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1063,7 +1063,7 @@ CREATE TABLE siteserver_StarSetting(
     TotalCount             INT,
     PointAverage           DECIMAL(18, 1),
     PRIMARY KEY (StarSettingId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1074,7 +1074,7 @@ CREATE TABLE siteserver_StlTag(
     TagDescription         NATIONAL VARCHAR(255),
     TagContent             LONGTEXT,
     PRIMARY KEY (TagName, PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1086,7 +1086,7 @@ CREATE TABLE siteserver_SystemPermissions(
     ChannelPermissions     TEXT,
     WebsitePermissions     TEXT,
     PRIMARY KEY (RoleName, PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1104,7 +1104,7 @@ CREATE TABLE siteserver_TagStyle(
     FailureTemplate        LONGTEXT,
     SettingsXml            LONGTEXT,
     PRIMARY KEY (StyleId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1127,7 +1127,7 @@ CREATE TABLE siteserver_Task(
     Description             NATIONAL VARCHAR(255),
     OnlyOnceDate            DATETIME,
     PRIMARY KEY (TaskId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1139,7 +1139,7 @@ CREATE TABLE siteserver_TaskLog(
     ErrorMessage    NATIONAL VARCHAR(255),
     AddDate         DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1155,7 +1155,7 @@ CREATE TABLE siteserver_Template(
     Charset                VARCHAR(50),
     IsDefault              VARCHAR(18),
     PRIMARY KEY (TemplateId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1169,7 +1169,7 @@ CREATE TABLE siteserver_TemplateLog(
     ContentLength          INT,
     TemplateContent        LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1183,7 +1183,7 @@ CREATE TABLE siteserver_TemplateMatch(
     ChannelFilePathRule    VARCHAR(200),
     ContentFilePathRule    VARCHAR(200),
     PRIMARY KEY (NodeId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1202,7 +1202,7 @@ CREATE TABLE siteserver_Tracking(
     Browser                VARCHAR(200),
     AccessDateTime         DATETIME,
     PRIMARY KEY (TrackingId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1216,7 +1216,7 @@ CREATE TABLE siteserver_VoteOperation(
     UserName               NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (OperationId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1231,7 +1231,7 @@ CREATE TABLE siteserver_VoteOption(
     NavigationUrl          VARCHAR(200),
     VoteNum                INT,
     PRIMARY KEY (OptionId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1244,7 +1244,7 @@ CREATE TABLE wcm_GovInteractChannel(
     DepartmentIdCollection    NATIONAL VARCHAR(255),
     Summary                   NATIONAL VARCHAR(255),
     PRIMARY KEY (NodeId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1261,7 +1261,7 @@ CREATE TABLE wcm_GovInteractLog(
     AddDate                DATETIME,
     Summary                NATIONAL VARCHAR(255),
     PRIMARY KEY (LogId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1271,7 +1271,7 @@ CREATE TABLE wcm_GovInteractPermissions(
     NodeId         INT                      NOT NULL,
     Permissions    NATIONAL VARCHAR(255),
     PRIMARY KEY (UserName, NodeId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1287,7 +1287,7 @@ CREATE TABLE wcm_GovInteractRemark(
     UserName               NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (RemarkId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1303,7 +1303,7 @@ CREATE TABLE wcm_GovInteractReply(
     UserName               NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (ReplyId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1315,7 +1315,7 @@ CREATE TABLE wcm_GovInteractType(
     PublishmentSystemId    INT,
     Taxis                  INT,
     PRIMARY KEY (TypeId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1355,7 +1355,7 @@ CREATE TABLE wcm_GovPublicApply(
     QueryCode              NATIONAL VARCHAR(255),
     State                  VARCHAR(50),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1371,7 +1371,7 @@ CREATE TABLE wcm_GovPublicApplyLog(
     AddDate                DATETIME,
     Summary                NATIONAL VARCHAR(255),
     PRIMARY KEY (LogId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1386,7 +1386,7 @@ CREATE TABLE wcm_GovPublicApplyRemark(
     UserName               NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (RemarkId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1401,7 +1401,7 @@ CREATE TABLE wcm_GovPublicApplyReply(
     UserName               NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (ReplyId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1422,7 +1422,7 @@ CREATE TABLE wcm_GovPublicCategory(
     Summary                NATIONAL VARCHAR(255),
     ContentNum             INT,
     PRIMARY KEY (CategoryId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1437,7 +1437,7 @@ CREATE TABLE wcm_GovPublicCategoryClass(
     Taxis                   INT,
     Description             NATIONAL VARCHAR(255),
     PRIMARY KEY (ClassCode, PublishmentSystemId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1448,7 +1448,7 @@ CREATE TABLE wcm_GovPublicChannel(
     Code                   NATIONAL VARCHAR(50),
     Summary                NATIONAL VARCHAR(255),
     PRIMARY KEY (NodeId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1466,7 +1466,7 @@ CREATE TABLE wcm_GovPublicIdentifierRule(
     Taxis                  INT,
     SettingsXml            LONGTEXT,
     PRIMARY KEY (RuleId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1479,7 +1479,7 @@ CREATE TABLE wcm_GovPublicIdentifierSeq(
     AddYear                INT,
     Sequence               INT,
     PRIMARY KEY (SeqId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 CREATE TABLE wx_Account(
@@ -1498,7 +1498,7 @@ CREATE TABLE wx_Account(
     IsDefaultReply         VARCHAR(18),
     DefaultReplyKeyword    NATIONAL VARCHAR(50),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1513,7 +1513,7 @@ CREATE TABLE wx_Album(
     ImageUrl               VARCHAR(200),
     Summary                NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1527,7 +1527,7 @@ CREATE TABLE wx_AlbumContent(
     ImageUrl               VARCHAR(200),
     LargeImageUrl          VARCHAR(200),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1558,7 +1558,7 @@ CREATE TABLE wx_Appointment(
     IsFormEmail                 VARCHAR(18),
     FormEmailTitle              NATIONAL VARCHAR(50),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1579,7 +1579,7 @@ CREATE TABLE wx_AppointmentContent(
     AddDate                DATETIME,
     SettingsXml            LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1611,7 +1611,7 @@ CREATE TABLE wx_AppointmentItem(
     TelTitle                   NATIONAL VARCHAR(255),
     Tel                        VARCHAR(20),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1638,7 +1638,7 @@ CREATE TABLE wx_Card(
     ShopPassword            NATIONAL VARCHAR(200),
     ShopOperatorList        LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1657,7 +1657,7 @@ CREATE TABLE wx_CardCashLog(
     Description            NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1676,7 +1676,7 @@ CREATE TABLE wx_CardEntitySn(
     IsBinding              VARCHAR(18),
     AddDate                DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1687,7 +1687,7 @@ CREATE TABLE wx_CardSignLog(
     UserName               NATIONAL VARCHAR(255),
     SignDate               DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1702,7 +1702,7 @@ CREATE TABLE wx_CardSn(
     UserName               NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1727,7 +1727,7 @@ CREATE TABLE wx_Collect(
     EndImageUrl            VARCHAR(200),
     EndSummary             NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1744,7 +1744,7 @@ CREATE TABLE wx_CollectItem(
     IsChecked              VARCHAR(18),
     VoteNum                INT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1760,7 +1760,7 @@ CREATE TABLE wx_CollectLog(
     UserName               NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1792,7 +1792,7 @@ CREATE TABLE wx_Conference(
     EndImageUrl            VARCHAR(200),
     EndSummary             NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1813,7 +1813,7 @@ CREATE TABLE wx_ConferenceContent(
     Position               NATIONAL VARCHAR(255),
     Note                   NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1826,7 +1826,7 @@ CREATE TABLE wx_ConfigExtend(
     AttributeName          VARCHAR(50),
     IsVisible              VARCHAR(18),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1840,7 +1840,7 @@ CREATE TABLE wx_Count(
     CountType              VARCHAR(50),
     Count                  INT,
     PRIMARY KEY (CountId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1853,7 +1853,7 @@ CREATE TABLE wx_Coupon(
     TotalNum               INT,
     AddDate                DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1886,7 +1886,7 @@ CREATE TABLE wx_CouponAct(
     EndSummary             NATIONAL VARCHAR(255),
     AwardCode              NATIONAL VARCHAR(50),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1907,7 +1907,7 @@ CREATE TABLE wx_CouponSn(
     CashDate               DATETIME,
     CashUserName           NATIONAL VARCHAR(50),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1923,7 +1923,7 @@ CREATE TABLE wx_Keyword(
     AddDate                DATETIME,
     Taxis                  INT,
     PRIMARY KEY (KeywordId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1934,7 +1934,7 @@ CREATE TABLE wx_KeywordGroup(
     GroupName              NATIONAL VARCHAR(255),
     Taxis                  INT,
     PRIMARY KEY (GroupId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1948,7 +1948,7 @@ CREATE TABLE wx_KeywordMatch(
     KeywordType            VARCHAR(50),
     MatchType              VARCHAR(50),
     PRIMARY KEY (MatchId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -1968,7 +1968,7 @@ CREATE TABLE wx_KeywordResource(
     ContentId              INT,
     Taxis                  INT,
     PRIMARY KEY (ResourceId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2007,7 +2007,7 @@ CREATE TABLE wx_Lottery(
     EndImageUrl             VARCHAR(200),
     EndSummary              NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2022,7 +2022,7 @@ CREATE TABLE wx_LotteryAward(
     Probability            DECIMAL(18, 2),
     WonNum                 INT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2038,7 +2038,7 @@ CREATE TABLE wx_LotteryLog(
     LotteryDailyCount      INT,
     LastLotteryDate        DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2061,7 +2061,7 @@ CREATE TABLE wx_LotteryWinner(
     CashSn                 VARCHAR(200),
     CashDate               DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2077,7 +2077,7 @@ CREATE TABLE wx_Map(
     Summary                NATIONAL VARCHAR(255),
     MapWd                  NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2094,7 +2094,7 @@ CREATE TABLE wx_Menu(
     ParentId               INT,
     Taxis                  INT,
     PRIMARY KEY (MenuId)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2112,7 +2112,7 @@ CREATE TABLE wx_Message(
     ContentImageUrl        VARCHAR(200),
     ContentDescription     LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2135,7 +2135,7 @@ CREATE TABLE wx_MessageContent(
     Content                   NATIONAL VARCHAR(255),
     AddDate                   DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2159,7 +2159,7 @@ CREATE TABLE wx_Search(
     TextAreaTitle          NATIONAL VARCHAR(50),
     TextAreaChannelId      INT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2177,7 +2177,7 @@ CREATE TABLE wx_SearchNavigation(
     ChannelId              INT,
     ContentId              INT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2192,7 +2192,7 @@ CREATE TABLE wx_Store(
     ImageUrl               VARCHAR(200),
     Summary                NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2209,7 +2209,7 @@ CREATE TABLE wx_StoreCategory(
     StoreCount             INT,
     IsLastNode             VARCHAR(18),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2228,7 +2228,7 @@ CREATE TABLE wx_StoreItem(
     Latitude               VARCHAR(100),
     Summary                LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2249,7 +2249,7 @@ CREATE TABLE wx_View360(
     ContentImageUrl5       VARCHAR(200),
     ContentImageUrl6       VARCHAR(200),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2275,7 +2275,7 @@ CREATE TABLE wx_Vote(
     EndImageUrl             VARCHAR(200),
     EndSummary              NATIONAL VARCHAR(255),
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2289,7 +2289,7 @@ CREATE TABLE wx_VoteItem(
     NavigationUrl          VARCHAR(200),
     VoteNum                INT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2305,7 +2305,7 @@ CREATE TABLE wx_VoteLog(
     UserName               NATIONAL VARCHAR(255),
     AddDate                DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2325,7 +2325,7 @@ CREATE TABLE wx_WebMenu(
     ParentId               INT,
     Taxis                  INT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2342,7 +2342,7 @@ CREATE TABLE wx_Wifi(
     BusinessId             VARCHAR(100),
     CallBackString         LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 
@@ -2354,7 +2354,7 @@ CREATE TABLE wx_WifiNode(
     NodeId                 VARCHAR(100),
     CallBackString         LONGTEXT,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+)ENGINE=INNODB DEFAULT CHARSET=utf8
 GO
 
 

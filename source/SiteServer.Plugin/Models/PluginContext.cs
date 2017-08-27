@@ -1,21 +1,29 @@
-﻿namespace SiteServer.Plugin.Models
+﻿using SiteServer.Plugin.Apis;
+
+namespace SiteServer.Plugin.Models
 {
     public class PluginContext
     {
-        public PluginContext(PluginEnvironment environment, PluginMetadata metadata, IPublicApi api)
-        {
-            Environment = environment;
-            Metadata = metadata;
-            Api = api;
-        }
-
-        public PluginEnvironment Environment { get; }
+        public PluginEnvironment Environment { get; internal set; }
 
         public PluginMetadata Metadata { get; set; }
 
-        /// <summary>
-        /// 公开的API调用
-        /// </summary>
-        public IPublicApi Api { get; }
+        public IAuthApi AuthApi { get; internal set; }
+
+        public IConfigApi ConfigApi { get; internal set; }
+
+        public IContentApi ContentApi { get; internal set; }
+
+        public IDataApi DataApi { get; internal set; }
+
+        public IFilesApi FilesApi { get; internal set; }
+
+        public INodeApi NodeApi { get; internal set; }
+
+        public IParseApi ParseApi { get; internal set; }
+
+        public IPluginApi PluginApi { get; internal set; }
+
+        public IPublishmentSystemApi PublishmentSystemApi { get; internal set; }
     }
 }

@@ -51,7 +51,6 @@ namespace BaiRong.Core
 
         public const string IdSite = "Site";
         public const string IdPlugins = "Plugins";
-        public const string IdUsers = "Users";
         public const string IdSettings = "Settings";
 
         public class Permissions
@@ -62,18 +61,12 @@ namespace BaiRong.Core
                 public const string Management = "plugins_management";
             }
 
-            public class Users
-            {
-                public const string AdminManagement = "users_admin_management";
-                public const string AdminConfiguration = "users_admin_configuration";
-                public const string UserManagement = "users_user_management";
-                public const string UserConfiguration = "users_user_configuration";
-            }
-
             public class Settings
             {
                 public const string SiteAdd = "settings_site_add";
                 public const string SiteManagement = "settings_site_management";
+                public const string AdminManagement = "settings_admin_management";
+                public const string UserManagement = "settings_user_management";
                 public const string Config = "settings_config";
                 public const string Service = "settings_service";
                 public const string Chart = "settings_chart";
@@ -128,13 +121,9 @@ namespace BaiRong.Core
             {
                 retval = "插件管理";
             }
-            else if (menuId == IdUsers)
-            {
-                retval = "人员管理";
-            }
             else if (menuId == IdSettings)
             {
-                retval = "系统设置";
+                retval = "系统管理";
             }
             return retval;
         }

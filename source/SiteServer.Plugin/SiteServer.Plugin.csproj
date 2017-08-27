@@ -48,6 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Apis\IParseApi.cs" />
+    <Compile Include="Apis\IConfigApi.cs" />
+    <Compile Include="Apis\IDataApi.cs" />
+    <Compile Include="Apis\IAuthApi.cs" />
+    <Compile Include="Apis\INodeApi.cs" />
+    <Compile Include="Apis\IPluginApi.cs" />
+    <Compile Include="Apis\IFilesApi.cs" />
+    <Compile Include="Apis\IContentApi.cs" />
+    <Compile Include="Apis\IPublishmentSystemApi.cs" />
     <Compile Include="Models\DataType.cs" />
     <Compile Include="Models\Copyable.cs" />
     <Compile Include="Models\ExtendedAttributes.cs" />
@@ -71,7 +80,6 @@
     <Compile Include="Models\IDbHelper.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="Models\IRequestContext.cs" />
-    <Compile Include="Models\IPublicApi.cs" />
     <Compile Include="Models\PluginEnvironment.cs" />
     <Compile Include="Models\PluginContentLink.cs" />
     <Compile Include="Models\PluginParseContext.cs" />

@@ -59,7 +59,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             string loading;
             string yes;
             string no;
-            StlInnerUtility.GetTemplateLoadingYesNo(pageInfo, contextInfo.InnerXml, out template, out loading, out yes, out no);
+            StlInnerUtility.GetTemplateLoadingYesNo(contextInfo.InnerXml, out template, out loading, out yes, out no);
 
             if (string.IsNullOrEmpty(template))
             {

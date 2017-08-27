@@ -693,6 +693,12 @@ namespace BaiRong.Core.Provider
             return arraylist;
         }
 
+        public int GetFirstContentId(string tableName, int nodeId)
+        {
+            string sqlString = $"SELECT ID FROM {tableName} WHERE NodeID = {nodeId} ORDER BY Taxis DESC, ID DESC";
+            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
+        }
+
         public List<int> GetContentIdList(string tableName, int nodeId)
         {
             var arraylist = new List<int>();

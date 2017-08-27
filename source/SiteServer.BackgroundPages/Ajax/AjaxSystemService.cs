@@ -5,7 +5,7 @@ using System.Text;
 using System.Web.UI;
 using BaiRong.Core;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.BackgroundPages.Users;
+using SiteServer.BackgroundPages.Settings;
 
 namespace SiteServer.BackgroundPages.Ajax
 {

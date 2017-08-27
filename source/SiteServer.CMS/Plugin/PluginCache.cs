@@ -180,7 +180,7 @@ namespace SiteServer.CMS.Plugin
                 var menu = feature.GlobalMenu;
                 if (menu != null)
                 {
-                    permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"插件（{pluginPair.Metadata.DisplayName}）"));
+                    permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"系统管理 -> {pluginPair.Metadata.DisplayName}（插件）"));
                 }
             }
 
@@ -200,7 +200,7 @@ namespace SiteServer.CMS.Plugin
                 var menu = feature.Menu;
                 if (menu != null)
                 {
-                    permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"插件（{pluginPair.Metadata.DisplayName}）"));
+                    permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"{pluginPair.Metadata.DisplayName}（插件）"));
                 }
             }
 
