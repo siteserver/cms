@@ -7,6 +7,10 @@ namespace SiteServer.CMS.Plugin.Apis
 {
     public class FilesApi : IFilesApi
     {
+        private FilesApi() { }
+
+        public static FilesApi Instance { get; } = new FilesApi();
+
         public void MoveFiles(int sourcePublishmentSystemId, int targetPublishmentSystemId, List<string> relatedUrls)
         {
             if (sourcePublishmentSystemId == targetPublishmentSystemId) return;

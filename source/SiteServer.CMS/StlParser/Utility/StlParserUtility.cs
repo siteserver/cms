@@ -121,44 +121,36 @@ namespace SiteServer.CMS.StlParser.Utility
             return content;
         }
 
-        public static void XmlToHtml(StringBuilder builder)
-        {
-            builder.Replace("&quot;", "'");
-            builder.Replace("&gt;", ">");
-            builder.Replace("&lt;", "<");
-            builder.Replace("&amp;", "&");
-        }
-
-        public static string XmlToHtml(string content)
-        {
-            if (content != null)
-            {
-                content = content.Replace("&quot;", "'");
-                content = content.Replace("&gt;", ">");
-                content = content.Replace("&lt;", "<");
-                content = content.Replace("&amp;", "&");
-            }
-            return content;
-        }
-
         public static string Amp(string content)
         {
             return content?.Replace("&", "&amp;");
         }
 
+        public static void XmlToHtml(StringBuilder builder)
+        {
+            builder?.Replace("&quot;", "'").Replace("&gt;", ">").Replace("&lt;", "<").Replace("&amp;", "&");
+        }
+
+        public static string XmlToHtml(string xml)
+        {
+            return string.IsNullOrWhiteSpace(xml) ? string.Empty : xml.Replace("&quot;", "'").Replace("&gt;", ">").Replace("&lt;", "<").Replace("&amp;", "&");
+        }
+
         /// <summary>
         /// 将html代码转换为xml代码，需要在try-catch块中调用。
         /// </summary>
-        public static string HtmlToXml(string strInputHtml)
+        public static string HtmlToXml(string html)
         {
-            strInputHtml = StringUtils.ReplaceIgnoreCase(strInputHtml, "<br>", "<br />");
-            strInputHtml = StringUtils.ReplaceIgnoreCase(strInputHtml, "&#", "&amp;#");
+            if (string.IsNullOrWhiteSpace(html)) return string.Empty;
+
+            html = StringUtils.ReplaceIgnoreCase(html, "<br>", "<br />");
+            html = StringUtils.ReplaceIgnoreCase(html, "&#", "&amp;#");
             //strInputHtml = StringUtils.ReplaceNewline(strInputHtml, NEWLINE_REPLACEMENT);
             var reader = new SgmlReader
             {
                 DocType = "HTML"
             };
-            var sr = new System.IO.StringReader(strInputHtml);
+            var sr = new System.IO.StringReader(html);
             reader.InputStream = sr;
             var sw = new System.IO.StringWriter();
             var w = new XmlTextWriter(sw);

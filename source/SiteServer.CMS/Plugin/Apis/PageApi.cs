@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
-using Newtonsoft.Json;
+﻿using BaiRong.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.Plugin.Apis;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
-    public class PluginApi : IPluginApi
+    public class PageApi : IPageApi
     {
         private readonly PluginMetadata _metadata;
 
-        public PluginApi(PluginMetadata metadata)
+        public PageApi(PluginMetadata metadata)
         {
             _metadata = metadata;
         }
@@ -41,9 +35,9 @@ namespace SiteServer.CMS.Plugin.Apis
             return Controllers.Plugins.HttpApi.GetUrl(apiUrl, _metadata.Id, name, id);
         }
 
-        public void AddErrorLog(Exception ex)
+        public string FilterXss(string html)
         {
-            LogUtils.AddErrorLog(ex, $"插件： {_metadata.Name}");
+            return PageUtils.FilterXss(html);
         }
     }
 }

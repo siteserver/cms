@@ -132,7 +132,7 @@ top.frames[""left""].location.reload( false );
                 $@"<a href=""{PageTableStyle.GetRedirectUrl(PublishmentSystemId, ETableStyle.InputContent,
                     DataProvider.InputContentDao.TableName, inputId)}"">表单字段</a>";
 
-            ltlPreviewUrl.Text = $@"<a href=""{PageInputPreview.GetRedirectUrl(PublishmentSystemId, inputId, string.Empty)}"">预览</a>";
+            //ltlPreviewUrl.Text = $@"<a href=""{PageInputPreview.GetRedirectUrl(PublishmentSystemId, inputId, string.Empty)}"">预览</a>";
 
             ltlEditUrl.Text =
                 $@"<a href=""javascript:;"" onclick=""{ModalInputAdd.GetOpenWindowStringToEdit(

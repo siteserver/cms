@@ -177,7 +177,6 @@
     <Compile Include="Controllers\Stl\StlActionsGovInteractQueryAddController.cs" />
     <Compile Include="Controllers\Stl\StlActionsGovPublicApplyAddController.cs" />
     <Compile Include="Controllers\Stl\StlActionsGovPublicQueryAddController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsInputAddController.cs" />
     <Compile Include="Controllers\Stl\StlActionsLoadingChannelsController.cs" />
     <Compile Include="Controllers\Stl\StlActionsResumeAddController.cs" />
     <Compile Include="Controllers\Stl\StlActionsTriggerController.cs" />

@@ -15,7 +15,7 @@ namespace SiteServer.CMS.Plugin.Apis
             _metadata = metadata;
         }
 
-        public bool IsAuthorized()
+        public bool IsGlobalAuthorized()
         {
             var body = new RequestBody();
             return PermissionsManager.HasAdministratorPermissions(body.AdministratorName, _metadata.Id);

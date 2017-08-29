@@ -7,6 +7,10 @@ namespace SiteServer.CMS.Plugin.Apis
 {
     public class PublishmentSystemApi : IPublishmentSystemApi
     {
+        private PublishmentSystemApi() { }
+
+        public static PublishmentSystemApi Instance { get; } = new PublishmentSystemApi();
+
         public int GetPublishmentSystemIdByFilePath(string path)
         {
             var publishmentSystemInfo = PathUtility.GetPublishmentSystemInfo(path);

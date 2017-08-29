@@ -1,12 +1,15 @@
 ﻿using System.Text;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin.Apis;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
     public class ParseApi : IParseApi
     {
+        private ParseApi() { }
+
+        public static ParseApi Instance { get; } = new ParseApi();
+
         public void GetTemplateLoadingYesNo(string innerXml, out string template, out string loading, out string yes, out string no)
         {
             StlInnerUtility.GetTemplateLoadingYesNo(innerXml, out template, out loading, out yes, out no);
@@ -20,6 +23,16 @@ namespace SiteServer.CMS.Plugin.Apis
         public void Parse(StringBuilder builder, int publishmentSystemId, int channelId, int contentId)
         {
             StlParserManager.ParseInnerContent(builder, publishmentSystemId, channelId, contentId);
+        }
+
+        public string HtmlToXml(string html)
+        {
+            return StlParserUtility.HtmlToXml(html);
+        }
+
+        public string XmlToHtml(string xml)
+        {
+            return StlParserUtility.XmlToHtml(xml);
         }
     }
 }

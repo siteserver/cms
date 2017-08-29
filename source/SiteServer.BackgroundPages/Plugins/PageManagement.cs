@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Plugins
@@ -14,7 +12,6 @@ namespace SiteServer.BackgroundPages.Plugins
     {
         public Literal LtlNav;
         public DataGrid DgPlugins;
-        public Button BtnImport;
 
         private int _type;
 
@@ -128,8 +125,6 @@ namespace SiteServer.BackgroundPages.Plugins
             DgPlugins.DataSource = list;
             DgPlugins.ItemDataBound += DgPlugins_ItemDataBound;
             DgPlugins.DataBind();
-
-            BtnImport.Attributes.Add("onclick", ModalImportZip.GetOpenWindowString(ModalImportZip.TypePlugin));
         }
 
         private void DgPlugins_ItemDataBound(object sender, DataGridItemEventArgs e)

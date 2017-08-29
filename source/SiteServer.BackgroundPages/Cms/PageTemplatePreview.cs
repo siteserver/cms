@@ -24,6 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
+            Response.AddHeader("X-XSS-Protection", "0");
 
             if (IsPostBack) return;
             BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "STL在线解析", AppManager.Permissions.WebSite.Template);

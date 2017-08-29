@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -12,7 +12,7 @@ namespace BaiRong.Core
 {
     public class SmsManager
     {
-        public static bool IsSmsReady()
+        public static bool IsReady()
         {
             if (ConfigManager.SystemConfigInfo.SmsProviderType == ESmsProviderType.Aliyun && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAppKey) && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsAppSecret) && !string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.SmsSignName))
             {
@@ -25,7 +25,7 @@ namespace BaiRong.Core
             return false;
         }
 
-        public static bool SendNotify(string mobile, string tplId, NameValueCollection parameters, out string errorMessage)
+        public static bool Send(string mobile, string tplId, Dictionary<string, string> parameters, out string errorMessage)
         {
             if (string.IsNullOrEmpty(mobile) || !StringUtils.IsMobile(mobile))
             {
@@ -53,20 +53,23 @@ namespace BaiRong.Core
             return isSuccess;
         }
 
-        public static bool SendVerify(string mobile, int code, string tplId, out string errorMessage)
+        public static bool SendCode(string mobile, int code, string tplId, out string errorMessage)
         {
-            var parameters = new NameValueCollection { { "code", code.ToString() } };
-            return SendNotify(mobile, tplId, parameters, out errorMessage);
+            var parameters = new Dictionary<string, string> { { "code", code.ToString() } };
+            return Send(mobile, tplId, parameters, out errorMessage);
         }
 
-        private static bool SendByAliyun(string mobile, string tplId, NameValueCollection parameters, out string errorMessage)
+        private static bool SendByAliyun(string mobile, string tplId, Dictionary<string, string> parameters, out string errorMessage)
         {
             errorMessage = null;
             var param = new StringBuilder("{");
-            foreach (string key in parameters.Keys)
+            if (parameters != null)
             {
-                var value = parameters[key];
-                param.Append($"{key}:'{value}',");
+                foreach (var key in parameters.Keys)
+                {
+                    var value = parameters[key] ?? string.Empty;
+                    param.Append($"{key}:'{value}',");
+                }
             }
             param.Length--;
             param.Append("}");
@@ -98,16 +101,20 @@ namespace BaiRong.Core
             return false;
         }
 
-        private static bool SendByYunpian(string mobile, string tplId, NameValueCollection parameters, out string errorMessage)
+        private static bool SendByYunpian(string mobile, string tplId, Dictionary<string, string> parameters, out string errorMessage)
         {
             var param = new StringBuilder();
-            foreach (string key in parameters.Keys)
+            if (parameters != null)
             {
-                var value = parameters[key];
+                foreach (var key in parameters.Keys)
+                {
+                    var value = parameters[key] ?? string.Empty;
 
-                param.Append(HttpUtility.UrlEncode("#" + key + "#", Encoding.UTF8) + "=" +
-                             HttpUtility.UrlEncode(value, Encoding.UTF8)).Append("&");
+                    param.Append(HttpUtility.UrlEncode("#" + key + "#", Encoding.UTF8) + "=" +
+                                 HttpUtility.UrlEncode(value, Encoding.UTF8)).Append("&");
+                }
             }
+            
             param.Length--;
 
             mobile = HttpUtility.UrlEncode(mobile, Encoding.UTF8);
@@ -148,6 +155,5 @@ namespace BaiRong.Core
             }
             return false;
         }
-
     }
 }

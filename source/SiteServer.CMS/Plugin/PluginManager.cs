@@ -109,13 +109,14 @@ namespace SiteServer.CMS.Plugin
                 Metadata = metadata,
                 AuthApi = new AuthApi(metadata),
                 ConfigApi = new ConfigApi(metadata),
-                ContentApi = new ContentApi(),
+                ContentApi = ContentApi.Instance,
                 DataApi = new DataApi(metadata),
-                FilesApi = new FilesApi(),
-                NodeApi = new NodeApi(),
-                ParseApi = new ParseApi(),
-                PluginApi = new PluginApi(metadata),
-                PublishmentSystemApi = new PublishmentSystemApi()
+                FilesApi = FilesApi.Instance,
+                NodeApi = NodeApi.Instance,
+                PageApi = new PageApi(metadata),
+                ParseApi = ParseApi.Instance,
+                PublishmentSystemApi = PublishmentSystemApi.Instance,
+                SmsApi = SmsApi.Instance
             };
             plugin.OnPluginActive?.Invoke(context);
 

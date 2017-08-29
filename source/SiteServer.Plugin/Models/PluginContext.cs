@@ -20,10 +20,12 @@ namespace SiteServer.Plugin.Models
 
         public INodeApi NodeApi { get; internal set; }
 
+        public IPageApi PageApi { get; internal set; }
+
         public IParseApi ParseApi { get; internal set; }
 
-        public IPluginApi PluginApi { get; internal set; }
-
         public IPublishmentSystemApi PublishmentSystemApi { get; internal set; }
+
+        public ISmsApi SmsApi { get; internal set; }
     }
 }

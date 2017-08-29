@@ -6,7 +6,6 @@ using BaiRong.Core;
 using BaiRong.Core.IO;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Plugins;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -14,7 +13,6 @@ namespace SiteServer.BackgroundPages.Settings
 	public class ModalImportZip : BasePageCms
 	{
 	    public const string TypeSiteTemplate = "SiteTemplate";
-        public const string TypePlugin = "Plugin";
 
         public RadioButtonList RblImportType;
         public PlaceHolder PhUpload;
@@ -66,10 +64,6 @@ namespace SiteServer.BackgroundPages.Settings
             if (_type == TypeSiteTemplate)
             {
                 ImportSiteTemplate(isUpload);
-            }
-            else if (_type == TypePlugin)
-            {
-                ImportPlugin(isUpload);
             }
         }
 
@@ -123,48 +117,5 @@ namespace SiteServer.BackgroundPages.Settings
 	                directoryName));
 	        }
 	    }
-
-        private void ImportPlugin(bool isUpload)
-        {
-            if (isUpload)
-            {
-                if (!string.IsNullOrEmpty(HifFile.PostedFile?.FileName))
-                {
-                    var filePath = HifFile.PostedFile.FileName;
-                    var sExt = PathUtils.GetExtension(filePath);
-                    if (!StringUtils.EqualsIgnoreCase(sExt, ".zip"))
-                    {
-                        FailMessage("插件压缩包为zip格式，请选择有效的文件上传");
-                        return;
-                    }
-                    try
-                    {
-                        var fileName = PathUtils.GetFileName(filePath);
-                        var localFilePath = PathUtils.GetPluginsPath(fileName);
-                        FileUtils.DeleteFileIfExists(localFilePath);
-
-                        HifFile.PostedFile.SaveAs(localFilePath);
-
-                        ZipUtils.UnpackFiles(localFilePath, PathUtils.GetPluginsPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
-
-                        PageUtils.CloseModalPageAndRedirect(Page, PageManagement.GetRedirectUrl(0));
-                    }
-                    catch (Exception ex)
-                    {
-                        FailMessage(ex, "文件上传失败！");
-                    }
-                }
-            }
-            else
-            {
-                var sExt = PathUtils.GetExtension(TbDownloadUrl.Text);
-                if (!StringUtils.EqualsIgnoreCase(sExt, ".zip"))
-                {
-                    FailMessage("插件压缩包为zip格式，请输入有效文件地址");
-                    return;
-                }
-                PageUtils.Redirect(ModalProgressBar.GetRedirectUrlStringWithPluginDownload(TbDownloadUrl.Text));
-            }
-        }
     }
 }

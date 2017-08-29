@@ -127,10 +127,6 @@ namespace SiteServer.CMS.StlParser.Model
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInclude), stlAttribute)
                     },
                     {
-                        StlInput.ElementName, 
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInput), stlAttribute)
-                    },
-                    {
                         StlInputContent.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInputContent), stlAttribute)
                     },
@@ -318,7 +314,6 @@ namespace SiteServer.CMS.StlParser.Model
                 {StlIf.ElementName, StlIf.AttributeList},
                 {StlImage.ElementName, StlImage.AttributeList},
                 {StlInclude.ElementName, StlInclude.AttributeList},
-                {StlInput.ElementName, StlInput.AttributeList},
                 {StlInputContent.ElementName, StlInputContent.AttributeList},
                 {StlInputContents.ElementName, StlInputContents.AttributeList},
                 {StlItemTemplate.ElementName, StlItemTemplate.AttributeList},

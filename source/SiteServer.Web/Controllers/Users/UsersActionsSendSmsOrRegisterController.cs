@@ -25,7 +25,7 @@ namespace SiteServer.API.Controllers.Users
             {
                 var code = StringUtils.GetRandomInt(1111, 9999);
                 CacheDbUtils.RemoveAndInsert($"SiteServer.API.Controllers.Users.SendSms.{mobile}.Code", code.ToString());
-                isSms = SmsManager.SendVerify(mobile, code, ConfigManager.UserConfigInfo.RegisterSmsTplId, out errorMessage);
+                isSms = SmsManager.SendCode(mobile, code, ConfigManager.UserConfigInfo.RegisterSmsTplId, out errorMessage);
             }
             
             if (!isSms)

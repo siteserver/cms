@@ -13,12 +13,12 @@
     </head>
 
     <body>
-      <form runat="server">
-        <bairong:alerts runat="server" />
-        <!-- container start -->
-        <div class="container">
-          <div class="m-b-25"></div>
+      <bairong:alerts runat="server" />
+      <!-- container start -->
+      <div class="container">
+        <div class="m-b-25"></div>
 
+        <form runat="server">
           <div class="row">
             <div class="col-sm-12">
               <div class="card-box">
@@ -63,24 +63,24 @@
               </div>
             </div>
           </div>
+        </form>
 
-          <asp:Placeholder id="PhPreview" runat="server" visible="false">
-            <div class="row">
-              <div class="col-sm-12">
-                <div class="card-box">
-                  <h4 class="text-dark  header-title m-t-0">STL解析结果</h4>
-                  <p class="text-muted m-b-25 font-13"></p>
+        <asp:Placeholder id="PhPreview" runat="server" visible="false">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="card-box">
+                <h4 class="text-dark  header-title m-t-0">STL解析结果</h4>
+                <p class="text-muted m-b-25 font-13"></p>
 
-                  <asp:Literal ID="LtlPreview" runat="server"></asp:Literal>
+                <asp:Literal ID="LtlPreview" runat="server"></asp:Literal>
 
-                </div>
               </div>
             </div>
-          </asp:Placeholder>
+          </div>
+        </asp:Placeholder>
 
-        </div>
-        <!-- container end -->
-      </form>
+      </div>
+      <!-- container end -->
     </body>
 
     </html>

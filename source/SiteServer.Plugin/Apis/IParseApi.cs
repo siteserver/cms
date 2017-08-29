@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SiteServer.Plugin.Models;
+﻿using System.Text;
 
 namespace SiteServer.Plugin.Apis
 {
@@ -13,5 +10,9 @@ namespace SiteServer.Plugin.Apis
         string Parse(string innerXml, int publishmentSystemId, int channelId, int contentId);
 
         void Parse(StringBuilder builder, int publishmentSystemId, int channelId, int contentId);
+
+        string HtmlToXml(string html);
+
+        string XmlToHtml(string xml);
     }
 }

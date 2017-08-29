@@ -2,7 +2,7 @@
 {
     public interface IAuthApi
     {
-        bool IsAuthorized();
+        bool IsGlobalAuthorized();
 
         bool IsAuthorized(int publishmentSystemId);
 

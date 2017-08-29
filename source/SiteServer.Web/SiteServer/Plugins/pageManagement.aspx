@@ -54,10 +54,6 @@
       </Columns>
     </asp:dataGrid>
 
-    <ul class="breadcrumb breadcrumb-button">
-      <asp:Button class="btn btn-success" id="BtnImport" Text="导入插件" runat="server" />
-    </ul>
-
   </form>
 </body>
 

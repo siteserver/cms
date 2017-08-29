@@ -6,6 +6,10 @@ namespace SiteServer.CMS.Plugin.Apis
 {
     public class ContentApi : IContentApi
     {
+        private ContentApi() { }
+
+        public static ContentApi Instance { get; } = new ContentApi();
+
         public IContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId)
         {
             if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return null;

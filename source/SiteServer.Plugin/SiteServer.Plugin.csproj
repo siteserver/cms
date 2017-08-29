@@ -48,12 +48,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Apis\ISmsApi.cs" />
     <Compile Include="Apis\IParseApi.cs" />
     <Compile Include="Apis\IConfigApi.cs" />
     <Compile Include="Apis\IDataApi.cs" />
     <Compile Include="Apis\IAuthApi.cs" />
     <Compile Include="Apis\INodeApi.cs" />
-    <Compile Include="Apis\IPluginApi.cs" />
+    <Compile Include="Apis\IPageApi.cs" />
     <Compile Include="Apis\IFilesApi.cs" />
     <Compile Include="Apis\IContentApi.cs" />
     <Compile Include="Apis\IPublishmentSystemApi.cs" />

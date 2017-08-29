@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages
             {
                 PageUtils.RedirectToErrorPage("基于安全考虑，找回密码功能已关闭，如需使用请与管理员联系！");
             }
-            else if (!SmsManager.IsSmsReady() || string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.FindPasswordSmsTplId))
+            else if (!SmsManager.IsReady() || string.IsNullOrEmpty(ConfigManager.SystemConfigInfo.FindPasswordSmsTplId))
             {
                 PageUtils.RedirectToErrorPage("短信验证码发送功能未开启或配置不正确，找回密码功能无法使用，如需使用请与管理员联系！");
             }
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages
             string errorMessage;
             var code = StringUtils.GetRandomInt(1111, 9999);
             CacheDbUtils.RemoveAndInsert($"BaiRong.BackgroundPages.FrameworkFindPwd.{userName}.Code", code.ToString());
-            var isSend = SmsManager.SendVerify(mobile, code, ConfigManager.SystemConfigInfo.FindPasswordSmsTplId, out errorMessage);
+            var isSend = SmsManager.SendCode(mobile, code, ConfigManager.SystemConfigInfo.FindPasswordSmsTplId, out errorMessage);
             if (!isSend)
             {
                 LtlMessage.Text = GetMessageHtml($"找回密码错误：{errorMessage}", true);
