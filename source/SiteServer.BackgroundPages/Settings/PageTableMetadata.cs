@@ -229,7 +229,7 @@ namespace SiteServer.BackgroundPages.Settings
                 ltlDisplayName.Text = styleInfo.DisplayName;
 
                 ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-                ltlValidate.Text = EInputValidateTypeUtils.GetValidateInfo(styleInfo);
+                ltlValidate.Text = EValidateTypeUtils.GetValidateInfo(styleInfo);
 
                 ltlDataType.Text = DataTypeUtils.GetTextByAuxiliaryTable(DataTypeUtils.GetEnumType(dataType), dataLength);
                 ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));

@@ -14,9 +14,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Wcm.GovInteract;
-using SiteServer.CMS.Wcm.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Core
@@ -92,10 +89,6 @@ namespace SiteServer.BackgroundPages.Core
             else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.RelatedField))
             {
                 retval = ParseRelatedField(publishmentSystemInfo, attributeName, formCollection, styleInfo);
-            }
-            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.SpecifiedValue))
-            {
-                retval = ParseSpecifiedValue(publishmentSystemInfo, nodeId, tableStyle, attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
 
             styleInfo.Additional.IsValidate = oriIsValidate;
@@ -210,7 +203,7 @@ $('#{0}_colorContainer').hide();
 ", styleInfo.AttributeName, isFormatted ? string.Empty : "none", formatStrong.ToString().ToLower(), formatEm.ToString().ToLower(), formatU.ToString().ToLower(), formatStrong ? @" btn-success" : string.Empty, formatEm ? " btn-success" : string.Empty, formatU ? " btn-success" : string.Empty, !string.IsNullOrEmpty(formatColor) ? " btn-success" : string.Empty, formatColor));
             }
 
-            if (nodeId > 0 && (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.VoteContent) && styleInfo.AttributeName == ContentAttribute.Title)
+            if (nodeId > 0 && tableStyle == ETableStyle.BackgroundContent && styleInfo.AttributeName == ContentAttribute.Title)
             {
                 builder.Append(@"
 <script type=""text/javascript"">
@@ -990,56 +983,6 @@ $(document).ready(function(){{
                 AddHelpText(builder, styleInfo.HelpText);
             }
             return builder.ToString();
-        }
-
-        private static string ParseSpecifiedValue(PublishmentSystemInfo publishmentSystemInfo, int nodeId, ETableStyle tableStyle, string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, TableStyleInfo styleInfo)
-        {
-            if (tableStyle == ETableStyle.GovInteractContent)
-            {
-                if (StringUtils.EqualsIgnoreCase(attributeName, GovInteractContentAttribute.TypeId))
-                {
-                    styleInfo.StyleItems = new List<TableStyleItemInfo>();
-                    var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, "<<请选择>>", string.Empty, false);
-                    styleInfo.StyleItems.Add(itemInfo);
-                    var typeInfoArrayList = DataProvider.GovInteractTypeDao.GetTypeInfoArrayList(nodeId);
-                    foreach (GovInteractTypeInfo typeInfo in typeInfoArrayList)
-                    {
-                        var isSelected = false;
-                        if (!isAddAndNotPostBack)
-                        {
-                            isSelected = formCollection[attributeName] == typeInfo.TypeID.ToString();
-                        }
-                        itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, typeInfo.TypeName, typeInfo.TypeID.ToString(), isSelected);
-                        styleInfo.StyleItems.Add(itemInfo);
-                    }
-                    return ParseSelectOne(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
-                }
-                else if (StringUtils.EqualsIgnoreCase(attributeName, GovInteractContentAttribute.DepartmentId))
-                {
-                    styleInfo.StyleItems = new List<TableStyleItemInfo>();
-                    var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, "<<请选择>>", string.Empty, false);
-                    styleInfo.StyleItems.Add(itemInfo);
-                    var channelInfo = DataProvider.GovInteractChannelDao.GetChannelInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
-                    var departmentIdList = GovInteractManager.GetFirstDepartmentIdList(channelInfo);
-                    foreach (var departmentId in departmentIdList)
-                    {
-                        var departmentInfo = DepartmentManager.GetDepartmentInfo(departmentId);
-                        if (departmentInfo != null)
-                        {
-                            var isSelected = false;
-                            if (!isAddAndNotPostBack)
-                            {
-                                isSelected = formCollection[attributeName] == departmentInfo.DepartmentId.ToString();
-                            }
-                            itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, departmentInfo.DepartmentName, departmentInfo.DepartmentId.ToString(), isSelected);
-                            styleInfo.StyleItems.Add(itemInfo);
-                        }
-                    }
-                    return ParseSelectOne(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
-                }
-            }
-
-            return string.Empty;
         }
 
         private static void AddHelpText(StringBuilder builder, string helpText)

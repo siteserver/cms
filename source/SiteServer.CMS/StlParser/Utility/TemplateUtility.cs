@@ -135,7 +135,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsRecommend))//推荐的内容
             {
-                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.IsRecommend)))
+                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetExtendedAttribute(ContentAttribute.IsRecommend)))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -143,7 +143,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsHot))//热点内容
             {
-                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.IsHot)))
+                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetExtendedAttribute(ContentAttribute.IsHot)))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -151,7 +151,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsColor))//醒目内容
             {
-                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.IsColor)))
+                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetExtendedAttribute(ContentAttribute.IsColor)))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;

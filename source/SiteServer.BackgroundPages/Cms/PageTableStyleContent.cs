@@ -24,7 +24,8 @@ namespace SiteServer.BackgroundPages.Cms
         public Button Export;
 
         private NodeInfo _nodeInfo;
-        private ContentModelInfo _modelInfo;
+        private string _tableName;
+        private EAuxiliaryTableType _tableType;
         private ETableStyle _tableStyle;
         private List<int> _relatedIdentities;
         private string _redirectUrl;
@@ -44,8 +45,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             var nodeId = Body.GetQueryInt("NodeID", PublishmentSystemId);
             _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
-            _modelInfo = ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId);
-            _tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(_modelInfo.TableType);
+            _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
+            _tableType = NodeManager.GetTableType(PublishmentSystemInfo, _nodeInfo);
+            _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
             _redirectUrl = GetRedirectUrl(PublishmentSystemId, nodeId);
 
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeId);
@@ -65,32 +67,32 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 InfoMessage(
-                    $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 辅助表:{BaiRongDataProvider.TableCollectionDao.GetTableCnName(_modelInfo.TableName)}({_modelInfo.TableName}); 内容模型:{_modelInfo.ModelName}");
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, false, true, true, Body.AdministratorName);
+                    $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 辅助表:{BaiRongDataProvider.TableCollectionDao.GetTableCnName(_tableName)}({_tableName})");
+                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, false, true, Body.AdministratorName);
                 ControlUtils.SelectListItems(NodeIDDropDownList, nodeId.ToString());
 
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _modelInfo.TableName, _relatedIdentities);
+                var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
 
                 dgContents.DataSource = styleInfoList;
                 dgContents.ItemDataBound += dgContents_ItemDataBound;
                 dgContents.DataBind();
 
-                AddStyle.Attributes.Add("onclick", ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, 0, _relatedIdentities, _modelInfo.TableName, string.Empty, _tableStyle, _redirectUrl));
-                AddStyles.Attributes.Add("onclick", ModalTableStylesAdd.GetOpenWindowString(PublishmentSystemId, _relatedIdentities, _modelInfo.TableName, _tableStyle, _redirectUrl));
-                Import.Attributes.Add("onclick", ModalTableStyleImport.GetOpenWindowString(_modelInfo.TableName, _tableStyle, PublishmentSystemId, nodeId));
-                Export.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToSingleTableStyle(_tableStyle, _modelInfo.TableName, PublishmentSystemId, nodeId));
+                AddStyle.Attributes.Add("onclick", ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, 0, _relatedIdentities, _tableName, string.Empty, _tableStyle, _redirectUrl));
+                AddStyles.Attributes.Add("onclick", ModalTableStylesAdd.GetOpenWindowString(PublishmentSystemId, _relatedIdentities, _tableName, _tableStyle, _redirectUrl));
+                Import.Attributes.Add("onclick", ModalTableStyleImport.GetOpenWindowString(_tableName, _tableStyle, PublishmentSystemId, nodeId));
+                Export.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToSingleTableStyle(_tableStyle, _tableName, PublishmentSystemId, nodeId));
             }
         }
 
         private void DeleteStyle()
         {
             var attributeName = Body.GetQueryString("AttributeName");
-            if (TableStyleManager.IsExists(_nodeInfo.NodeId, _modelInfo.TableName, attributeName))
+            if (TableStyleManager.IsExists(_nodeInfo.NodeId, _tableName, attributeName))
             {
                 try
                 {
-                    TableStyleManager.Delete(_nodeInfo.NodeId, _modelInfo.TableName, attributeName);
-                    Body.AddSiteLog(PublishmentSystemId, "删除数据表单样式", $"表单:{_modelInfo.TableName},字段:{attributeName}");
+                    TableStyleManager.Delete(_nodeInfo.NodeId, _tableName, attributeName);
+                    Body.AddSiteLog(PublishmentSystemId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -126,10 +128,10 @@ namespace SiteServer.BackgroundPages.Cms
                 switch (direction.ToUpper())
                 {
                     case "UP":
-                        BaiRongDataProvider.TableMetadataDao.TaxisDown(tableMetadataId, _modelInfo.TableName);
+                        BaiRongDataProvider.TableMetadataDao.TaxisDown(tableMetadataId, _tableName);
                         break;
                     case "DOWN":
-                        BaiRongDataProvider.TableMetadataDao.TaxisUp(tableMetadataId, _modelInfo.TableName);
+                        BaiRongDataProvider.TableMetadataDao.TaxisUp(tableMetadataId, _tableName);
                         break;
                 }
                 SuccessMessage("排序成功！");
@@ -159,17 +161,16 @@ namespace SiteServer.BackgroundPages.Cms
                 var upLinkButton = e.Item.FindControl("UpLinkButton") as HyperLink;
                 var downLinkButton = e.Item.FindControl("DownLinkButton") as HyperLink;
 
-                var showPopWinString = ModalTableMetadataView.GetOpenWindowString(_modelInfo.TableType,
-                    _modelInfo.TableName, styleInfo.AttributeName);
+                var showPopWinString = ModalTableMetadataView.GetOpenWindowString(_tableType, _tableName, styleInfo.AttributeName);
                 ltlAttributeName.Text =
                     $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{styleInfo.AttributeName}</a>";
 
                 ltlDisplayName.Text = styleInfo.DisplayName;
                 ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
-                if (TableManager.IsAttributeNameExists(_tableStyle, _modelInfo.TableName, styleInfo.AttributeName))
+                if (TableManager.IsAttributeNameExists(_tableStyle, _tableName, styleInfo.AttributeName))
                 {
                     ltlFieldType.Text =
-                        $"真实 {TableManager.GetTableMetadataDataType(_modelInfo.TableName, styleInfo.AttributeName)}";
+                        $"真实 {TableManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}";
                 }
                 else
                 {
@@ -177,9 +178,9 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-                ltlValidate.Text = EInputValidateTypeUtils.GetValidateInfo(styleInfo);
+                ltlValidate.Text = EValidateTypeUtils.GetValidateInfo(styleInfo);
 
-                showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _modelInfo.TableName, styleInfo.AttributeName, _tableStyle, _redirectUrl);
+                showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _tableStyle, _redirectUrl);
                 var editText = "添加";
                 if (styleInfo.RelatedIdentity == _nodeInfo.NodeId)//数据库中有样式
                 {
@@ -187,7 +188,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 ltlEditStyle.Text = $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{editText}</a>";
 
-                showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(styleInfo.TableStyleId, _relatedIdentities, _modelInfo.TableName, styleInfo.AttributeName, _tableStyle, _redirectUrl);
+                showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _tableStyle, _redirectUrl);
                 ltlEditValidate.Text = $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">设置</a>";
 
                 if (styleInfo.RelatedIdentity == _nodeInfo.NodeId)//数据库中有样式
@@ -197,7 +198,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"NodeID", _nodeInfo.NodeId.ToString()},
                         {"DeleteStyle", true.ToString()},
-                        {"TableName", _modelInfo.TableName},
+                        {"TableName", _tableName},
                         {"AttributeName", styleInfo.AttributeName}
                     });
                     ltlEditStyle.Text +=
@@ -211,7 +212,7 @@ namespace SiteServer.BackgroundPages.Cms
                 //}
                 //else
                 //{
-                isTaxisVisible = !TableStyleManager.IsExistsInParents(_relatedIdentities, _modelInfo.TableName, styleInfo.AttributeName);
+                isTaxisVisible = !TableStyleManager.IsExistsInParents(_relatedIdentities, _tableName, styleInfo.AttributeName);
                 //}
 
                 if (!isTaxisVisible)

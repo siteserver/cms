@@ -39,5 +39,10 @@ namespace SiteServer.CMS.StlParser.Cache
         {
             CacheUtils.InsertMinutes(cacheKey, value, 2);
         }
+
+        public static void ClearCache(string nameofClass)
+        {
+            CacheUtils.RemoveByStartString(GetCacheKey(nameofClass, string.Empty));
+        }
     }
 }

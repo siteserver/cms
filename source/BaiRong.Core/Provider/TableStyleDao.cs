@@ -294,6 +294,22 @@ namespace BaiRong.Core.Provider
             ExecuteNonQuery(SqlUpdateTableStyle, updateParms);
         }
 
+        public void Delete(string tableName)
+        {
+            if (string.IsNullOrEmpty(tableName)) return;
+
+            const string sqlString = "DELETE FROM bairong_TableStyle WHERE TableName = @TableName";
+
+            var parameters = new IDataParameter[]
+            {
+                GetParameter(ParmTableName, DataType.VarChar, 50, tableName)
+            };
+
+            ExecuteNonQuery(sqlString, parameters);
+
+            TableStyleManager.IsChanged = true;
+        }
+
         public void Delete(int relatedIdentity, string tableName, string attributeName)
         {
             var parms = new IDataParameter[]

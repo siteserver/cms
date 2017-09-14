@@ -629,6 +629,10 @@ SELECT * FROM (
             {
                 try
                 {
+                    if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+                    {
+                        tableName = $"`{tableName}`";
+                    }
                     // Other RDBMS.  Graceful degradation
                     exists = true;
                     ExecuteNonQuery($"select 1 from {tableName} where 1 = 0");

@@ -90,14 +90,12 @@ namespace SiteServer.CMS.Core.Office
 
             var relatedidentityes =
                 RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
-            var modelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
             var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, modelInfo.TableName,
+            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName,
                 relatedidentityes);
             tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, tableStyle,
                 tableStyleInfoList);
-
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
             foreach (var tableStyleInfo in tableStyleInfoList)
             {
@@ -558,13 +556,11 @@ namespace SiteServer.CMS.Core.Office
                 var relatedidentityes =
                     RelatedIdentities.GetChannelRelatedIdentities(
                         publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
-                var modelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo,
-                    nodeInfo.ContentModelId);
-                var tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(modelInfo.TableType);
+                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
+                var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
                 // ArrayList tableStyleInfoArrayList = TableStyleManager.GetTableStyleInfoArrayList(ETableStyle.BackgroundContent, publishmentSystemInfo.AuxiliaryTableForContent, relatedidentityes);
 
-                var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle,
-                    modelInfo.TableName, relatedidentityes);
+                var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedidentityes);
                 tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo,
                     tableStyle, tableStyleInfoList);
                 var nameValueCollection = new NameValueCollection();

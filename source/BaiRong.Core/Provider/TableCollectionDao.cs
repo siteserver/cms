@@ -6,7 +6,6 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
@@ -389,58 +388,6 @@ namespace BaiRong.Core.Provider
                     // ignored
                 }
             }
-            else if (tableType == EAuxiliaryTableType.GovPublicContent)
-            {
-                string sqlString =
-                    $"SELECT COUNT(*) FROM siteserver_PublishmentSystem WHERE (AuxiliaryTableForGovPublic = '{PageUtils.FilterSql(tableEnName)}')";
-                try
-                {
-                    count += BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-            else if (tableType == EAuxiliaryTableType.GovInteractContent)
-            {
-                string sqlString =
-                    $"SELECT COUNT(*) FROM siteserver_PublishmentSystem WHERE (AuxiliaryTableForGovInteract = '{PageUtils.FilterSql(tableEnName)}')";
-                try
-                {
-                    count += BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-            else if (tableType == EAuxiliaryTableType.VoteContent)
-            {
-                string sqlString =
-                    $"SELECT COUNT(*) FROM siteserver_PublishmentSystem WHERE (AuxiliaryTableForVote = '{PageUtils.FilterSql(tableEnName)}')";
-                try
-                {
-                    count += BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-            else if (tableType == EAuxiliaryTableType.JobContent)
-            {
-                string sqlString =
-                    $"SELECT COUNT(*) FROM siteserver_PublishmentSystem WHERE (AuxiliaryTableForJob = '{PageUtils.FilterSql(tableEnName)}')";
-                try
-                {
-                    count += BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
 
             string sqlString2 =
                 $"SELECT COUNT(*) FROM bairong_ContentModel WHERE (TableName = '{PageUtils.FilterSql(tableEnName)}')";
@@ -518,42 +465,6 @@ namespace BaiRong.Core.Provider
             {
                 var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.BackgroundContent);
                 var tableInfo = new AuxiliaryTableInfo(tableName, "后台内容表", 0, EAuxiliaryTableType.BackgroundContent, false, false, true, string.Empty);
-                BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
-            }
-
-            //添加招聘内容表
-            if (!IsTableExists(EAuxiliaryTableType.JobContent))
-            {
-                var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.JobContent);
-                var tableInfo = new AuxiliaryTableInfo(tableName, "招聘内容表", 0, EAuxiliaryTableType.JobContent, false, false, true, string.Empty);
-                BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
-            }
-
-            //添加投票内容表
-            if (!IsTableExists(EAuxiliaryTableType.VoteContent))
-            {
-                var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.VoteContent);
-                var tableInfo = new AuxiliaryTableInfo(tableName, "投票内容表", 0, EAuxiliaryTableType.VoteContent, false, false, true, string.Empty);
-                BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
-            }
-
-            //添加信息公开内容表
-            if (!IsTableExists(EAuxiliaryTableType.GovPublicContent))
-            {
-                var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.GovPublicContent);
-                var tableInfo = new AuxiliaryTableInfo(tableName, "信息公开内容表", 0, EAuxiliaryTableType.GovPublicContent, false, false, true, string.Empty);
-                BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
-            }
-
-            //添加互动交流内容表
-            if (!IsTableExists(EAuxiliaryTableType.GovInteractContent))
-            {
-                var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.GovInteractContent);
-                var tableInfo = new AuxiliaryTableInfo(tableName, "互动交流内容表", 0, EAuxiliaryTableType.GovInteractContent, false, false, true, string.Empty);
                 BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
                 BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
             }

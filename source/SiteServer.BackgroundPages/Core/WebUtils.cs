@@ -5,9 +5,7 @@ using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Plugins;
 using SiteServer.BackgroundPages.Settings;
-using SiteServer.BackgroundPages.Wcm;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
@@ -23,7 +21,7 @@ namespace SiteServer.BackgroundPages.Core
             string url;
             var title = ContentUtility.FormatTitle(contentInfo.NameValues[BackgroundContentAttribute.TitleFormatString], contentInfo.Title);
 
-            var displayString = TranslateUtils.ToBool(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.IsColor)) ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
+            var displayString = contentInfo.IsTop ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
 
             if (contentInfo.NodeId < 0)
             {
@@ -41,15 +39,15 @@ namespace SiteServer.BackgroundPages.Core
             }
 
             var image = string.Empty;
-            if (TranslateUtils.ToBool(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.IsRecommend)))
+            if (contentInfo.IsRecommend)
             {
                 image += "&nbsp;<img src='../pic/icon/recommend.gif' title='推荐' align='absmiddle' border=0 />";
             }
-            if (TranslateUtils.ToBool(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.IsHot)))
+            if (contentInfo.IsHot)
             {
                 image += "&nbsp;<img src='../pic/icon/hot.gif' title='热点' align='absmiddle' border=0 />";
             }
-            if (TranslateUtils.ToBool(contentInfo.GetExtendedAttribute(ContentAttribute.IsTop)))
+            if (contentInfo.IsTop)
             {
                 image += "&nbsp;<img src='../pic/icon/top.gif' title='置顶' align='absmiddle' border=0 />";
             }
@@ -124,49 +122,20 @@ namespace SiteServer.BackgroundPages.Core
             return str;
         }
 
-        private static string GetContentAddUrl(EContentModelType modelType, int publishmentSystemId, int nodeId, string returnUrl)
-        {
-            if (modelType == EContentModelType.GovPublic)
-            {
-                return PageGovPublicContentAdd.GetRedirectUrlOfAdd(publishmentSystemId, nodeId, returnUrl);
-            }
-            if (modelType == EContentModelType.Vote)
-            {
-                return PageVoteContentAdd.GetRedirectUrlOfAdd(publishmentSystemId, nodeId, returnUrl);
-            }
-            return PageContentAdd.GetRedirectUrlOfAdd(publishmentSystemId, nodeId, returnUrl);
-        }
-
-        private static string GetContentEditUrl(EContentModelType modelType, int publishmentSystemId, int nodeId, int id, string returnUrl)
-        {
-            if (modelType == EContentModelType.GovPublic)
-            {
-                return PageGovPublicContentAdd.GetRedirectUrlOfEdit(publishmentSystemId, nodeId, id, returnUrl);
-            }
-            if (modelType == EContentModelType.Vote)
-            {
-                return PageVoteContentAdd.GetRedirectUrlOfEdit(publishmentSystemId, nodeId, id, returnUrl);
-            }
-            return PageContentAdd.GetRedirectUrlOfEdit(publishmentSystemId, nodeId, id, returnUrl);
-        }
-
         public static string GetContentAddUploadWordUrl(int publishmentSystemId, NodeInfo nodeInfo, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, int contentLevel, string fileName, string returnUrl)
         {
-            var modelType = EContentModelTypeUtils.GetEnumType(nodeInfo.ContentModelId);
             return
-                $"{GetContentAddUrl(modelType, publishmentSystemId, nodeInfo.NodeId, returnUrl)}&isUploadWord=True&isFirstLineTitle={isFirstLineTitle}&isFirstLineRemove={isFirstLineRemove}&isClearFormat={isClearFormat}&isFirstLineIndent={isFirstLineIndent}&isClearFontSize={isClearFontSize}&isClearFontFamily={isClearFontFamily}&isClearImages={isClearImages}&contentLevel={contentLevel}&fileName={fileName}";
+                $"{PageContentAdd.GetRedirectUrlOfAdd(publishmentSystemId, nodeInfo.NodeId, returnUrl)}&isUploadWord=True&isFirstLineTitle={isFirstLineTitle}&isFirstLineRemove={isFirstLineRemove}&isClearFormat={isClearFormat}&isFirstLineIndent={isFirstLineIndent}&isClearFontSize={isClearFontSize}&isClearFontFamily={isClearFontFamily}&isClearImages={isClearImages}&contentLevel={contentLevel}&fileName={fileName}";
         }
 
         public static string GetContentAddAddUrl(int publishmentSystemId, NodeInfo nodeInfo, string returnUrl)
         {
-            var modelType = EContentModelTypeUtils.GetEnumType(nodeInfo.ContentModelId);
-            return GetContentAddUrl(modelType, publishmentSystemId, nodeInfo.NodeId, returnUrl);
+            return PageContentAdd.GetRedirectUrlOfAdd(publishmentSystemId, nodeInfo.NodeId, returnUrl);
         }
 
         public static string GetContentAddEditUrl(int publishmentSystemId, NodeInfo nodeInfo, int id, string returnUrl)
         {
-            var modelType = EContentModelTypeUtils.GetEnumType(nodeInfo.ContentModelId);
-            return GetContentEditUrl(modelType, publishmentSystemId, nodeInfo.NodeId, id, returnUrl);
+            return PageContentAdd.GetRedirectUrlOfEdit(publishmentSystemId, nodeInfo.NodeId, id, returnUrl);
         }
 
         public static string GetContentCommands(string administratorName, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string pageUrl, string currentFileName, bool isCheckPage)

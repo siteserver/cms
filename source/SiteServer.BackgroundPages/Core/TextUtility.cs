@@ -11,7 +11,9 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Controllers.Plugins;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.StlParser.StlElement;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin.Features;
+using SiteServer.CMS.Core.User;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -152,9 +154,9 @@ namespace SiteServer.BackgroundPages.Core
             {
                 value = DateUtils.GetDateAndTimeString(contentInfo.LastHitsDate);
             }
-            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsTop))
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsTop) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsRecommend))
             {
-                value = StringUtils.GetTrueImageHtml(contentInfo.IsTop);
+                value = StringUtils.GetTrueImageHtml(contentInfo.GetExtendedAttribute(styleInfo.AttributeName));
             }
             else
             {
@@ -176,10 +178,6 @@ namespace SiteServer.BackgroundPages.Core
                         string display = $"赞同：{nums[0]} 不赞同：{nums[1]}";
                         value =
                             $@"<a href=""javascript:;"" onclick=""{showPopWinString}"" title=""点击设置Digg数"">{display}</a>";
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, BackgroundContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, BackgroundContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, BackgroundContentAttribute.IsRecommend))
-                    {
-                        value = StringUtils.GetTrueImageHtml(contentInfo.GetExtendedAttribute(styleInfo.AttributeName));
                     }
                     else
                     {
@@ -212,15 +210,19 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandHeadRowsHtml(string administratorName, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, ContentModelInfo modelInfo)
+        public static string GetCommandHeadRowsHtml(string administratorName, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, Dictionary<string, IChannel> pluginChannels)
         {
             var builder = new StringBuilder();
 
-            if (modelInfo?.Links != null && modelInfo.Links.Count > 0)
+            foreach (var pluginId in pluginChannels.Keys)
             {
-                for (var i = 0; i < modelInfo.Links.Count; i++)
+                var pluginChannel = pluginChannels[pluginId];
+                if (pluginChannel?.ContentLinks != null && pluginChannel.ContentLinks.Count > 0)
                 {
-                    builder.Append(@"<td class=""center"" width=""80"">&nbsp;</td>");
+                    for (var i = 0; i < pluginChannel.ContentLinks.Count; i++)
+                    {
+                        builder.Append(@"<td class=""center"" width=""80"">&nbsp;</td>");
+                    }
                 }
             }
 
@@ -251,26 +253,30 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandItemRowsHtml(PublishmentSystemInfo publishmentSystemInfo, ContentModelInfo modelInfo, ContentInfo contentInfo, string pageUrl, string administratorName)
+        public static string GetCommandItemRowsHtml(PublishmentSystemInfo publishmentSystemInfo, Dictionary<string, IChannel> pluginChannels, ContentInfo contentInfo, string pageUrl, string administratorName)
         {
             var builder = new StringBuilder();
 
-            if (modelInfo?.Links != null && modelInfo.Links.Count > 0)
+            foreach (var pluginId in pluginChannels.Keys)
             {
-                var apiUrl = JsonApi.GetUrl(PageUtility.GetInnerApiUrl(publishmentSystemInfo), modelInfo.ModelId);
-                apiUrl = PageUtils.AddProtocolToUrl(apiUrl);
-                foreach (var link in modelInfo.Links)
+                var pluginChannel = pluginChannels[pluginId];
+                if (pluginChannel?.ContentLinks != null && pluginChannel.ContentLinks.Count > 0)
                 {
-                    var href = PageUtils.AddQueryString(link.Href, new NameValueCollection
+                    var apiUrl = JsonApi.GetUrl(PageUtility.GetInnerApiUrl(publishmentSystemInfo), pluginId);
+                    apiUrl = PageUtils.AddProtocolToUrl(apiUrl);
+                    foreach (var link in pluginChannel.ContentLinks)
+                    {
+                        var href = PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, link.Href), new NameValueCollection
                     {
                         {"apiUrl", apiUrl},
-                        {"siteId", publishmentSystemInfo.PublishmentSystemId.ToString()},
+                        {"publishmentSystemId", publishmentSystemInfo.PublishmentSystemId.ToString()},
                         {"channelId", contentInfo.NodeId.ToString()},
                         {"contentId", contentInfo.Id.ToString()},
                         {"returnUrl", StringUtils.ValueToUrl(pageUrl)}
                     });
-                    builder.Append(
-                        $@"<td class=""center"" width=""80""><a href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a></td>");
+                        builder.Append(
+                            $@"<td class=""center"" width=""80""><a href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a></td>");
+                    }
                 }
             }
 
@@ -304,47 +310,72 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetTagStyleOpenWindowStringToAdd(string elementName, int publishmentSystemId)
+        public static bool IsEdit(PublishmentSystemInfo publishmentSystemInfo, int nodeId, string administratorName)
         {
-            if (StringUtils.EqualsIgnoreCase(elementName, StlGovPublicApply.ElementName))
-            {
-                return ModalTagStyleGovPublicApplyAdd.GetOpenWindowStringToAdd(publishmentSystemId);
-            }
-            else if (StringUtils.EqualsIgnoreCase(elementName, StlGovPublicQuery.ElementName))
-            {
-                return ModalTagStyleGovPublicQueryAdd.GetOpenWindowStringToAdd(publishmentSystemId);
-            }
-            else if (StringUtils.EqualsIgnoreCase(elementName, StlGovInteractApply.ElementName))
-            {
-                return ModalTagStyleGovInteractApplyAdd.GetOpenWindowStringToAdd(publishmentSystemId);
-            }
-            else if (StringUtils.EqualsIgnoreCase(elementName, StlGovInteractQuery.ElementName))
-            {
-                return ModalTagStyleGovInteractQueryAdd.GetOpenWindowStringToAdd(publishmentSystemId);
-            }
-
-            return string.Empty;
+            return AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentEdit);
         }
 
-        public static string GetTagStyleOpenWindowStringToEdit(string elementName, int publishmentSystemId, int styleId)
+        public static bool IsComment(PublishmentSystemInfo publishmentSystemInfo, int nodeId, string administratorName)
         {
-            if (StringUtils.EqualsIgnoreCase(elementName, StlGovPublicApply.ElementName))
+            return publishmentSystemInfo.Additional.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeId, AppManager.Permissions.Channel.CommentCheck, AppManager.Permissions.Channel.CommentDelete);
+        }
+
+        public static int GetContentLinkCount(PublishmentSystemInfo publishmentSystemInfo, Dictionary<string, IChannel> pluginChannels)
+        {
+            var count = 0;
+            foreach (var pluginChannel in pluginChannels.Values)
             {
-                return ModalTagStyleGovPublicApplyAdd.GetOpenWindowStringToEdit(publishmentSystemId, styleId);
+                if (pluginChannel?.ContentLinks != null)
+                {
+                    count += pluginChannel.ContentLinks.Count;
+                }
             }
-            else if (StringUtils.EqualsIgnoreCase(elementName, StlGovPublicQuery.ElementName))
+
+            return count;
+        }
+
+        public static string GetCommandHtml(PublishmentSystemInfo publishmentSystemInfo, Dictionary<string, IChannel> pluginChannels, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit, bool isComment)
+        {
+            var builder = new StringBuilder();
+
+            if (isEdit || administratorName == contentInfo.AddUserName)
             {
-                return ModalTagStyleGovPublicQueryAdd.GetOpenWindowStringToEdit(publishmentSystemId, styleId);
+                builder.Append($@"<a style=""margin:0 5px"" href=""{PageContentAdd.GetRedirectUrlOfEdit(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl)}"">编辑</a>");
             }
-            else if (StringUtils.EqualsIgnoreCase(elementName, StlGovInteractApply.ElementName))
+
+            if (isComment)
             {
-                return ModalTagStyleGovInteractApplyAdd.GetOpenWindowStringToEdit(publishmentSystemId, styleId);
+                //var urlComment = PageComment.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemID, contentInfo.NodeId, contentInfo.Id, pageUrl);
+                var urlComment = PageComments.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
+                builder.Append(
+                    $@"<a style=""margin:0 5px"" href=""{urlComment}"">评论<span style=""color:gray"">({contentInfo
+                        .Comments})</span></a>");
             }
-            else if (StringUtils.EqualsIgnoreCase(elementName, StlGovInteractQuery.ElementName))
+
+            foreach (var pluginId in pluginChannels.Keys)
             {
-                return ModalTagStyleGovInteractQueryAdd.GetOpenWindowStringToEdit(publishmentSystemId, styleId);
+                var pluginChannel = pluginChannels[pluginId];
+                if (pluginChannel?.ContentLinks != null && pluginChannel.ContentLinks.Count > 0)
+                {
+                    var apiUrl = JsonApi.GetUrl(PageUtility.GetInnerApiUrl(publishmentSystemInfo), pluginId);
+                    apiUrl = PageUtils.AddProtocolToUrl(apiUrl);
+                    foreach (var link in pluginChannel.ContentLinks)
+                    {
+                        var href = PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, link.Href), new NameValueCollection
+                    {
+                        {"apiUrl", apiUrl},
+                        {"publishmentSystemId", publishmentSystemInfo.PublishmentSystemId.ToString()},
+                        {"channelId", contentInfo.NodeId.ToString()},
+                        {"contentId", contentInfo.Id.ToString()},
+                        {"returnUrl", StringUtils.ValueToUrl(pageUrl)}
+                    });
+                        builder.Append(
+                            $@"<a style=""margin:0 5px"" href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a>");
+                    }
+                }
             }
-            return string.Empty;
+
+            return builder.ToString();
         }
     }
 }

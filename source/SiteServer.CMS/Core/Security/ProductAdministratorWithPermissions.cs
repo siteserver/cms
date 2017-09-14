@@ -9,14 +9,12 @@ namespace SiteServer.CMS.Core.Security
 	{
 		private Dictionary<int, List<string>> _websitePermissionDict;
 		private Dictionary<int, List<string>> _channelPermissionDict;
-        private Dictionary<int, List<string>> _govInteractPermissionDict;
         private List<string> _channelPermissionListIgnoreNodeId;
         private List<int> _publishmentSystemIdList;
         private List<int> _owningNodeIdList;
 
         private readonly string _websitePermissionDictKey;
         private readonly string _channelPermissionDictKey;
-        private readonly string _govInteractPermissionDictKey;
         private readonly string _channelPermissionListIgnoreNodeIdKey;
         private readonly string _publishmentSystemIdListKey;
         private readonly string _owningNodeIdListKey;
@@ -26,7 +24,6 @@ namespace SiteServer.CMS.Core.Security
 		{
             _websitePermissionDictKey = PermissionsManager.GetWebsitePermissionDictKey(userName);
             _channelPermissionDictKey = PermissionsManager.GetChannelPermissionDictKey(userName);
-            _govInteractPermissionDictKey = PermissionsManager.GetGovInteractPermissionDictKey(userName);
             _channelPermissionListIgnoreNodeIdKey = PermissionsManager.GetChannelPermissionListIgnoreNodeIdKey(userName);
             _publishmentSystemIdListKey = PermissionsManager.GetPublishmentSystemIdKey(userName);
             _owningNodeIdListKey = PermissionsManager.GetOwningNodeIdListKey(userName);
@@ -150,50 +147,6 @@ namespace SiteServer.CMS.Core.Security
                     }
                 }
                 return _channelPermissionListIgnoreNodeId ?? (_channelPermissionListIgnoreNodeId = new List<string>());
-            }
-        }
-
-        public Dictionary<int, List<string>> GovInteractPermissionDict
-        {
-            get
-            {
-                if (_govInteractPermissionDict == null)
-                {
-                    if (!string.IsNullOrEmpty(UserName) && !string.Equals(UserName, AdminManager.AnonymousUserName))
-                    {
-                        if (CacheUtils.Get(_govInteractPermissionDictKey) != null)
-                        {
-                            _govInteractPermissionDict = CacheUtils.Get(_govInteractPermissionDictKey) as Dictionary<int, List<string>>;
-                        }
-                        else
-                        {
-                            if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
-                            {
-                                var allGovInteractPermissionList = new List<string>();
-                                foreach (PermissionConfig permission in PermissionConfigManager.Instance.GovInteractPermissions)
-                                {
-                                    allGovInteractPermissionList.Add(permission.Name);
-                                }
-
-                                _govInteractPermissionDict = new Dictionary<int, List<string>>();
-
-                                if (PublishmentSystemIdList.Count > 0)
-                                {
-                                    foreach (var publishmentSystemId in PublishmentSystemIdList)
-                                    {
-                                        _govInteractPermissionDict[publishmentSystemId] = allGovInteractPermissionList;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                _govInteractPermissionDict = DataProvider.GovInteractPermissionsDao.GetPermissionSortedList(UserName);
-                            }
-                            CacheUtils.InsertMinutes(_govInteractPermissionDictKey, _govInteractPermissionDict, 30);
-                        }
-                    }
-                }
-                return _govInteractPermissionDict ?? (_govInteractPermissionDict = new Dictionary<int, List<string>>());
             }
         }
 
@@ -330,14 +283,12 @@ namespace SiteServer.CMS.Core.Security
         {
             _websitePermissionDict = null;
             _channelPermissionDict = null;
-            _govInteractPermissionDict = null;
             _channelPermissionListIgnoreNodeId = null;
             _publishmentSystemIdList = null;
             _owningNodeIdList = null;
 
             CacheUtils.Remove(_websitePermissionDictKey);
             CacheUtils.Remove(_channelPermissionDictKey);
-            CacheUtils.Remove(_govInteractPermissionDictKey);
             CacheUtils.Remove(_channelPermissionListIgnoreNodeIdKey);
             CacheUtils.Remove(_publishmentSystemIdListKey);
             CacheUtils.Remove(_owningNodeIdListKey);

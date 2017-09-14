@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core
@@ -61,10 +60,6 @@ namespace BaiRong.Core
 		    {
 		        return "RelatedField";
 		    }
-		    if (type == InputType.SpecifiedValue)
-		    {
-		        return "SpecifiedValue";
-		    }
 		    throw new Exception();
 		}
 
@@ -121,10 +116,6 @@ namespace BaiRong.Core
 		    if (type == InputType.RelatedField)
 		    {
 		        return "联动字段";
-		    }
-		    if (type == InputType.SpecifiedValue)
-		    {
-		        return "系统指定值";
 		    }
 		    throw new Exception();
 		}
@@ -185,10 +176,6 @@ namespace BaiRong.Core
             {
                 retval = InputType.RelatedField;
             }
-            else if (Equals(InputType.SpecifiedValue, typeStr))
-            {
-                retval = InputType.SpecifiedValue;
-            }
 
 			return retval;
 		}
@@ -247,7 +234,6 @@ namespace BaiRong.Core
                 listControl.Items.Add(GetListItem(InputType.Video, false));
                 listControl.Items.Add(GetListItem(InputType.File, false));
                 listControl.Items.Add(GetListItem(InputType.RelatedField, false));
-                listControl.Items.Add(GetListItem(InputType.SpecifiedValue, false));
             }
         }
 

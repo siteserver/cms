@@ -22,11 +22,10 @@ namespace SiteServer.CMS.Core.Office
 
             var relatedidentityes = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
 
-            var modelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
             var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, modelInfo.TableName, relatedidentityes);
-            styleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, tableStyle, styleInfoList);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedidentityes);
+            styleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, tableStyle, styleInfoList);
 
             var accessDAO = new AccessDao(filePath);
 
@@ -64,10 +63,10 @@ namespace SiteServer.CMS.Core.Office
                     {
                         var relatedidentityes = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
 
-                        var modelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
-                        var tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(modelInfo.TableType);
+                        var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
+                        var theTableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
-                        var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, modelInfo.TableName, relatedidentityes);
+                        var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, theTableName, relatedidentityes);
 
                         var nameValueCollection = new NameValueCollection();
 

@@ -173,11 +173,7 @@ namespace SiteServer.CMS.Core
         {
             return new List <string>
             {
-                publishmentSystemInfo.AuxiliaryTableForContent,
-                publishmentSystemInfo.AuxiliaryTableForGovInteract,
-                publishmentSystemInfo.AuxiliaryTableForGovPublic,
-                publishmentSystemInfo.AuxiliaryTableForJob,
-                publishmentSystemInfo.AuxiliaryTableForVote
+                publishmentSystemInfo.AuxiliaryTableForContent
             };
         }
 
@@ -188,22 +184,6 @@ namespace SiteServer.CMS.Core
             if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForContent))
             {
                 tableStyle = ETableStyle.BackgroundContent;
-            }
-            else if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForGovInteract))
-            {
-                tableStyle = ETableStyle.GovInteractContent;
-            }
-            else if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForGovPublic))
-            {
-                tableStyle = ETableStyle.GovPublicContent;
-            }
-            else if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForJob))
-            {
-                tableStyle = ETableStyle.JobContent;
-            }
-            else if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForVote))
-            {
-                tableStyle = ETableStyle.VoteContent;
             }
             else if (StringUtils.EqualsIgnoreCase(tableName, DataProvider.PublishmentSystemDao.TableName))
             {
@@ -428,7 +408,7 @@ namespace SiteServer.CMS.Core
                     var nodeList = DataProvider.NodeDao.GetNodeInfoListByPublishmentSystemId(publishmentSystemId, string.Empty);
                     foreach (var nodeInfo in nodeList)
                     {
-                        if (nodeInfo != null && EContentModelTypeUtils.Equals(nodeInfo.ContentModelId, EContentModelType.Content))
+                        if (nodeInfo != null)
                         {
                             nodeInfoList.Add(nodeInfo);
                         }
@@ -446,7 +426,7 @@ namespace SiteServer.CMS.Core
                         foreach (int ownNodeId in nodeIdList)
                         {
                             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, ownNodeId);
-                            if (nodeInfo != null && EContentModelTypeUtils.Equals(nodeInfo.ContentModelId, EContentModelType.Content))
+                            if (nodeInfo != null)
                             {
                                 nodeInfoList.Add(nodeInfo);
                             }

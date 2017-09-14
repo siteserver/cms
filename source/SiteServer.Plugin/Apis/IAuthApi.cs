@@ -5,9 +5,5 @@
         bool IsGlobalAuthorized();
 
         bool IsAuthorized(int publishmentSystemId);
-
-        string EncryptStringBySecretKey(string inputString);
-
-        string DecryptStringBySecretKey(string inputString);
     }
 }

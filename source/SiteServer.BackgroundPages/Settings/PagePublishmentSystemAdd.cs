@@ -47,8 +47,6 @@ namespace SiteServer.BackgroundPages.Settings
         public RadioButtonList IsUserSiteTemplateAuxiliaryTables;
         public PlaceHolder phAuxiliaryTable;
         public DropDownList AuxiliaryTableForContent;
-        public DropDownList AuxiliaryTableForVote;
-        public DropDownList AuxiliaryTableForJob;
         public RadioButtonList IsCheckContentUseLevel;
         public Control CheckContentLevelRow;
         public DropDownList CheckContentLevel;
@@ -140,20 +138,6 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
                     AuxiliaryTableForContent.Items.Add(li);
-                }
-
-                tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.VoteContent);
-                foreach (var tableInfo in tableList)
-                {
-                    var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
-                    AuxiliaryTableForVote.Items.Add(li);
-                }
-
-                tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.JobContent);
-                foreach (var tableInfo in tableList)
-                {
-                    var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
-                    AuxiliaryTableForJob.Items.Add(li);
                 }
 
                 IsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制", false.ToString()));
@@ -413,11 +397,11 @@ namespace SiteServer.BackgroundPages.Settings
 
                 nodeInfo.NodeName = nodeInfo.NodeIndexName = "首页";
                 nodeInfo.NodeType = ENodeType.BackgroundPublishNode;
-                nodeInfo.ContentModelId = EContentModelTypeUtils.GetValue(EContentModelType.Content);
+                nodeInfo.ContentModelId = string.Empty;
 
                 var publishmentSystemUrl = PageUtils.Combine(PageUtils.ApplicationPath, publishmentSystemDir);
 
-                var psInfo = BaseTable.GetDefaultPublishmentSystemInfo(PageUtils.FilterXss(PublishmentSystemName.Text), AuxiliaryTableForContent.SelectedValue, string.Empty, string.Empty, AuxiliaryTableForVote.SelectedValue, AuxiliaryTableForJob.SelectedValue, publishmentSystemDir, publishmentSystemUrl, parentPublishmentSystemId);
+                var psInfo = BaseTable.GetDefaultPublishmentSystemInfo(PageUtils.FilterXss(PublishmentSystemName.Text), AuxiliaryTableForContent.SelectedValue, publishmentSystemDir, publishmentSystemUrl, parentPublishmentSystemId);
 
                 if (psInfo.ParentPublishmentSystemId > 0)
                 {

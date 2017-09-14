@@ -4,7 +4,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.BackgroundPages.Wcm;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -170,44 +169,6 @@ namespace SiteServer.BackgroundPages.Settings
     <td>{title}</td>
     <td>&nbsp;{departmentInfo.Code}</td>
     <td class=""center"">{departmentInfo.CountOfAdmin}</td>
-    <td class=""center"">{upLink}</td>
-    <td class=""center"">{downLink}</td>
-    <td class=""center"">{editUrl}</td>
-    <td class=""center"">{checkBoxHtml}</td>
-</tr>
-";
-            }
-            else if (loadingType == EDepartmentLoadingType.GovPublicDepartment)
-            {
-                var publishmentSystemId = TranslateUtils.ToInt(additional["PublishmentSystemID"]);
-
-                var returnUrl = PageGovPublicDepartment.GetRedirectUrl(publishmentSystemId, departmentInfo.DepartmentId);
-
-                string editUrl = $@"<a href=""javascript:;"" onclick=""{ModalDepartmentAdd.GetOpenWindowStringToEdit(
-                    departmentInfo.DepartmentId, returnUrl)}"">编辑</a>";
-
-                var urlUp = PageUtils.GetWcmUrl(nameof(PageGovPublicDepartment), new NameValueCollection
-                {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
-                    {"DepartmentID", departmentInfo.DepartmentId.ToString()},
-                    {"Subtract", true.ToString()}
-                });
-                string upLink = $@"<a href=""{urlUp}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
-
-                var urlDown = PageUtils.GetWcmUrl(nameof(PageGovPublicDepartment), new NameValueCollection
-                {
-                    {"PublishmentSystemID", publishmentSystemId.ToString()},
-                    {"DepartmentID", departmentInfo.DepartmentId.ToString()},
-                    {"Add", true.ToString()}
-                });
-                string downLink = $@"<a href=""{urlDown}""><img src=""../Pic/icon/down.gif"" border=""0"" alt=""下降"" /></a>";
-
-                string checkBoxHtml = $"<input type='checkbox' name='DepartmentIDCollection' value='{departmentInfo.DepartmentId}' />";
-
-                rowHtml = $@"
-<tr treeItemLevel=""{departmentInfo.ParentsCount + 1}"">
-    <td>{title}</td>
-    <td>&nbsp;{departmentInfo.Code}</td>
     <td class=""center"">{upLink}</td>
     <td class=""center"">{downLink}</td>
     <td class=""center"">{editUrl}</td>

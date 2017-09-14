@@ -145,16 +145,28 @@ namespace BaiRong.Core.Model
             set { SetExtendedAttribute("SmsAppKey", value); }
         }
 
-        public string SmsAppSecret
+        public EPaymentProviderType PaymentProviderType
         {
-            get { return GetString("SmsAppSecret", string.Empty); }
-            set { SetExtendedAttribute("SmsAppSecret", value); }
+            get { return EPaymentProviderTypeUtils.GetEnumType(GetString("PaymentProviderType", EPaymentProviderTypeUtils.GetValue(EPaymentProviderType.None))); }
+            set { SetExtendedAttribute("PaymentProviderType", EPaymentProviderTypeUtils.GetValue(value)); }
         }
 
-        public string SmsSignName
+        public string PaymentChannels
         {
-            get { return GetString("SmsSignName", string.Empty); }
-            set { SetExtendedAttribute("SmsSignName", value); }
+            get { return GetString("PaymentChannels", string.Empty); }
+            set { SetExtendedAttribute("PaymentChannels", value); }
+        }
+
+        public string PaymentPingxxAppId
+        {
+            get { return GetString("PaymentPingxxAppId", string.Empty); }
+            set { SetExtendedAttribute("PaymentPingxxAppId", value); }
+        }
+
+        public string PaymentPingxxSecretKey
+        {
+            get { return GetString("PaymentPingxxSecretKey", string.Empty); }
+            set { SetExtendedAttribute("PaymentPingxxSecretKey", value); }
         }
     }
 }

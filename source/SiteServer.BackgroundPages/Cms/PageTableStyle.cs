@@ -8,7 +8,6 @@ using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Plugins;
 using SiteServer.BackgroundPages.Settings;
-using SiteServer.BackgroundPages.Wcm;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -94,11 +93,6 @@ namespace SiteServer.BackgroundPages.Cms
             else if (_tableStyle == ETableStyle.InputContent)
             {
                 btnReturn.Attributes.Add("onclick", $"location.href='{PageInput.GetRedirectUrl(PublishmentSystemId)}';return false;");
-            }
-            else if (_tableStyle == ETableStyle.GovInteractContent)
-            {
-                var urlReturn = PageGovInteractListAll.GetRedirectUrl(PublishmentSystemId, 0);
-                btnReturn.Attributes.Add("onclick", $"location.href='{urlReturn}';return false;");
             }
             else if (_tableStyle == ETableStyle.Site)
             {
@@ -208,7 +202,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
 
                 ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-                ltlValidate.Text = EInputValidateTypeUtils.GetValidateInfo(styleInfo);
+                ltlValidate.Text = EValidateTypeUtils.GetValidateInfo(styleInfo);
 
                 var redirectUrl = GetRedirectUrl(PublishmentSystemId, _tableStyle, _tableName, _relatedIdentity, _itemId);
                 showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _tableStyle, redirectUrl);

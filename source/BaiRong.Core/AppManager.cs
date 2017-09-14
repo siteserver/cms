@@ -67,7 +67,7 @@ namespace BaiRong.Core
                 public const string SiteManagement = "settings_site_management";
                 public const string AdminManagement = "settings_admin_management";
                 public const string UserManagement = "settings_user_management";
-                public const string Config = "settings_config";
+                public const string Integration = "settings_integration";
                 public const string Service = "settings_service";
                 public const string Chart = "settings_chart";
                 public const string Log = "settings_log";
@@ -147,14 +147,6 @@ namespace BaiRong.Core
             {
                 retval = "生成管理";
             }
-            else if (menuId == Wcm.LeftMenu.IdGovPublic)
-            {
-                retval = "信息公开";
-            }
-            else if (menuId == Wcm.LeftMenu.IdGovInteract)
-            {
-                retval = "互动交流";
-            }
             return retval;
         }
 
@@ -168,101 +160,6 @@ namespace BaiRong.Core
                 public const string IdTemplate = "Template";
                 public const string IdConfigration = "Configration";
                 public const string IdCreate = "Create";
-            }
-        }
-
-        public class Wcm
-        {
-            public const string AppId = "wcm";
-
-            public class LeftMenu
-            {
-                public const string IdGovPublic = "GovPublic";
-                public const string IdGovInteract = "GovInteract";
-            }
-
-            public class Permission
-            {
-                public class WebSite
-                {
-                    private WebSite() { }
-
-                    public const string GovPublicContent = "wcm_govPublicContent";                                      //主动信息公开
-                    public const string GovPublicApply = "wcm_govPublicApply";                                          //依申请公开
-                    public const string GovPublicContentConfiguration = "wcm_govPublicContentConfiguration";            //主动信息公开设置
-                    public const string GovPublicApplyConfiguration = "wcm_govPublicApplyConfiguration";                //依申请公开设置
-                    public const string GovPublicAnalysis = "wcm_govPublicAnalysis";                                    //信息公开统计
-
-                    public const string GovInteract = "wcm_govInteract";                                                //互动交流管理
-                    public const string GovInteractConfiguration = "wcm_govInteractConfiguration";                      //互动交流设置
-                    public const string GovInteractAnalysis = "wcm_govInteractAnalysis";                                //互动交流统计
-                }
-
-                public class GovInteract
-                {
-                    private GovInteract() { }
-                    public const string GovInteractView = "wcm_govInteractView";
-                    public const string GovInteractAdd = "wcm_govInteractAdd";
-                    public const string GovInteractEdit = "wcm_govInteractEdit";
-                    public const string GovInteractDelete = "wcm_govInteractDelete";
-                    public const string GovInteractSwitchToTranslate = "wcm_govInteractSwitchToTranslate";
-                    public const string GovInteractComment = "wcm_govInteractComment";
-                    public const string GovInteractAccept = "wcm_govInteractAccept";
-                    public const string GovInteractReply = "wcm_govInteractReply";
-                    public const string GovInteractCheck = "wcm_govInteractCheck";
-
-                    public static string GetPermissionName(string permission)
-                    {
-                        var retval = string.Empty;
-                        if (permission == GovInteractView)
-                        {
-                            retval = "浏览办件";
-                        }
-                        else if (permission == GovInteractAdd)
-                        {
-                            retval = "新增办件";
-                        }
-                        else if (permission == GovInteractEdit)
-                        {
-                            retval = "编辑办件";
-                        }
-                        else if (permission == GovInteractDelete)
-                        {
-                            retval = "删除办件";
-                        }
-                        else if (permission == GovInteractSwitchToTranslate)
-                        {
-                            retval = "转办转移";
-                        }
-                        else if (permission == GovInteractComment)
-                        {
-                            retval = "批示办件";
-                        }
-                        else if (permission == GovInteractAccept)
-                        {
-                            retval = "受理办件";
-                        }
-                        else if (permission == GovInteractReply)
-                        {
-                            retval = "办理办件";
-                        }
-                        else if (permission == GovInteractCheck)
-                        {
-                            retval = "审核办件";
-                        }
-                        return retval;
-                    }
-                }
-            }
-
-            public class AuxiliaryTableName
-            {
-                public const string BackgroundContent = AppId + "_Content";
-                public const string GovPublicContent = AppId + "_ContentGovPublic";
-                public const string GovInteractContent = AppId + "_ContentGovInteract";
-                public const string JobContent = AppId + "_ContentJob";
-                public const string VoteContent = AppId + "_ContentVote";
-                public const string UserDefined = AppId + "_ContentCustom";
             }
         }
 
@@ -450,12 +347,7 @@ namespace BaiRong.Core
 
         public static List<string> GetAppIdList()
         {
-            return new List<string> { Cms.AppId, Wcm.AppId, WeiXin.AppId };
-        }
-
-        public static bool IsWcm()
-        {
-            return FileUtils.IsFileExists(PathUtils.GetMenusPath(Wcm.AppId, "Management.config"));
+            return new List<string> { Cms.AppId, WeiXin.AppId };
         }
 
         public static bool IsWeiXin()

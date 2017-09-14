@@ -32,10 +32,6 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.PublishmentSystemId, psInfo.PublishmentSystemId.ToString());
 			AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.PublishmentSystemName, psInfo.PublishmentSystemName);
 			AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.AuxiliaryTableForContent, psInfo.AuxiliaryTableForContent);
-            AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.AuxiliaryTableForGovPublic, psInfo.AuxiliaryTableForGovPublic);
-            AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.AuxiliaryTableForGovInteract, psInfo.AuxiliaryTableForGovInteract);
-            AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.AuxiliaryTableForJob, psInfo.AuxiliaryTableForJob);
-            AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.AuxiliaryTableForVote, psInfo.AuxiliaryTableForVote);
             AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.IsCheckContentUseLevel, psInfo.IsCheckContentUseLevel.ToString());
 			AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.CheckContentLevel, psInfo.CheckContentLevel.ToString());
 			AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.PublishmentSystemDir, psInfo.PublishmentSystemDir);

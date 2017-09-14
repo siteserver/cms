@@ -9,15 +9,17 @@ namespace SiteServer.Plugin.Models
 
         public string DisplayName { get; set; }
 
-        public DataType DataType { get; set; }
+        public DataType DataType { get; set; } = DataType.NVarChar;
 
-        public int DataLength { get; set; }
+        public int DataLength { get; set; } = 50;
 
-        public InputType InputType { get; set; }
+        public InputType InputType { get; set; } = InputType.Text;
 
         public string DefaultValue { get; set; }
 
         public bool IsRequired { get; set; }
+
+        public ValidateType ValidateType { get; set; } = ValidateType.None;
 
         public int MinNum { get; set; }
 
@@ -26,5 +28,9 @@ namespace SiteServer.Plugin.Models
         public string RegExp { get; set; }
 
         public string Width { get; set; }
+
+        public bool IsVisibleInEdit { get; set; } = true;
+
+        public bool IsVisibleInList { get; set; } = false;
     }
 }

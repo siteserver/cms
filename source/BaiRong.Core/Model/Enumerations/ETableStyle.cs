@@ -6,10 +6,6 @@ namespace BaiRong.Core.Model.Enumerations
     public enum ETableStyle
     {
         BackgroundContent,	    //内容        
-        GovPublicContent,	    //信息公开
-        GovInteractContent,	    //互动交流
-        VoteContent,	        //投票
-        JobContent,	            //招聘
         Custom,                 //自定义
         Channel,			    //栏目
         InputContent,           //提交表单
@@ -23,22 +19,6 @@ namespace BaiRong.Core.Model.Enumerations
             if (type == ETableStyle.BackgroundContent)
             {
                 return "BackgroundContent";
-            }
-            if (type == ETableStyle.GovPublicContent)
-            {
-                return "GovPublicContent";
-            }
-            if (type == ETableStyle.GovInteractContent)
-            {
-                return "GovInteractContent";
-            }
-            if (type == ETableStyle.VoteContent)
-            {
-                return "VoteContent";
-            }
-            if (type == ETableStyle.JobContent)
-            {
-                return "JobContent";
             }
             if (type == ETableStyle.Custom)
             {
@@ -64,22 +44,6 @@ namespace BaiRong.Core.Model.Enumerations
             if (type == ETableStyle.BackgroundContent)
             {
                 return "内容";
-            }
-            if (type == ETableStyle.GovPublicContent)
-            {
-                return "信息公开";
-            }
-            if (type == ETableStyle.GovInteractContent)
-            {
-                return "互动交流";
-            }
-            if (type == ETableStyle.VoteContent)
-            {
-                return "投票";
-            }
-            if (type == ETableStyle.JobContent)
-            {
-                return "招聘";
             }
             if (type == ETableStyle.Custom)
             {
@@ -107,22 +71,6 @@ namespace BaiRong.Core.Model.Enumerations
             if (Equals(ETableStyle.BackgroundContent, typeStr))
             {
                 retval = ETableStyle.BackgroundContent;
-            }
-            else if (Equals(ETableStyle.GovPublicContent, typeStr))
-            {
-                retval = ETableStyle.GovPublicContent;
-            }
-            else if (Equals(ETableStyle.GovInteractContent, typeStr))
-            {
-                retval = ETableStyle.GovInteractContent;
-            }
-            else if (Equals(ETableStyle.VoteContent, typeStr))
-            {
-                retval = ETableStyle.VoteContent;
-            }
-            else if (Equals(ETableStyle.JobContent, typeStr))
-            {
-                retval = ETableStyle.JobContent;
             }
             else if (Equals(ETableStyle.Custom, typeStr))
             {
@@ -170,7 +118,7 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static bool IsNodeRelated(ETableStyle tableStyle)
         {
-            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.Custom || tableStyle == ETableStyle.Channel)
+            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.Custom || tableStyle == ETableStyle.Channel)
             {
                 return true;
             }
@@ -179,7 +127,7 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static bool IsContent(ETableStyle tableStyle)
         {
-            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.VoteContent || tableStyle == ETableStyle.JobContent || tableStyle == ETableStyle.Custom)
+            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.Custom)
             {
                 return true;
             }
@@ -188,22 +136,6 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static EAuxiliaryTableType GetTableType(ETableStyle tableStyle)
         {
-            if (tableStyle == ETableStyle.GovPublicContent)
-            {
-                return EAuxiliaryTableType.GovPublicContent;
-            }
-            if (tableStyle == ETableStyle.GovInteractContent)
-            {
-                return EAuxiliaryTableType.GovInteractContent;
-            }
-            if (tableStyle == ETableStyle.VoteContent)
-            {
-                return EAuxiliaryTableType.VoteContent;
-            }
-            if (tableStyle == ETableStyle.JobContent)
-            {
-                return EAuxiliaryTableType.JobContent;
-            }
             if (tableStyle == ETableStyle.Custom)
             {
                 return EAuxiliaryTableType.Custom;
@@ -213,22 +145,6 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static ETableStyle GetStyleType(EAuxiliaryTableType tableType)
         {
-            if (tableType == EAuxiliaryTableType.GovPublicContent)
-            {
-                return ETableStyle.GovPublicContent;
-            }
-            if (tableType == EAuxiliaryTableType.GovInteractContent)
-            {
-                return ETableStyle.GovInteractContent;
-            }
-            if (tableType == EAuxiliaryTableType.VoteContent)
-            {
-                return ETableStyle.VoteContent;
-            }
-            if (tableType == EAuxiliaryTableType.JobContent)
-            {
-                return ETableStyle.JobContent;
-            }
             if (tableType == EAuxiliaryTableType.Custom)
             {
                 return ETableStyle.Custom;

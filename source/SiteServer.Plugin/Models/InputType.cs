@@ -18,7 +18,6 @@ namespace SiteServer.Plugin.Models
 		Text,
 		TextArea,
 		TextEditor,
-        RelatedField,
-        SpecifiedValue
+        RelatedField
 	}
 }

@@ -8,7 +8,6 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Controls
@@ -23,7 +22,6 @@ namespace SiteServer.BackgroundPages.Controls
         private string _tableName;
         private bool _isEdit;
         private bool _isPostBack;
-        private readonly List<string> _excludeAttributeNames = new List<string>();
 
         public void SetParameters(NameValueCollection formCollection, PublishmentSystemInfo publishmentSystemInfo, int nodeId, List<int> relatedIdentities, ETableStyle tableStyle, string tableName, bool isEdit, bool isPostBack)
         {
@@ -35,11 +33,6 @@ namespace SiteServer.BackgroundPages.Controls
             _tableName = tableName;
             _isEdit = isEdit;
             _isPostBack = isPostBack;
-        }
-
-        public void AddExcludeAttributeNames(List<string> arraylist)
-        {
-            _excludeAttributeNames.AddRange(arraylist);
         }
 
         protected override void Render(HtmlTextWriter output)
@@ -61,7 +54,7 @@ namespace SiteServer.BackgroundPages.Controls
                 var isPreviousLeftColumn = false;
                 foreach (var styleInfo in styleInfoList)
                 {
-                    if (styleInfo.IsVisible && !_excludeAttributeNames.Contains(styleInfo.AttributeName.ToLower()))
+                    if (styleInfo.IsVisible)
                     {
                         var text = $"{styleInfo.DisplayName}：";
                         var value = BackgroundInputTypeParser.Parse(_publishmentSystemInfo, _nodeId, styleInfo, _tableStyle, styleInfo.AttributeName, _formCollection, _isEdit, _isPostBack, null, pageScripts, true);

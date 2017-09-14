@@ -1,5 +1,4 @@
-﻿using BaiRong.Core;
-using SiteServer.CMS.Core;
+﻿using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.Plugin.Apis;
 using SiteServer.Plugin.Models;
@@ -25,16 +24,6 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             var body = new RequestBody();
             return PermissionsManager.HasAdministratorPermissions(body.AdministratorName, _metadata.Id + publishmentSystemId);
-        }
-
-        public string EncryptStringBySecretKey(string inputString)
-        {
-            return TranslateUtils.EncryptStringBySecretKey(inputString);
-        }
-
-        public string DecryptStringBySecretKey(string inputString)
-        {
-            return TranslateUtils.DecryptStringBySecretKey(inputString);
         }
     }
 }

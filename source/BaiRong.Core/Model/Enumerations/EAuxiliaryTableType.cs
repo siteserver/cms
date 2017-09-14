@@ -6,10 +6,6 @@ namespace BaiRong.Core.Model.Enumerations
 	public enum EAuxiliaryTableType
 	{
         BackgroundContent,	    //内容
-        GovPublicContent,	    //信息公开
-        GovInteractContent,     //互动交流
-        VoteContent,            //投票
-        JobContent,	            //招聘
         Custom                  //自定义
     }
 
@@ -21,22 +17,6 @@ namespace BaiRong.Core.Model.Enumerations
 			{
 				return "BackgroundContent";
             }
-		    if (type == EAuxiliaryTableType.GovPublicContent)
-		    {
-		        return "GovPublicContent";
-		    }
-		    if (type == EAuxiliaryTableType.GovInteractContent)
-		    {
-		        return "GovInteractContent";
-		    }
-		    if (type == EAuxiliaryTableType.VoteContent)
-		    {
-		        return "VoteContent";
-		    }
-		    if (type == EAuxiliaryTableType.JobContent)
-		    {
-		        return "JobContent";
-		    }
 		    if (type == EAuxiliaryTableType.Custom)
 		    {
 		        return "Custom";
@@ -50,22 +30,6 @@ namespace BaiRong.Core.Model.Enumerations
 			{
                 return "内容";
             }
-		    if (type == EAuxiliaryTableType.GovPublicContent)
-		    {
-		        return "信息公开";
-		    }
-		    if (type == EAuxiliaryTableType.GovInteractContent)
-		    {
-		        return "互动交流";
-		    }
-		    if (type == EAuxiliaryTableType.VoteContent)
-		    {
-		        return "投票";
-		    }
-		    if (type == EAuxiliaryTableType.JobContent)
-		    {
-		        return "招聘";
-		    }
 		    if (type == EAuxiliaryTableType.Custom)
 		    {
 		        return "自定义";
@@ -80,22 +44,6 @@ namespace BaiRong.Core.Model.Enumerations
 			if (Equals(EAuxiliaryTableType.BackgroundContent, typeStr))
 			{
 				retval = EAuxiliaryTableType.BackgroundContent;
-            }
-            else if (Equals(EAuxiliaryTableType.GovPublicContent, typeStr))
-            {
-                retval = EAuxiliaryTableType.GovPublicContent;
-            }
-            else if (Equals(EAuxiliaryTableType.GovInteractContent, typeStr))
-            {
-                retval = EAuxiliaryTableType.GovInteractContent;
-            }
-            else if (Equals(EAuxiliaryTableType.VoteContent, typeStr))
-            {
-                retval = EAuxiliaryTableType.VoteContent;
-            }
-            else if (Equals(EAuxiliaryTableType.JobContent, typeStr))
-            {
-                retval = EAuxiliaryTableType.JobContent;
             }
             else if (Equals(EAuxiliaryTableType.Custom, typeStr))
             {
@@ -132,22 +80,6 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static ETableStyle GetTableStyle(EAuxiliaryTableType tableType)
         {
-            if (tableType == EAuxiliaryTableType.GovPublicContent)
-            {
-                return ETableStyle.GovPublicContent;
-            }
-            if (tableType == EAuxiliaryTableType.GovInteractContent)
-            {
-                return ETableStyle.GovInteractContent;
-            }
-            if (tableType == EAuxiliaryTableType.VoteContent)
-            {
-                return ETableStyle.VoteContent;
-            }
-            if (tableType == EAuxiliaryTableType.JobContent)
-            {
-                return ETableStyle.JobContent;
-            }
             if (tableType == EAuxiliaryTableType.Custom)
             {
                 return ETableStyle.Custom;
@@ -157,22 +89,6 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static string GetDefaultTableName(EAuxiliaryTableType tableType)
         {
-            if (tableType == EAuxiliaryTableType.GovPublicContent)
-            {
-                return "model_WCM_GovPublic";
-            }
-            if (tableType == EAuxiliaryTableType.GovInteractContent)
-            {
-                return "model_WCM_GovInteract";
-            }
-            if (tableType == EAuxiliaryTableType.VoteContent)
-            {
-                return "model_Vote";
-            }
-            if (tableType == EAuxiliaryTableType.JobContent)
-            {
-                return "model_Job";
-            }
             if (tableType == EAuxiliaryTableType.Custom)
             {
                 return "model_Custom";

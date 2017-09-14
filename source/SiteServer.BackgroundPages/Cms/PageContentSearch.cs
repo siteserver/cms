@@ -6,7 +6,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -15,6 +14,8 @@ using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Core.User;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -49,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
         private StringCollection _attributesOfDisplay;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _tableStyleInfoList;
-        private ContentModelInfo _modelInfo;
+        private Dictionary<string, IChannel> _pluginChannels;
         private readonly Hashtable _valueHashtable = new Hashtable();
 
         public static string GetRedirectUrl(int publishmentSystemId)
@@ -91,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, _nodeId));
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, tableName, _relatedIdentities);
-            _modelInfo = ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId);
+            _pluginChannels = PluginCache.GetChannelFeatures(_nodeInfo);
 
             spContents.ControlToPaginate = rptContents;
             if (string.IsNullOrEmpty(Body.GetQueryString("NodeID")))
@@ -178,7 +179,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 ltlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                ltlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _modelInfo);
+                ltlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _pluginChannels);
             }
 
             if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ContentAdd)) AddContent.Visible = false;
@@ -252,7 +253,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (ltlCommandItemRows != null)
                 {
-                    ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _modelInfo, contentInfo, PageUrl, Body.AdministratorName);
+                    ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdministratorName);
                 }
 
                 if (ltlSelect != null)

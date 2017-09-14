@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Collections.Specialized;
+using System.Web;
 using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Stl;
@@ -75,8 +76,23 @@ namespace SiteServer.API.Controllers.Stl
 
                     if (!string.IsNullOrEmpty(redirectUrl))
                     {
-                        redirectUrl = PageUtils.AddQueryString(redirectUrl, "__r", StringUtils.GetRandomInt(1, 10000).ToString());
-                        HttpContext.Current.Response.Redirect(redirectUrl, true);
+                        var parameters = new NameValueCollection();
+                        var returnUrl = body.GetQueryString("returnUrl");
+                        if (!string.IsNullOrEmpty(returnUrl))
+                        {
+                            if (returnUrl.StartsWith("?"))
+                            {
+                                parameters = TranslateUtils.ToNameValueCollection(returnUrl.Substring(1));
+                            }
+                            else
+                            {
+                                redirectUrl = returnUrl;
+                            }
+                        }
+                        
+                        parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();
+
+                        HttpContext.Current.Response.Redirect(PageUtils.AddQueryString(redirectUrl, parameters), true);
                         return;
                     }
                 }

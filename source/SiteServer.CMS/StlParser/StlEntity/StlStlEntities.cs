@@ -7,7 +7,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.StlParser.StlEntity
@@ -97,7 +96,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(CurrentUrl, attributeName))//当前页地址
                 {
-                    parsedContent = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
+                    parsedContent = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
                 }
                 else if (StringUtils.EqualsIgnoreCase(ChannelUrl, attributeName))//栏目页地址
                 {
@@ -109,17 +108,17 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(attributeName, LoginUrl))
                 {
-                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
+                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
                     parsedContent = HomeUtils.GetLoginUrl(pageInfo.HomeUrl, returnUrl);
                 }
                 else if (StringUtils.EqualsIgnoreCase(attributeName, LogoutUrl))
                 {
-                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
+                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
                     parsedContent = HomeUtils.GetLogoutUrl(pageInfo.HomeUrl, returnUrl);
                 }
                 else if (StringUtils.EqualsIgnoreCase(attributeName, RegisterUrl))
                 {
-                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
+                    var returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
                     parsedContent = HomeUtils.GetRegisterUrl(pageInfo.HomeUrl, returnUrl);
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "TableFor"))//
@@ -127,22 +126,6 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     if (StringUtils.EqualsIgnoreCase(attributeName, "TableForContent"))
                     {
                         parsedContent = pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent;
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(attributeName, "TableForGovInteract"))
-                    {
-                        parsedContent = pageInfo.PublishmentSystemInfo.AuxiliaryTableForGovInteract;
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(attributeName, "TableForGovPublic"))
-                    {
-                        parsedContent = pageInfo.PublishmentSystemInfo.AuxiliaryTableForGovPublic;
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(attributeName, "TableForJob"))
-                    {
-                        parsedContent = pageInfo.PublishmentSystemInfo.AuxiliaryTableForJob;
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(attributeName, "TableForVote"))
-                    {
-                        parsedContent = pageInfo.PublishmentSystemInfo.AuxiliaryTableForVote;
                     }
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "Site"))//

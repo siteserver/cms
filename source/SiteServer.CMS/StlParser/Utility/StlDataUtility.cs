@@ -410,7 +410,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
 
             string sqlWhereString;
-            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovPublicContent)
+            if (tableStyle == ETableStyle.BackgroundContent)
             {
                 sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate);
             }
@@ -419,7 +419,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where);
             }
             var nodeIdList = Node.GetNodeIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot);
-            return Content.GetStlDataSourceChecked(nodeIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup, others);
+            return Content.GetStlDataSourceChecked(nodeIdList, tableStyle, tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup, others);
         }
 
         public static IEnumerable GetCommentsDataSource(int publishmentSystemId, int channelId, int contentId, DbItemContainer itemContainer, int startNum, int totalNum, bool isRecommend, string orderByString, string where)

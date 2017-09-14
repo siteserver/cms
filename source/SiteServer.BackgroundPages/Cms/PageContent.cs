@@ -14,6 +14,8 @@ using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Core.User;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -21,9 +23,9 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public Repeater RptContents;
         public SqlPager SpContents;
-        public Literal LtlColumnHeadRows;
-        public Literal LtlCommandHeadRows;
-        public Literal LtlContentButtons;
+        public Literal LtlHeadRows;
+        public Literal LtlHeadCommand;
+        public Literal LtlButtons;
         public DateTimeTextBox TbDateFrom;
         public DropDownList DdlSearchType;
         public TextBox TbKeyword;
@@ -34,7 +36,9 @@ namespace SiteServer.BackgroundPages.Cms
         private StringCollection _attributesOfDisplay;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _styleInfoList;
-        private ContentModelInfo _modelInfo;
+        private Dictionary<string, IChannel> _pluginChannels;
+        private bool _isEdit;
+        private bool _isComment;
         private readonly Hashtable _valueHashtable = new Hashtable();
 
         public static string GetRedirectUrl(int publishmentSystemId, int nodeId)
@@ -59,7 +63,9 @@ namespace SiteServer.BackgroundPages.Cms
             _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
             _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
-            _modelInfo = ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId);
+            _pluginChannels = PluginCache.GetChannelFeatures(_nodeInfo);
+            _isEdit = TextUtility.IsEdit(PublishmentSystemInfo, nodeId, Body.AdministratorName);
+            _isComment = TextUtility.IsComment(PublishmentSystemInfo, nodeId, Body.AdministratorName);
 
             if (_nodeInfo.Additional.IsPreviewContents)
             {
@@ -119,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId);
                 BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdContent, "内容管理", nodeName, string.Empty);
 
-                LtlContentButtons.Text = WebUtils.GetContentCommands(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, PageUrl, GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId), false);
+                LtlButtons.Text = WebUtils.GetContentCommands(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, PageUrl, GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId), false);
                 SpContents.DataBind();
 
                 if (_styleInfoList != null)
@@ -145,7 +151,7 @@ namespace SiteServer.BackgroundPages.Cms
                     TbDateFrom.Text = Body.GetQueryString("DateFrom");
                     ControlUtils.SelectListItems(DdlSearchType, Body.GetQueryString("SearchType"));
                     TbKeyword.Text = Body.GetQueryString("Keyword");
-                    LtlContentButtons.Text += @"
+                    LtlButtons.Text += @"
 <script>
 $(document).ready(function() {
 	$('#contentSearch').show();
@@ -154,41 +160,41 @@ $(document).ready(function() {
 ";
                 }
 
-                LtlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_styleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _modelInfo);
+                LtlHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_styleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
+                var commandCount = 0;
+                if (_isEdit)
+                {
+                    commandCount += 1;
+                }
+                if (_isComment)
+                {
+                    commandCount += 1;
+                }
+                commandCount += TextUtility.GetContentLinkCount(PublishmentSystemInfo, _pluginChannels);
+                LtlHeadCommand.Text = $@"<td width=""{commandCount * 70}"">操作</td>";
             }
         }
 
-        void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
-            {
-                var ltlItemTitle = (Literal)e.Item.FindControl("ltlItemTitle");
-                var ltlColumnItemRows = (Literal)e.Item.FindControl("ltlColumnItemRows");
-                var ltlItemStatus = (Literal)e.Item.FindControl("ltlItemStatus");
-                var ltlItemEditUrl = (Literal)e.Item.FindControl("ltlItemEditUrl");
-                var ltlCommandItemRows = (Literal)e.Item.FindControl("ltlCommandItemRows");
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-                var contentInfo = new ContentInfo(e.Item.DataItem);
+            var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
+            var ltlRows = (Literal)e.Item.FindControl("ltlRows");
+            var ltlStatus = (Literal)e.Item.FindControl("ltlStatus");
+            var ltlCommands = (Literal)e.Item.FindControl("ltlCommands");
 
-                ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
+            var contentInfo = new ContentInfo(e.Item.DataItem);
 
-                var showPopWinString = ModalCheckState.GetOpenWindowString(PublishmentSystemId, contentInfo, PageUrl);
+            ltlTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
 
-                ltlItemStatus.Text =
-                    $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{showPopWinString}"">{LevelManager.GetCheckState(
-                        PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
+            ltlRows.Text = TextUtility.GetColumnItemRowsHtml(_styleInfoList, _attributesOfDisplay, _valueHashtable, _tableStyle, PublishmentSystemInfo, contentInfo);
 
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
-                {
-                    ltlItemEditUrl.Text =
-                        $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, _nodeInfo, contentInfo.Id, PageUrl)}\">编辑</a>";
-                }
+            ltlStatus.Text =
+                $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(PublishmentSystemId, contentInfo, PageUrl)}"">{LevelManager.GetCheckState(
+                    PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-                ltlColumnItemRows.Text = TextUtility.GetColumnItemRowsHtml(_styleInfoList, _attributesOfDisplay, _valueHashtable, _tableStyle, PublishmentSystemInfo, contentInfo);
-
-                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _modelInfo, contentInfo, PageUrl, Body.AdministratorName);
-            }
+            ltlCommands.Text = TextUtility.GetCommandHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdministratorName, _isEdit, _isComment);
         }
 
         public void Search_OnClick(object sender, EventArgs e)

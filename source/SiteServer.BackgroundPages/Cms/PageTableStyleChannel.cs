@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
                     SetTaxis();
                 }
 
-                NodeManager.AddListItems(DdlNodeIdDropDownList.Items, PublishmentSystemInfo, false, true, true, Body.AdministratorName);
+                NodeManager.AddListItems(DdlNodeIdDropDownList.Items, PublishmentSystemInfo, false, true, Body.AdministratorName);
                 ControlUtils.SelectListItems(DdlNodeIdDropDownList, nodeId.ToString());
 
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.Channel, _tableName, _relatedIdentities);
@@ -143,7 +143,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlFieldType.Text = "虚拟字段";
 
             ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-            ltlValidate.Text = EInputValidateTypeUtils.GetValidateInfo(styleInfo);
+            ltlValidate.Text = EValidateTypeUtils.GetValidateInfo(styleInfo);
 
             string showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, ETableStyle.Channel, _redirectUrl);
             var editText = "添加";

@@ -10,7 +10,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
@@ -516,7 +515,7 @@ namespace SiteServer.CMS.Provider
             return nodeInfo.NodeId;
         }
 
-        public int InsertNodeInfo(int publishmentSystemId, int parentId, string nodeName, string nodeIndex, string contentModelId, int channelTemplateId, int contentTemplateId)
+        public int InsertNodeInfo(int publishmentSystemId, int parentId, string nodeName, string nodeIndex, string contentModelId, int channelTemplateId, int contentTemplateId, string pluginIds)
         {
             if (publishmentSystemId > 0 && parentId == 0) return 0;
 
@@ -534,6 +533,7 @@ namespace SiteServer.CMS.Provider
                 ChannelTemplateId = channelTemplateId > 0 ? channelTemplateId : defaultChannelTemplateInfo.TemplateId,
                 ContentTemplateId = contentTemplateId > 0 ? contentTemplateId : defaultContentTemplateInfo.TemplateId
             };
+            nodeInfo.Additional.PluginIds = pluginIds;
 
             var parentNodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, parentId);
 
@@ -768,26 +768,6 @@ namespace SiteServer.CMS.Provider
                     publishmentSystemIdList.Add(publishmentSystemId);
                     NodeManager.RemoveCache(publishmentSystemId);
                 }
-                else if (tableType == EAuxiliaryTableType.GovPublicContent && psInfo.AuxiliaryTableForGovPublic == tableName)
-                {
-                    publishmentSystemIdList.Add(publishmentSystemId);
-                    NodeManager.RemoveCache(publishmentSystemId);
-                }
-                else if (tableType == EAuxiliaryTableType.GovInteractContent && psInfo.AuxiliaryTableForGovInteract == tableName)
-                {
-                    publishmentSystemIdList.Add(publishmentSystemId);
-                    NodeManager.RemoveCache(publishmentSystemId);
-                }
-                else if (tableType == EAuxiliaryTableType.VoteContent && psInfo.AuxiliaryTableForVote == tableName)
-                {
-                    publishmentSystemIdList.Add(publishmentSystemId);
-                    NodeManager.RemoveCache(publishmentSystemId);
-                }
-                else if (tableType == EAuxiliaryTableType.JobContent && psInfo.AuxiliaryTableForJob == tableName)
-                {
-                    publishmentSystemIdList.Add(publishmentSystemId);
-                    NodeManager.RemoveCache(publishmentSystemId);
-                }
             }
             if (publishmentSystemIdList.Count == 0) return;
 
@@ -933,13 +913,14 @@ namespace SiteServer.CMS.Provider
             return node;
         }
 
-        public NodeInfo GetNodeInfoByParentId(int publishmentSystemId, int parentId, EContentModelType contentModelType)
+        public NodeInfo GetNodeInfoByParentId(int publishmentSystemId, int parentId, string contentModelId)
         {
             NodeInfo nodeInfo = null;
-            var nodeParms = new IDataParameter[] {
-                GetParameter(ParmPublishmentSystemId,DataType.Integer,publishmentSystemId),
-                GetParameter(ParmParentId,DataType.Integer,parentId),
-                GetParameter(ParmContentModelId,DataType.VarChar,50,EContentModelTypeUtils.GetValue(contentModelType))
+            var nodeParms = new IDataParameter[]
+            {
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmParentId, DataType.Integer, parentId),
+                GetParameter(ParmContentModelId, DataType.VarChar, 50, contentModelId)
             };
             using (var rdr = ExecuteReader(SqlSelectNodeByParentIdAndContentModelId, nodeParms))
             {
@@ -1275,14 +1256,14 @@ ORDER BY Taxis";
             return nodeId;
         }
 
-        public int GetNodeIdByContentModelType(int publishmentSystemId, EContentModelType contentModelType)
+        public int GetNodeIdByContentModelType(int publishmentSystemId, string contentModelId)
         {
             var nodeId = 0;
 
             var nodeParms = new IDataParameter[]
             {
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-                GetParameter(ParmContentModelId, DataType.VarChar, 50, EContentModelTypeUtils.GetValue(contentModelType))
+                GetParameter(ParmContentModelId, DataType.VarChar, 50, contentModelId)
             };
 
             using (var rdr = ExecuteReader(SqlSelectNodeIdByContentModelId, nodeParms))

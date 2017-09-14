@@ -119,22 +119,22 @@ namespace SiteServer.CMS.Provider
 
             if (isTopExists)
             {
-                whereBuilder.Append($" AND IsTop = '{isTop}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsTop} = '{isTop}' ");
             }
 
             if (isRecommendExists)
             {
-                whereBuilder.Append($" AND {BackgroundContentAttribute.IsRecommend} = '{isRecommend}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsRecommend} = '{isRecommend}' ");
             }
 
             if (isHotExists)
             {
-                whereBuilder.Append($" AND {BackgroundContentAttribute.IsHot} = '{isHot}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsHot} = '{isHot}' ");
             }
 
             if (isColorExists)
             {
-                whereBuilder.Append($" AND {BackgroundContentAttribute.IsColor} = '{isColor}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsColor} = '{isColor}' ");
             }
 
             if (!string.IsNullOrEmpty(group))
@@ -237,22 +237,22 @@ namespace SiteServer.CMS.Provider
 
             if (isTopExists)
             {
-                whereBuilder.Append($" AND IsTop = '{isTop}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsTop} = '{isTop}' ");
             }
 
             if (isRecommendExists)
             {
-                whereBuilder.Append($" AND {BackgroundContentAttribute.IsRecommend} = '{isRecommend}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsRecommend} = '{isRecommend}' ");
             }
 
             if (isHotExists)
             {
-                whereBuilder.Append($" AND {BackgroundContentAttribute.IsHot} = '{isHot}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsHot} = '{isHot}' ");
             }
 
             if (isColorExists)
             {
-                whereBuilder.Append($" AND {BackgroundContentAttribute.IsColor} = '{isColor}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsColor} = '{isColor}' ");
             }
 
             if (!string.IsNullOrEmpty(group))

@@ -11,7 +11,7 @@ namespace BaiRong.Core
 		{
 		}
 
-        public const string FormatStringDateTime = "yyyy-MM-dd HH:mm";
+        public const string FormatStringDateTime = "yyyy-MM-dd HH:mm:ss";
         public const string FormatStringDateOnly = "yyyy-MM-dd";
 
         public static string GetRelatedDateTimeString(DateTime datetime)

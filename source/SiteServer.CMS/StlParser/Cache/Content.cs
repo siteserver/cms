@@ -12,6 +12,11 @@ namespace SiteServer.CMS.StlParser.Cache
     {
         private static readonly object LockObject = new object();
 
+        public static void ClearCache()
+        {
+            StlCacheUtils.ClearCache(nameof(Content));
+        }
+
         public static List<int> GetContentIdListChecked(string tableName, int nodeId, string orderByFormatString)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetContentIdListChecked),
@@ -32,7 +37,7 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static DataSet GetStlDataSourceChecked(List<int> nodeIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
+        public static DataSet GetStlDataSourceChecked(List<int> nodeIdList, ETableStyle tableStyle, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlDataSourceChecked),
                     TranslateUtils.ObjectCollectionToString(nodeIdList), tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString, isNoDup.ToString(), TranslateUtils.NameValueCollectionToString(others));
@@ -44,7 +49,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<DataSet>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ContentDao.GetStlDataSourceChecked(nodeIdList, tableName, startNum, totalNum, orderByString, whereString, isNoDup, others);
+                    retval = DataProvider.ContentDao.GetStlDataSourceChecked(nodeIdList, tableStyle, tableName, startNum, totalNum, orderByString, whereString, isNoDup, others);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

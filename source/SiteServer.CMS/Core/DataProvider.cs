@@ -1,5 +1,4 @@
 using SiteServer.CMS.Provider;
-using SiteServer.CMS.Wcm.Provider;
 
 namespace SiteServer.CMS.Core
 {
@@ -16,69 +15,6 @@ namespace SiteServer.CMS.Core
 
         private static BackgroundContentDao _backgroundContentDao;
         public static BackgroundContentDao BackgroundContentDao => _backgroundContentDao ?? (_backgroundContentDao = new BackgroundContentDao());
-
-        private static GovPublicContentDao _govPublicContentDao;
-        public static GovPublicContentDao GovPublicContentDao => _govPublicContentDao ?? (_govPublicContentDao = new GovPublicContentDao());
-
-        private static GovPublicCategoryClassDao _govPublicCategoryClassDao;
-        public static GovPublicCategoryClassDao GovPublicCategoryClassDao => _govPublicCategoryClassDao ?? (_govPublicCategoryClassDao = new GovPublicCategoryClassDao());
-
-        private static GovPublicCategoryDao _govPublicCategoryDao;
-        public static GovPublicCategoryDao GovPublicCategoryDao => _govPublicCategoryDao ?? (_govPublicCategoryDao = new GovPublicCategoryDao());
-
-        private static GovPublicChannelDao _govPublicChannelDao;
-        public static GovPublicChannelDao GovPublicChannelDao => _govPublicChannelDao ?? (_govPublicChannelDao = new GovPublicChannelDao());
-
-        private static GovPublicIdentifierRuleDao _govPublicIdentifierRuleDao;
-        public static GovPublicIdentifierRuleDao GovPublicIdentifierRuleDao => _govPublicIdentifierRuleDao ?? (_govPublicIdentifierRuleDao = new GovPublicIdentifierRuleDao());
-
-        private static GovPublicIdentifierSeqDao _govPublicIdentifierSeqDao;
-        public static GovPublicIdentifierSeqDao GovPublicIdentifierSeqDao => _govPublicIdentifierSeqDao ?? (_govPublicIdentifierSeqDao = new GovPublicIdentifierSeqDao());
-
-        private static GovPublicApplyDao _govPublicApplyDao;
-        public static GovPublicApplyDao GovPublicApplyDao => _govPublicApplyDao ?? (_govPublicApplyDao = new GovPublicApplyDao());
-
-        private static GovPublicApplyLogDao _govPublicApplyLogDao;
-        public static GovPublicApplyLogDao GovPublicApplyLogDao => _govPublicApplyLogDao ?? (_govPublicApplyLogDao = new GovPublicApplyLogDao());
-
-        private static GovPublicApplyRemarkDao _govPublicApplyRemarkDao;
-        public static GovPublicApplyRemarkDao GovPublicApplyRemarkDao => _govPublicApplyRemarkDao ?? (_govPublicApplyRemarkDao = new GovPublicApplyRemarkDao());
-
-        private static GovPublicApplyReplyDao _govPublicApplyReplyDao;
-        public static GovPublicApplyReplyDao GovPublicApplyReplyDao => _govPublicApplyReplyDao ?? (_govPublicApplyReplyDao = new GovPublicApplyReplyDao());
-
-        private static GovInteractChannelDao _govInteractChannelDao;
-        public static GovInteractChannelDao GovInteractChannelDao => _govInteractChannelDao ?? (_govInteractChannelDao = new GovInteractChannelDao());
-
-        private static GovInteractContentDao _govInteractContentDao;
-        public static GovInteractContentDao GovInteractContentDao => _govInteractContentDao ?? (_govInteractContentDao = new GovInteractContentDao());
-
-        private static GovInteractLogDao _govInteractApplyLogDao;
-        public static GovInteractLogDao GovInteractLogDao => _govInteractApplyLogDao ?? (_govInteractApplyLogDao = new GovInteractLogDao());
-
-        private static GovInteractRemarkDao _govInteractRemarkDao;
-        public static GovInteractRemarkDao GovInteractRemarkDao => _govInteractRemarkDao ?? (_govInteractRemarkDao = new GovInteractRemarkDao());
-
-        private static GovInteractReplyDao _govInteractApplyReplyDao;
-        public static GovInteractReplyDao GovInteractReplyDao => _govInteractApplyReplyDao ?? (_govInteractApplyReplyDao = new GovInteractReplyDao());
-
-        private static GovInteractTypeDao _govInteractTypeDao;
-        public static GovInteractTypeDao GovInteractTypeDao => _govInteractTypeDao ?? (_govInteractTypeDao = new GovInteractTypeDao());
-
-        private static GovInteractPermissionsDao _govInteractPermissionsDao;
-        public static GovInteractPermissionsDao GovInteractPermissionsDao => _govInteractPermissionsDao ?? (_govInteractPermissionsDao = new GovInteractPermissionsDao());
-
-        private static VoteContentDao _voteContentDao;
-        public static VoteContentDao VoteContentDao => _voteContentDao ?? (_voteContentDao = new VoteContentDao());
-
-        private static VoteOptionDao _voteOptionDao;
-        public static VoteOptionDao VoteOptionDao => _voteOptionDao ?? (_voteOptionDao = new VoteOptionDao());
-
-        private static VoteOperationDao _voteOperationDao;
-        public static VoteOperationDao VoteOperationDao => _voteOperationDao ?? (_voteOperationDao = new VoteOperationDao());
-
-        private static JobContentDao _jobContentDao;
-        public static JobContentDao JobContentDao => _jobContentDao ?? (_jobContentDao = new JobContentDao());
 
         private static ContentDao _contentDao;
         public static ContentDao ContentDao => _contentDao ?? (_contentDao = new ContentDao());
@@ -154,9 +90,6 @@ namespace SiteServer.CMS.Core
 
         private static TagStyleDao _tagStyleDao;
         public static TagStyleDao TagStyleDao => _tagStyleDao ?? (_tagStyleDao = new TagStyleDao());
-
-        private static ResumeContentDao _resumeContentDao;
-        public static ResumeContentDao ResumeContentDao => _resumeContentDao ?? (_resumeContentDao = new ResumeContentDao());
 
         private static PhotoDao _photoDao;
         public static PhotoDao PhotoDao => _photoDao ?? (_photoDao = new PhotoDao());

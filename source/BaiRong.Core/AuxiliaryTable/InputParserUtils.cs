@@ -22,19 +22,19 @@ namespace BaiRong.Core.AuxiliaryTable
             return string.Empty;
         }
 
-        public static string GetValidateAttributes(bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, EInputValidateType validateType, string regExp, string errorMessage)
+        public static string GetValidateAttributes(bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, ValidateType validateType, string regExp, string errorMessage)
         {
             if (isValidate)
             {
                 return
                     $@"isValidate=""{true.ToString().ToLower()}"" displayName=""{displayName}"" isRequire=""{isRequire
-                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{EInputValidateTypeUtils
+                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{EValidateTypeUtils
                         .GetValue(validateType)}"" regExp=""{regExp}"" errorMessage=""{errorMessage}""";
             }
             return string.Empty;
         }
 
-        public static void GetValidateAttributesForListItem(ListControl control, bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, EInputValidateType validateType, string regExp, string errorMessage)
+        public static void GetValidateAttributesForListItem(ListControl control, bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, ValidateType validateType, string regExp, string errorMessage)
         {
             if (!isValidate) return;
 
@@ -43,7 +43,7 @@ namespace BaiRong.Core.AuxiliaryTable
             control.Attributes.Add("isRequire", isRequire.ToString().ToLower());
             control.Attributes.Add("minNum", minNum.ToString());
             control.Attributes.Add("maxNum", maxNum.ToString());
-            control.Attributes.Add("validateType", EInputValidateTypeUtils.GetValue(validateType));
+            control.Attributes.Add("validateType", EValidateTypeUtils.GetValue(validateType));
             control.Attributes.Add("regExp", regExp);
             control.Attributes.Add("errorMessage", errorMessage);
             control.Attributes.Add("isListItem", true.ToString().ToLower());

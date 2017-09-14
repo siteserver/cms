@@ -5,42 +5,44 @@ using BaiRong.Core;
 using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Advertisement;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Cache;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
     public class StlUtility
     {
-        public static string GetStlCurrentUrl(PageInfo pageInfo, int nodeId, int contentId, ContentInfo contentInfo)
+        public static string GetStlCurrentUrl(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, IContentInfo contentInfo, ETemplateType templateType, int templateId)
         {
             var currentUrl = string.Empty;
-            if (pageInfo.TemplateInfo.TemplateType == ETemplateType.IndexPageTemplate)
+            if (templateType == ETemplateType.IndexPageTemplate)
             {
-                currentUrl = pageInfo.PublishmentSystemInfo.PublishmentSystemUrl;
+                currentUrl = publishmentSystemInfo.PublishmentSystemUrl;
             }
-            else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.ContentTemplate)
+            else if (templateType == ETemplateType.ContentTemplate)
             {
                 if (contentInfo == null)
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId);
-                    currentUrl = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, nodeInfo, contentId, false);
+                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId);
+                    currentUrl = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, false);
                 }
                 else
                 {
-                    currentUrl = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo);
+                    currentUrl = PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo);
                 }
             }
-            else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.ChannelTemplate)
+            else if (templateType == ETemplateType.ChannelTemplate)
             {
-                currentUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, nodeId));
+                currentUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId));
             }
-            else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.FileTemplate)
+            else if (templateType == ETemplateType.FileTemplate)
             {
-                currentUrl = PageUtility.GetFileUrl(pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo.TemplateId);
+                currentUrl = PageUtility.GetFileUrl(publishmentSystemInfo, templateId);
             }
             //currentUrl是当前页面的地址，前后台分离的时候，不允许带上protocol
             //return PageUtils.AddProtocolToUrl(currentUrl);

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.WeiXin.WeiXinMP;
 using SiteServer.Plugin;
 using SiteServer.Plugin.Features;
 using SiteServer.Plugin.Models;
@@ -63,14 +63,6 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        public static bool IsExists(string pluginId)
-        {
-            lock (AllPluginsLock)
-            {
-                return PluginSortedList.ContainsKey(pluginId);
-            }
-        }
-
         public static PluginMetadata GetMetadata(string pluginId)
         {
             lock (AllPluginsLock)
@@ -94,6 +86,14 @@ namespace SiteServer.CMS.Plugin
                     pair.Metadata = metadata;
                 }
                 ClearAllCaches();
+            }
+        }
+
+        public static bool IsExists(string pluginId)
+        {
+            lock (AllPluginsLock)
+            {
+                return PluginSortedList.ContainsKey(pluginId);
             }
         }
 
@@ -125,6 +125,23 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
+        public static PluginPair GetEnabledPluginPair<T>(string pluginId) where T : IPlugin
+        {
+            if (string.IsNullOrEmpty(pluginId)) return null;
+
+            lock (AllPluginsLock)
+            {
+                PluginPair pair;
+                var isGet = PluginSortedList.TryGetValue(pluginId, out pair);
+                if (isGet && pair?.Metadata != null && pair.Plugin != null && !pair.Metadata.Disabled &&
+                    pair.Plugin is T)
+                {
+                    return pair;
+                }
+                return null;
+            }
+        }
+
         public static List<PluginPair> GetEnabledPluginPairs<T1, T2>()
         {
             lock (AllPluginsLock)
@@ -139,8 +156,40 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
+        public static List<PluginMetadata> GetEnabledPluginMetadatas<T>() where T : IPlugin
+        {
+            lock (AllPluginsLock)
+            {
+                return
+                    PluginSortedList.Values.Where(
+                        pair =>
+                            pair?.Metadata != null && pair.Plugin != null && !pair.Metadata.Disabled &&
+                            pair.Plugin is T
+                    ).Select(pluginPair => pluginPair.Metadata).ToList();
+            }
+        }
+
+        public static PluginMetadata GetEnabledPluginMetadata<T>(string pluginId) where T : IPlugin
+        {
+            if (string.IsNullOrEmpty(pluginId)) return null;
+
+            lock (AllPluginsLock)
+            {
+                PluginPair pair;
+                var isGet = PluginSortedList.TryGetValue(pluginId, out pair);
+                if (isGet && pair?.Metadata != null && pair.Plugin != null && !pair.Metadata.Disabled &&
+                    pair.Plugin is T)
+                {
+                    return pair.Metadata;
+                }
+                return null;
+            }
+        }
+
         public static T GetEnabledFeature<T>(string pluginId) where T : IPlugin
         {
+            if (string.IsNullOrEmpty(pluginId)) return default(T);
+
             lock (AllPluginsLock)
             {
                 PluginPair pair;
@@ -260,53 +309,151 @@ namespace SiteServer.CMS.Plugin
             return menus;
         }
 
-        public static List<ContentModelInfo> GetAllContentModels(PublishmentSystemInfo publishmentSystemInfo)
+        //public static List<ContentModelInfo> GetAllContentModels(PublishmentSystemInfo publishmentSystemInfo)
+        //{
+        //    var cacheName = nameof(GetAllContentModels) + publishmentSystemInfo.PublishmentSystemId;
+        //    var contentModels = GetCache<List<ContentModelInfo>>(cacheName);
+        //    if (contentModels != null) return contentModels;
+
+        //    contentModels = new List<ContentModelInfo>();
+
+        //    foreach (var pluginPair in GetEnabledPluginPairs<IContentModel>())
+        //    {
+        //        var model = pluginPair.Plugin as IContentModel;
+
+        //        if (model == null) continue;
+
+        //        var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
+        //        var tableType = EAuxiliaryTableType.BackgroundContent;
+        //        if (model.ContentTableColumns != null && model.ContentTableColumns.Count > 0)
+        //        {
+        //            tableName = pluginPair.Metadata.Id;
+        //            tableType = EAuxiliaryTableType.Custom;
+        //        }
+
+        //        contentModels.Add(new ContentModelInfo(
+        //            pluginPair.Metadata.Id,
+        //            pluginPair.Metadata.Id,
+        //            $"插件：{pluginPair.Metadata.DisplayName}",
+        //            tableName,
+        //            tableType,
+        //            PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, pluginPair.Metadata.Icon))
+        //        );
+        //    }
+
+        //    SetCache(cacheName, contentModels);
+
+        //    return contentModels;
+        //}
+
+        public static List<PluginMetadata> GetAllChannels(bool includeContentTable)
         {
-            var cacheName = nameof(GetAllContentModels) + publishmentSystemInfo.PublishmentSystemId;
-            var contentModels = GetCache<List<ContentModelInfo>>(cacheName);
-            if (contentModels != null) return contentModels;
+            var list = new List<PluginMetadata>();
 
-            contentModels = new List<ContentModelInfo>();
-
-            foreach (var pluginPair in GetEnabledPluginPairs<IContentModel>())
+            var pairs = GetEnabledPluginPairs<IChannel>();
+            foreach (var pluginPair in pairs)
             {
-                var model = pluginPair.Plugin as IContentModel;
+                if (!includeContentTable && pluginPair.Plugin is IContentTable) continue;
 
-                if (model == null) continue;
-
-                var links = new List<PluginContentLink>();
-                if (model.ContentLinks != null)
-                {
-                    links.AddRange(model.ContentLinks.Select(link => new PluginContentLink
-                    {
-                        Text = link.Text,
-                        Href = PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, link.Href),
-                        Target = link.Target
-                    }));
-                }
-                var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
-                var tableType = EAuxiliaryTableType.BackgroundContent;
-                if (model.IsCustomContentTable && model.CustomContentTableColumns != null && model.CustomContentTableColumns.Count > 0)
-                {
-                    tableName = pluginPair.Metadata.Id;
-                    tableType = EAuxiliaryTableType.Custom;
-                }
-
-                contentModels.Add(new ContentModelInfo(
-                    pluginPair.Metadata.Id,
-                    pluginPair.Metadata.Id,
-                    $"插件：{pluginPair.Metadata.DisplayName}",
-                    tableName,
-                    tableType,
-                    PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, pluginPair.Metadata.Icon),
-                    links)
-                );
+                list.Add(pluginPair.Metadata);
             }
 
-            SetCache(cacheName, contentModels);
-
-            return contentModels;
+            return list;
         }
+
+        public static List<PluginMetadata> GetChannels(NodeInfo nodeInfo, bool includeContentTable)
+        {
+            var list = new List<PluginMetadata>();
+            var pluginIds = TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.PluginIds);
+            if (!string.IsNullOrEmpty(nodeInfo.ContentModelId))
+            {
+                pluginIds.Add(nodeInfo.ContentModelId);
+            }
+
+            var pairs = GetEnabledPluginPairs<IChannel>();
+            foreach (var pluginPair in pairs)
+            {
+                var pluginId = pluginPair.Metadata.Id;
+                if (!pluginIds.Contains(pluginId)) continue;
+
+                if (!includeContentTable && pluginPair.Plugin is IContentTable) continue;
+
+                list.Add(pluginPair.Metadata);
+            }
+
+            return list;
+        }
+
+        public static Dictionary<string, IChannel> GetChannelFeatures(NodeInfo nodeInfo)
+        {
+            var dict = new Dictionary<string, IChannel>();
+            var pluginIds = TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.PluginIds);
+            if (!string.IsNullOrEmpty(nodeInfo.ContentModelId))
+            {
+                pluginIds.Add(nodeInfo.ContentModelId);
+            }
+
+            var pairs = GetEnabledPluginPairs<IChannel>();
+            foreach (var pluginPair in pairs)
+            {
+                var pluginId = pluginPair.Metadata.Id;
+                if (!pluginIds.Contains(pluginId)) continue;
+
+                var feature = (IChannel) pluginPair.Plugin;
+
+                dict[pluginId] = feature;
+            }
+
+            return dict;
+        }
+
+        //public static List<ContentModelInfo> GetAllContentModels(PublishmentSystemInfo publishmentSystemInfo)
+        //{
+        //    var cacheName = nameof(GetAllContentModels) + publishmentSystemInfo.PublishmentSystemId;
+        //    var contentModels = GetCache<List<ContentModelInfo>>(cacheName);
+        //    if (contentModels != null) return contentModels;
+
+        //    contentModels = new List<ContentModelInfo>();
+
+        //    foreach (var pluginPair in GetEnabledPluginPairs<IContentModel>())
+        //    {
+        //        var model = pluginPair.Plugin as IContentModel;
+
+        //        if (model == null) continue;
+
+        //        var links = new List<PluginContentLink>();
+        //        if (model.ContentLinks != null)
+        //        {
+        //            links.AddRange(model.ContentLinks.Select(link => new PluginContentLink
+        //            {
+        //                Text = link.Text,
+        //                Href = PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, link.Href),
+        //                Target = link.Target
+        //            }));
+        //        }
+        //        var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
+        //        var tableType = EAuxiliaryTableType.BackgroundContent;
+        //        if (model.IsCustomContentTable && model.CustomContentTableColumns != null && model.CustomContentTableColumns.Count > 0)
+        //        {
+        //            tableName = pluginPair.Metadata.Id;
+        //            tableType = EAuxiliaryTableType.Custom;
+        //        }
+
+        //        contentModels.Add(new ContentModelInfo(
+        //            pluginPair.Metadata.Id,
+        //            pluginPair.Metadata.Id,
+        //            $"插件：{pluginPair.Metadata.DisplayName}",
+        //            tableName,
+        //            tableType,
+        //            PageUtils.GetPluginDirectoryUrl(pluginPair.Metadata.Id, pluginPair.Metadata.Icon),
+        //            links)
+        //        );
+        //    }
+
+        //    SetCache(cacheName, contentModels);
+
+        //    return contentModels;
+        //}
 
         public static Dictionary<string, Func<PluginParseContext, string>> GetParses()
         {

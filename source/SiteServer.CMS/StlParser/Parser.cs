@@ -141,7 +141,7 @@ namespace SiteServer.CMS.StlParser
                     var apiUrl = pageInfo.ApiUrl;
                     var ajaxUrl = ActionsTrigger.GetUrl(apiUrl, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, fileTemplateId, true);
                     pageInfo.AddPageEndScriptsIfNotExists("CreateDoubleClick", $@"
-<script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}';}}</script>");
+<script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}&returnUrl=' + encodeURIComponent(location.search);}}</script>");
                 }
 
                 if (pageInfo.PageEndScriptKeys.Count > 0)

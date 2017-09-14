@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core;
+using BaiRong.Core.Integration;
 using SiteServer.Plugin.Apis;
 
 namespace SiteServer.CMS.Plugin.Apis

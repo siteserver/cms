@@ -112,6 +112,16 @@ namespace SiteServer.CMS.Plugin.Apis
             return RemoveConfig(0, name);
         }
 
+        public string EncryptStringBySecretKey(string inputString)
+        {
+            return TranslateUtils.EncryptStringBySecretKey(inputString);
+        }
+
+        public string DecryptStringBySecretKey(string inputString)
+        {
+            return TranslateUtils.DecryptStringBySecretKey(inputString);
+        }
+
         public string PhysicalApplicationPath => WebConfigUtils.PhysicalApplicationPath;
 
         public string AdminDirectory => WebConfigUtils.AdminDirectory;

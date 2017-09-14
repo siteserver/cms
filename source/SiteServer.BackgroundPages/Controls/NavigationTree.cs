@@ -39,8 +39,8 @@ namespace SiteServer.BackgroundPages.Controls
                 var childBuilder = new StringBuilder();
                 if (parent.Children != null && parent.Children.Length > 0)
                 {
-                    var tabCollection = NodeNaviTabManager.GetTabCollection(parent, PublishmentSystemId);
-                    if (tabCollection?.Tabs != null && tabCollection.Tabs.Length > 0)
+                    var tabCollection = new TabCollection(parent.Children);
+                    if (tabCollection.Tabs != null && tabCollection.Tabs.Length > 0)
                     {
                         foreach (var childTab in tabCollection.Tabs)
                         {

@@ -8,6 +8,8 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin.Features;
 
 namespace SiteServer.CMS.Core
 {
@@ -105,49 +107,21 @@ namespace SiteServer.CMS.Core
             {
                 tableName = publishmentSystemInfo.AuxiliaryTableForContent;
             }
-            else if (Equals(EAuxiliaryTableType.GovInteractContent, tableType))
-            {
-                tableName = publishmentSystemInfo.AuxiliaryTableForGovInteract;
-            }
-            else if (Equals(EAuxiliaryTableType.GovPublicContent, tableType))
-            {
-                tableName = publishmentSystemInfo.AuxiliaryTableForGovPublic;
-            }
-            else if (Equals(EAuxiliaryTableType.JobContent, tableType))
-            {
-                tableName = publishmentSystemInfo.AuxiliaryTableForJob;
-            }
-            else if (Equals(EAuxiliaryTableType.VoteContent, tableType))
-            {
-                tableName = publishmentSystemInfo.AuxiliaryTableForVote;
-            }
             return tableName;
         }
 
         public static string GetTableName(PublishmentSystemInfo publishmentSystemInfo, string contentModelId)
         {
-            var modelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, contentModelId);
-            if (!string.IsNullOrEmpty(modelInfo?.TableName))
-            {
-                return modelInfo.TableName;
-            }
             var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
-            if (EContentModelTypeUtils.Equals(EContentModelType.GovPublic, contentModelId))
+
+            if (string.IsNullOrEmpty(contentModelId)) return tableName;
+
+            var contentTable = PluginCache.GetEnabledFeature<IContentTable>(contentModelId);
+            if (!string.IsNullOrEmpty(contentTable?.ContentTableName))
             {
-                tableName = publishmentSystemInfo.AuxiliaryTableForGovPublic;
+                tableName = contentTable.ContentTableName;
             }
-            else if (EContentModelTypeUtils.Equals(EContentModelType.GovInteract, contentModelId))
-            {
-                tableName = publishmentSystemInfo.AuxiliaryTableForGovInteract;
-            }
-            else if (EContentModelTypeUtils.Equals(EContentModelType.Vote, contentModelId))
-            {
-                tableName = publishmentSystemInfo.AuxiliaryTableForVote;
-            }
-            else if (EContentModelTypeUtils.Equals(EContentModelType.Job, contentModelId))
-            {
-                tableName = publishmentSystemInfo.AuxiliaryTableForJob;
-            }
+
             return tableName;
         }
 
@@ -158,29 +132,32 @@ namespace SiteServer.CMS.Core
 
         public static ETableStyle GetTableStyle(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
         {
-            var modelInfo = ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId);
-            if (!string.IsNullOrEmpty(modelInfo?.TableName))
-            {
-                return EAuxiliaryTableTypeUtils.GetTableStyle(modelInfo.TableType);
-            }
             var tableStyle = ETableStyle.BackgroundContent;
-            if (EContentModelTypeUtils.Equals(EContentModelType.GovPublic, nodeInfo.ContentModelId))
+
+            if (string.IsNullOrEmpty(nodeInfo.ContentModelId)) return tableStyle;
+
+            var contentTable = PluginCache.GetEnabledPluginMetadata<IContentTable>(nodeInfo.ContentModelId);
+            if (contentTable != null)
             {
-                tableStyle = ETableStyle.GovPublicContent;
+                tableStyle = ETableStyle.Custom;
             }
-            else if (EContentModelTypeUtils.Equals(EContentModelType.GovInteract, nodeInfo.ContentModelId))
-            {
-                tableStyle = ETableStyle.GovInteractContent;
-            }
-            else if (EContentModelTypeUtils.Equals(EContentModelType.Vote, nodeInfo.ContentModelId))
-            {
-                tableStyle = ETableStyle.VoteContent;
-            }
-            else if (EContentModelTypeUtils.Equals(EContentModelType.Job, nodeInfo.ContentModelId))
-            {
-                tableStyle = ETableStyle.JobContent;
-            }
+
             return tableStyle;
+        }
+
+        public static EAuxiliaryTableType GetTableType(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
+        {
+            var tableType = EAuxiliaryTableType.BackgroundContent;
+
+            if (string.IsNullOrEmpty(nodeInfo.ContentModelId)) return tableType;
+
+            var contentTable = PluginCache.GetEnabledPluginMetadata<IContentTable>(nodeInfo.ContentModelId);
+            if (contentTable != null)
+            {
+                tableType = EAuxiliaryTableType.Custom;
+            }
+
+            return tableType;
         }
 
         public static string GetNodeTreeLastImageHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
@@ -192,14 +169,23 @@ namespace SiteServer.CMS.Core
                 if (publishmentSystemInfo.IsHeadquarters == false)
                 {
                     imageHtml =
-                        $@"<img align=""absmiddle"" alt=""站点"" border=""0"" src=""{PageUtils.Combine(treeDirectoryUrl,
+                        $@"<img align=""absmiddle"" title=""站点"" border=""0"" src=""{PageUtils.Combine(treeDirectoryUrl,
                             "site.gif")}"" /></a>";
                 }
                 else
                 {
                     imageHtml =
-                        $@"<img align=""absmiddle"" alt=""站点"" border=""0"" src=""{PageUtils.Combine(treeDirectoryUrl,
+                        $@"<img align=""absmiddle"" title=""站点"" border=""0"" src=""{PageUtils.Combine(treeDirectoryUrl,
                             "siteHQ.gif")}"" />";
+                }
+            }
+            if (!string.IsNullOrEmpty(nodeInfo.Additional.PluginIds))
+            {
+                var pluginChannels = PluginCache.GetChannels(nodeInfo, false);
+                foreach (var pluginChannel in pluginChannels)
+                {
+                    imageHtml +=
+                        $@"<img align=""absmiddle"" title=""插件：{pluginChannel.DisplayName}"" border=""0"" src=""{PageUtils.GetPluginDirectoryUrl(pluginChannel.Id, pluginChannel.Icon)}"" width=""18"" height=""18"" />";
                 }
             }
             return imageHtml;
@@ -364,11 +350,6 @@ namespace SiteServer.CMS.Core
 
         public static void AddListItems(ListItemCollection listItemCollection, PublishmentSystemInfo publishmentSystemInfo, bool isSeeOwning, bool isShowContentNum, string administratorName)
         {
-            AddListItems(listItemCollection, publishmentSystemInfo, isSeeOwning, isShowContentNum, false, administratorName);
-        }
-
-        public static void AddListItems(ListItemCollection listItemCollection, PublishmentSystemInfo publishmentSystemInfo, bool isSeeOwning, bool isShowContentNum, bool isShowContentModel, string administratorName)
-        {
             var list = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
             var nodeCount = list.Count;
             var isLastNodeArray = new bool[nodeCount];
@@ -385,7 +366,7 @@ namespace SiteServer.CMS.Core
                 }
                 var nodeInfo = GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
 
-                var listitem = new ListItem(GetSelectText(publishmentSystemInfo, nodeInfo, isLastNodeArray, isShowContentNum, isShowContentModel), nodeInfo.NodeId.ToString());
+                var listitem = new ListItem(GetSelectText(publishmentSystemInfo, nodeInfo, isLastNodeArray, isShowContentNum), nodeInfo.NodeId.ToString());
                 if (!enabled)
                 {
                     listitem.Attributes.Add("style", "color:gray;");
@@ -394,7 +375,7 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void AddListItems(ListItemCollection listItemCollection, PublishmentSystemInfo publishmentSystemInfo, bool isSeeOwning, bool isShowContentNum, bool isShowContentModel, EContentModelType contentModel, string administratorName)
+        public static void AddListItems(ListItemCollection listItemCollection, PublishmentSystemInfo publishmentSystemInfo, bool isSeeOwning, bool isShowContentNum, string contentModelId, string administratorName)
         {
             var list = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
             var nodeCount = list.Count;
@@ -412,12 +393,12 @@ namespace SiteServer.CMS.Core
                 }
                 var nodeInfo = GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
 
-                var listitem = new ListItem(GetSelectText(publishmentSystemInfo, nodeInfo, isLastNodeArray, isShowContentNum, isShowContentModel), nodeInfo.NodeId.ToString());
+                var listitem = new ListItem(GetSelectText(publishmentSystemInfo, nodeInfo, isLastNodeArray, isShowContentNum), nodeInfo.NodeId.ToString());
                 if (!enabled)
                 {
                     listitem.Attributes.Add("style", "color:gray;");
                 }
-                if (nodeInfo.ContentModelId != contentModel.ToString())
+                if (!StringUtils.EqualsIgnoreCase(nodeInfo.ContentModelId, contentModelId))
                 {
                     listitem.Attributes.Add("disabled", "disabled");
                 }
@@ -449,7 +430,7 @@ namespace SiteServer.CMS.Core
                     continue;
                 }
 
-                var listitem = new ListItem(GetSelectText(publishmentSystemInfo, nodeInfo, isLastNodeArray, true, false), nodeInfo.NodeId.ToString());
+                var listitem = new ListItem(GetSelectText(publishmentSystemInfo, nodeInfo, isLastNodeArray, true), nodeInfo.NodeId.ToString());
                 listItemCollection.Add(listitem);
             }
         }
@@ -479,12 +460,12 @@ namespace SiteServer.CMS.Core
                     continue;
                 }
 
-                var listitem = new ListItem(GetSelectText(publishmentSystemInfo, nodeInfo, isLastNodeArray, true, false), nodeInfo.NodeId.ToString());
+                var listitem = new ListItem(GetSelectText(publishmentSystemInfo, nodeInfo, isLastNodeArray, true), nodeInfo.NodeId.ToString());
                 listItemCollection.Add(listitem);
             }
         }
 
-        public static string GetSelectText(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, bool[] isLastNodeArray, bool isShowContentNum, bool isShowContentModel)
+        public static string GetSelectText(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, bool[] isLastNodeArray, bool isShowContentNum)
         {
             var retval = string.Empty;
             if (nodeInfo.NodeId == nodeInfo.PublishmentSystemId)
@@ -511,10 +492,6 @@ namespace SiteServer.CMS.Core
                 retval = string.Concat(retval, " (", nodeInfo.ContentNum, ")");
             }
 
-            if (isShowContentModel)
-            {
-                retval = string.Concat(retval, " - ", ContentModelManager.GetContentModelInfo(publishmentSystemInfo, nodeInfo.ContentModelId).ModelName);
-            }
             return retval;
         }
 

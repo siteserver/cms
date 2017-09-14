@@ -175,31 +175,11 @@ namespace SiteServer.CMS.ImportExport.Components
                     }
                 }
 
-                var tableNameToChange = (!string.IsNullOrEmpty(tableNameToInsert)) ? tableNameToInsert : tableName;
+                var tableNameToChange = !string.IsNullOrEmpty(tableNameToInsert) ? tableNameToInsert : tableName;
                 //更新发布系统后台内容表及栏目表
                 if (tableType == EAuxiliaryTableType.BackgroundContent)
                 {
                     publishmentSystemInfo.AuxiliaryTableForContent = tableNameToChange;
-                    DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-                }
-                else if (tableType == EAuxiliaryTableType.GovPublicContent)
-                {
-                    publishmentSystemInfo.AuxiliaryTableForGovPublic = tableNameToChange;
-                    DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-                }
-                else if (tableType == EAuxiliaryTableType.GovInteractContent)
-                {
-                    publishmentSystemInfo.AuxiliaryTableForGovInteract = tableNameToChange;
-                    DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-                }
-                else if (tableType == EAuxiliaryTableType.JobContent)
-                {
-                    publishmentSystemInfo.AuxiliaryTableForJob = tableNameToChange;
-                    DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-                }
-                else if (tableType == EAuxiliaryTableType.VoteContent)
-                {
-                    publishmentSystemInfo.AuxiliaryTableForVote = tableNameToChange;
                     DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
                 }
             }

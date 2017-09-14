@@ -18,7 +18,7 @@ namespace SiteServer.Plugin
 
         #endregion       
 
-        #region IContentModel
+        #region IChannel
 
         public virtual List<PluginContentLink> ContentLinks => null;
 
@@ -28,11 +28,13 @@ namespace SiteServer.Plugin
 
         public virtual Action<int, int, int> OnContentDeleted => null;
 
-        public virtual bool IsCustomContentTable => false;
+        #endregion
 
-        public virtual string CustomContentTableName => null;
+        #region IContentTable
 
-        public virtual List<PluginTableColumn> CustomContentTableColumns => null;
+        public virtual string ContentTableName => null;
+
+        public virtual List<PluginTableColumn> ContentTableColumns => null;
 
         #endregion
 

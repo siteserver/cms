@@ -163,6 +163,11 @@ namespace BaiRong.Core.Provider
             }
         }
 
+        public void Delete(string tableEnName)
+        {
+            Delete(tableEnName, null);
+        }
+
         public void Delete(string tableEnName, IDbTransaction trans)
         {
             var parms = new IDataParameter[]

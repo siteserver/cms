@@ -14,6 +14,8 @@ using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Core.User;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -36,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
         private StringCollection _attributesOfDisplay;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _tableStyleInfoList;
-        private ContentModelInfo _modelInfo;
+        private Dictionary<string, IChannel> _pluginChannels;
         private readonly Hashtable _displayNameHashtable = new Hashtable();
 
         public void Page_Load(object sender, EventArgs e)
@@ -52,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
             _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeId);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
-            _modelInfo = ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, _nodeInfo.ContentModelId);
+            _pluginChannels = PluginCache.GetChannelFeatures(_nodeInfo);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, nodeId));
 
             if (_nodeInfo.Additional.IsPreviewContents)
@@ -151,7 +153,7 @@ $(document).ready(function() {
                 }
 
                 LtlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _modelInfo);
+                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _pluginChannels);
             }
         }
 
@@ -182,7 +184,7 @@ $(document).ready(function() {
 
                 ltlColumnItemRows.Text = TextUtility.GetColumnItemRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _displayNameHashtable, _tableStyle, PublishmentSystemInfo, contentInfo);
 
-                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _modelInfo, contentInfo, PageUrl, Body.AdministratorName);
+                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdministratorName);
             }
         }
 

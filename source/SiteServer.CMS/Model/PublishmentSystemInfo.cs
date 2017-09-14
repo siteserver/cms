@@ -13,10 +13,6 @@ namespace SiteServer.CMS.Model
         public const string PublishmentSystemId = nameof(PublishmentSystemId);
         public const string PublishmentSystemName = nameof(PublishmentSystemName);
         public const string AuxiliaryTableForContent = nameof(AuxiliaryTableForContent);
-        public const string AuxiliaryTableForGovPublic = nameof(AuxiliaryTableForGovPublic);
-        public const string AuxiliaryTableForGovInteract = nameof(AuxiliaryTableForGovInteract);
-        public const string AuxiliaryTableForJob = nameof(AuxiliaryTableForJob);
-        public const string AuxiliaryTableForVote = nameof(AuxiliaryTableForVote);
         public const string IsCheckContentUseLevel = nameof(IsCheckContentUseLevel);
         public const string CheckContentLevel = nameof(CheckContentLevel);
         public const string PublishmentSystemDir = nameof(PublishmentSystemDir);
@@ -33,10 +29,6 @@ namespace SiteServer.CMS.Model
 		private int _publishmentSystemId;
 		private string _publishmentSystemName = string.Empty;
 		private string _auxiliaryTableForContent = string.Empty;
-        private string _auxiliaryTableForGovPublic = string.Empty;
-        private string _auxiliaryTableForGovInteract = string.Empty;
-        private string _auxiliaryTableForVote = string.Empty;
-        private string _auxiliaryTableForJob = string.Empty;
 		private bool _isCheckContentUseLevel;
 		private int _checkContentLevel;
 		private string _publishmentSystemDir = string.Empty;
@@ -51,15 +43,11 @@ namespace SiteServer.CMS.Model
 		{
 		}
 
-        public PublishmentSystemInfo(int publishmentSystemId, string publishmentSystemName, string auxiliaryTableForContent, string auxiliaryTableForGovPublic, string auxiliaryTableForGovInteract, string auxiliaryTableForVote, string auxiliaryTableForJob, bool isCheckContentUseLevel, int checkContentLevel, string publishmentSystemDir, string publishmentSystemUrl, bool isHeadquarters, int parentPublishmentSystemId, int taxis, string settingsXml) 
+        public PublishmentSystemInfo(int publishmentSystemId, string publishmentSystemName, string auxiliaryTableForContent, bool isCheckContentUseLevel, int checkContentLevel, string publishmentSystemDir, string publishmentSystemUrl, bool isHeadquarters, int parentPublishmentSystemId, int taxis, string settingsXml) 
 		{
 			_publishmentSystemId = publishmentSystemId;
 			_publishmentSystemName = publishmentSystemName;
 			_auxiliaryTableForContent = auxiliaryTableForContent;
-            _auxiliaryTableForGovPublic = auxiliaryTableForGovPublic;
-            _auxiliaryTableForGovInteract = auxiliaryTableForGovInteract;
-            _auxiliaryTableForVote = auxiliaryTableForVote;
-            _auxiliaryTableForJob = auxiliaryTableForJob;
 			_isCheckContentUseLevel = isCheckContentUseLevel;
 			_checkContentLevel = checkContentLevel;
 			_publishmentSystemDir = publishmentSystemDir;
@@ -90,34 +78,6 @@ namespace SiteServer.CMS.Model
 			get{ return _auxiliaryTableForContent; }
 			set{ _auxiliaryTableForContent = value; }
 		}
-
-        [XmlIgnore]
-        public string AuxiliaryTableForGovPublic
-        {
-            get { return _auxiliaryTableForGovPublic; }
-            set { _auxiliaryTableForGovPublic = value; }
-        }
-
-        [XmlIgnore]
-        public string AuxiliaryTableForGovInteract
-        {
-            get { return _auxiliaryTableForGovInteract; }
-            set { _auxiliaryTableForGovInteract = value; }
-        }
-
-        [XmlIgnore]
-        public string AuxiliaryTableForJob
-        {
-            get { return _auxiliaryTableForJob; }
-            set { _auxiliaryTableForJob = value; }
-        }
-
-        [XmlIgnore]
-        public string AuxiliaryTableForVote
-        {
-            get { return _auxiliaryTableForVote; }
-            set { _auxiliaryTableForVote = value; }
-        }
 
         [XmlIgnore]
         public bool IsCheckContentUseLevel

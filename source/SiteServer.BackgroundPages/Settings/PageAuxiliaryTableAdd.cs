@@ -36,15 +36,7 @@ namespace SiteServer.BackgroundPages.Settings
                 //cms
                 AuxiliaryTableType.Items.Add(EAuxiliaryTableTypeUtils.GetListItem(EAuxiliaryTableType.BackgroundContent, true));
 
-                if (AppManager.IsWcm())
-                {
-                    //wcm
-                    AuxiliaryTableType.Items.Add(EAuxiliaryTableTypeUtils.GetListItem(EAuxiliaryTableType.GovPublicContent, false));
-                    AuxiliaryTableType.Items.Add(EAuxiliaryTableTypeUtils.GetListItem(EAuxiliaryTableType.GovInteractContent, false));
-                }
                 //others
-                AuxiliaryTableType.Items.Add(EAuxiliaryTableTypeUtils.GetListItem(EAuxiliaryTableType.VoteContent, false));
-                AuxiliaryTableType.Items.Add(EAuxiliaryTableTypeUtils.GetListItem(EAuxiliaryTableType.JobContent, false));
                 AuxiliaryTableType.Items.Add(EAuxiliaryTableTypeUtils.GetListItem(EAuxiliaryTableType.Custom, false));
 
                 if (!string.IsNullOrEmpty(enName))

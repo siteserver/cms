@@ -11,11 +11,7 @@ namespace SiteServer.CMS.Model.Enumerations
         TemplateFilePathRule,
         ConfigurationCreateDetails,
         ConfigurationCrossSiteTrans,
-        ConfigurationSignin,
-        GovPublicChannelAdd,
-        GovPublicChannelTree,
-        GovPublicChannel,
-        GovInteractChannel,
+        ConfigurationSignin
     }
 
     public class ELoadingTypeUtils
@@ -53,22 +49,6 @@ namespace SiteServer.CMS.Model.Enumerations
             if (type == ELoadingType.ConfigurationSignin)
             {
                 return "ConfigurationSignin";
-            }
-            if (type == ELoadingType.GovPublicChannelAdd)
-            {
-                return "GovPublicChannelAdd";
-            }
-            if (type == ELoadingType.GovPublicChannelTree)
-            {
-                return "GovPublicChannelTree";
-            }
-            if (type == ELoadingType.GovPublicChannel)
-            {
-                return "GovPublicChannel";
-            }
-            if (type == ELoadingType.GovInteractChannel)
-            {
-                return "GovInteractChannel";
             }
             throw new Exception();
         }
@@ -108,22 +88,6 @@ namespace SiteServer.CMS.Model.Enumerations
             else if (Equals(ELoadingType.ConfigurationSignin, typeStr))
             {
                 retval = ELoadingType.ConfigurationSignin;
-            }
-            else if (Equals(ELoadingType.GovPublicChannelAdd, typeStr))
-            {
-                retval = ELoadingType.GovPublicChannelAdd;
-            }
-            else if (Equals(ELoadingType.GovPublicChannelTree, typeStr))
-            {
-                retval = ELoadingType.GovPublicChannelTree;
-            }
-            else if (Equals(ELoadingType.GovPublicChannel, typeStr))
-            {
-                retval = ELoadingType.GovPublicChannel;
-            }
-            else if (Equals(ELoadingType.GovInteractChannel, typeStr))
-            {
-                retval = ELoadingType.GovInteractChannel;
             }
 
             return retval;

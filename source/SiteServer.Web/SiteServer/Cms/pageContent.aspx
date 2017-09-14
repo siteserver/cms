@@ -22,7 +22,7 @@
   </script>
 
   <div class="well well-small">
-    <asp:Literal ID="LtlContentButtons" runat="server"></asp:Literal>
+    <asp:Literal ID="LtlButtons" runat="server"></asp:Literal>
     <div id="contentSearch" style="display:none;margin-top:10px;">
       时间从：
       <bairong:DateTimeTextBox ID="TbDateFrom" class="input-small" Columns="12" runat="server" />
@@ -37,10 +37,9 @@
   <table id="contents" class="table table-bordered table-hover">
     <tr class="info thead">
       <td>内容标题(点击查看) </td>
-      <asp:Literal ID="LtlColumnHeadRows" runat="server"></asp:Literal>
-      <td width="50"> 状态 </td>
-      <td width="30">&nbsp;</td>
-      <asp:Literal ID="LtlCommandHeadRows" runat="server"></asp:Literal>
+      <asp:Literal ID="LtlHeadRows" runat="server"></asp:Literal>
+      <asp:Literal ID="LtlHeadCommand" runat="server"></asp:Literal>
+      <td width="50">状态</td>
       <td width="20">
         <input type="checkbox" onClick="selectRows(document.getElementById('contents'), this.checked);">
       </td>
@@ -49,16 +48,15 @@
       <itemtemplate>
         <tr>
           <td>
-            <asp:Literal ID="ltlItemTitle" runat="server"></asp:Literal>
+            <asp:Literal ID="ltlTitle" runat="server"></asp:Literal>
           </td>
-          <asp:Literal ID="ltlColumnItemRows" runat="server"></asp:Literal>
-          <td class="center" nowrap>
-            <asp:Literal ID="ltlItemStatus" runat="server"></asp:Literal>
+          <asp:Literal ID="ltlRows" runat="server"></asp:Literal>
+          <td class="center">
+            <asp:Literal ID="ltlCommands" runat="server"></asp:Literal>
           </td>
           <td class="center">
-            <asp:Literal ID="ltlItemEditUrl" runat="server"></asp:Literal>
+            <asp:Literal ID="ltlStatus" runat="server"></asp:Literal>
           </td>
-          <asp:Literal ID="ltlCommandItemRows" runat="server"></asp:Literal>
           <td class="center">
             <input type="checkbox" name="ContentIDCollection" value='<%#DataBinder.Eval(Container.DataItem, "ID")%>' />
           </td>

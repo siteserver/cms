@@ -16,8 +16,6 @@ namespace SiteServer.BackgroundPages.Settings
 		public TextBox PublishmentSystemName;
         public DropDownList ParentPublishmentSystemID;
 		public DropDownList AuxiliaryTableForContent;
-        public DropDownList AuxiliaryTableForVote;
-        public DropDownList AuxiliaryTableForJob;
         public TextBox Taxis;
 		public RadioButtonList IsCheckContentUseLevel;
 		public DropDownList CheckContentLevel;
@@ -87,20 +85,6 @@ namespace SiteServer.BackgroundPages.Settings
 					AuxiliaryTableForContent.Items.Add(li);
 				}
 
-                tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.VoteContent);
-                foreach (AuxiliaryTableInfo tableInfo in tableList)
-                {
-                    var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
-                    AuxiliaryTableForVote.Items.Add(li);
-                }
-
-                tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.JobContent);
-                foreach (AuxiliaryTableInfo tableInfo in tableList)
-                {
-                    var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
-                    AuxiliaryTableForJob.Items.Add(li);
-                }
-
                 Taxis.Text = PublishmentSystemInfo.Taxis.ToString();
 
 				IsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制",false.ToString()));
@@ -133,28 +117,6 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (ListItem item in AuxiliaryTableForContent.Items)
                 {
                     if (item.Value.Equals(PublishmentSystemInfo.AuxiliaryTableForContent))
-                    {
-                        item.Selected = true;
-                    }
-                    else
-                    {
-                        item.Selected = false;
-                    }
-                }
-                foreach (ListItem item in AuxiliaryTableForVote.Items)
-                {
-                    if (item.Value.Equals(PublishmentSystemInfo.AuxiliaryTableForVote))
-                    {
-                        item.Selected = true;
-                    }
-                    else
-                    {
-                        item.Selected = false;
-                    }
-                }
-                foreach (ListItem item in AuxiliaryTableForJob.Items)
-                {
-                    if (item.Value.Equals(PublishmentSystemInfo.AuxiliaryTableForJob))
                     {
                         item.Selected = true;
                     }
@@ -227,16 +189,6 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     isTableChanged = true;
                     PublishmentSystemInfo.AuxiliaryTableForContent = AuxiliaryTableForContent.SelectedValue;
-                }
-                if (PublishmentSystemInfo.AuxiliaryTableForVote != AuxiliaryTableForVote.SelectedValue)
-                {
-                    isTableChanged = true;
-                    PublishmentSystemInfo.AuxiliaryTableForVote = AuxiliaryTableForVote.SelectedValue;
-                }
-                if (PublishmentSystemInfo.AuxiliaryTableForJob != AuxiliaryTableForJob.SelectedValue)
-                {
-                    isTableChanged = true;
-                    PublishmentSystemInfo.AuxiliaryTableForJob = AuxiliaryTableForJob.SelectedValue;
                 }
 
                 if (PublishmentSystemInfo.IsHeadquarters == false)

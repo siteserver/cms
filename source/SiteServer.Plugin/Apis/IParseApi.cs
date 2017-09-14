@@ -7,9 +7,9 @@ namespace SiteServer.Plugin.Apis
         void GetTemplateLoadingYesNo(string innerXml, out string template, out string loading, out string yes,
             out string no);
 
-        string Parse(string innerXml, int publishmentSystemId, int channelId, int contentId);
+        string ParseInnerXml(string innerXml, int publishmentSystemId, int channelId, int contentId);
 
-        void Parse(StringBuilder builder, int publishmentSystemId, int channelId, int contentId);
+        string ParseAttributeValue(string attributeValue, int publishmentSystemId, int channelId, int contentId);
 
         string HtmlToXml(string html);
 

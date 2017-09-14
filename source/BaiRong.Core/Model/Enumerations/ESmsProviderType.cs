@@ -5,7 +5,6 @@ namespace BaiRong.Core.Model.Enumerations
 {
     public enum ESmsProviderType
     {
-        Aliyun,
         Yunpian,
         None
     }
@@ -14,10 +13,6 @@ namespace BaiRong.Core.Model.Enumerations
     {
         public static string GetValue(ESmsProviderType type)
         {
-            if (type == ESmsProviderType.Aliyun)
-            {
-                return "Aliyun";
-            }
             if (type == ESmsProviderType.Yunpian)
             {
                 return "Yunpian";
@@ -27,10 +22,6 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static string GetText(ESmsProviderType type)
         {
-            if (type == ESmsProviderType.Aliyun)
-            {
-                return "阿里大于";
-            }
             if (type == ESmsProviderType.Yunpian)
             {
                 return "云片";
@@ -40,10 +31,6 @@ namespace BaiRong.Core.Model.Enumerations
 
         public static string GetUrl(ESmsProviderType type)
         {
-            if (type == ESmsProviderType.Aliyun)
-            {
-                return "http://www.alidayu.com/";
-            }
             if (type == ESmsProviderType.Yunpian)
             {
                 return "http://www.yunpian.com/";
@@ -54,11 +41,7 @@ namespace BaiRong.Core.Model.Enumerations
         public static ESmsProviderType GetEnumType(string typeStr)
         {
             var retval = ESmsProviderType.None;
-            if (Equals(typeStr, ESmsProviderType.Aliyun))
-            {
-                retval = ESmsProviderType.Aliyun;
-            }
-            else if (Equals(typeStr, ESmsProviderType.Yunpian))
+            if (Equals(typeStr, ESmsProviderType.Yunpian))
             {
                 retval = ESmsProviderType.Yunpian;
             }
@@ -79,7 +62,6 @@ namespace BaiRong.Core.Model.Enumerations
         {
             return new List<ESmsProviderType>
             {
-                //ESmsProviderType.AliDaYu,
                 ESmsProviderType.Yunpian
             };
         }

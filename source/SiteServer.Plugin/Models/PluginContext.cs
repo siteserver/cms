@@ -24,6 +24,8 @@ namespace SiteServer.Plugin.Models
 
         public IParseApi ParseApi { get; internal set; }
 
+        public IPaymentApi PaymentApi { get; internal set; }
+
         public IPublishmentSystemApi PublishmentSystemApi { get; internal set; }
 
         public ISmsApi SmsApi { get; internal set; }

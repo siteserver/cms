@@ -164,7 +164,7 @@ namespace BaiRong.Core.Model
 
         public int Height
         {
-            get { return GetInt("Height", 0); }
+            get { return GetInt("Height"); }
             set { SetExtendedAttribute("Height", value.ToString()); }
         }
 
@@ -180,19 +180,19 @@ namespace BaiRong.Core.Model
 
         public int Columns
         {
-            get { return GetInt("Columns", 0); }
+            get { return GetInt("Columns"); }
             set { SetExtendedAttribute("Columns", value.ToString()); }
         }
 
         public bool IsFormatString
         {
-            get { return GetBool("IsFormatString", false); }
+            get { return GetBool("IsFormatString"); }
             set { SetExtendedAttribute("IsFormatString", value.ToString()); }
         }
 
         public int RelatedFieldId
         {
-            get { return GetInt("RelatedFieldID", 0); }
+            get { return GetInt("RelatedFieldID"); }
             set { SetExtendedAttribute("RelatedFieldID", value.ToString()); }
         }
 
@@ -204,32 +204,32 @@ namespace BaiRong.Core.Model
 
         public bool IsValidate
         {
-            get { return GetBool("IsValidate", false); }
+            get { return GetBool("IsValidate"); }
             set { SetExtendedAttribute("IsValidate", value.ToString()); }
         }
 
         public bool IsRequired
         {
-            get { return GetBool("IsRequired", false); }
+            get { return GetBool("IsRequired"); }
             set { SetExtendedAttribute("IsRequired", value.ToString()); }
         }
 
         public int MinNum
         {
-            get { return GetInt("MinNum", 0); }
+            get { return GetInt("MinNum"); }
             set { SetExtendedAttribute("MinNum", value.ToString()); }
         }
 
         public int MaxNum
         {
-            get { return GetInt("MaxNum", 0); }
+            get { return GetInt("MaxNum"); }
             set { SetExtendedAttribute("MaxNum", value.ToString()); }
         }
 
-        public EInputValidateType ValidateType
+        public ValidateType ValidateType
         {
-            get { return EInputValidateTypeUtils.GetEnumType(GetExtendedAttribute("ValidateType")); }
-            set { SetExtendedAttribute("ValidateType", EInputValidateTypeUtils.GetValue(value)); }
+            get { return EValidateTypeUtils.GetEnumType(GetExtendedAttribute("ValidateType")); }
+            set { SetExtendedAttribute("ValidateType", EValidateTypeUtils.GetValue(value)); }
         }
 
         public string RegExp

@@ -63,7 +63,7 @@ namespace SiteServer.CMS.Plugin
         private static void Watcher_EventHandler(object sender, FileSystemEventArgs e)
         {
             var fullPath = e.FullPath.ToLower();
-            if (!fullPath.EndsWith(PluginUtils.PluginConfigName) && !fullPath.EndsWith(".dll")) return;
+            if (!fullPath.Contains("-") || !fullPath.EndsWith(PluginUtils.PluginConfigName) && !fullPath.EndsWith(".dll")) return;
 
             try
             {
@@ -115,44 +115,88 @@ namespace SiteServer.CMS.Plugin
                 NodeApi = NodeApi.Instance,
                 PageApi = new PageApi(metadata),
                 ParseApi = ParseApi.Instance,
+                PaymentApi = PaymentApi.Instance,
                 PublishmentSystemApi = PublishmentSystemApi.Instance,
                 SmsApi = SmsApi.Instance
             };
             plugin.OnPluginActive?.Invoke(context);
 
-            var contentTable = plugin as IContentModel;
-            if (!string.IsNullOrEmpty(contentTable?.CustomContentTableName) && contentTable.CustomContentTableColumns != null)
+            var contentTable = plugin as IContentTable;
+            if (!string.IsNullOrEmpty(contentTable?.ContentTableName) && contentTable.ContentTableColumns != null && contentTable.ContentTableColumns.Count > 0)
             {
-                var tableName = contentTable.CustomContentTableName;
+                var tableName = contentTable.ContentTableName;
+
                 if (!BaiRongDataProvider.DatabaseDao.IsTableExists(tableName))
                 {
-                    var tableInfo = new AuxiliaryTableInfo(tableName, $"插件内容表：{metadata.DisplayName}", 0,
-                        EAuxiliaryTableType.Custom, false, false, false, string.Empty);
-                    BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
+                    BaiRongDataProvider.TableCollectionDao.Delete(tableName);
+                    BaiRongDataProvider.TableMetadataDao.Delete(tableName);
+                    BaiRongDataProvider.TableStyleDao.Delete(tableName);
 
-                    foreach (var tableColumn in contentTable.CustomContentTableColumns)
+                    BaiRongDataProvider.TableCollectionDao.Insert(new AuxiliaryTableInfo(tableName,
+                        $"插件内容表：{metadata.DisplayName}", 0,
+                        EAuxiliaryTableType.Custom, false, false, false, string.Empty));
+
+                    var tableMetadataInfoList = new List<TableMetadataInfo>();
+                    foreach (var tableColumn in contentTable.ContentTableColumns)
                     {
-                        if (string.IsNullOrEmpty(tableColumn.AttributeName)) continue;
+                        if (string.IsNullOrEmpty(tableColumn.AttributeName) || ContentAttribute.AllAttributes.Contains(tableColumn.AttributeName.ToLower())) continue;
+
+                        tableMetadataInfoList.Add(new TableMetadataInfo(0, tableName, tableColumn.AttributeName,
+                            tableColumn.DataType, tableColumn.DataLength, 0, true));
+                    }
+
+                    tableMetadataInfoList.Reverse();
+                    foreach (var tableMetadataInfo in tableMetadataInfoList)
+                    {
+                        BaiRongDataProvider.TableMetadataDao.Insert(tableMetadataInfo);
+                    }
+
+                    BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableName);
+                }
+                else
+                {
+                    var columnNameList = BaiRongDataProvider.TableStructureDao.GetColumnNameList(tableName, true);
+                    foreach (var tableColumn in contentTable.ContentTableColumns)
+                    {
+                        if (columnNameList.Contains(tableColumn.AttributeName.ToLower())) continue;
 
                         var tableMetadataInfo = new TableMetadataInfo(0, tableName, tableColumn.AttributeName,
                             tableColumn.DataType, tableColumn.DataLength, 0, true);
                         BaiRongDataProvider.TableMetadataDao.Insert(tableMetadataInfo);
 
-                        var tableStyleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.BackgroundContent, tableName,
-                            tableColumn.AttributeName, new List<int> { 0 });
-                        tableStyleInfo.DisplayName = tableColumn.DisplayName;
-                        tableStyleInfo.InputType = InputTypeUtils.GetValue(tableColumn.InputType);
-                        tableStyleInfo.DefaultValue = tableColumn.DefaultValue;
-                        tableStyleInfo.Additional.IsValidate = true;
-                        tableStyleInfo.Additional.IsRequired = tableColumn.IsRequired;
-                        tableStyleInfo.Additional.MinNum = tableColumn.MinNum;
-                        tableStyleInfo.Additional.MaxNum = tableColumn.MaxNum;
-                        tableStyleInfo.Additional.RegExp = tableColumn.RegExp;
-                        tableStyleInfo.Additional.Width = tableColumn.Width;
-                        TableStyleManager.Insert(tableStyleInfo, ETableStyle.BackgroundContent);
+                        var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+                        string sqlString = $"ALTER TABLE {tableName} ADD ({columnSqlString})";
+
+                        BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
                     }
 
-                    BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableName);
+                    BaiRongDataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDb(false, tableName);
+                }
+
+                var tableStyleInfoList = new List<TableStyleInfo>();
+                foreach (var tableColumn in contentTable.ContentTableColumns)
+                {
+                    var tableStyleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Custom, tableName,
+                            tableColumn.AttributeName, new List<int> { 0 });
+                    tableStyleInfo.DisplayName = tableColumn.DisplayName;
+                    tableStyleInfo.InputType = InputTypeUtils.GetValue(tableColumn.InputType);
+                    tableStyleInfo.DefaultValue = tableColumn.DefaultValue;
+                    tableStyleInfo.IsVisible = tableColumn.IsVisibleInEdit;
+                    tableStyleInfo.IsVisibleInList = tableColumn.IsVisibleInList;
+                    tableStyleInfo.Additional.IsValidate = true;
+                    tableStyleInfo.Additional.IsRequired = tableColumn.IsRequired;
+                    tableStyleInfo.Additional.ValidateType = tableColumn.ValidateType;
+                    tableStyleInfo.Additional.MinNum = tableColumn.MinNum;
+                    tableStyleInfo.Additional.MaxNum = tableColumn.MaxNum;
+                    tableStyleInfo.Additional.RegExp = tableColumn.RegExp;
+                    tableStyleInfo.Additional.Width = tableColumn.Width;
+                    tableStyleInfoList.Add(tableStyleInfo);
+                }
+
+                tableStyleInfoList.Reverse();
+                foreach (var tableStyleInfo in tableStyleInfoList)
+                {
+                    TableStyleManager.InsertOrUpdate(tableStyleInfo, ETableStyle.Custom);
                 }
             }
 

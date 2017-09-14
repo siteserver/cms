@@ -80,6 +80,8 @@ namespace SiteServer.BackgroundPages
 
             //防止csrf攻击
             Response.AddHeader("X-Frame-Options", "SAMEORIGIN");
+            //tell Chrome to disable its XSS protection
+            Response.AddHeader("X-XSS-Protection", "0");
         }
 
         protected override void Render(HtmlTextWriter writer)

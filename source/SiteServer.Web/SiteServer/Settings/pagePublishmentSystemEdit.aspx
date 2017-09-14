@@ -69,30 +69,6 @@
           </td>
         </tr>
         <tr>
-          <td>投票辅助表：</td>
-          <td>
-            <asp:DropDownList ID="AuxiliaryTableForVote" runat="server" ></asp:DropDownList>
-            <asp:RequiredFieldValidator
-              ControlToValidate="AuxiliaryTableForVote"
-              ErrorMessage="辅助表不能为空！"
-              foreColor="red"
-              Display="Dynamic"
-              runat="server"/>
-          </td>
-        </tr>
-        <tr>
-          <td width="160">招聘辅助表：</td>
-          <td>
-            <asp:DropDownList ID="AuxiliaryTableForJob" runat="server" ></asp:DropDownList>
-            <asp:RequiredFieldValidator
-              ControlToValidate="AuxiliaryTableForJob"
-              ErrorMessage="辅助表不能为空！"
-              foreColor="red"
-              Display="Dynamic"
-              runat="server"/>
-          </td>
-        </tr>
-        <tr>
           <td>站点排序：</td>
           <td>
             <asp:TextBox ID="Taxis" class="input-mini" MaxLength="50" runat="server"></asp:TextBox>

@@ -4,10 +4,11 @@ using SiteServer.CMS.Model;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Wcm;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -37,9 +38,13 @@ namespace SiteServer.BackgroundPages.Core
 
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
 
-            var modelInfo = ContentModelManager.GetContentModelInfo(_publishmentSystemInfo, nodeInfo.ContentModelId);
-            _iconFolderUrl = !string.IsNullOrEmpty(modelInfo.IconUrl) ? modelInfo.IconUrl : PageUtils.Combine(treeDirectoryUrl, "folder.gif");
-            
+            _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
+            var contentTable = PluginCache.GetEnabledPluginMetadata<IContentTable>(nodeInfo.ContentModelId);
+            if (contentTable != null)
+            {
+                _iconFolderUrl = PageUtils.GetPluginDirectoryUrl(contentTable.Id, contentTable.Icon);
+            }
+
             _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
             _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
@@ -49,14 +54,6 @@ namespace SiteServer.BackgroundPages.Core
         {
             var htmlBuilder = new StringBuilder();
             var parentsCount = _nodeInfo.ParentsCount;
-            if (loadingType == ELoadingType.GovPublicChannelAdd || loadingType == ELoadingType.GovPublicChannelTree)
-            {
-                parentsCount = parentsCount - 1;
-            }
-            else if (loadingType == ELoadingType.GovPublicChannel || loadingType == ELoadingType.GovInteractChannel)
-            {
-                parentsCount = parentsCount - 2;
-            }
             for (var i = 0; i < parentsCount; i++)
             {
                 htmlBuilder.Append($@"<img align=""absmiddle"" src=""{_iconEmptyUrl}"" />");
@@ -114,20 +111,6 @@ namespace SiteServer.BackgroundPages.Core
                     }
                     htmlBuilder.Append($"<a href='{linkUrl}'>{_nodeInfo.NodeName}</a>");
                 }
-                else if (loadingType == ELoadingType.GovPublicChannelAdd)
-                {
-                    htmlBuilder.Append(EContentModelTypeUtils.Equals(_nodeInfo.ContentModelId, EContentModelType.GovPublic)
-                        ? $@"<a href=""{ModalGovPublicCategoryChannelSelect.GetRedirectUrl(
-                            _nodeInfo.PublishmentSystemId, _nodeInfo.NodeId)}"">{_nodeInfo.NodeName}</a>"
-                        : _nodeInfo.NodeName);
-                }
-                else if (loadingType == ELoadingType.GovPublicChannelTree)
-                {
-                    var linkUrl = PageContent.GetRedirectUrl(_nodeInfo.PublishmentSystemId, _nodeInfo.NodeId);
-
-                    htmlBuilder.Append(
-                        $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_nodeInfo.NodeName}</a>");
-                }
                 else
                 {
                     if (AdminUtility.HasChannelPermissions(_administratorName, _nodeInfo.PublishmentSystemId, _nodeInfo.NodeId, AppManager.Permissions.Channel.ChannelEdit))
@@ -154,12 +137,11 @@ namespace SiteServer.BackgroundPages.Core
 
                 htmlBuilder.Append(NodeManager.GetNodeTreeLastImageHtml(_publishmentSystemInfo, _nodeInfo));
 
-                if (_nodeInfo.ContentNum >= 0)
-                {
-                    htmlBuilder.Append("&nbsp;");
-                    htmlBuilder.Append(
-                        $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({_nodeInfo.ContentNum})</span>");
-                }
+                if (_nodeInfo.ContentNum < 0) return htmlBuilder.ToString();
+
+                htmlBuilder.Append("&nbsp;");
+                htmlBuilder.Append(
+                    $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({_nodeInfo.ContentNum})</span>");
             }
 
             return htmlBuilder.ToString();

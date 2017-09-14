@@ -5,15 +5,12 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -639,73 +636,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var isSelected = false;
                     var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contentInfo.NodeId);
                     var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, nodeInfo);
-
-                    //WCM SPECIFIC
-
-                    if (tableStyle == ETableStyle.GovInteractContent)
-                    {
-                        isSelected = true;
-                        if (GovInteractContentAttribute.State.ToLower().Equals(type))
-                        {
-                            parsedContent = EGovInteractStateUtils.GetText(EGovInteractStateUtils.GetEnumType(contentInfo.GetExtendedAttribute(GovInteractContentAttribute.State)));
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.Reply))
-                        {
-                            //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            if (replyInfo != null)
-                            {
-                                parsedContent = replyInfo.Reply;
-                                if (!string.IsNullOrEmpty(parsedContent))
-                                {
-                                    parsedContent = StringUtils.ParseString(InputType.TextEditor, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
-                                }
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyDepartment))
-                        {
-                            //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            if (replyInfo != null)
-                            {
-                                parsedContent = DepartmentManager.GetDepartmentName(replyInfo.DepartmentID);
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyUserName))
-                        {
-                            //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            if (replyInfo != null)
-                            {
-                                parsedContent = replyInfo.UserName;
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyDate))
-                        {
-                            //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            if (replyInfo != null)
-                            {
-                                var addDate = replyInfo.AddDate;
-                                parsedContent = DateUtils.Format(addDate, formatString);
-                            }
-                        }
-                        else if (StringUtils.EqualsIgnoreCase(type, GovInteractContentAttribute.ReplyFileUrl))
-                        {
-                            //var replyInfo = DataProvider.GovInteractReplyDao.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            var replyInfo = GovInteractReply.GetReplyInfoByContentId(pageInfo.PublishmentSystemId, contentInfo.Id);
-                            if (replyInfo != null)
-                            {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, replyInfo.FileUrl);
-                            }
-                        }
-                        else
-                        {
-                            isSelected = false;
-                        }
-                    }
-
-                    //WCM SPECIFIC
 
                     if (!isSelected && contentInfo.ContainsKey(type))
                     {

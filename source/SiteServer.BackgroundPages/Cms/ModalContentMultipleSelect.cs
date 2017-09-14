@@ -85,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, false, true, true, EContentModelType.Content, Body.AdministratorName);
+                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, false, true, Body.AdministratorName);
 
                 if (_tableStyleInfoList != null)
                 {

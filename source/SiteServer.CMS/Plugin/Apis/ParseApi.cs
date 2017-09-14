@@ -1,4 +1,7 @@
 ﻿using System.Text;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Model;
+using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin.Apis;
 
@@ -15,14 +18,17 @@ namespace SiteServer.CMS.Plugin.Apis
             StlInnerUtility.GetTemplateLoadingYesNo(innerXml, out template, out loading, out yes, out no);
         }
 
-        public string Parse(string innerXml, int publishmentSystemId, int channelId, int contentId)
+        public string ParseInnerXml(string innerXml, int publishmentSystemId, int channelId, int contentId)
         {
             return StlParserManager.ParseInnerContent(innerXml, publishmentSystemId, channelId, contentId);
         }
 
-        public void Parse(StringBuilder builder, int publishmentSystemId, int channelId, int contentId)
+        public string ParseAttributeValue(string attributeValue, int publishmentSystemId, int channelId, int contentId)
         {
-            StlParserManager.ParseInnerContent(builder, publishmentSystemId, channelId, contentId);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, null, null);
+            var contextInfo = new ContextInfo(pageInfo);
+            return StlEntityParser.ReplaceStlEntitiesForAttributeValue(attributeValue, pageInfo, contextInfo);
         }
 
         public string HtmlToXml(string html)

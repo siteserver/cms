@@ -17,9 +17,6 @@ namespace BaiRong.Core.Model.Attributes
         public const string Author = "Author";
         public const string Source = "Source";
         public const string Summary = "Summary";
-        public const string IsRecommend = "IsRecommend";
-        public const string IsHot = "IsHot";
-        public const string IsColor = "IsColor";
         public const string Content = "Content";
         //not exists
         public const string TitleFormatString = "TitleFormatString";
@@ -51,18 +48,7 @@ namespace BaiRong.Core.Model.Attributes
             Content.ToLower(),
             Author.ToLower(),
             Source.ToLower(),
-            Summary.ToLower(),
-            IsRecommend.ToLower(),
-            IsHot.ToLower(),
-            IsColor.ToLower()
-        });
-
-	    private static List<string> _excludeAttributes;
-        public static List<string> ExcludeAttributes => _excludeAttributes ?? (_excludeAttributes = new List<string>(ContentAttribute.ExcludeAttributes)
-        {
-            IsRecommend.ToLower(),
-            IsHot.ToLower(),
-            IsColor.ToLower()
+            Summary.ToLower()
         });
 	}
 }

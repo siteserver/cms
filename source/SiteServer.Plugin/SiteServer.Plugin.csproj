@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Apis\IPaymentApi.cs" />
     <Compile Include="Apis\ISmsApi.cs" />
     <Compile Include="Apis\IParseApi.cs" />
     <Compile Include="Apis\IConfigApi.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Apis\IFilesApi.cs" />
     <Compile Include="Apis\IContentApi.cs" />
     <Compile Include="Apis\IPublishmentSystemApi.cs" />
+    <Compile Include="Features\IChannel.cs" />
     <Compile Include="Models\DataType.cs" />
     <Compile Include="Models\Copyable.cs" />
     <Compile Include="Models\ExtendedAttributes.cs" />
@@ -75,10 +77,11 @@
     <Compile Include="IPlugin.cs" />
     <Compile Include="Models\InputType.cs" />
     <Compile Include="Features\IMenu.cs" />
-    <Compile Include="Features\IContentModel.cs" />
+    <Compile Include="Features\IContentTable.cs" />
     <Compile Include="Features\IFileSystem.cs" />
     <Compile Include="Features\IJsonApi.cs" />
     <Compile Include="Models\IDbHelper.cs" />
+    <Compile Include="Models\ValidateType.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="Models\IRequestContext.cs" />
     <Compile Include="Models\PluginEnvironment.cs" />
@@ -96,7 +99,6 @@
     <None Include="README.md" />
     <None Include="SiteServer.Plugin.nuspec" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

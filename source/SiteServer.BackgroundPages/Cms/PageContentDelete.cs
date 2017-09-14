@@ -169,7 +169,7 @@ namespace SiteServer.BackgroundPages.Cms
                             DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList);
 
                             //引用内容，需要删除
-                            var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent, EAuxiliaryTableType.JobContent, EAuxiliaryTableType.VoteContent);
+                            var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent);
                             foreach (var table in tableList)
                             {
                                 var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, contentIdList);

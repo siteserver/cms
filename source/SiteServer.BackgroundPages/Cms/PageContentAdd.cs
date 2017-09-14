@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -25,8 +26,11 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public Literal LtlPageTitle;
 
+        public TextBox TbTitle;
+        public Literal LtlTitleHtml;
+
         public AuxiliaryControl AcAttributes;
-        public PlaceHolder PhContentAttributes;
+
         public CheckBoxList CblContentAttributes;
         public PlaceHolder PhContentGroup;
         public CheckBoxList CblContentGroupNameCollection;
@@ -38,6 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
         public HtmlControl DivTranslateAdd;
         public DropDownList DdlTranslateType;
         public PlaceHolder PhStatus;
+        public DateTimeTextBox TbAddDate;
         public Button BtnSubmit;
 
         private NodeInfo _nodeInfo;
@@ -121,6 +126,8 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
+            LtlTitleHtml.Text = GetTitleHtml(contentInfo);
+
             if (!IsPostBack)
             {
                 var nodeNames = NodeManager.GetNodeNameNavigation(PublishmentSystemId, _nodeInfo.NodeId);
@@ -149,36 +156,34 @@ var previewUrl = '{PagePreview.GetRedirectUrl(PublishmentSystemId, _nodeInfo.Nod
                 }
 
                 //内容属性
-                var excludeAttributeNames = TableManager.GetExcludeAttributeNames(_tableStyle);
-                AcAttributes.AddExcludeAttributeNames(excludeAttributeNames);
-
-                if (excludeAttributeNames.Count == 0)
+                CblContentAttributes.Items.Add(new ListItem("置顶", ContentAttribute.IsTop));
+                CblContentAttributes.Items.Add(new ListItem("推荐", ContentAttribute.IsRecommend));
+                CblContentAttributes.Items.Add(new ListItem("热点", ContentAttribute.IsHot));
+                CblContentAttributes.Items.Add(new ListItem("醒目", ContentAttribute.IsColor));
+                TbAddDate.DateTime = DateTime.Now;
+                TbAddDate.Now = true;
+                if (contentInfo != null)
                 {
-                    PhContentAttributes.Visible = false;
-                }
-                else
-                {
-                    PhContentAttributes.Visible = true;
-                    foreach (var attributeName in excludeAttributeNames)
+                    TbTitle.Text = contentInfo.Title;
+                    var list = new List<string>();
+                    if (contentInfo.IsTop)
                     {
-                        var styleInfo = TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, attributeName, _relatedIdentities);
-                        if (styleInfo.IsVisible)
-                        {
-                            var listItem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                            if (contentId > 0)
-                            {
-                                listItem.Selected = TranslateUtils.ToBool(contentInfo?.GetExtendedAttribute(styleInfo.AttributeName));
-                            }
-                            else
-                            {
-                                if (TranslateUtils.ToBool(styleInfo.DefaultValue))
-                                {
-                                    listItem.Selected = true;
-                                }
-                            }
-                            CblContentAttributes.Items.Add(listItem);
-                        }
+                        list.Add(ContentAttribute.IsTop);
                     }
+                    if (contentInfo.IsRecommend)
+                    {
+                        list.Add(ContentAttribute.IsRecommend);
+                    }
+                    if (contentInfo.IsHot)
+                    {
+                        list.Add(ContentAttribute.IsHot);
+                    }
+                    if (contentInfo.IsColor)
+                    {
+                        list.Add(ContentAttribute.IsColor);
+                    }
+                    ControlUtils.SelectListItems(CblContentAttributes, list);
+                    TbAddDate.DateTime = contentInfo.AddDate;
                 }
 
                 //内容组
@@ -337,10 +342,9 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.NodeId = _nodeInfo.NodeId;
                     contentInfo.PublishmentSystemId = PublishmentSystemId;
                     contentInfo.AddUserName = Body.AdministratorName;
-                    if (contentInfo.AddDate.Year == DateUtils.SqlMinValue.Year)
+                    if (contentInfo.AddDate.Year <= DateUtils.SqlMinValue.Year)
                     {
-                        errorMessage = $"内容添加失败：系统时间不能为{DateUtils.SqlMinValue.Year}年";
-                        return 0;
+                        contentInfo.AddDate = DateTime.Now;
                     }
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = DateTime.Now;
@@ -351,15 +355,20 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
 
-                    if (PhContentAttributes.Visible)
+                    contentInfo.Title = TbTitle.Text;
+                    var formatString = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatStrong"]);
+                    var formatEm = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatEM"]);
+                    var formatU = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatU"]);
+                    var formatColor = Request.Form[ContentAttribute.Title + "_formatColor"];
+                    var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
+                    contentInfo.SetExtendedAttribute(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title), theFormatString);
+                    foreach (ListItem listItem in CblContentAttributes.Items)
                     {
-                        foreach (ListItem listItem in CblContentAttributes.Items)
-                        {
-                            var value = listItem.Selected.ToString();
-                            var attributeName = listItem.Value;
-                            contentInfo.SetExtendedAttribute(attributeName, value);
-                        }
+                        var value = listItem.Selected.ToString();
+                        var attributeName = listItem.Value;
+                        contentInfo.SetExtendedAttribute(attributeName, value);
                     }
+                    contentInfo.AddDate = TbAddDate.DateTime;
 
                     contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
                     contentInfo.IsChecked = contentInfo.CheckedLevel >= PublishmentSystemInfo.CheckContentLevel;
@@ -425,15 +434,20 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
 
-                    if (PhContentAttributes.Visible)
+                    contentInfo.Title = TbTitle.Text;
+                    var formatString = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatStrong"]);
+                    var formatEm = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatEM"]);
+                    var formatU = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatU"]);
+                    var formatColor = Request.Form[ContentAttribute.Title + "_formatColor"];
+                    var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
+                    contentInfo.SetExtendedAttribute(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title), theFormatString);
+                    foreach (ListItem listItem in CblContentAttributes.Items)
                     {
-                        foreach (ListItem listItem in CblContentAttributes.Items)
-                        {
-                            var value = listItem.Selected.ToString();
-                            var attributeName = listItem.Value;
-                            contentInfo.SetExtendedAttribute(attributeName, value);
-                        }
+                        var value = listItem.Selected.ToString();
+                        var attributeName = listItem.Value;
+                        contentInfo.SetExtendedAttribute(attributeName, value);
                     }
+                    contentInfo.AddDate = TbAddDate.DateTime;
 
                     var checkedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
                     if (checkedLevel != LevelManager.LevelInt.NotChange)
@@ -458,7 +472,7 @@ $('#TbTags').keyup(function (e) {
                     {
                         contentInfo.Id
                     };
-                    var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent, EAuxiliaryTableType.JobContent, EAuxiliaryTableType.VoteContent);
+                    var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent);
                     foreach (var table in tableList)
                     {
                         var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, sourceContentIdList);
@@ -539,6 +553,135 @@ $('#TbTags').keyup(function (e) {
             }
 
             return savedContentId;
+        }
+
+        private string GetTitleHtml(ContentInfo contentInfo)
+        {
+            var builder = new StringBuilder();
+            var isFormatted = false;
+            var formatStrong = false;
+            var formatEm = false;
+            var formatU = false;
+            var formatColor = string.Empty;
+            if (IsPostBack)
+            {
+                if (Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] != null)
+                {
+                    isFormatted = ContentUtility.SetTitleFormatControls(Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)], out formatStrong, out formatEm, out formatU, out formatColor);
+                }
+            }
+            else if (contentInfo != null)
+            {
+                if (contentInfo.GetExtendedAttribute(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)) != null)
+                {
+                    isFormatted = ContentUtility.SetTitleFormatControls(contentInfo.GetExtendedAttribute(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), out formatStrong, out formatEm, out formatU, out formatColor);
+                }
+            }
+
+            builder.Append(string.Format(@"<a class=""btn"" href=""javascript:;"" onclick=""$('#div_{0}').toggle();return false;""><i class=""icon-text-height""></i></a>
+<script type=""text/javascript"">
+function {0}_strong(e){{
+var e = $(e);
+if ($('#{0}_formatStrong').val() == 'true'){{
+$('#{0}_formatStrong').val('false');
+e.removeClass('btn-success');
+}}else{{
+$('#{0}_formatStrong').val('true');
+e.addClass('btn-success');
+}}
+}}
+function {0}_em(e){{
+var e = $(e);
+if ($('#{0}_formatEM').val() == 'true'){{
+$('#{0}_formatEM').val('false');
+e.removeClass('btn-success');
+}}else{{
+$('#{0}_formatEM').val('true');
+e.addClass('btn-success');
+}}
+}}
+function {0}_u(e){{
+var e = $(e);
+if ($('#{0}_formatU').val() == 'true'){{
+$('#{0}_formatU').val('false');
+e.removeClass('btn-success');
+}}else{{
+$('#{0}_formatU').val('true');
+e.addClass('btn-success');
+}}
+}}
+function {0}_color(){{
+if ($('#{0}_formatColor').val()){{
+$('#{0}_colorBtn').css('color', $('#{0}_formatColor').val());
+$('#{0}_colorBtn').addClass('btn-success');
+}}else{{
+$('#{0}_colorBtn').css('color', '');
+$('#{0}_colorBtn').removeClass('btn-success');
+}}
+$('#{0}_colorContainer').hide();
+}}
+</script>
+", ContentAttribute.Title));
+
+            builder.Append(string.Format(@"
+<div id=""div_{0}"" style=""display:{1};margin-top:5px;"">
+<div class=""btn-group"" style=""float:left;"">
+    <button class=""btn{5}"" style=""font-weight:bold;font-size:12px;"" onclick=""{0}_strong(this);return false;"">粗体</button>
+    <button class=""btn{6}"" style=""font-style:italic;font-size:12px;"" onclick=""{0}_em(this);return false;"">斜体</button>
+    <button class=""btn{7}"" style=""text-decoration:underline;font-size:12px;"" onclick=""{0}_u(this);return false;"">下划线</button>
+    <button class=""btn{8}"" style=""font-size:12px;"" id=""{0}_colorBtn"" onclick=""$('#{0}_colorContainer').toggle();return false;"">颜色</button>
+</div>
+<div id=""{0}_colorContainer"" class=""input-append"" style=""float:left;display:none"">
+    <input id=""{0}_formatColor"" name=""{0}_formatColor"" class=""input-mini color {{required:false}}"" type=""text"" value=""{9}"" placeholder=""颜色值"">
+    <button class=""btn"" type=""button"" onclick=""Title_color();return false;"">确定</button>
+</div>
+<input id=""{0}_formatStrong"" name=""{0}_formatStrong"" type=""hidden"" value=""{2}"" />
+<input id=""{0}_formatEM"" name=""{0}_formatEM"" type=""hidden"" value=""{3}"" />
+<input id=""{0}_formatU"" name=""{0}_formatU"" type=""hidden"" value=""{4}"" />
+</div>
+", ContentAttribute.Title, isFormatted ? string.Empty : "none", formatStrong.ToString().ToLower(), formatEm.ToString().ToLower(), formatU.ToString().ToLower(), formatStrong ? @" btn-success" : string.Empty, formatEm ? " btn-success" : string.Empty, formatU ? " btn-success" : string.Empty, !string.IsNullOrEmpty(formatColor) ? " btn-success" : string.Empty, formatColor));
+
+            builder.Append(@"
+<script type=""text/javascript"">
+function getTitles(title){
+	$.get('[url]&title=' + encodeURIComponent(title) + '&channelID=' + $('#channelID').val() + '&r=' + Math.random(), function(data) {
+		if(data !=''){
+			var arr = data.split('|');
+			var temp='';
+			for(i=0;i<arr.length;i++)
+			{
+				temp += '<li><a>'+arr[i].replace(title,'<b>' + title + '</b>') + '</a></li>';
+			}
+			var myli='<ul>'+temp+'</ul>';
+			$('#titleTips').html(myli);
+			$('#titleTips').show();
+		}else{
+            $('#titleTips').hide();
+        }
+		$('#titleTips li').click(function () {
+			$('#Title').val($(this).text());
+			$('#titleTips').hide();
+		})
+	});	
+}
+$(document).ready(function () {
+$('#Title').keyup(function (e) {
+    if (e.keyCode != 40 && e.keyCode != 38) {
+        var title = $('#Title').val();
+        if (title != ''){
+            window.setTimeout(""getTitles('"" + title + ""');"", 200);
+        }else{
+            $('#titleTips').hide();
+        }
+    }
+}).blur(function () {
+	window.setTimeout(""$('#titleTips').hide();"", 200);
+})});
+</script>
+<div id=""titleTips"" class=""inputTips""></div>");
+            builder.Replace("[url]", AjaxCmsService.GetTitlesUrl(PublishmentSystemId, _nodeInfo.NodeId));
+
+            return builder.ToString();
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

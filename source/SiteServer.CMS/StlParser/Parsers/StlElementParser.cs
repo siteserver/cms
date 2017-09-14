@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using BaiRong.Core;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.StlParser.Parsers
@@ -78,7 +78,6 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlPhoto.ElementName.ToLower(), StlPhoto.Parse},
             {StlPlayer.ElementName.ToLower(), StlPlayer.Parse},
             {StlPrinter.ElementName.ToLower(), StlPrinter.Parse},
-            {StlResume.ElementName.ToLower(), StlResume.Parse},
             {StlRss.ElementName.ToLower(), StlRss.Parse},
             {StlSearch.ElementName.ToLower(), StlSearch.Parse},
             {StlSearch.ElementName2.ToLower(), StlSearch.Parse},
@@ -94,12 +93,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlTree.ElementName.ToLower(), StlTree.Parse},
             {StlValue.ElementName.ToLower(), StlValue.Parse},
             {StlVideo.ElementName.ToLower(), StlVideo.Parse},
-            {StlVote.ElementName.ToLower(), StlVote.Parse},
-            {StlZoom.ElementName.ToLower(), StlZoom.Parse},
-            {StlGovInteractApply.ElementName.ToLower(), StlGovInteractApply.Parse},
-            {StlGovInteractQuery.ElementName.ToLower(), StlGovInteractQuery.Parse},
-            {StlGovPublicApply.ElementName.ToLower(), StlGovPublicApply.Parse},
-            {StlGovPublicQuery.ElementName.ToLower(), StlGovPublicQuery.Parse}
+            {StlZoom.ElementName.ToLower(), StlZoom.Parse}
         };
 
         private static readonly Dictionary<string, Func<string, string>> ElementsToTranslateDic = new Dictionary<string, Func<string, string>>
@@ -237,7 +231,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                                     Func<PluginParseContext, string> func;
                                     if (parsers.TryGetValue(elementName, out func))
                                     {
-                                        var context = new PluginParseContext(attributes, innerXml, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId);
+                                        var context = new PluginParseContext(attributes, innerXml, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, ETemplateTypeUtils.GetValue(pageInfo.TemplateInfo.TemplateType), pageInfo.TemplateInfo.TemplateId);
                                         parsedContent = func(context);
                                     }
                                 }

@@ -6,8 +6,10 @@ using BaiRong.Core;
 using BaiRong.Core.Auth;
 using BaiRong.Core.Auth.JWT;
 using BaiRong.Core.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using SiteServer.Plugin;
+using Newtonsoft.Json.Serialization;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
@@ -103,11 +105,41 @@ namespace SiteServer.CMS.Core
             return !string.IsNullOrEmpty(HttpContext.Current.Request.QueryString[name]) ? TranslateUtils.ToInt(HttpContext.Current.Request.QueryString[name]) : defaultValue;
         }
 
+        public decimal GetQueryDecimal(string name, decimal defaultValue = 0)
+        {
+            return !string.IsNullOrEmpty(HttpContext.Current.Request.QueryString[name]) ? TranslateUtils.ToDecimal(HttpContext.Current.Request.QueryString[name]) : defaultValue;
+        }
+
         public bool GetQueryBool(string name, bool defaultValue = false)
         {
             var str = HttpContext.Current.Request.QueryString[name];
             var retval = !string.IsNullOrEmpty(str) ? TranslateUtils.ToBool(str) : defaultValue;
             return retval;
+        }
+
+        public T GetPostObject<T>(string name = "")
+        {
+            string json;
+            if (string.IsNullOrEmpty(name))
+            {
+                var bodyStream = new StreamReader(HttpContext.Current.Request.InputStream);
+                bodyStream.BaseStream.Seek(0, SeekOrigin.Begin);
+                json = bodyStream.ReadToEnd();
+            }
+            else
+            {
+                json = GetPostString(name);
+            }
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+            var timeFormat = new IsoDateTimeConverter
+            {
+                DateTimeFormat = "yyyy-MM-dd HH:mm:ss"
+            };
+            settings.Converters.Add(timeFormat);
+            return JsonConvert.DeserializeObject<T>(json, settings);
         }
 
         public string GetPostString(string name)
@@ -118,6 +150,11 @@ namespace SiteServer.CMS.Core
         public int GetPostInt(string name, int defaultValue = 0)
         {
             return TranslateUtils.ToInt(PostData[name]?.ToString(), defaultValue);
+        }
+
+        public decimal GetPostDecimal(string name, decimal defaultValue = 0)
+        {
+            return TranslateUtils.ToDecimal(PostData[name]?.ToString(), defaultValue);
         }
 
         public bool GetPostBool(string name, bool defaultValue = false)
@@ -350,6 +387,21 @@ namespace SiteServer.CMS.Core
                     // ignored
                 }
             }
+        }
+
+        public void SetCookie(string name, string value, DateTime expires)
+        {
+            CookieUtils.SetCookie(name, value, expires);
+        }
+
+        public string GetCookie(string name)
+        {
+            return CookieUtils.GetCookie(name);
+        }
+
+        public bool IsCookieExists(string name)
+        {
+            return CookieUtils.IsExists(name);
         }
     }
 }

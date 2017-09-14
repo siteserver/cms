@@ -6,7 +6,6 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -93,8 +92,8 @@ namespace SiteServer.BackgroundPages.Cms
                 MinNum.Text = _styleInfo.Additional.MinNum.ToString();
                 MaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
 
-                EInputValidateTypeUtils.AddListItems(ValidateType);
-                ControlUtils.SelectListItems(ValidateType, EInputValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
+                EValidateTypeUtils.AddListItems(ValidateType);
+                ControlUtils.SelectListItems(ValidateType, EValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
 
                 RegExp.Text = _styleInfo.Additional.RegExp;
                 ErrorMessage.Text = _styleInfo.Additional.ErrorMessage;
@@ -116,8 +115,8 @@ namespace SiteServer.BackgroundPages.Cms
                 phValidate.Visible = true;
             }
 
-            var type = EInputValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
-            if (type == EInputValidateType.Custom)
+            var type = EValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
+            if (type == Plugin.Models.ValidateType.RegExp)
             {
                 phRegExp.Visible = true;
             }
@@ -145,7 +144,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.Additional.IsRequired = TranslateUtils.ToBool(IsRequired.SelectedValue);
             _styleInfo.Additional.MinNum = TranslateUtils.ToInt(MinNum.Text);
             _styleInfo.Additional.MaxNum = TranslateUtils.ToInt(MaxNum.Text);
-            _styleInfo.Additional.ValidateType = EInputValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
+            _styleInfo.Additional.ValidateType = EValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
             _styleInfo.Additional.RegExp = RegExp.Text.Trim('/');
             _styleInfo.Additional.ErrorMessage = ErrorMessage.Text;
 

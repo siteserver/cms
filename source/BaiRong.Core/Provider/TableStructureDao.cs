@@ -8,7 +8,6 @@ using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using MySql.Data.MySqlClient;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
@@ -195,11 +194,6 @@ namespace BaiRong.Core.Provider
             return defaultConstraintName;
         }
 
-        public List<string> GetColumnNameList(string tableName)
-        {
-            return GetColumnNameList(tableName, false);
-        }
-
         public List<string> GetColumnNameList(string tableName, bool isLower)
         {
             var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.ConnectionString);
@@ -211,27 +205,6 @@ namespace BaiRong.Core.Provider
             foreach (var tableColumnInfo in allTableColumnInfoList)
             {
                 columnNameList.Add(isLower ? tableColumnInfo.ColumnName.ToLower() : tableColumnInfo.ColumnName);
-            }
-
-            return columnNameList;
-        }
-
-        public List<string> GetColumnNameList(string connectionString, string tableName)
-        {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                connectionString = ConnectionString;
-            }
-
-            var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(connectionString);
-            var tableId = GetTableId(connectionString, databaseName, tableName);
-            var allTableColumnInfoList = GetTableColumnInfoList(connectionString, databaseName, tableName, tableId);
-
-            var columnNameList = new List<string>();
-
-            foreach (var tableColumnInfo in allTableColumnInfoList)
-            {
-                columnNameList.Add(tableColumnInfo.ColumnName);
             }
 
             return columnNameList;
@@ -435,7 +408,7 @@ namespace BaiRong.Core.Provider
             parms = parameterList.ToArray();
 
             string returnSqlString =
-                $"INSERT INTO {tableName} ({TranslateUtils.ObjectCollectionToString(columnNameList, " ,", "[", "]")}) VALUES ({TranslateUtils.ObjectCollectionToString(columnNameList, " ,", "@")})";
+                $"INSERT INTO {SqlUtils.GetTableName(tableName)} ({TranslateUtils.ObjectCollectionToString(columnNameList, " ,", "[", "]")}) VALUES ({TranslateUtils.ObjectCollectionToString(columnNameList, " ,", "@")})";
 
             return returnSqlString;
         }
@@ -515,7 +488,7 @@ namespace BaiRong.Core.Provider
             parms = parmsList.ToArray();
 
             string returnSqlString =
-                $"UPDATE {tableName} SET {TranslateUtils.ObjectCollectionToString(setList, " ,")} WHERE {TranslateUtils.ObjectCollectionToString(whereList, " AND ")}";
+                $"UPDATE {SqlUtils.GetTableName(tableName)} SET {TranslateUtils.ObjectCollectionToString(setList, " ,")} WHERE {TranslateUtils.ObjectCollectionToString(whereList, " AND ")}";
 
             return returnSqlString;
         }
@@ -556,14 +529,6 @@ namespace BaiRong.Core.Provider
                 whereString = joinString + " " + whereString;
             }
 
-            //if (totalNum > 0)
-            //{
-            //    sqlString = $"SELECT TOP {totalNum} {columns} FROM [{tableName}] {whereString} {orderByString}";
-            //}
-            //else
-            //{
-            //    sqlString = $"SELECT {columns} FROM {tableName} {whereString} {orderByString}";
-            //}
             return SqlUtils.GetTopSqlString(tableName, columns, whereString + " " + orderByString, totalNum);
         }
 
@@ -584,7 +549,7 @@ namespace BaiRong.Core.Provider
                 return GetSelectSqlString(connectionString, tableName, totalNum, columns, whereString, orderByString);
             }
 
-            string countSqlString = $"SELECT Count(*) FROM {tableName} {whereString}";
+            string countSqlString = $"SELECT Count(*) FROM {SqlUtils.GetTableName(tableName)} {whereString}";
             var count = BaiRongDataProvider.DatabaseDao.GetIntResult(connectionString, countSqlString);
             if (totalNum == 0)
             {
@@ -611,7 +576,7 @@ namespace BaiRong.Core.Provider
                 return $@"
 SELECT {columns} FROM (
     SELECT {columns} FROM (
-        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
+        SELECT {columns} FROM {SqlUtils.GetTableName(tableName)} {whereString} {orderByString} LIMIT {topNum}
     ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
 ) AS tmp {orderByString}
 ";
@@ -620,7 +585,7 @@ SELECT {columns} FROM (
 SELECT {columns}
 FROM (SELECT TOP {totalNum} {columns}
         FROM (SELECT TOP {topNum} {columns}
-                FROM {tableName} {whereString} {orderByString}) tmp
+                FROM {SqlUtils.GetTableName(tableName)} {whereString} {orderByString}) tmp
         {orderByStringOpposite}) tmp
 {orderByString}
 ";

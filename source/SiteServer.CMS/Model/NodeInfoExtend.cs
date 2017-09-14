@@ -1,4 +1,5 @@
-﻿using BaiRong.Core;
+﻿using System.Collections.Generic;
+using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
@@ -143,6 +144,12 @@ namespace SiteServer.CMS.Model
         {
             get { return GetExtendedAttribute("SigninEndDate"); }
             set { SetExtendedAttribute("SigninEndDate", value); }
+        }
+
+        public string PluginIds
+        {
+            get { return GetExtendedAttribute("PluginIds"); }
+            set { SetExtendedAttribute("PluginIds", value); }
         }
 
         public override string ToString()

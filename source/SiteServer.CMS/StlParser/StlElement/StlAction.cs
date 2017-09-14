@@ -109,7 +109,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (string.IsNullOrEmpty(returnUrl))
                     {
-                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
+                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
                     }
 
                     url = HomeUtils.GetLoginUrl(pageInfo.HomeUrl, returnUrl);
@@ -118,7 +118,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (string.IsNullOrEmpty(returnUrl))
                     {
-                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
+                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
                     }
 
                     url = HomeUtils.GetRegisterUrl(pageInfo.HomeUrl, returnUrl);
@@ -127,7 +127,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (string.IsNullOrEmpty(returnUrl))
                     {
-                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
+                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
                     }
 
                     url = HomeUtils.GetLogoutUrl(pageInfo.HomeUrl, returnUrl);

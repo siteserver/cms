@@ -18,6 +18,10 @@
 
         bool RemoveConfig(int publishmentSystemId, string name = "");
 
+        string EncryptStringBySecretKey(string inputString);
+
+        string DecryptStringBySecretKey(string inputString);
+
         string PhysicalApplicationPath { get; }
 
         string AdminDirectory { get; }

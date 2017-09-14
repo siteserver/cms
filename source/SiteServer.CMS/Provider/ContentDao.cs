@@ -11,6 +11,7 @@ using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.Provider
 {
@@ -71,9 +72,16 @@ namespace SiteServer.CMS.Provider
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemManager.GetPublishmentSystemInfo(contentInfo.PublishmentSystemId), contentInfo.NodeId, true);
                     }).BeginInvoke(null, null);
                 }
+
+                ClearStlCache();
             }
 
             return contentId;
+        }
+
+        private static void ClearStlCache()
+        {
+            new Action(Content.ClearCache).BeginInvoke(null, null);
         }
 
         public void Update(string tableName, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo)
@@ -84,6 +92,8 @@ namespace SiteServer.CMS.Provider
             }
 
             BaiRongDataProvider.ContentDao.Update(tableName, contentInfo);
+
+            ClearStlCache();
         }
 
         public void UpdateAutoPageContent(string tableName, PublishmentSystemInfo publishmentSystemInfo)
@@ -91,7 +101,7 @@ namespace SiteServer.CMS.Provider
             if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor)
             {
                 string sqlString =
-                    $"SELECT ID, [{BackgroundContentAttribute.Content}] FROM [{tableName}] WHERE ([PublishmentSystemID] = {publishmentSystemInfo.PublishmentSystemId})";
+                    $"SELECT Id, {BackgroundContentAttribute.Content} FROM {SqlUtils.GetTableName(tableName)} WHERE (PublishmentSystemId = {publishmentSystemInfo.PublishmentSystemId})";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
@@ -103,7 +113,7 @@ namespace SiteServer.CMS.Provider
                         {
                             content = ContentUtility.GetAutoPageContent(content, publishmentSystemInfo.Additional.AutoPageWordNum);
                             string updateString =
-                                $"UPDATE [{tableName}] SET [{BackgroundContentAttribute.Content}] = '{content}' WHERE ID = {contentId}";
+                                $"UPDATE {SqlUtils.GetTableName(tableName)} SET {BackgroundContentAttribute.Content} = '{content}' WHERE Id = {contentId}";
                             try
                             {
                                 ExecuteNonQuery(updateString);
@@ -127,7 +137,7 @@ namespace SiteServer.CMS.Provider
             {
                 if (!string.IsNullOrEmpty(tableName))
                 {
-                    string sqlWhere = $"WHERE NodeID > 0 AND ID = {contentId}";
+                    string sqlWhere = $"WHERE NodeId > 0 AND Id = {contentId}";
                     var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                     using (var rdr = ExecuteReader(sqlSelect))
@@ -145,17 +155,6 @@ namespace SiteServer.CMS.Provider
             info?.AfterExecuteReader();
             return info;
         }
-
-        //public ContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId)
-        //{
-        //    if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return null;
-
-        //    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-        //    var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
-        //    var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
-
-        //    return GetContentInfo(tableStyle, tableName, contentId);
-        //}
 
         public ContentInfo GetContentInfo(ETableStyle tableStyle, string tableName, int contentId)
         {
@@ -164,7 +163,7 @@ namespace SiteServer.CMS.Provider
             {
                 if (!string.IsNullOrEmpty(tableName))
                 {
-                    string sqlWhere = $"WHERE ID = {contentId}";
+                    string sqlWhere = $"WHERE Id = {contentId}";
                     var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                     using (var rdr = ExecuteReader(sqlSelect))
@@ -182,26 +181,6 @@ namespace SiteServer.CMS.Provider
             info?.AfterExecuteReader();
             return info;
         }
-
-        //public ContentInfo GetContentInfo(ETableStyle tableStyle, string sqlString)
-        //{
-        //    ContentInfo info = null;
-        //    if (!string.IsNullOrEmpty(sqlString))
-        //    {
-        //        using (var rdr = ExecuteReader(sqlString))
-        //        {
-        //            if (rdr.Read())
-        //            {
-        //                info = ContentUtility.GetContentInfo(tableStyle);
-        //                BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
-        //            }
-        //            rdr.Close();
-        //        }
-        //    }
-
-        //    info?.AfterExecuteReader();
-        //    return info;
-        //}
 
         public int GetCountOfContentAdd(string tableName, int publishmentSystemId, int nodeId, EScopeType scope, DateTime begin, DateTime end, string userName)
         {
@@ -214,27 +193,6 @@ namespace SiteServer.CMS.Provider
             var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scope, string.Empty, string.Empty);
             return BaiRongDataProvider.ContentDao.GetCountOfContentUpdate(tableName, publishmentSystemId, nodeIdList, begin, end, userName);
         }
-
-        //public List<int> GetContentIdArrayListChecked(string tableName, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, int totalNum, string orderByString, string whereString, EScopeType scopeType)
-        //{
-        //    var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, string.Empty, string.Empty);
-
-        //    var theList = new List<int>();
-        //    foreach (int theNodeId in nodeIdList)
-        //    {
-        //        if (isSystemAdministrator || owningNodeIdList.Contains(theNodeId))
-        //        {
-        //            theList.Add(theNodeId);
-        //        }
-        //    }
-
-        //    return BaiRongDataProvider.ContentDao.GetContentIdListChecked(tableName, theList, totalNum, orderByString, whereString);
-        //}
-
-        //public List<int> GetContentIdListChecked(List<int> nodeIdList, string tableName, int totalNum, string orderByString, string whereString)
-        //{
-        //    return BaiRongDataProvider.ContentDao.GetContentIdListChecked(tableName, nodeIdList, totalNum, orderByString, whereString);
-        //}
 
         public List<int> GetContentIdListChecked(string tableName, int nodeId, int totalNum, string orderByFormatString, string whereString)
         {
@@ -321,11 +279,11 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public void DeleteContents(int publishmentSystemId, string tableName, List<int> contentIdArrayList, int nodeId)
+        public void DeleteContents(int publishmentSystemId, string tableName, List<int> contentIdList, int nodeId)
         {
             if (!string.IsNullOrEmpty(tableName))
             {
-                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContents(publishmentSystemId, tableName, contentIdArrayList);
+                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContents(publishmentSystemId, tableName, contentIdList);
 
                 if (nodeId > 0 && deleteNum > 0)
                 {
@@ -334,14 +292,16 @@ namespace SiteServer.CMS.Provider
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId), nodeId, true);
                     }).BeginInvoke(null, null);
                 }
+
+                ClearStlCache();
             }
         }
 
-        private void DeleteContents(int publishmentSystemId, string tableName, List<int> contentIdArrayList)
+        private void DeleteContents(int publishmentSystemId, string tableName, List<int> contentIdList)
         {
             if (!string.IsNullOrEmpty(tableName))
             {
-                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContents(publishmentSystemId, tableName, contentIdArrayList);
+                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContents(publishmentSystemId, tableName, contentIdList);
                 if (deleteNum > 0)
                 {
                     new Action(() =>
@@ -349,6 +309,8 @@ namespace SiteServer.CMS.Provider
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId));
                     }).BeginInvoke(null, null);
                 }
+
+                ClearStlCache();
             }
         }
 
@@ -356,8 +318,8 @@ namespace SiteServer.CMS.Provider
         {
             if (!string.IsNullOrEmpty(tableName))
             {
-                var contentIdArrayList = GetContentIdListChecked(tableName, nodeId, string.Empty);
-                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContentsByNodeId(publishmentSystemId, tableName, nodeId, contentIdArrayList);
+                var contentIdList = GetContentIdListChecked(tableName, nodeId, string.Empty);
+                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContentsByNodeId(publishmentSystemId, tableName, nodeId, contentIdList);
 
                 if (nodeId > 0 && deleteNum > 0)
                 {
@@ -366,6 +328,8 @@ namespace SiteServer.CMS.Provider
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId), nodeId, true);
                     }).BeginInvoke(null, null);
                 }
+
+                ClearStlCache();
             }
         }
 
@@ -377,7 +341,7 @@ namespace SiteServer.CMS.Provider
                 DataProvider.NodeDao.UpdateAdditional(nodeInfo);
 
                 string sqlString =
-                    $"DELETE FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeInfo.NodeId} AND SourceID = {SourceManager.Preview}";
+                    $"DELETE FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeInfo.NodeId} AND SourceId = {SourceManager.Preview}";
                 BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
             }
         }
@@ -418,15 +382,15 @@ namespace SiteServer.CMS.Provider
 
             if (isAllSites)
             {
-                whereBuilder.Append("(PublishmentSystemID > 0) ");
+                whereBuilder.Append("(PublishmentSystemId > 0) ");
             }
             else if (!string.IsNullOrEmpty(siteIds))
             {
-                whereBuilder.Append($"(PublishmentSystemID IN ({TranslateUtils.ToSqlInStringWithoutQuote(TranslateUtils.StringCollectionToIntList(siteIds))})) ");
+                whereBuilder.Append($"(PublishmentSystemId IN ({TranslateUtils.ToSqlInStringWithoutQuote(TranslateUtils.StringCollectionToIntList(siteIds))})) ");
             }
             else
             {
-                whereBuilder.Append($"(PublishmentSystemID = {publishmentSystemInfo.PublishmentSystemId}) ");
+                whereBuilder.Append($"(PublishmentSystemId = {publishmentSystemInfo.PublishmentSystemId}) ");
             }
 
             if (!string.IsNullOrEmpty(channelIds))
@@ -439,8 +403,8 @@ namespace SiteServer.CMS.Provider
                     nodeIdList.AddRange(DataProvider.NodeDao.GetNodeIdListForDescendant(nodeId));
                 }
                 whereBuilder.Append(nodeIdList.Count == 1
-                    ? $"(NodeID = {nodeIdList[0]}) "
-                    : $"(NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
+                    ? $"(NodeId = {nodeIdList[0]}) "
+                    : $"(NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
             }
             else if (channelId != publishmentSystemId)
             {
@@ -448,8 +412,8 @@ namespace SiteServer.CMS.Provider
                 var nodeIdList = DataProvider.NodeDao.GetNodeIdListForDescendant(channelId);
                 nodeIdList.Add(channelId);
                 whereBuilder.Append(nodeIdList.Count == 1
-                    ? $"(NodeID = {nodeIdList[0]}) "
-                    : $"(NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
+                    ? $"(NodeId = {nodeIdList[0]}) "
+                    : $"(NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
             }
 
             var typeList = new List<string>();
@@ -523,45 +487,6 @@ namespace SiteServer.CMS.Provider
                         }
                     }
                 }
-
-                if (tableStyle == ETableStyle.GovPublicContent)
-                {
-                    if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.DepartmentId))
-                    {
-                        whereBuilder.Append(" AND ");
-                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category1Id))
-                    {
-                        whereBuilder.Append(" AND ");
-                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category2Id))
-                    {
-                        whereBuilder.Append(" AND ");
-                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category3Id))
-                    {
-                        whereBuilder.Append(" AND ");
-                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category4Id))
-                    {
-                        whereBuilder.Append(" AND ");
-                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category5Id))
-                    {
-                        whereBuilder.Append(" AND ");
-                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category6Id))
-                    {
-                        whereBuilder.Append(" AND ");
-                        whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                    }
-                }
             }
 
             if (whereBuilder.ToString().Contains(" AND "))
@@ -626,7 +551,7 @@ namespace SiteServer.CMS.Provider
             return BaiRongDataProvider.ContentDao.GetSelectCommendByCondition(tableStyle, tableName, publishmentSystemId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, isWritingOnly, userNameOnly);
         }
 
-        public string GetWritingSelectCommend(string writingUserName, string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo)
+        public string GetWritingSelectCommend(string writingUserName, ETableStyle tableStyle, string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo)
         {
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
@@ -637,11 +562,11 @@ namespace SiteServer.CMS.Provider
 
             if (nodeIdList.Count == 1)
             {
-                whereString.AppendFormat("AND PublishmentSystemID = {0} AND NodeID = {1} ", publishmentSystemId, nodeIdList[0]);
+                whereString.AppendFormat("AND PublishmentSystemId = {0} AND NodeId = {1} ", publishmentSystemId, nodeIdList[0]);
             }
             else
             {
-                whereString.AppendFormat("AND PublishmentSystemID = {0} AND NodeID IN ({1}) ", publishmentSystemId, TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList));
+                whereString.AppendFormat("AND PublishmentSystemId = {0} AND NodeId IN ({1}) ", publishmentSystemId, TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList));
             }
 
             var dateString = string.Empty;
@@ -661,14 +586,10 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                var columnNameList = BaiRongDataProvider.TableStructureDao.GetColumnNameList(tableName);
-                foreach (var columnName in columnNameList)
+                var list = TableManager.GetAllLowerAttributeNameList(tableStyle, tableName);
+                if (list.Contains(searchType.ToLower()))
                 {
-                    if (StringUtils.EqualsIgnoreCase(columnName, searchType))
-                    {
-                        whereString.AppendFormat("AND ([{0}] LIKE '%{1}%') {2} ", searchType, keyword, dateString);
-                        break;
-                    }
+                    whereString.AppendFormat("AND ([{0}] LIKE '%{1}%') {2} ", searchType, keyword, dateString);
                 }
             }
 
@@ -679,13 +600,13 @@ namespace SiteServer.CMS.Provider
         {
             contentGroupName = PageUtils.FilterSql(contentGroupName);
             string sqlString =
-                $"SELECT * FROM {tableName} WHERE PublishmentSystemID={publishmentSystemId} AND NodeID>0 AND (ContentGroupNameCollection LIKE '{contentGroupName},%' OR ContentGroupNameCollection LIKE '%,{contentGroupName}' OR ContentGroupNameCollection  LIKE '%,{contentGroupName},%'  OR ContentGroupNameCollection='{contentGroupName}')";
+                $"SELECT * FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId > 0 AND (ContentGroupNameCollection LIKE '{contentGroupName},%' OR ContentGroupNameCollection LIKE '%,{contentGroupName}' OR ContentGroupNameCollection  LIKE '%,{contentGroupName},%'  OR ContentGroupNameCollection='{contentGroupName}')";
             return sqlString;
         }
 
-        public DataSet GetStlDataSourceChecked(List<int> nodeIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
+        public DataSet GetStlDataSourceChecked(List<int> nodeIdList, ETableStyle tableStyle, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
         {
-            return BaiRongDataProvider.ContentDao.GetStlDataSourceChecked(tableName, nodeIdList, startNum, totalNum, orderByString, whereString, isNoDup, others);
+            return BaiRongDataProvider.ContentDao.GetStlDataSourceChecked(tableStyle, tableName, nodeIdList, startNum, totalNum, orderByString, whereString, isNoDup, others);
         }
 
         public string GetStlSqlStringChecked(List<int> nodeIdList, string tableName, int publishmentSystemId, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup)
@@ -695,7 +616,7 @@ namespace SiteServer.CMS.Provider
             if (publishmentSystemId == nodeId && scopeType == EScopeType.All && string.IsNullOrEmpty(groupChannel) && string.IsNullOrEmpty(groupChannelNot))
             {
                 sqlWhereString =
-                    $"WHERE (PublishmentSystemId = {publishmentSystemId} AND NodeID > 0 AND IsChecked = '{true}' {whereString})";
+                    $"WHERE (PublishmentSystemId = {publishmentSystemId} AND NodeId > 0 AND IsChecked = '{true}' {whereString})";
             }
             else
             {
@@ -703,13 +624,13 @@ namespace SiteServer.CMS.Provider
                 {
                     return string.Empty;
                 }
-                sqlWhereString = nodeIdList.Count == 1 ? $"WHERE (NodeID = {nodeIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})";
+                sqlWhereString = nodeIdList.Count == 1 ? $"WHERE (NodeId = {nodeIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})";
             }
 
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(ID)", sqlWhereString + " GROUP BY Title");
-                sqlWhereString += $" AND ID IN ({sqlString})";
+                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
+                sqlWhereString += $" AND Id IN ({sqlString})";
             }
 
             if (!string.IsNullOrEmpty(tableName))
@@ -722,16 +643,16 @@ namespace SiteServer.CMS.Provider
         public string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup)
         {
             string sqlWhereString =
-                    $"WHERE (NodeID > 0 AND IsChecked = '{true}' {whereString})";
+                    $"WHERE (NodeId > 0 AND IsChecked = '{true}' {whereString})";
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(ID)", sqlWhereString + " GROUP BY Title");
-                sqlWhereString += $" AND ID IN ({sqlString})";
+                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
+                sqlWhereString += $" AND Id IN ({sqlString})";
             }
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, $"{ContentAttribute.Id}, {ContentAttribute.NodeId}, {ContentAttribute.IsTop}", sqlWhereString, orderByString);
+                return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, $"{ContentAttribute.Id}, {ContentAttribute.NodeId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}", sqlWhereString, orderByString);
             }
             return string.Empty;
         }
@@ -741,7 +662,7 @@ namespace SiteServer.CMS.Provider
             var taxisDirection = isDesc ? "ASC" : "DESC";//升序,但由于页面排序是按Taxis的Desc排序的，所以这里sql里面的ASC/DESC取反
 
             string sqlString =
-                $"SELECT ID, IsTop FROM {tableName} WHERE NodeID = {nodeId} OR NodeID = -{nodeId} ORDER BY {attributeName} {taxisDirection}";
+                $"SELECT Id, IsTop FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId} OR NodeId = -{nodeId} ORDER BY {attributeName} {taxisDirection}";
             var sqlList = new List<string>();
 
             using (var rdr = ExecuteReader(sqlString))
@@ -753,7 +674,7 @@ namespace SiteServer.CMS.Provider
                     var isTop = GetBool(rdr, 1);
 
                     sqlList.Add(
-                        $"UPDATE {tableName} SET Taxis = {taxis++}, IsTop = '{isTop}' WHERE ID = {id}");
+                        $"UPDATE {SqlUtils.GetTableName(tableName)} SET Taxis = {taxis++}, IsTop = '{isTop}' WHERE Id = {id}");
                 }
                 rdr.Close();
             }
@@ -788,7 +709,7 @@ namespace SiteServer.CMS.Provider
         public List<int> GetIdListBySameTitleInOneNode(string tableName, int nodeId, string title)
         {
             var list = new List<int>();
-            string sql = $"SELECT ID FROM {tableName} WHERE NodeID = {nodeId} AND Title = '{title}'";
+            string sql = $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId} AND Title = '{title}'";
             using (var rdr = ExecuteReader(sql))
             {
                 while (rdr.Read())

@@ -9,7 +9,6 @@ using System.Web.UI;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using MySql.Data.MySqlClient;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Data
@@ -218,18 +217,18 @@ namespace BaiRong.Core.Data
         {
             if (topN > 0)
             {
-                return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"SELECT {columns} FROM {tableName} {whereAndOrder} LIMIT {topN}" : $"SELECT TOP {topN} {columns} FROM {tableName} {whereAndOrder}";
+                return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"SELECT {columns} FROM {GetTableName(tableName)} {whereAndOrder} LIMIT {topN}" : $"SELECT TOP {topN} {columns} FROM {GetTableName(tableName)} {whereAndOrder}";
             }
-            return $"SELECT {columns} FROM {tableName} {whereAndOrder}";
+            return $"SELECT {columns} FROM {GetTableName(tableName)} {whereAndOrder}";
         }
 
         public static string GetDistinctTopSqlString(string tableName, string columns, string whereAndOrder, int topN)
         {
             if (topN > 0)
             {
-                return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"SELECT DISTINCT {columns} FROM {tableName} {whereAndOrder} LIMIT {topN}" : $"SELECT DISTINCT TOP {topN} {columns} FROM {tableName} {whereAndOrder}";
+                return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"SELECT DISTINCT {columns} FROM {GetTableName(tableName)} {whereAndOrder} LIMIT {topN}" : $"SELECT DISTINCT TOP {topN} {columns} FROM {GetTableName(tableName)} {whereAndOrder}";
             }
-            return $"SELECT DISTINCT {columns} FROM {tableName} {whereAndOrder}";
+            return $"SELECT DISTINCT {columns} FROM {GetTableName(tableName)} {whereAndOrder}";
         }
 
         public static string GetInTopSqlString(string tableName, string columns, string whereAndOrder, int topN)
@@ -630,6 +629,11 @@ namespace BaiRong.Core.Data
                 return $"DATE_FORMAT({fieldName}, '%j')";
             }
             return $"DATEPART([DAYOFYEAR], {fieldName})";
+        }
+
+        public static string GetTableName(string tableName)
+        {
+            return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"`{tableName}`" : tableName;
         }
 
         public static string GetAddOne(string fieldName)

@@ -23,9 +23,9 @@ namespace SiteServer.CMS.Core.SystemData
 			return arraylist;
 		}
 
-        public static PublishmentSystemInfo GetDefaultPublishmentSystemInfo(string publishmentSystemName, string auxiliaryTableForContent, string auxiliaryTableForGovPublic, string auxiliaryTableForGovInteract, string auxiliaryTableForVote, string auxiliaryTableForJob, string publishmentSystemDir, string publishmentSystemUrl, int parentPublishmentSystemId)
+        public static PublishmentSystemInfo GetDefaultPublishmentSystemInfo(string publishmentSystemName, string auxiliaryTableForContent, string publishmentSystemDir, string publishmentSystemUrl, int parentPublishmentSystemId)
 		{
-            var psInfo = new PublishmentSystemInfo(0, publishmentSystemName, auxiliaryTableForContent, auxiliaryTableForGovPublic, auxiliaryTableForGovInteract, auxiliaryTableForVote, auxiliaryTableForJob, false, 0, publishmentSystemDir, publishmentSystemUrl, false, parentPublishmentSystemId, 0, string.Empty);
+            var psInfo = new PublishmentSystemInfo(0, publishmentSystemName, auxiliaryTableForContent, false, 0, publishmentSystemDir, publishmentSystemUrl, false, parentPublishmentSystemId, 0, string.Empty);
 			return psInfo;
 		}
 

@@ -1,5 +1,6 @@
 ﻿using System.Web.Http;
 using BaiRong.Core;
+using BaiRong.Core.Integration;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Users;

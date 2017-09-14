@@ -202,6 +202,9 @@
     <Compile Include="Settings\PageDepartmentTree.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Settings\PageIntegrationPayment.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Settings\PagePermissionAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -253,9 +256,6 @@
     <Compile Include="Cms\PageConfigurationComment.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Plugins\PageResumeView.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Controls\UEditor.cs" />
     <Compile Include="Core\AreaTreeItem.cs" />
     <Compile Include="Core\ChannelLoading.cs" />
@@ -265,7 +265,6 @@
     <Compile Include="Controls\NodeTree.cs" />
     <Compile Include="Controls\TextEditorControl.cs" />
     <Compile Include="Core\DepartmentTreeItem.cs" />
-    <Compile Include="Core\GovPublicCategoryTreeItem.cs" />
     <Compile Include="Core\AjaxManager.cs" />
     <Compile Include="Controls\NavigationTree.cs" />
     <Compile Include="Core\NavigationTreeItem.cs" />
@@ -288,15 +287,11 @@
     <Compile Include="Controls\Weather.cs" />
     <Compile Include="Core\ControlUtility.cs" />
     <Compile Include="Core\BackgroundInputTypeParser.cs" />
-    <Compile Include="Core\NodeNaviTabManager.cs" />
     <Compile Include="Core\NodeNaviTreeItem.cs" />
     <Compile Include="Core\NodeTreeItem.cs" />
     <Compile Include="Core\TextUtility.cs" />
     <Compile Include="Core\WebUtils.cs" />
     <Compile Include="PagePreview.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Ajax\AjaxWcmService.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="PageRedirect.cs">
@@ -321,204 +316,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageTableStyle.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\BasePageGovInteract.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\BasePageGovInteractList.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\BasePageGovInteractPage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\BasePageGovPublic.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\BasePageGovPublicApplyTo.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\BasePageGovPublicApplyToDetail.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractApplyComment.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractApplyFlow.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractApplyRedo.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractApplyReply.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractApplySwitchTo.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractApplyTranslate.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractApplyView.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractChannelAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractDepartmentSelect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractPermissions.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovInteractTypeAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicApplyComment.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicApplyFlow.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicApplyRedo.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicApplySwitchTo.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicApplyView.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicCategoryAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicCategoryChannelSelect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicCategoryClassAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicCategoryDepartmentSelect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicCategorySelect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicChannelAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicDepartmentAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\ModalGovPublicIdentifierRuleAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractAnalysis.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractChannel.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractConfiguration.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractConfigurationAlert.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractDepartmentSelect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractListAccept.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractListAll.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractListCheck.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractListReply.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractPageAccept.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractPageCheck.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractPageReply.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractPermissions.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovInteractType.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicAnalysisDepartment.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicApplyAnalysis.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicApplyConfiguration.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicApplyToAccept.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicApplyToAcceptDetail.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicApplyToAll.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicApplyToCheck.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicApplyToCheckDetail.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicApplyToReply.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicApplyToReplyDetail.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicCategory.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicCategoryClass.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicChannel.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicConfiguration.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicContent.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicContentAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicContentAddAfter.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicContentTree.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicCreateIdentifier.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicDepartment.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicDepartmentSelect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Wcm\PageGovPublicIdentifierRule.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Ajax\AjaxGatherService.cs">
@@ -899,9 +696,6 @@
     <Compile Include="Cms\PageRelatedFieldMain.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Plugins\PageResumeContent.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="PageRight.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -965,9 +759,6 @@
     <Compile Include="Plugins\PageTrackerYear.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Plugins\PageVoteContentAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Ajax\AjaxBackupService.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -999,18 +790,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalTableStyleImport.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalTagStyleGovInteractApplyAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalTagStyleGovInteractQueryAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalTagStyleGovPublicApplyAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalTagStyleGovPublicQueryAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalTemplateFilePathRule.cs">
@@ -1055,12 +834,6 @@
     <Compile Include="Cms\PageStlTag.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageTagStyle.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageTagStyleLeft.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\PageTagStyleMailSMS.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -1068,12 +841,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTagStyleMenuAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageTagStylePreview.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageTagStyleTemplate.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTemplate.cs">
@@ -1199,7 +966,7 @@
     <Compile Include="Settings\PageTaskLog.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageSmsProvider.cs">
+    <Compile Include="Settings\PageIntegrationSms.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageCache.cs">

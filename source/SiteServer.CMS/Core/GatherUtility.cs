@@ -426,15 +426,15 @@ namespace SiteServer.CMS.Core
                             {
                                 contentInfo.AddDate = TranslateUtils.ToDateTime(value, DateTime.Now);
                             }
-                            else if (StringUtils.EqualsIgnoreCase(BackgroundContentAttribute.IsColor, attributeName))
+                            else if (StringUtils.EqualsIgnoreCase(ContentAttribute.IsColor, attributeName))
                             {
                                 contentInfo.IsColor = TranslateUtils.ToBool(value, false);
                             }
-                            else if (StringUtils.EqualsIgnoreCase(BackgroundContentAttribute.IsHot, attributeName))
+                            else if (StringUtils.EqualsIgnoreCase(ContentAttribute.IsHot, attributeName))
                             {
                                 contentInfo.IsHot = TranslateUtils.ToBool(value, false);
                             }
-                            else if (StringUtils.EqualsIgnoreCase(BackgroundContentAttribute.IsRecommend, attributeName))
+                            else if (StringUtils.EqualsIgnoreCase(ContentAttribute.IsRecommend, attributeName))
                             {
                                 contentInfo.IsRecommend = TranslateUtils.ToBool(value, false);
                             }

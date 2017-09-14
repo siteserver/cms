@@ -52,7 +52,7 @@ namespace SiteServer.API.Controllers.Writing
                 var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemId, nodeId);
 
-                var sqlString = DataProvider.ContentDao.GetWritingSelectCommend(user.UserName, tableName, publishmentSystemId, nodeIdList, searchType, keyword, dateFrom, dateTo);
+                var sqlString = DataProvider.ContentDao.GetWritingSelectCommend(user.UserName, tableStyle, tableName, publishmentSystemId, nodeIdList, searchType, keyword, dateFrom, dateTo);
 
                 var results = new List<Dictionary<string, object>>();
                 var sqlPager = new SqlPager

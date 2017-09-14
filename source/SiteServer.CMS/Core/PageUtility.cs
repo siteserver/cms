@@ -6,6 +6,7 @@ using SiteServer.CMS.Model.Enumerations;
 using System;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
 {
@@ -314,24 +315,24 @@ namespace SiteServer.CMS.Core
             return GetContentUrlById(publishmentSystemInfo, contentInfo, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl), isFromBackground);
         }
 
-        public static string GetContentUrl(PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo)
+        public static string GetContentUrl(PublishmentSystemInfo publishmentSystemInfo, IContentInfo contentInfo)
         {
-            return GetContentUrlById(publishmentSystemInfo, contentInfo, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl), false);
+            return GetContentUrlById(publishmentSystemInfo, contentInfo, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.Attributes.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl), false);
         }
 
-        public static string GetContentUrl(PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, bool isFromBackground)
+        public static string GetContentUrl(PublishmentSystemInfo publishmentSystemInfo, IContentInfo contentInfo, bool isFromBackground)
         {
-            return GetContentUrlById(publishmentSystemInfo, contentInfo, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl), isFromBackground);
+            return GetContentUrlById(publishmentSystemInfo, contentInfo, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.Attributes.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl), isFromBackground);
         }
 
         /// <summary>
         /// 对GetContentUrlByID的优化
         /// 通过传入参数contentInfoCurrent，避免对ContentInfo查询太多
         /// </summary>
-        private static string GetContentUrlById(PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfoCurrent, int sourceId, int referenceId, string linkUrl, bool isFromBackground)
+        private static string GetContentUrlById(PublishmentSystemInfo publishmentSystemInfo, IContentInfo contentInfoCurrent, int sourceId, int referenceId, string linkUrl, bool isFromBackground)
         {
             var nodeId = contentInfoCurrent.NodeId;
-            if (referenceId > 0 && contentInfoCurrent.GetExtendedAttribute(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+            if (referenceId > 0 && contentInfoCurrent.Attributes.GetExtendedAttribute(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
                 if (sourceId > 0 && (NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, sourceId) || NodeManager.IsExists(sourceId)))
                 {

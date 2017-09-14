@@ -1,5 +1,7 @@
 ﻿using BaiRong.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin.Apis;
 using SiteServer.Plugin.Models;
 
@@ -38,6 +40,43 @@ namespace SiteServer.CMS.Plugin.Apis
         public string FilterXss(string html)
         {
             return PageUtils.FilterXss(html);
+        }
+
+        public string GetHomeUrl(int publishmentSystemId, string relatedUrl = "")
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            return HomeUtils.GetUrl(publishmentSystemInfo.Additional.HomeUrl, relatedUrl);
+        }
+
+        public string GetHomeLoginUrl(int publishmentSystemId, string returnUrl)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            return HomeUtils.GetLoginUrl(publishmentSystemInfo.Additional.HomeUrl, returnUrl);
+        }
+
+        public string GetHomeLogoutUrl(int publishmentSystemId, string returnUrl)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            return HomeUtils.GetLogoutUrl(publishmentSystemInfo.Additional.HomeUrl, returnUrl);
+        }
+
+        public string GetHomeRegisterUrl(int publishmentSystemId, string returnUrl)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            return HomeUtils.GetRegisterUrl(publishmentSystemInfo.Additional.HomeUrl, returnUrl);
+        }
+
+        public string GetCurrentUrl(PluginParseContext context)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(context.PublishmentSystemId);
+            return StlUtility.GetStlCurrentUrl(publishmentSystemInfo, context.ChannelId, context.ContentId,
+                context.ContentInfo, ETemplateTypeUtils.GetEnumType(context.TemplateType), context.TemplateId);
+        }
+
+        public string GetPublishmentSystemUrl(int publishmentSystemId)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            return PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo, string.Empty, false);
         }
     }
 }

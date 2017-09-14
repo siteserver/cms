@@ -35,9 +35,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-            var modelInfo = ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, nodeInfo.ContentModelId);
-            var tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(modelInfo.TableType);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, modelInfo.TableName, relatedIdentities);
+            var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
+            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
             styleInfoList = ContentUtility.GetAllTableStyleInfoList(PublishmentSystemInfo, tableStyle, styleInfoList);
 
             foreach (var styleInfo in styleInfoList)

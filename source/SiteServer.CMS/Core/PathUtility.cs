@@ -774,14 +774,14 @@ namespace SiteServer.CMS.Core
                 return filePath;
             }
 
-            public static string Parse(PublishmentSystemInfo publishmentSystemInfo, int nodeId, ContentInfo contentInfo)
+            public static string Parse(PublishmentSystemInfo publishmentSystemInfo, int nodeId, IContentInfo contentInfo)
             {
                 var contentFilePathRule = GetContentFilePathRule(publishmentSystemInfo, nodeId);
                 var filePath = ParseContentPath(publishmentSystemInfo, nodeId, contentInfo, contentFilePathRule);
                 return filePath;
             }
 
-            private static string ParseContentPath(PublishmentSystemInfo publishmentSystemInfo, int nodeId, ContentInfo contentInfo, string contentFilePathRule)
+            private static string ParseContentPath(PublishmentSystemInfo publishmentSystemInfo, int nodeId, IContentInfo contentInfo, string contentFilePathRule)
             {
                 var filePath = contentFilePathRule.Trim();
                 var regex = "(?<element>{@[^}]+})";
@@ -893,7 +893,7 @@ namespace SiteServer.CMS.Core
                             attributeName = attributeName.Substring(5);
                         }
 
-                        value = contentInfo.GetExtendedAttribute(attributeName);
+                        value = contentInfo.Attributes.GetExtendedAttribute(attributeName);
                         if (isLower)
                         {
                             value = value.ToLower();

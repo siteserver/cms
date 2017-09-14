@@ -1,13 +1,10 @@
 ﻿using BaiRong.Core;
-using System.Collections.Specialized;
 using System.Text;
 using System.Collections;
 using SiteServer.CMS.Model;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Wcm.Model;
 using System.Collections.Generic;
 using SiteServer.Plugin.Models;
 
@@ -36,56 +33,6 @@ namespace SiteServer.CMS.Core
             }
 
             return builder.ToString();
-        }
-
-        public static void SendSmsByGovPublicApply(PublishmentSystemInfo publishmentSystemInfo, TagStyleGovPublicApplyInfo tagStyleInfo, GovPublicApplyInfo applyInfo)
-        {
-            try
-            {
-                if (tagStyleInfo.IsSMS && !string.IsNullOrEmpty(tagStyleInfo.SMSTo))
-                {
-                    var mobiles = tagStyleInfo.SMSTo.Split(';', ',');
-                    var mobileArrayList = new ArrayList();
-
-                    foreach (var mobile in mobiles)
-                    {
-                        if (!string.IsNullOrEmpty(mobile) && StringUtils.IsMobile(mobile) && !mobileArrayList.Contains(mobile))
-                        {
-                            mobileArrayList.Add(mobile);
-                        }
-                    }
-
-                    var builder = new StringBuilder(tagStyleInfo.SMSTitle);
-                    var attributes = new NameValueCollection {["申请人类型"] = "公民"};
-                    if (TranslateUtils.ToBool(applyInfo.GetExtendedAttribute(GovPublicApplyAttribute.IsOrganization)))
-                    {
-                        attributes["申请人类型"] = "法人/其他组织";
-                    }
-                    attributes["申请时间"] = DateUtils.GetDateAndTimeString(applyInfo.AddDate);
-                    foreach (string key in attributes.Keys)
-                    {
-                        var theValue = attributes[key];
-
-                        builder.Append($@"{key}：{theValue},");
-                    }
-
-                    if (builder.Length > 0)
-                    {
-                        builder.Length = builder.Length - 1;
-                    }
-
-                    //var errorMessage = string.Empty;
-                    //var providerInfo = BaiRongDataProvider.SmsProviderDAO.GetFirstSmsProviderInfo();
-                    //if (providerInfo != null)
-                    //{
-                    //    SmsProviderManager.Send(providerInfo, mobileArrayList, builder.ToString(), out errorMessage);
-                    //}
-                }
-            }
-            catch
-            {
-                // ignored
-            }
         }
 
         public static void SendSms(PublishmentSystemInfo publishmentSystemInfo, ITagStyleMailSMSBaseInfo mailSmsInfo, ETableStyle tableStyle, string tableName, int relatedIdentity, ExtendedAttributes contentInfo)

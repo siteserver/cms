@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -11,6 +10,8 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin.Features;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -20,6 +21,8 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbNodeName;
         public TextBox TbNodeIndexName;
         public DropDownList DdlContentModelId;
+        public PlaceHolder PhPlugins;
+        public CheckBoxList CblPlugins;
         public CheckBoxList CblNodeGroupNameCollection;
         public RadioButtonList RblIsChannelAddable;
         public RadioButtonList RblIsContentAddable;
@@ -107,12 +110,26 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "编辑栏目", string.Empty);
 
-                    var contentModelInfoList = ContentModelManager.GetContentModelInfoList(PublishmentSystemInfo);
-                    foreach (var modelInfo in contentModelInfoList)
+                    DdlContentModelId.Items.Add(new ListItem("<默认>", string.Empty));
+                    var contentTables = PluginCache.GetEnabledPluginMetadatas<IContentTable>();
+                    foreach (var contentTable in contentTables)
                     {
-                        DdlContentModelId.Items.Add(new ListItem(modelInfo.ModelName, modelInfo.ModelId));
+                        DdlContentModelId.Items.Add(new ListItem($"插件：{contentTable.DisplayName}", contentTable.Id));
                     }
                     ControlUtils.SelectListItems(DdlContentModelId, nodeInfo.ContentModelId);
+
+                    var pluginChannels = PluginCache.GetAllChannels(false);
+                    if (pluginChannels.Count > 0)
+                    {
+                        foreach (var pluginMetadata in pluginChannels)
+                        {
+                            CblPlugins.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id));
+                        }
+                    }
+                    else
+                    {
+                        PhPlugins.Visible = false;
+                    }
 
                     CacAttributes.SetParameters(nodeInfo.Additional.NameValues, true, IsPostBack);
 
@@ -221,6 +238,8 @@ namespace SiteServer.BackgroundPages.Cms
                         nodeInfo.ContentModelId = DdlContentModelId.SelectedValue;
                         nodeInfo.ContentNum = BaiRongDataProvider.ContentDao.GetCount(NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo.ContentModelId), nodeInfo.NodeId);
                     }
+
+                    nodeInfo.Additional.PluginIds = ControlUtils.GetSelectedListControlValueCollection(CblPlugins);
 
                     TbFilePath.Text = TbFilePath.Text.Trim();
                     if (!nodeInfo.FilePath.Equals(TbFilePath.Text) && TbFilePath.Text.Length != 0)

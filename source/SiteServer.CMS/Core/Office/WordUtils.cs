@@ -4,7 +4,6 @@ using Word.Plugin;
 using System.Collections.Specialized;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
@@ -132,14 +131,7 @@ namespace SiteServer.CMS.Core.Office
 
                 wordContent = StringUtils.ReplaceFirst("<p></p>", wordContent, string.Empty);
 
-                if (EContentModelTypeUtils.Equals(contentModelId, EContentModelType.Job))
-                {
-                    formCollection[JobContentAttribute.Responsibility] = wordContent;
-                }
-                else
-                {
-                    formCollection[BackgroundContentAttribute.Content] = wordContent;
-                }
+                formCollection[BackgroundContentAttribute.Content] = wordContent;
             }
             return formCollection;
         }

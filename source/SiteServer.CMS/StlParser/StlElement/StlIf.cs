@@ -387,7 +387,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
-            var pageUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
+            var pageUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
 
             var ifApiUrl = ActionsIf.GetUrl(pageInfo.ApiUrl);
             var ifApiParms = ActionsIf.GetParameters(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.TemplateId, ajaxDivId, pageUrl, testType, testValue, testOperate, successTemplateString, failureTemplateString);

@@ -63,7 +63,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             var apiUrl = ActionsDynamic.GetUrl(pageInfo.ApiUrl);
-            var currentPageUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo);
+            var currentPageUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
             currentPageUrl = PageUtils.AddQuestionOrAndToUrl(currentPageUrl);
             var apiParameters = ActionsDynamic.GetParameters(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.TemplateId, currentPageUrl, ajaxDivId, isPageRefresh, templateContent);
 
