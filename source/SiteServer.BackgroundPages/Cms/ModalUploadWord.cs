@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 var contentInfo = ContentUtility.GetContentInfo(tableStyle);
 
-                                BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, formCollection, contentInfo.NameValues, ContentAttribute.HiddenAttributes);
+                                BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, formCollection, contentInfo.GetExtendedAttributes(), ContentAttribute.HiddenAttributes);
 
                                 contentInfo.NodeId = _nodeInfo.NodeId;
                                 contentInfo.PublishmentSystemId = PublishmentSystemId;

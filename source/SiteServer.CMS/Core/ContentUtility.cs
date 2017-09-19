@@ -420,7 +420,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.PublishmentSystemId = targetPublishmentSystemId;
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
-                contentInfo.NameValues[ContentAttribute.TranslateContentType] = ETranslateContentType.Copy.ToString();
+                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 
@@ -453,7 +453,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.PublishmentSystemId = targetPublishmentSystemId;
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
-                contentInfo.NameValues[ContentAttribute.TranslateContentType] = ETranslateContentType.Cut.ToString();
+                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
 
                 var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
@@ -504,7 +504,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.NameValues[ContentAttribute.TranslateContentType] = ETranslateContentType.Reference.ToString();
+                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
                 DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
             }
@@ -518,7 +518,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.NameValues[ContentAttribute.TranslateContentType] = ETranslateContentType.ReferenceContent.ToString();
+                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 
                 var pluginChannels = PluginCache.GetChannelFeatures(nodeInfo);

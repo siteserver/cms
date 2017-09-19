@@ -12,6 +12,11 @@ namespace siteserver
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             WebConfigUtils.Load(Environment.CurrentDirectory);
 
+            foreach (var arg in args)
+            {
+                Console.WriteLine(arg);
+            }
+
             if (!ServiceUtils.IsSiteServerDir)
             {
                 Console.WriteLine("当前文件夹不是正确的SiteServer系统根目录");
@@ -73,6 +78,14 @@ namespace siteserver
                 if (subOptions != null)
                 {
                     Decode.Start(subOptions.String);
+                }
+            }
+            else if (invokedVerb == Plugin.CommandName)
+            {
+                var subOptions = (PluginSubOptions)invokedVerbInstance;
+                if (subOptions != null)
+                {
+                    Plugin.Start(subOptions.String);
                 }
             }
             else if (invokedVerb == Run.CommandName)

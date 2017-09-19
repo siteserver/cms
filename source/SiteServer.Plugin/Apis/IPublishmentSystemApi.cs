@@ -12,7 +12,5 @@ namespace SiteServer.Plugin.Apis
         List<int> GetPublishmentSystemIds();
 
         IPublishmentSystemInfo GetPublishmentSystemInfo(int publishmentSystemId);
-
-        string GetUrlByFilePath(string filePath);
     }
 }

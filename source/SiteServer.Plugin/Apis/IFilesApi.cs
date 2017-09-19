@@ -7,5 +7,7 @@ namespace SiteServer.Plugin.Apis
         void MoveFiles(int sourcePublishmentSystemId, int targetPublishmentSystemId, List<string> relatedUrls);
 
         string GetUploadFilePath(int publishmentSystemId, string filePath);
+
+        string GetTemporaryFilesPath(string relatedPath);
     }
 }

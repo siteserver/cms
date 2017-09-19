@@ -23,5 +23,13 @@ namespace SiteServer.Plugin.Apis
         string GetCurrentUrl(PluginParseContext context);
 
         string GetPublishmentSystemUrl(int publishmentSystemId);
+
+        string GetPublishmentSystemUrlByFilePath(string filePath);
+
+        string GetChannelUrl(int publishmentSystemId, int channelId);
+
+        string GetContentUrl(int publishmentSystemId, int channelId, int contentId);
+
+        string GetRootUrl(string relatedUrl);
     }
 }

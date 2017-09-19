@@ -30,13 +30,6 @@ namespace SiteServer.CMS.Plugin.Apis
             return PublishmentSystemManager.GetPublishmentSystemIdList();
         }
 
-        public string GetUrlByFilePath(string filePath)
-        {
-            var publishmentSystemId = GetPublishmentSystemIdByFilePath(filePath);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath);
-        }
-
         public IPublishmentSystemInfo GetPublishmentSystemInfo(int publishmentSystemId)
         {
             return PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);

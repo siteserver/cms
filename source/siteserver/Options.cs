@@ -36,6 +36,12 @@ namespace siteserver
         public string String { get; set; }
     }
 
+    internal class PluginSubOptions
+    {
+        [Option('s', "string", Required = true, HelpText = "Command to execute.")]
+        public string String { get; set; }
+    }
+
     internal class Options
     {
         [Option]

@@ -232,9 +232,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.PublishmentSystemInfo, tableStyle, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
                     parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
-                    if (!isClearTags && !string.IsNullOrEmpty(contentInfo.NameValues[BackgroundContentAttribute.TitleFormatString]))
+                    if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.TitleFormatString)))
                     {
-                        parsedContent = ContentUtility.FormatTitle(contentInfo.NameValues[BackgroundContentAttribute.TitleFormatString], parsedContent);
+                        parsedContent = ContentUtility.FormatTitle(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.TitleFormatString), parsedContent);
                     }
 
                     if (!contextInfo.IsInnerElement)

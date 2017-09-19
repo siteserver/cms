@@ -287,7 +287,7 @@ $('#TbTags').keyup(function (e) {
                 }
                 else
                 {
-                    AcAttributes.SetParameters(contentInfo?.NameValues, PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities, _tableStyle, _tableName, true, IsPostBack);
+                    AcAttributes.SetParameters(contentInfo?.GetExtendedAttributes(), PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities, _tableStyle, _tableName, true, IsPostBack);
                     TbTags.Text = contentInfo?.Tags;
                 }
 
@@ -350,7 +350,7 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.LastEditDate = DateTime.Now;
 
                     //自动保存的时候，不保存编辑器的图片
-                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.NameValues, ContentAttribute.HiddenAttributes, true);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.GetExtendedAttributes(), ContentAttribute.HiddenAttributes, true);
 
                     contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
@@ -429,7 +429,7 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.LastEditDate = DateTime.Now;
 
                     //自动保存的时候，不保存编辑器的图片
-                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.NameValues, ContentAttribute.HiddenAttributes, true);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.GetExtendedAttributes(), ContentAttribute.HiddenAttributes, true);
 
                     contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);

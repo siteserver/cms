@@ -25,7 +25,7 @@ namespace BaiRong.Core.Provider
             contentInfo.IsTop = contentInfo.IsTop;
 
             IDataParameter[] parms;
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.NameValues, tableName, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.GetExtendedAttributes(), tableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -69,7 +69,7 @@ namespace BaiRong.Core.Provider
             if (!string.IsNullOrEmpty(tableName))
             {
                 contentInfo.BeforeExecuteNonQuery();
-                sqlString = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(contentInfo.NameValues, tableName, out parms);
+                sqlString = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(contentInfo.GetExtendedAttributes(), tableName, out parms);
             }
 
             if (!string.IsNullOrEmpty(sqlString))

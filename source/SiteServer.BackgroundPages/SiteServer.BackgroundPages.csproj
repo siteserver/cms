@@ -202,6 +202,15 @@
     <Compile Include="Settings\PageDepartmentTree.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Settings\PageIntegrationPayWeixin.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Settings\PageIntegrationPayAlipayPc.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Settings\PageIntegrationPay.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Settings\PageIntegrationPayment.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

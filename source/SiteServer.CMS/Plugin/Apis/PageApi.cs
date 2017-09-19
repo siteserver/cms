@@ -78,5 +78,29 @@ namespace SiteServer.CMS.Plugin.Apis
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             return PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo, string.Empty, false);
         }
+
+        public string GetPublishmentSystemUrlByFilePath(string filePath)
+        {
+            var publishmentSystemId = PublishmentSystemApi.Instance.GetPublishmentSystemIdByFilePath(filePath);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath);
+        }
+
+        public string GetRootUrl(string relatedUrl)
+        {
+            return PageUtils.GetRootUrl(relatedUrl);
+        }
+
+        public string GetChannelUrl(int publishmentSystemId, int channelId)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            return PageUtility.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId), false);
+        }
+
+        public string GetContentUrl(int publishmentSystemId, int channelId, int contentId)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            return PageUtility.GetContentUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId), contentId, false);
+        }
     }
 }

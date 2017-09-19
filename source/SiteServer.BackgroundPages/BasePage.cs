@@ -328,5 +328,18 @@ $('.operation-area').hide();
             }
             return analytics;
         }
+
+        public string SwalError(string title, string message)
+        {
+            var script = $@"swal({{
+  title: '{title}',
+  text: '{StringUtils.ReplaceNewline(message, string.Empty)}',
+  icon: 'error',
+  button: '关 闭',
+}});";
+            ClientScript.RegisterClientScriptBlock(GetType(), "error", script, true);
+
+            return script;
+        }
     }
 }

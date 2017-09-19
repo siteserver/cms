@@ -13,7 +13,7 @@ namespace BaiRong.Core.Model
 
         public override string ToString()
         {
-            return TranslateUtils.NameValueCollectionToString(NameValues);
+            return TranslateUtils.NameValueCollectionToString(GetExtendedAttributes());
         }
 
         public string Cipherkey
@@ -167,6 +167,12 @@ namespace BaiRong.Core.Model
         {
             get { return GetString("PaymentPingxxSecretKey", string.Empty); }
             set { SetExtendedAttribute("PaymentPingxxSecretKey", value); }
+        }
+
+        public string IntegrationPayConfigJson
+        {
+            get { return GetString("IntegrationPayConfigJson", string.Empty); }
+            set { SetExtendedAttribute("IntegrationPayConfigJson", value); }
         }
     }
 }

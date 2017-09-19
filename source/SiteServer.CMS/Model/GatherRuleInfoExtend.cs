@@ -98,7 +98,7 @@ namespace SiteServer.CMS.Model
 
         public override string ToString()
         {
-            return TranslateUtils.NameValueCollectionToString(NameValues);
+            return TranslateUtils.NameValueCollectionToString(GetExtendedAttributes());
         }
     }
 }

@@ -56,7 +56,7 @@ namespace SiteServer.API.Controllers.Writing
                 //    }
                 //}
 
-                InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, postCollection, contentInfo.NameValues, ContentAttribute.HiddenAttributes);
+                InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, postCollection, contentInfo.GetExtendedAttributes(), ContentAttribute.HiddenAttributes);
 
                 contentInfo.LastEditDate = DateTime.Now;
                 contentInfo.IsChecked = false;

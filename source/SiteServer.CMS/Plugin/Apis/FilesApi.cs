@@ -35,5 +35,10 @@ namespace SiteServer.CMS.Plugin.Apis
             var localFileName = PathUtility.GetUploadFileName(publishmentSystemInfo, fileName);
             return PathUtils.Combine(localDirectoryPath, localFileName);
         }
+
+        public string GetTemporaryFilesPath(string relatedPath)
+        {
+            return PathUtils.GetTemporaryFilesPath(relatedPath);
+        }
     }
 }

@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     var contentInfo = DataProvider.InputContentDao.GetContentInfo(_contentId);
                     if (contentInfo != null)
                     {
-                        ContentControl.SetParameters(contentInfo.NameValues, PublishmentSystemInfo, 0, _relatedIdentities, ETableStyle.InputContent, DataProvider.InputContentDao.TableName, true, IsPostBack);
+                        ContentControl.SetParameters(contentInfo.GetExtendedAttributes(), PublishmentSystemInfo, 0, _relatedIdentities, ETableStyle.InputContent, DataProvider.InputContentDao.TableName, true, IsPostBack);
                     }
                 }
                 else
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Plugins
 				{
                     var contentInfo = DataProvider.InputContentDao.GetContentInfo(_contentId);
 
-                    InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, contentInfo.NameValues);
+                    InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, contentInfo.GetExtendedAttributes());
 
                     DataProvider.InputContentDao.Update(contentInfo);
 
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                     var contentInfo = new InputContentInfo(0, _inputInfo.InputId, 0, true, string.Empty, ipAddress, DateTime.Now, string.Empty);
 
-                    InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, contentInfo.NameValues);
+                    InputTypeParser.AddValuesToAttributes(ETableStyle.InputContent, DataProvider.InputContentDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, contentInfo.GetExtendedAttributes());
 
                     DataProvider.InputContentDao.Insert(contentInfo);
 

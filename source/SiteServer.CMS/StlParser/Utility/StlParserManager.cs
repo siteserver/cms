@@ -3,6 +3,7 @@ using System.Text;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlElement;
@@ -73,25 +74,30 @@ namespace SiteServer.CMS.StlParser.Utility
             return builder.ToString();
         }
 
-        public static string ParseInnerContent(string template, int publishmentSystemId, int channelId, int contentId)
+        public static string ParseInnerContent(string template, PluginParseContext context)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
             var builder = new StringBuilder(template);
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, null, null);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(context.PublishmentSystemId);
+            var templateInfo = new TemplateInfo
+            {
+                TemplateId = context.TemplateId,
+                TemplateType = ETemplateTypeUtils.GetEnumType(context.TemplateType)
+            };
+            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, publishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo);
             ParseInnerContent(builder, pageInfo, contextInfo);
             return builder.ToString();
         }
 
-        public static void ParseInnerContent(StringBuilder builder, int publishmentSystemId, int channelId, int contentId)
-        {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, null, null);
-            var contextInfo = new ContextInfo(pageInfo);
-            ParseInnerContent(builder, pageInfo, contextInfo);
-        }
+        //public static void ParseInnerContent(StringBuilder builder, int publishmentSystemId, int channelId, int contentId)
+        //{
+        //    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+        //    var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, null, null);
+        //    var contextInfo = new ContextInfo(pageInfo);
+        //    ParseInnerContent(builder, pageInfo, contextInfo);
+        //}
 
         public static void ReplacePageElementsInContentPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, int nodeId, int contentId, int currentPageIndex, int pageCount)
         {

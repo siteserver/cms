@@ -14,8 +14,10 @@ namespace SiteServer.Plugin.Models
     {
         private readonly object _dataItem;
         private NameValueCollection _extendedAttributes = new NameValueCollection();
-
-        public virtual NameValueCollection NameValues => _extendedAttributes;
+        public NameValueCollection GetExtendedAttributes()
+        {
+            return _extendedAttributes;
+        }
 
         public ExtendedAttributes()
         {
@@ -233,7 +235,7 @@ namespace SiteServer.Plugin.Models
         //将数据保存至数据库前执行
         public void BeforeExecuteNonQuery()
         {
-            var attributes = new NameValueCollection(NameValues);
+            var attributes = new NameValueCollection(GetExtendedAttributes());
 
             foreach (var attributeName in GetDefaultAttributesNames())
             {

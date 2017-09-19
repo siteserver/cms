@@ -179,17 +179,17 @@ namespace SiteServer.BackgroundPages.Plugins
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            if (string.IsNullOrEmpty(DdlSqlDatabaseName.SelectedValue))
-            {
-                FailMessage("配置失败，需要选择数据库");
-                return;
-            }
-
             var databaseType = string.Empty;
             var connectionString = string.Empty;
 
             if (!TranslateUtils.ToBool(DdlIsDefault.SelectedValue))
             {
+                if (string.IsNullOrEmpty(DdlSqlDatabaseName.SelectedValue))
+                {
+                    FailMessage("配置失败，需要选择数据库");
+                    return;
+                }
+
                 databaseType = DdlSqlDatabaseType.SelectedValue;
                 connectionString = GetConnectionString(true);
             }

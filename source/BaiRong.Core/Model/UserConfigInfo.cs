@@ -14,7 +14,7 @@ namespace BaiRong.Core.Model
 
         public override string ToString()
         {
-            return TranslateUtils.NameValueCollectionToString(NameValues);
+            return TranslateUtils.NameValueCollectionToString(GetExtendedAttributes());
         }
 
         /****************用户中心显示设置********************/

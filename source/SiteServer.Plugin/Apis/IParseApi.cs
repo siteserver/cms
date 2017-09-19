@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using SiteServer.Plugin.Models;
 
 namespace SiteServer.Plugin.Apis
 {
@@ -7,9 +7,9 @@ namespace SiteServer.Plugin.Apis
         void GetTemplateLoadingYesNo(string innerXml, out string template, out string loading, out string yes,
             out string no);
 
-        string ParseInnerXml(string innerXml, int publishmentSystemId, int channelId, int contentId);
+        string ParseInnerXml(string innerXml, PluginParseContext context);
 
-        string ParseAttributeValue(string attributeValue, int publishmentSystemId, int channelId, int contentId);
+        string ParseAttributeValue(string attributeValue, PluginParseContext context);
 
         string HtmlToXml(string html);
 

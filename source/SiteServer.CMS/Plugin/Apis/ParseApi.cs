@@ -1,9 +1,12 @@
 ﻿using System.Text;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin.Apis;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -18,15 +21,20 @@ namespace SiteServer.CMS.Plugin.Apis
             StlInnerUtility.GetTemplateLoadingYesNo(innerXml, out template, out loading, out yes, out no);
         }
 
-        public string ParseInnerXml(string innerXml, int publishmentSystemId, int channelId, int contentId)
+        public string ParseInnerXml(string innerXml, PluginParseContext context)
         {
-            return StlParserManager.ParseInnerContent(innerXml, publishmentSystemId, channelId, contentId);
+            return StlParserManager.ParseInnerContent(innerXml, context);
         }
 
-        public string ParseAttributeValue(string attributeValue, int publishmentSystemId, int channelId, int contentId)
+        public string ParseAttributeValue(string attributeValue, PluginParseContext context)
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, null, null);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(context.PublishmentSystemId);
+            var templateInfo = new TemplateInfo
+            {
+                TemplateId = context.TemplateId,
+                TemplateType = ETemplateTypeUtils.GetEnumType(context.TemplateType)
+            };
+            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, publishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo);
             return StlEntityParser.ReplaceStlEntitiesForAttributeValue(attributeValue, pageInfo, contextInfo);
         }

@@ -1146,20 +1146,37 @@ namespace BaiRong.Core
 
         public static string JsonSerialize(object obj)
         {
-            var settings = new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()};
-            var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
-            settings.Converters.Add(timeFormat);
+            try
+            {
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
+                var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
+                settings.Converters.Add(timeFormat);
 
-            return JsonConvert.SerializeObject(obj, settings);
+                return JsonConvert.SerializeObject(obj, settings);
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         public static T JsonDeserialize<T>(string json)
         {
-            var settings = new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()};
-            var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
-            settings.Converters.Add(timeFormat);
+            try
+            {
+                var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+                var timeFormat = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
+                settings.Converters.Add(timeFormat);
 
-            return JsonConvert.DeserializeObject<T>(json, settings);
+                return JsonConvert.DeserializeObject<T>(json, settings);
+            }
+            catch
+            {
+                return default(T);
+            }
         }
 
         public static string EncryptStringBySecretKey(string inputString)

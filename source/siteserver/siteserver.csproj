@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="commands\Decode.cs" />
+    <Compile Include="commands\Plugin.cs" />
     <Compile Include="commands\Encode.cs" />
     <Compile Include="commands\Build.cs" />
     <Compile Include="commands\Test.cs" />
