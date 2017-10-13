@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages.Cms
     {
 		public DataGrid DgFiles;
 
-        public string PublishmentSystemUrl => PublishmentSystemInfo.PublishmentSystemUrl;
+        public string PublishmentSystemUrl => PublishmentSystemInfo.Additional.WebUrl;
 
 	    private string _directoryPath;
 

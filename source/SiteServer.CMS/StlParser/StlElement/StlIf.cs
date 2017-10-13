@@ -5,7 +5,7 @@ using System.Web.UI;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
-using SiteServer.CMS.Controllers.Stl;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -37,7 +37,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string TypeIsUserLoggin = "IsUserLoggin";                                      //用户是否已登录
         public const string TypeIsAdministratorLoggin = "IsAdministratorLoggin";                    //管理员是否已登录
         public const string TypeIsUserOrAdministratorLoggin = "IsUserOrAdministratorLoggin";        //用户或管理员是否已登录
-        public const string TypeUserGroup = "UserGroup";                                            //用户组
         public const string TypeChannelName = "ChannelName";			                            //栏目名称
         public const string TypeChannelIndex = "ChannelIndex";			                            //栏目索引
         public const string TypeTemplateName = "TemplateName";			                            //模板名称
@@ -58,7 +57,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             {TypeIsUserLoggin, "用户是否已登录"},
             {TypeIsAdministratorLoggin, "管理员是否已登录"},
             {TypeIsUserOrAdministratorLoggin, "用户或管理员是否已登录"},
-            {TypeUserGroup, "用户组"},
             {TypeChannelName, "栏目名称"},
             {TypeChannelIndex, "栏目索引"},
             {TypeTemplateName, "模板名称"},
@@ -137,8 +135,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) ||
                 StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) ||
-                StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin) ||
-                StringUtils.EqualsIgnoreCase(testType, TypeUserGroup))
+                StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin))
             {
                 return TestTypeDynamic(pageInfo, contextInfo, testType, testValue, testOperate, successTemplateString,
                     failureTemplateString);

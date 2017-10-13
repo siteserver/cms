@@ -3,7 +3,7 @@ using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
-using SiteServer.CMS.Controllers.Stl;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -164,7 +164,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-            var apiUrl = ActionsSearch.GetUrl(pageInfo.PublishmentSystemInfo.Additional.ApiUrl);
+            var apiUrl = ActionsSearch.GetUrl(pageInfo.ApiUrl);
             var apiParameters = ActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, isDefaultDisplay, pageInfo.PublishmentSystemId, ajaxDivId, yes);
 
             var builder = new StringBuilder();

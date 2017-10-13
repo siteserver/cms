@@ -398,7 +398,7 @@ itemController.itemCount = {awardInfoList.Count};itemController.items = [{itemBu
                         {
                             DataProviderWx.LotteryDao.Update(lotteryInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改刮刮卡", $"刮刮卡:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改刮刮卡", $"刮刮卡:{TbTitle.Text}");
                             SuccessMessage("修改刮刮卡成功！");
                         }
                         else
@@ -407,7 +407,7 @@ itemController.itemCount = {awardInfoList.Count};itemController.items = [{itemBu
 
                             DataProviderWx.LotteryAwardDao.UpdateLotteryId(PublishmentSystemId, _lotteryId);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加刮刮卡", $"刮刮卡:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加刮刮卡", $"刮刮卡:{TbTitle.Text}");
                             SuccessMessage("添加刮刮卡成功！");
                         }
 

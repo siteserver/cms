@@ -35,8 +35,8 @@ namespace SiteServer.CMS.Core.Advertisement
         public static string GetSlideAdvHtml(PublishmentSystemInfo publishmentSystemInfo, AdAreaInfo adAreaInfo, AdvInfo advInfo, ArrayList adMaterialInfoList)
         {
             var strHtml = new StringBuilder();
-            strHtml.Append($@"<link href=""{SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "Styles/Css/slideAdv.css")}"" rel=""stylesheet"" />");
-            strHtml.Append($@"<script src=""{SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "JQuery/jquery-1.4.3.min.js")}""></script>");
+            strHtml.Append($@"<link href=""{SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "Styles/Css/slideAdv.css")}"" rel=""stylesheet"" />");
+            strHtml.Append($@"<script src=""{SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "JQuery/jquery-1.4.3.min.js")}""></script>");
             strHtml.AppendFormat(@"
 <script type=""text/javascript"">
     var t = n = 0, count;

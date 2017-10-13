@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using Aop.Api.Util;
-using SiteServer.CMS.Plugin.Apis;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -13,10 +11,14 @@ namespace SiteServer.BackgroundPages.Settings
     {
         public DropDownList DdlIsEnabled;
         public PlaceHolder PhSettings;
-        public TextBox TbAccount;
-        public TextBox TbAppId;
+        public DropDownList DdlIsMApi;
+
+        public PlaceHolder PhMApi;
         public TextBox TbPid;
         public TextBox TbMd5;
+
+        public PlaceHolder PhOpenApi;
+        public TextBox TbAppId;
         public TextBox TbPublicKey;
         public TextBox TbPrivateKey;
 
@@ -37,24 +39,35 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings("֧������", AppManager.Permissions.Settings.Integration);
+            BreadCrumbSettings("支付设置", AppManager.Permissions.Settings.Integration);
 
-            EBooleanUtils.AddListItems(DdlIsEnabled, "��ͨ", "����ͨ");
+            EBooleanUtils.AddListItems(DdlIsEnabled, "开通", "不开通");
             ControlUtils.SelectListItems(DdlIsEnabled, _config.IsAlipayPc.ToString());
+
+            EBooleanUtils.AddListItems(DdlIsMApi, "即时到账（mapi）", "电脑网站支付（openapi）");
+            ControlUtils.SelectListItems(DdlIsMApi, _config.AlipayPcIsMApi.ToString());
 
             PhSettings.Visible = _config.IsAlipayPc;
 
-            TbAccount.Text = _config.AlipayPcAccount;
             TbAppId.Text = _config.AlipayPcAppId;
             TbPid.Text = _config.AlipayPcPid;
             TbMd5.Text = _config.AlipayPcMd5;
             TbPublicKey.Text = _config.AlipayPcPublicKey;
             TbPrivateKey.Text = _config.AlipayPcPrivateKey;
+
+            PhMApi.Visible = _config.AlipayPcIsMApi;
+            PhOpenApi.Visible = !PhMApi.Visible;
         }
 
         public void DdlIsEnabled_SelectedIndexChanged(object sender, EventArgs e)
         {
             PhSettings.Visible = TranslateUtils.ToBool(DdlIsEnabled.SelectedValue);
+        }
+
+        public void DdlIsMApi_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhMApi.Visible = TranslateUtils.ToBool(DdlIsMApi.SelectedValue);
+            PhOpenApi.Visible = !PhMApi.Visible;
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -64,16 +77,16 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    AlipaySignature.RSASignCharSet("test", TbPrivateKey.Text, PaymentApi.AlipayCharset,
-                        false, PaymentApi.AlipaySignType);
+                    AlipaySignature.RSASignCharSet("test", TbPrivateKey.Text, "utf-8", false, "RSA2");
                 }
                 catch (Exception ex)
                 {
-                    SwalError("Ӧ��˽Կ��ʽ����ȷ!", ex.Message);
+                    SwalError("应用私钥格式不正确!", ex.Message);
                     return;
                 }
             }
-            _config.AlipayPcAccount = TbAccount.Text;
+
+            _config.AlipayPcIsMApi = TranslateUtils.ToBool(DdlIsMApi.SelectedValue);
             _config.AlipayPcAppId = TbAppId.Text;
             _config.AlipayPcPid = TbPid.Text;
             _config.AlipayPcMd5 = TbMd5.Text;

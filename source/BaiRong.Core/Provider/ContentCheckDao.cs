@@ -9,7 +9,7 @@ namespace BaiRong.Core.Provider
 {
 	public class ContentCheckDao : DataProviderBase
 	{
-        public string TableName => "bairong_ContentCheck";
+        public override string TableName => "bairong_ContentCheck";
 
         private const string SqlSelect = "SELECT CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM bairong_ContentCheck WHERE CheckID = @CheckID";
 

@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             return
-                $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;<a href='{publishmentSystemInfo.PublishmentSystemUrl}' target='_blank'>{publishmentSystemInfo.PublishmentSystemName}</a>";
+                $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;<a href='{publishmentSystemInfo.Additional.WebUrl}' target='_blank'>{publishmentSystemInfo.PublishmentSystemName}</a>";
         }
 
         private string GetChangeHtml(int publishmentSystemID, bool isHeadquarters)

@@ -31,33 +31,33 @@ namespace SiteServer.BackgroundPages.Settings
 
             BreadCrumbSettings("管理员设置", AppManager.Permissions.Settings.AdminManagement);
 
-            TbLoginUserNameMinLength.Text = ConfigManager.SystemConfigInfo.LoginUserNameMinLength.ToString();
-            TbLoginPasswordMinLength.Text = ConfigManager.SystemConfigInfo.LoginPasswordMinLength.ToString();
+            TbLoginUserNameMinLength.Text = ConfigManager.SystemConfigInfo.AdminUserNameMinLength.ToString();
+            TbLoginPasswordMinLength.Text = ConfigManager.SystemConfigInfo.AdminPasswordMinLength.ToString();
             EUserPasswordRestrictionUtils.AddListItems(DdlLoginPasswordRestriction);
-            ControlUtils.SelectListItemsIgnoreCase(DdlLoginPasswordRestriction, EUserPasswordRestrictionUtils.GetValue(ConfigManager.SystemConfigInfo.LoginPasswordRestriction));
+            ControlUtils.SelectListItemsIgnoreCase(DdlLoginPasswordRestriction, ConfigManager.SystemConfigInfo.AdminPasswordRestriction);
 
             EBooleanUtils.AddListItems(RblIsLoginFailToLock, "是", "否");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsLoginFailToLock, ConfigManager.SystemConfigInfo.IsLoginFailToLock.ToString());
+            ControlUtils.SelectListItemsIgnoreCase(RblIsLoginFailToLock, ConfigManager.SystemConfigInfo.IsAdminLockLogin.ToString());
 
-            PhFailToLock.Visible = ConfigManager.SystemConfigInfo.IsLoginFailToLock;
+            PhFailToLock.Visible = ConfigManager.SystemConfigInfo.IsAdminLockLogin;
 
-            TbLoginFailToLockCount.Text = ConfigManager.SystemConfigInfo.LoginFailToLockCount.ToString();
+            TbLoginFailToLockCount.Text = ConfigManager.SystemConfigInfo.AdminLockLoginCount.ToString();
 
             DdlLoginLockingType.Items.Add(new ListItem("按小时锁定", EUserLockTypeUtils.GetValue(EUserLockType.Hours)));
             DdlLoginLockingType.Items.Add(new ListItem("永久锁定", EUserLockTypeUtils.GetValue(EUserLockType.Forever)));
-            ControlUtils.SelectListItemsIgnoreCase(DdlLoginLockingType, ConfigManager.SystemConfigInfo.LoginLockingType);
+            ControlUtils.SelectListItemsIgnoreCase(DdlLoginLockingType, ConfigManager.SystemConfigInfo.AdminLockLoginType);
 
             PhLoginLockingHours.Visible = false;
-            if (!EUserLockTypeUtils.Equals(ConfigManager.SystemConfigInfo.LoginLockingType, EUserLockType.Forever))
+            if (!EUserLockTypeUtils.Equals(ConfigManager.SystemConfigInfo.AdminLockLoginType, EUserLockType.Forever))
             {
                 PhLoginLockingHours.Visible = true;
-                TbLoginLockingHours.Text = ConfigManager.SystemConfigInfo.LoginLockingHours.ToString();
+                TbLoginLockingHours.Text = ConfigManager.SystemConfigInfo.AdminLockLoginHours.ToString();
             }
 
             EBooleanUtils.AddListItems(RblIsFindPassword, "启用", "禁用");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsFindPassword, ConfigManager.SystemConfigInfo.IsFindPassword.ToString());
-            PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsFindPassword;
-            TbFindPasswordSmsTplId.Text = ConfigManager.SystemConfigInfo.FindPasswordSmsTplId;
+            ControlUtils.SelectListItemsIgnoreCase(RblIsFindPassword, ConfigManager.SystemConfigInfo.IsAdminFindPassword.ToString());
+            PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsAdminFindPassword;
+            TbFindPasswordSmsTplId.Text = ConfigManager.SystemConfigInfo.AdminFindPasswordSmsTplId;
 
             EBooleanUtils.AddListItems(RblIsViewContentOnlySelf, "不可以", "可以");
             ControlUtils.SelectListItemsIgnoreCase(RblIsViewContentOnlySelf, ConfigManager.SystemConfigInfo.IsViewContentOnlySelf.ToString());
@@ -82,17 +82,17 @@ namespace SiteServer.BackgroundPages.Settings
         {
             try
             {
-                ConfigManager.SystemConfigInfo.LoginUserNameMinLength = TranslateUtils.ToInt(TbLoginUserNameMinLength.Text);
-                ConfigManager.SystemConfigInfo.LoginPasswordMinLength = TranslateUtils.ToInt(TbLoginPasswordMinLength.Text);
-                ConfigManager.SystemConfigInfo.LoginPasswordRestriction = EUserPasswordRestrictionUtils.GetEnumType(DdlLoginPasswordRestriction.SelectedValue);
+                ConfigManager.SystemConfigInfo.AdminUserNameMinLength = TranslateUtils.ToInt(TbLoginUserNameMinLength.Text);
+                ConfigManager.SystemConfigInfo.AdminPasswordMinLength = TranslateUtils.ToInt(TbLoginPasswordMinLength.Text);
+                ConfigManager.SystemConfigInfo.AdminPasswordRestriction = DdlLoginPasswordRestriction.SelectedValue;
 
-                ConfigManager.SystemConfigInfo.IsLoginFailToLock = TranslateUtils.ToBool(RblIsLoginFailToLock.SelectedValue);
-                ConfigManager.SystemConfigInfo.LoginFailToLockCount = TranslateUtils.ToInt(TbLoginFailToLockCount.Text, 3);
-                ConfigManager.SystemConfigInfo.LoginLockingType = DdlLoginLockingType.SelectedValue;
-                ConfigManager.SystemConfigInfo.LoginLockingHours = TranslateUtils.ToInt(TbLoginLockingHours.Text);
+                ConfigManager.SystemConfigInfo.IsAdminLockLogin = TranslateUtils.ToBool(RblIsLoginFailToLock.SelectedValue);
+                ConfigManager.SystemConfigInfo.AdminLockLoginCount = TranslateUtils.ToInt(TbLoginFailToLockCount.Text, 3);
+                ConfigManager.SystemConfigInfo.AdminLockLoginType = DdlLoginLockingType.SelectedValue;
+                ConfigManager.SystemConfigInfo.AdminLockLoginHours = TranslateUtils.ToInt(TbLoginLockingHours.Text);
 
-                ConfigManager.SystemConfigInfo.IsFindPassword = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
-                ConfigManager.SystemConfigInfo.FindPasswordSmsTplId = TbFindPasswordSmsTplId.Text;
+                ConfigManager.SystemConfigInfo.IsAdminFindPassword = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
+                ConfigManager.SystemConfigInfo.AdminFindPasswordSmsTplId = TbFindPasswordSmsTplId.Text;
 
                 ConfigManager.SystemConfigInfo.IsViewContentOnlySelf = TranslateUtils.ToBool(RblIsViewContentOnlySelf.SelectedValue);
 

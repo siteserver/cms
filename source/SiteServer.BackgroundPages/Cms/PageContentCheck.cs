@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
             var nodeId = PublishmentSystemId;
 
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeId);
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var owningNodeId in ProductPermissionsManager.Current.OwningNodeIdList)
                 {
                     int checkedLevelByNodeId;
-                    var isCheckedByNodeId = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, owningNodeId, out checkedLevelByNodeId);
+                    var isCheckedByNodeId = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, owningNodeId, out checkedLevelByNodeId);
                     if (checkedLevel > checkedLevelByNodeId)
                     {
                         checkedLevel = checkedLevelByNodeId;
@@ -128,7 +128,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var owningNodeId in ProductPermissionsManager.Current.OwningNodeIdList)
                     {
-                        if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, owningNodeId, AppManager.Permissions.Channel.ContentCheck))
+                        if (AdminUtility.HasChannelPermissions(Body.AdminName, PublishmentSystemId, owningNodeId, AppManager.Permissions.Channel.ContentCheck))
                         {
                             owningNodeIdList.Add(owningNodeId);
                         }
@@ -147,7 +147,7 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnCheck.Attributes.Add("onclick", showPopWinString);
 
                 LtlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _pluginChannels);
+                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdminName, PublishmentSystemInfo, _nodeInfo, _pluginChannels);
             }
 
             if (!HasChannelPermissions(PublishmentSystemId, AppManager.Permissions.Channel.ContentDelete))
@@ -189,7 +189,7 @@ namespace SiteServer.BackgroundPages.Cms
                     $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{showPopWinString}"">{LevelManager.GetCheckState(
                         PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
                 {
                     ltlItemEditUrl.Text =
                         $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, nodeInfo, contentInfo.Id, PageUrl)}\">编辑</a>";
@@ -200,7 +200,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ltlColumnItemRows.Text = TextUtility.GetColumnItemRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _valueHashtable, _tableStyle, PublishmentSystemInfo, contentInfo);
 
-                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdministratorName);
+                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName);
             }
         }
 

@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ControlUtils.SelectListItemsIgnoreCase(IsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
 
                 //NodeManager.AddListItemsForAddContent(this.NodeIDCollection.Items, base.PublishmentSystemInfo, false);
-                NodeManager.AddListItemsForCreateChannel(NodeIDCollection.Items, PublishmentSystemInfo, false, Body.AdministratorName);
+                NodeManager.AddListItemsForCreateChannel(NodeIDCollection.Items, PublishmentSystemInfo, false, Body.AdminName);
                 ControlUtils.SelectListItems(NodeIDCollection, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIDsIfContentChanged));
 			}
 		}

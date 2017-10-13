@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages
 
             if (PageUtils.DetermineRedirectToInstaller()) return; // 检测系统是否需要安装，如果需要转到安装页面。
 
-            if (!Body.IsAdministratorLoggin) // 检测管理员是否登录
+            if (!Body.IsAdminLoggin) // 检测管理员是否登录
             {
                 PageUtils.RedirectToLoginPage(); // 如果没有登录则跳到登录页面
                 return;
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages
 
             var redirectUrl = PageMain.GetRedirectUrl(); // 如果检测登录帐号一切正常，则准备转到框架主页 pagemain.aspx
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdministratorName); // 获取登录管理员的权限
+            var permissions = PermissionsManager.GetPermissions(Body.AdminName); // 获取登录管理员的权限
             var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList; // 获取当前站点ID
             if (publishmentSystemIdList == null || publishmentSystemIdList.Count == 0) // 如果目前还没有创建站点
             {

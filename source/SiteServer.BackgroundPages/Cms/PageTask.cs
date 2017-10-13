@@ -160,7 +160,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (publishmentSystemInfo != null)
             {
                 return
-                    $"<a href=\"{publishmentSystemInfo.PublishmentSystemUrl}\" target=\"_blank\">{publishmentSystemInfo.PublishmentSystemName}</a>";
+                    $"<a href=\"{publishmentSystemInfo.Additional.WebUrl}\" target=\"_blank\">{publishmentSystemInfo.PublishmentSystemName}</a>";
             }
             return string.Empty;
         }

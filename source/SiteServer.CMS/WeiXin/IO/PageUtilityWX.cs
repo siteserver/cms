@@ -14,7 +14,7 @@ namespace SiteServer.CMS.WeiXin.IO
 
         public static string GetWeiXinTemplateDirectoryUrl(PublishmentSystemInfo publishmentSystemInfo)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/components/templates"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/components/templates"));
         }
 
         public static string GetWeiXinFileUrl(PublishmentSystemInfo publishmentSystemInfo, int keywordID, int resourceID)
@@ -49,7 +49,7 @@ namespace SiteServer.CMS.WeiXin.IO
 
         public static string GetVoteTemplateDirectoryUrl(PublishmentSystemInfo publishmentSystemInfo)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/vote"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/vote"));
         }
 
         public static string GetVoteUrl(PublishmentSystemInfo publishmentSystemInfo, int keywordID, int voteID)

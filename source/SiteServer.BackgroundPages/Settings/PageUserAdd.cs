@@ -66,10 +66,10 @@ namespace SiteServer.BackgroundPages.Settings
                 }
             }
 
-            if (ConfigManager.UserConfigInfo.RegisterPasswordRestriction != EUserPasswordRestriction.None)
+            if (!EUserPasswordRestrictionUtils.Equals(ConfigManager.SystemConfigInfo.UserPasswordRestriction, EUserPasswordRestriction.None))
             {
                 LtlPasswordTips.Text =
-                    $"（请包含{EUserPasswordRestrictionUtils.GetText(ConfigManager.UserConfigInfo.RegisterPasswordRestriction)}）";
+                    $"（请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}）";
             }
 
             if (!string.IsNullOrEmpty(_returnUrl))
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Settings
                     };
 
                     string errorMessage;
-                    var isCreated = BaiRongDataProvider.UserDao.Insert(userInfo, string.Empty, out errorMessage);
+                    var isCreated = BaiRongDataProvider.UserDao.Insert(userInfo, userInfo.Password, string.Empty, out errorMessage);
 
                     if (isCreated)
                     {

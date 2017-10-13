@@ -136,7 +136,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                     DataProviderWx.StoreCategoryDao.Update(PublishmentSystemId, categoryInfo); ;
                 }
 
-                LogUtils.AddAdminLog(Body.AdministratorName, "维护门店属性信息");
+                LogUtils.AddAdminLog(Body.AdminName, "维护门店属性信息");
 
                 SuccessMessage("类别设置成功！");
                 isChanged = true;

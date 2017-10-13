@@ -689,7 +689,7 @@ namespace BaiRong.Core.Provider
         {
             var sqlList = new List<string>();
             var columnSqlString = SqlUtils.GetColumnSqlString(metadataInfo.DataType, metadataInfo.AttributeName, metadataInfo.DataLength);
-            string alterSqlString = $"ALTER TABLE [{tableEnName}] ADD {columnSqlString}";
+            var alterSqlString = SqlUtils.GetAddColumnsSqlString(metadataInfo.DataType, tableEnName, columnSqlString);
             sqlList.Add(alterSqlString);
             return sqlList;
         }

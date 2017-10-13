@@ -22,11 +22,11 @@ namespace SiteServer.API.Controllers.Users
             var isRegister = false;
             var errorMessage = string.Empty;
 
-            if (ConfigManager.UserConfigInfo.RegisterVerifyType == EUserVerifyType.Mobile)
+            if (EUserVerifyTypeUtils.Equals(ConfigManager.SystemConfigInfo.UserRegistrationVerifyType, EUserVerifyType.Mobile))
             {
                 var code = StringUtils.GetRandomInt(1111, 9999);
                 CacheDbUtils.RemoveAndInsert($"SiteServer.API.Controllers.Users.SendSms.{mobile}.Code", code.ToString());
-                isSms = SmsManager.SendCode(mobile, code, ConfigManager.UserConfigInfo.RegisterSmsTplId, out errorMessage);
+                isSms = SmsManager.SendCode(mobile, code, ConfigManager.SystemConfigInfo.UserRegistrationSmsTplId, out errorMessage);
             }
             
             if (!isSms)
@@ -37,7 +37,7 @@ namespace SiteServer.API.Controllers.Users
                     Mobile = mobile,
                     Password = password
                 };
-                isRegister = BaiRongDataProvider.UserDao.Insert(userInfo, PageUtils.GetIpAddress(), out errorMessage);
+                isRegister = BaiRongDataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out errorMessage);
             }
 
             return Ok(new {

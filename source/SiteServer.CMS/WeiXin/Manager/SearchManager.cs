@@ -16,7 +16,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/search/img/start.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/search/img/start.jpg"));
             }
             else
             {
@@ -28,7 +28,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/search/img/head_img.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/search/img/head_img.jpg"));
             }
             else
             {
@@ -41,7 +41,7 @@ namespace SiteServer.CMS.WeiXin.Manager
             var attributes = new NameValueCollection();
             attributes.Add("publishmentSystemID", searchInfo.PublishmentSystemId.ToString());
             attributes.Add("searchID", searchInfo.Id.ToString());
-            var url = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/search/index.html"));
+            var url = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/search/index.html"));
             return PageUtils.AddQueryString(url, attributes);
         }
 

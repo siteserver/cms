@@ -9,9 +9,9 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
@@ -58,11 +58,11 @@ namespace SiteServer.CMS.Core
             }
             else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Date))
             {
-                retval = ParseDate(publishmentSystemInfo, attributeName, pageScripts, styleInfo);
+                retval = ParseDate(attributeName, pageScripts, styleInfo);
             }
             else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.DateTime))
             {
-                retval = ParseDateTime(publishmentSystemInfo, attributeName, pageScripts, styleInfo);
+                retval = ParseDateTime(attributeName, pageScripts, styleInfo);
             }
             else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Image))
             {
@@ -130,8 +130,8 @@ namespace SiteServer.CMS.Core
 
             var builder = new StringBuilder();
 
-            var controllerUrl = Controllers.Files.UEditor.GetUrl(publishmentSystemInfo.Additional.ApiUrl, publishmentSystemInfo.PublishmentSystemId);
-            var editorUrl = SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "ueditor");
+            var controllerUrl = Controllers.Sys.Editors.UEditor.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId);
+            var editorUrl = SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "ueditor");
 
             if (pageScripts["uEditor"] == null)
             {
@@ -152,7 +152,7 @@ $(function(){{
             return builder.ToString();
         }
 
-        private static string ParseDate(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection pageScripts, TableStyleInfo styleInfo)
+        private static string ParseDate(string attributeName, NameValueCollection pageScripts, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
@@ -165,7 +165,7 @@ $(function(){{
             if (pageScripts != null)
             {
                 pageScripts["calendar"] =
-                    $@"<script language=""javascript"" src=""{SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, SiteFilesAssets.DatePicker.Js)}""></script>";
+                    $@"<script language=""javascript"" src=""{SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, SiteFilesAssets.DatePicker.Js)}""></script>";
             }
 
             var value = string.Empty;
@@ -182,7 +182,7 @@ $(function(){{
             return builder.ToString();
         }
 
-        private static string ParseDateTime(PublishmentSystemInfo publishmentSystemInfo, string attributeName, NameValueCollection pageScripts, TableStyleInfo styleInfo)
+        private static string ParseDateTime(string attributeName, NameValueCollection pageScripts, TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
 
@@ -195,7 +195,7 @@ $(function(){{
             if (pageScripts != null)
             {
                 pageScripts["calendar"] =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, SiteFilesAssets.DatePicker.Js)}""></script>";
+                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, SiteFilesAssets.DatePicker.Js)}""></script>";
             }
 
             var value = string.Empty;
@@ -419,7 +419,7 @@ function getRelatedField_{fieldInfo.RelatedFieldID}(level){{
     var obj = $('#c_' + attributeName + '_' + (level - 1));
     var itemID = $('option:selected', obj).attr('itemID');
     if (itemID){{
-        var url = '{Controllers.Stl.ActionsRelatedField.GetUrl(publishmentSystemInfo.Additional.ApiUrl, publishmentSystemInfo.PublishmentSystemId, styleInfo.Additional.RelatedFieldId, 0)}' + itemID;
+        var url = '{ActionsRelatedField.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, styleInfo.Additional.RelatedFieldId, 0)}' + itemID;
         var values = '';
         var value = (values) ? values.split(',')[level - 1] : '';
         $.post(url + '&callback=?', '', function(data, textStatus){{

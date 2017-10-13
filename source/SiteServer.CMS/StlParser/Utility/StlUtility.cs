@@ -22,7 +22,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var currentUrl = string.Empty;
             if (templateType == ETemplateType.IndexPageTemplate)
             {
-                currentUrl = publishmentSystemInfo.PublishmentSystemUrl;
+                currentUrl = publishmentSystemInfo.Additional.WebUrl;
             }
             else if (templateType == ETemplateType.ContentTemplate)
             {
@@ -213,7 +213,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
         }
 
-        public static string ParseDynamicContent(int publishmentSystemId, int channelId, int contentId, int templateId, bool isPageRefresh, string templateContent, string pageUrl, int pageIndex, string ajaxDivId, NameValueCollection queryString, UserInfo userInfo)
+        public static string ParseDynamicContent(int publishmentSystemId, int channelId, int contentId, int templateId, bool isPageRefresh, string templateContent, string pageUrl, int pageIndex, string ajaxDivId, NameValueCollection queryString, IUserInfo userInfo)
         {
             var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemId, templateId);
             //TemplateManager.GetTemplateInfo(publishmentSystemID, channelID, templateType);

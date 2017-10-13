@@ -56,7 +56,7 @@ namespace SiteServer.CMS.Plugin
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex, "载入插件时报错");
+                LogUtils.AddSystemErrorLog(ex, "载入插件时报错");
             }
         }
 
@@ -107,17 +107,18 @@ namespace SiteServer.CMS.Plugin
             {
                 Environment = Environment,
                 Metadata = metadata,
-                AuthApi = new AuthApi(metadata),
+                AdminApi = AdminApi.Instance,
                 ConfigApi = new ConfigApi(metadata),
                 ContentApi = ContentApi.Instance,
                 DataApi = new DataApi(metadata),
-                FilesApi = FilesApi.Instance,
+                FilesApi = new FilesApi(metadata),
+                MenuApi = new MenuApi(metadata),
                 NodeApi = NodeApi.Instance,
-                PageApi = new PageApi(metadata),
                 ParseApi = ParseApi.Instance,
                 PaymentApi = PaymentApi.Instance,
                 PublishmentSystemApi = PublishmentSystemApi.Instance,
-                SmsApi = SmsApi.Instance
+                SmsApi = SmsApi.Instance,
+                UserApi = UserApi.Instance
             };
             plugin.OnPluginActive?.Invoke(context);
 
@@ -142,7 +143,7 @@ namespace SiteServer.CMS.Plugin
                         if (string.IsNullOrEmpty(tableColumn.AttributeName) || ContentAttribute.AllAttributes.Contains(tableColumn.AttributeName.ToLower())) continue;
 
                         tableMetadataInfoList.Add(new TableMetadataInfo(0, tableName, tableColumn.AttributeName,
-                            tableColumn.DataType, tableColumn.DataLength, 0, true));
+                            DataTypeUtils.GetEnumType(tableColumn.DataType), tableColumn.DataLength, 0, true));
                     }
 
                     tableMetadataInfoList.Reverse();
@@ -161,13 +162,20 @@ namespace SiteServer.CMS.Plugin
                         if (columnNameList.Contains(tableColumn.AttributeName.ToLower())) continue;
 
                         var tableMetadataInfo = new TableMetadataInfo(0, tableName, tableColumn.AttributeName,
-                            tableColumn.DataType, tableColumn.DataLength, 0, true);
+                            DataTypeUtils.GetEnumType(tableColumn.DataType), tableColumn.DataLength, 0, true);
                         BaiRongDataProvider.TableMetadataDao.Insert(tableMetadataInfo);
 
-                        var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
-                        string sqlString = $"ALTER TABLE {tableName} ADD ({columnSqlString})";
+                        var columnSqlString = SqlUtils.GetColumnSqlString(DataTypeUtils.GetEnumType(tableColumn.DataType), tableColumn.AttributeName, tableColumn.DataLength);
+                        var sqlString = SqlUtils.GetAddColumnsSqlString(DataTypeUtils.GetEnumType(tableColumn.DataType), tableName, columnSqlString);
 
-                        BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
+                        try
+                        {
+                            BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogUtils.AddPluginErrorLog(metadata.Id, ex, sqlString);
+                        }
                     }
 
                     BaiRongDataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDb(false, tableName);
@@ -179,13 +187,13 @@ namespace SiteServer.CMS.Plugin
                     var tableStyleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Custom, tableName,
                             tableColumn.AttributeName, new List<int> { 0 });
                     tableStyleInfo.DisplayName = tableColumn.DisplayName;
-                    tableStyleInfo.InputType = InputTypeUtils.GetValue(tableColumn.InputType);
+                    tableStyleInfo.InputType = tableColumn.InputType;
                     tableStyleInfo.DefaultValue = tableColumn.DefaultValue;
                     tableStyleInfo.IsVisible = tableColumn.IsVisibleInEdit;
                     tableStyleInfo.IsVisibleInList = tableColumn.IsVisibleInList;
                     tableStyleInfo.Additional.IsValidate = true;
                     tableStyleInfo.Additional.IsRequired = tableColumn.IsRequired;
-                    tableStyleInfo.Additional.ValidateType = tableColumn.ValidateType;
+                    tableStyleInfo.Additional.ValidateType = ValidateTypeUtils.GetEnumType(tableColumn.ValidateType);
                     tableStyleInfo.Additional.MinNum = tableColumn.MinNum;
                     tableStyleInfo.Additional.MaxNum = tableColumn.MaxNum;
                     tableStyleInfo.Additional.RegExp = tableColumn.RegExp;
@@ -210,21 +218,11 @@ namespace SiteServer.CMS.Plugin
 
                     if (!BaiRongDataProvider.DatabaseDao.IsTableExists(tableName))
                     {
-                        BaiRongDataProvider.DatabaseDao.CreatePluginTable(tableName, tableColumns);
+                        BaiRongDataProvider.DatabaseDao.CreatePluginTable(metadata.Id, tableName, tableColumns);
                     }
                     else
                     {
-                        var columnNameList = BaiRongDataProvider.TableStructureDao.GetColumnNameList(tableName, true);
-                        foreach (var tableColumn in tableColumns)
-                        {
-                            if (!columnNameList.Contains(tableColumn.AttributeName.ToLower()))
-                            {
-                                var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
-                                string sqlString = $"ALTER TABLE {tableName} ADD ({columnSqlString})";
-
-                                BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
-                            }
-                        }
+                        BaiRongDataProvider.DatabaseDao.AlterPluginTable(metadata.Id, tableName, tableColumns);
                     }
                 }
             }

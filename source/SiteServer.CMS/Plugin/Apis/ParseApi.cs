@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -47,6 +47,13 @@ namespace SiteServer.CMS.Plugin.Apis
         public string XmlToHtml(string xml)
         {
             return StlParserUtility.XmlToHtml(xml);
+        }
+
+        public string GetCurrentUrl(PluginParseContext context)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(context.PublishmentSystemId);
+            return StlUtility.GetStlCurrentUrl(publishmentSystemInfo, context.ChannelId, context.ContentId,
+                context.ContentInfo, ETemplateTypeUtils.GetEnumType(context.TemplateType), context.TemplateId);
         }
     }
 }

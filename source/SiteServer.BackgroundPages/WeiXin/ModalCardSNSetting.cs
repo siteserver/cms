@@ -97,7 +97,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                                 cardCashLogInfo.Amount = cardEntitySnInfo.Amount;
                                 cardCashLogInfo.CurAmount += cardEntitySnInfo.Amount; ;
                                 cardCashLogInfo.CashType = ECashTypeUtils.GetValue(ECashType.Recharge);
-                                cardCashLogInfo.Operator = Body.AdministratorName;
+                                cardCashLogInfo.Operator = Body.AdminName;
                                 cardCashLogInfo.Description = "绑定实体卡充值";
                                 cardCashLogInfo.AddDate = DateTime.Now;
 

@@ -98,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var nodeId in _idsDictionary.Keys)
                 {
                     int checkedLevelByNodeId;
-                    var isCheckedByNodeId = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, nodeId, out checkedLevelByNodeId);
+                    var isCheckedByNodeId = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, nodeId, out checkedLevelByNodeId);
                     if (checkedLevel > checkedLevelByNodeId)
                     {
                         checkedLevel = checkedLevelByNodeId;
@@ -114,7 +114,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var listItem = new ListItem("<保持原栏目不变>", "0");
                 ddlTranslateNodeID.Items.Add(listItem);
 
-                NodeManager.AddListItemsForAddContent(ddlTranslateNodeID.Items, PublishmentSystemInfo, true, Body.AdministratorName);
+                NodeManager.AddListItemsForAddContent(ddlTranslateNodeID.Items, PublishmentSystemInfo, true, Body.AdminName);
             }
         }
 
@@ -134,7 +134,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentIdListToCheck = new List<int>();
 
                 int checkedLevelOfUser;
-                var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, nodeId, out checkedLevelOfUser);
+                var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, nodeId, out checkedLevelOfUser);
 
                 foreach (var contentId in contentIdList)
                 {
@@ -176,7 +176,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
                         var contentIdList = idsDictionaryToCheck[nodeId];
-                        BaiRongDataProvider.ContentDao.UpdateIsChecked(tableName, PublishmentSystemId, nodeId, contentIdList, translateNodeId, true, Body.AdministratorName, isChecked, checkedLevel, tbCheckReasons.Text);
+                        BaiRongDataProvider.ContentDao.UpdateIsChecked(tableName, PublishmentSystemId, nodeId, contentIdList, translateNodeId, true, Body.AdminName, isChecked, checkedLevel, tbCheckReasons.Text);
 
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemInfo, nodeId, true);
                     }

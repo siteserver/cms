@@ -27,19 +27,19 @@ namespace SiteServer.BackgroundPages.Settings
 
                 EBooleanUtils.AddListItems(RblIsRegisterAllowed);
 
-                TbRegisterPasswordMinLength.Text = ConfigManager.UserConfigInfo.RegisterPasswordMinLength.ToString();
+                TbRegisterPasswordMinLength.Text = ConfigManager.SystemConfigInfo.UserPasswordMinLength.ToString();
 
                 EUserPasswordRestrictionUtils.AddListItems(DdlRegisterPasswordRestriction);
-                ControlUtils.SelectListItemsIgnoreCase(DdlRegisterPasswordRestriction, EUserPasswordRestrictionUtils.GetValue(ConfigManager.UserConfigInfo.RegisterPasswordRestriction));
+                ControlUtils.SelectListItemsIgnoreCase(DdlRegisterPasswordRestriction, ConfigManager.SystemConfigInfo.UserPasswordRestriction);
 
                 EUserVerifyTypeUtils.AddListItems(DdlRegisterVerifyType);
-                PhRegisterSms.Visible = ConfigManager.UserConfigInfo.RegisterVerifyType == EUserVerifyType.Mobile;
-                TbRegisterSmsTplId.Text = ConfigManager.UserConfigInfo.RegisterSmsTplId;
+                PhRegisterSms.Visible = EUserVerifyTypeUtils.Equals(ConfigManager.SystemConfigInfo.UserRegistrationVerifyType, EUserVerifyType.Mobile);
+                TbRegisterSmsTplId.Text = ConfigManager.SystemConfigInfo.UserRegistrationSmsTplId;
 
-                ControlUtils.SelectListItemsIgnoreCase(RblIsRegisterAllowed, ConfigManager.UserConfigInfo.IsRegisterAllowed.ToString());
-                ControlUtils.SelectListItemsIgnoreCase(DdlRegisterVerifyType, EUserVerifyTypeUtils.GetValue(ConfigManager.UserConfigInfo.RegisterVerifyType));
+                ControlUtils.SelectListItemsIgnoreCase(RblIsRegisterAllowed, ConfigManager.SystemConfigInfo.IsUserRegistrationAllowed.ToString());
+                ControlUtils.SelectListItemsIgnoreCase(DdlRegisterVerifyType, ConfigManager.SystemConfigInfo.UserRegistrationVerifyType);
 
-                TbRegisterMinMinutesOfIpAddress.Text = ConfigManager.UserConfigInfo.RegisterMinMinutesOfIpAddress.ToString();
+                TbRegisterMinMinutesOfIpAddress.Text = ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes.ToString();
             }
         }
 
@@ -52,15 +52,15 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                ConfigManager.UserConfigInfo.IsRegisterAllowed = TranslateUtils.ToBool(RblIsRegisterAllowed.SelectedValue);
+                ConfigManager.SystemConfigInfo.IsUserRegistrationAllowed = TranslateUtils.ToBool(RblIsRegisterAllowed.SelectedValue);
 
-                ConfigManager.UserConfigInfo.RegisterPasswordMinLength = TranslateUtils.ToInt(TbRegisterPasswordMinLength.Text);
-                ConfigManager.UserConfigInfo.RegisterPasswordRestriction = EUserPasswordRestrictionUtils.GetEnumType(DdlRegisterPasswordRestriction.SelectedValue);
+                ConfigManager.SystemConfigInfo.UserPasswordMinLength = TranslateUtils.ToInt(TbRegisterPasswordMinLength.Text);
+                ConfigManager.SystemConfigInfo.UserPasswordRestriction = DdlRegisterPasswordRestriction.SelectedValue;
 
-                ConfigManager.UserConfigInfo.RegisterVerifyType = EUserVerifyTypeUtils.GetEnumType(DdlRegisterVerifyType.SelectedValue);
-                ConfigManager.UserConfigInfo.RegisterSmsTplId = TbRegisterSmsTplId.Text;
+                ConfigManager.SystemConfigInfo.UserRegistrationVerifyType = DdlRegisterVerifyType.SelectedValue;
+                ConfigManager.SystemConfigInfo.UserRegistrationSmsTplId = TbRegisterSmsTplId.Text;
 
-                ConfigManager.UserConfigInfo.RegisterMinMinutesOfIpAddress = TranslateUtils.ToInt(TbRegisterMinMinutesOfIpAddress.Text);
+                ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes = TranslateUtils.ToInt(TbRegisterMinMinutesOfIpAddress.Text);
 
                 try
                 {

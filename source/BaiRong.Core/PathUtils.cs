@@ -315,7 +315,7 @@ namespace BaiRong.Core
         public static string GetUserUploadDirectoryPath(string userName)
         {
             string directoryPath;
-            var dateFormatType = EDateFormatTypeUtils.GetEnumType(ConfigManager.UserConfigInfo.UploadDateFormatString);
+            var dateFormatType = EDateFormatType.Month;
             var datetime = DateTime.Now;
             var userFilesPath = GetUserFilesPath(userName, string.Empty);
             if (dateFormatType == EDateFormatType.Year)
@@ -336,18 +336,9 @@ namespace BaiRong.Core
 
         public static string GetUserUploadFileName(string filePath)
         {
-            string retval;
-            if (ConfigManager.UserConfigInfo.IsUploadChangeFileName)
-            {
-                var dt = DateTime.Now;
-                string strDateTime = $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}";
-                retval = $"{strDateTime}{GetExtension(filePath)}";
-            }
-            else
-            {
-                retval = GetFileName(filePath);
-            }
-            return retval;
+            var dt = DateTime.Now;
+            string strDateTime = $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}";
+            return $"{strDateTime}{GetExtension(filePath)}";
         }
 
         public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory);

@@ -15,7 +15,7 @@ namespace SiteServer.CMS.WeiXin.Manager
             }
             if (!backgroundImageUrl.StartsWith("@"))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/components/background/{backgroundImageUrl}"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/components/background/{backgroundImageUrl}"));
             }
             else
             {
@@ -38,7 +38,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 {
                     selected = "selected";
                 }
-                builder.AppendFormat(@"<option value=""{0}"" url=""{1}"" {2}>{3}</option>", PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/components/background/{i}.jpg")), fileName, selected, "预设背景" + (i + 1));
+                builder.AppendFormat(@"<option value=""{0}"" url=""{1}"" {2}>{3}</option>", PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/components/background/{i}.jpg")), fileName, selected, "预设背景" + (i + 1));
             }
             builder.Append("</select>");
             return builder.ToString();

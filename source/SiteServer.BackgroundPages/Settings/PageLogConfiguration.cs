@@ -7,12 +7,9 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class PageLogConfiguration : BasePage
     {
-        protected RadioButtonList rblIsTimeThreshold;
-        public PlaceHolder phTimeThreshold;
-        protected TextBox tbTime;
-        public RadioButtonList rblIsCounterThreshold;
-        public PlaceHolder phCounterThreshold;
-        protected TextBox tbCounter;
+        protected RadioButtonList RblIsTimeThreshold;
+        public PlaceHolder PhTimeThreshold;
+        protected TextBox TbTime;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -21,42 +18,26 @@ namespace SiteServer.BackgroundPages.Settings
 
             BreadCrumbSettings("日志阈值设置", AppManager.Permissions.Settings.Log);
 
-            EBooleanUtils.AddListItems(rblIsTimeThreshold, "启用", "不启用");
-            ControlUtils.SelectListItemsIgnoreCase(rblIsTimeThreshold, ConfigManager.SystemConfigInfo.IsTimeThreshold.ToString());
-            tbTime.Text = ConfigManager.SystemConfigInfo.TimeThreshold.ToString();
+            EBooleanUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
+            ControlUtils.SelectListItemsIgnoreCase(RblIsTimeThreshold, ConfigManager.SystemConfigInfo.IsTimeThreshold.ToString());
+            TbTime.Text = ConfigManager.SystemConfigInfo.TimeThreshold.ToString();
 
-            EBooleanUtils.AddListItems(rblIsCounterThreshold, "启用", "不启用");
-            ControlUtils.SelectListItemsIgnoreCase(rblIsCounterThreshold, ConfigManager.SystemConfigInfo.IsCounterThreshold.ToString());
-            tbCounter.Text = ConfigManager.SystemConfigInfo.CounterThreshold.ToString();
-
-            rblIsTimeThreshold_SelectedIndexChanged(null, EventArgs.Empty);
-            rblIsCounterThreshold_SelectedIndexChanged(null, EventArgs.Empty);
+            PhTimeThreshold.Visible = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
         }
 
-        public void rblIsTimeThreshold_SelectedIndexChanged(object sender, EventArgs e)
+        public void RblIsTimeThreshold_SelectedIndexChanged(object sender, EventArgs e)
         {
-            phTimeThreshold.Visible = TranslateUtils.ToBool(rblIsTimeThreshold.SelectedValue);
-        }
-
-        public void rblIsCounterThreshold_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            phCounterThreshold.Visible = TranslateUtils.ToBool(rblIsCounterThreshold.SelectedValue);
+            PhTimeThreshold.Visible = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             try
             {
-                ConfigManager.SystemConfigInfo.IsTimeThreshold = TranslateUtils.ToBool(rblIsTimeThreshold.SelectedValue);
+                ConfigManager.SystemConfigInfo.IsTimeThreshold = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
                 if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
                 {
-                    ConfigManager.SystemConfigInfo.TimeThreshold = TranslateUtils.ToInt(tbTime.Text);
-                }
-
-                ConfigManager.SystemConfigInfo.IsCounterThreshold = TranslateUtils.ToBool(rblIsCounterThreshold.SelectedValue);
-                if (ConfigManager.SystemConfigInfo.IsCounterThreshold)
-                {
-                    ConfigManager.SystemConfigInfo.CounterThreshold = TranslateUtils.ToInt(tbCounter.Text);
+                    ConfigManager.SystemConfigInfo.TimeThreshold = TranslateUtils.ToInt(TbTime.Text);
                 }
 
                 BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);

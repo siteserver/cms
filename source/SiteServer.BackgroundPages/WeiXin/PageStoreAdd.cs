@@ -129,14 +129,14 @@ namespace SiteServer.BackgroundPages.WeiXin
                         {
                             DataProviderWx.StoreDao.Update(storeInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改微门店", $"微门店:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改微门店", $"微门店:{TbTitle.Text}");
                             SuccessMessage("修改微门店成功！");
                         }
                         else
                         {
                             _storeId = DataProviderWx.StoreDao.Insert(storeInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加微门店", $"微门店:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加微门店", $"微门店:{TbTitle.Text}");
                             SuccessMessage("添加微门店成功！");
                         }
 

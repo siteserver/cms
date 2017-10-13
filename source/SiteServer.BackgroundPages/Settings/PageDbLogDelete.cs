@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public string GetLastExecuteDate()
         {
-            var dt = BaiRongDataProvider.LogDao.GetLastRemoveLogDate(Body.AdministratorName);
+            var dt = BaiRongDataProvider.LogDao.GetLastRemoveLogDate(Body.AdminName);
             return dt == DateTime.MinValue ? "无记录" : DateUtils.GetDateAndTimeString(dt);
         }
 

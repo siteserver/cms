@@ -170,14 +170,14 @@ namespace SiteServer.BackgroundPages.WeiXin
                         {
                             DataProviderWx.MessageDao.Update(messageInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改微留言", $"微留言:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改微留言", $"微留言:{TbTitle.Text}");
                             SuccessMessage("修改微留言成功！");
                         }
                         else
                         {
                             _messageId = DataProviderWx.MessageDao.Insert(messageInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加微留言", $"微留言:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加微留言", $"微留言:{TbTitle.Text}");
                             SuccessMessage("添加微留言成功！");
                         }
 

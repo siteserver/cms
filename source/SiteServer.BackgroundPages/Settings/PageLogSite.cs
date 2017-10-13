@@ -136,7 +136,7 @@ namespace SiteServer.BackgroundPages.Settings
                     if (publishmentSystemInfo != null)
                     {
                         publishmentSystemName =
-                            $"<a href='{publishmentSystemInfo.PublishmentSystemUrl}' target='_blank'>{publishmentSystemInfo.PublishmentSystemName}</a>";
+                            $"<a href='{publishmentSystemInfo.Additional.WebUrl}' target='_blank'>{publishmentSystemInfo.PublishmentSystemName}</a>";
                     }
                     ltlPublishmentSystem.Text = $@"<td align=""center"" width=""160"">{publishmentSystemName}</td>";
                 }

@@ -1,7 +1,5 @@
 ﻿using System.Web.UI.WebControls;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.AuxiliaryTable
@@ -12,15 +10,15 @@ namespace BaiRong.Core.AuxiliaryTable
         {
         }
 
-        private static string GetValidateCheckMethod(string attributeName, string displayName, InputValidateInfo validateInfo)
-        {
-            if (validateInfo != null)
-            {
-                return
-                    $"checkAttributeValue('{attributeName}', '{displayName}', {validateInfo.IsRequire.ToString().ToLower()}, {validateInfo.MinNum}, {validateInfo.MaxNum}, '{validateInfo.RegExp}', '{validateInfo.ErrorMessage}');";
-            }
-            return string.Empty;
-        }
+        //private static string GetValidateCheckMethod(string attributeName, string displayName, InputValidateInfo validateInfo)
+        //{
+        //    if (validateInfo != null)
+        //    {
+        //        return
+        //            $"checkAttributeValue('{attributeName}', '{displayName}', {validateInfo.IsRequire.ToString().ToLower()}, {validateInfo.MinNum}, {validateInfo.MaxNum}, '{validateInfo.RegExp}', '{validateInfo.ErrorMessage}');";
+        //    }
+        //    return string.Empty;
+        //}
 
         public static string GetValidateAttributes(bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, ValidateType validateType, string regExp, string errorMessage)
         {
@@ -28,7 +26,7 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 return
                     $@"isValidate=""{true.ToString().ToLower()}"" displayName=""{displayName}"" isRequire=""{isRequire
-                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{EValidateTypeUtils
+                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{ValidateTypeUtils
                         .GetValue(validateType)}"" regExp=""{regExp}"" errorMessage=""{errorMessage}""";
             }
             return string.Empty;
@@ -43,7 +41,7 @@ namespace BaiRong.Core.AuxiliaryTable
             control.Attributes.Add("isRequire", isRequire.ToString().ToLower());
             control.Attributes.Add("minNum", minNum.ToString());
             control.Attributes.Add("maxNum", maxNum.ToString());
-            control.Attributes.Add("validateType", EValidateTypeUtils.GetValue(validateType));
+            control.Attributes.Add("validateType", ValidateTypeUtils.GetValue(validateType));
             control.Attributes.Add("regExp", regExp);
             control.Attributes.Add("errorMessage", errorMessage);
             control.Attributes.Add("isListItem", true.ToString().ToLower());

@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            var permissioins = PermissionsManager.GetPermissions(Body.AdministratorName);
+            var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
 
             _departmentId = Body.GetQueryInt("departmentID");
             var areaId = Body.GetQueryInt("areaID");
@@ -131,21 +131,21 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 spContents.ItemsPerPage = TranslateUtils.ToInt(PageNum.SelectedValue) == 0 ? StringUtils.Constants.PageSize : TranslateUtils.ToInt(PageNum.SelectedValue);
 
-                spContents.SelectCommand = BaiRongDataProvider.AdministratorDao.GetSelectCommand(permissioins.IsConsoleAdministrator, Body.AdministratorName, _departmentId);
+                spContents.SelectCommand = BaiRongDataProvider.AdministratorDao.GetSelectCommand(permissioins.IsConsoleAdministrator, Body.AdminName, _departmentId);
                 spContents.SortField = BaiRongDataProvider.AdministratorDao.GetSortFieldName();
                 spContents.SortMode = SortMode.ASC;
             }
             else
             {
                 spContents.ItemsPerPage = Body.GetQueryInt("PageNum") == 0 ? StringUtils.Constants.PageSize : Body.GetQueryInt("PageNum");
-                spContents.SelectCommand = BaiRongDataProvider.AdministratorDao.GetSelectCommand(Body.GetQueryString("Keyword"), Body.GetQueryString("RoleName"), Body.GetQueryInt("LastActivityDate"), permissioins.IsConsoleAdministrator, Body.AdministratorName, _departmentId, Body.GetQueryInt("AreaID"));
+                spContents.SelectCommand = BaiRongDataProvider.AdministratorDao.GetSelectCommand(Body.GetQueryString("Keyword"), Body.GetQueryString("RoleName"), Body.GetQueryInt("LastActivityDate"), permissioins.IsConsoleAdministrator, Body.AdminName, _departmentId, Body.GetQueryInt("AreaID"));
                 spContents.SortField = Body.GetQueryString("Order");
                 spContents.SortMode = StringUtils.EqualsIgnoreCase(spContents.SortField, "UserName") ? SortMode.ASC : SortMode.DESC;
             }
 
             rptContents.ItemDataBound += rptContents_ItemDataBound;
 
-            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.LoginLockingType);
+            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.AdminLockLoginType);
 
             if (IsPostBack) return;
 
@@ -157,7 +157,7 @@ namespace SiteServer.BackgroundPages.Settings
             };
             RoleName.Items.Add(theListItem);
 
-            var allRoles = permissioins.IsConsoleAdministrator ? BaiRongDataProvider.RoleDao.GetAllRoles() : BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdministratorName);
+            var allRoles = permissioins.IsConsoleAdministrator ? BaiRongDataProvider.RoleDao.GetAllRoles() : BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
 
             var allPredefinedRoles = EPredefinedRoleUtils.GetAllPredefinedRoleName();
             foreach (var roleName in allRoles)
@@ -282,7 +282,7 @@ namespace SiteServer.BackgroundPages.Settings
                 ltlEdit.Text = $@"<a href=""{urlEdit}"">修改属性</a>";
                 hlChangePassword.Attributes.Add("onclick", ModalAdminPassword.GetOpenWindowString(userName));
 
-                if (Body.AdministratorName != userName)
+                if (Body.AdminName != userName)
                 {
                     var openWindowString = ModalPermissionsSet.GetOpenWindowString(userName);
                     ltlRole.Text = $@"<a href=""javascript:;"" onclick=""{openWindowString}"">权限设置</a>";
@@ -299,8 +299,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 state = @"<span style=""color:red;"">[已被锁定]</span>";
             }
-            else if (ConfigManager.SystemConfigInfo.IsLoginFailToLock &&
-                       ConfigManager.SystemConfigInfo.LoginFailToLockCount <= countOfFailedLogin)
+            else if (ConfigManager.SystemConfigInfo.IsAdminLockLogin &&
+                       ConfigManager.SystemConfigInfo.AdminLockLoginCount <= countOfFailedLogin)
             {
                 if (_lockType == EUserLockType.Forever)
                 {
@@ -309,7 +309,7 @@ namespace SiteServer.BackgroundPages.Settings
                 else
                 {
                     var ts = new TimeSpan(DateTime.Now.Ticks - lastActivityDate.Ticks);
-                    var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.LoginLockingHours - ts.TotalHours);
+                    var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.AdminLockLoginHours - ts.TotalHours);
                     if (hours > 0)
                     {
                         state = $@"<span style=""color:red;"">[错误登录次数过多，已被锁定{hours}小时]</span>";

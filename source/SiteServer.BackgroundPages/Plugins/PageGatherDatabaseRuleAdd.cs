@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                 ltlPageTitle.Text = pageTitle;
 
-                NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdministratorName);
+                NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdminName);
 
 				SetActivePanel(WizardPanel.GatherRuleBase, GatherRuleBase);
 

@@ -232,14 +232,14 @@ namespace SiteServer.BackgroundPages.WeiXin
                         {
                             DataProviderWx.CardDao.Update(cardInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改会员卡", $"会员卡:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改会员卡", $"会员卡:{TbTitle.Text}");
                             SuccessMessage("修改会员卡成功！");
                         }
                         else
                         {
                             _cardId = DataProviderWx.CardDao.Insert(cardInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加会员卡", $"会员卡:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加会员卡", $"会员卡:{TbTitle.Text}");
                             SuccessMessage("添加会员卡成功！");
                         }
 

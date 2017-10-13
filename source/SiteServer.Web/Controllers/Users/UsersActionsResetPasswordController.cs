@@ -33,8 +33,6 @@ namespace SiteServer.API.Controllers.Users
 
             if (BaiRongDataProvider.UserDao.ChangePassword(body.UserName, newPassword, out errorMessage))
             {
-                LogUtils.AddUserLog(body.UserName, EUserActionType.UpdatePassword, string.Empty);
-
                 return Ok(new
                 {
                     LastResetPasswordDate = DateTime.Now

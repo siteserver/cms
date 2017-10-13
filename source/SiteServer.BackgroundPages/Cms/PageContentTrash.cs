@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
             _nodeId = Body.GetQueryInt("NodeID");
@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
                     AddWaitAndRedirectScript(PageUrl);
                     return;
                 }
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, true, false, Body.AdministratorName);
+                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, true, false, Body.AdminName);
 
                 if (_tableStyleInfoList != null)
                 {
@@ -205,7 +205,7 @@ namespace SiteServer.BackgroundPages.Cms
         private string GetEditUrl(BackgroundContentInfo contentInfo)
         {
             var url = string.Empty;
-            if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+            if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
             {
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, contentInfo.NodeId);
                 url =

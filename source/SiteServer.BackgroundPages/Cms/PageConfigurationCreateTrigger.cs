@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
             if (ltlHtml != null)
             {
-                ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ConfigurationCreateDetails, null, Body.AdministratorName);
+                ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ConfigurationCreateDetails, null, Body.AdminName);
             }
         }
 	}

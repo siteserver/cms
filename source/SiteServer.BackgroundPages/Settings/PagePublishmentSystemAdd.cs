@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             _sortedlist = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
-            _permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            _permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
             if (!IsPostBack)
             {
@@ -399,15 +399,7 @@ namespace SiteServer.BackgroundPages.Settings
                 nodeInfo.NodeType = ENodeType.BackgroundPublishNode;
                 nodeInfo.ContentModelId = string.Empty;
 
-                var publishmentSystemUrl = PageUtils.Combine(PageUtils.ApplicationPath, publishmentSystemDir);
-
-                var psInfo = BaseTable.GetDefaultPublishmentSystemInfo(PageUtils.FilterXss(PublishmentSystemName.Text), AuxiliaryTableForContent.SelectedValue, publishmentSystemDir, publishmentSystemUrl, parentPublishmentSystemId);
-
-                if (psInfo.ParentPublishmentSystemId > 0)
-                {
-                    var parentPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psInfo.ParentPublishmentSystemId);
-                    psInfo.PublishmentSystemUrl = PageUtils.Combine(parentPublishmentSystemInfo.PublishmentSystemUrl, psInfo.PublishmentSystemDir);
-                }
+                var psInfo = BaseTable.GetDefaultPublishmentSystemInfo(PageUtils.FilterXss(PublishmentSystemName.Text), AuxiliaryTableForContent.SelectedValue, publishmentSystemDir, parentPublishmentSystemId);
 
                 psInfo.IsHeadquarters = isHq;
 
@@ -418,13 +410,13 @@ namespace SiteServer.BackgroundPages.Settings
                     psInfo.CheckContentLevel = TranslateUtils.ToInt(CheckContentLevel.SelectedValue);
                 }
 
-                var thePublishmentSystemId = DataProvider.NodeDao.InsertPublishmentSystemInfo(nodeInfo, psInfo, Body.AdministratorName);
+                var thePublishmentSystemId = DataProvider.NodeDao.InsertPublishmentSystemInfo(nodeInfo, psInfo, Body.AdminName);
 
                 if (_permissions.IsSystemAdministrator && !_permissions.IsConsoleAdministrator)
                 {
                     var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList ?? new List<int>();
                     publishmentSystemIdList.Add(thePublishmentSystemId);
-                    BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(Body.AdministratorName, TranslateUtils.ObjectCollectionToString(publishmentSystemIdList));
+                    BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(Body.AdminName, TranslateUtils.ObjectCollectionToString(publishmentSystemIdList));
                 }
 
                 Body.AddAdminLog("新建站点", $"站点名称:{PageUtils.FilterXss(PublishmentSystemName.Text)}");
@@ -469,7 +461,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                         PublishmentSystemName.Text = publishmentSystemInfo.PublishmentSystemName;
                         PublishmentSystemDir.Text = publishmentSystemInfo.PublishmentSystemDir;
-                        var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.PublishmentSystemUrl, publishmentSystemInfo.SettingsXml);
+                        var extend = new PublishmentSystemInfoExtend(publishmentSystemInfo.PublishmentSystemDir, publishmentSystemInfo.SettingsXml);
                         if (!string.IsNullOrEmpty(extend.Charset))
                         {
                             Charset.SelectedValue = extend.Charset;

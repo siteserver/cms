@@ -14,7 +14,7 @@ namespace SiteServer.CMS.WeiXin.Manager
     {
         public static string GetImageUrl(PublishmentSystemInfo publishmentSystemInfo, string imageUrl)
         {
-            return PageUtils.AddProtocolToUrl(string.IsNullOrEmpty(imageUrl) ? SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/album/img/start.jpg") : PageUtility.ParseNavigationUrl(publishmentSystemInfo, imageUrl));
+            return PageUtils.AddProtocolToUrl(string.IsNullOrEmpty(imageUrl) ? SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/album/img/start.jpg") : PageUtility.ParseNavigationUrl(publishmentSystemInfo, imageUrl));
         }
 
         public static string GetContentImageUrl(PublishmentSystemInfo publishmentSystemInfo, string imageUrl)
@@ -24,7 +24,7 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         private static string GetAlbumUrl(PublishmentSystemInfo publishmentSystemInfo)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/album/index.html"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/album/index.html"));
         }
 
         public static string GetAlbumUrl(PublishmentSystemInfo publishmentSystemInfo, AlbumInfo albumInfo, string wxOpenId)

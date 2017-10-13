@@ -401,7 +401,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                         {
                             DataProviderWx.ConferenceDao.Update(conferenceInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改会议（活动）", $"会议（活动）:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改会议（活动）", $"会议（活动）:{TbTitle.Text}");
                             SuccessMessage("修改会议（活动）成功！");
                         }
                         else
@@ -410,7 +410,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
                             //DataProviderWx.ConferenceItemDao.UpdateConferenceID(base.PublishmentSystemId, this.conferenceID);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加会议（活动）", $"会议（活动）:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加会议（活动）", $"会议（活动）:{TbTitle.Text}");
                             SuccessMessage("添加会议（活动）成功！");
                         }
 

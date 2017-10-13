@@ -1,6 +1,5 @@
 ﻿using System;
 using BaiRong.Core;
-using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
 {
@@ -14,7 +13,7 @@ namespace SiteServer.BackgroundPages
 
             var redirectUrl = PageUtils.GetAdminDirectoryUrl("login.aspx");
 
-            RequestBody.AdministratorLogout();
+            Body.AdminLogout();
             PageUtils.Redirect(PageUtils.ParseNavigationUrl(redirectUrl));
         }
     }

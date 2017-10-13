@@ -101,7 +101,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
             }
-            else if (topId == "Settings")
+            else if (topId == "Plugins")
             {
                 var topMenus = PluginCache.GetTopMenus();
                 if (topMenus != null)

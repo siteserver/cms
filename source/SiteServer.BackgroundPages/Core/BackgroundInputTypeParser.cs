@@ -13,6 +13,8 @@ using SiteServer.BackgroundPages.Ajax;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Controllers.Sys.Editors;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin.Models;
 
@@ -302,8 +304,8 @@ $('#Title').keyup(function (e) {
 
             var builder = new StringBuilder();
 
-            var controllerUrl = CMS.Controllers.Files.UEditor.GetUrl(PageUtils.GetApiUrl(), publishmentSystemInfo.PublishmentSystemId);
-            var editorUrl = SiteFilesAssets.GetUrl(PageUtils.GetApiUrl(), "ueditor");
+            var controllerUrl = UEditor.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId);
+            var editorUrl = SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "ueditor");
 
             if (pageScripts["uEditor"] == null)
             {
@@ -967,7 +969,7 @@ function getRelatedField_{0}(level){{
         }}, 'jsonp');
     }}
 }}
-", fieldInfo.RelatedFieldID, styleInfo.AttributeName, fieldInfo.TotalLevel, CMS.Controllers.Stl.ActionsRelatedField.GetUrl(PageUtils.GetApiUrl(), publishmentSystemInfo.PublishmentSystemId, styleInfo.Additional.RelatedFieldId, 0), values));
+", fieldInfo.RelatedFieldID, styleInfo.AttributeName, fieldInfo.TotalLevel, ActionsRelatedField.GetUrl(PageUtils.InnerApiUrl, publishmentSystemInfo.PublishmentSystemId, styleInfo.Additional.RelatedFieldId, 0), values));
 
                 if (isLoad)
                 {

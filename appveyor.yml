@@ -15,7 +15,6 @@
 
   install:
     - ps: Install-Product node $env:nodejs_version
-    - npm install g3 -g
     - npm install gulp -g
     - npm install
 
@@ -33,8 +32,6 @@
     - nuget restore source/siteserver.sln
 
   after_build:
-    - cd home && npm install && cd ..
-    - g3 build home
     - gulp build
     - gulp zip
 
@@ -75,7 +72,6 @@
 
   install:
     - ps: Install-Product node $env:nodejs_version
-    - npm install g3 -g
     - npm install gulp -g
     - npm install
 
@@ -93,8 +89,6 @@
     - nuget restore source/siteserver.sln
 
   after_build:
-    - cd home && npm install && cd ..
-    - g3 build home
     - gulp build
     - gulp zip
 

@@ -101,8 +101,9 @@ namespace BaiRong.Core.Model.Enumerations
             }
         }
 
-        public static bool IsValid(string password, EUserPasswordRestriction restriction)
+        public static bool IsValid(string password, string restrictionStr)
         {
+            var restriction = GetEnumType(restrictionStr);
             var isValid = false;
             if (!string.IsNullOrEmpty(password))
             {

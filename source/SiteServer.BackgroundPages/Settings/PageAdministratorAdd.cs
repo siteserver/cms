@@ -188,7 +188,7 @@ namespace SiteServer.BackgroundPages.Settings
                     {
                         UserName = tbUserName.Text.Trim(),
                         Password = tbPassword.Text,
-                        CreatorUserName = Body.AdministratorName,
+                        CreatorUserName = Body.AdminName,
                         DisplayName = tbDisplayName.Text,
                         Email = tbEmail.Text,
                         Mobile = tbMobile.Text,

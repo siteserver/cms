@@ -48,9 +48,9 @@ namespace SiteServer.BackgroundPages
         {
             if (IsForbidden) return;
 
-            LtlUserName.Text = AdminManager.GetDisplayName(Body.AdministratorName, true);
+            LtlUserName.Text = AdminManager.GetDisplayName(Body.AdminName, true);
 
-            _permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            _permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
             var publishmentSystemId = PublishmentSystemId;
 
@@ -167,7 +167,7 @@ namespace SiteServer.BackgroundPages
 
             if (_publishmentSystemInfo != null && _publishmentSystemInfo.PublishmentSystemId > 0 && Body.AdministratorInfo.PublishmentSystemId != _publishmentSystemInfo.PublishmentSystemId)
             {
-                BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemId(Body.AdministratorName, _publishmentSystemInfo.PublishmentSystemId);
+                BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemId(Body.AdminName, _publishmentSystemInfo.PublishmentSystemId);
             }
         }
 
@@ -299,18 +299,12 @@ namespace SiteServer.BackgroundPages
 
             var builder = new StringBuilder();
 
-            if (_publishmentSystemInfo.Additional.IsMultiDeployment)
+            if (_publishmentSystemInfo.Additional.IsSeparatedWeb)
             {
-                if (!string.IsNullOrEmpty(_publishmentSystemInfo.Additional.OuterSiteUrl))
-                {
-                    builder.Append(
-                    $@"<li><a href=""{_publishmentSystemInfo.Additional.OuterSiteUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点外网地址</a></li>");
-                }
-                if (!string.IsNullOrEmpty(_publishmentSystemInfo.Additional.InnerSiteUrl))
-                {
-                    builder.Append(
-                        $@"<li><a href=""{_publishmentSystemInfo.Additional.InnerSiteUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点内网地址</a></li>");
-                }
+                builder.Append(
+                    $@"<li><a href=""{_publishmentSystemInfo.Additional.WebUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点外网地址</a></li>");
+                builder.Append(
+                    $@"<li><a href=""{PageUtils.Combine("/", _publishmentSystemInfo.PublishmentSystemDir)}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点内网地址</a></li>");
             }
             else
             {
@@ -318,9 +312,6 @@ namespace SiteServer.BackgroundPages
                 builder.Append(
                     $@"<li><a href=""{publishmentSystemUrl}"" target=""_blank""><i class=""icon-external-link""></i> 进入站点</a></li>");
             }
-
-            builder.Append(
-                    $@"<li><a href=""{HomeUtils.GetUrl(_publishmentSystemInfo.Additional.HomeUrl, string.Empty)}"" target=""_blank""><i class=""icon-external-link""></i> 进入用户中心</a></li>");
 
             return $@"<li class=""has-submenu"">
               <a href=""javascript:;""><i class=""ion-link""></i>站点访问地址</a>

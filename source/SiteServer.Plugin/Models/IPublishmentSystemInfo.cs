@@ -14,8 +14,6 @@
 
         string PublishmentSystemDir { get; set; }
 
-        string PublishmentSystemUrl { get; set; }
-
         bool IsHeadquarters { get; set; }
 
         int ParentPublishmentSystemId { get; set; }

@@ -362,7 +362,7 @@ namespace SiteServer.BackgroundPages.Cms
 								{
 									continue;
 								}
-								var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
+								var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
                                 if (nodeInfo.NodeType != ENodeType.BackgroundPublishNode)
                                 {
                                     TemplateManager.UpdateChannelTemplateId(PublishmentSystemId, nodeId, insertedTemplateId);
@@ -407,7 +407,7 @@ namespace SiteServer.BackgroundPages.Cms
 							{
 								continue;
 							}
-							var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
+							var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
 							var childNodeIdArrayList = DataProvider.NodeDao.GetNodeIdListForDescendant(nodeId);
 							foreach (var childNodeId in childNodeIdArrayList)
 							{
@@ -464,7 +464,7 @@ namespace SiteServer.BackgroundPages.Cms
 								{
 									continue;
 								}
-								var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
+								var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
                                 TemplateManager.UpdateContentTemplateId(PublishmentSystemId, nodeId, insertedTemplateId);
 								//DataProvider.BackgroundNodeDAO.UpdateContentTemplateID(nodeID, insertedTemplateID);
 							}
@@ -505,7 +505,7 @@ namespace SiteServer.BackgroundPages.Cms
 							{
 								continue;
 							}
-							var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdministratorName);
+							var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
 							var childNodeIdList = DataProvider.NodeDao.GetNodeIdListForDescendant(nodeId);
 							foreach (var childNodeId in childNodeIdList)
 							{

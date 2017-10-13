@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     if (PublishmentSystemId != 0)
                     {
-                        NodeManager.AddListItems(CreateChannelIDCollection.Items, PublishmentSystemInfo, false, true, Body.AdministratorName);
+                        NodeManager.AddListItems(CreateChannelIDCollection.Items, PublishmentSystemInfo, false, true, Body.AdminName);
                     }
                     else
                     {

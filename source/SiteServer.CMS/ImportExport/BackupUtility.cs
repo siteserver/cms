@@ -69,7 +69,7 @@ namespace SiteServer.CMS.ImportExport
             exportObject.ExportInput(inputDirectoryPath);
             var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             exportObject.ExportConfiguration(configurationFilePath);
-            exportObject.ExportMetadata(publishmentSystemInfo.PublishmentSystemName, publishmentSystemInfo.PublishmentSystemUrl, string.Empty, string.Empty, metadataPath);
+            exportObject.ExportMetadata(publishmentSystemInfo.PublishmentSystemName, publishmentSystemInfo.Additional.WebUrl, string.Empty, string.Empty, metadataPath);
 
             ZipUtils.PackFiles(filePath, siteTemplatePath);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);

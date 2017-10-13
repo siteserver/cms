@@ -727,7 +727,7 @@ namespace BaiRong.Core
 
             var newValue = urlString.Replace("\"", "'");
             newValue = HttpUtility.UrlEncode(newValue);
-            newValue = newValue?.Replace("%2f", "/");
+            newValue = newValue.Replace("%2f", "/");
             return newValue;
         }
 
@@ -740,7 +740,7 @@ namespace BaiRong.Core
 
             var newValue = urlString.Replace("\"", "'");
             newValue = HttpUtility.UrlEncode(newValue, Encoding.GetEncoding(encoding));
-            newValue = newValue?.Replace("%2f", "/");
+            newValue = newValue.Replace("%2f", "/");
             return newValue;
         }
 
@@ -753,7 +753,7 @@ namespace BaiRong.Core
 
             var newValue = urlString.Replace("\"", "'");
             newValue = HttpUtility.UrlEncode(newValue, ECharsetUtils.GetEncoding(charset));
-            newValue = newValue?.Replace("%2f", "/");
+            newValue = newValue.Replace("%2f", "/");
             return newValue;
         }
 
@@ -953,15 +953,9 @@ namespace BaiRong.Core
             return GetRootUrl(requestPath);
         }
 
-        public static string GetApiUrl()
-        {
-            return Combine(ApplicationPath, "api").ToLower();
-        }
+        public const string InnerApiUrl = "/api";
 
-        public static string GetHomeUrl()
-        {
-            return Combine(ApplicationPath, "home").ToLower();
-        }
+        public static string OuterApiUrl => ConfigManager.SystemConfigInfo.IsUrlGlobalSetting ? ConfigManager.SystemConfigInfo.ApiUrl : "/api";
 
         public static string ParseConfigRootUrl(string url)
         {

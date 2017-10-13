@@ -17,7 +17,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/message/img/start.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/message/img/start.jpg"));
             }
             else
             {
@@ -29,7 +29,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(contentImageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/message/img/top.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/message/img/top.jpg"));
             }
             else
             {
@@ -39,7 +39,7 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         private static string GetMessageUrl(PublishmentSystemInfo publishmentSystemInfo)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/message/index.html"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/message/index.html"));
         }
 
         public static string GetMessageUrl(PublishmentSystemInfo publishmentSystemInfo, MessageInfo messageInfo, string wxOpenID)

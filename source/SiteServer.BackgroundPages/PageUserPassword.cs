@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages
 
             if (!Page.IsPostBack)
             {
-                UserName.Text = Body.AdministratorName;
+                UserName.Text = Body.AdminName;
             }
         }
 

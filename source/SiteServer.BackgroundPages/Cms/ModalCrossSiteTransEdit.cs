@@ -153,7 +153,7 @@ namespace SiteServer.BackgroundPages.Cms
             NodeIDCollection.Items.Clear();
             if (PlaceHolder_PublishmentSystem.Visible && PublishmentSystemIDCollection.Items.Count > 0)
             {
-                NodeManager.AddListItemsForAddContent(NodeIDCollection.Items, PublishmentSystemManager.GetPublishmentSystemInfo(int.Parse(PublishmentSystemIDCollection.SelectedValue)), false, Body.AdministratorName);
+                NodeManager.AddListItemsForAddContent(NodeIDCollection.Items, PublishmentSystemManager.GetPublishmentSystemInfo(int.Parse(PublishmentSystemIDCollection.SelectedValue)), false, Body.AdminName);
             }
         }
 

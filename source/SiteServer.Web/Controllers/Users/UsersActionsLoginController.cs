@@ -24,7 +24,6 @@ namespace SiteServer.API.Controllers.Users
                 string errorMessage;
                 if (!BaiRongDataProvider.UserDao.ValidateAccount(account, password, out userName, out errorMessage))
                 {
-                    LogUtils.AddUserLog(userName, EUserActionType.LoginFailed,  "用户登录失败");
                     BaiRongDataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
                     return BadRequest(errorMessage);
                 }

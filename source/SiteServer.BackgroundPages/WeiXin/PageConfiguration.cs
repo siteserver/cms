@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                 BreadCrumb(AppManager.WeiXin.LeftMenu.IdConfiguration, "站点信息", AppManager.Permissions.WebSite.Configration);
 
                 PhDomain.Visible = true;
-                TbPublishmentSystemUrl.Text = PublishmentSystemInfo.PublishmentSystemUrl;
+                TbPublishmentSystemUrl.Text = PublishmentSystemInfo.Additional.WebUrl;
 
                 var publishmentSystemUrl = PageUtils.AddProtocolToUrl(PageUtility.GetPublishmentSystemUrl(PublishmentSystemInfo, string.Empty));
 
@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.WeiXin
             {
                 if (PhDomain.Visible)
                 {
-                    PublishmentSystemInfo.PublishmentSystemUrl = TbPublishmentSystemUrl.Text;
+                    //PublishmentSystemInfo.PublishmentSystemUrl = TbPublishmentSystemUrl.Text;
                 }
 
                 try

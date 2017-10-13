@@ -64,6 +64,7 @@ namespace BaiRong.Core
             public class Settings
             {
                 public const string SiteAdd = "settings_site_add";
+                public const string Config = "settings_config";
                 public const string SiteManagement = "settings_site_management";
                 public const string AdminManagement = "settings_admin_management";
                 public const string UserManagement = "settings_user_management";
@@ -355,24 +356,6 @@ namespace BaiRong.Core
             return FileUtils.IsFileExists(PathUtils.GetMenusPath(WeiXin.AppId, "Management.config"));
         }
 
-        public static void Upgrade(string version, out string errorMessage)
-        {
-            errorMessage = string.Empty;
-            if (!string.IsNullOrEmpty(version) && BaiRongDataProvider.ConfigDao.GetDatabaseVersion() != version)
-            {
-                var errorBuilder = new StringBuilder();
-                BaiRongDataProvider.DatabaseDao.Upgrade(WebConfigUtils.DatabaseType, errorBuilder);
-
-                //升级数据库
-
-                errorMessage = $"<!--{errorBuilder}-->";
-            }
-
-            var configInfo = BaiRongDataProvider.ConfigDao.GetConfigInfo();
-            configInfo.DatabaseVersion = version;
-            configInfo.IsInitialized = true;
-            configInfo.UpdateDate = DateTime.Now;
-            BaiRongDataProvider.ConfigDao.Update(configInfo);
-        }
+        
     }
 }

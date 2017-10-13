@@ -34,5 +34,10 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             return PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
         }
+
+        public List<IPublishmentSystemInfo> GetPublishmentSystemInfoList(string adminName)
+        {
+            return PublishmentSystemManager.GetWritingPublishmentSystemInfoList(adminName);
+        }
     }
 }

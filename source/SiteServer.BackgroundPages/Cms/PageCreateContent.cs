@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
                 listitem = new ListItem("2小时内更新的内容", "2Hour");
                 ChooseScope.Items.Add(listitem);
 
-                NodeManager.AddListItems(NodeIDList.Items, PublishmentSystemInfo, false, true, Body.AdministratorName);
+                NodeManager.AddListItems(NodeIDList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
                 DeleteAllContentButton.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的内容页面，确定吗？\");");
             }
         }

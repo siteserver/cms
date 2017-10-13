@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
@@ -441,7 +440,7 @@ namespace SiteServer.CMS.Core
             {
                 if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, PageUtils.ApplicationPath) ||
-                    StringUtils.StartsWithIgnoreCase(originalImageSrc, publishmentSystemInfo.PublishmentSystemUrl))
+                    StringUtils.StartsWithIgnoreCase(originalImageSrc, publishmentSystemInfo.Additional.WebUrl))
                     continue;
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);
                 if (!EFileSystemTypeUtils.IsImageOrFlashOrPlayer(fileExtName)) continue;

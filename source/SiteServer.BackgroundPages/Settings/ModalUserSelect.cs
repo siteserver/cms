@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                spContents.SelectCommand = BaiRongDataProvider.UserDao.GetSelectCommand(Request.QueryString["keyword"], TranslateUtils.ToInt(Request.QueryString["createDate"]), TranslateUtils.ToInt(Request.QueryString["lastActivityDate"]), true, 0, 0, string.Empty);
+                spContents.SelectCommand = BaiRongDataProvider.UserDao.GetSelectCommand(Request.QueryString["keyword"], TranslateUtils.ToInt(Request.QueryString["createDate"]), TranslateUtils.ToInt(Request.QueryString["lastActivityDate"]), true, 0, string.Empty);
             }
 
             rptContents.ItemDataBound += rptContents_ItemDataBound;

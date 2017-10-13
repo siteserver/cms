@@ -233,22 +233,19 @@ namespace BaiRong.Core.Provider
 
             if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
             {
-                string sqlString = $"select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, COLUMN_KEY from information_schema.columns where table_schema = '{databaseName}' and table_name = '{tableName}' order by table_name,ordinal_position; ";
+                string sqlString = $"select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLUMN_KEY from information_schema.columns where table_schema = '{databaseName}' and table_name = '{tableName}' order by table_name,ordinal_position; ";
                 using (var rdr = ExecuteReader(connectionString, sqlString))
                 {
                     while (rdr.Read())
                     {
                         var columnName = Convert.ToString(rdr.GetValue(0));
-                        var isNullable = Convert.ToString(rdr.GetValue(1)) == "YES";
-                        var dataType = DataTypeUtils.FromMySql(Convert.ToString(rdr.GetValue(2)));
-                        var length = rdr.IsDBNull(3) || dataType == DataType.NText || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(3));
-                        var precision = rdr.IsDBNull(4) ? 0 : Convert.ToInt32(rdr.GetValue(4));
-                        var scale = rdr.IsDBNull(5) ? 0 : Convert.ToInt32(rdr.GetValue(5));
-                        var isPrimaryKey = Convert.ToString(rdr.GetValue(6)) == "PRI";
+                        var dataType = DataTypeUtils.FromMySql(Convert.ToString(rdr.GetValue(1)));
+                        var length = rdr.IsDBNull(2) || dataType == DataType.NText || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(2));
+                        var isPrimaryKey = Convert.ToString(rdr.GetValue(3)) == "PRI";
                         
-                        var isIdentity = isPrimaryKey && StringUtils.EqualsIgnoreCase(columnName, "ID");
+                        var isIdentity = isPrimaryKey && StringUtils.EqualsIgnoreCase(columnName, "Id");
 
-                        var info = new TableColumnInfo(databaseName, tableId, columnName, dataType, length, precision, scale, isPrimaryKey, isNullable, isIdentity);
+                        var info = new TableColumnInfo(columnName, dataType, length, isPrimaryKey, isIdentity);
                         list.Add(info);
                     }
                     rdr.Close();
@@ -257,7 +254,7 @@ namespace BaiRong.Core.Provider
             else
             {
                 string sqlString =
-                $"select C.name, T.name, C.length, C.xprec, C.xscale, C.colstat, C.isnullable, case when C.autoval is null then 0 else 1 end, SC.text, (select CForgin.name from [{databaseName}].dbo.sysreferences Sr,[{databaseName}].dbo.sysobjects O,[{databaseName}].dbo.syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select O.name from [{databaseName}].dbo.sysreferences Sr,[{databaseName}].dbo.sysobjects O,[{databaseName}].dbo.syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select Sr.rkeyid from [{databaseName}].dbo.sysreferences Sr,[{databaseName}].dbo.sysobjects O,[{databaseName}].dbo.syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1) from [{databaseName}].dbo.systypes T, [{databaseName}].dbo.syscolumns C left join [{databaseName}].dbo.syscomments SC on C.cdefault=SC.id where C.id={tableId} and C.xtype=T.xusertype order by C.colid";
+                $"select C.name, T.name, C.length, C.colstat, case when C.autoval is null then 0 else 1 end, SC.text, (select CForgin.name from [{databaseName}].dbo.sysreferences Sr,[{databaseName}].dbo.sysobjects O,[{databaseName}].dbo.syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select O.name from [{databaseName}].dbo.sysreferences Sr,[{databaseName}].dbo.sysobjects O,[{databaseName}].dbo.syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select Sr.rkeyid from [{databaseName}].dbo.sysreferences Sr,[{databaseName}].dbo.sysobjects O,[{databaseName}].dbo.syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1) from [{databaseName}].dbo.systypes T, [{databaseName}].dbo.syscolumns C left join [{databaseName}].dbo.syscomments SC on C.cdefault=SC.id where C.id={tableId} and C.xtype=T.xusertype order by C.colid";
 
                 using (var rdr = ExecuteReader(connectionString, sqlString))
                 {
@@ -270,22 +267,18 @@ namespace BaiRong.Core.Provider
                         }
                         var dataType = DataTypeUtils.FromSqlServer(Convert.ToString(rdr.GetValue(1)));
                         var length = GetDataLength(dataType, Convert.ToInt32(rdr.GetValue(2)));
-                        var precision = Convert.ToInt32(rdr.GetValue(3));
-                        var scale = Convert.ToInt32(rdr.GetValue(4));
-                        var isPrimaryKeyInt = Convert.ToInt32(rdr.GetValue(5));
-                        var isNullableInt = Convert.ToInt32(rdr.GetValue(6));
-                        var isIdentityInt = Convert.ToInt32(rdr.GetValue(7));
+                        var isPrimaryKeyInt = Convert.ToInt32(rdr.GetValue(3));
+                        var isIdentityInt = Convert.ToInt32(rdr.GetValue(4));
 
                         var isPrimaryKey = isPrimaryKeyInt == 1;
-                        var isNullable = isNullableInt == 1;
-                        var isIdentity = isIdentityInt == 1 || StringUtils.EqualsIgnoreCase(columnName, "ID");
+                        var isIdentity = isIdentityInt == 1 || StringUtils.EqualsIgnoreCase(columnName, "Id");
                         //sqlserver 2005 返回isIdentity结果不正确,so 在此假设所有ID字段为Idenity字段
                         if (isIdentity)
                         {
                             isIdentityExist = true;
                         }
 
-                        var info = new TableColumnInfo(databaseName, tableId, columnName, dataType, length, precision, scale, isPrimaryKey, isNullable, isIdentity);
+                        var info = new TableColumnInfo(columnName, dataType, length, isPrimaryKey, isIdentity);
                         list.Add(info);
                     }
                     rdr.Close();
@@ -361,47 +354,22 @@ namespace BaiRong.Core.Provider
 
             foreach (var tableColumnInfo in allTableColumnInfoList)
             {
-                if (!tableColumnInfo.IsIdentity)
+                if (tableColumnInfo.IsIdentity || attributes[tableColumnInfo.ColumnName] == null) continue;
+
+                columnNameList.Add(tableColumnInfo.ColumnName);
+                var valueStr = attributes[tableColumnInfo.ColumnName];
+
+                if (tableColumnInfo.DataType == DataType.DateTime)
                 {
-                    if (attributes[tableColumnInfo.ColumnName] == null)
-                    {
-                        if (!tableColumnInfo.IsNullable)
-                        {
-                            columnNameList.Add(tableColumnInfo.ColumnName);
-                            var valueStr = string.Empty;
-
-                            if (tableColumnInfo.DataType == DataType.DateTime)
-                            {
-                                parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToDateTime(valueStr)));
-                            }
-                            else if (tableColumnInfo.DataType == DataType.Integer)
-                            {
-                                parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToIntWithNagetive(valueStr)));
-                            }
-                            else
-                            {
-                                parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, valueStr));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        columnNameList.Add(tableColumnInfo.ColumnName);
-                        var valueStr = attributes[tableColumnInfo.ColumnName];
-
-                        if (tableColumnInfo.DataType == DataType.DateTime)
-                        {
-                            parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToDateTime(valueStr)));
-                        }
-                        else if (tableColumnInfo.DataType == DataType.Integer)
-                        {
-                            parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToIntWithNagetive(valueStr)));
-                        }
-                        else
-                        {
-                            parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, valueStr));
-                        }
-                    }
+                    parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToDateTime(valueStr)));
+                }
+                else if (tableColumnInfo.DataType == DataType.Integer)
+                {
+                    parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToIntWithNagetive(valueStr)));
+                }
+                else
+                {
+                    parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, valueStr));
                 }
             }
 

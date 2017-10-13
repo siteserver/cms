@@ -51,7 +51,7 @@ namespace siteserver
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex, "服务组件生成失败");
+                LogUtils.AddSystemErrorLog(ex, "服务组件生成失败");
             }
 
             return false;

@@ -17,8 +17,7 @@
         <div class="well well-small">
             <table class="table table-noborder">
                 <tr>
-                    <td>用户组：
-                        <asp:DropDownList ID="DdlGroup" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick" runat="server"></asp:DropDownList>
+                    <td>
                         每页显示条数：
                         <asp:DropDownList ID="DdlPageNum" class="input-small" AutoPostBack="true" OnSelectedIndexChanged="Search_OnClick" runat="server">
                             <asp:ListItem Text="默认" Value="0" Selected="true"></asp:ListItem>
@@ -82,7 +81,6 @@
                 <td>注册时间</td>
                 <td>最后活动时间</td>
                 <td>登录次数</td>
-                <td>用户组</td>
                 <td class="center" width="60">投稿数量</td>
                 <td class="center" width="60">&nbsp;</td>
                 <td class="center" width="60">&nbsp;</td>
@@ -113,9 +111,6 @@
                             <asp:Literal ID="ltlLoginCount" runat="server"></asp:Literal>
                         </td>
                         <td class="center">
-                            <asp:Literal ID="ltlGroupName" runat="server"></asp:Literal>
-                        </td>
-                        <td class="center">
                             <asp:Literal ID="ltlWritingCount" runat="server"></asp:Literal>
                         </td>
                         <td class="center">
@@ -136,7 +131,6 @@
 
         <ul class="breadcrumb breadcrumb-button">
             <asp:Button class="btn btn-success" ID="BtnAdd" Text="添加用户" runat="server" />
-            <asp:Button class="btn" ID="BtnAddToGroup" Text="设置用户组" runat="server" />
             <asp:Button class="btn" ID="BtnLock" Text="锁定用户" runat="server" />
             <asp:Button class="btn" ID="BtnUnLock" Text="解除锁定" runat="server" />
             <asp:Button class="btn" ID="BtnDelete" Text="删 除" runat="server" />

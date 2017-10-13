@@ -6,17 +6,13 @@ namespace BaiRong.Core
 {
     public class LogUtils
     {
-        public static void AddErrorLog(ErrorLogInfo logInfo)
+        private static void AddErrorLog(ErrorLogInfo logInfo)
         {
             try
             {
                 if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
                 {
-                    BaiRongDataProvider.ErrorLogDao.Delete(ConfigManager.SystemConfigInfo.TimeThreshold, 0);
-                }
-                if (ConfigManager.SystemConfigInfo.IsCounterThreshold)
-                {
-                    BaiRongDataProvider.ErrorLogDao.Delete(0, ConfigManager.SystemConfigInfo.CounterThreshold * 10000);
+                    BaiRongDataProvider.ErrorLogDao.Delete(ConfigManager.SystemConfigInfo.TimeThreshold);
                 }
 
                 BaiRongDataProvider.ErrorLogDao.Insert(logInfo);
@@ -27,29 +23,26 @@ namespace BaiRong.Core
             }
         }
 
-        public static void AddErrorLog(Exception ex)
+        public static void AddSystemErrorLog(Exception ex, string summary = "")
         {
-            AddErrorLog(ex, string.Empty);
+            AddErrorLog(new ErrorLogInfo(0, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
         }
 
-        public static void AddErrorLog(Exception ex, string summary)
+        public static void AddPluginErrorLog(string pluginId, Exception ex, string summary = "")
         {
-            var logInfo = new ErrorLogInfo(0, DateTime.Now, ex.Message, ex.StackTrace, summary);
-            AddErrorLog(logInfo);
+            AddErrorLog(new ErrorLogInfo(0, pluginId, ex.Message, ex.StackTrace, summary, DateTime.Now));
         }
 
-        public static void AddAdminLog(string userName, string action)
-        {
-            AddAdminLog(userName, action, string.Empty);
-        }
-
-        public static void AddAdminLog(string userName, string action, string summary)
+        public static void AddAdminLog(string userName, string action, string summary = "")
         {
             if (!ConfigManager.SystemConfigInfo.IsLogAdmin) return;
 
             try
             {
-                BaiRongDataProvider.LogDao.Delete(ConfigManager.SystemConfigInfo.IsTimeThreshold ? ConfigManager.SystemConfigInfo.TimeThreshold : 0, ConfigManager.SystemConfigInfo.IsCounterThreshold ? ConfigManager.SystemConfigInfo.CounterThreshold * 10000 : 0);
+                if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
+                {
+                    BaiRongDataProvider.LogDao.Delete(ConfigManager.SystemConfigInfo.TimeThreshold);
+                }
 
                 if (!string.IsNullOrEmpty(action))
                 {
@@ -65,7 +58,7 @@ namespace BaiRong.Core
             }
             catch (Exception ex)
             {
-                AddErrorLog(ex);
+                AddSystemErrorLog(ex);
             }
         }
 
@@ -76,21 +69,29 @@ namespace BaiRong.Core
 
         public static void AddUserLog(string userName, EUserActionType actionType, string summary)
         {
+            AddUserLog(userName, EUserActionTypeUtils.GetText(actionType), summary);
+        }
+
+        public static void AddUserLog(string userName, string actionType, string summary)
+        {
             if (!ConfigManager.SystemConfigInfo.IsLogUser) return;
 
             try
             {
-                BaiRongDataProvider.UserLogDao.Delete(ConfigManager.SystemConfigInfo.IsTimeThreshold ? ConfigManager.SystemConfigInfo.TimeThreshold : 0, ConfigManager.SystemConfigInfo.IsCounterThreshold ? ConfigManager.SystemConfigInfo.CounterThreshold * 10000 : 0);
+                if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
+                {
+                    BaiRongDataProvider.UserLogDao.Delete(ConfigManager.SystemConfigInfo.TimeThreshold);
+                }
 
                 if (!string.IsNullOrEmpty(summary))
                 {
                     summary = StringUtils.MaxLengthText(summary, 250);
                 }
-                BaiRongDataProvider.UserLogDao.Insert(new UserLogInfo(0, userName, PageUtils.GetIpAddress(), DateTime.Now, EUserActionTypeUtils.GetValue(actionType), summary));
+                BaiRongDataProvider.UserLogDao.Insert(new UserLogInfo(0, userName, PageUtils.GetIpAddress(), DateTime.Now, actionType, summary));
             }
             catch (Exception ex)
             {
-                AddErrorLog(ex);
+                AddSystemErrorLog(ex);
             }
         }
     }

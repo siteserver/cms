@@ -170,7 +170,7 @@ namespace SiteServer.BackgroundPages.Cms
                         FailMessage(ex, "删除栏目失败！");
                     }
 
-                    LogUtils.AddErrorLog(ex);
+                    LogUtils.AddSystemErrorLog(ex);
 				}
 			}
 		}

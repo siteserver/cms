@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -17,9 +17,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public PublishmentSystemInfo PublishmentSystemInfo { get; private set; }
 
-        public string ApiUrl => PublishmentSystemInfo.Additional.ApiUrl;
-
-        public string HomeUrl => PublishmentSystemInfo.Additional.HomeUrl;
+        public string ApiUrl { get; }
 
         private int _uniqueId;
 
@@ -88,7 +86,7 @@ namespace SiteServer.CMS.StlParser.Model
             public const string StlClient = "StlClient";
         }
 
-        public PageInfo(int pageNodeId, int pageContentId, PublishmentSystemInfo publishmentSystemInfo, TemplateInfo templateInfo, UserInfo userInfo)
+        public PageInfo(int pageNodeId, int pageContentId, PublishmentSystemInfo publishmentSystemInfo, TemplateInfo templateInfo, IUserInfo userInfo)
         {
             TemplateInfo = templateInfo;
             PublishmentSystemId = publishmentSystemInfo.PublishmentSystemId;
@@ -101,6 +99,7 @@ namespace SiteServer.CMS.StlParser.Model
             PublishmentSystemInfo = publishmentSystemInfo;
             UserInfo = userInfo;
             _uniqueId = 1;
+            ApiUrl = PageUtils.OuterApiUrl;
 
             ChannelItems = new Stack<ChannelItemInfo>(5);
             ContentItems = new Stack<ContentItemInfo>(5);
@@ -114,7 +113,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public TemplateInfo TemplateInfo { get; }
 
-        public UserInfo UserInfo { get; }
+        public IUserInfo UserInfo { get; }
 
         public int PublishmentSystemId { get; private set; }
 
@@ -260,7 +259,7 @@ wnd_frame.src=url;}}
             {
                 retval = $@"
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
-<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{PublishmentSystemInfo.PublishmentSystemId}', {PublishmentSystemInfo.PublishmentSystemUrl.TrimEnd('/')}');</script>
+<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{PublishmentSystemInfo.PublishmentSystemId}', {PublishmentSystemInfo.Additional.WebUrl.TrimEnd('/')}');</script>
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
             }
             else if (pageJsName == JsInnerCalendar)

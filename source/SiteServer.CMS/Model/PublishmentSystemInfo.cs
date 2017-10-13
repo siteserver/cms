@@ -32,7 +32,6 @@ namespace SiteServer.CMS.Model
 		private bool _isCheckContentUseLevel;
 		private int _checkContentLevel;
 		private string _publishmentSystemDir = string.Empty;
-		private string _publishmentSystemUrl = string.Empty;
         private bool _isHeadquarters;
         private int _parentPublishmentSystemId;
         private int _taxis;
@@ -43,7 +42,7 @@ namespace SiteServer.CMS.Model
 		{
 		}
 
-        public PublishmentSystemInfo(int publishmentSystemId, string publishmentSystemName, string auxiliaryTableForContent, bool isCheckContentUseLevel, int checkContentLevel, string publishmentSystemDir, string publishmentSystemUrl, bool isHeadquarters, int parentPublishmentSystemId, int taxis, string settingsXml) 
+        public PublishmentSystemInfo(int publishmentSystemId, string publishmentSystemName, string auxiliaryTableForContent, bool isCheckContentUseLevel, int checkContentLevel, string publishmentSystemDir, bool isHeadquarters, int parentPublishmentSystemId, int taxis, string settingsXml) 
 		{
 			_publishmentSystemId = publishmentSystemId;
 			_publishmentSystemName = publishmentSystemName;
@@ -51,7 +50,6 @@ namespace SiteServer.CMS.Model
 			_isCheckContentUseLevel = isCheckContentUseLevel;
 			_checkContentLevel = checkContentLevel;
 			_publishmentSystemDir = publishmentSystemDir;
-			_publishmentSystemUrl = publishmentSystemUrl;
 			_isHeadquarters = isHeadquarters;
             _parentPublishmentSystemId = parentPublishmentSystemId;
             _taxis = taxis;
@@ -103,13 +101,6 @@ namespace SiteServer.CMS.Model
 		}
 
 		[XmlIgnore]
-		public string PublishmentSystemUrl
-		{
-            get { return _publishmentSystemUrl; }
-			set{ _publishmentSystemUrl = value; }
-		}
-
-		[XmlIgnore]
         public bool IsHeadquarters
 		{
 			get{ return _isHeadquarters; }
@@ -140,7 +131,7 @@ namespace SiteServer.CMS.Model
             }
         }
 
-        public PublishmentSystemInfoExtend Additional => _additional ?? (_additional = new PublishmentSystemInfoExtend(PublishmentSystemUrl, _settingsXml));
+        public PublishmentSystemInfoExtend Additional => _additional ?? (_additional = new PublishmentSystemInfoExtend(PublishmentSystemDir, _settingsXml));
 
 	    public ExtendedAttributes Attributes => Additional;
 	}

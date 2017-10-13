@@ -10,27 +10,27 @@ namespace SiteServer.BackgroundPages
 	{
         public bool HasChannelPermissions(int nodeId, params string[] channelPermissionArray)
         {
-            return AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, nodeId, channelPermissionArray);
+            return AdminUtility.HasChannelPermissions(Body.AdminName, PublishmentSystemId, nodeId, channelPermissionArray);
         }
 
         public bool HasChannelPermissionsIgnoreNodeId(params string[] channelPermissionArray)
         {
-            return AdminUtility.HasChannelPermissionsIgnoreNodeId(Body.AdministratorName, channelPermissionArray);
+            return AdminUtility.HasChannelPermissionsIgnoreNodeId(Body.AdminName, channelPermissionArray);
         }
 
         public bool HasWebsitePermissions(params string[] websitePermissionArray)
         {
-            return AdminUtility.HasWebsitePermissions(Body.AdministratorName, PublishmentSystemId, websitePermissionArray);
+            return AdminUtility.HasWebsitePermissions(Body.AdminName, PublishmentSystemId, websitePermissionArray);
         }
 
         public bool IsOwningNodeId(int nodeId)
         {
-            return AdminUtility.IsOwningNodeId(Body.AdministratorName, nodeId);
+            return AdminUtility.IsOwningNodeId(Body.AdminName, nodeId);
         }
 
         public bool IsHasChildOwningNodeId(int nodeId)
         {
-            return AdminUtility.IsHasChildOwningNodeId(Body.AdministratorName, nodeId);
+            return AdminUtility.IsHasChildOwningNodeId(Body.AdminName, nodeId);
         }
 
         private int _publishmentSystemId = -1;
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages
 
             if (!string.IsNullOrEmpty(permission))
             {
-                AdminUtility.VerifyWebsitePermissions(Body.AdministratorName, PublishmentSystemId, permission);
+                AdminUtility.VerifyWebsitePermissions(Body.AdminName, PublishmentSystemId, permission);
             }
         }
 
@@ -82,7 +82,7 @@ namespace SiteServer.BackgroundPages
 
             if (!string.IsNullOrEmpty(permission))
             {
-                AdminUtility.VerifyWebsitePermissions(Body.AdministratorName, PublishmentSystemId, permission);
+                AdminUtility.VerifyWebsitePermissions(Body.AdminName, PublishmentSystemId, permission);
             }
         }
 

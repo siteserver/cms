@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                             if (EBackupTypeUtils.Equals(EBackupType.Templates, BackupType.SelectedValue))
                             {
-                                importObject.ImportTemplates(localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue), Body.AdministratorName);
+                                importObject.ImportTemplates(localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue), Body.AdminName);
                                 SuccessMessage("恢复模板成功!");
                             }
                             else if (EBackupTypeUtils.Equals(EBackupType.ChannelsAndContents, BackupType.SelectedValue))

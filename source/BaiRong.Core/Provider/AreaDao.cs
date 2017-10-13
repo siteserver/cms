@@ -10,7 +10,7 @@ namespace BaiRong.Core.Provider
 {
     public class AreaDao : DataProviderBase
     {
-        public string TableName => "bairong_Area";
+        public override string TableName => "bairong_Area";
 
         private const string SqlSelect = "SELECT AreaID, AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin FROM bairong_Area WHERE AreaID = @AreaID";
         private const string SqlSelectAll = "SELECT AreaID, AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin FROM bairong_Area ORDER BY TAXIS";

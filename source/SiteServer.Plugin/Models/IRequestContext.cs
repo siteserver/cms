@@ -8,16 +8,6 @@ namespace SiteServer.Plugin.Models
     /// </summary>
     public interface IRequestContext
     {
-        bool IsAdministratorLoggin { get; }
-
-        string AdministratorName { get; }
-
-        bool IsUserLoggin { get; }
-
-        string UserName { get; }
-
-        string ReturnUrl { get; }
-
         HttpRequest Request { get; }
 
         string GetQueryString(string name);
@@ -43,5 +33,31 @@ namespace SiteServer.Plugin.Models
         string GetCookie(string name);
 
         bool IsCookieExists(string name);
+
+        bool IsUserLoggin { get; }
+
+        string UserName { get; }
+
+        IUserInfo UserInfo { get; }
+
+        void UserLogin(string userName);
+
+        void UserLogout();
+
+        bool IsAdminLoggin { get; }
+
+        string AdminName { get; }
+
+        void AdminLogin(string administratorName);
+
+        void AdminLogout();
+
+        string GetUserTokenByUserName(string userName);
+
+        string GetUserNameByToken(string token);
+
+        string GetAdminTokenByAdminName(string administratorName);
+
+        string GetAdminNameByToken(string token);
     }
 }

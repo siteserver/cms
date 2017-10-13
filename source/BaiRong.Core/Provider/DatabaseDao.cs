@@ -7,9 +7,9 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Text;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using MySql.Data.MySqlClient;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
@@ -646,7 +646,7 @@ SELECT * FROM (
             return exists;
         }
 
-        public void CreatePluginTable(string tableName, List<PluginTableColumn> tableColumns)
+        public void CreatePluginTable(string pluginId, string tableName, List<PluginTableColumn> tableColumns)
         {
             var sqlBuilder = new StringBuilder();
 
@@ -668,7 +668,7 @@ SELECT * FROM (
                     if (string.IsNullOrEmpty(tableColumn.AttributeName) ||
                         StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, "Id")) continue;
 
-                    var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.AttributeName,
+                    var columnSql = SqlUtils.GetColumnSqlString(DataTypeUtils.GetEnumType(tableColumn.DataType), tableColumn.AttributeName,
                         tableColumn.DataLength);
                     if (!string.IsNullOrEmpty(columnSql))
                     {
@@ -689,7 +689,109 @@ SELECT * FROM (
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex, sqlBuilder.ToString());
+                LogUtils.AddPluginErrorLog(pluginId, ex, sqlBuilder.ToString());
+            }
+        }
+
+        public void AlterPluginTable(string pluginId, string tableName, List<PluginTableColumn> tableColumns)
+        {
+            var columnNameList = BaiRongDataProvider.TableStructureDao.GetColumnNameList(tableName, true);
+            foreach (var tableColumn in tableColumns)
+            {
+                if (columnNameList.Contains(tableColumn.AttributeName.ToLower())) continue;
+
+                var columnSqlString = SqlUtils.GetColumnSqlString(DataTypeUtils.GetEnumType(tableColumn.DataType), tableColumn.AttributeName, tableColumn.DataLength);
+                var sqlString = SqlUtils.GetAddColumnsSqlString(DataTypeUtils.GetEnumType(tableColumn.DataType), tableName, columnSqlString);
+
+                try
+                {
+                    BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddPluginErrorLog(pluginId, ex, sqlString);
+                }
+            }
+        }
+
+        public void CreateSystemTable(string tableName, List<TableColumnInfo> tableColumns)
+        {
+            var sqlBuilder = new StringBuilder();
+
+            try
+            {
+                sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
+
+                var primaryKeyColumns = new List<TableColumnInfo>();
+                foreach (var tableColumn in tableColumns)
+                {
+                    if (string.IsNullOrEmpty(tableColumn.ColumnName)) continue;
+
+                    if (tableColumn.IsIdentity || StringUtils.EqualsIgnoreCase(tableColumn.ColumnName, "Id"))
+                    {
+                        primaryKeyColumns.Add(tableColumn);
+                        if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+                        {
+                            sqlBuilder.Append($@"{tableColumn.ColumnName} INT AUTO_INCREMENT,").AppendLine();
+                        }
+                        else
+                        {
+                            sqlBuilder.Append($@"{tableColumn.ColumnName} int IDENTITY (1, 1),").AppendLine();
+                        }
+                    }
+                    else
+                    {
+                        if (tableColumn.IsPrimaryKey)
+                        {
+                            primaryKeyColumns.Add(tableColumn);
+                        }
+
+                        var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.ColumnName,
+                        tableColumn.Length);
+                        if (!string.IsNullOrEmpty(columnSql))
+                        {
+                            sqlBuilder.Append(columnSql).Append(",").AppendLine();
+                        }
+                    }
+                }
+
+                foreach (var tableColumn in primaryKeyColumns)
+                {
+                    sqlBuilder.Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                    ? $@"PRIMARY KEY ({tableColumn.ColumnName})"
+                    : $@"CONSTRAINT PK_{tableName}_{tableColumn.ColumnName} PRIMARY KEY ({tableColumn.ColumnName})").AppendLine();
+                }
+
+                sqlBuilder.Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                    ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8"
+                    : ")");
+
+                ExecuteNonQuery(sqlBuilder.ToString());
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddSystemErrorLog(ex, sqlBuilder.ToString());
+            }
+        }
+
+        public void AlterSystemTable(string tableName, List<TableColumnInfo> tableColumns)
+        {
+            var columnNameList = BaiRongDataProvider.TableStructureDao.GetColumnNameList(tableName, true);
+            foreach (var tableColumn in tableColumns)
+            {
+                if (columnNameList.Contains(tableColumn.ColumnName.ToLower())) continue;
+
+                var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.ColumnName, tableColumn.Length);
+                var sqlString = SqlUtils.GetAddColumnsSqlString(tableColumn.DataType, tableName, columnSqlString);
+
+                try
+                {
+                    BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddSystemErrorLog(ex, sqlString);
+                }
             }
         }
     }

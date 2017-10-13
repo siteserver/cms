@@ -112,13 +112,13 @@ namespace SiteServer.BackgroundPages.WeiXin
             SpContents.ControlToPaginate = RptContents;
             if (string.IsNullOrEmpty(Request.QueryString["NodeID"]))
             {
-                var pm = PermissionsManager.GetPermissions(Body.AdministratorName);
+                var pm = PermissionsManager.GetPermissions(Body.AdminName);
                 var stateType = ETriStateUtils.GetEnumType(State.SelectedValue);
                 SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableStyle, tableName, PublishmentSystemId, _nodeId, pm.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, SearchType.SelectedValue, Keyword.Text, DateFrom.Text, DateTo.Text, true, stateType, !IsDuplicate.Checked, false);
             }
             else
             {
-                var pm = PermissionsManager.GetPermissions(Body.AdministratorName);
+                var pm = PermissionsManager.GetPermissions(Body.AdminName);
                 var stateType = ETriStateUtils.GetEnumType(Request.QueryString["State"]);
                 SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableStyle, tableName, PublishmentSystemId, _nodeId, pm.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, Request.QueryString["SearchType"], Request.QueryString["Keyword"], Request.QueryString["DateFrom"], Request.QueryString["DateTo"], true, stateType, !TranslateUtils.ToBool(Request.QueryString["IsDuplicate"]), false);
             }
@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.WeiXin
 
             if (!IsPostBack)
             {
-                NodeManager.AddListItems(NodeIdDropDownList.Items, PublishmentSystemInfo, true, true, Body.AdministratorName);
+                NodeManager.AddListItems(NodeIdDropDownList.Items, PublishmentSystemInfo, true, true, Body.AdminName);
 
                 if (_tableStyleInfoList != null)
                 {

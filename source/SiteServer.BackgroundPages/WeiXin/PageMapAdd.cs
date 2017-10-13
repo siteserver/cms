@@ -164,14 +164,14 @@ namespace SiteServer.BackgroundPages.WeiXin
                         {
                             DataProviderWx.MapDao.Update(mapInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改微导航", $"微导航:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改微导航", $"微导航:{TbTitle.Text}");
                             SuccessMessage("修改微导航成功！");
                         }
                         else
                         {
                             _mapId = DataProviderWx.MapDao.Insert(mapInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加微导航", $"微导航:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加微导航", $"微导航:{TbTitle.Text}");
                             SuccessMessage("添加微导航成功！");
                         }
 

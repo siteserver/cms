@@ -396,7 +396,7 @@ itemController.itemCount = {awardInfoList.Count};itemController.items = [{itemBu
                         {
                             DataProviderWx.LotteryDao.Update(lotteryInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改砸金蛋", $"砸金蛋:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改砸金蛋", $"砸金蛋:{TbTitle.Text}");
                             SuccessMessage("修改砸金蛋成功！");
                         }
                         else
@@ -405,7 +405,7 @@ itemController.itemCount = {awardInfoList.Count};itemController.items = [{itemBu
 
                             DataProviderWx.LotteryAwardDao.UpdateLotteryId(PublishmentSystemId, _lotteryId);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加砸金蛋", $"砸金蛋:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加砸金蛋", $"砸金蛋:{TbTitle.Text}");
                             SuccessMessage("添加砸金蛋成功！");
                         }
 

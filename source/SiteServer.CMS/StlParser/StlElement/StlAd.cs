@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using BaiRong.Core;
-using SiteServer.CMS.Controllers.Stl;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core.Advertisement;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
@@ -55,12 +55,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (templateType == ETemplateType.IndexPageTemplate || templateType == ETemplateType.ChannelTemplate || templateType == ETemplateType.ContentTemplate)
                             {
                                 parsedContent =
-                                    $"<script src='{ActionsAdvHtml.GetUrl(pageInfo.PublishmentSystemInfo.Additional.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.UniqueId, area, pageInfo.PageNodeId, 0, pageInfo.TemplateInfo.TemplateType)}' language='javascript'></script>";
+                                    $"<script src='{ActionsAdvHtml.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.UniqueId, area, pageInfo.PageNodeId, 0, pageInfo.TemplateInfo.TemplateType)}' language='javascript'></script>";
                             }
                             else if (templateType == ETemplateType.FileTemplate)
                             {
                                 parsedContent =
-                                    $"<script src='{ActionsAdvHtml.GetUrl(pageInfo.PublishmentSystemInfo.Additional.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.UniqueId, area, 0, pageInfo.TemplateInfo.TemplateId, pageInfo.TemplateInfo.TemplateType)}' language='javascript'></script>";
+                                    $"<script src='{ActionsAdvHtml.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.UniqueId, area, 0, pageInfo.TemplateInfo.TemplateId, pageInfo.TemplateInfo.TemplateType)}' language='javascript'></script>";
                             }
                         }
                         else if (advInfo.RotateType == EAdvRotateType.SlideRotate)

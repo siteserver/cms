@@ -7,8 +7,6 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class PageUserConfigLogin : BasePage
     {
-        public RadioButtonList RblIsRecordIp;
-        public RadioButtonList RblIsRecordSource;
         public RadioButtonList RblIsFailToLock;
         public PlaceHolder PhFailToLock;
         public DropDownList DdlLockType;
@@ -27,29 +25,25 @@ namespace SiteServer.BackgroundPages.Settings
 
             BreadCrumbSettings("用户登录配置", AppManager.Permissions.Settings.UserManagement);
 
-            EBooleanUtils.AddListItems(RblIsRecordIp, "是", "否");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsRecordIp, ConfigManager.UserConfigInfo.IsRecordIp.ToString());
-            EBooleanUtils.AddListItems(RblIsRecordSource, "是", "否");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsRecordSource, ConfigManager.UserConfigInfo.IsRecordSource.ToString());
             EBooleanUtils.AddListItems(RblIsFailToLock, "是", "否");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsFailToLock, ConfigManager.UserConfigInfo.IsLoginFailToLock.ToString());
+            ControlUtils.SelectListItemsIgnoreCase(RblIsFailToLock, ConfigManager.SystemConfigInfo.IsUserLockLogin.ToString());
 
-            PhFailToLock.Visible = ConfigManager.UserConfigInfo.IsLoginFailToLock;
+            PhFailToLock.Visible = ConfigManager.SystemConfigInfo.IsUserLockLogin;
 
-            TbLoginFailCount.Text = ConfigManager.UserConfigInfo.LoginFailToLockCount.ToString();
+            TbLoginFailCount.Text = ConfigManager.SystemConfigInfo.UserLockLoginCount.ToString();
 
             DdlLockType.Items.Add(new ListItem("按小时锁定", EUserLockTypeUtils.GetValue(EUserLockType.Hours)));
             DdlLockType.Items.Add(new ListItem("永久锁定", EUserLockTypeUtils.GetValue(EUserLockType.Forever)));
-            ControlUtils.SelectListItemsIgnoreCase(DdlLockType, ConfigManager.UserConfigInfo.LoginLockingType);
-            TbLockingTime.Text = ConfigManager.UserConfigInfo.LoginLockingHours.ToString();
+            ControlUtils.SelectListItemsIgnoreCase(DdlLockType, ConfigManager.SystemConfigInfo.UserLockLoginType);
+            TbLockingTime.Text = ConfigManager.SystemConfigInfo.UserLockLoginHours.ToString();
 
             PhLockingTime.Visible = false;
-            PhLockingTime.Visible = EUserLockTypeUtils.Equals(ConfigManager.UserConfigInfo.LoginLockingType, EUserLockType.Hours);
+            PhLockingTime.Visible = EUserLockTypeUtils.Equals(ConfigManager.SystemConfigInfo.UserLockLoginType, EUserLockType.Hours);
 
             EBooleanUtils.AddListItems(RblIsFindPassword, "启用", "禁用");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsFindPassword, ConfigManager.UserConfigInfo.IsFindPassword.ToString());
-            PhFindPassword.Visible = ConfigManager.UserConfigInfo.IsFindPassword;
-            TbFindPasswordSmsTplId.Text = ConfigManager.UserConfigInfo.FindPasswordSmsTplId;
+            ControlUtils.SelectListItemsIgnoreCase(RblIsFindPassword, ConfigManager.SystemConfigInfo.IsUserFindPassword.ToString());
+            PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsUserFindPassword;
+            TbFindPasswordSmsTplId.Text = ConfigManager.SystemConfigInfo.UserFindPasswordSmsTplId;
         }
 
         public void RblIsFailToLock_SelectedIndexChanged(object sender, EventArgs e)
@@ -73,18 +67,16 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    ConfigManager.UserConfigInfo.IsRecordIp = TranslateUtils.ToBool(RblIsRecordIp.SelectedValue);
-                    ConfigManager.UserConfigInfo.IsRecordSource = TranslateUtils.ToBool(RblIsRecordSource.SelectedValue);
-                    ConfigManager.UserConfigInfo.IsLoginFailToLock = TranslateUtils.ToBool(RblIsFailToLock.SelectedValue);
+                    ConfigManager.SystemConfigInfo.IsUserLockLogin = TranslateUtils.ToBool(RblIsFailToLock.SelectedValue);
 
-                    ConfigManager.UserConfigInfo.LoginFailToLockCount = TranslateUtils.ToInt(TbLoginFailCount.Text, 3);
+                    ConfigManager.SystemConfigInfo.UserLockLoginCount = TranslateUtils.ToInt(TbLoginFailCount.Text, 3);
 
-                    ConfigManager.UserConfigInfo.LoginLockingType = DdlLockType.SelectedValue;
+                    ConfigManager.SystemConfigInfo.UserLockLoginType = DdlLockType.SelectedValue;
 
-                    ConfigManager.UserConfigInfo.LoginLockingHours = TranslateUtils.ToInt(TbLockingTime.Text);
+                    ConfigManager.SystemConfigInfo.UserLockLoginHours = TranslateUtils.ToInt(TbLockingTime.Text);
 
-                    ConfigManager.UserConfigInfo.IsFindPassword = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
-                    ConfigManager.UserConfigInfo.FindPasswordSmsTplId = TbFindPasswordSmsTplId.Text;
+                    ConfigManager.SystemConfigInfo.IsUserFindPassword = TranslateUtils.ToBool(RblIsFindPassword.SelectedValue);
+                    ConfigManager.SystemConfigInfo.UserFindPasswordSmsTplId = TbFindPasswordSmsTplId.Text;
 
                     BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
 

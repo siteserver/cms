@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Data
@@ -307,5 +307,9 @@ namespace BaiRong.Core.Data
         {
             return rdr.IsDBNull(i) ? DateTime.Now : rdr.GetDateTime(i);
         }
+
+        public virtual string TableName => string.Empty;
+
+        public virtual List<TableColumnInfo> TableColumns => null;
     }
 }

@@ -18,7 +18,7 @@ namespace SiteServer.API
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex, "CreateHub");
+                LogUtils.AddSystemErrorLog(ex, "CreateHub");
             }
 
             Clients.Client(Context.ConnectionId).next(pendingTaskCount);
@@ -83,7 +83,7 @@ namespace SiteServer.API
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex, "CreateHub");
+                LogUtils.AddSystemErrorLog(ex, "CreateHub");
             }
         }
     }

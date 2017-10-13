@@ -14,7 +14,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/map/img/start.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/map/img/start.jpg"));
             }
             else
             {
@@ -24,7 +24,7 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         public static string GetMapUrl(PublishmentSystemInfo publishmentSystemInfo, string mapWD)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/map/index.html?mapWD=" + System.Web.HttpUtility.UrlEncode(mapWD) + ""));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/map/index.html?mapWD=" + System.Web.HttpUtility.UrlEncode(mapWD) + ""));
         }
 
         public static List<Article> Trigger(PublishmentSystemInfo publishmentSystemInfo, Model.KeywordInfo keywordInfo, string wxOpenID)

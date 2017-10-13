@@ -75,14 +75,14 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            var permissioins = PermissionsManager.GetPermissions(Body.AdministratorName);
+            var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
 
             _theRoleName = Body.GetQueryString("RoleName");
             _generalPermissionList = permissioins.PermissionList;
 
             if (!IsPostBack)
             {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, AppManager.Permissions.Settings.AdminManagement);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, AppManager.Permissions.Settings.AdminManagement);
 
                 if (!string.IsNullOrEmpty(_theRoleName))
                 {
@@ -233,7 +233,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                         try
                         {
-                            DataProvider.PermissionsDao.InsertRoleAndPermissions(TbRoleName.Text, Body.AdministratorName, TbDescription.Text, generalPermissionList, publishmentSystemPermissionsInRolesInfoList);
+                            DataProvider.PermissionsDao.InsertRoleAndPermissions(TbRoleName.Text, Body.AdminName, TbDescription.Text, generalPermissionList, publishmentSystemPermissionsInRolesInfoList);
 
                             PermissionsManager.ClearAllCache();
 

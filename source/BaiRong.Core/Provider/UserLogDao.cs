@@ -4,8 +4,6 @@ using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
@@ -34,19 +32,10 @@ namespace BaiRong.Core.Provider
             ExecuteNonQuery(sqlString, parms);
         }
 
-        public void Delete(int days, int counter)
+        public void Delete(int days)
         {
-            if (days > 0)
-            {
-                ExecuteNonQuery($@"DELETE FROM bairong_UserLog WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
-            }
-            if (counter > 0)
-            {
-                ExecuteNonQuery($@"DELETE FROM bairong_UserLog WHERE ID IN(
-SELECT ID from(
-SELECT ID, ROW_NUMBER() OVER(ORDER BY AddDate DESC) as rowNum FROM bairong_UserLog) as t
-WHERE t.rowNum > {counter})");
-            }
+            if (days <= 0) return;
+            ExecuteNonQuery($@"DELETE FROM bairong_UserLog WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
         }
 
         public void Delete(List<int> idList)
@@ -200,29 +189,27 @@ WHERE t.rowNum > {counter})");
             return retval;
         }
 
-        public List<UserLogInfo> List(string userName, int totalNum, string action)
+        public List<ILogInfo> List(string userName, int totalNum, string action)
         {
-            var list = new List<UserLogInfo>();
+            var list = new List<ILogInfo>();
             var sqlString = "SELECT * FROM bairong_UserLog WHERE UserName = @UserName";
 
             if (!string.IsNullOrEmpty(action))
             {
                 sqlString += " And Action = @Action";
             }
-            else
-            {
-                action = EUserActionTypeUtils.GetValue(EUserActionType.Login);
-                sqlString += " And Action <> @Action";
-            }
             sqlString += " ORDER BY ID DESC";
 
-            var parms = new IDataParameter[]
+            var parameters = new List<IDataParameter>
             {
-                GetParameter(ParmUserName, DataType.VarChar, 50, userName),
-                GetParameter(ParmAction, DataType.NVarChar, 255, action)
+                GetParameter(ParmUserName, DataType.VarChar, 50, userName)
             };
+            if (!string.IsNullOrEmpty(action))
+            {
+                parameters.Add(GetParameter(ParmAction, DataType.NVarChar, 255, action));
+            }
 
-            using (var rdr = ExecuteReader(sqlString, parms))
+            using (var rdr = ExecuteReader(sqlString, parameters.ToArray()))
             {
                 while (rdr.Read())
                 {

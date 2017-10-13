@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BaiRong.Core;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.WeiXin.WeiXinMP;
 using SiteServer.Plugin;
 using SiteServer.Plugin.Features;
 using SiteServer.Plugin.Models;
@@ -225,12 +223,9 @@ namespace SiteServer.CMS.Plugin
             permissions = new List<PermissionConfig>();
             foreach (var pluginPair in GetEnabledPluginPairs<IMenu>())
             {
-                var feature = (IMenu)pluginPair.Plugin;
-                var menu = feature.GlobalMenu;
-                if (menu != null)
-                {
-                    permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"系统管理 -> {pluginPair.Metadata.DisplayName}（插件）"));
-                }
+                var feature = pluginPair.Plugin as IMenu;
+                if (feature?.PluginMenu == null) continue;
+                permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"系统管理 -> {pluginPair.Metadata.DisplayName}（插件）"));
             }
 
             SetCache(nameof(GetTopPermissions), permissions);
@@ -245,12 +240,9 @@ namespace SiteServer.CMS.Plugin
 
             foreach (var pluginPair in pairs)
             {
-                var feature = (IMenu)pluginPair.Plugin;
-                var menu = feature.Menu;
-                if (menu != null)
-                {
-                    permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"{pluginPair.Metadata.DisplayName}（插件）"));
-                }
+                var feature = pluginPair.Plugin as IMenu;
+                if (feature?.SiteMenu == null) continue;
+                permissions.Add(new PermissionConfig(pluginPair.Metadata.Id, $"{pluginPair.Metadata.DisplayName}（插件）"));
             }
 
             return permissions;
@@ -266,15 +258,12 @@ namespace SiteServer.CMS.Plugin
             var pairs = GetEnabledPluginPairs<IMenu>();
             if (pairs != null && pairs.Count > 0)
             {
-                var apiUrl = PageUtils.GetApiUrl();
-
                 foreach (var pluginPair in pairs)
                 {
-                    var feature = (IMenu)pluginPair.Plugin;
-                    var metadataMenu = feature.GlobalMenu?.Invoke();
-                    if (metadataMenu == null) continue;
+                    var feature = pluginPair.Plugin as IMenu;
+                    if (feature?.PluginMenu == null) continue;
 
-                    var pluginMenu = PluginUtils.GetMenu(pluginPair.Metadata.Id, metadataMenu, apiUrl, 0, 0);
+                    var pluginMenu = PluginUtils.GetSiteMenu(pluginPair.Metadata.Id, feature.PluginMenu, 0, 0);
 
                     menus.Add(pluginPair.Metadata.Id, pluginMenu);
                 }
@@ -292,16 +281,13 @@ namespace SiteServer.CMS.Plugin
 
             var menus = new Dictionary<string, PluginMenu>();
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
-            var apiUrl = PageUtility.GetInnerApiUrl(publishmentSystemInfo);
-
             foreach (var pluginPair in pairs)
             {
-                var feature = (IMenu)pluginPair.Plugin;
+                var feature = pluginPair.Plugin as IMenu;
 
-                var metadataMenu = feature.Menu?.Invoke(siteId);
+                var metadataMenu = feature?.SiteMenu?.Invoke(siteId);
                 if (metadataMenu == null) continue;
-                var pluginMenu = PluginUtils.GetMenu(pluginPair.Metadata.Id, metadataMenu, apiUrl, siteId, 0);
+                var pluginMenu = PluginUtils.GetSiteMenu(pluginPair.Metadata.Id, metadataMenu, siteId, 0);
 
                 menus.Add(pluginPair.Metadata.Id, pluginMenu);
             }
@@ -482,21 +468,23 @@ namespace SiteServer.CMS.Plugin
             return elementsToParse;
         }
 
-        public static List<Func<PluginRenderContext, string>> GetRenders()
+        public static Dictionary<string, Func<PluginRenderContext, string>> GetRenders()
         {
-            var renders = GetCache<List<Func<PluginRenderContext, string>>>(nameof(GetRenders));
+            var renders = GetCache<Dictionary<string, Func<PluginRenderContext, string>>>(nameof(GetRenders));
             if (renders != null) return renders;
 
-            renders = new List<Func<PluginRenderContext, string>>();
+            renders = new Dictionary<string, Func<PluginRenderContext, string>>();
 
-            var plugins = GetEnabledFeatures<IRender>();
-            if (plugins != null && plugins.Count > 0)
+            var pairs = GetEnabledPluginPairs<IRender>();
+            if (pairs != null && pairs.Count > 0)
             {
-                foreach (var plugin in plugins)
+                foreach (var pair in pairs)
                 {
+                    if (!(pair.Plugin is IRender plugin)) continue;
+
                     if (plugin.Render != null)
                     {
-                        renders.Add(plugin.Render);
+                        renders.Add(pair.Metadata.Id, plugin.Render);
                     }
                 }
             }
@@ -526,54 +514,6 @@ namespace SiteServer.CMS.Plugin
             }
 
             SetCache(nameof(GetFileSystemChangedActions), actions);
-
-            return actions;
-        }
-
-        public static List<Action<EventArgs>> GetPageAdminPreLoadActions()
-        {
-            var actions = GetCache<List<Action<EventArgs>>>(nameof(GetPageAdminPreLoadActions));
-            if (actions != null) return actions;
-
-            actions = new List<Action<EventArgs>>();
-
-            var plugins = GetEnabledFeatures<IPageAdmin>();
-            if (plugins != null && plugins.Count > 0)
-            {
-                foreach (var plugin in plugins)
-                {
-                    if (plugin.OnPageAdminPreLoad != null)
-                    {
-                        actions.Add(plugin.OnPageAdminPreLoad);
-                    }
-                }
-            }
-
-            SetCache(nameof(GetPageAdminPreLoadActions), actions);
-
-            return actions;
-        }
-
-        public static List<Action<EventArgs>> GetPageAdminLoadCompleteActions()
-        {
-            var actions = GetCache<List<Action<EventArgs>>>(nameof(GetPageAdminLoadCompleteActions));
-            if (actions != null) return actions;
-
-            actions = new List<Action<EventArgs>>();
-
-            var plugins = GetEnabledFeatures<IPageAdmin>();
-            if (plugins != null && plugins.Count > 0)
-            {
-                foreach (var plugin in plugins)
-                {
-                    if (plugin.OnPageAdminLoadComplete != null)
-                    {
-                        actions.Add(plugin.OnPageAdminLoadComplete);
-                    }
-                }
-            }
-
-            SetCache(nameof(GetPageAdminLoadCompleteActions), actions);
 
             return actions;
         }

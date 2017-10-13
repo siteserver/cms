@@ -6,7 +6,7 @@ using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Controllers.Stl;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
@@ -281,7 +281,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             _pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(_pageInfo.UniqueId);
-            var apiUrl = ActionsPageContents.GetUrl(_pageInfo.PublishmentSystemInfo.Additional.ApiUrl);
+            var apiUrl = ActionsPageContents.GetUrl(_pageInfo.ApiUrl);
             var apiParameters = ActionsPageContents.GetParameters(_pageInfo.PublishmentSystemId, _pageInfo.PageNodeId, _pageInfo.TemplateInfo.TemplateId, totalNum, pageCount, currentPageIndex, _stlPageContentsElement);
 
             var builder = new StringBuilder();

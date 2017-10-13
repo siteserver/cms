@@ -10,7 +10,6 @@ namespace SiteServer.BackgroundPages.Settings
     {
         protected Literal ltlUserID;
         protected Literal ltlUserName;
-        protected Literal ltlGroup;
         protected Literal ltlDisplayName;
         protected Literal ltlCreateDate;
         protected Literal ltlLastResetPasswordDate;
@@ -52,7 +51,6 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlUserID.Text = _userInfo.UserId.ToString();
             ltlUserName.Text = _userInfo.UserName;
-            ltlGroup.Text = UserGroupManager.GetGroupName(_userInfo.GroupId);
             ltlDisplayName.Text = _userInfo.DisplayName;
             ltlCreateDate.Text = DateUtils.GetDateAndTimeString(_userInfo.CreateDate);
             ltlLastActivityDate.Text = DateUtils.GetDateAndTimeString(_userInfo.LastActivityDate);

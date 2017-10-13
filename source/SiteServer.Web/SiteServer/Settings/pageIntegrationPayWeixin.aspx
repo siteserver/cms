@@ -43,7 +43,7 @@
                     <asp:TextBox id="TbAppId" placeholder="微信公众号的 AppID" class="form-control" runat="server"></asp:TextBox>
                   </div>
                   <div class="col-sm-5">
-                    <span class="help-block">微信公众平台 - 开发 - 基本配置 - 开发者 ID - AppID</span>
+                    <span class="help-block"><a href="https://mp.weixin.qq.com" target="_blank">微信公众平台</a> - 开发 - 基本配置 - 开发者 ID - AppID</span>
                   </div>
                   <div class="col-sm-1">
                     <asp:RequiredFieldValidator ControlToValidate="TbAppId" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
@@ -58,7 +58,7 @@
                     <asp:TextBox id="TbAppSecret" placeholder="微信公众号的 AppSecret" class="form-control" runat="server"></asp:TextBox>
                   </div>
                   <div class="col-sm-5">
-                    <span class="help-block">微信公众平台 - 开发 - 基本配置 - 开发者 ID - AppSecret</span>
+                    <span class="help-block"><a href="https://mp.weixin.qq.com" target="_blank">微信公众平台</a> - 开发 - 基本配置 - 开发者 ID - AppSecret</span>
                   </div>
                   <div class="col-sm-1">
                     <asp:RequiredFieldValidator ControlToValidate="TbAppSecret" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
@@ -88,39 +88,13 @@
                     <asp:TextBox id="TbKey" placeholder="API 密钥（32位）" class="form-control" runat="server"></asp:TextBox>
                   </div>
                   <div class="col-sm-5">
-                    <span class="help-block">微信支付商户平台 - 账户中心 - 账户设置 - API 安全 - API 密钥 - 设置密钥</span>
+                    <span class="help-block"><a href="https://pay.weixin.qq.com" target="_blank">微信支付商户平台</a> - 账户中心 - 账户设置 - API 安全 - API 密钥 - 设置密钥</span>
                   </div>
                   <div class="col-sm-1">
                     <asp:RequiredFieldValidator ControlToValidate="TbKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
                     />
                     <asp:RegularExpressionValidator runat="server" ControlToValidate="TbKey" ValidationExpression="[^']+" ErrorMessage=" *" ForeColor="red"
                       Display="Dynamic" />
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-sm-3 control-label">API 证书</label>
-                  <div class="col-sm-8">
-                    <asp:TextBox id="TbClientCert" placeholder="apiclient_cert（pem 格式）" TextMode="MultiLine" Rows="6" class="form-control" runat="server"></asp:TextBox>
-                    <span class="help-block">微信支付商户平台 - 账户中心 - 账户设置 - API 安全 - API 证书 - 下载证书</span>
-                  </div>
-                  <div class="col-sm-1">
-                    <asp:RequiredFieldValidator ControlToValidate="TbClientCert" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
-                    />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TbClientCert" ValidationExpression="[^']+" ErrorMessage=" *"
-                      ForeColor="red" Display="Dynamic" />
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-sm-3 control-label">API 证书密钥</label>
-                  <div class="col-sm-8">
-                    <asp:TextBox id="TbClientKey" placeholder="apiclient_key（pem 格式）" TextMode="MultiLine" Rows="15" class="form-control" runat="server"></asp:TextBox>
-                    <span class="help-block">微信支付商户平台 - 账户中心 - 账户设置 - API 安全 - API 证书 - 下载证书</span>
-                  </div>
-                  <div class="col-sm-1">
-                    <asp:RequiredFieldValidator ControlToValidate="TbClientKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
-                    />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TbClientKey" ValidationExpression="[^']+" ErrorMessage=" *"
-                      ForeColor="red" Display="Dynamic" />
                   </div>
                 </div>
 

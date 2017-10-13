@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
             PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
             var nodeId = Body.GetQueryInt("NodeID");
@@ -64,8 +64,8 @@ namespace SiteServer.BackgroundPages.Cms
             _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
             _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
             _pluginChannels = PluginCache.GetChannelFeatures(_nodeInfo);
-            _isEdit = TextUtility.IsEdit(PublishmentSystemInfo, nodeId, Body.AdministratorName);
-            _isComment = TextUtility.IsComment(PublishmentSystemInfo, nodeId, Body.AdministratorName);
+            _isEdit = TextUtility.IsEdit(PublishmentSystemInfo, nodeId, Body.AdminName);
+            _isComment = TextUtility.IsComment(PublishmentSystemInfo, nodeId, Body.AdminName);
 
             if (_nodeInfo.Additional.IsPreviewContents)
             {
@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentView, AppManager.Permissions.Channel.ContentAdd, AppManager.Permissions.Channel.ContentEdit, AppManager.Permissions.Channel.ContentDelete, AppManager.Permissions.Channel.ContentTranslate))
             {
-                if (!Body.IsAdministratorLoggin)
+                if (!Body.IsAdminLoggin)
                 {
                     PageUtils.RedirectToLoginPage();
                     return;
@@ -94,8 +94,8 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
-            var administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdministratorName, PublishmentSystemId, nodeId)
-                    ? Body.AdministratorName
+            var administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdminName, PublishmentSystemId, nodeId)
+                    ? Body.AdminName
                     : string.Empty;
 
             if (Body.IsQueryExists("SearchType"))
@@ -125,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId);
                 BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdContent, "内容管理", nodeName, string.Empty);
 
-                LtlButtons.Text = WebUtils.GetContentCommands(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, PageUrl, GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId), false);
+                LtlButtons.Text = WebUtils.GetContentCommands(Body.AdminName, PublishmentSystemInfo, _nodeInfo, PageUrl, GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId), false);
                 SpContents.DataBind();
 
                 if (_styleInfoList != null)
@@ -194,7 +194,7 @@ $(document).ready(function() {
                 $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(PublishmentSystemId, contentInfo, PageUrl)}"">{LevelManager.GetCheckState(
                     PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-            ltlCommands.Text = TextUtility.GetCommandHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdministratorName, _isEdit, _isComment);
+            ltlCommands.Text = TextUtility.GetCommandHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName, _isEdit, _isComment);
         }
 
         public void Search_OnClick(object sender, EventArgs e)

@@ -373,7 +373,7 @@ namespace SiteServer.CMS.Core
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(ex, $"插件：{pluginId} OnContentAdded");
+                    LogUtils.AddPluginErrorLog(pluginId, ex, "OnContentAdded");
                 }
             }
 
@@ -437,7 +437,7 @@ namespace SiteServer.CMS.Core
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddErrorLog(ex, $"插件：{pluginId} OnContentTranslated");
+                        LogUtils.AddPluginErrorLog(pluginId, ex, "OnContentTranslated");
                     }
                 }
 
@@ -475,7 +475,7 @@ namespace SiteServer.CMS.Core
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddErrorLog(ex, $"插件：{pluginId} OnContentTranslated");
+                            LogUtils.AddPluginErrorLog(pluginId, ex, "OnContentTranslated");
                         }
                     }
                     if (pluginChannel.OnContentDeleted != null)
@@ -486,7 +486,7 @@ namespace SiteServer.CMS.Core
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddErrorLog(ex, $"插件：{pluginId} OnContentDeleted");
+                            LogUtils.AddPluginErrorLog(pluginId, ex, "OnContentDeleted");
                         }
                     }
                 }
@@ -534,7 +534,7 @@ namespace SiteServer.CMS.Core
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddErrorLog(ex, $"插件：{pluginId} OnContentTranslated");
+                        LogUtils.AddPluginErrorLog(pluginId, ex, "OnContentTranslated");
                     }
                 }
 

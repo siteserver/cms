@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
             var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, _contentId);
 
             var checkedLevel = 0;
-            var isChecked = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
+            var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
             phCheck.Visible = LevelManager.IsCheckable(PublishmentSystemInfo, _nodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
 
             ltlTitle.Text = contentInfo.Title;

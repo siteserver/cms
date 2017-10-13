@@ -18,12 +18,6 @@ namespace SiteServer.CMS.StlControls
             set { ViewState["PageNum"] = value; }
         }
 
-        public string HomeUrl
-        {
-            get { return ViewState["HomeUrl"] as string; }
-            set { ViewState["HomeUrl"] = value; }
-        }
-
         public string ApiUrl
         {
             get { return ViewState["ApiUrl"] as string; }
@@ -75,7 +69,7 @@ namespace SiteServer.CMS.StlControls
     {TemplateManager.GetContentByFilePath(SiteFilesAssets.CommentInput.CommentsTemplatePath)}
 </div>
 <script>
-    loadComments('{HomeUrl}', '{ApiGetUrl}', '{ApiActionsAddUrl}', '{ApiActionsGoodUrl}', '{ApiActionsDeleteUrl}', '{ApiActionsLogoutUrl}', {PageNum}, {IsDelete.ToString().ToLower()});
+    loadComments('{ApiGetUrl}', '{ApiActionsAddUrl}', '{ApiActionsGoodUrl}', '{ApiActionsDeleteUrl}', '{ApiActionsLogoutUrl}', {PageNum}, {IsDelete.ToString().ToLower()});
 </script>
 ");
 		}

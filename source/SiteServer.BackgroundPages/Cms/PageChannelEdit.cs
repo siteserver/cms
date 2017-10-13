@@ -125,6 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             CblPlugins.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id));
                         }
+                        ControlUtils.SelectListItems(CblPlugins, nodeInfo.Additional.PluginIds);
                     }
                     else
                     {
@@ -133,7 +134,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     CacAttributes.SetParameters(nodeInfo.Additional.GetExtendedAttributes(), true, IsPostBack);
 
-                    TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", PublishmentSystemInfo.PublishmentSystemUrl));
+                    TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", PublishmentSystemInfo.Additional.WebUrl));
 
                     var showPopWinString = ModalFilePathRule.GetOpenWindowString(PublishmentSystemId, _nodeId, true, TbChannelFilePathRule.ClientID);
                     BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
@@ -176,14 +177,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (ListItem item in CblNodeGroupNameCollection.Items)
                     {
-                        if (CompareUtils.Contains(nodeInfo.NodeGroupNameCollection, item.Value))
-                        {
-                            item.Selected = true;
-                        }
-                        else
-                        {
-                            item.Selected = false;
-                        }
+                        item.Selected = CompareUtils.Contains(nodeInfo.NodeGroupNameCollection, item.Value);
                     }
                     TbFilePath.Text = nodeInfo.FilePath;
                     TbChannelFilePathRule.Text = nodeInfo.ChannelFilePathRule;
@@ -337,7 +331,7 @@ namespace SiteServer.BackgroundPages.Cms
                 catch (Exception ex)
                 {
                     FailMessage(ex, $"栏目修改失败：{ex.Message}");
-                    LogUtils.AddErrorLog(ex);
+                    LogUtils.AddSystemErrorLog(ex);
                     return;
                 }
 

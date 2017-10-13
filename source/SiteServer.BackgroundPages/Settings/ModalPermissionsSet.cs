@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             _userName = Body.GetQueryString("UserName");
-            _permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            _permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
             if (IsPostBack) return;
 
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             LbAvailableRoles.Items.Clear();
             LbAssignedRoles.Items.Clear();
-            var allRoles = _permissions.IsConsoleAdministrator ? BaiRongDataProvider.RoleDao.GetAllRoles() : BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdministratorName);
+            var allRoles = _permissions.IsConsoleAdministrator ? BaiRongDataProvider.RoleDao.GetAllRoles() : BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
             var userRoles = BaiRongDataProvider.RoleDao.GetRolesForUser(_userName);
             var userRoleNameArrayList = new ArrayList(userRoles);
             foreach (var roleName in allRoles)

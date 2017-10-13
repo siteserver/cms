@@ -50,7 +50,7 @@ namespace SiteServer.CMS.Plugin.Apis
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex, $"插件： {_metadata.Name}");
+                LogUtils.AddPluginErrorLog(_metadata.Id, ex);
                 return false;
             }
             return true;
@@ -70,7 +70,7 @@ namespace SiteServer.CMS.Plugin.Apis
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex, $"插件： {_metadata.Name}");
+                LogUtils.AddPluginErrorLog(_metadata.Id, ex);
             }
             return default(T);
         }
@@ -85,45 +85,16 @@ namespace SiteServer.CMS.Plugin.Apis
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex, $"插件： {_metadata.Name}");
+                LogUtils.AddPluginErrorLog(_metadata.Id, ex);
                 return false;
             }
             return true;
         }
 
-        public bool SetGlobalConfig(object config)
-        {
-            return SetConfig(0, string.Empty, config);
-        }
-
-        public bool SetGlobalConfig(string name, object config)
-        {
-            return SetConfig(0, name, config);
-        }
-
-        public T GetGlobalConfig<T>(string name = "")
-        {
-            if (name == null) name = string.Empty;
-            return GetConfig<T>(0, name);
-        }
-
-        public bool RemoveGlobalConfig(string name)
-        {
-            return RemoveConfig(0, name);
-        }
-
-        public string EncryptStringBySecretKey(string inputString)
-        {
-            return TranslateUtils.EncryptStringBySecretKey(inputString);
-        }
-
-        public string DecryptStringBySecretKey(string inputString)
-        {
-            return TranslateUtils.DecryptStringBySecretKey(inputString);
-        }
-
         public string PhysicalApplicationPath => WebConfigUtils.PhysicalApplicationPath;
 
         public string AdminDirectory => WebConfigUtils.AdminDirectory;
+
+        public ISystemConfigInfo SystemConfigInfo => ConfigManager.SystemConfigInfo;
     }
 }

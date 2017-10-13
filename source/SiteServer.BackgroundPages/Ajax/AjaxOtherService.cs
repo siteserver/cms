@@ -127,7 +127,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var retval = new NameValueCollection();
             string retString = null;
             var body = new RequestBody();
-            if (!body.IsAdministratorLoggin) return;
+            if (!body.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
             {
@@ -405,17 +405,17 @@ namespace SiteServer.BackgroundPages.Ajax
 
             foreach (var nodeId in nodeIdList)
             {
-                var enabled = AdminUtility.IsOwningNodeId(body.AdministratorName, nodeId);
+                var enabled = AdminUtility.IsOwningNodeId(body.AdminName, nodeId);
                 if (!enabled)
                 {
-                    if (!AdminUtility.IsHasChildOwningNodeId(body.AdministratorName, nodeId))
+                    if (!AdminUtility.IsHasChildOwningNodeId(body.AdminName, nodeId))
                     {
                         continue;
                     }
                 }
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
 
-                list.Add(ChannelLoading.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, body.AdministratorName));
+                list.Add(ChannelLoading.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, body.AdminName));
             }
 
             //arraylist.Reverse();

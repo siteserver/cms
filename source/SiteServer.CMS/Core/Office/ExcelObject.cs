@@ -533,7 +533,6 @@ namespace SiteServer.CMS.Core.Office
                     userInfo.DisplayName,
                     userInfo.Email,
                     userInfo.Mobile,
-                    UserGroupManager.GetGroupName(userInfo.GroupId),
                     DateUtils.GetDateAndTimeString(userInfo.CreateDate),
                     DateUtils.GetDateAndTimeString(userInfo.LastActivityDate)
                 });

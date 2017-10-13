@@ -20,7 +20,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 return PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, imageUrl));
             }
             var directoryName = "img" + ELotteryTypeUtils.GetValue(lotteryType);
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/lottery/{directoryName}/start.jpg"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/lottery/{directoryName}/start.jpg"));
         }
 
         public static string GetContentImageUrl(PublishmentSystemInfo publishmentSystemInfo, ELotteryType lotteryType, string contentImageUrl)
@@ -30,7 +30,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 return PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, contentImageUrl));
             }
             var directoryName = "img" + ELotteryTypeUtils.GetValue(lotteryType);
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/lottery/{directoryName}/content.jpg"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/lottery/{directoryName}/content.jpg"));
         }
 
         public static string GetContentAwardImageUrl(PublishmentSystemInfo publishmentSystemInfo, ELotteryType lotteryType, string contentImageUrl, int awardCount)
@@ -45,7 +45,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 fileName = "contentAward.png";
             }
             var directoryName = "img" + ELotteryTypeUtils.GetValue(lotteryType);
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/lottery/{directoryName}/{fileName}"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/lottery/{directoryName}/{fileName}"));
         }
 
         public static string GetAwardImageUrl(PublishmentSystemInfo publishmentSystemInfo, ELotteryType lotteryType, string contentImageUrl)
@@ -55,7 +55,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 return PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, contentImageUrl));
             }
             var directoryName = "img" + ELotteryTypeUtils.GetValue(lotteryType);
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/lottery/{directoryName}/award.jpg"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/lottery/{directoryName}/award.jpg"));
         }
 
         public static string GetEndImageUrl(PublishmentSystemInfo publishmentSystemInfo, ELotteryType lotteryType, string endImageUrl)
@@ -65,13 +65,13 @@ namespace SiteServer.CMS.WeiXin.Manager
                 return PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, endImageUrl));
             }
             var directoryName = "img" + ELotteryTypeUtils.GetValue(lotteryType);
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/lottery/{directoryName}/end.jpg"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/lottery/{directoryName}/end.jpg"));
         }
 
         private static string GetLotteryUrl(PublishmentSystemInfo publishmentSystemInfo, LotteryInfo lotteryInfo)
         {
             var fileName = ELotteryTypeUtils.GetValue(ELotteryTypeUtils.GetEnumType(lotteryInfo.LotteryType)).ToLower();
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/lottery/{fileName}.html"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/lottery/{fileName}.html"));
         }
 
         public static string GetLotteryUrl(PublishmentSystemInfo publishmentSystemInfo, LotteryInfo lotteryInfo, string wxOpenId)
@@ -88,7 +88,7 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         public static string GetLotteryTemplateDirectoryUrl(PublishmentSystemInfo publishmentSystemInfo)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/lottery"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/lottery"));
         }
 
         private static LotteryAwardInfo GetAwardInfo(List<LotteryAwardInfo> awardInfoList, int awardId)

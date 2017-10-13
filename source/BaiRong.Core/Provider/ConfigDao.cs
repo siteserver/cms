@@ -10,22 +10,21 @@ namespace BaiRong.Core.Provider
 {
     public class ConfigDao : DataProviderBase
 	{
-        public string TableName => "bairong_Config";
+        public override string TableName => "bairong_Config";
 
-        private const string SqlInsertConfig = "INSERT INTO bairong_Config (IsInitialized, DatabaseVersion, UpdateDate, UserConfig, SystemConfig) VALUES (@IsInitialized, @DatabaseVersion, @UpdateDate, @UserConfig, @SystemConfig)";
+        private const string SqlInsertConfig = "INSERT INTO bairong_Config (IsInitialized, DatabaseVersion, UpdateDate, SystemConfig) VALUES (@IsInitialized, @DatabaseVersion, @UpdateDate, @SystemConfig)";
 
-        private const string SqlSelectConfig = "SELECT IsInitialized, DatabaseVersion, UpdateDate, UserConfig, SystemConfig FROM bairong_Config";
+        private const string SqlSelectConfig = "SELECT IsInitialized, DatabaseVersion, UpdateDate, SystemConfig FROM bairong_Config";
 
         private const string SqlSelectIsInitialized = "SELECT IsInitialized FROM bairong_Config";
 
 		private const string SqlSelectDatabaseVersion = "SELECT DatabaseVersion FROM bairong_Config";
 
-        private const string SqlUpdateConfig = "UPDATE bairong_Config SET IsInitialized = @IsInitialized, DatabaseVersion = @DatabaseVersion, UpdateDate = @UpdateDate, UserConfig = @UserConfig, SystemConfig = @SystemConfig";
+        private const string SqlUpdateConfig = "UPDATE bairong_Config SET IsInitialized = @IsInitialized, DatabaseVersion = @DatabaseVersion, UpdateDate = @UpdateDate, SystemConfig = @SystemConfig";
 
 		private const string ParmIsInitialized = "@IsInitialized";
 		private const string ParmDatabaseVersion = "@DatabaseVersion";
         private const string ParmUpdateDate = "@UpdateDate";
-		private const string ParmUserConfig = "@UserConfig";
         private const string ParmSystemConfig = "@SystemConfig";
 
         public void Insert(ConfigInfo info) 
@@ -35,7 +34,6 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmIsInitialized, DataType.VarChar, 18, info.IsInitialized.ToString()),
 				GetParameter(ParmDatabaseVersion, DataType.VarChar, 50, info.DatabaseVersion),
                 GetParameter(ParmUpdateDate, DataType.DateTime, info.UpdateDate),
-				GetParameter(ParmUserConfig, DataType.NText, info.UserConfigInfo.ToString()),
                 GetParameter(ParmSystemConfig, DataType.NText, info.SystemConfigInfo.ToString())
             };
 
@@ -50,7 +48,6 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmIsInitialized, DataType.VarChar, 18, info.IsInitialized.ToString()),
 				GetParameter(ParmDatabaseVersion, DataType.VarChar, 50, info.DatabaseVersion),
                 GetParameter(ParmUpdateDate, DataType.DateTime, info.UpdateDate),
-                GetParameter(ParmUserConfig, DataType.NText, info.UserConfigInfo.ToString()),
                 GetParameter(ParmSystemConfig, DataType.NText, info.SystemConfigInfo.ToString())
             };
 
@@ -116,7 +113,7 @@ namespace BaiRong.Core.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new ConfigInfo(GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+                    info = new ConfigInfo(GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i));
                 }
                 rdr.Close();
             }
@@ -137,15 +134,9 @@ namespace BaiRong.Core.Provider
             return guid;
         }
 
-        public int GetSiteCount()
-        {
-            const string sqlString = "SELECT COUNT(*) FROM siteserver_PublishmentSystem";
-            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
-        }
-
         public void InitializeConfig()
         {
-            var configInfo = new ConfigInfo(true, AppManager.Version, DateTime.Now, string.Empty, string.Empty);
+            var configInfo = new ConfigInfo(true, AppManager.Version, DateTime.Now, string.Empty);
             Insert(configInfo);
         }
 

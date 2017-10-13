@@ -9,18 +9,11 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class ModalChangePublishmentSystemUrl : BasePageCms
     {
-        public TextBox TbPublishmentSystemUrl;
-        public TextBox TbHomeUrl;
+        public PlaceHolder PhUrlSettings;
 
-        public DropDownList DdlIsMultiDeployment;
-        public PlaceHolder PhSingle;
-        public TextBox TbSiteUrl;
-        public TextBox TbApiUrl;
-        public PlaceHolder PhMulti;
-        public TextBox TbOuterSiteUrl;
-        public TextBox TbInnerSiteUrl;
-        public TextBox TbOuterApiUrl;
-        public TextBox TbInnerApiUrl;
+        public DropDownList DdlIsSeparatedWeb;
+        public PlaceHolder PhSeparatedWeb;
+        public TextBox TbSeparatedWebUrl;
 
         public static string GetOpenWindowString(int publishmentSystemId)
         {
@@ -39,30 +32,19 @@ namespace SiteServer.BackgroundPages.Settings
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-            if (!Page.IsPostBack)
-            {
-                TbPublishmentSystemUrl.Text = PublishmentSystemInfo.PublishmentSystemUrl;
-                EBooleanUtils.AddListItems(DdlIsMultiDeployment, "内外网分离部署", "默认部署");
-                ControlUtils.SelectListItems(DdlIsMultiDeployment, PublishmentSystemInfo.Additional.IsMultiDeployment.ToString());
+            if (Page.IsPostBack) return;
 
-                TbSiteUrl.Text = PublishmentSystemInfo.Additional.SiteUrl;
-                TbApiUrl.Text = PublishmentSystemInfo.Additional.ApiUrl;
+            PhUrlSettings.Visible = !ConfigManager.SystemConfigInfo.IsUrlGlobalSetting;
 
-                TbOuterSiteUrl.Text = PublishmentSystemInfo.Additional.OuterSiteUrl;
-                TbInnerSiteUrl.Text = PublishmentSystemInfo.Additional.InnerSiteUrl;
-                TbOuterApiUrl.Text = PublishmentSystemInfo.Additional.OuterApiUrl;
-                TbInnerApiUrl.Text = PublishmentSystemInfo.Additional.InnerApiUrl;
-
-                TbHomeUrl.Text = PublishmentSystemInfo.Additional.HomeUrl;
-
-                DdlIsMultiDeployment_SelectedIndexChanged(null, EventArgs.Empty);
-            }
+            EBooleanUtils.AddListItems(DdlIsSeparatedWeb, "Web独立部署", "Web与CMS部署在一起");
+            ControlUtils.SelectListItems(DdlIsSeparatedWeb, PublishmentSystemInfo.Additional.IsSeparatedWeb.ToString());
+            PhSeparatedWeb.Visible = PublishmentSystemInfo.Additional.IsSeparatedWeb;
+            TbSeparatedWebUrl.Text = PublishmentSystemInfo.Additional.SeparatedWebUrl;
         }
 
-        public void DdlIsMultiDeployment_SelectedIndexChanged(object sender, EventArgs e)
+        public void DdlIsSeparatedWeb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            PhMulti.Visible = TranslateUtils.ToBool(DdlIsMultiDeployment.SelectedValue);
-            PhSingle.Visible = !PhMulti.Visible;
+            PhSeparatedWeb.Visible = TranslateUtils.ToBool(DdlIsSeparatedWeb.SelectedValue);
         }
 
         public string GetSiteName()
@@ -74,17 +56,10 @@ namespace SiteServer.BackgroundPages.Settings
         {
             try
             {
-                PublishmentSystemInfo.PublishmentSystemUrl = TbPublishmentSystemUrl.Text;
+                PublishmentSystemInfo.Additional.IsSeparatedWeb = TranslateUtils.ToBool(DdlIsSeparatedWeb.SelectedValue);
+                PublishmentSystemInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
 
-                PublishmentSystemInfo.Additional.IsMultiDeployment = TranslateUtils.ToBool(DdlIsMultiDeployment.SelectedValue);
-                PublishmentSystemInfo.Additional.SiteUrl = TbSiteUrl.Text;
-                PublishmentSystemInfo.Additional.ApiUrl = TbApiUrl.Text;
-                PublishmentSystemInfo.Additional.OuterSiteUrl = TbOuterSiteUrl.Text;
-                PublishmentSystemInfo.Additional.InnerSiteUrl = TbInnerSiteUrl.Text;
-                PublishmentSystemInfo.Additional.OuterApiUrl = TbOuterApiUrl.Text;
-                PublishmentSystemInfo.Additional.InnerApiUrl = TbInnerApiUrl.Text;
-
-                PublishmentSystemInfo.Additional.HomeUrl = TbHomeUrl.Text;
+                //PublishmentSystemInfo.Additional.HomeUrl = TbHomeUrl.Text;
 
                 DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
                 Body.AddSiteLog(PublishmentSystemId, "修改网站访问设置");

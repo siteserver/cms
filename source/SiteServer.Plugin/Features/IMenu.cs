@@ -5,8 +5,8 @@ namespace SiteServer.Plugin.Features
 {
     public interface IMenu : IPlugin
     {
-        Func<PluginMenu> GlobalMenu { get; }
+        PluginMenu PluginMenu { get; }
 
-        Func<int, PluginMenu> Menu { get; }
+        Func<int, PluginMenu> SiteMenu { get; }
     }
 }

@@ -17,12 +17,14 @@
     <table class="table table-noborder">
       <tr>
         <td>
+          来源：
+          <asp:DropDownList id="DdlPluginId" class="input-small" runat="server" />
           时间：从
-          <bairong:DateTimeTextBox id="DateFrom" class="input-small" runat="server" />
+          <bairong:DateTimeTextBox id="TbDateFrom" class="input-small" runat="server" />
           &nbsp;到&nbsp;
-          <bairong:DateTimeTextBox id="DateTo" class="input-small" runat="server" />
+          <bairong:DateTimeTextBox id="TbDateTo" class="input-small" runat="server" />
           关键字：
-          <asp:TextBox id="Keyword" MaxLength="500" Size="37" runat="server"/>
+          <asp:TextBox id="TbKeyword" MaxLength="500" Size="37" runat="server"/>
           <asp:Button class="btn" OnClick="Search_OnClick" id="Search" text="搜 索"  runat="server"/>
         </td>
       </tr>
@@ -39,7 +41,7 @@
         <input onclick="_checkFormAll(this.checked)" type="checkbox" />
       </td>
     </tr>
-    <asp:Repeater ID="rptContents" runat="server">
+    <asp:Repeater ID="RptContents" runat="server">
       <itemtemplate>
           <tr>
             <td class="center"><asp:Literal ID="ltlAddDate" runat="server"></asp:Literal></td>
@@ -57,14 +59,14 @@
     </asp:Repeater>
   </table>
 
-  <bairong:sqlPager id="spContents" runat="server" class="table table-pager" />
+  <bairong:sqlPager id="SpContents" runat="server" class="table table-pager" />
 
   <ul class="breadcrumb breadcrumb-button">
     <table width="100%">
       <tr>
         <td>
-          <asp:Button class="btn" id="Delete" Text="删 除" runat="server" />
-          <asp:Button class="btn" id="DeleteAll" Text="删除全部" runat="server" />
+          <asp:Button class="btn" id="BtnDelete" Text="删 除" runat="server" />
+          <asp:Button class="btn" id="BtnDeleteAll" Text="删除全部" runat="server" />
         </td>
       </tr>
     </table>

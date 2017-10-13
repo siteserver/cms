@@ -30,7 +30,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/coupon/images/start.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/coupon/images/start.jpg"));
             }
             else
             {
@@ -42,7 +42,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(contentImageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/coupon/images/content.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/coupon/images/content.jpg"));
             }
             else
             {
@@ -54,7 +54,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(endImageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/coupon/images/end.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/coupon/images/end.jpg"));
             }
             else
             {
@@ -64,7 +64,7 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         public static string GetCouponUrl(PublishmentSystemInfo publishmentSystemInfo)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/coupon/application.html"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/coupon/application.html"));
         }
 
         public static string GetCouponHoldUrl(PublishmentSystemInfo publishmentSystemInfo, int keywordID, int actID, int snID, string keyword)
@@ -86,7 +86,7 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         public static string GetCouponActTemplateDirectoryUrl(PublishmentSystemInfo publishmentSystemInfo)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/coupon"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/coupon"));
         }
 
         public static List<Article> Trigger(Model.KeywordInfo keywordInfo, string keyword, string requestFromUserName)

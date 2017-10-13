@@ -48,10 +48,10 @@ namespace SiteServer.CMS.WeiXin.Utils
         {
             if (publishmentSystemInfo.Additional.WxIsWebMenu && !string.IsNullOrEmpty(publishmentSystemInfo.Additional.WxWebMenuType))
             {
-                var directoryUrl = SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/components/webMenu/{publishmentSystemInfo.Additional.WxWebMenuType}");
-                if (PageUtils.IsProtocolUrl(publishmentSystemInfo.PublishmentSystemUrl))
+                var directoryUrl = SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/components/webMenu/{publishmentSystemInfo.Additional.WxWebMenuType}");
+                if (PageUtils.IsProtocolUrl(publishmentSystemInfo.Additional.WebUrl))
                 {
-                    directoryUrl = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/components/webMenu/{publishmentSystemInfo.Additional.WxWebMenuType}"));
+                    directoryUrl = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/components/webMenu/{publishmentSystemInfo.Additional.WxWebMenuType}"));
                 } 
                  
                 var menuPath = SiteFilesAssets.GetPath($"weixin/components/webMenu/{publishmentSystemInfo.Additional.WxWebMenuType}/template.html");

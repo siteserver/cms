@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using Aop.Api.Util;
-using SiteServer.CMS.Plugin.Apis;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -17,8 +14,6 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox TbAppSecret;
         public TextBox TbMchId;
         public TextBox TbKey;
-        public TextBox TbClientCert;
-        public TextBox TbClientKey;
 
         private IntegrationPayConfig _config;
 
@@ -48,8 +43,6 @@ namespace SiteServer.BackgroundPages.Settings
             TbAppSecret.Text = _config.WeixinAppSecret;
             TbMchId.Text = _config.WeixinMchId;
             TbKey.Text = _config.WeixinKey;
-            TbClientCert.Text = _config.WeixinClientCert;
-            TbClientKey.Text = _config.WeixinClientKey;
         }
 
         public void DdlIsEnabled_SelectedIndexChanged(object sender, EventArgs e)
@@ -64,8 +57,6 @@ namespace SiteServer.BackgroundPages.Settings
             _config.WeixinAppSecret = TbAppSecret.Text;
             _config.WeixinMchId = TbMchId.Text;
             _config.WeixinKey = TbKey.Text;
-            _config.WeixinClientCert = TbClientCert.Text;
-            _config.WeixinClientKey = TbClientKey.Text;
 
             ConfigManager.SystemConfigInfo.IntegrationPayConfigJson = TranslateUtils.JsonSerialize(_config);
             BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);

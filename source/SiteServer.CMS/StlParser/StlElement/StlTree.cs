@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Controllers.Stl;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -650,7 +650,7 @@ var stltree_isNodeTree = {isNodeTree};
                 _level = nodeInfo.ParentsCount - topParentsCount;
                 _currentNodeId = currentNodeId;
 
-                var treeDirectoryUrl = SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "tree");
+                var treeDirectoryUrl = SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "tree");
                 _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
                 _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
                 _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");

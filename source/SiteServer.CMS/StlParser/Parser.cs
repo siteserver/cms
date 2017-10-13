@@ -2,7 +2,7 @@
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Controllers.Stl;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -165,25 +165,25 @@ namespace SiteServer.CMS.StlParser
                 }
 
                 var renders = PluginCache.GetRenders();
-                if (renders.Count > 0)
-                {
-                    var html = contentBuilder.ToString();
-                    foreach (var render in renders)
-                    {
-                        try
-                        {
-                            var context = new PluginRenderContext(html, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId);
-                            html = render(context);
-                        }
-                        catch (Exception ex)
-                        {
-                            LogUtils.AddErrorLog(ex, "plugin render");
-                        }
-                    }
+                if (renders.Count <= 0) return;
 
-                    contentBuilder.Clear();
-                    contentBuilder.Append(html);
+                var html = contentBuilder.ToString();
+                foreach (var pluginId in renders.Keys)
+                {
+                    var render = renders[pluginId];
+                    try
+                    {
+                        var context = new PluginRenderContext(html, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId);
+                        html = render(context);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddPluginErrorLog(pluginId, ex, "Render");
+                    }
                 }
+
+                contentBuilder.Clear();
+                contentBuilder.Append(html);
             }
         }
     }

@@ -5,7 +5,6 @@ using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
@@ -45,24 +44,15 @@ namespace BaiRong.Core.Provider
             }
         }
 
-        public void Delete(int days, int counter)
+        public void Delete(int days)
         {
-            if (days > 0)
-            {
-                ExecuteNonQuery($@"DELETE FROM bairong_Log WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
-            }
-            if (counter > 0)
-            {
-                ExecuteNonQuery($@"DELETE FROM bairong_Log WHERE ID IN(
-SELECT ID from(
-SELECT ID, ROW_NUMBER() OVER(ORDER BY AddDate DESC) as rowNum FROM bairong_Log) as t
-WHERE t.rowNum > {counter})");
-            }
+            if (days <= 0) return;
+            ExecuteNonQuery($@"DELETE FROM bairong_Log WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
         }
 
         public void DeleteAll()
         {
-            var sqlString = "DELETE FROM bairong_Log";
+            const string sqlString = "DELETE FROM bairong_Log";
 
             ExecuteNonQuery(sqlString);
         }
@@ -70,11 +60,11 @@ WHERE t.rowNum > {counter})");
         public int GetCount()
         {
             var count = 0;
-            var sqlString = "SELECT Count(ID) FROM bairong_Log";
+            const string sqlString = "SELECT Count(*) FROM bairong_Log";
 
             using (var rdr = ExecuteReader(sqlString))
             {
-                if (rdr.Read())
+                if (rdr.Read() && !rdr.IsDBNull(0))
                 {
                     count = GetInt(rdr, 0);
                 }

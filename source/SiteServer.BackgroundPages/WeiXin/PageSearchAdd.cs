@@ -367,7 +367,7 @@ $(document).ready(function() {{
                         {
                             DataProviderWx.SearchDao.Update(searchInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改微搜索", $"微搜索:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改微搜索", $"微搜索:{TbTitle.Text}");
                             SuccessMessage("修改微搜索成功！");
                         }
                         else
@@ -376,7 +376,7 @@ $(document).ready(function() {{
 
                             DataProviderWx.SearchNavigationDao.UpdateSearchId(PublishmentSystemId, _searchId);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加微搜索", $"微搜索:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加微搜索", $"微搜索:{TbTitle.Text}");
                             SuccessMessage("添加微搜索成功！");
                         }
 

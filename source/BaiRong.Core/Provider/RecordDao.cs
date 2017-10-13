@@ -10,7 +10,7 @@ namespace BaiRong.Core.Provider
 {
     public class RecordDao : DataProviderBase
     {
-        private const string TableName = "bairong_Record";
+        public override string TableName => "bairong_Record";
 
         private const string ParmText = "@Text";
         private const string ParmSummary = "@Summary";

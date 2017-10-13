@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Plugins
         {
             if (IsForbidden) return;
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
             _nodeId = Body.GetQueryInt("NodeID");
@@ -139,7 +139,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     AddWaitAndRedirectScript(PageUrl);
                     return;
                 }
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, true, false, Body.AdministratorName);
+                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, true, false, Body.AdminName);
 
                 if (_tableStyleInfoList != null)
                 {

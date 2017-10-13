@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ltlItemAddDate.Text = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
                 ltlItemStatus.Text = LevelManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
 
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
                 {
                     //编辑
                     ltlItemEditUrl.Text =

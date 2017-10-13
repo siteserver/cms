@@ -7,7 +7,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -157,7 +156,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.PublishmentSystemInfo.PublishmentSystemUrl;
+                parsedContent = pageInfo.PublishmentSystemInfo.Additional.WebUrl;
             }
             else if (type.ToLower().Equals(TypeDate.ToLower()))
             {

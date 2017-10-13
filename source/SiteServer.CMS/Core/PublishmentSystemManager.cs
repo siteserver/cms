@@ -8,6 +8,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
 {
@@ -354,9 +355,9 @@ namespace SiteServer.CMS.Core
 
         private const string CacheKey = "SiteServer.CMS.Core.PublishmentSystemManager";
 
-        public static List<PublishmentSystemInfo> GetWritingPublishmentSystemInfoList(string adminUserName)
+        public static List<IPublishmentSystemInfo> GetWritingPublishmentSystemInfoList(string adminUserName)
         {
-            var publishmentSystemInfoList = new List<PublishmentSystemInfo>();
+            var publishmentSystemInfoList = new List<IPublishmentSystemInfo>();
 
             if (!string.IsNullOrEmpty(adminUserName))
             {
@@ -398,9 +399,9 @@ namespace SiteServer.CMS.Core
             return publishmentSystemInfoList;
         }
 
-        public static List<NodeInfo> GetWritingNodeInfoList(string adminUserName, int publishmentSystemId)
+        public static List<INodeInfo> GetWritingNodeInfoList(string adminUserName, int publishmentSystemId)
         {
-            var nodeInfoList = new List<NodeInfo>();
+            var nodeInfoList = new List<INodeInfo>();
             if (!string.IsNullOrEmpty(adminUserName))
             {
                 if (AdminManager.HasChannelPermissionIsConsoleAdministrator(adminUserName) || AdminManager.HasChannelPermissionIsSystemAdministrator(adminUserName))//如果是超级管理员或站点管理员

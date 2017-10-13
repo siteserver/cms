@@ -38,91 +38,101 @@
               <asp:PlaceHolder id="PhSettings" runat="server">
 
                 <div class="form-group">
-                  <label class="col-sm-3 control-label">支付宝账户</label>
+                  <label class="col-sm-3 control-label">接口类型</label>
                   <div class="col-sm-3">
-                    <asp:TextBox id="TbAccount" class="form-control" runat="server"></asp:TextBox>
+                    <asp:DropDownList id="DdlIsMApi" AutoPostBack="true" OnSelectedIndexChanged="DdlIsMApi_SelectedIndexChanged" class="form-control"
+                      runat="server"></asp:DropDownList>
                   </div>
-                  <div class="col-sm-5">
-                    <span class="help-block">支付宝企业账户（邮箱）</span>
-                  </div>
-                  <div class="col-sm-1">
-                    <asp:RequiredFieldValidator ControlToValidate="TbAccount" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
-                    />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TbAccount" ValidationExpression="[^']+" ErrorMessage=" *"
-                      ForeColor="red" Display="Dynamic" />
+                  <div class="col-sm-6">
+                    <span class="help-block"></span>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label class="col-sm-3 control-label">APPID</label>
-                  <div class="col-sm-3">
-                    <asp:TextBox id="TbAppId" class="form-control" runat="server"></asp:TextBox>
+
+                <asp:PlaceHolder id="PhMApi" runat="server">
+
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label">合作伙伴身份（PID）</label>
+                    <div class="col-sm-3">
+                      <asp:TextBox id="TbPid" class="form-control" runat="server"></asp:TextBox>
+                    </div>
+                    <div class="col-sm-5">
+                      <span class="help-block"><a href="https://open.alipay.com" target="_blank">支付宝开放平台</a> - 密钥管理 - mapi网关产品密钥 - 合作伙伴身份（PID）</span>
+                    </div>
+                    <div class="col-sm-1">
+                      <asp:RequiredFieldValidator ControlToValidate="TbPid" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                      />
+                      <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPid" ValidationExpression="[^']+" ErrorMessage=" *" ForeColor="red"
+                        Display="Dynamic" />
+                    </div>
                   </div>
-                  <div class="col-sm-5">
-                    <span class="help-block">支付宝开放平台 - PID 和公钥管理 - 开放平台密钥 - APPID</span>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label">MD5 密钥</label>
+                    <div class="col-sm-3">
+                      <asp:TextBox id="TbMd5" class="form-control" runat="server"></asp:TextBox>
+                    </div>
+                    <div class="col-sm-5">
+                      <span class="help-block"><a href="https://open.alipay.com" target="_blank">支付宝开放平台</a> - 密钥管理 - mapi网关产品密钥 - MD5密钥</span>
+                    </div>
+                    <div class="col-sm-1">
+                      <asp:RequiredFieldValidator ControlToValidate="TbMd5" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                      />
+                      <asp:RegularExpressionValidator runat="server" ControlToValidate="TbMd5" ValidationExpression="[^']+" ErrorMessage=" *" ForeColor="red"
+                        Display="Dynamic" />
+                    </div>
                   </div>
-                  <div class="col-sm-1">
-                    <asp:RequiredFieldValidator ControlToValidate="TbAppId" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
-                    />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TbAppId" ValidationExpression="[^']+" ErrorMessage=" *"
-                      ForeColor="red" Display="Dynamic" />
+
+                </asp:PlaceHolder>
+                <asp:PlaceHolder id="PhOpenApi" runat="server">
+
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label">APPID</label>
+                    <div class="col-sm-3">
+                      <asp:TextBox id="TbAppId" class="form-control" runat="server"></asp:TextBox>
+                    </div>
+                    <div class="col-sm-5">
+                        <span class="help-block">
+                          <a href="https://open.alipay.com" target="_blank">支付宝开放平台</a> - 应用 - APPID
+                        </span>
+                    </div>
+                    <div class="col-sm-1">
+                      <asp:RequiredFieldValidator ControlToValidate="TbAppId" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                      />
+                      <asp:RegularExpressionValidator runat="server" ControlToValidate="TbAppId" ValidationExpression="[^']+" ErrorMessage=" *"
+                        ForeColor="red" Display="Dynamic" />
+                    </div>
                   </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-sm-3 control-label">合作伙伴身份（PID）</label>
-                  <div class="col-sm-3">
-                    <asp:TextBox id="TbPid" class="form-control" runat="server"></asp:TextBox>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label">支付宝公钥</label>
+                    <div class="col-sm-8">
+                      <asp:TextBox id="TbPublicKey" TextMode="MultiLine" Rows="6" class="form-control" runat="server"></asp:TextBox>
+                      <span class="help-block">
+                        <a href="https://open.alipay.com" target="_blank">支付宝开放平台</a> - 应用 - RSA2(SHA256)密钥 - 查看支付宝公钥
+                      </span>
+                    </div>
+                    <div class="col-sm-1">
+                      <asp:RequiredFieldValidator ControlToValidate="TbPublicKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                      />
+                      <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublicKey" ValidationExpression="[^']+" ErrorMessage=" *"
+                        ForeColor="red" Display="Dynamic" />
+                    </div>
                   </div>
-                  <div class="col-sm-5">
-                    <span class="help-block">支付宝开放平台 - PID 和公钥管理 - mapi 网关产品密钥 - 合作伙伴身份（PID）</span>
+                  <div class="form-group">
+                    <label class="col-sm-3 control-label">应用私钥</label>
+                    <div class="col-sm-8">
+                      <asp:TextBox id="TbPrivateKey" TextMode="MultiLine" Rows="15" class="form-control" runat="server"></asp:TextBox>
+                      <span class="help-block">
+                          与“<a href="https://open.alipay.com" target="_blank">支付宝开放平台</a> - 应用 - RSA2(SHA256)密钥” 中设置的应用公钥对应的应用私钥，非 PKCS8 编码
+                      </span>
+                    </div>
+                    <div class="col-sm-1">
+                      <asp:RequiredFieldValidator ControlToValidate="TbPrivateKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                      />
+                      <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPrivateKey" ValidationExpression="[^']+" ErrorMessage=" *"
+                        ForeColor="red" Display="Dynamic" />
+                    </div>
                   </div>
-                  <div class="col-sm-1">
-                    <asp:RequiredFieldValidator ControlToValidate="TbPid" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
-                    />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPid" ValidationExpression="[^']+" ErrorMessage=" *" ForeColor="red"
-                      Display="Dynamic" />
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-sm-3 control-label">MD5 密钥</label>
-                  <div class="col-sm-3">
-                    <asp:TextBox id="TbMd5" class="form-control" runat="server"></asp:TextBox>
-                  </div>
-                  <div class="col-sm-5">
-                    <span class="help-block">支付宝开放平台 - PID 和公钥管理 - mapi 网关产品密钥 - 合作伙伴密钥 - 安全校验码（key） - MD5 密钥</span>
-                  </div>
-                  <div class="col-sm-1">
-                    <asp:RequiredFieldValidator ControlToValidate="TbMd5" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
-                    />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TbMd5" ValidationExpression="[^']+" ErrorMessage=" *" ForeColor="red"
-                      Display="Dynamic" />
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-sm-3 control-label">支付宝公钥</label>
-                  <div class="col-sm-8">
-                    <asp:TextBox id="TbPublicKey" TextMode="MultiLine" Rows="6" class="form-control" runat="server"></asp:TextBox>
-                    <span class="help-block">支付宝开放平台 - PID 和公钥管理 - mapi 网关产品密钥 - 安全校验码（key）- RSA (SHA1) 密钥 - 查看支付宝公钥</span>
-                  </div>
-                  <div class="col-sm-1">
-                    <asp:RequiredFieldValidator ControlToValidate="TbPublicKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
-                    />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublicKey" ValidationExpression="[^']+" ErrorMessage=" *"
-                      ForeColor="red" Display="Dynamic" />
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-sm-3 control-label">应用私钥</label>
-                  <div class="col-sm-8">
-                    <asp:TextBox id="TbPrivateKey" TextMode="MultiLine" Rows="15" class="form-control" runat="server"></asp:TextBox>
-                    <span class="help-block">非 PKCS8 编码，与“支付宝开放平台 - PID 和公钥管理 - mapi 网关产品密钥 - 安全校验码（key）- RSA (SHA1) 密钥 ”中设置的应用公钥对应的应用私钥</span>
-                  </div>
-                  <div class="col-sm-1">
-                    <asp:RequiredFieldValidator ControlToValidate="TbPrivateKey" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
-                    />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPrivateKey" ValidationExpression="[^']+" ErrorMessage=" *"
-                      ForeColor="red" Display="Dynamic" />
-                  </div>
-                </div>
+
+                </asp:PlaceHolder>
 
               </asp:PlaceHolder>
 

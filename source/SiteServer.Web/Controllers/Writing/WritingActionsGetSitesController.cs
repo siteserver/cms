@@ -17,7 +17,8 @@ namespace SiteServer.API.Controllers.Writing
                 var body = new RequestBody();
                 if (!body.IsUserLoggin) return Unauthorized();
 
-                var groupInfo = UserGroupManager.GetGroupInfo(body.UserInfo.GroupId);
+                //var groupInfo = UserGroupManager.GetGroupInfo(body.UserInfo.GroupId);
+                var groupInfo = UserGroupManager.GetGroupInfo(0);
                 var adminUserName = groupInfo.Additional.WritingAdminUserName;
 
                 var publishmentSystemInfoList = PublishmentSystemManager.GetWritingPublishmentSystemInfoList(adminUserName);

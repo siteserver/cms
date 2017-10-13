@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
                 WaterMarkImagePath.Text = PublishmentSystemInfo.Additional.WaterMarkImagePath;
                
 				IsWaterMark_SelectedIndexChanged(null, null);
-                WaterMarkImagePath.Attributes.Add("onchange", GetShowImageScript("preview_WaterMarkImagePath", PublishmentSystemInfo.PublishmentSystemUrl));
+                WaterMarkImagePath.Attributes.Add("onchange", GetShowImageScript("preview_WaterMarkImagePath", PublishmentSystemInfo.Additional.WebUrl));
 
                 var showPopWinString = ModalSelectImage.GetOpenWindowString(PublishmentSystemInfo, WaterMarkImagePath.ClientID);
                 ImageUrlSelect.Attributes.Add("onclick", showPopWinString);

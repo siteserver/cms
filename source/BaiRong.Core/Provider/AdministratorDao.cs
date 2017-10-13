@@ -8,14 +8,13 @@ using BaiRong.Core.Cryptography;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class AdministratorDao : DataProviderBase
     {
-        public const string TableName = "bairong_Administrator";
+        public override string TableName => "bairong_Administrator";
 
         private const string SqlSelectUser = "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE UserName = @UserName";
 
@@ -801,9 +800,9 @@ namespace BaiRong.Core.Provider
                 errorMessage = "用户名不能为空";
                 return false;
             }
-            if (userInfo.UserName.Length < ConfigManager.SystemConfigInfo.LoginUserNameMinLength)
+            if (userInfo.UserName.Length < ConfigManager.SystemConfigInfo.AdminUserNameMinLength)
             {
-                errorMessage = $"用户名长度必须大于等于{ConfigManager.SystemConfigInfo.LoginUserNameMinLength}";
+                errorMessage = $"用户名长度必须大于等于{ConfigManager.SystemConfigInfo.AdminUserNameMinLength}";
                 return false;
             }
             if (IsUserNameExists(userInfo.UserName))
@@ -817,15 +816,15 @@ namespace BaiRong.Core.Provider
                 errorMessage = "密码不能为空";
                 return false;
             }
-            if (userInfo.Password.Length < ConfigManager.SystemConfigInfo.LoginPasswordMinLength)
+            if (userInfo.Password.Length < ConfigManager.SystemConfigInfo.AdminPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.LoginPasswordMinLength}";
+                errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.AdminPasswordMinLength}";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(userInfo.Password, ConfigManager.SystemConfigInfo.LoginPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(userInfo.Password, ConfigManager.SystemConfigInfo.AdminPasswordRestriction))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(ConfigManager.SystemConfigInfo.LoginPasswordRestriction)}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.AdminPasswordRestriction))}";
                 return false;
             }
 
@@ -853,15 +852,15 @@ namespace BaiRong.Core.Provider
                 errorMessage = "密码不能为空";
                 return false;
             }
-            if (password.Length < ConfigManager.SystemConfigInfo.LoginPasswordMinLength)
+            if (password.Length < ConfigManager.SystemConfigInfo.AdminPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.LoginPasswordMinLength}";
+                errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.AdminPasswordMinLength}";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.LoginPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.AdminPasswordRestriction))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(ConfigManager.SystemConfigInfo.LoginPasswordRestriction)}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.AdminPasswordRestriction))}";
                 return false;
             }
 
@@ -901,11 +900,11 @@ namespace BaiRong.Core.Provider
                 return false;
             }
 
-            if (ConfigManager.SystemConfigInfo.IsLoginFailToLock)
+            if (ConfigManager.SystemConfigInfo.IsAdminLockLogin)
             {
-                if (adminInfo.CountOfFailedLogin > 0 && adminInfo.CountOfFailedLogin >= ConfigManager.SystemConfigInfo.LoginFailToLockCount)
+                if (adminInfo.CountOfFailedLogin > 0 && adminInfo.CountOfFailedLogin >= ConfigManager.SystemConfigInfo.AdminLockLoginCount)
                 {
-                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.LoginLockingType);
+                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.AdminLockLoginType);
                     if (lockType == EUserLockType.Forever)
                     {
                         errorMessage = "此账号错误登录次数过多，已被永久锁定";
@@ -914,7 +913,7 @@ namespace BaiRong.Core.Provider
                     if (lockType == EUserLockType.Hours)
                     {
                         var ts = new TimeSpan(DateTime.Now.Ticks - adminInfo.LastActivityDate.Ticks);
-                        var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.LoginLockingHours - ts.TotalHours);
+                        var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.AdminLockLoginHours - ts.TotalHours);
                         if (hours > 0)
                         {
                             errorMessage =

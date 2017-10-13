@@ -92,14 +92,14 @@ namespace SiteServer.BackgroundPages.Settings
 			try
 			{
                 dgContents.PageSize = StringUtils.Constants.PageSize;
-                var permissioins = PermissionsManager.GetPermissions(Body.AdministratorName);
+                var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
                 if (permissioins.IsConsoleAdministrator)
 				{
                     dgContents.DataSource = GetDataSetByRoles(BaiRongDataProvider.RoleDao.GetAllRoles());
 				}
 				else
 				{
-                    dgContents.DataSource = GetDataSetByRoles(BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdministratorName));
+                    dgContents.DataSource = GetDataSetByRoles(BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName));
 				}
                 dgContents.ItemDataBound += dgContents_ItemDataBound;
                 dgContents.DataBind();

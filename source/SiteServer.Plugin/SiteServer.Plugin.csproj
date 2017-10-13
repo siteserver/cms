@@ -48,14 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Apis\IAdminApi.cs" />
+    <Compile Include="Apis\IUserApi.cs" />
     <Compile Include="Apis\IPaymentApi.cs" />
     <Compile Include="Apis\ISmsApi.cs" />
     <Compile Include="Apis\IParseApi.cs" />
     <Compile Include="Apis\IConfigApi.cs" />
     <Compile Include="Apis\IDataApi.cs" />
-    <Compile Include="Apis\IAuthApi.cs" />
+    <Compile Include="Apis\IMenuApi.cs" />
     <Compile Include="Apis\INodeApi.cs" />
-    <Compile Include="Apis\IPageApi.cs" />
     <Compile Include="Apis\IFilesApi.cs" />
     <Compile Include="Apis\IContentApi.cs" />
     <Compile Include="Apis\IPublishmentSystemApi.cs" />
@@ -63,6 +64,10 @@
     <Compile Include="Models\DataType.cs" />
     <Compile Include="Models\Copyable.cs" />
     <Compile Include="Models\ExtendedAttributes.cs" />
+    <Compile Include="Models\ISystemConfigInfo.cs" />
+    <Compile Include="Models\IAdministratorInfo.cs" />
+    <Compile Include="Models\ILogInfo.cs" />
+    <Compile Include="Models\IUserInfo.cs" />
     <Compile Include="Models\IContentInfo.cs" />
     <Compile Include="Models\INodeInfo.cs" />
     <Compile Include="Models\IPublishmentSystemInfo.cs" />
@@ -71,15 +76,13 @@
     <Compile Include="Models\SerializerData.cs" />
     <Compile Include="Features\IRender.cs" />
     <Compile Include="Features\IParse.cs" />
-    <Compile Include="Features\IHttpApi.cs" />
     <Compile Include="Features\ITable.cs" />
-    <Compile Include="Features\IPageAdmin.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="Models\InputType.cs" />
     <Compile Include="Features\IMenu.cs" />
     <Compile Include="Features\IContentTable.cs" />
     <Compile Include="Features\IFileSystem.cs" />
-    <Compile Include="Features\IJsonApi.cs" />
+    <Compile Include="Features\IWebApi.cs" />
     <Compile Include="Models\IDbHelper.cs" />
     <Compile Include="Models\ValidateType.cs" />
     <Compile Include="PluginBase.cs" />

@@ -1,5 +1,4 @@
 ﻿using System;
-using BaiRong.Core.Model.Enumerations;
 using System.Collections.Generic;
 using SiteServer.Plugin.Models;
 
@@ -228,8 +227,8 @@ namespace BaiRong.Core.Model
 
         public ValidateType ValidateType
         {
-            get { return EValidateTypeUtils.GetEnumType(GetExtendedAttribute("ValidateType")); }
-            set { SetExtendedAttribute("ValidateType", EValidateTypeUtils.GetValue(value)); }
+            get { return ValidateTypeUtils.GetEnumType(GetExtendedAttribute("ValidateType")); }
+            set { SetExtendedAttribute("ValidateType", ValidateTypeUtils.GetValue(value)); }
         }
 
         public string RegExp

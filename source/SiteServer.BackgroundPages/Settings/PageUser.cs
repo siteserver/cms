@@ -10,7 +10,6 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class PageUser : BasePage
     {
-        public DropDownList DdlGroup;
         public DropDownList DdlPageNum;
         public DropDownList DdlLoginCount;
 
@@ -23,7 +22,6 @@ namespace SiteServer.BackgroundPages.Settings
         public SqlCountPager SpContents;
 
         public Button BtnAdd;
-        public Button BtnAddToGroup;
         public Button BtnLock;
         public Button BtnUnLock;
         public Button BtnDelete;
@@ -105,7 +103,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             SpContents.ControlToPaginate = RptContents;
 
-            if (string.IsNullOrEmpty(Body.GetQueryString("GroupID")))
+            if (string.IsNullOrEmpty(Body.GetQueryString("PageNum")))
             {
                 SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? 25 : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
 
@@ -114,30 +112,18 @@ namespace SiteServer.BackgroundPages.Settings
             else
             {
                 SpContents.ItemsPerPage = Body.GetQueryInt("PageNum") == 0 ? StringUtils.Constants.PageSize : Body.GetQueryInt("PageNum");
-                SpContents.SelectCommand = BaiRongDataProvider.UserDao.GetSelectCommand(Body.GetQueryString("Keyword"), Body.GetQueryInt("CreationDate"), Body.GetQueryInt("LastActivityDate"), true, Body.GetQueryInt("GroupID"), Body.GetQueryInt("LoginCount"), Body.GetQueryString("SearchType"));
+                SpContents.SelectCommand = BaiRongDataProvider.UserDao.GetSelectCommand(Body.GetQueryString("Keyword"), Body.GetQueryInt("CreationDate"), Body.GetQueryInt("LastActivityDate"), true, Body.GetQueryInt("LoginCount"), Body.GetQueryString("SearchType"));
             }
 
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             SpContents.SortField = BaiRongDataProvider.UserDao.GetSortFieldName();
             SpContents.SortMode = SortMode.DESC;
 
-            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.UserConfigInfo.LoginLockingType);
+            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserLockLoginType);
 
             if (IsPostBack) return;
 
             BreadCrumbSettings("用户管理", AppManager.Permissions.Settings.UserManagement);
-
-            var theListItem = new ListItem("全部", "0")
-            {
-                Selected = true
-            };
-            DdlGroup.Items.Add(theListItem);
-            var groupInfoList = UserGroupManager.GetGroupInfoList();
-            foreach (var userGroupInfo in groupInfoList)
-            {
-                var listitem = new ListItem(userGroupInfo.GroupName, userGroupInfo.GroupId.ToString());
-                DdlGroup.Items.Add(listitem);
-            }
 
             //添加隐藏属性
             DdlSearchType.Items.Add(new ListItem("用户ID", "userID"));
@@ -151,10 +137,6 @@ namespace SiteServer.BackgroundPages.Settings
             if (!string.IsNullOrEmpty(Body.GetQueryString("SearchType")))
             {
                 ControlUtils.SelectListItems(DdlSearchType, Body.GetQueryString("SearchType"));
-            }
-            if (!string.IsNullOrEmpty(Body.GetQueryString("GroupID")))
-            {
-                ControlUtils.SelectListItems(DdlGroup, Body.GetQueryString("GroupID"));
             }
             if (!string.IsNullOrEmpty(Body.GetQueryString("PageNum")))
             {
@@ -176,9 +158,6 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 ControlUtils.SelectListItems(DdlLastActivityDate, Body.GetQueryString("LastActivityDate"));
             }
-
-            var showPopWinString = ModalAddToUserGroup.GetOpenWindowString();
-            BtnAddToGroup.Attributes.Add("onclick", showPopWinString);
 
             var backgroundUrl = GetRedirectUrl();
 
@@ -209,7 +188,6 @@ namespace SiteServer.BackgroundPages.Settings
 
             var ltlUserName = (Literal)e.Item.FindControl("ltlUserName");
             var ltlDisplayName = (Literal)e.Item.FindControl("ltlDisplayName");
-            var ltlGroupName = (Literal)e.Item.FindControl("ltlGroupName");
             var ltlEmail = (Literal)e.Item.FindControl("ltlEmail");
             var ltlMobile = (Literal)e.Item.FindControl("ltlMobile");
             var ltlLastActivityDate = (Literal)e.Item.FindControl("ltlLastActivityDate");
@@ -224,7 +202,6 @@ namespace SiteServer.BackgroundPages.Settings
             ltlDisplayName.Text = userInfo.DisplayName;
             ltlEmail.Text = userInfo.Email;
             ltlMobile.Text = userInfo.Mobile;
-            ltlGroupName.Text = UserGroupManager.GetGroupName(userInfo.GroupId);
             ltlLastActivityDate.Text = DateUtils.GetDateAndTimeString(userInfo.LastActivityDate);
             ltlLoginCount.Text = userInfo.CountOfLogin.ToString();
             ltlCreationDate.Text = DateUtils.GetDateAndTimeString(userInfo.CreateDate);
@@ -244,8 +221,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 state = @"<span style=""color:red;"">[已被锁定]</span>";
             }
-            else if (ConfigManager.UserConfigInfo.IsLoginFailToLock &&
-                       ConfigManager.UserConfigInfo.LoginFailToLockCount <= userInfo.CountOfFailedLogin)
+            else if (ConfigManager.SystemConfigInfo.IsUserLockLogin &&
+                       ConfigManager.SystemConfigInfo.UserLockLoginCount <= userInfo.CountOfFailedLogin)
             {
                 if (_lockType == EUserLockType.Forever)
                 {
@@ -254,7 +231,7 @@ namespace SiteServer.BackgroundPages.Settings
                 else
                 {
                     var ts = new TimeSpan(DateTime.Now.Ticks - userInfo.LastActivityDate.Ticks);
-                    var hours = Convert.ToInt32(ConfigManager.UserConfigInfo.LoginLockingHours - ts.TotalHours);
+                    var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.UserLockLoginHours - ts.TotalHours);
                     if (hours > 0)
                     {
                         state = $@"<span style=""color:red;"">[错误登录次数过多，已被锁定{hours}小时]</span>";
@@ -277,7 +254,7 @@ namespace SiteServer.BackgroundPages.Settings
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
                     _pageUrl =
-                        $"{GetRedirectUrl()}?GroupID={DdlGroup.SelectedValue}&PageNum={DdlPageNum.SelectedValue}&Keyword={TbKeyword.Text}&CreationDate={DdlCreationDate.SelectedValue}&LastActivityDate={DdlLastActivityDate.SelectedValue}&loginCount={DdlLoginCount.SelectedValue}&SearchType={DdlSearchType.SelectedValue}";
+                        $"{GetRedirectUrl()}?PageNum={DdlPageNum.SelectedValue}&Keyword={TbKeyword.Text}&CreationDate={DdlCreationDate.SelectedValue}&LastActivityDate={DdlLastActivityDate.SelectedValue}&loginCount={DdlLoginCount.SelectedValue}&SearchType={DdlSearchType.SelectedValue}";
                 }
                 return _pageUrl;
             }

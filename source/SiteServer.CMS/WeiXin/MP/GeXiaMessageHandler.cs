@@ -370,7 +370,7 @@ namespace SiteServer.CMS.WeiXin.MP
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
             }
 
             return null;

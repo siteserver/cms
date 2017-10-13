@@ -15,6 +15,7 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox TbCopyright;
         public TextBox TbBeianNo;
         public Literal LtlLogoUrl;
+        public Literal LtlDefaultAvatarUrl;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -28,7 +29,17 @@ namespace SiteServer.BackgroundPages.Settings
                 Response.End();
                 return;
             }
+            if (Body.IsQueryExists("uploadDefaultAvatar"))
+            {
+                var attributes = UploadDefaultAvatar();
+                var json = JsonMapper.ToJson(attributes);
+                Response.Write(json);
+                Response.End();
+                return;
+            }
+
             LtlLogoUrl.Text = $@"<img id=""logoUrl"" src=""{ConfigManager.UserConfigInfo.LogoUrl}"" />";
+            LtlDefaultAvatarUrl.Text = $@"<img id=""defaultAvatarUrl"" src=""{ConfigManager.UserConfigInfo.DefaultAvatarUrl}"" />";
             if (IsPostBack) return;
 
             BreadCrumbSettings("基本配置", AppManager.Permissions.Settings.UserManagement);
@@ -111,6 +122,60 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 jsonAttributes.Add("success", "true");
                 jsonAttributes.Add("logoUrl", logoUrl);
+            }
+            else
+            {
+                jsonAttributes.Add("success", "false");
+                if (string.IsNullOrEmpty(message))
+                {
+                    message = "图标上传失败";
+                }
+                jsonAttributes.Add("message", message);
+            }
+
+            return jsonAttributes;
+        }
+
+        private Hashtable UploadDefaultAvatar()
+        {
+            var success = false;
+            var message = string.Empty;
+            var defaultAvatarUrl = ConfigManager.UserConfigInfo.DefaultAvatarUrl;
+
+            if (Request.Files["Filedata"] != null)
+            {
+                var postedFile = Request.Files["Filedata"];
+                try
+                {
+                    if (!string.IsNullOrEmpty(postedFile?.FileName))
+                    {
+                        var filePath = postedFile.FileName;
+                        var fileExtName = filePath.ToLower().Substring(filePath.LastIndexOf(".", StringComparison.Ordinal) + 1);
+                        var imageType = EImageTypeUtils.GetEnumType(fileExtName);
+                        if (imageType != EImageType.Unknown)
+                        {
+                            string fileName = $"default_avatar.{fileExtName}";
+                            var logoPath = PathUtils.GetUserFilesPath(string.Empty, fileName);
+                            postedFile.SaveAs(logoPath);
+                            defaultAvatarUrl = PageUtils.AddProtocolToUrl(PageUtils.GetUserFilesUrl(string.Empty, fileName));
+                            ConfigManager.UserConfigInfo.DefaultAvatarUrl = defaultAvatarUrl;
+                            BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+
+                            success = true;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    message = ex.Message;
+                }
+            }
+
+            var jsonAttributes = new Hashtable();
+            if (success)
+            {
+                jsonAttributes.Add("success", "true");
+                jsonAttributes.Add("defaultAvatarUrl", defaultAvatarUrl);
             }
             else
             {

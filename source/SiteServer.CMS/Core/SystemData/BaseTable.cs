@@ -23,10 +23,9 @@ namespace SiteServer.CMS.Core.SystemData
 			return arraylist;
 		}
 
-        public static PublishmentSystemInfo GetDefaultPublishmentSystemInfo(string publishmentSystemName, string auxiliaryTableForContent, string publishmentSystemDir, string publishmentSystemUrl, int parentPublishmentSystemId)
+        public static PublishmentSystemInfo GetDefaultPublishmentSystemInfo(string publishmentSystemName, string auxiliaryTableForContent, string publishmentSystemDir, int parentPublishmentSystemId)
 		{
-            var psInfo = new PublishmentSystemInfo(0, publishmentSystemName, auxiliaryTableForContent, false, 0, publishmentSystemDir, publishmentSystemUrl, false, parentPublishmentSystemId, 0, string.Empty);
-			return psInfo;
+            return new PublishmentSystemInfo(0, publishmentSystemName, auxiliaryTableForContent, false, 0, publishmentSystemDir, false, parentPublishmentSystemId, 0, string.Empty);
 		}
 
 

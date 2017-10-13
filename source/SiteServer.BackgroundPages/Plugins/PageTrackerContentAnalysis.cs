@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 StartDate.Text = startDateString;
                 EndDate.Text = endDateString;
 
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, true, true, Body.AdministratorName);
+                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, true, true, Body.AdminName);
                 ControlUtils.SelectListItems(NodeIDDropDownList, nodeID.ToString());
 
                 var begin = DateUtils.SqlMinValue;

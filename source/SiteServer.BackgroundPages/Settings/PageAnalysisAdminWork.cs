@@ -182,7 +182,7 @@ yArrayUpdate.push('{yValueUpdate}');";
 
             var element = (NoTagText)e.Item.FindControl("ElHtml");
 
-            element.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, Body.AdministratorName);
+            element.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.SiteAnalysis, _additional, Body.AdminName);
         }
 
         public void Analysis_OnClick(object sender, EventArgs e)

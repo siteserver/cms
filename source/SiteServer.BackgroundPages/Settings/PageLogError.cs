@@ -5,20 +5,22 @@ using BaiRong.Core;
 using BaiRong.Core.Data;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Settings
 {
 	public class PageLogError : BasePage
-    {
-        public TextBox Keyword;
-        public DateTimeTextBox DateFrom;
-        public DateTimeTextBox DateTo;
+	{
+	    public DropDownList DdlPluginId;
+        public TextBox TbKeyword;
+        public DateTimeTextBox TbDateFrom;
+        public DateTimeTextBox TbDateTo;
 
-        public Repeater rptContents;
-        public SqlPager spContents;
+        public Repeater RptContents;
+        public SqlPager SpContents;
 
-		public Button Delete;
-		public Button DeleteAll;
+		public Button BtnDelete;
+		public Button BtnDeleteAll;
 
 		public void Page_Load(object sender, EventArgs e)
         {
@@ -50,61 +52,60 @@ namespace SiteServer.BackgroundPages.Settings
                 }
             }
 
-            spContents.ControlToPaginate = rptContents;
-            spContents.ItemsPerPage = StringUtils.Constants.PageSize;
+            SpContents.ControlToPaginate = RptContents;
+            SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            if (!Body.IsQueryExists("Keyword"))
+            SpContents.SelectCommand = BaiRongDataProvider.ErrorLogDao.GetSelectCommend(Body.GetQueryString("PluginId"), Body.GetQueryString("Keyword"),
+                    Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
+
+            SpContents.SortField = "Id";
+            SpContents.SortMode = SortMode.DESC;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+
+            if (IsPostBack) return;
+
+            DdlPluginId.Items.Add(new ListItem("系统", string.Empty));
+            foreach (var pair in PluginCache.AllPluginPairs)
             {
-                spContents.SelectCommand = BaiRongDataProvider.ErrorLogDao.GetSelectCommend();
+                DdlPluginId.Items.Add(new ListItem(pair.Metadata.DisplayName, pair.Metadata.Id));
             }
-            else
+
+            BreadCrumbSettings("系统错误日志", AppManager.Permissions.Settings.Log);
+
+            if (Body.IsQueryExists("Keyword"))
             {
-                spContents.SelectCommand = BaiRongDataProvider.ErrorLogDao.GetSelectCommend(Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
+                ControlUtils.SelectListItems(DdlPluginId, Body.GetQueryString("PluginId"));
+                TbKeyword.Text = Body.GetQueryString("Keyword");
+                TbDateFrom.Text = Body.GetQueryString("DateFrom");
+                TbDateTo.Text = Body.GetQueryString("DateTo");
             }
 
-            spContents.SortField = "ID";
-            spContents.SortMode = SortMode.DESC;
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+            {
+                {"Delete", "True" }
+            }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
 
-			if(!IsPostBack)
-			{
-                BreadCrumbSettings("系统错误日志", AppManager.Permissions.Settings.Log);
+            BtnDeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+            {
+                {"DeleteAll", "True" }
+            }), "此操作将删除所有日志信息，确定吗？"));
 
-                if (Body.IsQueryExists("Keyword"))
-                {
-                    Keyword.Text = Body.GetQueryString("Keyword");
-                    DateFrom.Text = Body.GetQueryString("DateFrom");
-                    DateTo.Text = Body.GetQueryString("DateTo");
-                }
+            SpContents.DataBind();
+        }
 
-                Delete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
-                {
-                    {"Delete", "True" }
-                }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
-
-                DeleteAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
-                {
-                    {"DeleteAll", "True" }
-                }), "此操作将删除所有日志信息，确定吗？"));
-
-                spContents.DataBind();
-			}
-		}
-
-        void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private static void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
-            {
-                var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
-                var ltlMessage = (Literal)e.Item.FindControl("ltlMessage");
-                var ltlStacktrace = (Literal)e.Item.FindControl("ltlStacktrace");
-                var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-                ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
-                ltlMessage.Text = SqlUtils.EvalString(e.Item.DataItem, "Message");
-                ltlStacktrace.Text = SqlUtils.EvalString(e.Item.DataItem, "Stacktrace");
-                ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
-            }
+            var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
+            var ltlMessage = (Literal)e.Item.FindControl("ltlMessage");
+            var ltlStacktrace = (Literal)e.Item.FindControl("ltlStacktrace");
+            var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
+
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
+            ltlMessage.Text = SqlUtils.EvalString(e.Item.DataItem, "Message");
+            ltlStacktrace.Text = SqlUtils.EvalString(e.Item.DataItem, "Stacktrace");
+            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
         }
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -114,9 +115,10 @@ namespace SiteServer.BackgroundPages.Settings
 
 	    private string PageUrl => PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
 	    {
-	        {"Keyword", Keyword.Text},
-	        {"DateFrom", DateFrom.Text},
-	        {"DateTo", DateTo.Text}
+            {"PluginId", DdlPluginId.SelectedValue},
+            {"Keyword", TbKeyword.Text},
+	        {"DateFrom", TbDateFrom.Text},
+	        {"DateTo", TbDateTo.Text}
 	    });
 	}
 }

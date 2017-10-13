@@ -85,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "添加栏目", string.Empty);
 
-                NodeManager.AddListItems(DdlParentNodeId.Items, PublishmentSystemInfo, true, true, Body.AdministratorName);
+                NodeManager.AddListItems(DdlParentNodeId.Items, PublishmentSystemInfo, true, true, Body.AdminName);
                 ControlUtils.SelectListItems(DdlParentNodeId, _nodeId.ToString());
 
                 DdlContentModelId.Items.Add(new ListItem("<默认>", string.Empty));
@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 CacChannelControl.SetParameters(null, false, IsPostBack);
 
-                TbNavigationPicPath.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", PublishmentSystemInfo.PublishmentSystemUrl));
+                TbNavigationPicPath.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", PublishmentSystemInfo.Additional.WebUrl));
 
                 var showPopWinString = ModalFilePathRule.GetOpenWindowString(PublishmentSystemId, _nodeId, true, TbChannelFilePathRule.ClientID);
                 BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
@@ -301,8 +301,8 @@ namespace SiteServer.BackgroundPages.Cms
             }
             catch (Exception ex)
             {
+                LogUtils.AddSystemErrorLog(ex);
                 FailMessage(ex, $"栏目添加失败：{ex.Message}");
-                LogUtils.AddErrorLog(ex);
                 return;
             }
 

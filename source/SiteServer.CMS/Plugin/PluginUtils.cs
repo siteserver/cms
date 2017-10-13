@@ -8,9 +8,8 @@ using System.Threading;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using Newtonsoft.Json;
-using SiteServer.CMS.Controllers.Plugins;
+using SiteServer.CMS.Controllers.Json;
 using SiteServer.Plugin;
-using SiteServer.Plugin.Features;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin
@@ -84,13 +83,13 @@ namespace SiteServer.CMS.Plugin
             catch (Exception ex)
             {
                 retval = false;
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddPluginErrorLog(metadata.Id, ex);
             }
 
             return retval;
         }
 
-        internal static PluginMenu GetMenu(string pluginId, PluginMenu metadataMenu, string apiUrl, int siteId, int i)
+        internal static PluginMenu GetSiteMenu(string pluginId, PluginMenu metadataMenu, int siteId, int i)
         {
             var menu = new PluginMenu
             {
@@ -110,7 +109,7 @@ namespace SiteServer.CMS.Plugin
                 menu.Href = PageUtils.GetPluginDirectoryUrl(pluginId, menu.Href);
                 menu.Href = PageUtils.AddQueryString(menu.Href, new NameValueCollection
                 {
-                    {"apiUrl", JsonApi.GetUrl(apiUrl, pluginId)},
+                    {"apiUrl", PluginJsonApi.GetUrl(PageUtils.OuterApiUrl, pluginId)},
                     {"siteId", siteId.ToString()},
                     {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
                 });
@@ -126,7 +125,7 @@ namespace SiteServer.CMS.Plugin
                 var x = 1;
                 foreach (var childMetadataMenu in metadataMenu.Menus)
                 {
-                    var child = GetMenu(pluginId, childMetadataMenu, apiUrl, siteId, x++);
+                    var child = GetSiteMenu(pluginId, childMetadataMenu, siteId, x++);
 
                     chlildren.Add(child);
                 }
@@ -212,7 +211,7 @@ namespace SiteServer.CMS.Plugin
             }
             catch (Exception e)
             {
-                LogUtils.AddErrorLog(e, $"插件加载：{directoryPath}");
+                LogUtils.AddSystemErrorLog(e, $"插件加载：{directoryPath}");
             }
         }
 

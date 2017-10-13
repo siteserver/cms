@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                         {
                             DataProviderWx.AccountDao.Update(accountInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "绑定微信公众帐号", $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
+                            LogUtils.AddAdminLog(Body.AdminName, "绑定微信公众帐号", $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
 
                             SuccessMessage("绑定微信公众帐号成功！");
                             AddWaitAndRedirectScript(_returnUrl);
@@ -151,7 +151,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                     {
                         DataProviderWx.AccountDao.Update(accountInfo);
 
-                        LogUtils.AddAdminLog(Body.AdministratorName, "绑定微信公众帐号",
+                        LogUtils.AddAdminLog(Body.AdminName, "绑定微信公众帐号",
                             $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
 
                         SuccessMessage("绑定微信公众帐号成功！");

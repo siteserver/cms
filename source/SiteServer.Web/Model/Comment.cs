@@ -1,14 +1,14 @@
 ﻿using BaiRong.Core;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.API.Model
 {
     public class Comment
     {
-        public Comment(CommentInfo commentInfo, UserInfo userInfo)
+        public Comment(CommentInfo commentInfo, IUserInfo userInfo)
         {
             if (commentInfo == null) return;
 
@@ -18,7 +18,7 @@ namespace SiteServer.API.Model
             Content = commentInfo.Content;
             IsChecked = commentInfo.IsChecked;
             DisplayName = userInfo?.DisplayName;
-            AvatarUrl = PageUtility.GetUserAvatarUrl(PageUtils.GetApiUrl(), userInfo);
+            AvatarUrl = PageUtility.GetUserAvatarUrl(PageUtils.OuterApiUrl, userInfo);
         }
 
         public int Id { get; set; }

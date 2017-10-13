@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages
             }
             if (publishmentSystemId != 0)
             {
-                var url = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId).PublishmentSystemUrl;
+                var url = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId).Additional.WebUrl;
                 PageUtils.Redirect(url);
             }
             else

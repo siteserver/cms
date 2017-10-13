@@ -11,7 +11,6 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using System.Collections.Generic;
 using BaiRong.Core.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
@@ -182,7 +181,7 @@ namespace SiteServer.CMS.Core
             catch (Exception ex)
             {
                 errorBuilder.Append("<br/>").Append(ex.Message);
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
             }
             return contentUrls;
         }
@@ -918,7 +917,7 @@ namespace SiteServer.CMS.Core
             catch (Exception ex)
             {
                 errorBuilder.Append(ex.Message);
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
             }
 
             if (isCache)
@@ -1237,7 +1236,7 @@ namespace SiteServer.CMS.Core
             catch (Exception ex)
             {
                 errorBuilder.Append(ex.Message);
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
             }
 
             if (isCache)

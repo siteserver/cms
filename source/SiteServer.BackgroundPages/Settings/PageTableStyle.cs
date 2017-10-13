@@ -163,7 +163,7 @@ namespace SiteServer.BackgroundPages.Settings
                 ltlFieldType.Text = TableManager.IsAttributeNameExists(_tableStyle, _tableName, styleInfo.AttributeName) ? $"ÕæÊµ {TableManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}" : "ÐéÄâ×Ö¶Î";
 
                 ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-                ltlValidate.Text = EValidateTypeUtils.GetValidateInfo(styleInfo);
+                ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
 
                 showPopWinString = ModalTableStyleAdd.GetOpenWindowString(styleInfo.TableStyleId, _tableName, styleInfo.AttributeName, _tableStyle, _redirectUrl);
                 var editText = "Ìí¼Ó";

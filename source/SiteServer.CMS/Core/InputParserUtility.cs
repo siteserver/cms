@@ -5,7 +5,7 @@ using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Controllers.Stl;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
@@ -313,7 +313,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     retval = $@"
-<embed src=""{SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
+<embed src=""{SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
                         .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
@@ -328,13 +328,13 @@ namespace SiteServer.CMS.Core
             {
                 if (isStlEntity)
                 {
-                    retval = ActionsDownload.GetUrl(publishmentSystemInfo.Additional.ApiUrl, publishmentSystemInfo.PublishmentSystemId, nodeId, contentId, fileUrl);
+                    retval = ActionsDownload.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, nodeId, contentId, fileUrl);
                 }
                 else
                 {
                     var stlAnchor = new HtmlAnchor();
                     ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                    stlAnchor.HRef = ActionsDownload.GetUrl(publishmentSystemInfo.Additional.ApiUrl, publishmentSystemInfo.PublishmentSystemId, nodeId, contentId, fileUrl);
+                    stlAnchor.HRef = ActionsDownload.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, nodeId, contentId, fileUrl);
                     stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
 
                     retval = ControlUtils.GetControlRenderHtml(stlAnchor);
@@ -352,13 +352,13 @@ namespace SiteServer.CMS.Core
                 {
                     if (isStlEntity)
                     {
-                        retval = ActionsDownload.GetUrl(publishmentSystemInfo.Additional.ApiUrl, publishmentSystemInfo.PublishmentSystemId, fileUrl);
+                        retval = ActionsDownload.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, fileUrl);
                     }
                     else
                     {
                         var stlAnchor = new HtmlAnchor();
                         ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                        stlAnchor.HRef = ActionsDownload.GetUrl(publishmentSystemInfo.Additional.ApiUrl, publishmentSystemInfo.PublishmentSystemId, fileUrl);
+                        stlAnchor.HRef = ActionsDownload.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId, fileUrl);
                         stlAnchor.InnerHtml = string.IsNullOrEmpty(innerXml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerXml;
 
                         retval = ControlUtils.GetControlRenderHtml(stlAnchor);

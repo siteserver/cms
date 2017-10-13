@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 InfoMessage(
                     $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 辅助表:{BaiRongDataProvider.TableCollectionDao.GetTableCnName(_tableName)}({_tableName})");
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, false, true, Body.AdministratorName);
+                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
                 ControlUtils.SelectListItems(NodeIDDropDownList, nodeId.ToString());
 
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
@@ -178,7 +178,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-                ltlValidate.Text = EValidateTypeUtils.GetValidateInfo(styleInfo);
+                ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
 
                 showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _tableStyle, _redirectUrl);
                 var editText = "添加";

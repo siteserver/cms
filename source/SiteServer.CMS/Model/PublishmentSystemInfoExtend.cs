@@ -12,11 +12,11 @@ namespace SiteServer.CMS.Model
         public const string DefaultApiUrl = "/api";
         public const string DefaultHomeUrl = "/home";
 
-        private readonly string _publishmentSystemUrl;
+        private readonly string _publishmentSystemDir;
 
-        public PublishmentSystemInfoExtend(string publishmentSystemUrl, string settingsXml)
+        public PublishmentSystemInfoExtend(string publishmentSystemDir, string settingsXml)
         {
-            _publishmentSystemUrl = publishmentSystemUrl;
+            _publishmentSystemDir = publishmentSystemDir;
             var nameValueCollection = TranslateUtils.ToNameValueCollection(settingsXml);
             SetExtendedAttribute(nameValueCollection);
         }
@@ -57,13 +57,13 @@ namespace SiteServer.CMS.Model
 
         public bool IsCountHits
         {
-            get { return GetBool("IsCountHits", false); }
+            get { return GetBool("IsCountHits"); }
             set { SetExtendedAttribute("IsCountHits", value.ToString()); }
         }
 
         public bool IsCountHitsByDay
         {
-            get { return GetBool("IsCountHitsByDay", false); }
+            get { return GetBool("IsCountHitsByDay"); }
             set { SetExtendedAttribute("IsCountHitsByDay", value.ToString()); }
         }
 
@@ -93,7 +93,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsAutoPageInTextEditor
         {
-            get { return GetBool("IsAutoPageInTextEditor", false); }
+            get { return GetBool("IsAutoPageInTextEditor"); }
             set { SetExtendedAttribute("IsAutoPageInTextEditor", value.ToString()); }
         }
 
@@ -105,7 +105,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsContentTitleBreakLine
         {
-            get { return GetBool("IsContentTitleBreakLine", false); }
+            get { return GetBool("IsContentTitleBreakLine"); }
             set { SetExtendedAttribute("IsContentTitleBreakLine", value.ToString()); }
         }
 
@@ -114,7 +114,7 @@ namespace SiteServer.CMS.Model
         /// </summary>
         public bool IsAutoCheckKeywords
         {
-            get { return GetBool("lIsAutoCheckKeywords", false); }
+            get { return GetBool("lIsAutoCheckKeywords"); }
             set { SetExtendedAttribute("lIsAutoCheckKeywords", value.ToString()); }
         }
 
@@ -143,13 +143,13 @@ namespace SiteServer.CMS.Model
 
         public bool IsWaterMark
         {
-            get { return GetBool("IsWaterMark", false); }
+            get { return GetBool("IsWaterMark"); }
             set { SetExtendedAttribute("IsWaterMark", value.ToString()); }
         }
 
         public bool IsImageWaterMark
         {
-            get { return GetBool("IsImageWaterMark", false); }
+            get { return GetBool("IsImageWaterMark"); }
             set { SetExtendedAttribute("IsImageWaterMark", value.ToString()); }
         }
 
@@ -203,70 +203,33 @@ namespace SiteServer.CMS.Model
 
         /****************生成页面设置********************/
 
-        public bool IsMultiDeployment
-        {
-            get { return GetBool("IsMultiDeployment", false); }
-            set { SetExtendedAttribute("IsMultiDeployment", value.ToString()); }
-        }
-
-        public string OuterSiteUrl
+        public bool IsSeparatedWeb
         {
             get
             {
-                return IsMultiDeployment ? GetString("OuterSiteUrl", string.Empty) : SiteUrl;
+                return ConfigManager.SystemConfigInfo.IsUrlGlobalSetting
+                    ? ConfigManager.SystemConfigInfo.IsSeparatedWeb
+                    : GetBool("IsSeparatedWeb");
             }
-            set { SetExtendedAttribute("OuterSiteUrl", value); }
+            set { SetExtendedAttribute("IsSeparatedWeb", value.ToString()); }
         }
 
-        public string InnerSiteUrl
+        public string WebUrl
         {
             get
             {
-                return IsMultiDeployment ? GetString("InnerSiteUrl", string.Empty) : SiteUrl;
+                if (ConfigManager.SystemConfigInfo.IsUrlGlobalSetting)
+                {
+                    return PageUtils.Combine(ConfigManager.SystemConfigInfo.WebUrl, _publishmentSystemDir);
+                }
+                return IsSeparatedWeb ? SeparatedWebUrl : PageUtils.Combine("/", _publishmentSystemDir);
             }
-            set { SetExtendedAttribute("InnerSiteUrl", value); }
         }
 
-        public string OuterApiUrl
+        public string SeparatedWebUrl
         {
-            get
-            {
-                return IsMultiDeployment ? GetString("OuterApiUrl", DefaultApiUrl) : ApiUrl;
-            }
-            set { SetExtendedAttribute("OuterApiUrl", value); }
-        }
-
-        public string InnerApiUrl
-        {
-            get
-            {
-                return IsMultiDeployment ? GetString("InnerApiUrl", DefaultApiUrl) : ApiUrl;
-            }
-            set { SetExtendedAttribute("InnerApiUrl", value); }
-        }
-
-        public string SiteUrl
-        {
-            get
-            {
-                return IsMultiDeployment ? OuterSiteUrl : GetString("SiteUrl", _publishmentSystemUrl);
-            }
-            set { SetExtendedAttribute("SiteUrl", value); }
-        }
-
-        public string ApiUrl
-        {
-            get
-            {
-                return IsMultiDeployment ? OuterApiUrl : GetString("ApiUrl", DefaultApiUrl);
-            }
-            set { SetExtendedAttribute("ApiUrl", value); }
-        }
-
-        public string HomeUrl
-        {
-            get { return GetString("HomeUrl", DefaultHomeUrl); }
-            set { SetExtendedAttribute("HomeUrl", value); }
+            get { return GetString("SeparatedWebUrl"); }
+            set { SetExtendedAttribute("SeparatedWebUrl", value); }
         }
 
         public string ChannelFilePathRule
@@ -295,25 +258,25 @@ namespace SiteServer.CMS.Model
 
         public bool IsCreateShowPageInfo
         {
-            get { return GetBool("IsCreateShowPageInfo", false); }
+            get { return GetBool("IsCreateShowPageInfo"); }
             set { SetExtendedAttribute("IsCreateShowPageInfo", value.ToString()); }
         }
 
         public bool IsCreateIe8Compatible
         {
-            get { return GetBool("IsCreateIe8Compatible", false); }
+            get { return GetBool("IsCreateIe8Compatible"); }
             set { SetExtendedAttribute("IsCreateIe8Compatible", value.ToString()); }
         }
 
         public bool IsCreateBrowserNoCache
         {
-            get { return GetBool("IsCreateBrowserNoCache", false); }
+            get { return GetBool("IsCreateBrowserNoCache"); }
             set { SetExtendedAttribute("IsCreateBrowserNoCache", value.ToString()); }
         }
 
         public bool IsCreateJsIgnoreError
         {
-            get { return GetBool("IsCreateJsIgnoreError", false); }
+            get { return GetBool("IsCreateJsIgnoreError"); }
             set { SetExtendedAttribute("IsCreateJsIgnoreError", value.ToString()); }
         }
 
@@ -331,7 +294,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsCreateDoubleClick
         {
-            get { return GetBool("IsCreateDoubleClick", false); }
+            get { return GetBool("IsCreateDoubleClick"); }
             set { SetExtendedAttribute("IsCreateDoubleClick", value.ToString()); }
         }
 
@@ -343,7 +306,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsCreateStaticContentByAddDate
         {
-            get { return GetBool("IsCreateStaticContentByAddDate", false); }
+            get { return GetBool("IsCreateStaticContentByAddDate"); }
             set { SetExtendedAttribute("IsCreateStaticContentByAddDate", value.ToString()); }
         }
 
@@ -355,7 +318,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsCreateMultiThread
         {
-            get { return GetBool("IsCreateMultiThread", false); }
+            get { return GetBool("IsCreateMultiThread"); }
             set { SetExtendedAttribute("IsCreateMultiThread", value.ToString()); }
         }
 
@@ -363,25 +326,25 @@ namespace SiteServer.CMS.Model
 
         public bool IsTracker
         {
-            get { return GetBool("IsTracker", false); }
+            get { return GetBool("IsTracker"); }
             set { SetExtendedAttribute("IsTracker", value.ToString()); }
         }
 
         public int TrackerDays
         {
-            get { return GetInt("TrackerDays", 0); }
+            get { return GetInt("TrackerDays"); }
             set { SetExtendedAttribute("TrackerDays", value.ToString()); }
         }
 
         public int TrackerPageView
         {
-            get { return GetInt("TrackerPageView", 0); }
+            get { return GetInt("TrackerPageView"); }
             set { SetExtendedAttribute("TrackerPageView", value.ToString()); }
         }
 
         public int TrackerUniqueVisitor
         {
-            get { return GetInt("TrackerUniqueVisitor", 0); }
+            get { return GetInt("TrackerUniqueVisitor"); }
             set { SetExtendedAttribute("TrackerUniqueVisitor", value.ToString()); }
         }
 
@@ -409,7 +372,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsCrossSiteTransChecked
         {
-            get { return GetBool("IsCrossSiteTransChecked", false); }
+            get { return GetBool("IsCrossSiteTransChecked"); }
             set { SetExtendedAttribute("IsCrossSiteTransChecked", value.ToString()); }
         }
 
@@ -417,13 +380,13 @@ namespace SiteServer.CMS.Model
 
         public bool IsInnerLink
         {
-            get { return GetBool("IsInnerLink", false); }
+            get { return GetBool("IsInnerLink"); }
             set { SetExtendedAttribute("IsInnerLink", value.ToString()); }
         }
 
         public bool IsInnerLinkByChannelName
         {
-            get { return GetBool("IsInnerLinkByChannelName", false); }
+            get { return GetBool("IsInnerLinkByChannelName"); }
             set { SetExtendedAttribute("IsInnerLinkByChannelName", value.ToString()); }
         }
 
@@ -571,7 +534,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsCheckComments
         {
-            get { return GetBool("IsCheckComments", false); }
+            get { return GetBool("IsCheckComments"); }
             set { SetExtendedAttribute("IsCheckComments", value.ToString()); }
         }
 
@@ -686,7 +649,7 @@ namespace SiteServer.CMS.Model
 
         public bool WxIsWebMenu
         {
-            get { return GetBool("WxIsWebMenu", false); }
+            get { return GetBool("WxIsWebMenu"); }
             set { SetExtendedAttribute("WxIsWebMenu", value.ToString()); }
         }
 
@@ -710,7 +673,7 @@ namespace SiteServer.CMS.Model
 
         public bool WxCardIsClaimCardCredits
         {
-            get { return GetBool("WxCardIsClaimCardCredits", false); }
+            get { return GetBool("WxCardIsClaimCardCredits"); }
             set { SetExtendedAttribute("WxCardIsClaimCardCredits", value.ToString()); }
         }
 
@@ -722,7 +685,7 @@ namespace SiteServer.CMS.Model
 
         public bool WxCardIsGiveConsumeCredits
         {
-            get { return GetBool("WxCardIsGiveConsumeCredits", false); }
+            get { return GetBool("WxCardIsGiveConsumeCredits"); }
             set { SetExtendedAttribute("WxCardIsGiveConsumeCredits", value.ToString()); }
         }
 
@@ -758,7 +721,7 @@ namespace SiteServer.CMS.Model
 
         public bool WxCardIsSign
         {
-            get { return GetBool("WxCardIsSign", false); }
+            get { return GetBool("WxCardIsSign"); }
             set { SetExtendedAttribute("WxCardIsSign", value.ToString()); }
         }
 

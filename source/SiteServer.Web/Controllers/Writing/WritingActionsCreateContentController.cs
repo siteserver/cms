@@ -24,8 +24,9 @@ namespace SiteServer.API.Controllers.Writing
                 var publishmentSystemId = body.GetPostInt("publishmentSystemId");
                 var nodeId = body.GetPostInt("nodeId");
 
-                var user = new User(body.UserInfo);
-                var groupInfo = UserGroupManager.GetGroupInfo(user.GroupId);
+                var user = body.UserInfo;
+                //var groupInfo = UserGroupManager.GetGroupInfo(user.GroupId);
+                var groupInfo = UserGroupManager.GetGroupInfo(0);
                 var adminUserName = groupInfo.Additional.WritingAdminUserName;
 
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);

@@ -6,8 +6,8 @@ using System.Text;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
@@ -16,7 +16,7 @@ namespace BaiRong.Core.Provider
         public const int TaxisMaxValue = 2147483647;
         public const int TaxisIsTopStartValue = 2147480000;
 
-        public int Insert(string tableName, ContentInfo contentInfo)
+        public int Insert(string tableName, IContentInfo contentInfo)
         {
             var contentId = 0;
 
@@ -25,7 +25,7 @@ namespace BaiRong.Core.Provider
             contentInfo.IsTop = contentInfo.IsTop;
 
             IDataParameter[] parms;
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.GetExtendedAttributes(), tableName, out parms);
+            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -49,7 +49,7 @@ namespace BaiRong.Core.Provider
             return contentId;
         }
 
-        public void Update(string tableName, ContentInfo contentInfo)
+        public void Update(string tableName, IContentInfo contentInfo)
         {
             IDataParameter[] parms = null;
             var sqlString = string.Empty;
@@ -68,8 +68,8 @@ namespace BaiRong.Core.Provider
             contentInfo.LastEditDate = DateTime.Now;
             if (!string.IsNullOrEmpty(tableName))
             {
-                contentInfo.BeforeExecuteNonQuery();
-                sqlString = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(contentInfo.GetExtendedAttributes(), tableName, out parms);
+                contentInfo.Attributes.BeforeExecuteNonQuery();
+                sqlString = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
             }
 
             if (!string.IsNullOrEmpty(sqlString))

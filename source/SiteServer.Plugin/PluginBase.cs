@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
+using System.Net.Http;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.Plugin
@@ -44,87 +44,55 @@ namespace SiteServer.Plugin
 
         #endregion
 
-        #region IHttpApi
-
-        public virtual Action<HttpRequest, HttpResponse> HttpGet => null;
-
-        public virtual Action<HttpRequest, HttpResponse, string> HttpGetWithName => null;
-
-        public virtual Action<HttpRequest, HttpResponse, string, int> HttpGetWithNameAndId => null;
-
-        public virtual Action<HttpRequest, HttpResponse> HttpPost => null;
-
-        public virtual Action<HttpRequest, HttpResponse, string> HttpPostWithName => null;
-
-        public virtual Action<HttpRequest, HttpResponse, string, int> HttpPostWithNameAndId => null;
-
-        public virtual Action<HttpRequest, HttpResponse> HttpPut => null;
-
-        public virtual Action<HttpRequest, HttpResponse, string> HttpPutWithName => null;
-
-        public virtual Action<HttpRequest, HttpResponse, string, int> HttpPutWithNameAndId => null;
-
-        public virtual Action<HttpRequest, HttpResponse> HttpDelete => null;
-
-        public virtual Action<HttpRequest, HttpResponse, string> HttpDeleteWithName => null;
-
-        public virtual Action<HttpRequest, HttpResponse, string, int> HttpDeleteWithNameAndId => null;
-
-        public virtual Action<HttpRequest, HttpResponse> HttpPatch => null;
-
-        public virtual Action<HttpRequest, HttpResponse, string> HttpPatchWithName => null;
-
-        public virtual Action<HttpRequest, HttpResponse, string, int> HttpPatchWithNameAndId => null;
-
-        #endregion
-
-        #region IJsonApi
+        #region IWebApi
 
         public virtual Func<IRequestContext, object> JsonGet => null;
-
         public virtual Func<IRequestContext, string, object> JsonGetWithName => null;
-
-        public virtual Func<IRequestContext, string, int, object> JsonGetWithNameAndId => null;
+        public virtual Func<IRequestContext, string, string, object> JsonGetWithNameAndId => null;
 
         public virtual Func<IRequestContext, object> JsonPost => null;
-
         public virtual Func<IRequestContext, string, object> JsonPostWithName => null;
-
-        public virtual Func<IRequestContext, string, int, object> JsonPostWithNameAndId => null;
+        public virtual Func<IRequestContext, string, string, object> JsonPostWithNameAndId => null;
 
         public virtual Func<IRequestContext, object> JsonPut => null;
-
         public virtual Func<IRequestContext, string, object> JsonPutWithName => null;
-
-        public virtual Func<IRequestContext, string, int, object> JsonPutWithNameAndId => null;
+        public virtual Func<IRequestContext, string, string, object> JsonPutWithNameAndId => null;
 
         public virtual Func<IRequestContext, object> JsonDelete => null;
-
         public virtual Func<IRequestContext, string, object> JsonDeleteWithName => null;
-
-        public virtual Func<IRequestContext, string, int, object> JsonDeleteWithNameAndId => null;
+        public virtual Func<IRequestContext, string, string, object> JsonDeleteWithNameAndId => null;
 
         public virtual Func<IRequestContext, object> JsonPatch => null;
-
         public virtual Func<IRequestContext, string, object> JsonPatchWithName => null;
+        public virtual Func<IRequestContext, string, string, object> JsonPatchWithNameAndId => null;
 
-        public virtual Func<IRequestContext, string, int, object> JsonPatchWithNameAndId => null;
+        public virtual Func<IRequestContext, HttpResponseMessage> HttpGet => null;
+        public virtual Func<IRequestContext, string, HttpResponseMessage> HttpGetWithName => null;
+        public virtual Func<IRequestContext, string, string, HttpResponseMessage> HttpGetWithNameAndId => null;
+
+        public virtual Func<IRequestContext, HttpResponseMessage> HttpPost => null;
+        public virtual Func<IRequestContext, string, HttpResponseMessage> HttpPostWithName => null;
+        public virtual Func<IRequestContext, string, string, HttpResponseMessage> HttpPostWithNameAndId => null;
+
+        public virtual Func<IRequestContext, HttpResponseMessage> HttpPut => null;
+        public virtual Func<IRequestContext, string, HttpResponseMessage> HttpPutWithName => null;
+        public virtual Func<IRequestContext, string, string, HttpResponseMessage> HttpPutWithNameAndId => null;
+
+        public virtual Func<IRequestContext, HttpResponseMessage> HttpDelete => null;
+        public virtual Func<IRequestContext, string, HttpResponseMessage> HttpDeleteWithName => null;
+        public virtual Func<IRequestContext, string, string, HttpResponseMessage> HttpDeleteWithNameAndId => null;
+
+        public virtual Func<IRequestContext, HttpResponseMessage> HttpPatch => null;
+        public virtual Func<IRequestContext, string, HttpResponseMessage> HttpPatchWithName => null;
+        public virtual Func<IRequestContext, string, string, HttpResponseMessage> HttpPatchWithNameAndId => null;
 
         #endregion
 
         #region IMenu
 
-        public virtual Func<PluginMenu> GlobalMenu => null;
+        public virtual PluginMenu PluginMenu => null;
 
-        public virtual Func<int, PluginMenu> Menu => null;
-
-        #endregion
-
-        #region IPageAdmin
-
-        public virtual Action<EventArgs> OnPageAdminPreLoad => null;
-
-        public virtual Action<EventArgs> OnPageAdminLoadComplete => null;
+        public virtual Func<int, PluginMenu> SiteMenu => null;
 
         #endregion
 

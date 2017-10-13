@@ -17,13 +17,13 @@ namespace SiteServer.CMS.Provider
     {
         public string TableName => "siteserver_PublishmentSystem";
 
-        private const string SqlSelectPublishmentSystemAll = "SELECT PublishmentSystemID, PublishmentSystemName, AuxiliaryTableForContent, IsCheckContentUseLevel, CheckContentLevel, PublishmentSystemDir, PublishmentSystemUrl, IsHeadquarters, ParentPublishmentSystemID, Taxis, SettingsXML FROM siteserver_PublishmentSystem ORDER BY Taxis";
+        private const string SqlSelectPublishmentSystemAll = "SELECT PublishmentSystemID, PublishmentSystemName, AuxiliaryTableForContent, IsCheckContentUseLevel, CheckContentLevel, PublishmentSystemDir, IsHeadquarters, ParentPublishmentSystemID, Taxis, SettingsXML FROM siteserver_PublishmentSystem ORDER BY Taxis";
 
-        private const string SqlSelectAllWithNode = "SELECT p.PublishmentSystemID, p.PublishmentSystemName, p.AuxiliaryTableForContent, p.IsCheckContentUseLevel, p.CheckContentLevel, p.PublishmentSystemDir, p.PublishmentSystemUrl, p.IsHeadquarters, p.ParentPublishmentSystemID, p.Taxis, n.NodeName FROM siteserver_PublishmentSystem p INNER JOIN siteserver_Node n ON (p.PublishmentSystemID = n.NodeID) ORDER BY p.IsHeadquarters DESC, p.ParentPublishmentSystemID, p.Taxis DESC, n.NodeID";
+        private const string SqlSelectAllWithNode = "SELECT p.PublishmentSystemID, p.PublishmentSystemName, p.AuxiliaryTableForContent, p.IsCheckContentUseLevel, p.CheckContentLevel, p.PublishmentSystemDir, p.IsHeadquarters, p.ParentPublishmentSystemID, p.Taxis, n.NodeName FROM siteserver_PublishmentSystem p INNER JOIN siteserver_Node n ON (p.PublishmentSystemID = n.NodeID) ORDER BY p.IsHeadquarters DESC, p.ParentPublishmentSystemID, p.Taxis DESC, n.NodeID";
 
-        private const string SqlInsertPublishmentSystem = "INSERT INTO siteserver_PublishmentSystem (PublishmentSystemID, PublishmentSystemName, AuxiliaryTableForContent, IsCheckContentUseLevel, CheckContentLevel, PublishmentSystemDir, PublishmentSystemUrl, IsHeadquarters, ParentPublishmentSystemID, Taxis, SettingsXML) VALUES (@PublishmentSystemID, @PublishmentSystemName, @AuxiliaryTableForContent, @IsCheckContentUseLevel, @CheckContentLevel, @PublishmentSystemDir, @PublishmentSystemUrl, @IsHeadquarters, @ParentPublishmentSystemID, @Taxis, @SettingsXML)";
+        private const string SqlInsertPublishmentSystem = "INSERT INTO siteserver_PublishmentSystem (PublishmentSystemID, PublishmentSystemName, AuxiliaryTableForContent, IsCheckContentUseLevel, CheckContentLevel, PublishmentSystemDir, IsHeadquarters, ParentPublishmentSystemID, Taxis, SettingsXML) VALUES (@PublishmentSystemID, @PublishmentSystemName, @AuxiliaryTableForContent, @IsCheckContentUseLevel, @CheckContentLevel, @PublishmentSystemDir, @IsHeadquarters, @ParentPublishmentSystemID, @Taxis, @SettingsXML)";
 
-        private const string SqlUpdatePublishmentSystem = "UPDATE siteserver_PublishmentSystem SET PublishmentSystemName = @PublishmentSystemName, AuxiliaryTableForContent = @AuxiliaryTableForContent, IsCheckContentUseLevel = @IsCheckContentUseLevel, CheckContentLevel = @CheckContentLevel, PublishmentSystemDir = @PublishmentSystemDir, PublishmentSystemUrl = @PublishmentSystemUrl, IsHeadquarters = @IsHeadquarters, ParentPublishmentSystemID = @ParentPublishmentSystemID, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  PublishmentSystemID = @PublishmentSystemID";
+        private const string SqlUpdatePublishmentSystem = "UPDATE siteserver_PublishmentSystem SET PublishmentSystemName = @PublishmentSystemName, AuxiliaryTableForContent = @AuxiliaryTableForContent, IsCheckContentUseLevel = @IsCheckContentUseLevel, CheckContentLevel = @CheckContentLevel, PublishmentSystemDir = @PublishmentSystemDir, IsHeadquarters = @IsHeadquarters, ParentPublishmentSystemID = @ParentPublishmentSystemID, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  PublishmentSystemID = @PublishmentSystemID";
 
         private const string SqlUpdateAllIsHeadquarters = "UPDATE siteserver_PublishmentSystem SET IsHeadquarters = @IsHeadquarters";
 
@@ -41,7 +41,6 @@ namespace SiteServer.CMS.Provider
         private const string ParmIsCheckContentUseLevel = "@IsCheckContentUseLevel";
         private const string ParmCheckContentLevel = "@CheckContentLevel";
         private const string ParmPublishmentsystemDir = "@PublishmentSystemDir";
-        private const string ParmPublishmentsystemUrl = "@PublishmentSystemUrl";
         private const string ParmIsHeadquarters = "@IsHeadquarters";
         private const string ParmParentPublishmentsystemid = "@ParentPublishmentSystemID";
         private const string ParmTaxis = "@Taxis";
@@ -59,7 +58,6 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmIsCheckContentUseLevel, DataType.VarChar, 18, info.IsCheckContentUseLevel.ToString()),
 				GetParameter(ParmCheckContentLevel, DataType.Integer, info.CheckContentLevel),
 				GetParameter(ParmPublishmentsystemDir, DataType.VarChar, 50, info.PublishmentSystemDir),
-				GetParameter(ParmPublishmentsystemUrl, DataType.VarChar, 200, info.PublishmentSystemUrl),
 				GetParameter(ParmIsHeadquarters, DataType.VarChar, 18, info.IsHeadquarters.ToString()),
                 GetParameter(ParmParentPublishmentsystemid, DataType.Integer, info.ParentPublishmentSystemId),
                 GetParameter(ParmTaxis, DataType.Integer, taxis),
@@ -99,7 +97,6 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmIsCheckContentUseLevel, DataType.VarChar, 18, info.IsCheckContentUseLevel.ToString()),
 				GetParameter(ParmCheckContentLevel, DataType.Integer, info.CheckContentLevel),
 				GetParameter(ParmPublishmentsystemDir, DataType.VarChar, 50, info.PublishmentSystemDir),
-				GetParameter(ParmPublishmentsystemUrl, DataType.VarChar, 200, info.PublishmentSystemUrl),
 				GetParameter(ParmIsHeadquarters, DataType.VarChar, 18, info.IsHeadquarters.ToString()),
                 GetParameter(ParmParentPublishmentsystemid, DataType.Integer, info.ParentPublishmentSystemId),
                 GetParameter(ParmTaxis, DataType.Integer, info.Taxis),
@@ -216,7 +213,7 @@ namespace SiteServer.CMS.Provider
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var publishmentSystemInfo = new PublishmentSystemInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i));
+                    var publishmentSystemInfo = new PublishmentSystemInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i));
                     list.Add(publishmentSystemInfo);
                 }
                 rdr.Close();
@@ -232,23 +229,6 @@ namespace SiteServer.CMS.Provider
         public string GetSelectCommand()
         {
             return SqlSelectAllWithNode;
-        }
-
-        public string GetDatabasePublishmentSystemUrl(int publishmentSystemId)
-        {
-            var publishmentSystemUrl = string.Empty;
-
-            var sqlString = "SELECT PublishmentSystemUrl FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = " + publishmentSystemId;
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                if (rdr.Read())
-                {
-                    publishmentSystemUrl = GetString(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return publishmentSystemUrl;
         }
 
         public int GetPublishmentSystemCount()

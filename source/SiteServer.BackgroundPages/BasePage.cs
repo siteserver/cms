@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
-using SiteServer.CMS.Core.Share;
-using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages
 {
@@ -32,47 +29,13 @@ namespace SiteServer.BackgroundPages
             _message = ex != null ? $"{message}<!-- {ex} -->" : message;
         }
 
-        protected override void OnLoadComplete(EventArgs e)
-        {
-            base.OnLoadComplete(e);
-
-            try
-            {
-                foreach (var action in PluginCache.GetPageAdminLoadCompleteActions())
-                {
-                    action(e);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddErrorLog(ex, "插件");
-            }
-        }
-
-        protected override void OnPreLoad(EventArgs e)
-        {
-            base.OnPreLoad(e);
-
-            try
-            {
-                foreach (var action in PluginCache.GetPageAdminPreLoadActions())
-                {
-                    action(e);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddErrorLog(ex, "插件");
-            }
-        }
-
         protected override void OnInit(EventArgs e)
         {
             base.OnInit(e);
 
             Body = new RequestBody();
 
-            if (!IsAccessable && !Body.IsAdministratorLoggin) // 如果页面不能直接访问且又没有登录则直接跳登录页
+            if (!IsAccessable && !Body.IsAdminLoggin) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {
                 IsForbidden = true;
                 PageUtils.RedirectToLoginPage();
@@ -218,7 +181,7 @@ $('.operation-area').hide();
 
             if (!string.IsNullOrEmpty(permission))
             {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, permission);
             }
         }
 
@@ -232,7 +195,7 @@ $('.operation-area').hide();
 
             if (!string.IsNullOrEmpty(permission))
             {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, permission);
             }
         }
 
@@ -288,47 +251,6 @@ $('.operation-area').hide();
                 $"showImage({objString}, '{imageClientId}', '{PageUtils.ApplicationPath}', '{publishmentSystemUrl}')";
         }
 
-        public static List<Analytics> ParseJsonStringToName(string json)
-        {
-            var analytics = new List<Analytics>();
-            if (json.IndexOf("count", StringComparison.Ordinal) != -1)
-            {
-                json = json.Substring(json.IndexOf("count", StringComparison.Ordinal));
-                json = json.TrimEnd('}');
-                json = json.TrimEnd(']');
-                json = json.TrimEnd('}');
-                json = json.Replace("}", "");
-                json = json.Replace("{", "");
-                json = json.Replace("\"", "");
-                var arr = json.Split(',');
-                var a = new Analytics[arr.Length / 2];
-                for (var i = 0; i < arr.Length / 2; i++)
-                {
-                    a[i] = new Analytics();
-                }
-                for (var i = 0; i < arr.Length; i++)
-                {
-                    var arr1 = arr[i].Split(':');
-                    var j = i / 2;
-
-                    if (arr1[0] == "count")
-                    {
-                        a[j].Count = Convert.ToInt32((arr1[1]));
-
-                    }
-                    if (arr1[0] == "metric")
-                    {
-                        a[j].Metric = arr1[1];
-                    }
-                    if (i % 2 == 1)
-                    {
-                        analytics.Add(a[i / 2]);
-                    }
-                }
-            }
-            return analytics;
-        }
-
         public string SwalError(string title, string message)
         {
             var script = $@"swal({{
@@ -337,7 +259,19 @@ $('.operation-area').hide();
   icon: 'error',
   button: '关 闭',
 }});";
-            ClientScript.RegisterClientScriptBlock(GetType(), "error", script, true);
+            ClientScript.RegisterClientScriptBlock(GetType(), nameof(SwalError), script, true);
+
+            return script;
+        }
+
+        public string SwalDom(string title, string elementId)
+        {
+            var script = $@"swal({{
+  title: '{title}',
+  content: $('#{elementId}')[0],
+  button: '关 闭',
+}});";
+            ClientScript.RegisterClientScriptBlock(GetType(), nameof(SwalDom), script, true);
 
             return script;
         }

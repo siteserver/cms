@@ -254,7 +254,6 @@ namespace SiteServer.CMS.Core
 
                 publishmentSystemInfo.IsHeadquarters = true;
                 publishmentSystemInfo.PublishmentSystemDir = string.Empty;
-                publishmentSystemInfo.PublishmentSystemUrl = PageUtils.ApplicationPath;
 
                 DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
                 if (isMoveFiles)
@@ -271,7 +270,6 @@ namespace SiteServer.CMS.Core
             {
                 publishmentSystemInfo.IsHeadquarters = false;
                 publishmentSystemInfo.PublishmentSystemDir = psDir.Trim();
-                publishmentSystemInfo.PublishmentSystemUrl = PageUtils.Combine(PageUtils.ApplicationPath, psDir.Trim());
 
                 DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
 

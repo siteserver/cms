@@ -35,7 +35,6 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.IsCheckContentUseLevel, psInfo.IsCheckContentUseLevel.ToString());
 			AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.CheckContentLevel, psInfo.CheckContentLevel.ToString());
 			AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.PublishmentSystemDir, psInfo.PublishmentSystemDir);
-			AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.PublishmentSystemUrl, psInfo.PublishmentSystemUrl);
             AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.IsHeadquarters, psInfo.IsHeadquarters.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.ParentPublishmentSystemId, psInfo.ParentPublishmentSystemId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, PublishmentSystemAttribute.Taxis, psInfo.Taxis.ToString());
@@ -146,9 +145,7 @@ namespace SiteServer.CMS.ImportExport.Components
             //psInfo.CheckContentLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, PublishmentSystemAttribute.CheckContentLevel, psInfo.CheckContentLevel.ToString()));
             publishmentSystemInfo.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements, PublishmentSystemAttribute.SettingsXml, publishmentSystemInfo.SettingsXml);
 
-            publishmentSystemInfo.Additional.ApiUrl = PublishmentSystemInfoExtend.DefaultApiUrl;
-            publishmentSystemInfo.Additional.HomeUrl = PublishmentSystemInfoExtend.DefaultHomeUrl;
-            publishmentSystemInfo.Additional.IsMultiDeployment = false;
+            publishmentSystemInfo.Additional.IsSeparatedWeb = false;
             publishmentSystemInfo.Additional.IsCreateDoubleClick = false;
 
             DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);

@@ -251,7 +251,7 @@ namespace SiteServer.BackgroundPages.Cms
 					templateInfo.Charset = ECharsetUtils.GetEnumType(Charset.SelectedValue);
 					try
 					{
-						DataProvider.TemplateDao.Update(PublishmentSystemInfo, templateInfo, Content.Text, Body.AdministratorName);
+						DataProvider.TemplateDao.Update(PublishmentSystemInfo, templateInfo, Content.Text, Body.AdminName);
                         if (previousTemplateInfo != null)
                         {
                             FileUtils.DeleteFileIfExists(TemplateManager.GetTemplateFilePath(PublishmentSystemInfo, previousTemplateInfo));
@@ -296,7 +296,7 @@ namespace SiteServer.BackgroundPages.Cms
 					templateInfo.IsDefault = false;
 					try
 					{
-                        templateInfo.TemplateId = DataProvider.TemplateDao.Insert(templateInfo, Content.Text, Body.AdministratorName);
+                        templateInfo.TemplateId = DataProvider.TemplateDao.Insert(templateInfo, Content.Text, Body.AdminName);
                         CreatePages(templateInfo);
                         Body.AddSiteLog(PublishmentSystemId,
                             $"添加{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",

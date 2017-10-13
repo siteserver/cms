@@ -1,9 +1,10 @@
 using System;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Model
 {
-	public class UserLogInfo
-	{
+	public class UserLogInfo: ILogInfo
+    {
 	    public UserLogInfo()
 		{
             Id = 0;

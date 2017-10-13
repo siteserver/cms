@@ -92,8 +92,8 @@ namespace SiteServer.BackgroundPages.Cms
                 MinNum.Text = _styleInfo.Additional.MinNum.ToString();
                 MaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
 
-                EValidateTypeUtils.AddListItems(ValidateType);
-                ControlUtils.SelectListItems(ValidateType, EValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
+                ValidateTypeUtils.AddListItems(ValidateType);
+                ControlUtils.SelectListItems(ValidateType, ValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
 
                 RegExp.Text = _styleInfo.Additional.RegExp;
                 ErrorMessage.Text = _styleInfo.Additional.ErrorMessage;
@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
                 phValidate.Visible = true;
             }
 
-            var type = EValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
+            var type = ValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
             if (type == Plugin.Models.ValidateType.RegExp)
             {
                 phRegExp.Visible = true;
@@ -144,7 +144,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.Additional.IsRequired = TranslateUtils.ToBool(IsRequired.SelectedValue);
             _styleInfo.Additional.MinNum = TranslateUtils.ToInt(MinNum.Text);
             _styleInfo.Additional.MaxNum = TranslateUtils.ToInt(MaxNum.Text);
-            _styleInfo.Additional.ValidateType = EValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
+            _styleInfo.Additional.ValidateType = ValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
             _styleInfo.Additional.RegExp = RegExp.Text.Trim('/');
             _styleInfo.Additional.ErrorMessage = ErrorMessage.Text;
 

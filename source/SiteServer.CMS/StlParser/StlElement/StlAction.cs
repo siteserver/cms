@@ -24,9 +24,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {AttributeReturnUrl, "动作完成后的返回地址"}
         };
 
-        public const string TypeLogin = "Login";
-        public const string TypeRegister = "Register";
-        public const string TypeLogout = "Logout";
+        //public const string TypeLogin = "Login";
+        //public const string TypeRegister = "Register";
+        //public const string TypeLogout = "Logout";
         public const string TypeAddFavorite = "AddFavorite";
         public const string TypeSetHomePage = "SetHomePage";
         public const string TypeTranslate = "Translate";
@@ -34,9 +34,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
-            {TypeLogin, "登录"},
-            {TypeRegister, "注册"},
-            {TypeLogout, "退出"},
+            //{TypeLogin, "登录"},
+            //{TypeRegister, "注册"},
+            //{TypeLogout, "退出"},
             {TypeAddFavorite, "将页面添加至收藏夹"},
             {TypeSetHomePage, "将页面设置为首页"},
             {TypeTranslate, "繁体/简体转换"},
@@ -105,34 +105,34 @@ namespace SiteServer.CMS.StlParser.StlElement
             //计算动作开始
             if (!string.IsNullOrEmpty(type))
             {
-                if (StringUtils.EqualsIgnoreCase(type, TypeLogin))
-                {
-                    if (string.IsNullOrEmpty(returnUrl))
-                    {
-                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
-                    }
+                //if (StringUtils.EqualsIgnoreCase(type, TypeLogin))
+                //{
+                //    if (string.IsNullOrEmpty(returnUrl))
+                //    {
+                //        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
+                //    }
 
-                    url = HomeUtils.GetLoginUrl(pageInfo.HomeUrl, returnUrl);
-                }
-                else if (StringUtils.EqualsIgnoreCase(type, TypeRegister))
-                {
-                    if (string.IsNullOrEmpty(returnUrl))
-                    {
-                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
-                    }
+                //    url = HomeUtils.GetLoginUrl(pageInfo.HomeUrl, returnUrl);
+                //}
+                //else if (StringUtils.EqualsIgnoreCase(type, TypeRegister))
+                //{
+                //    if (string.IsNullOrEmpty(returnUrl))
+                //    {
+                //        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
+                //    }
 
-                    url = HomeUtils.GetRegisterUrl(pageInfo.HomeUrl, returnUrl);
-                }
-                else if (StringUtils.EqualsIgnoreCase(type, TypeLogout))
-                {
-                    if (string.IsNullOrEmpty(returnUrl))
-                    {
-                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
-                    }
+                //    url = HomeUtils.GetRegisterUrl(pageInfo.HomeUrl, returnUrl);
+                //}
+                //else if (StringUtils.EqualsIgnoreCase(type, TypeLogout))
+                //{
+                //    if (string.IsNullOrEmpty(returnUrl))
+                //    {
+                //        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
+                //    }
 
-                    url = HomeUtils.GetLogoutUrl(pageInfo.HomeUrl, returnUrl);
-                }
-                else if (StringUtils.EqualsIgnoreCase(type, TypeAddFavorite))
+                //    url = HomeUtils.GetLogoutUrl(pageInfo.HomeUrl, returnUrl);
+                //}
+                if (StringUtils.EqualsIgnoreCase(type, TypeAddFavorite))
                 {
                     pageInfo.SetPageScripts(TypeAddFavorite, @"
 <script type=""text/javascript""> 
@@ -150,7 +150,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, TypeSetHomePage))
                 {
-                    url = pageInfo.PublishmentSystemInfo.PublishmentSystemUrl;
+                    url = pageInfo.PublishmentSystemInfo.Additional.WebUrl;
                     pageInfo.AddPageEndScriptsIfNotExists(TypeAddFavorite, $@"
 <script type=""text/javascript""> 
     function SetHomepage(){{   

@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 			if (!IsPostBack)
 			{
                 int checkedLevel;
-                var isChecked = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
                 LevelManager.LoadContentLevelToEdit(ContentLevel, PublishmentSystemInfo, _nodeId, null, isChecked, checkedLevel);
 			}
 		}

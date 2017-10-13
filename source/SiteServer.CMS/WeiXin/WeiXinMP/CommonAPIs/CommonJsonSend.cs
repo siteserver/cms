@@ -62,7 +62,7 @@ namespace SiteServer.CMS.WeiXin.WeiXinMP.CommonAPIs
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex, jsonString);
+                LogUtils.AddSystemErrorLog(ex, jsonString);
                 throw ex;
             }
         }

@@ -1,13 +1,8 @@
-using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Text;
+ï»¿using System;
 using System.Web;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Plugin.Apis;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -33,18 +28,22 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Body.IsQueryExists("alipayPc"))
             {
-                LtlScript.Text = PaymentApi.Instance.ChargeByAlipayPc(0.01M, "", "").ToString();
+                LtlScript.Text = PaymentApi.Instance.ChargeByAlipayPc("æµ‹è¯•", 0.01M, StringUtils.GetShortGuid(), "https://www.alipay.com").ToString();
+            }
+            else if (Body.IsQueryExists("alipayMobi"))
+            {
+                LtlScript.Text = PaymentApi.Instance.ChargeByAlipayMobi("æµ‹è¯•", 0.01M, StringUtils.GetShortGuid(), "https://www.alipay.com").ToString();
             }
             else if (Body.IsQueryExists("weixin"))
             {
                 try
                 {
-                    var url = HttpUtility.UrlEncode(PaymentApi.Instance.ChargeByWeixin(0.01M, "", "").ToString());
-                    LtlScript.Text = $@"<img src=""{GetRedirectUrl()}?qrcode={url}"" width=""200"" height=""200"" />";
+                    var url = HttpUtility.UrlEncode(PaymentApi.Instance.ChargeByWeixin("æµ‹è¯•", 0.01M, StringUtils.GetShortGuid(), "https://pay.weixin.qq.com").ToString());
+                    LtlScript.Text = $@"<div style=""display: none""><img id=""weixin_test"" src=""{GetRedirectUrl()}?qrcode={url}"" width=""200"" height=""200"" /></div><script>{SwalDom("å¾®ä¿¡æ”¯ä»˜æµ‹è¯•", "weixin_test")}</script>";
                 }
                 catch (Exception ex)
                 {
-                    LtlScript.Text = $"<script>{SwalError("²âÊÔ±¨´í", ex.Message)}</script>";
+                    LtlScript.Text = $"<script>{SwalError("æµ‹è¯•æŠ¥é”™", ex.Message)}</script>";
                 }
             }
             else if (Body.IsQueryExists("qrcode"))
@@ -53,17 +52,23 @@ namespace SiteServer.BackgroundPages.Settings
                 Response.End();
             }
 
-            BreadCrumbSettings("Ö§¸¶ÉèÖÃ", AppManager.Permissions.Settings.Integration);
+            BreadCrumbSettings("æ”¯ä»˜è®¾ç½®", AppManager.Permissions.Settings.Integration);
 
             var config =
                 TranslateUtils.JsonDeserialize<IntegrationPayConfig>(
                     ConfigManager.SystemConfigInfo.IntegrationPayConfigJson) ?? new IntegrationPayConfig();
 
-            LtlAlipayPc.Text = config.IsAlipayPc ? $@"<span class=""label label-primary"">ÒÑ¿ªÍ¨</span><a class=""m-l-10"" href=""{GetRedirectUrl()}?alipayPc=true"">²âÊÔ</a>" : "Î´¿ªÍ¨";
-            LtlAlipayMobi.Text = config.IsAlipayMobi ? @"<span class=""label label-primary"">ÒÑ¿ªÍ¨</span>" : "Î´¿ªÍ¨";
-            LtlWeixin.Text = config.IsWeixin ? $@"<span class=""label label-primary"">ÒÑ¿ªÍ¨</span><a class=""m-l-10"" href=""{GetRedirectUrl()}?weixin=true"">²âÊÔ</a>" : "Î´¿ªÍ¨";
-            LtlUnionpayPc.Text = config.IsUnionpayPc ? @"<span class=""label label-primary"">ÒÑ¿ªÍ¨</span>" : "Î´¿ªÍ¨";
-            LtlUnionpayMobi.Text = config.IsUnionpayMobi ? @"<span class=""label label-primary"">ÒÑ¿ªÍ¨</span>" : "Î´¿ªÍ¨";
+            LtlAlipayPc.Text = config.IsAlipayPc ? $@"
+                <span class=""label label-primary"">å·²å¼€é€š</span>
+                <a class=""m-l-10"" href=""{GetRedirectUrl()}?alipayPc=true"">æµ‹è¯•</a>" : "æœªå¼€é€š";
+
+            LtlAlipayMobi.Text = config.IsAlipayMobi ? $@"
+                <span class=""label label-primary"">å·²å¼€é€š</span>
+                <a class=""m-l-10"" href=""{GetRedirectUrl()}?alipayMobi=true"">æµ‹è¯•</a>" : "æœªå¼€é€š";
+
+            LtlWeixin.Text = config.IsWeixin ? $@"<span class=""label label-primary"">å·²å¼€é€š</span><a class=""m-l-10"" href=""{GetRedirectUrl()}?weixin=true"">æµ‹è¯•</a>" : "æœªå¼€é€š";
+            LtlUnionpayPc.Text = config.IsUnionpayPc ? @"<span class=""label label-primary"">å·²å¼€é€š</span>" : "æœªå¼€é€š";
+            LtlUnionpayMobi.Text = config.IsUnionpayMobi ? @"<span class=""label label-primary"">å·²å¼€é€š</span>" : "æœªå¼€é€š";
         }
     }
 }

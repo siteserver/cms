@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
 				GatherNum.Text = gatherRuleInfo.Additional.GatherNum.ToString();
 
-                NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdministratorName);
+                NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdminName);
                 ControlUtils.SelectListItems(NodeIDDropDownList, gatherRuleInfo.NodeId.ToString());
 
 				GatherUrl_CheckedChanged(null, null);

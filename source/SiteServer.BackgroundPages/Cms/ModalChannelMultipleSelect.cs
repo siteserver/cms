@@ -149,7 +149,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ["linkUrl"] = GetRedirectUrl(_targetPublishmentSystemId.ToString(), string.Empty)
             };
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, additional, Body.AdministratorName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, additional, Body.AdminName);
         }
 
         public void DdlPublishmentSystemId_OnSelectedIndexChanged(object sender, EventArgs e)

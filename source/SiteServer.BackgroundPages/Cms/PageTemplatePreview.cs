@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
             BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "STL在线解析", AppManager.Permissions.WebSite.Template);
 
             ETemplateTypeUtils.AddListItems(DdlTemplateType);
-            NodeManager.AddListItems(DdlNodeId.Items, PublishmentSystemInfo, false, true, Body.AdministratorName);
+            NodeManager.AddListItems(DdlNodeId.Items, PublishmentSystemInfo, false, true, Body.AdminName);
             if (Body.IsQueryExists("fromCache"))
             {
                 TbTemplate.Text = TranslateUtils.DecryptStringBySecretKey(CacheUtils.Get<string>("SiteServer.BackgroundPages.Cms.PageTemplatePreview"));

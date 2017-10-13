@@ -6,7 +6,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -85,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
             //{
             //    ContentInfo contentInfo = DataProvider.ContentDAO.GetContentInfo(this.tableStyle, this.tableName, this.contentID);
 
-            //    if (contentInfo == null || !string.Equals(Body.AdministratorName, contentInfo.AddUserName))
+            //    if (contentInfo == null || !string.Equals(Body.AdminName, contentInfo.AddUserName))
             //    {
             //        if (!base.HasChannelPermissions(Math.Abs(this.nodeID), AppManager.CMS.Permission.Channel.ContentDelete))
             //        {
@@ -196,9 +195,8 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
+                    LogUtils.AddSystemErrorLog(ex);
                     FailMessage(ex, "删除内容失败！");
-
-                    LogUtils.AddErrorLog(ex);
                 }
             }
         }

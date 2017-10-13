@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
             var nodeId = Body.IsQueryExists("NodeID") ? Body.GetQueryInt("NodeID", PublishmentSystemId) : PublishmentSystemId;
@@ -82,8 +82,8 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
-            var administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdministratorName, PublishmentSystemId, nodeId)
-                ? Body.AdministratorName
+            var administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdminName, PublishmentSystemId, nodeId)
+                ? Body.AdminName
                 : string.Empty;
 
             if (Body.IsQueryExists("SearchType"))
@@ -116,8 +116,8 @@ namespace SiteServer.BackgroundPages.Cms
                 var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId).Replace(">", "/");
                 BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdContent, "栏目及内容", nodeName, string.Empty);
                 var url = PageUtils.GetCmsUrl(nameof(PageContentChannel), null);
-                LtlContentButtons.Text = WebUtils.GetContentCommands(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, PageUrl, url, false);
-                LtlChannelButtons.Text = WebUtils.GetChannelCommands(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, PageUrl, url);
+                LtlContentButtons.Text = WebUtils.GetContentCommands(Body.AdminName, PublishmentSystemInfo, _nodeInfo, PageUrl, url, false);
+                LtlChannelButtons.Text = WebUtils.GetChannelCommands(Body.AdminName, PublishmentSystemInfo, _nodeInfo, PageUrl, url);
                 SpContents.DataBind();
                 RptChannels.DataBind();
 
@@ -153,7 +153,7 @@ $(document).ready(function() {
                 }
 
                 LtlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo, _pluginChannels);
+                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdminName, PublishmentSystemInfo, _nodeInfo, _pluginChannels);
             }
         }
 
@@ -176,7 +176,7 @@ $(document).ready(function() {
                     $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{showPopWinString}"">{LevelManager.GetCheckState(
                         PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
                 {
                     ltlItemEditUrl.Text =
                         $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, _nodeInfo, contentInfo.Id, PageUrl)}\">编辑</a>";
@@ -184,7 +184,7 @@ $(document).ready(function() {
 
                 ltlColumnItemRows.Text = TextUtility.GetColumnItemRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _displayNameHashtable, _tableStyle, PublishmentSystemInfo, contentInfo);
 
-                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdministratorName);
+                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName);
             }
         }
 

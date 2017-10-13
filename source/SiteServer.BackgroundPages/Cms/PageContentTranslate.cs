@@ -119,7 +119,7 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 foreach (var contentId in contentIdArrayList)
                                 {
-                                    ContentUtility.Translate(PublishmentSystemInfo, nodeId, contentId, Request.Form["translateCollection"], translateType, Body.AdministratorName);
+                                    ContentUtility.Translate(PublishmentSystemInfo, nodeId, contentId, Request.Form["translateCollection"], translateType, Body.AdminName);
 
                                     Body.AddSiteLog(PublishmentSystemInfo.PublishmentSystemId, nodeId, contentId, "转移内容", string.Empty);
                                 }
@@ -132,8 +132,8 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
+                    LogUtils.AddSystemErrorLog(ex);
                     FailMessage(ex, "内容转移失败！");
-                    LogUtils.AddErrorLog(ex);
                 }
             }
             else

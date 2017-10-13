@@ -12,6 +12,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
@@ -33,7 +34,7 @@ namespace SiteServer.CMS.Provider
             return taxis;
         }
 
-        public int Insert(string tableName, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo)
+        public int Insert(string tableName, PublishmentSystemInfo publishmentSystemInfo, IContentInfo contentInfo)
         {
             var taxis = GetTaxisToInsert(tableName, contentInfo.NodeId, contentInfo.IsTop);
             return Insert(tableName, publishmentSystemInfo, contentInfo, true, taxis);
@@ -48,18 +49,18 @@ namespace SiteServer.CMS.Provider
             return Insert(tableName, publishmentSystemInfo, contentInfo, false, 0);
         }
 
-        public int Insert(string tableName, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, bool isUpdateContentNum, int taxis)
+        public int Insert(string tableName, PublishmentSystemInfo publishmentSystemInfo, IContentInfo contentInfo, bool isUpdateContentNum, int taxis)
         {
             var contentId = 0;
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.ContainsKey(BackgroundContentAttribute.Content))
+                if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.Attributes.ContainsKey(BackgroundContentAttribute.Content))
                 {
-                    contentInfo.SetExtendedAttribute(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
+                    contentInfo.Attributes.SetExtendedAttribute(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.Attributes.GetExtendedAttribute(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
                 }
 
-                contentInfo.BeforeExecuteNonQuery();
+                contentInfo.Attributes.BeforeExecuteNonQuery();
 
                 contentInfo.Taxis = taxis;
 
@@ -84,11 +85,11 @@ namespace SiteServer.CMS.Provider
             new Action(Content.ClearCache).BeginInvoke(null, null);
         }
 
-        public void Update(string tableName, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo)
+        public void Update(string tableName, PublishmentSystemInfo publishmentSystemInfo, IContentInfo contentInfo)
         {
-            if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.ContainsKey(BackgroundContentAttribute.Content))
+            if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.Attributes.ContainsKey(BackgroundContentAttribute.Content))
             {
-                contentInfo.SetExtendedAttribute(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
+                contentInfo.Attributes.SetExtendedAttribute(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.Attributes.GetExtendedAttribute(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
             }
 
             BaiRongDataProvider.ContentDao.Update(tableName, contentInfo);
@@ -719,6 +720,79 @@ namespace SiteServer.CMS.Provider
                 rdr.Close();
             }
             return list;
+        }
+
+        public List<IContentInfo> GetListByLimitAndOffset(string tableName, ETableStyle tableStyle, int nodeId, string whereString, string orderString, int limit, int offset)
+        {
+            var list = new List<IContentInfo>();
+            if (!string.IsNullOrEmpty(whereString))
+            {
+                whereString = whereString.Replace("WHERE ", string.Empty).Replace("where ", string.Empty);
+            }
+            if (!string.IsNullOrEmpty(orderString))
+            {
+                orderString = orderString.Replace("ORDER BY ", string.Empty).Replace("order by ", string.Empty);
+            }
+            var firstWhere = string.IsNullOrEmpty(whereString) ? string.Empty : $"WHERE {whereString}";
+            var secondWhere = string.IsNullOrEmpty(whereString) ? string.Empty : $"AND {whereString}";
+            var order = string.IsNullOrEmpty(orderString) ? "IsTop DESC, Id DESC" : orderString;
+
+            string sqlString;
+            if (limit > 0 && offset > 0)
+            {
+                sqlString = $@"SELECT TOP {limit} * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
+                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+                {
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
+                }
+            }
+            else if (limit > 0)
+            {
+                sqlString = $@"SELECT TOP {limit} * FROM {tableName} {secondWhere} ORDER BY {order}";
+                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+                {
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
+                }
+            }
+            else if (offset > 0)
+            {
+                sqlString =
+                    $@"SELECT * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
+                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+                {
+                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
+                }
+            }
+            else
+            {
+                sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order}";
+            }
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    var info = ContentUtility.GetContentInfo(tableStyle);
+                    BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
+                    list.Add(info);
+                }
+                rdr.Close();
+            }
+
+            return list;
+        }
+
+        public int GetCount(string tableName, ETableStyle tableStyle, int nodeId, string whereString)
+        {
+            if (!string.IsNullOrEmpty(whereString))
+            {
+                whereString = whereString.Replace("WHERE ", string.Empty).Replace("where ", string.Empty);
+            }
+            whereString = string.IsNullOrEmpty(whereString) ? string.Empty : $"WHERE {whereString}";
+
+            string sqlString = $"SELECT COUNT(*) FROM {tableName} {whereString}";
+
+            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
     }
 }

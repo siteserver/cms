@@ -71,5 +71,25 @@ namespace SiteServer.CMS.Plugin.Apis
                 return _dbHelper;
             }
         }
+
+        public string Encrypt(string inputString)
+        {
+            return TranslateUtils.EncryptStringBySecretKey(inputString);
+        }
+
+        public string Decrypt(string inputString)
+        {
+            return TranslateUtils.DecryptStringBySecretKey(inputString);
+        }
+
+        public string FilterXss(string html)
+        {
+            return PageUtils.FilterXss(html);
+        }
+
+        public string FilterSql(string sql)
+        {
+            return PageUtils.FilterSql(sql);
+        }
     }
 }

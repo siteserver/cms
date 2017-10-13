@@ -12,8 +12,8 @@ namespace SiteServer.BackgroundPages.Controls
     {
         protected override void Render(HtmlTextWriter writer)
         {
-            var controllerUrl = CMS.Controllers.Files.UEditor.GetUrl(PageUtils.GetApiUrl(), 0);
-            var editorUrl = SiteFilesAssets.GetUrl(PageUtils.GetApiUrl(), "ueditor");
+            var controllerUrl = CMS.Controllers.Sys.Editors.UEditor.GetUrl(PageUtils.OuterApiUrl, 0);
+            var editorUrl = SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "ueditor");
 
             if (string.IsNullOrEmpty(Height) || Height == "0")
             {

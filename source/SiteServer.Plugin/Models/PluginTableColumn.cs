@@ -9,17 +9,17 @@ namespace SiteServer.Plugin.Models
 
         public string DisplayName { get; set; }
 
-        public DataType DataType { get; set; } = DataType.NVarChar;
+        public string DataType { get; set; }
 
         public int DataLength { get; set; } = 50;
 
-        public InputType InputType { get; set; } = InputType.Text;
+        public string InputType { get; set; }
 
         public string DefaultValue { get; set; }
 
         public bool IsRequired { get; set; }
 
-        public ValidateType ValidateType { get; set; } = ValidateType.None;
+        public string ValidateType { get; set; }
 
         public int MinNum { get; set; }
 

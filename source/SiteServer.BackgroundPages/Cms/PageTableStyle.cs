@@ -202,7 +202,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
 
                 ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-                ltlValidate.Text = EValidateTypeUtils.GetValidateInfo(styleInfo);
+                ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
 
                 var redirectUrl = GetRedirectUrl(PublishmentSystemId, _tableStyle, _tableName, _relatedIdentity, _itemId);
                 showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _tableStyle, redirectUrl);

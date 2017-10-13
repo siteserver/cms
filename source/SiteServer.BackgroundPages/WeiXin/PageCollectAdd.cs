@@ -222,14 +222,14 @@ namespace SiteServer.BackgroundPages.WeiXin
                         {
                             DataProviderWx.CollectDao.Update(collectInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改征集活动", $"征集活动:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改征集活动", $"征集活动:{TbTitle.Text}");
                             SuccessMessage("修改征集活动成功！");
                         }
                         else
                         {
                             _collectId = DataProviderWx.CollectDao.Insert(collectInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加征集活动", $"征集活动:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加征集活动", $"征集活动:{TbTitle.Text}");
                             SuccessMessage("添加征集活动成功！");
                         }
 

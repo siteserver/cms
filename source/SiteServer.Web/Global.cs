@@ -1,9 +1,8 @@
-﻿using System;
-using System.Web;
+﻿using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using System.Web.Http.Routing;
+using System.Web.Routing;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using Newtonsoft.Json;
@@ -33,7 +32,9 @@ namespace SiteServer.API
                 new { id = RouteParameter.Optional }
             );
 
-            configuration.Routes.Add("name", new HttpRoute());
+            //configuration.Routes.Add("name", new HttpRoute());
+
+            RouteTable.Routes.Ignore(""); //Allow index.html to load
 
             var jsonFormatter = configuration.Formatters.JsonFormatter;
             var settings = new JsonSerializerSettings

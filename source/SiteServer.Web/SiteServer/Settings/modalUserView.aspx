@@ -22,9 +22,7 @@
     </tr>
     <tr>
       <td>姓名：</td>
-      <td><asp:Literal id="ltlDisplayName" runat="server" /></td>
-      <td>用户组：</td>
-      <td><asp:Literal id="ltlGroup" runat="server" /></td>
+      <td colspan="3"><asp:Literal id="ltlDisplayName" runat="server" /></td>
     </tr>
     <tr>
       <td height="25">电子邮箱：</td>

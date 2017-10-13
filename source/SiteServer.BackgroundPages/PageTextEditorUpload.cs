@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages
             PageUtils.CheckRequestParameter("FileType");
             var body = new RequestBody();
 
-            if (body.IsAdministratorLoggin)
+            if (body.IsAdminLoggin)
             {
                 _fileType = Request.QueryString["FileType"];
 

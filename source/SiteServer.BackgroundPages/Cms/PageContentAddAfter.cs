@@ -98,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void PublishmentSystemID_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
-            CrossSiteTransUtility.LoadNodeIdListBox(NodeIDListBox, PublishmentSystemInfo, psId, _nodeInfo, Body.AdministratorName);
+            CrossSiteTransUtility.LoadNodeIdListBox(NodeIDListBox, PublishmentSystemInfo, psId, _nodeInfo, Body.AdminName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

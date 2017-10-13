@@ -41,7 +41,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr style="cursor: pointer" onclick="location.href='pageIntegrationPayConfiguration.aspx'">
+                <tr style="cursor: pointer" onclick="location.href='pageIntegrationPayAlipayMobi.aspx'">
                   <td>
                     <div><img src="../images/channel_alipay.gif">支付宝手机网站支付</div>
                   </td>
@@ -71,7 +71,7 @@
                 </tr>
               </tbody>
               <tbody>
-                <tr style="cursor: pointer" onclick="location.href='pageIntegrationPayConfiguration.aspx'">
+                <tr style="cursor: pointer">
                   <td>
                     <div><img src="../images/channel_unionpay.gif">银联网关支付</div>
                   </td>
@@ -84,7 +84,7 @@
                     </div>
                   </td>
                 </tr>
-                <tr style="cursor: pointer" onclick="location.href='pageIntegrationPayConfiguration.aspx'">
+                <tr style="cursor: pointer">
                   <td>
                     <div><img src="../images/channel_unionpay.gif">银联手机支付</div>
                   </td>

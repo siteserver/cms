@@ -326,16 +326,12 @@ namespace SiteServer.BackgroundPages.WeiXin
                     else
                     {
                         FailMessage($"菜单同步失败：{errorMessage}");
-                        var logInfo = new ErrorLogInfo(0, DateTime.Now, errorMessage, string.Empty, "微信同步菜单错误");
-                        LogUtils.AddErrorLog(logInfo);
                     }
                 }
                 catch (Exception ex)
                 {
                     FailMessage($"菜单同步失败：{ex.Message}");
-
-                    var logInfo = new ErrorLogInfo(0, DateTime.Now, ex.Message, ex.StackTrace, "微信同步菜单错误");
-                    LogUtils.AddErrorLog(logInfo);
+                    LogUtils.AddSystemErrorLog(ex, "微信同步菜单错误");
                 }
             }
         }

@@ -14,5 +14,7 @@ namespace SiteServer.Plugin.Apis
         string HtmlToXml(string html);
 
         string XmlToHtml(string xml);
+
+        string GetCurrentUrl(PluginParseContext context);
     }
 }

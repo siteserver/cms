@@ -120,7 +120,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var isUseTables = TranslateUtils.ToBool(Request.Form["isUseTables"]);
                 var returnUrl = Request.Form["returnUrl"];
                 var isTop = TranslateUtils.ToBool(Request.Form["isTop"], false);
-                retval = CreatePublishmentSystem(publishmentSystemId, isUseSiteTemplate, isImportContents, isImportTableStyles, siteTemplateDir, isUseTables, userKeyPrefix, returnUrl, isTop, body.AdministratorName);
+                retval = CreatePublishmentSystem(publishmentSystemId, isUseSiteTemplate, isImportContents, isImportTableStyles, siteTemplateDir, isUseTables, userKeyPrefix, returnUrl, isTop, body.AdminName);
             }
             //    else if (type == "CreateAll")
             //    {
@@ -196,7 +196,7 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
@@ -258,7 +258,7 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数

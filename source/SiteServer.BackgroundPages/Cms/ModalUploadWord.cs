@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (!IsPostBack)
             {
                 int checkedLevel;
-                var isChecked = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
                 LevelManager.LoadContentLevelToEdit(rblContentLevel, PublishmentSystemInfo, _nodeInfo.NodeId, null, isChecked, checkedLevel);
                 ControlUtils.SelectListItems(rblContentLevel, LevelManager.LevelInt.CaoGao.ToString());
             }
@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                                 contentInfo.NodeId = _nodeInfo.NodeId;
                                 contentInfo.PublishmentSystemId = PublishmentSystemId;
-                                contentInfo.AddUserName = Body.AdministratorName;
+                                contentInfo.AddUserName = Body.AdminName;
                                 contentInfo.AddDate = DateTime.Now;
                                 contentInfo.LastEditUserName = contentInfo.AddUserName;
                                 contentInfo.LastEditDate = contentInfo.AddDate;

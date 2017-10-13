@@ -320,7 +320,7 @@ itemController.isImageOption = {voteInfo.ContentIsImageOption.ToLower()};itemCon
                         {
                             DataProviderWx.VoteDao.Update(voteInfo);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改投票活动", $"投票活动:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改投票活动", $"投票活动:{TbTitle.Text}");
                             SuccessMessage("修改投票活动成功！");
                         }
                         else
@@ -329,7 +329,7 @@ itemController.isImageOption = {voteInfo.ContentIsImageOption.ToLower()};itemCon
 
                             DataProviderWx.VoteItemDao.UpdateVoteId(PublishmentSystemId, _voteId);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加投票活动", $"投票活动:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加投票活动", $"投票活动:{TbTitle.Text}");
                             SuccessMessage("添加投票活动成功！");
                         }
 

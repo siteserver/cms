@@ -106,7 +106,7 @@ namespace SiteServer.BackgroundPages.Plugins
                         phWeight.Visible = false;
                     }
                 }
-                ImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_ImageUrl", PublishmentSystemInfo.PublishmentSystemUrl));
+                ImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_ImageUrl", PublishmentSystemInfo.Additional.WebUrl));
 
                 var showPopWinString = ModalSelectImage.GetOpenWindowString(PublishmentSystemInfo, ImageUrl.ClientID);
                 ImageUrlSelect.Attributes.Add("onclick", showPopWinString);
@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 showPopWinString = ModalUploadImageSingle.GetOpenWindowStringToTextBox(PublishmentSystemId, ImageUrl.ClientID, false);
                 ImageUrlUpload.Attributes.Add("onclick", showPopWinString);
 
-                FlashUrl.Attributes.Add("onchange", GetShowImageScript("preview_FlashUrl", PublishmentSystemInfo.PublishmentSystemUrl));
+                FlashUrl.Attributes.Add("onchange", GetShowImageScript("preview_FlashUrl", PublishmentSystemInfo.Additional.WebUrl));
 
                 showPopWinString = ModalSelectImage.GetOpenWindowString(PublishmentSystemInfo, FlashUrl.ClientID);
                 FlashUrlSelect.Attributes.Add("onclick", showPopWinString);

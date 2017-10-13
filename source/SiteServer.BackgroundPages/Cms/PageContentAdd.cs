@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentAdd))
                 {
-                    if (!Body.IsAdministratorLoggin)
+                    if (!Body.IsAdminLoggin)
                     {
                         PageUtils.RedirectToLoginPage();
                         return;
@@ -116,7 +116,7 @@ namespace SiteServer.BackgroundPages.Cms
                 contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentId);
                 if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ContentEdit))
                 {
-                    if (!Body.IsAdministratorLoggin)
+                    if (!Body.IsAdminLoggin)
                     {
                         PageUtils.RedirectToLoginPage();
                         return;
@@ -142,7 +142,7 @@ var previewUrl = '{PagePreview.GetRedirectUrl(PublishmentSystemId, _nodeInfo.Nod
 ";
 
                 //转移
-                if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, _nodeInfo.NodeId, AppManager.Permissions.Channel.ContentTranslate))
+                if (AdminUtility.HasChannelPermissions(Body.AdminName, PublishmentSystemId, _nodeInfo.NodeId, AppManager.Permissions.Channel.ContentTranslate))
                 {
                     PhTranslate.Visible = PublishmentSystemInfo.Additional.IsTranslate;
                     DivTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
@@ -295,7 +295,7 @@ $('#TbTags').keyup(function (e) {
                 {
                     PhStatus.Visible = true;
                     int checkedLevel;
-                    var isChecked = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, _nodeInfo.NodeId, out checkedLevel);
+                    var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, _nodeInfo.NodeId, out checkedLevel);
                     if (Body.IsQueryExists("contentLevel"))
                     {
                         checkedLevel = TranslateUtils.ToIntWithNagetive(Body.GetQueryString("contentLevel"));
@@ -341,7 +341,7 @@ $('#TbTags').keyup(function (e) {
                 {
                     contentInfo.NodeId = _nodeInfo.NodeId;
                     contentInfo.PublishmentSystemId = PublishmentSystemId;
-                    contentInfo.AddUserName = Body.AdministratorName;
+                    contentInfo.AddUserName = Body.AdminName;
                     if (contentInfo.AddDate.Year <= DateUtils.SqlMinValue.Year)
                     {
                         contentInfo.AddDate = DateTime.Now;
@@ -383,11 +383,11 @@ $('#TbTags').keyup(function (e) {
                         savedContentId = DataProvider.ContentDao.Insert(_tableName, PublishmentSystemInfo, contentInfo);
                         //判断是不是有审核权限
                         int checkedLevelOfUser;
-                        var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, contentInfo.NodeId, out checkedLevelOfUser);
+                        var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, contentInfo.NodeId, out checkedLevelOfUser);
                         if (LevelManager.IsCheckable(PublishmentSystemInfo, contentInfo.NodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
                             //添加审核记录
-                            BaiRongDataProvider.ContentDao.UpdateIsChecked(_tableName, PublishmentSystemId, contentInfo.NodeId, new List<int> { savedContentId }, 0, true, Body.AdministratorName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
+                            BaiRongDataProvider.ContentDao.UpdateIsChecked(_tableName, PublishmentSystemId, contentInfo.NodeId, new List<int> { savedContentId }, 0, true, Body.AdminName, contentInfo.IsChecked, contentInfo.CheckedLevel, "");
                         }
 
                         if (PhTags.Visible)
@@ -400,7 +400,7 @@ $('#TbTags').keyup(function (e) {
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(ex);
+                    LogUtils.AddSystemErrorLog(ex);
                     errorMessage = $"内容添加失败：{ex.Message}";
                     return 0;
                 }
@@ -413,7 +413,7 @@ $('#TbTags').keyup(function (e) {
                 Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id, "添加内容",
                     $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
 
-                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName);
+                ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdminName);
 
                 PageUtils.Redirect(PageContentAddAfter.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
                         ReturnUrl));
@@ -425,7 +425,7 @@ $('#TbTags').keyup(function (e) {
                 {
                     var tagsLast = contentInfo.Tags;
 
-                    contentInfo.LastEditUserName = Body.AdministratorName;
+                    contentInfo.LastEditUserName = Body.AdminName;
                     contentInfo.LastEditDate = DateTime.Now;
 
                     //自动保存的时候，不保存编辑器的图片
@@ -464,7 +464,7 @@ $('#TbTags').keyup(function (e) {
                         TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, PublishmentSystemId, contentId);
                     }
 
-                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdministratorName);
+                    ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdminName);
 
                     //更新引用该内容的信息
                     //如果不是异步自动保存，那么需要将引用此内容的content修改
@@ -535,7 +535,7 @@ $('#TbTags').keyup(function (e) {
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(ex);
+                    LogUtils.AddSystemErrorLog(ex);
                     errorMessage = $"内容修改失败：{ex.Message}";
                     return 0;
                 }

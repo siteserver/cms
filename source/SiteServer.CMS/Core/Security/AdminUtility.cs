@@ -37,7 +37,8 @@ namespace SiteServer.CMS.Core.Security
             {
                 return;
             }
-            RequestBody.AdministratorLogout();
+            var body = new RequestBody();
+            body.AdminLogout();
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 
@@ -95,7 +96,8 @@ namespace SiteServer.CMS.Core.Security
             {
                 return;
             }
-            RequestBody.AdministratorLogout();
+            var body = new RequestBody();
+            body.AdminLogout();
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 

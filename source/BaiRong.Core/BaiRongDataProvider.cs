@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using BaiRong.Core.Data;
 using BaiRong.Core.Provider;
 
 namespace BaiRong.Core
@@ -73,10 +75,35 @@ namespace BaiRong.Core
         private static UserDao _userDao;
         public static UserDao UserDao => _userDao ?? (_userDao = new UserDao());
 
-        private static UserGroupDao _userGroupDao;
-        public static UserGroupDao UserGroupDao => _userGroupDao ?? (_userGroupDao = new UserGroupDao());
-
         private static UserLogDao _userLogDao;
         public static UserLogDao UserLogDao => _userLogDao ?? (_userLogDao = new UserLogDao());
+
+        public static List<DataProviderBase> AllProviders => new List<DataProviderBase>
+        {
+            AdministratorDao,
+            AreaDao,
+            AuxiliaryTableDataDao,
+            ConfigDao,
+            ContentCheckDao,
+            ContentDao,
+            CountDao,
+            DatabaseDao,
+            DbCacheDao,
+            DepartmentDao,
+            DiggDao,
+            ErrorLogDao,
+            LogDao,
+            PermissionsInRolesDao,
+            RecordDao,
+            RoleDao,
+            TableCollectionDao,
+            TableMatchDao,
+            TableMetadataDao,
+            TableStructureDao,
+            TableStyleDao,
+            TagDao,
+            UserDao,
+            UserLogDao
+        };
     }
 }

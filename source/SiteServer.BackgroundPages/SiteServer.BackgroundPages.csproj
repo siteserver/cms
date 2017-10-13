@@ -142,9 +142,6 @@
     <Compile Include="Plugins\PageView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\ModalAddToUserGroup.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\ModalAdminPassword.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -167,9 +164,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalUserExport.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalUserGroupAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalUserImport.cs">
@@ -202,6 +196,9 @@
     <Compile Include="Settings\PageDepartmentTree.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Settings\PageIntegrationPayAlipayMobi.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Settings\PageIntegrationPayWeixin.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -211,10 +208,10 @@
     <Compile Include="Settings\PageIntegrationPay.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageIntegrationPayment.cs">
+    <Compile Include="Settings\PagePermissionAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePermissionAdd.cs">
+    <Compile Include="Settings\PageConfig.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageRecord.cs">
@@ -235,19 +232,10 @@
     <Compile Include="Settings\PageUserCheck.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageUserConfigDisplay.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\PageUserConfigLogin.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageUserConfigRegister.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageUserConfigWriting.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageUserGroup.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Ajax\AjaxUploadService.cs">

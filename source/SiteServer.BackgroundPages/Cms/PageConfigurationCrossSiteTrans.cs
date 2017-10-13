@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
             var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ConfigurationCrossSiteTrans, null, Body.AdministratorName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ConfigurationCrossSiteTrans, null, Body.AdminName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

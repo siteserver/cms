@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     PlaceHolder_File.Visible = false;
                     PlaceHolder_Content.Visible = true;
 
-                    NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdministratorName);
+                    NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdminName);
                     ControlUtils.SelectListItems(NodeIDDropDownList, gatherFileRuleInfo.NodeId.ToString());
                     ControlUtils.SelectListItems(IsSaveImage, gatherFileRuleInfo.IsSaveImage.ToString());
                 }

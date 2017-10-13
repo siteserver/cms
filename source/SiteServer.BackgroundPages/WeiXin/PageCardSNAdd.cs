@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.WeiXin
                         }
                    }
 
-                    LogUtils.AddAdminLog(Body.AdministratorName, "领取会员卡成功", $"会员卡:{TbUserNameList.Text}");
+                    LogUtils.AddAdminLog(Body.AdminName, "领取会员卡成功", $"会员卡:{TbUserNameList.Text}");
                     SuccessMessage("领取会员卡成功！");
                 }
                 catch (Exception ex)

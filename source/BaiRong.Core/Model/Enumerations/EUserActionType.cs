@@ -57,7 +57,7 @@ namespace BaiRong.Core.Model.Enumerations
         {
             if (type == EUserActionType.Login)
             {
-                return "用户登录成功";
+                return "用户登录";
             }
             if (type == EUserActionType.LoginFailed)
             {

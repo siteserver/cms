@@ -248,6 +248,13 @@ namespace BaiRong.Core.Data
             return WebConfigUtils.DatabaseType == EDatabaseType.MySql ? GetMySqlColumnSqlString(dataType, attributeName, length) : GetSqlServerColumnSqlString(dataType, attributeName, length);
         }
 
+        public static string GetAddColumnsSqlString(DataType dataType, string tableName, string columnsSqlString)
+        {
+            return WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                ? $"ALTER TABLE `{tableName}` ADD ({columnsSqlString})"
+                : $"ALTER TABLE [{tableName}] ADD {columnsSqlString}";
+        }
+
         public static string GetMySqlColumnSqlString(DataType dataType, string attributeName, int length)
         {
             string retval;

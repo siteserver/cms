@@ -156,60 +156,37 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\Plugins\HttpController.cs" />
-    <Compile Include="Controllers\Plugins\JsonController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsRelatedFieldController.cs" />
+    <Compile Include="Controllers\Json\PluginJsonController.cs" />
+    <Compile Include="Controllers\Sys\Stl\Comments\CommentsActionsLogoutController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\Http\PluginHttpController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsRelatedFieldController.cs" />
+    <Compile Include="Core\WebApiUtils.cs" />
     <Compile Include="ErrorRedirectModule.cs" />
     <Compile Include="Global.cs" />
-    <Compile Include="Controllers\Administrators\AdministratorsActionsLoginController.cs" />
-    <Compile Include="Controllers\Administrators\AdministratorsSiteCheckListController.cs" />
-    <Compile Include="Controllers\Comments\CommentsActionsAddController.cs" />
-    <Compile Include="Controllers\Comments\CommentsActionsDeleteController.cs" />
-    <Compile Include="Controllers\Comments\CommentsActionsGoodController.cs" />
-    <Compile Include="Controllers\Comments\CommentsGetController.cs" />
-    <Compile Include="Controllers\Files\FilesActionsUploadAvatarController.cs" />
-    <Compile Include="Controllers\Files\FilesActionsUploadAvatarResizeController.cs" />
-    <Compile Include="Controllers\Files\FilesActionsUploadSiteFilesController.cs" />
-    <Compile Include="Controllers\Files\FilesUEditorController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsAddContentHitsController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsAddTrackerCountController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsAdvHtmlController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsDownloadController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsLoadingChannelsController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsTriggerController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsUploadController.cs" />
-    <Compile Include="Controllers\Stl\StlDiggController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsDynamicController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsIfController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsPageContentsController.cs" />
-    <Compile Include="Controllers\Stl\StlActionsSearchController.cs" />
-    <Compile Include="Controllers\Stl\StlStarController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsIsCodeCorrectController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsIsMobileExistsController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsIsPasswordCorrectController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsLoadConfigController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsLoginController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsLogoutController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsRegisterWithCodeController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsResetPasswordByTokenController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsResetPasswordController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsSendSmsController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsSendSmsOrRegisterController.cs" />
-    <Compile Include="Controllers\Users\UsersCaptchaController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsGetLogsController.cs" />
-    <Compile Include="Controllers\Users\UsersActionsEditController.cs" />
-    <Compile Include="Controllers\Writing\WritingActionsGetContentController.cs" />
-    <Compile Include="Controllers\Writing\WritingActionsGetContentsController.cs" />
-    <Compile Include="Controllers\Writing\WritingActionsCreateContentController.cs" />
-    <Compile Include="Controllers\Writing\WritingActionsDeleteContentController.cs" />
-    <Compile Include="Controllers\Writing\WritingActionsEditContentController.cs" />
-    <Compile Include="Controllers\Writing\WritingActionsGetChannelsController.cs" />
-    <Compile Include="Controllers\Writing\WritingActionsGetSitesController.cs" />
-    <Compile Include="Controllers\Writing\WritingActionsGetTableStylesController.cs" />
+    <Compile Include="Controllers\Sys\Administrators\AdministratorsActionsLoginController.cs" />
+    <Compile Include="Controllers\Sys\Administrators\AdministratorsSiteCheckListController.cs" />
+    <Compile Include="Controllers\Sys\Stl\Comments\CommentsActionsAddController.cs" />
+    <Compile Include="Controllers\Sys\Stl\Comments\CommentsActionsDeleteController.cs" />
+    <Compile Include="Controllers\Sys\Stl\Comments\CommentsActionsGoodController.cs" />
+    <Compile Include="Controllers\Sys\Stl\Comments\CommentsGetController.cs" />
+    <Compile Include="Controllers\Sys\Editors\UEditorController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsAddContentHitsController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsAddTrackerCountController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsAdvHtmlController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsDownloadController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsLoadingChannelsController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsTriggerController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsUploadController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlDiggController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsDynamicController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsIfController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsPageContentsController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlActionsSearchController.cs" />
+    <Compile Include="Controllers\Sys\Stl\StlStarController.cs" />
     <Compile Include="Core\SqlPager.cs" />
     <Compile Include="CreateHub.cs" />
     <Compile Include="Model\Comment.cs" />
-    <Compile Include="Model\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -231,6 +208,7 @@
       <Name>SiteServer.Plugin</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

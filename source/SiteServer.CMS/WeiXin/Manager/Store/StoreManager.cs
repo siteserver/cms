@@ -17,7 +17,7 @@ namespace SiteServer.CMS.WeiXin.Manager.Store
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/store/img/start.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/store/img/start.jpg"));
             }
             else
             {
@@ -29,7 +29,7 @@ namespace SiteServer.CMS.WeiXin.Manager.Store
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/store/img/pic{sequence}.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/store/img/pic{sequence}.jpg"));
             }
             else
             {
@@ -39,7 +39,7 @@ namespace SiteServer.CMS.WeiXin.Manager.Store
 
         private static string GetStoreUrl(PublishmentSystemInfo publishmentSystemInfo)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/store/index.html"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/store/index.html"));
         }
 
         public static string GetStoreUrl(PublishmentSystemInfo publishmentSystemInfo, StoreInfo storeInfo, string wxOpenID)
@@ -54,7 +54,7 @@ namespace SiteServer.CMS.WeiXin.Manager.Store
 
         private static string GetStoreItemUrl(PublishmentSystemInfo publishmentSystemInfo)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/store/content.html"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/store/content.html"));
         }
 
         public static string GetStoreItemUrl(PublishmentSystemInfo publishmentSystemInfo, StoreItemInfo storeItemInfo, string wxOpenID)

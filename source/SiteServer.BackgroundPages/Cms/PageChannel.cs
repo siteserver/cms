@@ -126,7 +126,7 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
             }
 
-            PhCreate.Visible = AdminUtility.HasWebsitePermissions(Body.AdministratorName, PublishmentSystemId, AppManager.Permissions.WebSite.Create) 
+            PhCreate.Visible = AdminUtility.HasWebsitePermissions(Body.AdminName, PublishmentSystemId, AppManager.Permissions.WebSite.Create) 
  || HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.CreatePage);
             if (PhCreate.Visible)
             {
@@ -167,7 +167,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.Channel, null, Body.AdministratorName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.Channel, null, Body.AdminName);
         }
     }
 }

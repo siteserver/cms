@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BaiRong.Core;
+using SiteServer.CMS.Controllers.Sys.Stl.Comments;
 using SiteServer.CMS.StlControls;
 using SiteServer.CMS.StlParser.Model;
 
@@ -60,15 +61,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 IsAnonymous = isAnonymous,
                 PageNum = pageNum,
                 ApiActionsAddUrl =
-                    Controllers.Comments.ActionsAdd.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId),
+                    ActionsAdd.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId),
                 ApiActionsDeleteUrl =
-                    Controllers.Comments.ActionsDelete.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId),
+                    ActionsDelete.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId),
                 ApiActionsGoodUrl =
-                    Controllers.Comments.ActionsGood.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId),
+                    ActionsGood.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId),
                 ApiGetUrl =
-                    Controllers.Comments.Get.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId),
-                ApiActionsLogoutUrl = Controllers.Users.ActionsLogout.GetUrl(pageInfo.ApiUrl),
-                HomeUrl = pageInfo.HomeUrl,
+                    Get.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId),
+                ApiActionsLogoutUrl = ActionsLogout.GetUrl(pageInfo.ApiUrl),
                 IsDelete = false
             };
 

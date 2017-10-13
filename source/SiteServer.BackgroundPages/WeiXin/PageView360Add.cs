@@ -204,14 +204,14 @@ namespace SiteServer.BackgroundPages.WeiXin
                         {
                             DataProviderWx.View360Dao.Update(view360Info);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "修改360全景", $"360全景:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "修改360全景", $"360全景:{TbTitle.Text}");
                             SuccessMessage("修改360全景成功！");
                         }
                         else
                         {
                             _view360Id = DataProviderWx.View360Dao.Insert(view360Info);
 
-                            LogUtils.AddAdminLog(Body.AdministratorName, "添加360全景", $"360全景:{TbTitle.Text}");
+                            LogUtils.AddAdminLog(Body.AdminName, "添加360全景", $"360全景:{TbTitle.Text}");
                             SuccessMessage("添加360全景成功！");
                         }
 

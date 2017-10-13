@@ -31,8 +31,9 @@ namespace SiteServer.API.Controllers.Writing
                 var dateTo = PageUtils.FilterSqlAndXss(body.GetPostString("dateTo"));
                 var page = body.GetPostInt("page");
 
-                var user = new User(body.UserInfo);
-                var groupInfo = UserGroupManager.GetGroupInfo(user.GroupId);
+                var user = body.UserInfo;
+                //var groupInfo = UserGroupManager.GetGroupInfo(user.GroupId);
+                var groupInfo = UserGroupManager.GetGroupInfo(0);
                 var adminUserName = groupInfo.Additional.WritingAdminUserName;
 
                 var nodeIdList = new List<int> {nodeId};

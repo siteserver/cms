@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Plugins
         private bool[] isLastNodeArray;
         private EPositionType ePositionType = EPositionType.LeftTop;
 
-		public string PublishmentSystemUrl => PublishmentSystemInfo.PublishmentSystemUrl;
+		public string PublishmentSystemUrl => PublishmentSystemInfo.Additional.WebUrl;
 
 	    public string RootUrl => PageUtils.ApplicationPath;
 

@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                 ECharsetUtils.AddListItems(Charset);
                 ControlUtils.SelectListItemsIgnoreCase(Charset, ECharsetUtils.GetValue(ECharset.utf_8));
-                NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdministratorName);
+                NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdminName);
 
                 SetActivePanel(WizardPanel.GatherRuleBase, GatherRuleBase);
 

@@ -89,7 +89,7 @@ namespace SiteServer.CMS.StlParser
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddErrorLog(ex, "CreateContent");
+                            LogUtils.AddSystemErrorLog(ex, "CreateContent");
                         }
                     });
                 }
@@ -104,7 +104,7 @@ namespace SiteServer.CMS.StlParser
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddErrorLog(ex, "CreateContent");
+                        LogUtils.AddSystemErrorLog(ex, "CreateContent");
                     }
                 }
             }

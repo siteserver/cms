@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
             });
 		}
 
-        public string PublishmentSystemUrl => PublishmentSystemInfo.PublishmentSystemUrl;
+        public string PublishmentSystemUrl => PublishmentSystemInfo.Additional.WebUrl;
 
 	    public string RootUrl => PageUtils.ApplicationPath;
 

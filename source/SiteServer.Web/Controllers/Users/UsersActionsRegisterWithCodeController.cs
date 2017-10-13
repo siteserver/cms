@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Users
                     Mobile = mobile,
                     Password = password
                 };
-                isRegister = BaiRongDataProvider.UserDao.Insert(userInfo, PageUtils.GetIpAddress(), out errorMessage);
+                isRegister = BaiRongDataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out errorMessage);
             }
 
             return Ok(new {

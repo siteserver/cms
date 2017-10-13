@@ -9,7 +9,7 @@ using System.Collections.Specialized;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.CMS.Controllers.Plugins;
+using SiteServer.CMS.Controllers.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin.Features;
@@ -262,7 +262,7 @@ namespace SiteServer.BackgroundPages.Core
                 var pluginChannel = pluginChannels[pluginId];
                 if (pluginChannel?.ContentLinks != null && pluginChannel.ContentLinks.Count > 0)
                 {
-                    var apiUrl = JsonApi.GetUrl(PageUtility.GetInnerApiUrl(publishmentSystemInfo), pluginId);
+                    var apiUrl = PluginJsonApi.GetUrl(PageUtils.OuterApiUrl, pluginId);
                     apiUrl = PageUtils.AddProtocolToUrl(apiUrl);
                     foreach (var link in pluginChannel.ContentLinks)
                     {
@@ -357,7 +357,7 @@ namespace SiteServer.BackgroundPages.Core
                 var pluginChannel = pluginChannels[pluginId];
                 if (pluginChannel?.ContentLinks != null && pluginChannel.ContentLinks.Count > 0)
                 {
-                    var apiUrl = JsonApi.GetUrl(PageUtility.GetInnerApiUrl(publishmentSystemInfo), pluginId);
+                    var apiUrl = PluginJsonApi.GetUrl(PageUtils.OuterApiUrl, pluginId);
                     apiUrl = PageUtils.AddProtocolToUrl(apiUrl);
                     foreach (var link in pluginChannel.ContentLinks)
                     {

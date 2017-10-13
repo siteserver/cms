@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages
                 _vcManager = VcManager.GetInstance(); // 构建验证码实例
                 if (Page.IsPostBack) return;
 
-                PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsFindPassword;
+                PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsAdminFindPassword;
 
                 if (Body.IsQueryExists("error")) // 如果url参数error不为空，则把错误信息显示到页面上
                 {
@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages
             }
 
             BaiRongDataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName); // 记录最后登录时间、失败次数清零
-            Body.AdministratorLogin(userName); // 写Cookie并记录管理员操作日志
+            Body.AdminLogin(userName); // 写Cookie并记录管理员操作日志
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty)); // 跳转到登录成功的后台页
         }
 
