@@ -480,12 +480,17 @@ namespace SiteServer.CMS.Plugin
             {
                 foreach (var pair in pairs)
                 {
-                    if (!(pair.Plugin is IRender plugin)) continue;
-
-                    if (plugin.Render != null)
+                    var plugin = pair.Plugin as IRender;
+                    if (plugin?.Render != null)
                     {
                         renders.Add(pair.Metadata.Id, plugin.Render);
                     }
+                    //if (!(pair.Plugin is IRender plugin)) continue;
+
+                    //if (plugin.Render != null)
+                    //{
+                    //    renders.Add(pair.Metadata.Id, plugin.Render);
+                    //}
                 }
             }
 
