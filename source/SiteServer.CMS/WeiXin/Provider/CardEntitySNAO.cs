@@ -8,7 +8,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class CardEntitySnDao : DataProviderBase
     {
-        private const string TableName = "wx_CardEntitySN";
+        public override string TableName => "wx_CardEntitySN";
 
         public int Insert(CardEntitySnInfo cardEntitySnInfo)
         {

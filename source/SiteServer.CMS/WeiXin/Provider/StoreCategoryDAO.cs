@@ -14,7 +14,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class StoreCategoryDao : DataProviderBase
     {
-        private const string TableName = "wx_StoreCategory";
+        public override string TableName => "wx_StoreCategory";
 
         private const string SqlSelect = "SELECT ID, PublishmentSystemID, CategoryName, ParentID, Taxis, ChildCount, ParentsCount, ParentsPath, StoreCount, IsLastNode FROM wx_StoreCategory WHERE ID = @ID";
 

@@ -9,7 +9,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class AlbumDao : DataProviderBase
     {
-        private const string TableName = "wx_Album";
+        public override string TableName => "wx_Album";
          
         public int Insert(AlbumInfo albumInfo)
         {

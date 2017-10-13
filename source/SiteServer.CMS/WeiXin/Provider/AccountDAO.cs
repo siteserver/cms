@@ -8,7 +8,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class AccountDao : DataProviderBase
     {
-        private const string TableName = "wx_Account";
+        public override string TableName => "wx_Account";
 
         public int Insert(AccountInfo accountInfo)
         {

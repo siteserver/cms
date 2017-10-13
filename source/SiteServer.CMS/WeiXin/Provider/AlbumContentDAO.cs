@@ -11,7 +11,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class AlbumContentDao : DataProviderBase
     {
-        private const string TableName = "wx_AlbumContent";
+        public override string TableName => "wx_AlbumContent";
          
         private const string SqlSelectAll = "SELECT ID, PublishmentSystemID, AlbumID, ParentID, Title, ImageUrl, LargeImageUrl FROM wx_AlbumContent WHERE PublishmentSystemID = @PublishmentSystemID AND AlbumID = @AlbumID AND ParentID = 0  ORDER BY ID ASC";
 

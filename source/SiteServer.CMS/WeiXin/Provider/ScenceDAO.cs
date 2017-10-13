@@ -6,7 +6,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class ScenceDao : DataProviderBase
     {
-        private const string TableName = "wx_Scence";
+        public override string TableName => "wx_Scence";
 
         public ScenceInfo GetScenceInfo(int scenceId)
         {

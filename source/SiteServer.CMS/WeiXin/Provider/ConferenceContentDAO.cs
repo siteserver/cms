@@ -9,7 +9,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class ConferenceContentDao : DataProviderBase
     {
-        private const string TableName = "wx_ConferenceContent";
+        public override string TableName => "wx_ConferenceContent";
 
 
         public void Insert(ConferenceContentInfo contentInfo)

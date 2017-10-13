@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Provider
 {
     public class CommentDao : DataProviderBase
     {
-        private const string TableName = "siteserver_Comment";
+        public override string TableName => "siteserver_Comment";
 
         private const string ParmId = "@ID";
         private const string ParmPublishmentSystemId = "@PublishmentSystemID";

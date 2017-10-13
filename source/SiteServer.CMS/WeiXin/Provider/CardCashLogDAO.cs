@@ -9,7 +9,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class CardCashLogDao : DataProviderBase
     {
-        private const string TableName = "wx_CardCashLog";
+        public override string TableName => "wx_CardCashLog";
          
         public int Insert(CardCashLogInfo cardCashLogInfo)
         {

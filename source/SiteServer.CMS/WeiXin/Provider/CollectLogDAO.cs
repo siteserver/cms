@@ -8,7 +8,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class CollectLogDao : DataProviderBase
     {
-        private const string TableName = "wx_CollectLog";
+        public override string TableName => "wx_CollectLog";
 
         public void Insert(CollectLogInfo logInfo)
         {

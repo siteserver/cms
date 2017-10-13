@@ -9,7 +9,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class CouponActDao : DataProviderBase
     {
-        private const string TableName = "wx_CouponAct";
+        public override string TableName => "wx_CouponAct";
 
         public int Insert(CouponActInfo actInfo)
         {

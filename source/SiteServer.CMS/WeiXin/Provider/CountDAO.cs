@@ -13,8 +13,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class CountDao : DataProviderBase
     {
-        private const string TableName = "wx_Count";
-
+        public override string TableName => "wx_Count";
 
         public int Insert(CountInfo countInfo)
         {

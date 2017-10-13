@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Runtime.Serialization;
-using System.IO;
-using System.Text;
-using System.Net;
 using System.Web.Security;
-using BaiRong.Text.LitJson;
 using BaiRong.Text.LitJson;
 
 namespace WxPayAPI

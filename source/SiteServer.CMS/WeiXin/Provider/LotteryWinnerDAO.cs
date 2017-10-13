@@ -10,7 +10,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class LotteryWinnerDao : DataProviderBase
     {
-        private const string TableName = "wx_LotteryWinner";
+        public override string TableName => "wx_LotteryWinner";
 
         public int Insert(LotteryWinnerInfo winnerInfo)
         {

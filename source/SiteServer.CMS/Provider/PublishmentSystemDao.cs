@@ -15,7 +15,7 @@ namespace SiteServer.CMS.Provider
 {
     public class PublishmentSystemDao : DataProviderBase
     {
-        public string TableName => "siteserver_PublishmentSystem";
+        public override string TableName => "siteserver_PublishmentSystem";
 
         private const string SqlSelectPublishmentSystemAll = "SELECT PublishmentSystemID, PublishmentSystemName, AuxiliaryTableForContent, IsCheckContentUseLevel, CheckContentLevel, PublishmentSystemDir, IsHeadquarters, ParentPublishmentSystemID, Taxis, SettingsXML FROM siteserver_PublishmentSystem ORDER BY Taxis";
 

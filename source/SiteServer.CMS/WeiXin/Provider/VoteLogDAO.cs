@@ -8,7 +8,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class VoteLogDao : DataProviderBase
     {
-        private const string TableName = "wx_VoteLog";
+        public override string TableName => "wx_VoteLog";
 
         public void Insert(VoteLogInfo logInfo)
         {

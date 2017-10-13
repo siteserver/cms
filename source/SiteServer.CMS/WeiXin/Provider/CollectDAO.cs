@@ -9,7 +9,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class CollectDao : DataProviderBase
     {
-        private const string TableName = "wx_Collect";
+        public override string TableName => "wx_Collect";
 
         public int Insert(CollectInfo collectInfo)
         {

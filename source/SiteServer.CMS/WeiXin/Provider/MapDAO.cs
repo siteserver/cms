@@ -9,8 +9,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class MapDao : DataProviderBase
     {
-        private const string TableName = "wx_Map";
-          
+        public override string TableName => "wx_Map";
          
         public int Insert(MapInfo mapInfo)
         {

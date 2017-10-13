@@ -9,7 +9,8 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class LotteryLogDao : DataProviderBase
     {
-        private const string TableName = "wx_LotteryLog";
+        public override string TableName => "wx_LotteryLog";
+
         public int Insert(LotteryLogInfo lotteryLogInfo)
         {
             var lotteryLogId = 0;

@@ -8,7 +8,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class SearchNavigationDao : DataProviderBase
     {
-        private const string TableName = "wx_SearchNavigation";
+        public override string TableName => "wx_SearchNavigation";
 
         public int Insert(SearchNavigationInfo searchNavigationInfo)
         {

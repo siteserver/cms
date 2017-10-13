@@ -9,7 +9,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class StoreDao : DataProviderBase
     {
-        private const string TableName = "wx_Store";
+        public override string TableName => "wx_Store";
 
         public int Insert(StoreInfo storeInfo)
         {

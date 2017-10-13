@@ -16,7 +16,7 @@ namespace SiteServer.CMS.Provider
 {
     public class NodeDao : DataProviderBase
     {
-        public string TableName => "siteserver_Node";
+        public override string TableName => "siteserver_Node";
 
         private const string SqlSelectNode = "SELECT NodeID, NodeName, NodeType, PublishmentSystemID, ContentModelID, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, NodeIndexName, NodeGroupNameCollection, Taxis, AddDate, ImageUrl, Content, ContentNum, FilePath, ChannelFilePathRule, ContentFilePathRule, LinkUrl, LinkType, ChannelTemplateID, ContentTemplateID, Keywords, Description, ExtendValues FROM siteserver_Node WHERE NodeID = @NodeID";
 

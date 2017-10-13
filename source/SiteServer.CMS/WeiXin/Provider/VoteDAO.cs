@@ -9,7 +9,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class VoteDao : DataProviderBase
     {
-        private const string TableName = "wx_Vote";
+        public override string TableName => "wx_Vote";
 
         public int Insert(VoteInfo voteInfo)
         {

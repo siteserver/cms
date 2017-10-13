@@ -10,7 +10,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class CardSnDao : DataProviderBase
     {
-        private const string TableName = "wx_CardSN";
+        public override string TableName => "wx_CardSN";
 
         public int Insert(CardSnInfo cardSnInfo)
         {

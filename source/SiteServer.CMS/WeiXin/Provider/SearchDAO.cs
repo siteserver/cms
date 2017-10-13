@@ -9,7 +9,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class SearchDao : DataProviderBase
     {
-        private const string TableName = "wx_Search";
+        public override string TableName => "wx_Search";
 
         public int Insert(SearchInfo searchInfo)
         {

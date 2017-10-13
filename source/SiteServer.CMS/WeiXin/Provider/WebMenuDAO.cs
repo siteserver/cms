@@ -13,7 +13,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class WebMenuDao : DataProviderBase
     {
-        private const string TableName = "wx_WebMenu";
+        public override string TableName => "wx_WebMenu";
 
         public int Insert(WebMenuInfo menuInfo)
         {

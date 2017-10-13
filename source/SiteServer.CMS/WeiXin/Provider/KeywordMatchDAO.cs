@@ -11,7 +11,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class KeywordMatchDao : DataProviderBase
     {
-        private const string TableName = "wx_KeywordMatch";
+        public override string TableName => "wx_KeywordMatch";
 
         private const string SqlDeleteByKeywordId = "DELETE FROM wx_KeywordMatch WHERE KeywordID = @KeywordID";
 

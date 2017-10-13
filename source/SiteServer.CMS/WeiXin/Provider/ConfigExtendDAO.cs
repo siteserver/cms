@@ -8,7 +8,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class ConfigExtendDao : DataProviderBase
     {
-        private const string TableName = "wx_ConfigExtend";
+        public override string TableName => "wx_ConfigExtend";
 
         public int Insert(ConfigExtendInfo configExtendInfo)
         {

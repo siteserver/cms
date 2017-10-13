@@ -9,7 +9,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class View360Dao : DataProviderBase
     {
-        private const string TableName = "wx_View360";
+        public override string TableName => "wx_View360";
 
         public int Insert(View360Info view360Info)
         {

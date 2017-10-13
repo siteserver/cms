@@ -12,7 +12,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 {
     public class CouponSnDao : DataProviderBase
     {
-        private const string TableName = "wx_CouponSN";
+        public override string TableName => "wx_CouponSN";
 
         public int Insert(CouponSnInfo couponSnInfo)
         {

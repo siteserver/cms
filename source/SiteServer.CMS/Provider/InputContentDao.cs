@@ -17,7 +17,7 @@ namespace SiteServer.CMS.Provider
 {
     public class InputContentDao : DataProviderBase
     {
-        public string TableName => "siteserver_InputContent";
+        public override string TableName => "siteserver_InputContent";
 
         public int Insert(InputContentInfo info)
         {
