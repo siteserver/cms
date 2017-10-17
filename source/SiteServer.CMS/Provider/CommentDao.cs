@@ -238,7 +238,7 @@ namespace SiteServer.CMS.Provider
             }
             string sqlWhereString =
                 $"WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeId} AND ContentID = {contentId} AND IsChecked = '{true}' {whereString}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
         }
 
         public string GetSelectedCommendByCheck(int publishmentSystemId)
@@ -246,7 +246,7 @@ namespace SiteServer.CMS.Provider
             string whereString =
                         $"WHERE PublishmentSystemID = {publishmentSystemId} AND IsChecked='{false}'";
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public int GetTotalCountWithChecked(int publishmentSystemId, int nodeId, int contentId)

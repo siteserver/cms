@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            var roles = BaiRongDataProvider.RoleDao.GetRolesForUser(_userName);
+            var roles = BaiRongDataProvider.AdministratorsInRolesDao.GetRolesForUser(_userName);
             if (_permissions.IsConsoleAdministrator)
             {
                 DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.ConsoleAdministrator, false));
@@ -82,7 +82,7 @@ namespace SiteServer.BackgroundPages.Settings
             LbAvailableRoles.Items.Clear();
             LbAssignedRoles.Items.Clear();
             var allRoles = _permissions.IsConsoleAdministrator ? BaiRongDataProvider.RoleDao.GetAllRoles() : BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName);
-            var userRoles = BaiRongDataProvider.RoleDao.GetRolesForUser(_userName);
+            var userRoles = BaiRongDataProvider.AdministratorsInRolesDao.GetRolesForUser(_userName);
             var userRoleNameArrayList = new ArrayList(userRoles);
             foreach (var roleName in allRoles)
             {
@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Settings
                         var selectedRoles = ControlUtils.GetSelectedListControlValueArray(LbAvailableRoles);
                         if (selectedRoles.Length > 0)
                         {
-                            BaiRongDataProvider.RoleDao.AddUserToRoles(_userName, selectedRoles);
+                            BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRoles(_userName, selectedRoles);
                         }
                     }
                     ListBoxDataBind();
@@ -132,7 +132,7 @@ namespace SiteServer.BackgroundPages.Settings
                     var roles = ControlUtils.GetListControlValues(LbAvailableRoles);
                     if (roles.Length > 0)
                     {
-                        BaiRongDataProvider.RoleDao.AddUserToRoles(_userName, roles);
+                        BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRoles(_userName, roles);
                     }
                     ListBoxDataBind();
                 }
@@ -152,7 +152,7 @@ namespace SiteServer.BackgroundPages.Settings
                     if (LbAssignedRoles.SelectedIndex != -1)
                     {
                         var selectedRoles = ControlUtils.GetSelectedListControlValueArray(LbAssignedRoles);
-                        BaiRongDataProvider.RoleDao.RemoveUserFromRoles(_userName, selectedRoles);
+                        BaiRongDataProvider.AdministratorsInRolesDao.RemoveUserFromRoles(_userName, selectedRoles);
                     }
                     ListBoxDataBind();
                 }
@@ -174,7 +174,7 @@ namespace SiteServer.BackgroundPages.Settings
                         var roles = ControlUtils.GetListControlValues(LbAssignedRoles);
                         if (roles.Length > 0)
                         {
-                            BaiRongDataProvider.RoleDao.RemoveUserFromRoles(_userName, roles);
+                            BaiRongDataProvider.AdministratorsInRolesDao.RemoveUserFromRoles(_userName, roles);
                         }
                         ListBoxDataBind();
                     }
@@ -195,9 +195,9 @@ namespace SiteServer.BackgroundPages.Settings
                 var allRoles = EPredefinedRoleUtils.GetAllPredefinedRoleName();
                 foreach (var roleName in allRoles)
                 {
-                    BaiRongDataProvider.RoleDao.RemoveUserFromRole(_userName, roleName);
+                    BaiRongDataProvider.AdministratorsInRolesDao.RemoveUserFromRole(_userName, roleName);
                 }
-                BaiRongDataProvider.RoleDao.AddUserToRole(_userName, DdlPredefinedRole.SelectedValue);
+                BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRole(_userName, DdlPredefinedRole.SelectedValue);
 
                 BaiRongDataProvider.AdministratorDao.UpdatePublishmentSystemIdCollection(_userName,
                     EPredefinedRoleUtils.Equals(EPredefinedRole.SystemAdministrator, DdlPredefinedRole.SelectedValue)

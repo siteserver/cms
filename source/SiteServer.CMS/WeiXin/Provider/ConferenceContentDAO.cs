@@ -16,7 +16,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         {
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(contentInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
 
             ExecuteNonQuery(sqlInsert, parms);
@@ -89,7 +89,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             {
                 whereString += $" AND {ConferenceContentAttribute.ConferenceId} = {conferenceId}";
             }
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<ConferenceContentInfo> GetConferenceContentInfoList(int publishmentSystemId, int conferenceId)
@@ -99,7 +99,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             string sqlWhere =
                 $" AND {ConferenceContentAttribute.PublishmentSystemId} = {publishmentSystemId} AND {ConferenceContentAttribute.ConferenceId} = {conferenceId}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

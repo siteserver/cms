@@ -64,7 +64,7 @@ namespace SiteServer.CMS.Provider
                 if (!string.IsNullOrEmpty(tableName))
                 {
                     string sqlWhere = $"WHERE ID = {contentId}";
-                    var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+                    var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                     using (var rdr = ExecuteReader(sqlSelect))
                     {
@@ -203,7 +203,7 @@ namespace SiteServer.CMS.Provider
 
             if (!isCreateSearchDuplicate)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(ID)", whereBuilder + " GROUP BY Title");
+                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(ID)", whereBuilder + " GROUP BY Title");
                 whereBuilder.Append($" AND ID IN ({sqlString}) ");
             }
 
@@ -317,7 +317,7 @@ namespace SiteServer.CMS.Provider
             whereString.Append(
                 $"WHERE (PublishmentSystemID = {publishmentSystemId} AND IsChecked='True' AND FileUrl <> '') ");
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 	}
 }

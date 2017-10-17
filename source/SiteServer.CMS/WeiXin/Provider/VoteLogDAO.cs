@@ -14,7 +14,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         {
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(logInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(logInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             ExecuteNonQuery(sqlInsert, parms);
         }
@@ -69,7 +69,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public string GetSelectString(int voteId)
         {
             string whereString = $"WHERE {VoteLogAttribute.VoteId} = {voteId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<VoteLogInfo> GetVoteLogInfoListByVoteId(int publishmentSystemId, int voteId)
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             string sqlWhere =
                 $"WHERE {VoteLogAttribute.PublishmentSystemId} = {publishmentSystemId} AND {VoteLogAttribute.VoteId} = '{voteId}'";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -100,7 +100,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere = $"WHERE {VoteLogAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
@@ -11,6 +11,32 @@ namespace BaiRong.Core.Provider
     public class ConfigDao : DataProviderBase
 	{
         public override string TableName => "bairong_Config";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(ConfigInfo.IsInitialized),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(ConfigInfo.DatabaseVersion),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(ConfigInfo.UpdateDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(ConfigInfo.SystemConfig),
+                DataType = DataType.NText
+            }
+        };
 
         private const string SqlInsertConfig = "INSERT INTO bairong_Config (IsInitialized, DatabaseVersion, UpdateDate, SystemConfig) VALUES (@IsInitialized, @DatabaseVersion, @UpdateDate, @SystemConfig)";
 
@@ -152,7 +178,7 @@ namespace BaiRong.Core.Provider
 
             string errorMessage;
             AdminManager.CreateAdministrator(administratorInfo, out errorMessage);
-            BaiRongDataProvider.RoleDao.AddUserToRole(userName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
+            BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRole(userName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
         }
     }
 }

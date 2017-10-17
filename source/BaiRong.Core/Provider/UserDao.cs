@@ -960,7 +960,7 @@ namespace BaiRong.Core.Provider
         public string GetSelectCommand(bool isChecked)
         {
             string whereString = $"WHERE IsChecked = '{isChecked}'";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public string GetSelectCommand(string searchWord, int dayOfCreate, int dayOfLastActivity, bool isChecked, int loginCount, string searchType)
@@ -1007,7 +1007,7 @@ namespace BaiRong.Core.Provider
                 whereString = $"WHERE IsChecked = '{isChecked}' {whereBuilder}";
             }
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public string GetSortFieldName()
@@ -1027,12 +1027,12 @@ namespace BaiRong.Core.Provider
 
             if (startNum <= 1)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
                 enumerable = (IEnumerable)ExecuteReader(sqlString);
             }
             else
             {
-                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
                 enumerable = (IEnumerable)ExecuteReader(sqlSelect);
             }
 

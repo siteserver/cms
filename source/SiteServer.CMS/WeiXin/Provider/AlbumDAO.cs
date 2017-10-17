@@ -17,7 +17,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(albumInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(albumInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
              
             using (var conn = GetConnection())
             {
@@ -44,7 +44,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public void Update(AlbumInfo albumInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(albumInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(albumInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
              
             ExecuteNonQuery(sqlUpdate, parms);
         }
@@ -108,7 +108,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             AlbumInfo albumInfo = null;
 
             string sqlWhere = $"WHERE ID = {albumId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -133,7 +133,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 sqlWhere += $" AND {AlbumAttribute.KeywordId} = {keywordId}";
             }
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -161,7 +161,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             var title = string.Empty;
 
             string sqlWhere = $"WHERE ID = {albumId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, AlbumAttribute.Title, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, AlbumAttribute.Title, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -178,7 +178,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public string GetSelectString(int publishmentSystemId)
         {
             string whereString = $"WHERE {AlbumAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<AlbumInfo> GetAlbumInfoList(int publishmentSystemId)
@@ -186,7 +186,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             var albumInfoList = new List<AlbumInfo>();
 
             string sqlWhere = $" AND {AlbumAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

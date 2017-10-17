@@ -156,7 +156,7 @@ namespace SiteServer.CMS.Plugin
                 }
                 else
                 {
-                    var columnNameList = BaiRongDataProvider.TableStructureDao.GetColumnNameList(tableName, true);
+                    var columnNameList = BaiRongDataProvider.DatabaseDao.GetColumnNameList(tableName, true);
                     foreach (var tableColumn in contentTable.ContentTableColumns)
                     {
                         if (columnNameList.Contains(tableColumn.AttributeName.ToLower())) continue;
@@ -166,7 +166,7 @@ namespace SiteServer.CMS.Plugin
                         BaiRongDataProvider.TableMetadataDao.Insert(tableMetadataInfo);
 
                         var columnSqlString = SqlUtils.GetColumnSqlString(DataTypeUtils.GetEnumType(tableColumn.DataType), tableColumn.AttributeName, tableColumn.DataLength);
-                        var sqlString = SqlUtils.GetAddColumnsSqlString(DataTypeUtils.GetEnumType(tableColumn.DataType), tableName, columnSqlString);
+                        var sqlString = SqlUtils.GetAddColumnsSqlString(tableName, columnSqlString);
 
                         try
                         {

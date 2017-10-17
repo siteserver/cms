@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Provider
             info.Taxis = GetMaxTaxis(info.InputId) + 1;
             info.BeforeExecuteNonQuery();
             IDataParameter[] parms;
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(info.GetExtendedAttributes(), TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(info.GetExtendedAttributes(), TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -54,7 +54,7 @@ namespace SiteServer.CMS.Provider
         {
             info.BeforeExecuteNonQuery();
             IDataParameter[] parms;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(info.GetExtendedAttributes(), TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(info.GetExtendedAttributes(), TableName, out parms);
 
             ExecuteNonQuery(sqlUpdate, parms);
         }
@@ -151,7 +151,7 @@ namespace SiteServer.CMS.Provider
         {
             InputContentInfo info = null;
             string sqlWhere = $"WHERE ID = {contentId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, sqlWhere);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, sqlWhere);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -194,7 +194,7 @@ namespace SiteServer.CMS.Provider
 
         private DataSet GetDataSetByWhereString(string whereString)
         {
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
             return ExecuteDataset(sqlSelect);
         }
 
@@ -213,7 +213,7 @@ namespace SiteServer.CMS.Provider
 
         private IEnumerable GetDataSourceByContentNumAndWhereString(int totalNum, string whereString, string orderByString)
         {
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, totalNum, SqlUtils.Asterisk, whereString, orderByString);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, totalNum, SqlUtils.Asterisk, whereString, orderByString);
             return (IEnumerable)ExecuteReader(sqlSelect);
         }
 
@@ -324,7 +324,7 @@ namespace SiteServer.CMS.Provider
         {
             var orderByString = ETaxisTypeUtils.GetInputContentOrderByString(ETaxisType.OrderByTaxisDesc);
             string where = $"WHERE (InputID = {inputId} {whereString}) {orderByString}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, "ID, Taxis", where);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, "ID, Taxis", where);
         }
 
         public string GetSelectSqlStringWithChecked(int publishmentSystemId, int inputId, bool isReplyExists, bool isReply, int startNum, int totalNum, string whereString, string orderByString, LowerNameValueCollection others)
@@ -359,7 +359,7 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
         }
 
         public string GetSortFieldName()

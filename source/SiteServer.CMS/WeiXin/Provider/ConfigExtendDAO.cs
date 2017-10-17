@@ -16,7 +16,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(configExtendInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(configExtendInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public void Update(ConfigExtendInfo configExtendInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(configExtendInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(configExtendInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             ExecuteNonQuery(sqlUpdate, parms);
         }
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere =
                 $"WHERE {ConfigExtendAttribute.PublishmentSystemId} = {publishmentSystemId} AND {ConfigExtendAttribute.FunctionId} = {functionId} AND {ConfigExtendAttribute.KeywordType}='{keywordType}' ";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

@@ -22,7 +22,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                     try
                     {
                         IDataParameter[] parms = null;
-                        var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(itemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+                        var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(itemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
                         itemId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
 
@@ -42,7 +42,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public void Update(CollectItemInfo itemInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(itemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(itemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
 
             ExecuteNonQuery(sqlUpdate, parms);
@@ -73,7 +73,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             CollectItemInfo collectItemInfo = null;
 
             string sqlWhere = $"WHERE ID = {itemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -93,7 +93,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere =
                 $"WHERE {CollectItemAttribute.CollectId} = {collectId} AND IsChecked = 'True' order by id desc";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -161,7 +161,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         {
             string whereString =
                 $"WHERE {CollectItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CollectItemAttribute.CollectId} = {collectId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public void Audit(int publishmentSystemId, int collectItemId)

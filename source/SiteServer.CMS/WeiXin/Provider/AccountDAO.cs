@@ -16,7 +16,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             IDataParameter[] parms;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(accountInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(accountInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public void Update(AccountInfo accountInfo)
         {
             IDataParameter[] parms;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(accountInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(accountInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             ExecuteNonQuery(sqlUpdate, parms);
         }
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             AccountInfo accountInfo = null;
 
             string sqlWhere = $"WHERE {AccountAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -83,7 +83,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere = $"WHERE {AccountAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

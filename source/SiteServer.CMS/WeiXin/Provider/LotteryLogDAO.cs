@@ -17,7 +17,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(lotteryLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(lotteryLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
                 IDataParameter[] parms = null;
 
-                var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(logInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+                var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(logInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
                 ExecuteNonQuery(sqlInsert, parms);
             }
@@ -124,7 +124,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             string sqlWhere =
                 $"WHERE {LotteryLogAttribute.LotteryId} = {lotteryId} AND {LotteryLogAttribute.CookieSn} = '{cookieSn}'";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -141,7 +141,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public string GetSelectString(int lotteryId)
         {
             string whereString = $"WHERE {LotteryLogAttribute.LotteryId} = {lotteryId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<LotteryLogInfo> GetLotteryLogInfoList(int publishmentSystemId, int lotteryId)
@@ -151,7 +151,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             string sqlWhere =
                 $"WHERE {LotteryLogAttribute.PublishmentSystemId} = {publishmentSystemId} AND {LotteryLogAttribute.LotteryId} = {lotteryId}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

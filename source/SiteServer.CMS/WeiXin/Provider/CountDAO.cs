@@ -140,7 +140,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere = $"WHERE {CountAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

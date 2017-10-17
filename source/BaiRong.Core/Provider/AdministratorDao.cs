@@ -16,6 +16,106 @@ namespace BaiRong.Core.Provider
     {
         public override string TableName => "bairong_Administrator";
 
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.UserName),
+                DataType = DataType.NVarChar,
+                Length = 255,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.Password),
+                DataType = DataType.NVarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.PasswordFormat),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.PasswordSalt),
+                DataType = DataType.NVarChar,
+                Length = 128
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.CreationDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.LastActivityDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.CountOfLogin),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.CountOfFailedLogin),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.CreatorUserName),
+                DataType = DataType.NVarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.IsLockedOut),
+                DataType = DataType.NVarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.PublishmentSystemIdCollection),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.DepartmentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.AreaId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.DisplayName),
+                DataType = DataType.NVarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.Email),
+                DataType = DataType.NVarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdministratorInfo.Mobile),
+                DataType = DataType.VarChar,
+                Length = 20
+            }
+        };
+
         private const string SqlSelectUser = "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectUserByEmail = "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE Email = @Email";
@@ -434,7 +534,7 @@ namespace BaiRong.Core.Provider
                     whereString = $"AND {whereBuilder}";
                 }
                 whereString =
-                    $"WHERE (UserName IN (SELECT UserName FROM bairong_AdministratorsInRoles WHERE RoleName = '{PageUtils.FilterSql(roleName)}')) {whereString}";
+                    $"WHERE (UserName IN (SELECT UserName FROM {BaiRongDataProvider.AdministratorsInRolesDao.TableName} WHERE RoleName = '{PageUtils.FilterSql(roleName)}')) {whereString}";
             }
             else
             {

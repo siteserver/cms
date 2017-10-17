@@ -1735,7 +1735,7 @@ ORDER BY Taxis";
             string sqlWhereString =
                 $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) {whereString})";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
 
             return (IEnumerable)ExecuteReader(sqlSelect);
         }
@@ -1744,7 +1744,7 @@ ORDER BY Taxis";
         {
             string sqlWhereString = $"WHERE (PublishmentSystemID = {publishmentSystemId} {whereString})";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
 
             return ExecuteDataset(sqlSelect);
         }
@@ -1759,7 +1759,7 @@ ORDER BY Taxis";
             string sqlWhereString =
                 $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) {whereString})";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
 
             return ExecuteDataset(sqlSelect);
         }
@@ -1768,7 +1768,7 @@ ORDER BY Taxis";
         {
             string sqlWhereString = $"WHERE (PublishmentSystemID = {publishmentSystemId} {whereString})";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
 
             return ExecuteDataset(sqlSelect);
         }

@@ -17,7 +17,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(messageInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(messageInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -44,7 +44,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public void Update(MessageInfo messageInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(messageInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(messageInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             ExecuteNonQuery(sqlUpdate, parms);
         }
@@ -54,7 +54,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             var messageIdList = new List<int>();
 
             string sqlWhere = $"WHERE {MessageAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, MessageAttribute.Id, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, MessageAttribute.Id, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -177,7 +177,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             MessageInfo messageInfo = null;
 
             string sqlWhere = $"WHERE ID = {messageId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -202,7 +202,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 sqlWhere += $" AND {MessageAttribute.KeywordId} = {keywordId}";
             }
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -222,7 +222,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             var title = string.Empty;
 
             string sqlWhere = $"WHERE ID = {messageId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, MessageAttribute.Title, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, MessageAttribute.Title, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -247,7 +247,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public string GetSelectString(int publishmentSystemId)
         {
             string whereString = $"WHERE {MessageAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<MessageInfo> GetMessageInfoList(int publishmentSystemId)
@@ -256,7 +256,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere = $"WHERE {MessageAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

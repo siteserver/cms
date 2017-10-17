@@ -1,13 +1,38 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using SiteServer.Plugin;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class DbCacheDao : DataProviderBase
     {
+        public override string TableName => "bairong_DbCache";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = "CacheKey",
+                DataType = DataType.VarChar,
+                Length = 200,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "CacheValue",
+                DataType = DataType.NVarChar,
+                Length = 500
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "AddDate",
+                DataType = DataType.DateTime
+            }
+        };
+
         private const string SqlSelectValue = "SELECT CacheValue FROM bairong_DbCache WHERE CacheKey = @CacheKey";
 
         private const string SqlSelectCount = "SELECT COUNT(*) FROM bairong_DbCache";

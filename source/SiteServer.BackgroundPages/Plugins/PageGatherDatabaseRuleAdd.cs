@@ -211,7 +211,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 }
                 if (isSuccess)
                 {
-                    var dictionary = BaiRongDataProvider.TableStructureDao.GetTablesAndViewsDictionary(GetDatabaseConnectionString(), DatabaseName.SelectedValue);
+                    var dictionary = BaiRongDataProvider.DatabaseDao.GetTablesAndViewsDictionary(GetDatabaseConnectionString(), DatabaseName.SelectedValue);
                     RelatedTableName.Items.Clear();
                     var item = new ListItem("请选择表或视图", string.Empty);
                     RelatedTableName.Items.Add(item);
@@ -238,7 +238,7 @@ namespace SiteServer.BackgroundPages.Plugins
             }
             else
             {
-                var tableColumnInfoList = BaiRongDataProvider.TableStructureDao.GetTableColumnInfoList(GetDatabaseConnectionString(), DatabaseName.SelectedValue, RelatedTableName.SelectedValue);
+                var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetTableColumnInfoList(GetDatabaseConnectionString(), DatabaseName.SelectedValue, RelatedTableName.SelectedValue);
                 RelatedIdentity.Items.Clear();
                 RelatedOrderBy.Items.Clear();
                 var item = new ListItem("请选择主键字段名称", string.Empty);
@@ -392,7 +392,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 return false;
             }
 
-            var databaseNameList = BaiRongDataProvider.TableStructureDao.GetDatabaseNameList(GetConnectionString());
+            var databaseNameList = BaiRongDataProvider.DatabaseDao.GetDatabaseNameList(GetConnectionString());
             DatabaseName.Items.Clear();
             var item = new ListItem("请选择数据库", string.Empty);
             DatabaseName.Items.Add(item);
@@ -602,7 +602,7 @@ namespace SiteServer.BackgroundPages.Plugins
             Columns.Items.Clear();
             ColumnsToMatch.Items.Clear();
 
-            var tableColumnInfoList = BaiRongDataProvider.TableStructureDao.GetTableColumnInfoList(GetDatabaseConnectionString(), DatabaseName.SelectedValue, RelatedTableName.SelectedValue);
+            var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetTableColumnInfoList(GetDatabaseConnectionString(), DatabaseName.SelectedValue, RelatedTableName.SelectedValue);
             var columnToMatchArrayList = new ArrayList();
             foreach (var tableColumnInfo in tableColumnInfoList)
             {

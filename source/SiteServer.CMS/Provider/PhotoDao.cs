@@ -157,7 +157,7 @@ namespace SiteServer.CMS.Provider
             var orderByString = "ORDER BY Taxis";
             string whereString = $"WHERE (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId})";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, whereString, orderByString);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, whereString, orderByString);
 
             return (IEnumerable)ExecuteReader(sqlSelect);
         }

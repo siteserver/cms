@@ -17,7 +17,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(appointmentItemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(appointmentItemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
              
             
             using (var conn = GetConnection())
@@ -45,7 +45,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public void Update(AppointmentItemInfo appointmentItemInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(appointmentItemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(appointmentItemInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
              
 
             ExecuteNonQuery(sqlUpdate, parms);
@@ -134,7 +134,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             AppointmentItemInfo appointmentItemInfo = null;
 
             string sqlWhere = $"WHERE ID = {appointmentItemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -154,7 +154,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere =
                 $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {AppointmentItemAttribute.AppointmentId} = {appointmentId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -174,7 +174,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere =
                 $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {AppointmentItemAttribute.AppointmentId} = {appointmentId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, AppointmentItemAttribute.Id, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, AppointmentItemAttribute.Id, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -193,7 +193,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             var itemIdList = new List<int>();
 
             string sqlWhere = $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, AppointmentItemAttribute.Id, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, AppointmentItemAttribute.Id, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -213,7 +213,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere =
                 $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {AppointmentItemAttribute.AppointmentId} = {appointmentId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -240,7 +240,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                     $"WHERE  {AppointmentItemAttribute.Id} IN (SELECT AppointmentItemID FROM wx_AppointmentContent WHERE WXOpenID = '{PageUtils.FilterSql(wxOpenId)}')";
             }
             
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -261,7 +261,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             var title = string.Empty;
 
             string sqlWhere = $"WHERE ID = {appointmentItemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, AppointmentItemAttribute.Title, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, AppointmentItemAttribute.Title, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -279,7 +279,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         {
             string whereString =
                 $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId} AND {AppointmentItemAttribute.AppointmentId} = {appointmentId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<AppointmentItemInfo> GetAppointmentItemInfoList(int publishmentSystemId)
@@ -287,7 +287,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             var list = new List<AppointmentItemInfo>();
 
             string sqlWhere = $"WHERE {AppointmentItemAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

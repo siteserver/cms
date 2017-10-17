@@ -13,7 +13,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             ScenceInfo scenceInfo = null;
 
             string sqlWhere = $"WHERE ID = {scenceId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

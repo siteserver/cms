@@ -129,7 +129,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public string GetSelectString(int publishmentSystemId)
         {
             string whereString = $"WHERE PublishmentSystemID = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString("wx_KeywordMatch", SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString("wx_KeywordMatch", SqlUtils.Asterisk, whereString);
         }
 
         public string GetSelectString(int publishmentSystemId, string keywordType, string keyword)
@@ -143,7 +143,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             {
                 whereString += $" AND Keyword LIKE '%{keyword}%'";
             }
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString("wx_KeywordMatch", SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString("wx_KeywordMatch", SqlUtils.Asterisk, whereString);
         }
 
         public string GetSortField()
@@ -177,7 +177,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             string sqlWhere =
                 $"WHERE {KeywordMatchAttribute.PublishmentSystemId} = {publishmentSystemId} AND {KeywordMatchAttribute.KeywordId} = {keyWordId}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

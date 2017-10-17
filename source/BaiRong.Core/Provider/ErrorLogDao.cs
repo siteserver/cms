@@ -18,7 +18,8 @@ namespace BaiRong.Core.Provider
             {
                 ColumnName = nameof(ErrorLogInfo.Id),
                 DataType = DataType.Integer,
-                IsIdentity = true
+                IsIdentity = true,
+                IsPrimaryKey = true
             },
             new TableColumnInfo
             {

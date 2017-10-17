@@ -20,7 +20,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(couponSnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(couponSnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
 
             using (var conn = GetConnection())
@@ -80,7 +80,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public void Update(CouponSnInfo couponSnInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(couponSnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(couponSnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             ExecuteNonQuery(sqlUpdate, parms);
 
@@ -170,7 +170,7 @@ ORDER BY ID";
             CouponSnInfo snInfo = null;
 
             string sqlWhere = $"WHERE ID = {snId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -198,7 +198,7 @@ ORDER BY ID";
                 builder = new StringBuilder(
                     $"WHERE {CouponSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponSnAttribute.WxOpenId} = '{uniqueId}'");
             }
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -238,7 +238,7 @@ ORDER BY ID";
         {
             string whereString =
                 $"WHERE {CouponSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponSnAttribute.CouponId} = {couponId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<CouponSnInfo> GetCouponSnInfoList(int publishmentSystemId, int couponId)
@@ -248,7 +248,7 @@ ORDER BY ID";
             string sqlWhere =
                 $"WHERE {CouponSnAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponSnAttribute.CouponId} = {couponId}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

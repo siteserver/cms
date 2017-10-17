@@ -1,14 +1,50 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class CountDao : DataProviderBase
     {
-        // Static constants
+        public override string TableName => "bairong_Count";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CountInfo.CountId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CountInfo.RelatedTableName),
+                DataType = DataType.NVarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CountInfo.RelatedIdentity),
+                DataType = DataType.NVarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CountInfo.CountType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CountInfo.CountNum),
+                DataType = DataType.Integer
+            }
+        };
+
         private const string SqlSelectCountNum = "SELECT CountNum FROM bairong_Count WHERE RelatedTableName = @RelatedTableName AND RelatedIdentity = @RelatedIdentity AND CountType = @CountType";
 
         private const string SqlDeleteByRelatedTableName = "DELETE FROM bairong_Count WHERE RelatedTableName = @RelatedTableName";

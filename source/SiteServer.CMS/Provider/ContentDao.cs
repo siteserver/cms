@@ -139,7 +139,7 @@ namespace SiteServer.CMS.Provider
                 if (!string.IsNullOrEmpty(tableName))
                 {
                     string sqlWhere = $"WHERE NodeId > 0 AND Id = {contentId}";
-                    var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+                    var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                     using (var rdr = ExecuteReader(sqlSelect))
                     {
@@ -165,7 +165,7 @@ namespace SiteServer.CMS.Provider
                 if (!string.IsNullOrEmpty(tableName))
                 {
                     string sqlWhere = $"WHERE Id = {contentId}";
-                    var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+                    var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                     using (var rdr = ExecuteReader(sqlSelect))
                     {
@@ -594,7 +594,7 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
         public string GetSelectCommendByContentGroup(string tableName, string contentGroupName, int publishmentSystemId)
@@ -630,13 +630,13 @@ namespace SiteServer.CMS.Provider
 
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
+                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
                 sqlWhereString += $" AND Id IN ({sqlString})";
             }
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, BaiRongDataProvider.ContentDao.StlColumns, sqlWhereString, orderByString);
+                return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, BaiRongDataProvider.ContentDao.StlColumns, sqlWhereString, orderByString);
             }
             return string.Empty;
         }
@@ -647,13 +647,13 @@ namespace SiteServer.CMS.Provider
                     $"WHERE (NodeId > 0 AND IsChecked = '{true}' {whereString})";
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
+                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
                 sqlWhereString += $" AND Id IN ({sqlString})";
             }
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, $"{ContentAttribute.Id}, {ContentAttribute.NodeId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}", sqlWhereString, orderByString);
+                return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, $"{ContentAttribute.Id}, {ContentAttribute.NodeId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}", sqlWhereString, orderByString);
             }
             return string.Empty;
         }
@@ -690,7 +690,7 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(tableName))
             {
                 string sqlWhere = $"WHERE Title = {title}";
-                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                 using (var rdr = ExecuteReader(sqlSelect))
                 {

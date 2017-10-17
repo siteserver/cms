@@ -16,7 +16,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             int cardCashLogId;
 
             IDataParameter[] parms;
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(cardCashLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(cardCashLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
              
             using (var conn = GetConnection())
             {
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public void Update(CardCashLogInfo cardCashLogInfo)
         {
             IDataParameter[] parms;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(cardCashLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(cardCashLogInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             ExecuteNonQuery(sqlUpdate, parms);
         }
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             CardCashLogInfo cardCashLogInfo = null;
 
             string sqlWhere = $"WHERE ID = {cardCashLogId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -97,7 +97,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 sqlWhere += $" AND AddDate >='{startDate}' AND AddDate < '{endDate}'";
             }
             string sqlOrder = $" ORDER BY {CardCashLogAttribute.AddDate} DESC";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, sqlOrder);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, sqlOrder);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -186,7 +186,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 whereString +=
                     $" AND {CardCashLogAttribute.UserName} IN (SELECT UserName FROM bairong_Users WHERE Mobile='{PageUtils.FilterSql(mobile)}')";
             }
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<CardCashLogInfo> GetCardCashLogInfoList(int publishmentSystemId, int cardId, int cardSnid)
@@ -197,7 +197,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 $"WHERE PublishmentSystemID={publishmentSystemId} AND CardID = {cardId} AND CardSNID = {cardSnid}";
             
             string sqlOrder = $" ORDER BY {CardCashLogAttribute.AddDate} DESC";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, sqlOrder);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, sqlOrder);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

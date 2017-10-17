@@ -14,7 +14,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         {
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(logInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(logInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
 
 
@@ -71,7 +71,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public string GetSelectString(int collectId)
         {
             string whereString = $"WHERE {CollectLogAttribute.CollectId} = {collectId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<CollectLogInfo> GetCollectLogInfoList(int publishmentSystemId, int collectId, int collectItemId)
@@ -81,7 +81,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere =
                 $"WHERE {CollectLogAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CollectLogAttribute.CollectId} = {collectId} AND {CollectLogAttribute.ItemId} = {collectItemId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

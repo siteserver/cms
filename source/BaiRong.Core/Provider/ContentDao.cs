@@ -25,7 +25,7 @@ namespace BaiRong.Core.Provider
             contentInfo.IsTop = contentInfo.IsTop;
 
             IDataParameter[] parms;
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -69,7 +69,7 @@ namespace BaiRong.Core.Provider
             if (!string.IsNullOrEmpty(tableName))
             {
                 contentInfo.Attributes.BeforeExecuteNonQuery();
-                sqlString = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
+                sqlString = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
             }
 
             if (!string.IsNullOrEmpty(sqlString))
@@ -512,7 +512,7 @@ namespace BaiRong.Core.Provider
 
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(Id)", whereString + " GROUP BY Title");
+                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", whereString + " GROUP BY Title");
                 whereString.Append($"AND Id IN ({sqlString})");
             }
 
@@ -527,7 +527,7 @@ namespace BaiRong.Core.Provider
 
             whereString.Append(" ").Append(orderByString);
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
         public string GetSelectCommendByWhere(string tableName, int publishmentSystemId, List<int> nodeIdList, string where, ETriState checkedState)
@@ -557,7 +557,7 @@ namespace BaiRong.Core.Provider
 
             whereString.Append(orderByString);
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
         public string GetSelectCommend(string tableName, int nodeId, ETriState checkedState)
@@ -578,7 +578,7 @@ namespace BaiRong.Core.Provider
 
             //whereString.Append(orderByString);
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
         }
 
         public string GetSelectCommend(string tableName, int nodeId, ETriState checkedState, string userNameOnly)
@@ -604,7 +604,7 @@ namespace BaiRong.Core.Provider
 
             //whereString.Append(orderByString);
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString(), orderByString);
         }
 
         public string GetSelectCommend(string tableName, List<int> nodeIdList, ETriState checkedState)
@@ -628,7 +628,7 @@ namespace BaiRong.Core.Provider
 
             whereString.Append(orderByString);
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
         public string GetSelectCommendByHitsAnalysis(string tableName, int publishmentSystemId)
@@ -639,7 +639,7 @@ namespace BaiRong.Core.Provider
             whereString.Append($"AND IsChecked='{true}' AND PublishmentSystemId = {publishmentSystemId} AND Hits > 0");
             whereString.Append(orderByString);
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
         public string GetValue(string tableName, int contentId, string name)
@@ -1081,7 +1081,7 @@ group by tmp.userName";
                 whereString = owningNodeIdList.Count == 1 ? $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {owningNodeIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}) " : $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}) ";
             }
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
         }
 
         public DataSet GetStlDataSourceChecked(ETableStyle tableStyle, string tableName, List<int> nodeIdList, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
@@ -1094,7 +1094,7 @@ group by tmp.userName";
 
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
+                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
                 sqlWhereString += $" AND Id IN ({sqlString})";
             }
 
@@ -1238,7 +1238,7 @@ group by tmp.userName";
             DataSet dataset = null;
             if (!string.IsNullOrEmpty(tableName))
             {
-                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, totalNum, StlColumns, whereString, orderByString);
+                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, totalNum, StlColumns, whereString, orderByString);
                 dataset = ExecuteDataset(sqlSelect);
             }
             return dataset;
@@ -1249,7 +1249,7 @@ group by tmp.userName";
             DataSet dataset = null;
             if (!string.IsNullOrEmpty(tableName))
             {
-                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, StlColumns, whereString, orderByString);
+                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, StlColumns, whereString, orderByString);
                 dataset = ExecuteDataset(sqlSelect);
             }
             return dataset;

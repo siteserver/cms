@@ -31,14 +31,14 @@ CREATE TABLE bairong_Record(
 
 mysql
 
-CREATE TABLE bairong_ErrorLog(
+CREATE TABLE bairong_Record(
     Id            INT                      AUTO_INCREMENT,
     Text    NATIONAL VARCHAR(2000),
     Summary       NATIONAL VARCHAR(2000),
     Source        NATIONAL VARCHAR(200),
     AddDate       DATETIME,
     PRIMARY KEY (Id)
-)ENGINE=INNODB
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
     **/
 
         private void Insert(string text, string summary, string source)

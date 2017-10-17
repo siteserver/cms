@@ -17,7 +17,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(couponInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(couponInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
 
             using (var conn = GetConnection())
@@ -45,7 +45,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public void Update(CouponInfo couponInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(couponInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(couponInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             ExecuteNonQuery(sqlUpdate, parms);
         }
@@ -88,7 +88,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             CouponInfo couponInfo = null;
 
             string sqlWhere = $"WHERE ID = {couponId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -105,7 +105,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public string GetSelectString(int publishmentSystemId)
         {
             string whereString = $"WHERE {CouponAttribute.PublishmentSystemId} = {publishmentSystemId}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public Dictionary<string, int> GetCouponDictionary(int actId)
@@ -113,7 +113,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             var dictionary = new Dictionary<string, int>();
 
             string sqlWhere = $"WHERE {CouponAttribute.ActId} = {actId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, CouponAttribute.Title + "," + CouponAttribute.TotalNum, sqlWhere);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, CouponAttribute.Title + "," + CouponAttribute.TotalNum, sqlWhere);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -133,7 +133,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             var builder = new StringBuilder(
                 $"WHERE {CouponAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponAttribute.ActId} = {actId}");
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -154,7 +154,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             var builder = new StringBuilder(
                 $"WHERE {CouponAttribute.PublishmentSystemId} = {publishmentSystemId} AND {CouponAttribute.TotalNum} > 0");
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, builder.ToString(), "ORDER BY ID");
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -175,7 +175,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere = $"WHERE {CouponAttribute.PublishmentSystemId} = {publishmentSystemId}";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

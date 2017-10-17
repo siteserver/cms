@@ -329,7 +329,7 @@ namespace SiteServer.CMS.Provider
             {
                 orderByString = "ORDER BY IsHeadquarters DESC, ParentPublishmentSystemID, Taxis DESC, PublishmentSystemID";
 
-                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
 
                 ie = (IEnumerable)ExecuteReader(sqlSelect);
             }

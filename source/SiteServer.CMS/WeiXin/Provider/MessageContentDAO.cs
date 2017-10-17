@@ -17,7 +17,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(contentInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(contentInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -131,7 +131,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             {
                 whereString += $" AND {MessageContentAttribute.MessageId} = {messageId}";
             }
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<MessageContentInfo> GetContentInfoList(int messageId, int startNum, int totalNum)
@@ -140,7 +140,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere =
                 $"WHERE {MessageContentAttribute.IsReply} = '{false}' AND {MessageContentAttribute.MessageId} = {messageId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhere, "ORDER BY ID DESC");
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhere, "ORDER BY ID DESC");
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -161,7 +161,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere =
                 $"WHERE {MessageContentAttribute.IsReply} = '{true}' AND {MessageContentAttribute.MessageId} = {messageId} AND {MessageContentAttribute.ReplyId} = {replyId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, "ORDER BY ID DESC");
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, "ORDER BY ID DESC");
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -182,7 +182,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             string sqlWhere =
                 $"WHERE {MessageContentAttribute.PublishmentSystemId} = {publishmentSystemId} AND {MessageContentAttribute.MessageId} = {messageId} AND ReplyID = 0";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

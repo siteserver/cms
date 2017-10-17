@@ -9,11 +9,11 @@ namespace BaiRong.Core
         private static AdministratorDao _administratorDao;
         public static AdministratorDao AdministratorDao => _administratorDao ?? (_administratorDao = new AdministratorDao());
 
+        private static AdministratorsInRolesDao _administratorsInRolesDao;
+        public static AdministratorsInRolesDao AdministratorsInRolesDao => _administratorsInRolesDao ?? (_administratorsInRolesDao = new AdministratorsInRolesDao());
+
         private static AreaDao _areaDao;
         public static AreaDao AreaDao => _areaDao ?? (_areaDao = new AreaDao());
-
-        private static AuxiliaryTableDataDao _auxiliaryTableDataDao;
-        public static AuxiliaryTableDataDao AuxiliaryTableDataDao => _auxiliaryTableDataDao ?? (_auxiliaryTableDataDao = new AuxiliaryTableDataDao());
 
         private static ConfigDao _configDao;
         public static ConfigDao ConfigDao => _configDao ?? (_configDao = new ConfigDao());
@@ -63,9 +63,6 @@ namespace BaiRong.Core
         private static TableMetadataDao _tableMetadataDao;
         public static TableMetadataDao TableMetadataDao => _tableMetadataDao ?? (_tableMetadataDao = new TableMetadataDao());
 
-        private static TableStructureDao _tableStructureDao;
-        public static TableStructureDao TableStructureDao => _tableStructureDao ?? (_tableStructureDao = new TableStructureDao());
-
         private static TableStyleDao _tableStyleDao;
         public static TableStyleDao TableStyleDao => _tableStyleDao ?? (_tableStyleDao = new TableStyleDao());
 
@@ -81,8 +78,8 @@ namespace BaiRong.Core
         public static List<DataProviderBase> AllProviders => new List<DataProviderBase>
         {
             AdministratorDao,
+            AdministratorsInRolesDao,
             AreaDao,
-            AuxiliaryTableDataDao,
             ConfigDao,
             ContentCheckDao,
             ContentDao,
@@ -99,7 +96,6 @@ namespace BaiRong.Core
             TableCollectionDao,
             TableMatchDao,
             TableMetadataDao,
-            TableStructureDao,
             TableStyleDao,
             TagDao,
             UserDao,

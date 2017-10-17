@@ -378,7 +378,7 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    var roles = BaiRongDataProvider.RoleDao.GetRolesForUser(adminUserName);
+                    var roles = BaiRongDataProvider.AdministratorsInRolesDao.GetRolesForUser(adminUserName);
                     var ps = new ProductAdministratorWithPermissions(adminUserName);
                     foreach (var itemForPsid in ps.WebsitePermissionDict.Keys)
                     {

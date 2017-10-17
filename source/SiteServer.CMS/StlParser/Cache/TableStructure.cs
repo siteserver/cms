@@ -20,7 +20,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = BaiRongDataProvider.TableStructureDao.GetSelectSqlStringByQueryString(connectionString,
+                    retval = BaiRongDataProvider.DatabaseDao.GetSelectSqlStringByQueryString(connectionString,
                     queryString, startNum, totalNum, orderByString);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }

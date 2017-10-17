@@ -16,7 +16,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             IDataParameter[] parms = null;
 
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(cardEntitySnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(cardEntitySnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.WeiXin.Provider
         public void Update(CardEntitySnInfo cardEntitySnInfo)
         {
             IDataParameter[] parms = null;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(cardEntitySnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(cardEntitySnInfo.ToNameValueCollection(), ConnectionString, TableName, out parms);
 
             ExecuteNonQuery(sqlUpdate, parms);
         }
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             CardEntitySnInfo cardEntitySnInfo = null;
 
             string sqlWhere = $"WHERE ID = {cardEntitySnid}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -107,7 +107,7 @@ namespace SiteServer.CMS.WeiXin.Provider
                 sqlWhere += $" AND {CardEntitySnAttribute.Mobile}='{PageUtils.FilterSql(mobile)}'";
             }
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -127,7 +127,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere =
                 $"WHERE {CardEntitySnAttribute.PublishmentSystemId}= {publishmentSystemId} AND {CardEntitySnAttribute.CardId}={cardId} AND {CardEntitySnAttribute.Sn}='{PageUtils.FilterSql(cardSn)}' ";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -147,7 +147,7 @@ namespace SiteServer.CMS.WeiXin.Provider
 
             string sqlWhere =
                 $"WHERE {CardEntitySnAttribute.PublishmentSystemId}= {publishmentSystemId} AND {CardEntitySnAttribute.CardId}={cardId} AND {CardEntitySnAttribute.Mobile}='{PageUtils.FilterSql(mobile)}' ";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, null);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -177,7 +177,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             {
                 whereString += $" AND {CardEntitySnAttribute.Mobile} ='{PageUtils.FilterSql(mobile)}')";
             }
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public List<CardEntitySnInfo> GetCardEntitySnInfoList(int publishmentSystemId, int cardId)
@@ -188,7 +188,7 @@ namespace SiteServer.CMS.WeiXin.Provider
             string sqlWhere = $"WHERE PublishmentSystemID={publishmentSystemId} AND CardID = {cardId}";
 
             string sqlOrder = $" ORDER BY {CardEntitySnAttribute.AddDate} DESC";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, sqlOrder);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(ConnectionString, TableName, 0, SqlUtils.Asterisk, sqlWhere, sqlOrder);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {

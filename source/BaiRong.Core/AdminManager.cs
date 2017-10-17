@@ -110,7 +110,7 @@ namespace BaiRong.Core
                 if (isCreated == false) return false;
 
                 var roles = new[] { EPredefinedRoleUtils.GetValue(EPredefinedRole.Administrator) };
-                BaiRongDataProvider.RoleDao.AddUserToRoles(administratorInfo.UserName, roles);
+                BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRoles(administratorInfo.UserName, roles);
 
                 return true;
             }
@@ -128,7 +128,7 @@ namespace BaiRong.Core
             var isConsoleAdministrator = false;
             var isSystemAdministrator = false;
             var arraylist = new ArrayList();
-            var roles = BaiRongDataProvider.RoleDao.GetRolesForUser(userName);
+            var roles = BaiRongDataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
             foreach (var role in roles)
             {
                 if (!EPredefinedRoleUtils.IsPredefinedRole(role))
@@ -169,14 +169,14 @@ namespace BaiRong.Core
 
         public static bool HasChannelPermissionIsConsoleAdministrator(string userName)
         {
-            var roles = BaiRongDataProvider.RoleDao.GetRolesForUser(userName);
+            var roles = BaiRongDataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
 
             return EPredefinedRoleUtils.IsConsoleAdministrator(roles);
         }
 
         public static bool HasChannelPermissionIsSystemAdministrator(string userName)
         {
-            var roles = BaiRongDataProvider.RoleDao.GetRolesForUser(userName);
+            var roles = BaiRongDataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
 
             return EPredefinedRoleUtils.IsSystemAdministrator(roles);
         }

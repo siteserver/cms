@@ -12,6 +12,60 @@ namespace BaiRong.Core.Provider
     {
         public override string TableName => "bairong_Area";
 
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AreaInfo.AreaId),
+                DataType = DataType.Integer,
+                IsPrimaryKey = true,
+                IsIdentity = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AreaInfo.AreaName),
+                DataType = DataType.NVarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AreaInfo.ParentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AreaInfo.ParentsPath),
+                DataType = DataType.NVarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AreaInfo.ParentsCount),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AreaInfo.ChildrenCount),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AreaInfo.IsLastNode),
+                DataType = DataType.NVarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AreaInfo.Taxis),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AreaInfo.CountOfAdmin),
+                DataType = DataType.Integer
+            }
+        };
+
         private const string SqlSelect = "SELECT AreaID, AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin FROM bairong_Area WHERE AreaID = @AreaID";
         private const string SqlSelectAll = "SELECT AreaID, AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin FROM bairong_Area ORDER BY TAXIS";
         private const string SqlSelectCount = "SELECT COUNT(*) FROM bairong_Area WHERE ParentID = @ParentID";

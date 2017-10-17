@@ -82,7 +82,7 @@ namespace SiteServer.CMS.Core.Permissions
                         }
                         else
                         {
-                            _roles = BaiRongDataProvider.RoleDao.GetRolesForUser(UserName);
+                            _roles = BaiRongDataProvider.AdministratorsInRolesDao.GetRolesForUser(UserName);
                             CacheUtils.InsertMinutes(_rolesKey, _roles, 30);
                         }
                     }
