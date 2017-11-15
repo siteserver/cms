@@ -1,5 +1,4 @@
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin.Models;
 
@@ -28,7 +27,7 @@ namespace SiteServer.CMS.Model
 
 		public bool IsCloseable
 		{
-            get { return GetBool("IsCloseable", false); }
+            get { return GetBool("IsCloseable"); }
             set { SetExtendedAttribute("IsCloseable", value.ToString()); }
 		}
 
@@ -40,13 +39,13 @@ namespace SiteServer.CMS.Model
 
         public int PositionX
 		{
-            get { return GetInt("PositionX", 0); }
+            get { return GetInt("PositionX"); }
             set { SetExtendedAttribute("PositionX", value.ToString()); }
 		}
 
         public int PositionY
 		{
-            get { return GetInt("PositionY", 0); }
+            get { return GetInt("PositionY"); }
             set { SetExtendedAttribute("PositionY", value.ToString()); }
 		}
 
@@ -70,13 +69,13 @@ namespace SiteServer.CMS.Model
 
 		public int Height
 		{
-            get { return GetInt("Height", 0); }
+            get { return GetInt("Height"); }
             set { SetExtendedAttribute("Height", value.ToString()); }
 		}
 
 		public int Width
 		{
-            get { return GetInt("Width", 0); }
+            get { return GetInt("Width"); }
             set { SetExtendedAttribute("Width", value.ToString()); }
 		}
 	}

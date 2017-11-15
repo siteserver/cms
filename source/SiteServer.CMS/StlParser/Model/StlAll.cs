@@ -110,14 +110,14 @@ namespace SiteServer.CMS.StlParser.Model
                         StlInclude.ElementName, 
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInclude), stlAttribute)
                     },
-                    {
-                        StlInputContent.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInputContent), stlAttribute)
-                    },
-                    {
-                        StlInputContents.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInputContents), stlAttribute)
-                    },
+                    //{
+                    //    StlInputContent.ElementName,
+                    //    (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInputContent), stlAttribute)
+                    //},
+                    //{
+                    //    StlInputContents.ElementName,
+                    //    (StlAttribute) Attribute.GetCustomAttribute(typeof(StlInputContents), stlAttribute)
+                    //},
                     {
                         StlItemTemplate.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlItemTemplate), stlAttribute)
@@ -158,10 +158,10 @@ namespace SiteServer.CMS.StlParser.Model
                         StlPageContents.ElementName,
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPageContents), stlAttribute)
                     },
-                    {
-                        StlPageInputContents.ElementName,
-                        (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPageInputContents), stlAttribute)
-                    },
+                    //{
+                    //    StlPageInputContents.ElementName,
+                    //    (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPageInputContents), stlAttribute)
+                    //},
                     {
                         StlPageItem.ElementName, 
                         (StlAttribute) Attribute.GetCustomAttribute(typeof(StlPageItem), stlAttribute)
@@ -286,8 +286,8 @@ namespace SiteServer.CMS.StlParser.Model
                 {StlIf.ElementName, StlIf.AttributeList},
                 {StlImage.ElementName, StlImage.AttributeList},
                 {StlInclude.ElementName, StlInclude.AttributeList},
-                {StlInputContent.ElementName, StlInputContent.AttributeList},
-                {StlInputContents.ElementName, StlInputContents.AttributeList},
+                //{StlInputContent.ElementName, StlInputContent.AttributeList},
+                //{StlInputContents.ElementName, StlInputContents.AttributeList},
                 {StlItemTemplate.ElementName, StlItemTemplate.AttributeList},
                 {StlLoading.ElementName, StlLoading.AttributeList},
                 {StlLocation.ElementName, StlLocation.AttributeList},
@@ -298,7 +298,7 @@ namespace SiteServer.CMS.StlParser.Model
                 {StlPageChannels.ElementName, StlPageChannels.AttributeList},
                 {StlPageComments.ElementName, StlPageComments.AttributeList},
                 {StlPageContents.ElementName, StlPageContents.AttributeList},
-                {StlPageInputContents.ElementName, StlPageInputContents.AttributeList},
+                //{StlPageInputContents.ElementName, StlPageInputContents.AttributeList},
                 {StlPageItem.ElementName, StlPageItem.AttributeList},
                 {StlPageItems.ElementName, StlPageItems.AttributeList},
                 {StlPageSqlContents.ElementName, StlPageSqlContents.AttributeList},

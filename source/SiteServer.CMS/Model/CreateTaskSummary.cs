@@ -13,8 +13,11 @@ namespace SiteServer.CMS.Model
         }
 
         public List<CreateTaskSummaryItem> Tasks { get; set; }
+
         public int ChannelsCount { get; set; }
+
         public int ContentsCount { get; set; }
+
         public int FilesCount { get; set; }
     }
 }

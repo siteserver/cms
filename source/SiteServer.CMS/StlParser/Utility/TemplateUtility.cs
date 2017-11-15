@@ -272,22 +272,22 @@ namespace SiteServer.CMS.StlParser.Utility
             return innerBuilder.ToString();
         }
 
-        public static string GetInputContentsTemplateString(string templateString, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
-        {
-            var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
+        //public static string GetInputContentsTemplateString(string templateString, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
+        //{
+        //    var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
 
-            var contextInfo = contextInfoRef.Clone();
-            contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ItemContainer = itemContainer;
-            contextInfo.ContextType = contextType;
+        //    var contextInfo = contextInfoRef.Clone();
+        //    contextInfo.ContainerClientId = containerClientId;
+        //    contextInfo.ItemContainer = itemContainer;
+        //    contextInfo.ContextType = contextType;
 
-            var innerBuilder = new StringBuilder(templateString);
-            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+        //    var innerBuilder = new StringBuilder(templateString);
+        //    StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
 
-            DbItemContainer.PopInputItem(pageInfo);
+        //    DbItemContainer.PopInputItem(pageInfo);
 
-            return innerBuilder.ToString();
-        }
+        //    return innerBuilder.ToString();
+        //}
 
         public static string GetSqlContentsTemplateString(string templateString, LowerNameValueCollection selectedItems, LowerNameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
@@ -338,7 +338,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var innerBuilder = new StringBuilder(templateString);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
 
-            DbItemContainer.PopInputItem(pageInfo);
+            DbItemContainer.PopSiteItems(pageInfo);
 
             pageInfo.ChangeSite(prePublishmentSystemInfo, prePageNodeId, prePageContentId, contextInfo);
 

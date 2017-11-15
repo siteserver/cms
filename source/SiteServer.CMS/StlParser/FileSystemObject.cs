@@ -251,29 +251,29 @@ namespace SiteServer.CMS.StlParser
                 }
             }
             //如果标签中存在<stl:StlPageInputContents>
-            else if (StlParserUtility.IsStlElementExists(StlPageInputContents.ElementName, stlLabelList))
-            {
-                var stlElement = StlParserUtility.GetStlElement(StlPageInputContents.ElementName, stlLabelList);
-                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
+            //else if (StlParserUtility.IsStlElementExists(StlPageInputContents.ElementName, stlLabelList))
+            //{
+            //    var stlElement = StlParserUtility.GetStlElement(StlPageInputContents.ElementName, stlLabelList);
+            //    var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
 
-                var pageInputContentsElementParser = new StlPageInputContents(stlElement, pageInfo, contextInfo, true);
-                int totalNum;
-                var pageCount = pageInputContentsElementParser.GetPageCount(out totalNum);
+            //    var pageInputContentsElementParser = new StlPageInputContents(stlElement, pageInfo, contextInfo, true);
+            //    int totalNum;
+            //    var pageCount = pageInputContentsElementParser.GetPageCount(out totalNum);
 
-                Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
+            //    Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);
 
-                for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
-                {
-                    var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
-                    var pageHtml = pageInputContentsElementParser.Parse(currentPageIndex, pageCount);
-                    var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
+            //    for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
+            //    {
+            //        var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+            //        var pageHtml = pageInputContentsElementParser.Parse(currentPageIndex, pageCount);
+            //        var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
-                    StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageNodeId, currentPageIndex, pageCount, totalNum);
+            //        StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageNodeId, currentPageIndex, pageCount, totalNum);
 
-                    filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
-                    GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
-                }
-            }
+            //        filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, thePageInfo.PageNodeId, currentPageIndex);
+            //        GenerateFile(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+            //    }
+            //}
             else
             {
                 Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, filePath, false);

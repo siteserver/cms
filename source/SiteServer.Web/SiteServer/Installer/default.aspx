@@ -77,7 +77,7 @@
                     <tr>
                       <td valign="top" align="right" colspan="2"><span class="im">我已经阅读并同意此协议</span>
                         <asp:Checkbox id="ChkIAgree" runat="server" Checked="true" /> &nbsp;
-                        <asp:button OnClick="btnStep1_Click" class="btn byellow" Text="继 续" runat="server"></asp:button>
+                        <asp:button OnClick="BtnStep1_Click" class="btn byellow" Text="继 续" runat="server"></asp:button>
                       </td>
                     </tr>
                 </tbody>
@@ -152,7 +152,7 @@
                 </table>
 
                 <p style="text-align:right; padding-right:50px;">
-                  <asp:button OnClick="btnPrevious_Click" class="btn bnormal" Text="后 退" runat="server"></asp:button>
+                  <asp:button OnClick="BtnPrevious_Click" class="btn bnormal" Text="后 退" runat="server"></asp:button>
                   <asp:button ID="BtnStep2" OnClick="BtnStep2_Click" class="btn byellow" Text="下一步" runat="server"></asp:button>
 
                 </p>
@@ -165,7 +165,7 @@
               <div style="PADDING-BOTTOM: 10px; LINE-HEIGHT: 33px; PADDING-LEFT: 8px; PADDING-RIGHT: 8px; HEIGHT: 23px; COLOR: #666; OVERFLOW: hidden; PADDING-TOP: 2px">请选择需要安装的数据库类型。 </div>
               <p>
                 <label>数据库类型：</label>
-                <asp:DropDownList ID="DdlSqlDatabaseType" runat="server"></asp:DropDownList>
+                <asp:DropDownList ID="DdlSqlDatabaseType" AutoPostBack="true" OnSelectedIndexChanged="DdlSqlDatabaseType_SelectedIndexChanged" runat="server"></asp:DropDownList>
               </p>
               <asp:PlaceHolder ID="PhSql1" runat="server">
                 <div class=pr-title>
@@ -179,22 +179,36 @@
                   <span id="sqlserver_msg" class="error" style="display:none"></span> <span class="info">IP地址或者服务器名</span>
                 </p>
                 <p>
-                  <label>身份验证：</label>
-                  <asp:DropDownList ID="DdlIsTrustedConnection" AutoPostBack="true" OnSelectedIndexChanged="DdlIsTrustedConnection_SelectedIndexChanged" runat="server"></asp:DropDownList>
+                  <label>数据库端口：</label>
+                  <asp:DropDownList ID="DdlIsDefaultPort" AutoPostBack="true" OnSelectedIndexChanged="DdlIsDefaultPort_SelectedIndexChanged" runat="server"></asp:DropDownList>
                 </p>
-                <asp:PlaceHolder id="PhSqlUserNamePassword" runat="server">
+                <asp:PlaceHolder id="PhSqlPort" runat="server">
                   <p>
-                    <label>数据库用户：</label>
-                    <asp:TextBox style="width:285px" class="ipt_tx" id="TbSqlUserName" onblur="checkData(this, 'sqlusername_msg', '数据库用户');"
+                    <label>自定义端口：</label>
+                    <asp:TextBox style="width:285px" class="ipt_tx" id="TbSqlPort" onblur="checkData(this, 'sqlport_msg', '自定义端口');"
                       runat="server" />
-                    <span id="sqlusername_msg" class="error" style="display:none"></span> <span class="info">连接数据库的用户名</span>
+                    <span id="sqlport_msg" class="error" style="display:none"></span> <span class="info">连接数据库的端口</span>
                   </p>
+                </asp:PlaceHolder>
+                <p>
+                  <label>数据库用户：</label>
+                  <asp:TextBox style="width:285px" class="ipt_tx" id="TbSqlUserName" onblur="checkData(this, 'sqlusername_msg', '数据库用户');"
+                    runat="server" />
+                  <span id="sqlusername_msg" class="error" style="display:none"></span> <span class="info">连接数据库的用户名</span>
+                </p>
+                <p>
+                  <label>数据库密码：</label>
+                  <asp:TextBox style="width:285px" TextMode="Password" class="ipt_tx" id="TbSqlPassword" onblur="checkData(this, 'sqlpassword_msg', '数据库密码');"
+                    runat="server" />
+                  <input type="hidden" runat="server" id="HihSqlHiddenPassword" />
+                  <span id="sqlpassword_msg" class="error" style="display:none"></span> <span class="info">连接数据库的密码</span>
+                </p>
+                <asp:PlaceHolder id="PhSqlOracleDatabase" visible="false" runat="server">
                   <p>
-                    <label>数据库密码：</label>
-                    <asp:TextBox style="width:285px" TextMode="Password" class="ipt_tx" id="TbSqlPassword" onblur="checkData(this, 'sqlpassword_msg', '数据库密码');"
+                    <label>数据库名称：</label>
+                    <asp:TextBox style="width:285px" class="ipt_tx" id="TbSqlOracleDatabase" onblur="checkData(this, 'sqloracledatabase_msg', '数据库名称');"
                       runat="server" />
-                    <input type="hidden" runat="server" id="HihSqlHiddenPassword" />
-                    <span id="sqlpassword_msg" class="error" style="display:none"></span> <span class="info">连接数据库的密码</span>
+                    <span id="sqloracledatabase_msg" class="error" style="display:none"></span> <span class="info">指定需要安装的Oracle数据库名称</span>
                   </p>
                 </asp:PlaceHolder>
               </asp:PlaceHolder>
@@ -206,8 +220,8 @@
                 </p>
               </asp:PlaceHolder>
               <p style="text-align:right; padding-right:50px;">
-                <asp:button OnClick="btnPrevious_Click" class="btn bnormal" Text="后 退" runat="server"></asp:button>
-                <asp:button OnClick="btnStep3_Click" class="btn byellow" Text="下一步" runat="server"></asp:button>
+                <asp:button OnClick="BtnPrevious_Click" class="btn bnormal" Text="后 退" runat="server"></asp:button>
+                <asp:button OnClick="BtnStep3_Click" class="btn byellow" Text="下一步" runat="server"></asp:button>
               </p>
             </asp:PlaceHolder>
             <asp:PlaceHolder ID="PhStep4" runat="server">
@@ -240,8 +254,8 @@
                 <span class="info">设置是否加密Web.Config中的数据库连接字符串</span>
               </p>
               <p style="text-align:right; padding-right:50px;">
-                <asp:button OnClick="btnPrevious_Click" class="btn bnormal" Text="后 退" runat="server"></asp:button>
-                <asp:button OnClick="btnStep4_Click" class="btn byellow" Text="下一步" runat="server"></asp:button>
+                <asp:button OnClick="BtnPrevious_Click" class="btn bnormal" Text="后 退" runat="server"></asp:button>
+                <asp:button OnClick="BtnStep4_Click" class="btn byellow" Text="下一步" runat="server"></asp:button>
               </p>
             </asp:PlaceHolder>
             <asp:PlaceHolder ID="PhStep5" runat="server">

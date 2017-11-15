@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var stlTagInfo = new StlTagInfo();
             stlTagInfo.TagName = TagName.Text;
-            stlTagInfo.PublishmentSystemID = PublishmentSystemId;
+            stlTagInfo.PublishmentSystemId = PublishmentSystemId;
             stlTagInfo.TagDescription = Description.Text;
             stlTagInfo.TagContent = Content.Text;
 

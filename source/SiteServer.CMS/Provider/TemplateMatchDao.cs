@@ -2,14 +2,59 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class TemplateMatchDao : DataProviderBase
     {
+        public override string TableName => "siteserver_TemplateMatch";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.NodeId),
+                DataType = DataType.Integer,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.ChannelTemplateId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.ContentTemplateId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.FilePath),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.ChannelFilePathRule),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.ContentFilePathRule),
+                DataType = DataType.VarChar,
+                Length = 200
+            }
+        };
+
         private const string SqlSelect = "SELECT NodeID, PublishmentSystemID, ChannelTemplateID, ContentTemplateID, FilePath, ChannelFilePathRule, ContentFilePathRule FROM siteserver_TemplateMatch WHERE NodeID = @NodeID";
 
         private const string SqlInsert = "INSERT INTO siteserver_TemplateMatch (NodeID, PublishmentSystemID, ChannelTemplateID, ContentTemplateID, FilePath, ChannelFilePathRule, ContentFilePathRule) VALUES (@NodeID, @PublishmentSystemID, @ChannelTemplateID, @ContentTemplateID, @FilePath, @ChannelFilePathRule, @ContentFilePathRule)";

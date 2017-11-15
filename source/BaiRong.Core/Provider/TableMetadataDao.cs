@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
@@ -13,6 +12,53 @@ namespace BaiRong.Core.Provider
 {
     public class TableMetadataDao : DataProviderBase
     {
+        public override string TableName => "bairong_TableMetadata";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.TableMetadataId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.AuxiliaryTableEnName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.AttributeName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.DataType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.DataLength),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.Taxis),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.IsSystem),
+                DataType = DataType.VarChar,
+                Length = 18
+            }
+        };
+
         private const string SqlSelectTableMetadata = "SELECT TableMetadataID, AuxiliaryTableENName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE TableMetadataID = @TableMetadataID";
 
         private const string SqlSelectAllTableMetadataByEnname = "SELECT TableMetadataID, AuxiliaryTableENName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE AuxiliaryTableENName = @AuxiliaryTableENName ORDER BY IsSystem DESC, Taxis";
@@ -391,7 +437,10 @@ namespace BaiRong.Core.Provider
         {
             //Get Higher Taxis and ClassID
             //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName=@AuxiliaryTableENName2) ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis", "WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName=@AuxiliaryTableENName2) ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
+                "WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName=@AuxiliaryTableENName2)",
+                "ORDER BY Taxis",
+                1);
             var higherId = 0;
             var higherTaxis = 0;
 
@@ -434,7 +483,9 @@ namespace BaiRong.Core.Provider
         {
             //Get Lower Taxis and ClassID
             //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName = @AuxiliaryTableENName2) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis", "WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName = @AuxiliaryTableENName2) ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
+                "WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName = @AuxiliaryTableENName2)",
+                "ORDER BY Taxis DESC", 1);
 
             var lowerId = 0;
             var lowerTaxis = 0;
@@ -506,7 +557,7 @@ namespace BaiRong.Core.Provider
 
         public void CreateAuxiliaryTable(string tableEnName)
         {
-            var createTableSqlString = GetCreateAuxiliaryTableSqlString(tableEnName);
+            var createTableSqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(tableEnName);
 
             var updateParms = new IDataParameter[]
 			{
@@ -544,7 +595,7 @@ namespace BaiRong.Core.Provider
 
         public void CreateAuxiliaryTableOfArchive(string tableEnName)
         {
-            var createTableSqlString = GetCreateAuxiliaryTableSqlString(tableEnName);
+            var createTableSqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(tableEnName);
 
             var archiveTableName = TableManager.GetTableNameOfArchive(tableEnName);
 
@@ -643,7 +694,7 @@ namespace BaiRong.Core.Provider
                             }
 
                             string dropTableSqlString = $"DROP TABLE [{tableEnName}]";
-                            var createTableSqlString = GetCreateAuxiliaryTableSqlString(tableEnName);
+                            var createTableSqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(tableEnName);
 
                             ExecuteNonQuery(trans, dropTableSqlString);
 
@@ -656,7 +707,7 @@ namespace BaiRong.Core.Provider
 
                             ExecuteNonQuery(trans, "UPDATE bairong_TableCollection SET IsCreatedInDB = @IsCreatedInDB, IsChangedAfterCreatedInDB = @IsChangedAfterCreatedInDB WHERE  TableENName = @TableENName", updateParms);
                             TableManager.IsChanged = true;
-                            SqlUtils.Cache_RemoveTableColumnInfoListCache();
+                            TableManager.Cache_RemoveCache();
                             trans.Commit();
                         }
                         catch
@@ -671,21 +722,6 @@ namespace BaiRong.Core.Provider
 
         protected const string ErrorCommandMessage = "此辅助表无字段，无法在数据库中生成表！";
 
-        protected List<string> GetAlterDropColumnSqls(string tableEnName, string attributeName)
-        {
-            var sqlList = new List<string>();
-            if (WebConfigUtils.DatabaseType != EDatabaseType.MySql)
-            {
-                var defaultConstraintName = BaiRongDataProvider.DatabaseDao.GetDefaultConstraintName(tableEnName, attributeName);
-                if (!string.IsNullOrEmpty(defaultConstraintName))
-                {
-                    sqlList.Add($"ALTER TABLE [{tableEnName}] DROP CONSTRAINT [{defaultConstraintName}]");
-                }
-            }
-            sqlList.Add($"ALTER TABLE [{tableEnName}] DROP COLUMN [{attributeName}]");
-            return sqlList;
-        }
-
         protected List<string> GetAlterAddColumnSqls(string tableEnName, TableMetadataInfo metadataInfo)
         {
             var sqlList = new List<string>();
@@ -699,8 +735,7 @@ namespace BaiRong.Core.Provider
         {
             var list = GetTableMetadataInfoList(tableEnName);
             var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.ConnectionString);
-            var tableId = BaiRongDataProvider.DatabaseDao.GetTableId(WebConfigUtils.ConnectionString, databaseName, tableEnName);
-            var columnlist = BaiRongDataProvider.DatabaseDao.GetTableColumnInfoList(WebConfigUtils.ConnectionString, databaseName, tableEnName, tableId);
+            var columnlist = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(WebConfigUtils.ConnectionString, databaseName, tableEnName);
 
             var sqlList = new List<string>();
 
@@ -716,7 +751,7 @@ namespace BaiRong.Core.Provider
                         columnExists = true;
                         if (!BaiRongDataProvider.DatabaseDao.IsColumnEquals(metadataInfo, columnInfo))
                         {
-                            var alterSqllist = GetAlterDropColumnSqls(tableEnName, columnInfo.ColumnName);
+                            var alterSqllist = SqlUtils.GetDropColumnsSqlString(tableEnName, columnInfo.ColumnName);
                             foreach (var sql in alterSqllist)
                             {
                                 sqlList.Add(sql);
@@ -757,7 +792,7 @@ namespace BaiRong.Core.Provider
                 }
                 if (isNeedDelete)
                 {
-                    var alterSqlList = GetAlterDropColumnSqls(tableEnName, columnInfo.ColumnName);
+                    var alterSqlList = SqlUtils.GetDropColumnsSqlString(tableEnName, columnInfo.ColumnName);
                     foreach (var sql in alterSqlList)
                     {
                         sqlList.Add(sql);
@@ -773,7 +808,7 @@ namespace BaiRong.Core.Provider
             var list = new List<TableMetadataInfo>();
             if (tableType != EAuxiliaryTableType.BackgroundContent) return list;
 
-            var metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.SubTitle, DataType.NVarChar, 255, 0, true);
+            var metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.SubTitle, DataType.VarChar, 255, 0, true);
             list.Add(metadataInfo);
             metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.ImageUrl, DataType.VarChar, 200, 0, true);
             list.Add(metadataInfo);
@@ -781,138 +816,17 @@ namespace BaiRong.Core.Provider
             list.Add(metadataInfo);
             metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.FileUrl, DataType.VarChar, 200, 0, true);
             list.Add(metadataInfo);
-            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.LinkUrl, DataType.NVarChar, 200, 0, true);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.LinkUrl, DataType.VarChar, 200, 0, true);
             list.Add(metadataInfo);
-            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Content, DataType.NText, 16, 0, true);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Content, DataType.Text, 16, 0, true);
             list.Add(metadataInfo);
-            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Summary, DataType.NText, 16, 0, true);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Summary, DataType.Text, 16, 0, true);
             list.Add(metadataInfo);
-            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Author, DataType.NVarChar, 255, 0, true);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Author, DataType.VarChar, 255, 0, true);
             list.Add(metadataInfo);
-            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Source, DataType.NVarChar, 255, 0, true);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Source, DataType.VarChar, 255, 0, true);
             list.Add(metadataInfo);
             return list;
-        }
-
-        public string GetCreateAuxiliaryTableSqlString(string tableName)
-        {
-            var columnSqlStringList = new List<string>();
-
-            var tableMetadataInfoList = TableManager.GetTableMetadataInfoList(tableName);
-            if (tableMetadataInfoList.Count > 0)
-            {
-                foreach (var metadataInfo in tableMetadataInfoList)
-                {
-                    var columnSql = SqlUtils.GetColumnSqlString(metadataInfo.DataType, metadataInfo.AttributeName, metadataInfo.DataLength);
-                    if (!string.IsNullOrEmpty(columnSql))
-                    {
-                        columnSqlStringList.Add(columnSql);
-                    }
-                }
-            }
-
-            var sqlBuilder = new StringBuilder();
-
-            //添加默认字段
-            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
-            {
-                sqlBuilder.Append($@"CREATE TABLE `{tableName}` (");
-                sqlBuilder.Append($@"
-`{nameof(ContentInfo.Id)}` INT AUTO_INCREMENT,
-`{nameof(ContentInfo.NodeId)}` INT,
-`{nameof(ContentInfo.PublishmentSystemId)}` INT,
-`{nameof(ContentInfo.AddUserName)}` VARCHAR(255),
-`{nameof(ContentInfo.LastEditUserName)}` VARCHAR(255),
-`{nameof(ContentInfo.WritingUserName)}` VARCHAR(255),
-`{nameof(ContentInfo.LastEditDate)}` DATETIME,
-`{nameof(ContentInfo.Taxis)}` INT,
-`{nameof(ContentInfo.ContentGroupNameCollection)}` VARCHAR(255),
-`{nameof(ContentInfo.Tags)}` VARCHAR(255),
-`{nameof(ContentInfo.SourceId)}` INT,
-`{nameof(ContentInfo.ReferenceId)}` INT,
-`{nameof(ContentInfo.IsChecked)}` VARCHAR(18),
-`{nameof(ContentInfo.CheckedLevel)}` INT,
-`{nameof(ContentInfo.Comments)}` INT,
-`{nameof(ContentInfo.Photos)}` INT,
-`{nameof(ContentInfo.Hits)}` INT,
-`{nameof(ContentInfo.HitsByDay)}` INT,
-`{nameof(ContentInfo.HitsByWeek)}` INT,
-`{nameof(ContentInfo.HitsByMonth)}` INT,
-`{nameof(ContentInfo.LastHitsDate)}` DATETIME,
-`{nameof(ContentInfo.SettingsXml)}` LONGTEXT,
-`{nameof(ContentInfo.Title)}` VARCHAR(255),
-`{nameof(ContentInfo.IsTop)}` VARCHAR(18),
-`{nameof(ContentInfo.IsRecommend)}` VARCHAR(18),
-`{nameof(ContentInfo.IsHot)}` VARCHAR(18),
-`{nameof(ContentInfo.IsColor)}` VARCHAR(18),
-`{nameof(ContentInfo.AddDate)}` DATETIME,
-");
-            }
-            else
-            {
-                sqlBuilder.Append($@"CREATE TABLE {tableName} (");
-                sqlBuilder.Append($@"
-{nameof(ContentInfo.Id)} int IDENTITY (1, 1),
-{nameof(ContentInfo.NodeId)} int NULL,
-{nameof(ContentInfo.PublishmentSystemId)} int NULL,
-{nameof(ContentInfo.AddUserName)} nvarchar (255) NULL,
-{nameof(ContentInfo.LastEditUserName)} nvarchar (255) NULL,
-{nameof(ContentInfo.WritingUserName)} nvarchar (255) NULL,
-{nameof(ContentInfo.LastEditDate)} datetime NULL,
-{nameof(ContentInfo.Taxis)} int NULL,
-{nameof(ContentInfo.ContentGroupNameCollection)} nvarchar (255) NULL,
-{nameof(ContentInfo.Tags)} nvarchar (255) NULL,
-{nameof(ContentInfo.SourceId)} int NULL,
-{nameof(ContentInfo.ReferenceId)} int NULL,
-{nameof(ContentInfo.IsChecked)} varchar (18) NULL,
-{nameof(ContentInfo.CheckedLevel)} int NULL,
-{nameof(ContentInfo.Comments)} int NULL,
-{nameof(ContentInfo.Photos)} int NULL,
-{nameof(ContentInfo.Hits)} int NULL,
-{nameof(ContentInfo.HitsByDay)} int NULL,
-{nameof(ContentInfo.HitsByWeek)} int NULL,
-{nameof(ContentInfo.HitsByMonth)} int NULL,
-{nameof(ContentInfo.LastHitsDate)} datetime NULL,
-{nameof(ContentInfo.SettingsXml)} ntext NULL,
-{nameof(ContentInfo.Title)} nvarchar (255) NULL,
-{nameof(ContentInfo.IsTop)} varchar (18) NULL,
-{nameof(ContentInfo.IsRecommend)} varchar (18) NULL,
-{nameof(ContentInfo.IsHot)} varchar (18) NULL,
-{nameof(ContentInfo.IsColor)} varchar (18) NULL,
-{nameof(ContentInfo.AddDate)} datetime NULL,
-");
-            }
-
-            //添加后台定义字段
-            foreach (var sqlString in columnSqlStringList)
-            {
-                sqlBuilder.Append(sqlString).Append(@",");
-            }
-
-            if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
-            {
-                sqlBuilder.Append($@"
-PRIMARY KEY ({nameof(ContentInfo.Id)})
-)
-GO
-CREATE INDEX `IX_{tableName}` ON `{tableName}`(`{nameof(ContentInfo.IsTop)}` DESC, `{nameof(ContentInfo.Taxis)}` DESC, `{nameof(ContentInfo.Id)}` DESC)
-GO
-CREATE INDEX `IX_{tableName}_Taxis` ON `{tableName}`(`{nameof(ContentInfo.Taxis)}` DESC)
-GO");
-            }
-            else
-            {
-                sqlBuilder.Append($@"
-CONSTRAINT PK_{tableName} PRIMARY KEY ({nameof(ContentInfo.Id)})
-)
-GO
-CREATE INDEX IX_{tableName} ON {tableName}({nameof(ContentInfo.IsTop)} DESC, {nameof(ContentInfo.Taxis)} DESC, {nameof(ContentInfo.Id)} DESC)
-GO
-CREATE INDEX IX_{tableName}_Taxis ON {tableName}({nameof(ContentInfo.Taxis)} DESC)
-GO");
-            }
-
-            return sqlBuilder.ToString();
         }
     }
 }

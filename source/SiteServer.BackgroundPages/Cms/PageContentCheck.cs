@@ -111,15 +111,15 @@ namespace SiteServer.BackgroundPages.Cms
                 SpContents.ControlToPaginate = RptContents;
                 SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
-                var checkLevelArrayList = new ArrayList();
+                var checkLevelList = new List<int>();
 
-                if (!string.IsNullOrEmpty(Body.GetQueryString("State")))
+                if (Body.IsQueryExists("State"))
                 {
-                    checkLevelArrayList.Add(Body.GetQueryString("State"));
+                    checkLevelList.Add(Body.GetQueryInt("State"));
                 }
                 else
                 {
-                    checkLevelArrayList = LevelManager.LevelInt.GetCheckLevelArrayList(PublishmentSystemInfo, isChecked, checkedLevel);
+                    checkLevelList = LevelManager.LevelInt.GetCheckLevelList(PublishmentSystemInfo, isChecked, checkedLevel);
                 }
                 var tableName = NodeManager.GetTableName(PublishmentSystemInfo, DdlContentModelId.SelectedValue);
 
@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }                
 
-                SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectedCommendByCheck(tableName, PublishmentSystemId, permissions.IsSystemAdministrator, owningNodeIdList, checkLevelArrayList);
+                SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectedCommendByCheck(tableName, PublishmentSystemId, permissions.IsSystemAdministrator, owningNodeIdList, checkLevelList);
 
                 SpContents.SortField = ContentAttribute.LastEditDate;
                 SpContents.SortMode = SortMode.DESC;

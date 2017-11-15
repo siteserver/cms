@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             var innerLinkInfo = new InnerLinkInfo();
             innerLinkInfo.InnerLinkName = InnerLinkName.Text;
-            innerLinkInfo.PublishmentSystemID = PublishmentSystemId;
+            innerLinkInfo.PublishmentSystemId = PublishmentSystemId;
             innerLinkInfo.LinkUrl = LinkUrl.Text;
 
             if (Body.IsQueryExists("InnerLinkName"))

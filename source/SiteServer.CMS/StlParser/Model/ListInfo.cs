@@ -228,10 +228,10 @@ namespace SiteServer.CMS.StlParser.Model
                     {
                         listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.Channel, ETaxisType.OrderByTaxis);
                     }
-                    else if (contextType == EContextType.InputContent)
-                    {
-                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc);
-                    }
+                    //else if (contextType == EContextType.InputContent)
+                    //{
+                    //    listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc);
+                    //}
                     else
                     {
                         listInfo.OrderByString = value;
@@ -436,10 +436,10 @@ namespace SiteServer.CMS.StlParser.Model
                     {
                         return ETaxisTypeUtils.GetChannelOrderByString(ETaxisType.OrderByTaxis);
                     }
-                    if (_contextType == EContextType.InputContent)
-                    {
-                        return ETaxisTypeUtils.GetOrderByString(ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc);
-                    }
+                    //if (_contextType == EContextType.InputContent)
+                    //{
+                    //    return ETaxisTypeUtils.GetOrderByString(ETableStyle.InputContent, ETaxisType.OrderByTaxisDesc);
+                    //}
                 }
                 return _orderByString;
             }

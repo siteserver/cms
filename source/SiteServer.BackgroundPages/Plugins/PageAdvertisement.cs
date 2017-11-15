@@ -34,10 +34,10 @@ namespace SiteServer.BackgroundPages.Plugins
 		{
             var builder = new StringBuilder();
             var adInfo = DataProvider.AdvertisementDao.GetAdvertisementInfo(advertisementName, PublishmentSystemId);
-            if (!string.IsNullOrEmpty(adInfo.NodeIDCollectionToChannel))
+            if (!string.IsNullOrEmpty(adInfo.NodeIdCollectionToChannel))
             {
                 builder.Append("栏目：");
-                var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIDCollectionToChannel);
+                var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIdCollectionToChannel);
                 foreach (int nodeID in nodeIDArrayList)
                 {
                     builder.Append(NodeManager.GetNodeName(PublishmentSystemId, nodeID));
@@ -45,14 +45,14 @@ namespace SiteServer.BackgroundPages.Plugins
                 }
                 builder.Length--;
             }
-            if (!string.IsNullOrEmpty(adInfo.NodeIDCollectionToContent))
+            if (!string.IsNullOrEmpty(adInfo.NodeIdCollectionToContent))
             {
                 if (builder.Length > 0)
                 {
                     builder.Append("<br />");
                 }
                 builder.Append("内容：");
-                var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIDCollectionToContent);
+                var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIdCollectionToContent);
                 foreach (int nodeID in nodeIDArrayList)
                 {
                     builder.Append(NodeManager.GetNodeName(PublishmentSystemId, nodeID));
@@ -60,14 +60,14 @@ namespace SiteServer.BackgroundPages.Plugins
                 }
                 builder.Length--;
             }
-            if (!string.IsNullOrEmpty(adInfo.FileTemplateIDCollection))
+            if (!string.IsNullOrEmpty(adInfo.FileTemplateIdCollection))
             {
                 if (builder.Length > 0)
                 {
                     builder.Append("<br />");
                 }
                 builder.Append("单页：");
-                var fileTemplateIDArrayList = TranslateUtils.StringCollectionToIntList(adInfo.FileTemplateIDCollection);
+                var fileTemplateIDArrayList = TranslateUtils.StringCollectionToIntList(adInfo.FileTemplateIdCollection);
                 foreach (int fileTemplateID in fileTemplateIDArrayList)
                 {
                     builder.Append(TemplateManager.GetCreatedFileFullName(PublishmentSystemId, fileTemplateID));

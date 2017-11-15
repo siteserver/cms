@@ -1,7 +1,7 @@
-﻿using System.Xml;
+﻿using System;
+using System.Xml;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core
@@ -33,13 +33,22 @@ namespace BaiRong.Core
             {
                 if (_helper != null) return _helper;
 
-                if (DatabaseType == EDatabaseType.MySql)
+                switch (DatabaseType)
                 {
-                    _helper = new Data.MySql();
-                }
-                else
-                {
-                    _helper = new SqlServer();
+                    case EDatabaseType.MySql:
+                        _helper = new Data.MySql();
+                        break;
+                    case EDatabaseType.SqlServer:
+                        _helper = new SqlServer();
+                        break;
+                    case EDatabaseType.PostgreSql:
+                        _helper = new PostgreSql();
+                        break;
+                    case EDatabaseType.Oracle:
+                        _helper = new Data.Oracle();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
                 return _helper;
             }

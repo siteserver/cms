@@ -2,6 +2,7 @@
 using BaiRong.Core;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.Plugin.Apis;
 using SiteServer.Plugin.Models;
 
@@ -40,11 +41,13 @@ namespace SiteServer.CMS.Plugin.Apis
                     var json = JsonConvert.SerializeObject(config, Formatting.Indented, settings);
                     if (DataProvider.PluginConfigDao.IsExists(_metadata.Id, publishmentSystemId, name))
                     {
-                        DataProvider.PluginConfigDao.Update(_metadata.Id, publishmentSystemId, name, json);
+                        var configInfo = new PluginConfigInfo(0, _metadata.Id, publishmentSystemId, name, json);
+                        DataProvider.PluginConfigDao.Update(configInfo);
                     }
                     else
                     {
-                        DataProvider.PluginConfigDao.Insert(_metadata.Id, publishmentSystemId, name, json);
+                        var configInfo = new PluginConfigInfo(0, _metadata.Id, publishmentSystemId, name, json);
+                        DataProvider.PluginConfigDao.Insert(configInfo);
                     }
                 }
             }

@@ -33,17 +33,14 @@ namespace SiteServer.Plugin.Models
             internal set
             {
                 _directoryPath = value;
-                Id = (Publisher + "-" + Name).Replace(".", string.Empty).Replace(" ", string.Empty);
-                DirectoryName = Path.GetFileName(Path.GetDirectoryName(value));
+
+                Id = Path.GetFileName(value);
                 ExecuteFilePath = Path.Combine(value, ExecuteFileName.Replace("/", Path.DirectorySeparatorChar.ToString()));
             }
         }
 
         [JsonIgnore]
         public string Id { get; private set; }
-
-        [JsonIgnore]
-        public string DirectoryName { get; private set; }
 
         [JsonIgnore]
         public string ExecuteFilePath { get; private set; }

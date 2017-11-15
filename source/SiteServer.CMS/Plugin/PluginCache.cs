@@ -263,7 +263,7 @@ namespace SiteServer.CMS.Plugin
                     var feature = pluginPair.Plugin as IMenu;
                     if (feature?.PluginMenu == null) continue;
 
-                    var pluginMenu = PluginUtils.GetSiteMenu(pluginPair.Metadata.Id, feature.PluginMenu, 0, 0);
+                    var pluginMenu = PluginUtils.GetSiteMenu(pluginPair.Metadata.Id, feature.PluginMenu, 0);
 
                     menus.Add(pluginPair.Metadata.Id, pluginMenu);
                 }
@@ -285,9 +285,17 @@ namespace SiteServer.CMS.Plugin
             {
                 var feature = pluginPair.Plugin as IMenu;
 
-                var metadataMenu = feature?.SiteMenu?.Invoke(siteId);
+                PluginMenu metadataMenu = null;
+                try
+                {
+                    metadataMenu = feature?.SiteMenu?.Invoke(siteId);
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddPluginErrorLog(pluginPair.Metadata.Id, ex);
+                }
                 if (metadataMenu == null) continue;
-                var pluginMenu = PluginUtils.GetSiteMenu(pluginPair.Metadata.Id, metadataMenu, siteId, 0);
+                var pluginMenu = PluginUtils.GetSiteMenu(pluginPair.Metadata.Id, metadataMenu, 0);
 
                 menus.Add(pluginPair.Metadata.Id, pluginMenu);
             }

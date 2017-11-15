@@ -7,7 +7,6 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -86,9 +85,8 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     [DataType.DateTime] = new[] {"8", "false"},
                     [DataType.Integer] = new[] {"4", "false"},
-                    [DataType.NChar] = new[] {"50", "true"},
-                    [DataType.NText] = new[] {"16", "false"},
-                    [DataType.NVarChar] = new[] {"255", "true"}
+                    [DataType.Text] = new[] {"16", "false"},
+                    [DataType.VarChar] = new[] {"255", "true"}
                 };
 
                 var strArr = (string[])hashtable[DataTypeUtils.GetEnumType(DdlDataType.SelectedValue)];
@@ -98,7 +96,7 @@ namespace SiteServer.BackgroundPages.Settings
                 }
 
                 info.DataLength = int.Parse(DataLength.Text);
-                if (info.DataType == DataType.NVarChar || info.DataType == DataType.NChar)
+                if (info.DataType == DataType.VarChar)
                 {
                     var maxLength = SqlUtils.GetMaxLengthForNVarChar();
                     if (info.DataLength <= 0 || info.DataLength > maxLength)
@@ -148,9 +146,8 @@ namespace SiteServer.BackgroundPages.Settings
                     {
                         [DataType.DateTime] = new[] {"8", "false"},
                         [DataType.Integer] = new[] {"4", "false"},
-                        [DataType.NChar] = new[] {"50", "true"},
-                        [DataType.NText] = new[] {"16", "false"},
-                        [DataType.NVarChar] = new[] {"255", "true"}
+                        [DataType.Text] = new[] {"16", "false"},
+                        [DataType.VarChar] = new[] {"255", "true"}
                     };
 
                     var strArr = (string[])hashtable[DataTypeUtils.GetEnumType(DdlDataType.SelectedValue)];
@@ -160,7 +157,7 @@ namespace SiteServer.BackgroundPages.Settings
                     }
 
                     info.DataLength = int.Parse(DataLength.Text);
-                    if (info.DataType == DataType.NVarChar || info.DataType == DataType.NChar)
+                    if (info.DataType == DataType.VarChar)
                     {
                         var maxLength = SqlUtils.GetMaxLengthForNVarChar();
                         if (info.DataLength <= 0 || info.DataLength > maxLength)

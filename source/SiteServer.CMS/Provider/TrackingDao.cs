@@ -4,17 +4,91 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class TrackingDao : DataProviderBase
     {
+        public override string TableName => "siteserver_Tracking";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.TrackingId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.TrackerType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.LastAccessDateTime),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.PageUrl),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.PageNodeId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.PageContentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.Referrer),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.IpAddress),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.OperatingSystem),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.Browser),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TrackingInfo.AccessDateTime),
+                DataType = DataType.DateTime
+            }
+        };
+
         protected const string ParmTrackingId = "@TrackingID";
         protected const string ParmPublishmentSystemId = "@PublishmentSystemID";
         protected const string ParmTrackerType = "@TrackerType";

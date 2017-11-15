@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Text;
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Advertisement;
 using SiteServer.CMS.Model;
@@ -153,9 +152,9 @@ namespace SiteServer.CMS.StlParser.Utility
                 var isToDo = false;
                 if (pageInfo.TemplateInfo.TemplateType == ETemplateType.IndexPageTemplate || pageInfo.TemplateInfo.TemplateType == ETemplateType.ChannelTemplate)
                 {
-                    if (!string.IsNullOrEmpty(adInfo.NodeIDCollectionToChannel))
+                    if (!string.IsNullOrEmpty(adInfo.NodeIdCollectionToChannel))
                     {
-                        var nodeIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIDCollectionToChannel);
+                        var nodeIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIdCollectionToChannel);
                         if (nodeIdArrayList.Contains(pageInfo.PageNodeId))
                         {
                             isToDo = true;
@@ -164,9 +163,9 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
                 else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.ContentTemplate)
                 {
-                    if (!string.IsNullOrEmpty(adInfo.NodeIDCollectionToContent))
+                    if (!string.IsNullOrEmpty(adInfo.NodeIdCollectionToContent))
                     {
-                        var nodeIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIDCollectionToContent);
+                        var nodeIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIdCollectionToContent);
                         if (nodeIdArrayList.Contains(pageInfo.PageContentId))
                         {
                             isToDo = true;
@@ -175,9 +174,9 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
                 else if (pageInfo.TemplateInfo.TemplateType == ETemplateType.FileTemplate)
                 {
-                    if (!string.IsNullOrEmpty(adInfo.FileTemplateIDCollection))
+                    if (!string.IsNullOrEmpty(adInfo.FileTemplateIdCollection))
                     {
-                        var fileTemplateIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.FileTemplateIDCollection);
+                        var fileTemplateIdArrayList = TranslateUtils.StringCollectionToIntList(adInfo.FileTemplateIdCollection);
                         if (fileTemplateIdArrayList.Contains(pageInfo.TemplateInfo.TemplateId))
                         {
                             isToDo = true;
@@ -299,29 +298,29 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
             }
             //如果标签中存在<stl:pageinputContents>
-            else if (StlParserUtility.IsStlElementExists(StlPageInputContents.ElementName, stlElementList))
-            {
-                var stlElement = StlParserUtility.GetStlElement(StlPageInputContents.ElementName, stlElementList);
-                var stlPageInputContentsElement = stlElement;
-                var stlPageInputContentsElementReplaceString = stlElement;
+            //else if (StlParserUtility.IsStlElementExists(StlPageInputContents.ElementName, stlElementList))
+            //{
+            //    var stlElement = StlParserUtility.GetStlElement(StlPageInputContents.ElementName, stlElementList);
+            //    var stlPageInputContentsElement = stlElement;
+            //    var stlPageInputContentsElementReplaceString = stlElement;
 
-                var pageInputContentsElementParser = new StlPageInputContents(stlPageInputContentsElement, pageInfo, contextInfo, true);
-                int totalNum;
-                var pageCount = pageInputContentsElementParser.GetPageCount(out totalNum);
+            //    var pageInputContentsElementParser = new StlPageInputContents(stlPageInputContentsElement, pageInfo, contextInfo, true);
+            //    int totalNum;
+            //    var pageCount = pageInputContentsElementParser.GetPageCount(out totalNum);
 
-                for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
-                {
-                    if (currentPageIndex == pageIndex)
-                    {
-                        var pageHtml = pageInputContentsElementParser.Parse(currentPageIndex, pageCount);
-                        contentBuilder.Replace(stlPageInputContentsElementReplaceString, pageHtml);
+            //    for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
+            //    {
+            //        if (currentPageIndex == pageIndex)
+            //        {
+            //            var pageHtml = pageInputContentsElementParser.Parse(currentPageIndex, pageCount);
+            //            contentBuilder.Replace(stlPageInputContentsElementReplaceString, pageHtml);
 
-                        StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageNodeId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+            //            StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageNodeId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
 
-                        break;
-                    }
-                }
-            }
+            //            break;
+            //        }
+            //    }
+            //}
             //如果标签中存在<stl:pageSqlContents>
             else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlElementList))
             {

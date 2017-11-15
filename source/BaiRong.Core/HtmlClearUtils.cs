@@ -8,14 +8,14 @@ namespace BaiRong.Core
         /// <summary>
         /// 替换新闻内容中的Html标签的多余属性
         /// </summary>
-        /// <param name="str"></param>
+        /// <param name="html"></param>
         /// <returns></returns>
         public static string ClearFormat(string html)
         {
             if (string.IsNullOrEmpty(html)) return string.Empty;
             //清理word标签，如o:p之类，带冒号的
             html = ClearWordStyle(html);
-            var el = new string[] { "p", "strong", "ol", "ul", "li", "table", "tr", "td" };
+            var el = new[] { "p", "strong", "ol", "ul", "li", "table", "tr", "td" };
             foreach (var s in el)
             {
                 try
@@ -24,11 +24,11 @@ namespace BaiRong.Core
                 }
                 catch
                 {
-                    continue;
+                    // ignored
                 }
             }
             //清除样式
-            el = new string[] { "div", "span", "font", "h1", "h2", "h3", "h4", "h5", "h6", "tbody" };
+            el = new[] { "div", "span", "font", "h1", "h2", "h3", "h4", "h5", "h6", "tbody" };
             foreach (var s in el)
             {
                 try
@@ -37,7 +37,7 @@ namespace BaiRong.Core
                 }
                 catch
                 {
-                    continue;
+                    // ignored
                 }
             }
             return html;
@@ -67,22 +67,6 @@ namespace BaiRong.Core
             return html;
         }
 
-        //
-
-        /// <summary>
-        /// 清理HTML标签的多余样式；如<div style="color:#454353">示例</div>;换成<div>示例</div>
-        /// </summary>
-        /// <param name="str">原始文本</param>
-        /// <param name="element">要清除的标签</param>
-        /// <returns></returns>
-        //private static string ClearElementAttributes(string str, string element)
-        //{
-        //    string old = @"<" + element + "[^>]+>";
-        //    string rep = "<" + element + ">";
-        //    str = Regex.Replace(str, old, rep, RegexOptions.IgnoreCase);
-        //    return str;
-        //}
-
         public static string ClearElementAttributes(string str, string el)
         {
             var sb = new StringBuilder(str);
@@ -94,9 +78,9 @@ namespace BaiRong.Core
             {
                 //第三次匹配，当段落内不含有图片时，则清理冗余代码；
                 var pEl = @"<" + el + "[^>]+>";
-                var tm = m.Value.ToString();
+                var tm = m.Value;
                 tm = Regex.Replace(tm, pEl, "<" + el + ">");
-                sb = sb.Replace(m.Value.ToString(), tm);
+                sb = sb.Replace(m.Value, tm);
 
                 m = m.NextMatch();
             }

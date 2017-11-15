@@ -5,7 +5,6 @@ using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.User;
@@ -14,17 +13,17 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalContentCheck : BasePageCms
     {
-        public Literal ltlTitles;
-        public RadioButtonList rblCheckType;
-        public DropDownList ddlTranslateNodeID;
-        public TextBox tbCheckReasons;
+        public Literal LtlTitles;
+        public DropDownList DdlCheckType;
+        public DropDownList DdlTranslateNodeId;
+        public TextBox TbCheckReasons;
 
         private Dictionary<int, List<int>> _idsDictionary = new Dictionary<int, List<int>>();
         private string _returnUrl;
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -34,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringForMultiChannels(int publishmentSystemId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -43,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, int contentId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowString("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return PageUtils.GetOpenLayerString("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -86,11 +85,11 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                if (!string.IsNullOrEmpty(ltlTitles.Text))
+                if (!string.IsNullOrEmpty(LtlTitles.Text))
                 {
                     titles.Length -= 6;
                 }
-                ltlTitles.Text = titles.ToString();
+                LtlTitles.Text = titles.ToString();
 
                 var checkedLevel = 5;
                 var isChecked = true;
@@ -109,18 +108,18 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                LevelManager.LoadContentLevelToCheck(rblCheckType, PublishmentSystemInfo, isChecked, checkedLevel);
+                LevelManager.LoadContentLevelToCheck(DdlCheckType, PublishmentSystemInfo, isChecked, checkedLevel);
 
                 var listItem = new ListItem("<保持原栏目不变>", "0");
-                ddlTranslateNodeID.Items.Add(listItem);
+                DdlTranslateNodeId.Items.Add(listItem);
 
-                NodeManager.AddListItemsForAddContent(ddlTranslateNodeID.Items, PublishmentSystemInfo, true, Body.AdminName);
+                NodeManager.AddListItemsForAddContent(DdlTranslateNodeId.Items, PublishmentSystemInfo, true, Body.AdminName);
             }
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var checkedLevel = TranslateUtils.ToIntWithNagetive(rblCheckType.SelectedValue);
+            var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlCheckType.SelectedValue);
 
             var isChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
 
@@ -170,13 +169,13 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    var translateNodeId = TranslateUtils.ToInt(ddlTranslateNodeID.SelectedValue);
+                    var translateNodeId = TranslateUtils.ToInt(DdlTranslateNodeId.SelectedValue);
 
                     foreach (var nodeId in idsDictionaryToCheck.Keys)
                     {
                         var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
                         var contentIdList = idsDictionaryToCheck[nodeId];
-                        BaiRongDataProvider.ContentDao.UpdateIsChecked(tableName, PublishmentSystemId, nodeId, contentIdList, translateNodeId, true, Body.AdminName, isChecked, checkedLevel, tbCheckReasons.Text);
+                        BaiRongDataProvider.ContentDao.UpdateIsChecked(tableName, PublishmentSystemId, nodeId, contentIdList, translateNodeId, true, Body.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
 
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemInfo, nodeId, true);
                     }
@@ -186,7 +185,7 @@ namespace SiteServer.BackgroundPages.Cms
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemInfo, translateNodeId, true);
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, PublishmentSystemId, 0, "设置内容状态为" + rblCheckType.SelectedItem.Text, tbCheckReasons.Text);
+                    Body.AddSiteLog(PublishmentSystemId, PublishmentSystemId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);
 
                     if (isChecked)
                     {

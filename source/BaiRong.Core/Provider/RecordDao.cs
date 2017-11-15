@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
-using SiteServer.Plugin;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
@@ -12,34 +12,44 @@ namespace BaiRong.Core.Provider
     {
         public override string TableName => "bairong_Record";
 
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = "Id",
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Text",
+                DataType = DataType.VarChar,
+                Length = 2000
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Summary",
+                DataType = DataType.VarChar,
+                Length = 2000
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Source",
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "AddDate",
+                DataType = DataType.DateTime
+            }
+        };
+
         private const string ParmText = "@Text";
         private const string ParmSummary = "@Summary";
         private const string ParmSource = "@Source";
         private const string ParmAddDate = "@AddDate";
-
-        /**
-sqlserver
-
-CREATE TABLE bairong_Record(
-    Id            int              IDENTITY(1,1),
-    Text    nvarchar(2000)            NULL,
-    Summary    nvarchar(2000)            NULL,
-    Source       nvarchar(200)    NULL,
-    AddDate       datetime         NULL,
-    CONSTRAINT PK_bairong_Record PRIMARY KEY CLUSTERED (Id)
-)
-
-mysql
-
-CREATE TABLE bairong_Record(
-    Id            INT                      AUTO_INCREMENT,
-    Text    NATIONAL VARCHAR(2000),
-    Summary       NATIONAL VARCHAR(2000),
-    Source        NATIONAL VARCHAR(200),
-    AddDate       DATETIME,
-    PRIMARY KEY (Id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
-    **/
 
         private void Insert(string text, string summary, string source)
         {
@@ -47,9 +57,9 @@ CREATE TABLE bairong_Record(
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmText, DataType.NVarChar, 2000, text),
-                GetParameter(ParmSummary, DataType.NVarChar, 2000, summary),
-                GetParameter(ParmSource, DataType.NVarChar, 200, source),
+                GetParameter(ParmText, DataType.VarChar, 2000, text),
+                GetParameter(ParmSummary, DataType.VarChar, 2000, summary),
+                GetParameter(ParmSource, DataType.VarChar, 200, source),
                 GetParameter(ParmAddDate, DataType.DateTime, DateTime.Now)
             };
 

@@ -35,20 +35,20 @@ namespace SiteServer.CMS.Core
             return builder.ToString();
         }
 
-        public static void SendSms(PublishmentSystemInfo publishmentSystemInfo, ITagStyleMailSMSBaseInfo mailSmsInfo, ETableStyle tableStyle, string tableName, int relatedIdentity, ExtendedAttributes contentInfo)
+        public static void SendSms(PublishmentSystemInfo publishmentSystemInfo, ITagStyleMailSmsBaseInfo mailSmsInfo, ETableStyle tableStyle, string tableName, int relatedIdentity, ExtendedAttributes contentInfo)
         {
             try
             {
-                if (mailSmsInfo.IsSMS)
+                if (mailSmsInfo.IsSms)
                 {
                     var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, tableStyle, relatedIdentity);
 
                     var smsToArrayList = new ArrayList();
-                    if (mailSmsInfo.SMSReceiver == ETriState.All || mailSmsInfo.SMSReceiver == ETriState.True)
+                    if (mailSmsInfo.SmsReceiver == ETriState.All || mailSmsInfo.SmsReceiver == ETriState.True)
                     {
-                        if (!string.IsNullOrEmpty(mailSmsInfo.SMSTo))
+                        if (!string.IsNullOrEmpty(mailSmsInfo.SmsTo))
                         {
-                            var mobiles = mailSmsInfo.SMSTo.Split(';', ',');
+                            var mobiles = mailSmsInfo.SmsTo.Split(';', ',');
                             foreach (var mobile in mobiles)
                             {
                                 if (!string.IsNullOrEmpty(mobile) && StringUtils.IsMobile(mobile) && !smsToArrayList.Contains(mobile))
@@ -58,9 +58,9 @@ namespace SiteServer.CMS.Core
                             }
                         }
                     }
-                    if (mailSmsInfo.SMSReceiver == ETriState.All || mailSmsInfo.SMSReceiver == ETriState.False)
+                    if (mailSmsInfo.SmsReceiver == ETriState.All || mailSmsInfo.SmsReceiver == ETriState.False)
                     {
-                        var smsTo = contentInfo.GetExtendedAttribute(mailSmsInfo.SMSFiledName);
+                        var smsTo = contentInfo.GetExtendedAttribute(mailSmsInfo.SmsFiledName);
                         if (!string.IsNullOrEmpty(smsTo))
                         {
                             var mobiles = smsTo.Split(';', ',');
@@ -76,9 +76,9 @@ namespace SiteServer.CMS.Core
 
                     var builder = new StringBuilder();
 
-                    if (mailSmsInfo.IsSMSTemplate && !string.IsNullOrEmpty(mailSmsInfo.SMSContent))
+                    if (mailSmsInfo.IsSmsTemplate && !string.IsNullOrEmpty(mailSmsInfo.SmsContent))
                     {
-                        builder.Append(mailSmsInfo.SMSContent);
+                        builder.Append(mailSmsInfo.SmsContent);
                     }
                     else
                     {

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Script.Serialization;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core

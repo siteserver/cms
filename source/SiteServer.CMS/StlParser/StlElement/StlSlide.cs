@@ -53,7 +53,7 @@ var slide_data = {
                     photoInfo.Description)}"",""previewUrl"":""{StringUtils.ToJsString(
                     PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl))}"",""imageUrl"":""{StringUtils
                     .ToJsString(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.LargeUrl))}"",""id"":""{photoInfo
-                    .ID}""}},");
+                    .Id}""}},");
             }
 
             if (photoInfoList.Count > 0)

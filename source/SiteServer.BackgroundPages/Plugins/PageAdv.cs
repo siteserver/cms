@@ -47,10 +47,10 @@ namespace SiteServer.BackgroundPages.Plugins
         {
             var builder = new StringBuilder();
             var adInfo = DataProvider.AdvDao.GetAdvInfo(advID, PublishmentSystemId);
-            if (!string.IsNullOrEmpty(adInfo.NodeIDCollectionToChannel))
+            if (!string.IsNullOrEmpty(adInfo.NodeIdCollectionToChannel))
             {
                 builder.Append("栏目：");
-                var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIDCollectionToChannel);
+                var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIdCollectionToChannel);
                 foreach (int nodeID in nodeIDArrayList)
                 {
                     builder.Append(NodeManager.GetNodeName(PublishmentSystemId, nodeID));
@@ -58,14 +58,14 @@ namespace SiteServer.BackgroundPages.Plugins
                 }
                 builder.Length--;
             }
-            if (!string.IsNullOrEmpty(adInfo.NodeIDCollectionToContent))
+            if (!string.IsNullOrEmpty(adInfo.NodeIdCollectionToContent))
             {
                 if (builder.Length > 0)
                 {
                     builder.Append("<br />");
                 }
                 builder.Append("内容：");
-                var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIDCollectionToContent);
+                var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(adInfo.NodeIdCollectionToContent);
                 foreach (int nodeID in nodeIDArrayList)
                 {
                     builder.Append(NodeManager.GetNodeName(PublishmentSystemId, nodeID));
@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 {
                     foreach (AdAreaInfo adAreaInfo in adAreaInfoArrayList)
                     {
-                        AdAreaNameList.Items.Add(new ListItem(adAreaInfo.AdAreaName,adAreaInfo.AdAreaID.ToString()));
+                        AdAreaNameList.Items.Add(new ListItem(adAreaInfo.AdAreaName,adAreaInfo.AdAreaId.ToString()));
                     }
                 }
                 Delete.Attributes.Add("onclick", "return confirm(\"此操作将删除所选广告，确定吗？\");");

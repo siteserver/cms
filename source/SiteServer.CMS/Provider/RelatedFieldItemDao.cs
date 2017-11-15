@@ -2,14 +2,54 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class RelatedFieldItemDao : DataProviderBase
     {
+        public override string TableName => "siteserver_RelatedFieldItem";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldItemInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldItemInfo.RelatedFieldId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldItemInfo.ItemName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldItemInfo.ItemValue),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldItemInfo.ParentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldItemInfo.Taxis),
+                DataType = DataType.Integer
+            }
+        };
+
         private const string SqlUpdate = "UPDATE siteserver_RelatedFieldItem SET ItemName = @ItemName, ItemValue = @ItemValue WHERE ID = @ID";
 
         private const string ParmId = "@ID";
@@ -21,40 +61,20 @@ namespace SiteServer.CMS.Provider
 
         public int Insert(RelatedFieldItemInfo info)
         {
-            int id;
+            info.Taxis = GetMaxTaxis(info.ParentId) + 1;
 
-            info.Taxis = GetMaxTaxis(info.ParentID) + 1;
-
-            var sqlString = "INSERT INTO siteserver_RelatedFieldItem (RelatedFieldID, ItemName, ItemValue, ParentID, Taxis) VALUES (@RelatedFieldID, @ItemName, @ItemValue, @ParentID, @Taxis)";
+            const string sqlString = "INSERT INTO siteserver_RelatedFieldItem (RelatedFieldID, ItemName, ItemValue, ParentID, Taxis) VALUES (@RelatedFieldID, @ItemName, @ItemValue, @ParentID, @Taxis)";
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmRelatedFieldId, DataType.Integer, info.RelatedFieldID),
-                GetParameter(ParmItemName, DataType.NVarChar, 255, info.ItemName),
-                GetParameter(ParmItemValue, DataType.NVarChar, 255, info.ItemValue),
-				GetParameter(ParmParentId, DataType.Integer, info.ParentID),
+                GetParameter(ParmRelatedFieldId, DataType.Integer, info.RelatedFieldId),
+                GetParameter(ParmItemName, DataType.VarChar, 255, info.ItemName),
+                GetParameter(ParmItemValue, DataType.VarChar, 255, info.ItemValue),
+				GetParameter(ParmParentId, DataType.Integer, info.ParentId),
                 GetParameter(ParmTaxis, DataType.Integer, info.Taxis)
 			};
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        id = ExecuteNonQueryAndReturnId(trans, sqlString, parms);
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-
-            return id;
+            return ExecuteNonQueryAndReturningId(sqlString, nameof(RelatedFieldItemInfo.Id), parms);
 
             //RelatedFieldManager.ClearCache();
         }
@@ -63,9 +83,9 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmItemName, DataType.NVarChar, 255, info.ItemName),
-                GetParameter(ParmItemValue, DataType.NVarChar, 255, info.ItemValue),
-				GetParameter(ParmId, DataType.Integer, info.ID)
+				GetParameter(ParmItemName, DataType.VarChar, 255, info.ItemName),
+                GetParameter(ParmItemValue, DataType.VarChar, 255, info.ItemValue),
+				GetParameter(ParmId, DataType.Integer, info.Id)
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);
@@ -96,7 +116,7 @@ namespace SiteServer.CMS.Provider
             //Get Higher Taxis and ClassID
             //string sqlString =
             //    $"SELECT TOP 1 ID, Taxis FROM siteserver_RelatedFieldItem WHERE ((Taxis > (SELECT Taxis FROM siteserver_RelatedFieldItem WHERE ID = {id})) AND ParentID = {parentId}) ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_RelatedFieldItem", "ID, Taxis", $"WHERE ((Taxis > (SELECT Taxis FROM siteserver_RelatedFieldItem WHERE ID = {id})) AND ParentID = {parentId}) ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_RelatedFieldItem", "ID, Taxis", $"WHERE ((Taxis > (SELECT Taxis FROM siteserver_RelatedFieldItem WHERE ID = {id})) AND ParentID = {parentId})", "ORDER BY Taxis", 1);
 
             var higherId = 0;
             var higherTaxis = 0;
@@ -130,7 +150,7 @@ namespace SiteServer.CMS.Provider
             //Get Lower Taxis and ClassID
             //string sqlString =
             //    $"SELECT TOP 1 ID, Taxis FROM siteserver_RelatedFieldItem WHERE ((Taxis < (SELECT Taxis FROM siteserver_RelatedFieldItem WHERE (ID = {id}))) AND ParentID = {parentId}) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_RelatedFieldItem", "ID, Taxis", $"WHERE ((Taxis < (SELECT Taxis FROM siteserver_RelatedFieldItem WHERE (ID = {id}))) AND ParentID = {parentId}) ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_RelatedFieldItem", "ID, Taxis", $"WHERE ((Taxis < (SELECT Taxis FROM siteserver_RelatedFieldItem WHERE (ID = {id}))) AND ParentID = {parentId})", "ORDER BY Taxis DESC", 1);
 
             var lowerId = 0;
             var lowerTaxis = 0;

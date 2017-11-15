@@ -6,6 +6,8 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+using BaiRong.Core.Data;
 
 namespace SiteServer.BackgroundPages
 {
@@ -33,11 +35,14 @@ namespace SiteServer.BackgroundPages
 
         public PlaceHolder PhSql1;
         public TextBox TbSqlServer;
-        public DropDownList DdlIsTrustedConnection;
-	    public PlaceHolder PhSqlUserNamePassword;
+        public DropDownList DdlIsDefaultPort;
+	    public PlaceHolder PhSqlPort;
+	    public TextBox TbSqlPort;
         public TextBox TbSqlUserName;
         public TextBox TbSqlPassword;
         public HtmlInputHidden HihSqlHiddenPassword;
+	    public PlaceHolder PhSqlOracleDatabase;
+	    public TextBox TbSqlOracleDatabase;
         public PlaceHolder PhSql2;
         public DropDownList DdlSqlDatabaseName;
 
@@ -116,7 +121,7 @@ namespace SiteServer.BackgroundPages
 		{
             if (!IsPostBack)
             {
-                var isInstalled = !AppManager.IsNeedInstall();
+                var isInstalled = !SystemManager.IsNeedInstall();
 
                 if (isInstalled)
                 {
@@ -128,31 +133,30 @@ namespace SiteServer.BackgroundPages
                 LtlVersionInfo.Text = $"SITESERVER {AppManager.GetFullVersion()}";
                 LtlStepTitle.Text = GetSetpTitleString(1);
 
-                DdlSqlDatabaseType.Items.Add(new ListItem
-                {
-                    Text = "SqlServer",
-                    Value = "SqlServer"
-                });
-                DdlSqlDatabaseType.Items.Add(new ListItem
-                {
-                    Text = "MySql",
-                    Value = "MySql"
-                });
+                EDatabaseTypeUtils.AddListItems(DdlSqlDatabaseType);
 
-                EBooleanUtils.AddListItems(DdlIsTrustedConnection, "Windows 身份验证", "用户名密码验证");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsTrustedConnection, false.ToString());
+                EBooleanUtils.AddListItems(DdlIsDefaultPort, "默认数据库端口", "自定义数据库端口");
+                ControlUtils.SelectListItemsIgnoreCase(DdlIsDefaultPort, true.ToString());
+
+                PhSqlPort.Visible = false;
 
                 EBooleanUtils.AddListItems(DdlIsProtectData, "加密", "不加密");
                 ControlUtils.SelectListItemsIgnoreCase(DdlIsProtectData, true.ToString());
             }
 		}
 
-        protected void DdlIsTrustedConnection_SelectedIndexChanged(object sender, EventArgs e)
+        public void DdlSqlDatabaseType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            PhSqlUserNamePassword.Visible = !TranslateUtils.ToBool(DdlIsTrustedConnection.SelectedValue);
+            var databaseType = EDatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+            PhSqlOracleDatabase.Visible = databaseType == EDatabaseType.Oracle;
         }
 
-        protected void btnStep1_Click(object sender, EventArgs e)
+        public void DdlIsDefaultPort_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhSqlPort.Visible = !TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue);
+        }
+
+        public void BtnStep1_Click(object sender, EventArgs e)
         {
             if (ChkIAgree.Checked)
             {
@@ -170,8 +174,7 @@ namespace SiteServer.BackgroundPages
                     var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "robots.txt");
                     FileUtils.WriteText(filePath, ECharset.utf_8, @"User-agent: *
 Disallow: /SiteServer/
-Disallow: /SiteFiles/
-Disallow: /home/");
+Disallow: /SiteFiles/");
                     isRootWritable = true;
                 }
                 catch
@@ -208,13 +211,13 @@ Disallow: /home/");
             }
         }
 
-        protected void BtnStep2_Click(object sender, EventArgs e)
+        public void BtnStep2_Click(object sender, EventArgs e)
         {
             LtlErrorMessage.Text = string.Empty;
             LtlStepTitle.Text = GetSetpTitleString(3);
         }
 
-        protected void btnStep3_Click(object sender, EventArgs e)
+        public void BtnStep3_Click(object sender, EventArgs e)
         {
             LtlErrorMessage.Text = string.Empty;
 
@@ -223,36 +226,53 @@ Disallow: /home/");
                 HihSqlHiddenPassword.Value = TbSqlPassword.Text;
                 bool isConnectValid;
                 string errorMessage;
-                List<string> databaseNameList = new List<string>();
+                var databaseNameList = new List<string>();
+                var databaseType = EDatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 if (string.IsNullOrEmpty(TbSqlServer.Text))
                 {
                     isConnectValid = false;
                     errorMessage = "数据库主机必须填写。";
                 }
-                else if (PhSqlUserNamePassword.Visible && string.IsNullOrEmpty(TbSqlUserName.Text))
+                else if (PhSqlPort.Visible && string.IsNullOrEmpty(TbSqlPort.Text))
+                {
+                    isConnectValid = false;
+                    errorMessage = "数据库端口必须填写。";
+                }
+                else if (string.IsNullOrEmpty(TbSqlUserName.Text))
                 {
                     isConnectValid = false;
                     errorMessage = "数据库用户必须填写。";
                 }
+                else if (databaseType == EDatabaseType.Oracle && string.IsNullOrEmpty(TbSqlOracleDatabase.Text))
+                {
+                    isConnectValid = false;
+                    errorMessage = "数据库名称必须填写。";
+                }
                 else
                 {
-                    var connectionStringWithoutDatabaseName = GetConnectionString(false);
-                    var isMySql = StringUtils.EqualsIgnoreCase(DdlSqlDatabaseType.SelectedValue, "MySql");
-                    isConnectValid = BaiRongDataProvider.DatabaseDao.ConnectToServer(isMySql, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
+                    var connectionStringWithoutDatabaseName = GetConnectionString(databaseType == EDatabaseType.Oracle);
+                    isConnectValid = BaiRongDataProvider.DatabaseDao.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
                 }
                 
                 if (isConnectValid)
                 {
-                    DdlSqlDatabaseName.Items.Clear();
-
-                    foreach (var databaseName in databaseNameList)
+                    if (databaseType != EDatabaseType.Oracle)
                     {
-                        DdlSqlDatabaseName.Items.Add(databaseName);
-                    }
+                        DdlSqlDatabaseName.Items.Clear();
 
-                    DdlSqlDatabaseType.Enabled = false;
-                    PhSql1.Visible = false;
-                    PhSql2.Visible = true;
+                        foreach (var databaseName in databaseNameList)
+                        {
+                            DdlSqlDatabaseName.Items.Add(databaseName);
+                        }
+
+                        DdlSqlDatabaseType.Enabled = false;
+                        PhSql1.Visible = false;
+                        PhSql2.Visible = true;
+                    }
+                    else
+                    {
+                        LtlStepTitle.Text = GetSetpTitleString(4);
+                    }
                 }
                 else
                 {
@@ -265,7 +285,7 @@ Disallow: /home/");
             }
         }
 
-        protected void btnStep4_Click(object sender, EventArgs e)
+        public void BtnStep4_Click(object sender, EventArgs e)
         {
             LtlErrorMessage.Text = string.Empty;
 
@@ -287,7 +307,7 @@ Disallow: /home/");
             }
         }
 
-        protected void btnPrevious_Click(object sender, EventArgs e)
+        public void BtnPrevious_Click(object sender, EventArgs e)
 		{
             LtlErrorMessage.Text = string.Empty;
             DdlSqlDatabaseType.Enabled = true;
@@ -318,20 +338,17 @@ Disallow: /home/");
 
         private string GetConnectionString(bool isDatabaseName)
         {
-            string connectionString = $"server={TbSqlServer.Text};";
-            if (TranslateUtils.ToBool(DdlIsTrustedConnection.SelectedValue))
-            {
-                connectionString += "Trusted_Connection=True;";
-            }
-            else
-            {
-                connectionString += $"uid={TbSqlUserName.Text};pwd={HihSqlHiddenPassword.Value};";
-            }
+            var databaseType = EDatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+            var databaseName = string.Empty;
             if (isDatabaseName)
             {
-                connectionString += $"database={DdlSqlDatabaseName.SelectedValue};";
+                databaseName = DdlSqlDatabaseName.SelectedValue;
             }
-            return connectionString;
+            if (databaseType == EDatabaseType.Oracle)
+            {
+                databaseName = TbSqlOracleDatabase.Text;
+            }
+            return SqlUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName);
         }
 
         private bool CheckLoginValid(out string errorMessage)
@@ -371,11 +388,9 @@ Disallow: /home/");
 
             try
             {
-                var errorBuilder = new StringBuilder();
-                BaiRongDataProvider.DatabaseDao.Install(errorBuilder);
-
-                BaiRongDataProvider.ConfigDao.InitializeConfig();
-                BaiRongDataProvider.ConfigDao.InitializeUserRole(TbAdminName.Text, TbAdminPassword.Text);
+                //var errorBuilder = new StringBuilder();
+                //BaiRongDataProvider.DatabaseDao.Install(errorBuilder);
+                SystemManager.Install(TbAdminName.Text, TbAdminPassword.Text);
                 
                 return true;
             }

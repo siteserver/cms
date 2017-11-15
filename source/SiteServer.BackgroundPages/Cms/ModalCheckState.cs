@@ -5,18 +5,17 @@ using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.User;
 
 namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalCheckState : BasePageCms
     {
-        public Literal ltlTitle;
-        public Literal ltlState;
-        public PlaceHolder phCheckReasons;
-        public Repeater rpContents;
-        public PlaceHolder phCheck;
+        public Literal LtlTitle;
+        public Literal LtlState;
+        public PlaceHolder PhCheckReasons;
+        public Repeater RptContents;
+        public Button BtnCheck;
 
         private int _nodeId;
         private ETableStyle _tableStyle;
@@ -26,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, ContentInfo contentInfo, string returnUrl)
         {
-            return PageUtils.GetOpenWindowString("审核状态",
+            return PageUtils.GetOpenLayerString("审核状态",
                 PageUtils.GetCmsUrl(nameof(ModalCheckState), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -50,30 +49,30 @@ namespace SiteServer.BackgroundPages.Cms
 
             var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, _contentId);
 
-            var checkedLevel = 0;
+            int checkedLevel;
             var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
-            phCheck.Visible = LevelManager.IsCheckable(PublishmentSystemInfo, _nodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
+            BtnCheck.Visible = LevelManager.IsCheckable(PublishmentSystemInfo, _nodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
 
-            ltlTitle.Text = contentInfo.Title;
-            ltlState.Text = LevelManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
+            LtlTitle.Text = contentInfo.Title;
+            LtlState.Text = LevelManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
 
-            var checkInfoArrayList = BaiRongDataProvider.ContentCheckDao.GetCheckInfoArrayList(_tableName, _contentId);
-            if (checkInfoArrayList.Count > 0)
+            var checkInfoList = BaiRongDataProvider.ContentCheckDao.GetCheckInfoList(_tableName, _contentId);
+            if (checkInfoList.Count > 0)
             {
-                phCheckReasons.Visible = true;
-                rpContents.DataSource = checkInfoArrayList;
-                rpContents.ItemDataBound += rpContents_ItemDataBound;
-                rpContents.DataBind();
+                PhCheckReasons.Visible = true;
+                RptContents.DataSource = checkInfoList;
+                RptContents.ItemDataBound += RptContents_ItemDataBound;
+                RptContents.DataBind();
             }
         }
 
-        void rpContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private static void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            var checkInfo = e.Item.DataItem as ContentCheckInfo;
+            var checkInfo = (ContentCheckInfo)e.Item.DataItem;
 
-            var ltlUserName = e.Item.FindControl("ltlUserName") as Literal;
-            var ltlCheckDate = e.Item.FindControl("ltlCheckDate") as Literal;
-            var ltlReasons = e.Item.FindControl("ltlReasons") as Literal;
+            var ltlUserName = (Literal)e.Item.FindControl("ltlUserName");
+            var ltlCheckDate = (Literal)e.Item.FindControl("ltlCheckDate");
+            var ltlReasons = (Literal)e.Item.FindControl("ltlReasons");
 
             ltlUserName.Text = AdminManager.GetDisplayName(checkInfo.UserName, true);
             ltlCheckDate.Text = DateUtils.GetDateAndTimeString(checkInfo.CheckDate);

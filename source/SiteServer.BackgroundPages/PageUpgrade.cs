@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages
                 //AppManager.Upgrade(AppManager.Version, out errorMessage);
                 //LtlErrorMessage.Text = errorMessage;
 
-                UpgradeManager.Upgrade();
+                SystemManager.Upgrade();
                 LtlErrorMessage.Text = string.Empty;
             }
             else

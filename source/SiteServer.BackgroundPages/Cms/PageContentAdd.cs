@@ -56,9 +56,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             return PageUtils.GetCmsUrl(nameof(PageContentAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()},
-                {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
+                {"PublishmentSystemId", publishmentSystemId.ToString()},
+                {"nodeId", nodeId.ToString()},
+                {"returnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
 
@@ -66,10 +66,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             return PageUtils.GetCmsUrl(nameof(PageContentAdd), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()},
-                {"ID", id.ToString()},
-                {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
+                {"publishmentSystemId", publishmentSystemId.ToString()},
+                {"nodeId", nodeId.ToString()},
+                {"id", id.ToString()},
+                {"returnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
         }
 
@@ -77,11 +77,11 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID", "ReturnUrl");
+            PageUtils.CheckRequestParameter("publishmentSystemId", "nodeId", "returnUrl");
 
-            var nodeId = Body.GetQueryInt("NodeID");
-            var contentId = Body.GetQueryInt("ID");
-            ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            var nodeId = Body.GetQueryInt("nodeId");
+            var contentId = Body.GetQueryInt("id");
+            ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("returnUrl"));
 
             _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
             _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
@@ -331,7 +331,7 @@ $('#TbTags').keyup(function (e) {
             var contentId = 0;
             if (!isPreview)
             {
-                contentId = Body.GetQueryInt("ID");
+                contentId = Body.GetQueryInt("id");
             }
 
             if (contentId == 0)

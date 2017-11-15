@@ -89,10 +89,10 @@ namespace SiteServer.CMS.Core
             {
                 tableName = DataProvider.NodeDao.TableName;
             }
-            else if (tableStyle == ETableStyle.InputContent)
-            {
-                tableName = DataProvider.InputContentDao.TableName;
-            }
+            //else if (tableStyle == ETableStyle.InputContent)
+            //{
+            //    tableName = DataProvider.InputContentDao.TableName;
+            //}
 
             return tableName;
         }

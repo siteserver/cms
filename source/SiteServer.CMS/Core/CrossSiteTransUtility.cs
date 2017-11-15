@@ -110,38 +110,36 @@ namespace SiteServer.CMS.Core
                     }
                 }
             }
-            else if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllParentSite || nodeInfo.Additional.TransType == ECrossSiteTransType.AllSite)
+            else if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllParentSite)
             {
                 var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdList();
 
                 var allParentPublishmentSystemIdList = new List<int>();
-                if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllParentSite)
-                {
-                    PublishmentSystemManager.GetAllParentPublishmentSystemIdList(allParentPublishmentSystemIdList, publishmentSystemIdList, publishmentSystemInfo.PublishmentSystemId);
-                }
+                PublishmentSystemManager.GetAllParentPublishmentSystemIdList(allParentPublishmentSystemIdList, publishmentSystemIdList, publishmentSystemInfo.PublishmentSystemId);
 
-                foreach (int psId in publishmentSystemIdList)
+                foreach (var psId in publishmentSystemIdList)
                 {
                     if (psId == publishmentSystemInfo.PublishmentSystemId) continue;
                     var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psId);
-                    var show = false;
-                    if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllSite)
-                    {
-                        show = true;
-                    }
-                    else if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllParentSite)
-                    {
-                        if (psInfo.IsHeadquarters || allParentPublishmentSystemIdList.Contains(psInfo.PublishmentSystemId))
-                        {
-                            show = true;
-                        }
-                    }
+                    var show = psInfo.IsHeadquarters || allParentPublishmentSystemIdList.Contains(psInfo.PublishmentSystemId);
                     if (show)
                     {
                         var listitem = new ListItem(psInfo.PublishmentSystemName, psId.ToString());
                         if (psInfo.IsHeadquarters) listitem.Selected = true;
                         publishmentSystemIdDropDownList.Items.Add(listitem);
                     }
+                }
+            }
+            else if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllSite)
+            {
+                var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdList();
+
+                foreach (var psId in publishmentSystemIdList)
+                {
+                    var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psId);
+                    var listitem = new ListItem(psInfo.PublishmentSystemName, psId.ToString());
+                    if (psInfo.IsHeadquarters) listitem.Selected = true;
+                    publishmentSystemIdDropDownList.Items.Add(listitem);
                 }
             }
         }

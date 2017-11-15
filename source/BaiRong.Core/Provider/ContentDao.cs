@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -18,43 +17,169 @@ namespace BaiRong.Core.Provider
 
         public int Insert(string tableName, IContentInfo contentInfo)
         {
-            var contentId = 0;
+            //var contentId = 0;
 
-            if (string.IsNullOrEmpty(tableName)) return contentId;
+            if (string.IsNullOrEmpty(tableName) || contentInfo == null) return 0;
 
-            contentInfo.IsTop = contentInfo.IsTop;
+            contentInfo.LastEditDate = DateTime.Now;
 
-            IDataParameter[] parms;
-            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
+            var metadataInfoList = TableManager.GetTableMetadataInfoList(tableName);
 
-            using (var conn = GetConnection())
+            var names = new StringBuilder();
+            var values = new StringBuilder();
+            var paras = new List<IDataParameter>();
+            var lowerCaseExcludeAttributesNames = new List<string>(ContentAttribute.AllAttributes);
+            foreach (var metadataInfo in metadataInfoList)
             {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
+                lowerCaseExcludeAttributesNames.Add(metadataInfo.AttributeName.ToLower());
+                names.Append($",{metadataInfo.AttributeName}").AppendLine();
+                values.Append($",@{metadataInfo.AttributeName}").AppendLine();
+                if (metadataInfo.DataType == DataType.Integer)
                 {
-                    try
-                    {
-                        contentId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetInt(metadataInfo.AttributeName)));
+                }
+                else if (metadataInfo.DataType == DataType.Decimal)
+                {
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetDecimal(metadataInfo.AttributeName)));
+                }
+                else if (metadataInfo.DataType == DataType.Boolean)
+                {
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetBool(metadataInfo.AttributeName)));
+                }
+                else if (metadataInfo.DataType == DataType.DateTime)
+                {
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetDateTime(metadataInfo.AttributeName, DateTime.Now)));
+                }
+                else
+                {
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetExtendedAttribute(metadataInfo.AttributeName)));
                 }
             }
 
-            return contentId;
+            var sqlString = $@"
+INSERT INTO {tableName} (
+    {nameof(ContentInfo.NodeId)},
+    {nameof(ContentInfo.PublishmentSystemId)},
+    {nameof(ContentInfo.AddUserName)},
+    {nameof(ContentInfo.LastEditUserName)},
+    {nameof(ContentInfo.WritingUserName)},
+    {nameof(ContentInfo.LastEditDate)},
+    {nameof(ContentInfo.Taxis)},
+    {nameof(ContentInfo.ContentGroupNameCollection)},
+    {nameof(ContentInfo.Tags)},
+    {nameof(ContentInfo.SourceId)},
+    {nameof(ContentInfo.ReferenceId)},
+    {nameof(ContentInfo.IsChecked)},
+    {nameof(ContentInfo.CheckedLevel)},
+    {nameof(ContentInfo.Comments)},
+    {nameof(ContentInfo.Photos)},
+    {nameof(ContentInfo.Hits)},
+    {nameof(ContentInfo.HitsByDay)},
+    {nameof(ContentInfo.HitsByWeek)},
+    {nameof(ContentInfo.HitsByMonth)},
+    {nameof(ContentInfo.LastHitsDate)},
+    {nameof(ContentInfo.SettingsXml)},
+    {nameof(ContentInfo.Title)},
+    {nameof(ContentInfo.IsTop)},
+    {nameof(ContentInfo.IsRecommend)},
+    {nameof(ContentInfo.IsHot)},
+    {nameof(ContentInfo.IsColor)},
+    {nameof(ContentInfo.AddDate)}
+    {names}
+) VALUES (
+    @{nameof(ContentInfo.NodeId)},
+    @{nameof(ContentInfo.PublishmentSystemId)},
+    @{nameof(ContentInfo.AddUserName)},
+    @{nameof(ContentInfo.LastEditUserName)},
+    @{nameof(ContentInfo.WritingUserName)},
+    @{nameof(ContentInfo.LastEditDate)},
+    @{nameof(ContentInfo.Taxis)},
+    @{nameof(ContentInfo.ContentGroupNameCollection)},
+    @{nameof(ContentInfo.Tags)},
+    @{nameof(ContentInfo.SourceId)},
+    @{nameof(ContentInfo.ReferenceId)},
+    @{nameof(ContentInfo.IsChecked)},
+    @{nameof(ContentInfo.CheckedLevel)},
+    @{nameof(ContentInfo.Comments)},
+    @{nameof(ContentInfo.Photos)},
+    @{nameof(ContentInfo.Hits)},
+    @{nameof(ContentInfo.HitsByDay)},
+    @{nameof(ContentInfo.HitsByWeek)},
+    @{nameof(ContentInfo.HitsByMonth)},
+    @{nameof(ContentInfo.LastHitsDate)},
+    @{nameof(ContentInfo.SettingsXml)},
+    @{nameof(ContentInfo.Title)},
+    @{nameof(ContentInfo.IsTop)},
+    @{nameof(ContentInfo.IsRecommend)},
+    @{nameof(ContentInfo.IsHot)},
+    @{nameof(ContentInfo.IsColor)},
+    @{nameof(ContentInfo.AddDate)}
+    {values}
+)";
+
+            var parameters = new List<IDataParameter>
+            {
+                GetParameter($"@{nameof(ContentInfo.NodeId)}", DataType.Integer, contentInfo.NodeId),
+                GetParameter($"@{nameof(ContentInfo.PublishmentSystemId)}", DataType.Integer, contentInfo.PublishmentSystemId),
+                GetParameter($"@{nameof(ContentInfo.AddUserName)}", DataType.VarChar, 255, contentInfo.AddUserName),
+                GetParameter($"@{nameof(ContentInfo.LastEditUserName)}", DataType.VarChar, 255, contentInfo.LastEditUserName),
+                GetParameter($"@{nameof(ContentInfo.WritingUserName)}", DataType.VarChar, 255, contentInfo.WritingUserName),
+                GetParameter($"@{nameof(ContentInfo.LastEditDate)}", DataType.DateTime, contentInfo.LastEditDate),
+                GetParameter($"@{nameof(ContentInfo.Taxis)}", DataType.Integer, contentInfo.Taxis),
+                GetParameter($"@{nameof(ContentInfo.ContentGroupNameCollection)}", DataType.VarChar, 255, contentInfo.ContentGroupNameCollection),
+                GetParameter($"@{nameof(ContentInfo.Tags)}", DataType.VarChar, 255, contentInfo.Tags),
+                GetParameter($"@{nameof(ContentInfo.SourceId)}", DataType.Integer, contentInfo.SourceId),
+                GetParameter($"@{nameof(ContentInfo.ReferenceId)}", DataType.Integer, contentInfo.ReferenceId),
+                GetParameter($"@{nameof(ContentInfo.IsChecked)}", DataType.VarChar, 18, contentInfo.IsChecked.ToString()),
+                GetParameter($"@{nameof(ContentInfo.CheckedLevel)}", DataType.Integer, contentInfo.CheckedLevel),
+                GetParameter($"@{nameof(ContentInfo.Comments)}", DataType.Integer, contentInfo.Comments),
+                GetParameter($"@{nameof(ContentInfo.Photos)}", DataType.Integer, contentInfo.Photos),
+                GetParameter($"@{nameof(ContentInfo.Hits)}", DataType.Integer, contentInfo.Hits),
+                GetParameter($"@{nameof(ContentInfo.HitsByDay)}", DataType.Integer, contentInfo.HitsByDay),
+                GetParameter($"@{nameof(ContentInfo.HitsByWeek)}", DataType.Integer, contentInfo.HitsByWeek),
+                GetParameter($"@{nameof(ContentInfo.HitsByMonth)}", DataType.Integer, contentInfo.HitsByMonth),
+                GetParameter($"@{nameof(ContentInfo.LastHitsDate)}", DataType.DateTime, contentInfo.LastHitsDate),
+                GetParameter($"@{nameof(ContentInfo.SettingsXml)}", DataType.Text, contentInfo.Attributes.ToString(lowerCaseExcludeAttributesNames)),
+                GetParameter($"@{nameof(ContentInfo.Title)}", DataType.VarChar, 255, contentInfo.Title),
+                GetParameter($"@{nameof(ContentInfo.IsTop)}", DataType.VarChar, 18, contentInfo.IsTop.ToString()),
+                GetParameter($"@{nameof(ContentInfo.IsRecommend)}", DataType.VarChar, 18, contentInfo.IsRecommend.ToString()),
+                GetParameter($"@{nameof(ContentInfo.IsHot)}", DataType.VarChar, 18, contentInfo.IsHot.ToString()),
+                GetParameter($"@{nameof(ContentInfo.IsColor)}", DataType.VarChar, 18, contentInfo.IsColor.ToString()),
+                GetParameter($"@{nameof(ContentInfo.AddDate)}", DataType.DateTime, contentInfo.AddDate)
+            };
+            parameters.AddRange(paras);
+
+            //IDataParameter[] parms;
+            //var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
+
+            return ExecuteNonQueryAndReturningId(sqlString, nameof(ContentInfo.Id), parameters.ToArray());
+
+            //using (var conn = GetConnection())
+            //{
+            //    conn.Open();
+            //    using (var trans = conn.BeginTransaction())
+            //    {
+            //        try
+            //        {
+            //            //contentId = ExecuteNonQueryAndReturnId(trans, sqlInsert, parms);
+            //            contentId = ExecuteNonQueryAndReturningId(trans, sqlString, nameof(ContentInfo.Id), parameters.ToArray());
+
+            //            trans.Commit();
+            //        }
+            //        catch
+            //        {
+            //            trans.Rollback();
+            //            throw;
+            //        }
+            //    }
+            //}
+
+            //return contentId;
         }
 
         public void Update(string tableName, IContentInfo contentInfo)
         {
-            IDataParameter[] parms = null;
-            var sqlString = string.Empty;
-
-            contentInfo.IsTop = contentInfo.IsTop;
+            if (string.IsNullOrEmpty(tableName) || contentInfo == null) return;
 
             //出现IsTop与Taxis不同步情况
             if (contentInfo.IsTop == false && contentInfo.Taxis >= TaxisIsTopStartValue)
@@ -65,23 +190,122 @@ namespace BaiRong.Core.Provider
             {
                 contentInfo.Taxis = BaiRongDataProvider.ContentDao.GetMaxTaxis(tableName, contentInfo.NodeId, true) + 1;
             }
+
             contentInfo.LastEditDate = DateTime.Now;
-            if (!string.IsNullOrEmpty(tableName))
+
+            //if (!string.IsNullOrEmpty(tableName))
+            //{
+            //    contentInfo.Attributes.BeforeExecuteNonQuery();
+            //    sqlString = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
+            //}
+
+            var metadataInfoList = TableManager.GetTableMetadataInfoList(tableName);
+
+            var sets = new StringBuilder();
+            var paras = new List<IDataParameter>();
+            var lowerCaseExcludeAttributesNames = new List<string>(ContentAttribute.AllAttributes);
+            foreach (var metadataInfo in metadataInfoList)
             {
-                contentInfo.Attributes.BeforeExecuteNonQuery();
-                sqlString = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
+                lowerCaseExcludeAttributesNames.Add(metadataInfo.AttributeName.ToLower());
+                sets.Append($",{metadataInfo.AttributeName} = @{metadataInfo.AttributeName}").AppendLine();
+                if (metadataInfo.DataType == DataType.Integer)
+                {
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetInt(metadataInfo.AttributeName)));
+                }
+                else if (metadataInfo.DataType == DataType.Decimal)
+                {
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetDecimal(metadataInfo.AttributeName)));
+                }
+                else if (metadataInfo.DataType == DataType.Boolean)
+                {
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetBool(metadataInfo.AttributeName)));
+                }
+                else if (metadataInfo.DataType == DataType.DateTime)
+                {
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetDateTime(metadataInfo.AttributeName, DateTime.Now)));
+                }
+                else
+                {
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetExtendedAttribute(metadataInfo.AttributeName)));
+                }
             }
 
-            if (!string.IsNullOrEmpty(sqlString))
+            var sqlString = $@"
+UPDATE {tableName} SET 
+    {nameof(ContentInfo.NodeId)} = @{nameof(ContentInfo.NodeId)},
+    {nameof(ContentInfo.PublishmentSystemId)} = @{nameof(ContentInfo.PublishmentSystemId)},
+    {nameof(ContentInfo.AddUserName)} = @{nameof(ContentInfo.AddUserName)},
+    {nameof(ContentInfo.LastEditUserName)} = @{nameof(ContentInfo.LastEditUserName)},
+    {nameof(ContentInfo.WritingUserName)} = @{nameof(ContentInfo.WritingUserName)},
+    {nameof(ContentInfo.LastEditDate)} = @{nameof(ContentInfo.LastEditDate)},
+    {nameof(ContentInfo.Taxis)} = @{nameof(ContentInfo.Taxis)},
+    {nameof(ContentInfo.ContentGroupNameCollection)} = @{nameof(ContentInfo.ContentGroupNameCollection)},
+    {nameof(ContentInfo.Tags)} = @{nameof(ContentInfo.Tags)},
+    {nameof(ContentInfo.SourceId)} = @{nameof(ContentInfo.SourceId)},
+    {nameof(ContentInfo.ReferenceId)} = @{nameof(ContentInfo.ReferenceId)},
+    {nameof(ContentInfo.IsChecked)} = @{nameof(ContentInfo.IsChecked)},
+    {nameof(ContentInfo.CheckedLevel)} = @{nameof(ContentInfo.CheckedLevel)},
+    {nameof(ContentInfo.Comments)} = @{nameof(ContentInfo.Comments)},
+    {nameof(ContentInfo.Photos)} = @{nameof(ContentInfo.Photos)},
+    {nameof(ContentInfo.Hits)} = @{nameof(ContentInfo.Hits)},
+    {nameof(ContentInfo.HitsByDay)} = @{nameof(ContentInfo.HitsByDay)},
+    {nameof(ContentInfo.HitsByWeek)} = @{nameof(ContentInfo.HitsByWeek)},
+    {nameof(ContentInfo.HitsByMonth)} = @{nameof(ContentInfo.HitsByMonth)},
+    {nameof(ContentInfo.LastHitsDate)} = @{nameof(ContentInfo.LastHitsDate)},
+    {nameof(ContentInfo.SettingsXml)} = @{nameof(ContentInfo.SettingsXml)},
+    {nameof(ContentInfo.Title)} = @{nameof(ContentInfo.Title)},
+    {nameof(ContentInfo.IsTop)} = @{nameof(ContentInfo.IsTop)},
+    {nameof(ContentInfo.IsRecommend)} = @{nameof(ContentInfo.IsRecommend)},
+    {nameof(ContentInfo.IsHot)} = @{nameof(ContentInfo.IsHot)},
+    {nameof(ContentInfo.IsColor)} = @{nameof(ContentInfo.IsColor)},
+    {nameof(ContentInfo.AddDate)} = @{nameof(ContentInfo.AddDate)}
+    {sets}
+WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
+
+            var parameters = new List<IDataParameter>
             {
-                ExecuteNonQuery(sqlString, parms);
-            }
+                GetParameter($"@{nameof(ContentInfo.NodeId)}", DataType.Integer, contentInfo.NodeId),
+                GetParameter($"@{nameof(ContentInfo.PublishmentSystemId)}", DataType.Integer, contentInfo.PublishmentSystemId),
+                GetParameter($"@{nameof(ContentInfo.AddUserName)}", DataType.VarChar, 255, contentInfo.AddUserName),
+                GetParameter($"@{nameof(ContentInfo.LastEditUserName)}", DataType.VarChar, 255, contentInfo.LastEditUserName),
+                GetParameter($"@{nameof(ContentInfo.WritingUserName)}", DataType.VarChar, 255, contentInfo.WritingUserName),
+                GetParameter($"@{nameof(ContentInfo.LastEditDate)}", DataType.DateTime, contentInfo.LastEditDate),
+                GetParameter($"@{nameof(ContentInfo.Taxis)}", DataType.Integer, contentInfo.Taxis),
+                GetParameter($"@{nameof(ContentInfo.ContentGroupNameCollection)}", DataType.VarChar, 255, contentInfo.ContentGroupNameCollection),
+                GetParameter($"@{nameof(ContentInfo.Tags)}", DataType.VarChar, 255, contentInfo.Tags),
+                GetParameter($"@{nameof(ContentInfo.SourceId)}", DataType.Integer, contentInfo.SourceId),
+                GetParameter($"@{nameof(ContentInfo.ReferenceId)}", DataType.Integer, contentInfo.ReferenceId),
+                GetParameter($"@{nameof(ContentInfo.IsChecked)}", DataType.VarChar, 18, contentInfo.IsChecked.ToString()),
+                GetParameter($"@{nameof(ContentInfo.CheckedLevel)}", DataType.Integer, contentInfo.CheckedLevel),
+                GetParameter($"@{nameof(ContentInfo.Comments)}", DataType.Integer, contentInfo.Comments),
+                GetParameter($"@{nameof(ContentInfo.Photos)}", DataType.Integer, contentInfo.Photos),
+                GetParameter($"@{nameof(ContentInfo.Hits)}", DataType.Integer, contentInfo.Hits),
+                GetParameter($"@{nameof(ContentInfo.HitsByDay)}", DataType.Integer, contentInfo.HitsByDay),
+                GetParameter($"@{nameof(ContentInfo.HitsByWeek)}", DataType.Integer, contentInfo.HitsByWeek),
+                GetParameter($"@{nameof(ContentInfo.HitsByMonth)}", DataType.Integer, contentInfo.HitsByMonth),
+                GetParameter($"@{nameof(ContentInfo.LastHitsDate)}", DataType.DateTime, contentInfo.LastHitsDate),
+                GetParameter($"@{nameof(ContentInfo.SettingsXml)}", DataType.Text, contentInfo.Attributes.ToString(lowerCaseExcludeAttributesNames)),
+                GetParameter($"@{nameof(ContentInfo.Title)}", DataType.VarChar, 255, contentInfo.Title),
+                GetParameter($"@{nameof(ContentInfo.IsTop)}", DataType.VarChar, 18, contentInfo.IsTop.ToString()),
+                GetParameter($"@{nameof(ContentInfo.IsRecommend)}", DataType.VarChar, 18, contentInfo.IsRecommend.ToString()),
+                GetParameter($"@{nameof(ContentInfo.IsHot)}", DataType.VarChar, 18, contentInfo.IsHot.ToString()),
+                GetParameter($"@{nameof(ContentInfo.IsColor)}", DataType.VarChar, 18, contentInfo.IsColor.ToString()),
+                GetParameter($"@{nameof(ContentInfo.AddDate)}", DataType.DateTime, contentInfo.AddDate)
+            };
+            parameters.AddRange(paras);
+            parameters.Add(GetParameter($"@{nameof(ContentInfo.Id)}", DataType.Integer, contentInfo.Id));
+
+            ExecuteNonQuery(sqlString, parameters.ToArray());
         }
 
         public bool UpdateTaxisToUp(string tableName, int nodeId, int contentId, bool isTop)
         {
             //Get Higher Taxis and Id
-            var sqlString = SqlUtils.GetTopSqlString(tableName, "Id, Taxis", isTop ? $"WHERE (Taxis > (SELECT Taxis FROM {SqlUtils.GetTableName(tableName)} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND NodeId = {nodeId}) ORDER BY Taxis" : $"WHERE (Taxis > (SELECT Taxis FROM {SqlUtils.GetTableName(tableName)} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND NodeId = {nodeId}) ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString(tableName, "Id, Taxis",
+                isTop
+                    ? $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND NodeId = {nodeId})"
+                    : $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND NodeId = {nodeId})",
+                "ORDER BY Taxis", 1);
             var higherId = 0;
             var higherTaxis = 0;
 
@@ -112,7 +336,11 @@ namespace BaiRong.Core.Provider
         public bool UpdateTaxisToDown(string tableName, int nodeId, int contentId, bool isTop)
         {
             //Get Lower Taxis and Id
-            var sqlString = SqlUtils.GetTopSqlString(tableName, "Id, Taxis", isTop ? $"WHERE (Taxis < (SELECT Taxis FROM {SqlUtils.GetTableName(tableName)} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND NodeId = {nodeId}) ORDER BY Taxis DESC" : $"WHERE (Taxis < (SELECT Taxis FROM {SqlUtils.GetTableName(tableName)} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND NodeId = {nodeId}) ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString(tableName, "Id, Taxis",
+                isTop
+                    ? $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND NodeId = {nodeId})"
+                    : $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND NodeId = {nodeId})",
+                "ORDER BY Taxis DESC", 1);
             var lowerId = 0;
             var lowerTaxis = 0;
 
@@ -148,7 +376,7 @@ namespace BaiRong.Core.Provider
                 maxTaxis = TaxisIsTopStartValue;
 
                 string sqlString =
-                    $"SELECT MAX(Taxis) FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId} AND Taxis >= {TaxisIsTopStartValue}";
+                    $"SELECT MAX(Taxis) FROM {tableName} WHERE NodeId = {nodeId} AND Taxis >= {TaxisIsTopStartValue}";
 
                 using (var conn = GetConnection())
                 {
@@ -170,7 +398,7 @@ namespace BaiRong.Core.Provider
             else
             {
                 string sqlString =
-                    $"SELECT MAX(Taxis) FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId} AND Taxis < {TaxisIsTopStartValue}";
+                    $"SELECT MAX(Taxis) FROM {tableName} WHERE NodeId = {nodeId} AND Taxis < {TaxisIsTopStartValue}";
                 using (var conn = GetConnection())
                 {
                     conn.Open();
@@ -189,14 +417,14 @@ namespace BaiRong.Core.Provider
 
         public int GetTaxis(int selectedId, string tableName)
         {
-            string sqlString = $"SELECT Taxis FROM {SqlUtils.GetTableName(tableName)} WHERE (Id = {selectedId})";
+            string sqlString = $"SELECT Taxis FROM {tableName} WHERE (Id = {selectedId})";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
         public void SetTaxis(int id, int taxis, string tableName)
         {
-            string sqlString = $"UPDATE {SqlUtils.GetTableName(tableName)} SET Taxis = {taxis} WHERE Id = {id}";
+            string sqlString = $"UPDATE {tableName} SET Taxis = {taxis} WHERE Id = {id}";
             ExecuteNonQuery(sqlString);
         }
 
@@ -219,11 +447,11 @@ namespace BaiRong.Core.Provider
                 attributes[ContentAttribute.CheckReasons] = reasons;
 
                 string sqlString =
-                    $"UPDATE {SqlUtils.GetTableName(tableName)} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}' WHERE Id = {contentId}";
+                    $"UPDATE {tableName} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}' WHERE Id = {contentId}";
                 if (translateNodeId > 0)
                 {
                     sqlString =
-                        $"UPDATE {SqlUtils.GetTableName(tableName)} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}', NodeId = {translateNodeId} WHERE Id = {contentId}";
+                        $"UPDATE {tableName} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}', NodeId = {translateNodeId} WHERE Id = {contentId}";
                 }
                 ExecuteNonQuery(sqlString);
 
@@ -251,11 +479,11 @@ namespace BaiRong.Core.Provider
                 attributes[ContentAttribute.CheckReasons] = reasons;
 
                 string sqlString =
-                    $"UPDATE {SqlUtils.GetTableName(tableName)} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}' WHERE Id = {contentId}";
+                    $"UPDATE {tableName} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}' WHERE Id = {contentId}";
                 if (translateNodeId > 0)
                 {
                     sqlString =
-                        $"UPDATE {SqlUtils.GetTableName(tableName)} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}', NodeId = {translateNodeId} WHERE Id = {contentId}";
+                        $"UPDATE {tableName} SET IsChecked = '{isChecked}', CheckedLevel = {checkedLevel}, SettingsXML = '{TranslateUtils.NameValueCollectionToString(attributes)}', NodeId = {translateNodeId} WHERE Id = {contentId}";
                 }
                 ExecuteNonQuery(sqlString);
 
@@ -279,7 +507,7 @@ namespace BaiRong.Core.Provider
                         var lastHitsDate = DateTime.Now;
 
                         string sqlString =
-                            $"SELECT ReferenceId, HitsByDay, HitsByWeek, HitsByMonth, LastHitsDate FROM {SqlUtils.GetTableName(tableName)} WHERE (Id = {contentId})";
+                            $"SELECT ReferenceId, HitsByDay, HitsByWeek, HitsByMonth, LastHitsDate FROM {tableName} WHERE (Id = {contentId})";
 
                         using (var rdr = ExecuteReader(sqlString))
                         {
@@ -307,19 +535,19 @@ namespace BaiRong.Core.Provider
                         hitsByMonth = now.Month != lastHitsDate.Month || now.Year != lastHitsDate.Year ? 1 : hitsByMonth + 1;
 
                         sqlString =
-                            $"UPDATE {SqlUtils.GetTableName(tableName)} SET {SqlUtils.GetAddOne("Hits")}, HitsByDay = {hitsByDay}, HitsByWeek = {hitsByWeek}, HitsByMonth = {hitsByMonth}, LastHitsDate = '{DateUtils.GetDateAndTimeString(DateTime.Now)}' WHERE Id = {contentId}  AND ReferenceId = 0";
+                            $"UPDATE {tableName} SET {SqlUtils.GetAddOne("Hits")}, HitsByDay = {hitsByDay}, HitsByWeek = {hitsByWeek}, HitsByMonth = {hitsByMonth}, LastHitsDate = '{DateUtils.GetDateAndTimeString(DateTime.Now)}' WHERE Id = {contentId}  AND ReferenceId = 0";
                         ExecuteNonQuery(sqlString);
                     }
                     else
                     {
                         string sqlString =
-                            $"UPDATE {SqlUtils.GetTableName(tableName)} SET {SqlUtils.GetAddOne("Hits")}, LastHitsDate = '{DateUtils.GetDateAndTimeString(DateTime.Now)}' WHERE Id = {contentId} AND ReferenceId = 0";
+                            $"UPDATE {tableName} SET {SqlUtils.GetAddOne("Hits")}, LastHitsDate = '{DateUtils.GetDateAndTimeString(DateTime.Now)}' WHERE Id = {contentId} AND ReferenceId = 0";
                         var count = ExecuteNonQuery(sqlString);
                         if (count < 1)
                         {
                             var referenceId = 0;
 
-                            sqlString = $"SELECT ReferenceId FROM {SqlUtils.GetTableName(tableName)} WHERE (Id = {contentId})";
+                            sqlString = $"SELECT ReferenceId FROM {tableName} WHERE (Id = {contentId})";
 
                             using (var rdr = ExecuteReader(sqlString))
                             {
@@ -333,7 +561,7 @@ namespace BaiRong.Core.Provider
                             if (referenceId > 0)
                             {
                                 sqlString =
-                                    $"UPDATE {SqlUtils.GetTableName(tableName)} SET {SqlUtils.GetAddOne("Hits")}, LastHitsDate = '{DateUtils.GetDateAndTimeString(DateTime.Now)}' WHERE Id = {referenceId} AND ReferenceId = 0";
+                                    $"UPDATE {tableName} SET {SqlUtils.GetAddOne("Hits")}, LastHitsDate = '{DateUtils.GetDateAndTimeString(DateTime.Now)}' WHERE Id = {referenceId} AND ReferenceId = 0";
                                 ExecuteNonQuery(sqlString);
                             }
                         }
@@ -344,13 +572,13 @@ namespace BaiRong.Core.Provider
 
         public void UpdateComments(string tableName, int contentId, int comments)
         {
-            string sqlString = $"UPDATE {SqlUtils.GetTableName(tableName)} SET Comments = {comments} WHERE Id = {contentId}";
+            string sqlString = $"UPDATE {tableName} SET Comments = {comments} WHERE Id = {contentId}";
             ExecuteNonQuery(sqlString);
         }
 
         public void UpdatePhotos(string tableName, int contentId, int photos)
         {
-            string sqlString = $"UPDATE {SqlUtils.GetTableName(tableName)} SET Photos = {photos} WHERE Id = {contentId}";
+            string sqlString = $"UPDATE {tableName} SET Photos = {photos} WHERE Id = {contentId}";
             ExecuteNonQuery(sqlString);
         }
 
@@ -361,7 +589,7 @@ namespace BaiRong.Core.Provider
             linkUrl = string.Empty;
             try
             {
-                string sqlString = $"SELECT ReferenceId, NodeId, LinkUrl FROM {SqlUtils.GetTableName(tableName)} WHERE Id = {contentId}";
+                string sqlString = $"SELECT ReferenceId, NodeId, LinkUrl FROM {tableName} WHERE Id = {contentId}";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
@@ -387,7 +615,7 @@ namespace BaiRong.Core.Provider
             linkUrl = string.Empty;
             try
             {
-                string sqlString = $"SELECT ReferenceId, LinkUrl FROM {SqlUtils.GetTableName(tableName)} WHERE Id = {contentId}";
+                string sqlString = $"SELECT ReferenceId, LinkUrl FROM {tableName} WHERE Id = {contentId}";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
@@ -412,14 +640,14 @@ namespace BaiRong.Core.Provider
             if (string.IsNullOrEmpty(userName))
             {
                 sqlString = nodeIdList.Count == 1
-                    ? $"SELECT COUNT(Id) AS Num FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')"
-                    : $"SELECT COUNT(Id) AS Num FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')";
+                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')"
+                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')";
             }
             else
             {
                 sqlString = nodeIdList.Count == 1
-                    ? $"SELECT COUNT(Id) AS Num FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')"
-                    : $"SELECT COUNT(Id) AS Num FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')";
+                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')"
+                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')";
             }
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
@@ -431,14 +659,14 @@ namespace BaiRong.Core.Provider
             if (string.IsNullOrEmpty(userName))
             {
                 sqlString = nodeIdList.Count == 1
-                    ? $"SELECT COUNT(Id) AS Num FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)"
-                    : $"SELECT COUNT(Id) AS Num FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)";
+                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)"
+                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)";
             }
             else
             {
                 sqlString = nodeIdList.Count == 1
-                    ? $"SELECT COUNT(Id) AS Num FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')"
-                    : $"SELECT COUNT(Id) AS Num FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
+                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')"
+                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
             }
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
@@ -644,13 +872,13 @@ namespace BaiRong.Core.Provider
 
         public string GetValue(string tableName, int contentId, string name)
         {
-            string sqlString = $"SELECT {name} FROM {SqlUtils.GetTableName(tableName)} WHERE (Id = {contentId})";
+            string sqlString = $"SELECT {name} FROM {tableName} WHERE (Id = {contentId})";
             return BaiRongDataProvider.DatabaseDao.GetString(sqlString);
         }
 
         public void SetValue(string tableName, int contentId, string name, string value)
         {
-            string sqlString = $"UPDATE {SqlUtils.GetTableName(tableName)} SET {name} = '{value}' WHERE Id = {contentId}";
+            string sqlString = $"UPDATE {tableName} SET {name} = '{value}' WHERE Id = {contentId}";
 
             ExecuteNonQuery(sqlString);
         }
@@ -669,7 +897,7 @@ namespace BaiRong.Core.Provider
         {
             var arraylist = new List<int>();
             string sqlString =
-                $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId > 0 AND ReferenceId IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                $"SELECT Id FROM {tableName} WHERE NodeId > 0 AND ReferenceId IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -685,7 +913,7 @@ namespace BaiRong.Core.Provider
 
         public int GetFirstContentId(string tableName, int nodeId)
         {
-            string sqlString = $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId} ORDER BY Taxis DESC, Id DESC";
+            string sqlString = $"SELECT Id FROM {tableName} WHERE NodeId = {nodeId} ORDER BY Taxis DESC, Id DESC";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
@@ -693,7 +921,7 @@ namespace BaiRong.Core.Provider
         {
             var arraylist = new List<int>();
 
-            string sqlString = $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId}";
+            string sqlString = $"SELECT Id FROM {tableName} WHERE NodeId = {nodeId}";
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
@@ -710,7 +938,7 @@ namespace BaiRong.Core.Provider
         {
             var arraylist = new List<int>();
 
-            string sqlString = $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId}";
+            string sqlString = $"SELECT Id FROM {tableName} WHERE NodeId = {nodeId}";
             if (isPeriods)
             {
                 var dateString = string.Empty;
@@ -749,7 +977,7 @@ namespace BaiRong.Core.Provider
         {
             var arraylist = new List<int>();
 
-            string sqlString = $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId}";
+            string sqlString = $"SELECT Id FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId}";
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
@@ -762,7 +990,7 @@ namespace BaiRong.Core.Provider
             return arraylist;
         }
 
-        public List<int> GetContentIdListChecked(string tableName, List<int> nodeIdList, int totalNum, string orderByString, string whereString)
+        public List<int> GetContentIdListChecked(string tableName, List<int> nodeIdList, int totalNum, string orderString, string whereString)
         {
             var arraylist = new List<int>();
 
@@ -775,11 +1003,17 @@ namespace BaiRong.Core.Provider
 
             if (totalNum > 0)
             {
-                sqlString = SqlUtils.GetTopSqlString(tableName, "Id", nodeIdList.Count == 1 ? $"WHERE (NodeId = {nodeIdList[0]} AND IsChecked = '{true}' {whereString}) {orderByString}" : $"WHERE (NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString}) {orderByString}", totalNum);
+                sqlString = SqlUtils.GetTopSqlString(tableName, "Id",
+                    nodeIdList.Count == 1
+                        ? $"WHERE (NodeId = {nodeIdList[0]} AND IsChecked = '{true}' {whereString})"
+                        : $"WHERE (NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})", orderString,
+                    totalNum);
             }
             else
             {
-                sqlString = nodeIdList.Count == 1 ? $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE (NodeId = {nodeIdList[0]} AND IsChecked = '{true}' {whereString}) {orderByString}" : $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE (NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString}) {orderByString}";
+                sqlString = nodeIdList.Count == 1
+                    ? $"SELECT Id FROM {tableName} WHERE (NodeId = {nodeIdList[0]} AND IsChecked = '{true}' {whereString}) {orderString}"
+                    : $"SELECT Id FROM {tableName} WHERE (NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString}) {orderString}";
             }
 
             using (var rdr = ExecuteReader(sqlString))
@@ -797,7 +1031,7 @@ namespace BaiRong.Core.Provider
         public List<int> GetContentIdListByTrash(int publishmentSystemId, string tableName)
         {
             string sqlString =
-                $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId < 0";
+                $"SELECT Id FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId < 0";
             return BaiRongDataProvider.DatabaseDao.GetIntList(sqlString);
         }
 
@@ -806,7 +1040,7 @@ namespace BaiRong.Core.Provider
             if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
             {
                 string sqlString =
-                    $"UPDATE {SqlUtils.GetTableName(tableName)} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetDefaultDateString()} WHERE PublishmentSystemId = {publishmentSystemId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                    $"UPDATE {tableName} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetDefaultDateString()} WHERE PublishmentSystemId = {publishmentSystemId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
                 return ExecuteNonQuery(sqlString);
             }
             return 0;
@@ -817,7 +1051,7 @@ namespace BaiRong.Core.Provider
             if (!string.IsNullOrEmpty(tableName))
             {
                 string sqlString =
-                    $"UPDATE {SqlUtils.GetTableName(tableName)} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetDefaultDateString()} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {publishmentSystemId}";
+                    $"UPDATE {tableName} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetDefaultDateString()} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {publishmentSystemId}";
                 return ExecuteNonQuery(sqlString);
             }
             return 0;
@@ -830,7 +1064,7 @@ namespace BaiRong.Core.Provider
                 TagUtils.RemoveTags(publishmentSystemId, contentIdList);
 
                 string sqlString =
-                    $"DELETE FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                    $"DELETE FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
                 return ExecuteNonQuery(sqlString);
             }
             return 0;
@@ -843,7 +1077,7 @@ namespace BaiRong.Core.Provider
                 TagUtils.RemoveTags(publishmentSystemId, contentIdList);
 
                 string sqlString =
-                    $"DELETE FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeId}";
+                    $"DELETE FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeId}";
                 return ExecuteNonQuery(sqlString);
             }
             return 0;
@@ -854,7 +1088,7 @@ namespace BaiRong.Core.Provider
             if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
             {
                 string sqlString =
-                    $"DELETE FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                    $"DELETE FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
                 ExecuteNonQuery(sqlString);
             }
         }
@@ -867,7 +1101,7 @@ namespace BaiRong.Core.Provider
                 TagUtils.RemoveTags(publishmentSystemId, contentIdList);
 
                 string sqlString =
-                    $"DELETE FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId < 0";
+                    $"DELETE FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId < 0";
                 ExecuteNonQuery(sqlString);
             }
         }
@@ -877,7 +1111,7 @@ namespace BaiRong.Core.Provider
             if (!string.IsNullOrEmpty(tableName))
             {
                 string sqlString =
-                    $"UPDATE {SqlUtils.GetTableName(tableName)} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetDefaultDateString()} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId < 0";
+                    $"UPDATE {tableName} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetDefaultDateString()} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId < 0";
                 return ExecuteNonQuery(sqlString);
             }
             return 0;
@@ -886,7 +1120,12 @@ namespace BaiRong.Core.Provider
         public int GetContentId(string tableName, int nodeId, int taxis, bool isNextContent)
         {
             var contentId = 0;
-            var sqlString = SqlUtils.GetTopSqlString(tableName, "Id", isNextContent ? $"WHERE (NodeId = {nodeId} AND Taxis < {taxis} AND IsChecked = 'True') ORDER BY Taxis DESC" : $"WHERE (NodeId = {nodeId} AND Taxis > {taxis} AND IsChecked = 'True') ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString(tableName, "Id", $"WHERE (NodeId = {nodeId} AND Taxis > {taxis} AND IsChecked = 'True')", "ORDER BY Taxis", 1);
+            if (isNextContent)
+            {
+                sqlString = SqlUtils.GetTopSqlString(tableName, "Id",
+                $"WHERE (NodeId = {nodeId} AND Taxis < {taxis} AND IsChecked = 'True')", "ORDER BY Taxis DESC", 1);
+            }
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -903,7 +1142,7 @@ namespace BaiRong.Core.Provider
         public int GetContentId(string tableName, int nodeId, string orderByString)
         {
             var contentId = 0;
-            var sqlString = SqlUtils.GetTopSqlString(tableName, "Id", $"WHERE (NodeId = {nodeId}) {orderByString}", 1);
+            var sqlString = SqlUtils.GetTopSqlString(tableName, "Id", $"WHERE (NodeId = {nodeId})", orderByString, 1);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -919,7 +1158,7 @@ namespace BaiRong.Core.Provider
         public int GetContentId(string tableName, int nodeId, string attributeName, string value)
         {
             var contentId = 0;
-            string sqlString = $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE (NodeId = {nodeId} AND {attributeName} = '{value}')";
+            string sqlString = $"SELECT Id FROM {tableName} WHERE (NodeId = {nodeId} AND {attributeName} = '{value}')";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -934,21 +1173,21 @@ namespace BaiRong.Core.Provider
 
         public List<string> GetValueList(string tableName, int nodeId, string name)
         {
-            string sqlString = $"SELECT {name} FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId}";
+            string sqlString = $"SELECT {name} FROM {tableName} WHERE NodeId = {nodeId}";
             return BaiRongDataProvider.DatabaseDao.GetStringList(sqlString);
         }
 
         public List<string> GetValueListByStartString(string tableName, int nodeId, string name, string startString, int totalNum)
         {
             var inStr = SqlUtils.GetInStr(name, startString);
-            var sqlString = SqlUtils.GetDistinctTopSqlString(tableName, name, $"WHERE NodeId = {nodeId} AND {inStr}", totalNum);
+            var sqlString = SqlUtils.GetDistinctTopSqlString(tableName, name, $"WHERE NodeId = {nodeId} AND {inStr}", string.Empty, totalNum);
             return BaiRongDataProvider.DatabaseDao.GetStringList(sqlString);
         }
 
         public int GetNodeId(string tableName, int contentId)
         {
             var nodeId = 0;
-            string sqlString = $"SELECT {ContentAttribute.NodeId} FROM {SqlUtils.GetTableName(tableName)} WHERE (Id = {contentId})";
+            string sqlString = $"SELECT {ContentAttribute.NodeId} FROM {tableName} WHERE (Id = {contentId})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -964,7 +1203,7 @@ namespace BaiRong.Core.Provider
         public DateTime GetAddDate(string tableName, int contentId)
         {
             var addDate = DateTime.Now;
-            string sqlString = $"SELECT {ContentAttribute.AddDate} FROM {SqlUtils.GetTableName(tableName)} WHERE (Id = {contentId})";
+            string sqlString = $"SELECT {ContentAttribute.AddDate} FROM {tableName} WHERE (Id = {contentId})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -980,7 +1219,7 @@ namespace BaiRong.Core.Provider
         public DateTime GetLastEditDate(string tableName, int contentId)
         {
             var lastEditDate = DateTime.Now;
-            string sqlString = $"SELECT {ContentAttribute.LastEditDate} FROM {SqlUtils.GetTableName(tableName)} WHERE (Id = {contentId})";
+            string sqlString = $"SELECT {ContentAttribute.LastEditDate} FROM {tableName} WHERE (Id = {contentId})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -995,7 +1234,7 @@ namespace BaiRong.Core.Provider
 
         public int GetCount(string tableName, int nodeId)
         {
-            string sqlString = $"SELECT COUNT(*) AS TotalNum FROM {SqlUtils.GetTableName(tableName)} WHERE (NodeId = {nodeId})";
+            string sqlString = $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (NodeId = {nodeId})";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
@@ -1013,7 +1252,7 @@ namespace BaiRong.Core.Provider
         public int GetCountChecked(string tableName, int nodeId, string whereString)
         {
             string sqlString =
-                $"SELECT COUNT(*) AS TotalNum FROM {SqlUtils.GetTableName(tableName)} WHERE (NodeId = {nodeId} AND IsChecked = '{true}' {whereString})";
+                $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (NodeId = {nodeId} AND IsChecked = '{true}' {whereString})";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
@@ -1021,7 +1260,7 @@ namespace BaiRong.Core.Provider
         public int GetSequence(string tableName, int nodeId, int contentId)
         {
             string sqlString =
-                $"SELECT COUNT(*) AS TotalNum FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId} AND IsChecked = '{true}' AND Taxis < (SELECT Taxis FROM {SqlUtils.GetTableName(tableName)} WHERE (Id = {contentId}))";
+                $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE NodeId = {nodeId} AND IsChecked = '{true}' AND Taxis < (SELECT Taxis FROM {tableName} WHERE (Id = {contentId}))";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString) + 1;
         }
@@ -1029,15 +1268,15 @@ namespace BaiRong.Core.Provider
         public string GetSelectCommendOfAdminExcludeRecycle(string tableName, int publishmentSystemId, DateTime begin, DateTime end)
         {
             string sqlString = $@"select userName,SUM(addCount) as addCount, SUM(updateCount) as updateCount from( 
-SELECT AddUserName as userName, Count(AddUserName) as addCount, 0 as updateCount FROM {SqlUtils.GetTableName(tableName)} 
+SELECT AddUserName as userName, Count(AddUserName) as addCount, 0 as updateCount FROM {tableName} 
 INNER JOIN bairong_Administrator ON AddUserName = bairong_Administrator.UserName 
-WHERE {SqlUtils.GetTableName(tableName)}.PublishmentSystemId = {publishmentSystemId} AND (({SqlUtils.GetTableName(tableName)}.NodeId > 0)) 
+WHERE {tableName}.PublishmentSystemId = {publishmentSystemId} AND (({tableName}.NodeId > 0)) 
 AND LastEditDate BETWEEN '{DateUtils.GetDateString(begin)}' AND '{DateUtils.GetDateString(end.AddDays(1))}'
 GROUP BY AddUserName
 Union
-SELECT LastEditUserName as userName,0 as addCount, Count(LastEditUserName) as updateCount FROM {SqlUtils.GetTableName(tableName)} 
+SELECT LastEditUserName as userName,0 as addCount, Count(LastEditUserName) as updateCount FROM {tableName} 
 INNER JOIN bairong_Administrator ON LastEditUserName = bairong_Administrator.UserName 
-WHERE {SqlUtils.GetTableName(tableName)}.PublishmentSystemId = {publishmentSystemId} AND (({SqlUtils.GetTableName(tableName)}.NodeId > 0)) 
+WHERE {tableName}.PublishmentSystemId = {publishmentSystemId} AND (({tableName}.NodeId > 0)) 
 AND LastEditDate BETWEEN '{DateUtils.GetDateString(begin)}' AND '{DateUtils.GetDateString(end.AddDays(1))}'
 AND LastEditDate != AddDate
 GROUP BY LastEditUserName
@@ -1053,7 +1292,7 @@ group by tmp.userName";
             var arraylist = new List<int>();
 
             string sqlString =
-                $"SELECT DISTINCT NodeId FROM {SqlUtils.GetTableName(tableName)} WHERE (PublishmentSystemId = {publishmentSystemId}) AND (IsChecked = '{true}') AND (LastEditDate BETWEEN '{DateUtils.GetDateAndTimeString(DateTime.Now.AddHours(-hour))}' AND '{DateUtils.GetDateAndTimeString(DateTime.Now)}')";
+                $"SELECT DISTINCT NodeId FROM {tableName} WHERE (PublishmentSystemId = {publishmentSystemId}) AND (IsChecked = '{true}') AND (LastEditDate BETWEEN '{DateUtils.GetDateAndTimeString(DateTime.Now.AddHours(-hour))}' AND '{DateUtils.GetDateAndTimeString(DateTime.Now)}')";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -1067,18 +1306,18 @@ group by tmp.userName";
             return arraylist;
         }
 
-        public string GetSelectedCommendByCheck(string tableName, int publishmentSystemId, bool isSystemAdministrator, List<int> owningNodeIdList, ArrayList checkLevelArrayList)
+        public string GetSelectedCommendByCheck(string tableName, int publishmentSystemId, bool isSystemAdministrator, List<int> owningNodeIdList, List<int> checkLevelList)
         {
             string whereString;
 
             if (isSystemAdministrator)
             {
                 whereString =
-                    $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId > 0 AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}) ";
+                    $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId > 0 AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) ";
             }
             else
             {
-                whereString = owningNodeIdList.Count == 1 ? $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {owningNodeIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}) " : $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}) ";
+                whereString = owningNodeIdList.Count == 1 ? $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {owningNodeIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) " : $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) ";
             }
 
             return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
@@ -1228,7 +1467,7 @@ group by tmp.userName";
             }
             var sqlWhereString = nodeIdList.Count == 1 ? $"WHERE (NodeId ={nodeIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})";
 
-            string sqlString = $"SELECT COUNT(*) FROM {SqlUtils.GetTableName(tableName)} {sqlWhereString}";
+            string sqlString = $"SELECT COUNT(*) FROM {tableName} {sqlWhereString}";
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
@@ -1341,7 +1580,7 @@ group by tmp.userName";
             var list = new List<int>();
 
             string sqlString =
-                $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeId} AND IsChecked = '{false}'";
+                $"SELECT Id FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeId} AND IsChecked = '{false}'";
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
@@ -1359,7 +1598,7 @@ group by tmp.userName";
             var list = new List<int>();
 
             string sqlString =
-                $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeId} AND IsChecked = '{true}'";
+                $"SELECT Id FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeId} AND IsChecked = '{true}'";
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())

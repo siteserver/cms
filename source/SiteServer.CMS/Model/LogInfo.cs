@@ -4,94 +4,48 @@ namespace SiteServer.CMS.Model
 {
 	public class LogInfo
 	{
-        private int id;
-        private int publishmentSystemID;
-        private int channelID;
-        private int contentID;
-        private string userName;
-        private string ipAddress;
-        private DateTime addDate;
-        private string action;
-        private string summary;
-
-		public LogInfo()
+	    public LogInfo()
 		{
-            id = 0;
-            publishmentSystemID = 0;
-            channelID = 0;
-            contentID = 0;
-            userName = string.Empty;
-            ipAddress = string.Empty;
-            addDate = DateTime.Now;
-            action = string.Empty;
-            summary = string.Empty;
+            Id = 0;
+            PublishmentSystemId = 0;
+            ChannelId = 0;
+            ContentId = 0;
+            UserName = string.Empty;
+            IpAddress = string.Empty;
+            AddDate = DateTime.Now;
+            Action = string.Empty;
+            Summary = string.Empty;
 		}
 
-        public LogInfo(int id, int publishmentSystemID, int channelID, int contentID, string userName, string ipAddress, DateTime addDate, string action, string summary) 
+        public LogInfo(int id, int publishmentSystemId, int channelId, int contentId, string userName, string ipAddress, DateTime addDate, string action, string summary) 
 		{
-            this.id = id;
-            this.publishmentSystemID = publishmentSystemID;
-            this.channelID = channelID;
-            this.contentID = contentID;
-            this.userName = userName;
-            this.ipAddress = ipAddress;
-            this.addDate = addDate;
-            this.action = action;
-            this.summary = summary;
+            Id = id;
+            PublishmentSystemId = publishmentSystemId;
+            ChannelId = channelId;
+            ContentId = contentId;
+            UserName = userName;
+            IpAddress = ipAddress;
+            AddDate = addDate;
+            Action = action;
+            Summary = summary;
 		}
 
-        public int ID
-		{
-            get { return id; }
-            set { id = value; }
-		}
+        public int Id { get; set; }
 
-        public int PublishmentSystemID
-        {
-            get { return publishmentSystemID; }
-            set { publishmentSystemID = value; }
-        }
+	    public int PublishmentSystemId { get; set; }
 
-        public int ChannelID
-        {
-            get { return channelID; }
-            set { channelID = value; }
-        }
+	    public int ChannelId { get; set; }
 
-        public int ContentID
-        {
-            get { return contentID; }
-            set { contentID = value; }
-        }
+	    public int ContentId { get; set; }
 
-        public string UserName
-		{
-            get { return userName; }
-            set { userName = value; }
-		}
+	    public string UserName { get; set; }
 
-        public string IPAddress
-		{
-            get { return ipAddress; }
-            set { ipAddress = value; }
-		}
+	    public string IpAddress { get; set; }
 
-        public DateTime AddDate
-        {
-            get { return addDate; }
-            set { addDate = value; }
-        }
+	    public DateTime AddDate { get; set; }
 
-        public string Action
-		{
-            get { return action; }
-            set { action = value; }
-		}
+	    public string Action { get; set; }
 
-        public string Summary
-        {
-            get { return summary; }
-            set { summary = value; }
-        }
+	    public string Summary { get; set; }
 	}
 }

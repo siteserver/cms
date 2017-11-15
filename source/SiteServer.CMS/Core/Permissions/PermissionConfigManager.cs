@@ -9,8 +9,6 @@ namespace SiteServer.CMS.Core.Permissions
 	{
         public const string CacheKey = "SiteServer.CMS.Core.Permissions.PermissionConfigManager";
 
-        public const string FilePath = "~/SiteFiles/Configuration/Permissions.config";
-
 	    public List<PermissionConfig> GeneralPermissions { get; } = new List<PermissionConfig>();
 
 	    public List<PermissionConfig> WebsitePermissions { get; } = new List<PermissionConfig>();
@@ -32,7 +30,7 @@ namespace SiteServer.CMS.Core.Permissions
 
 			    permissionManager = new PermissionConfigManager();
 
-			    var path = PathUtils.MapPath(FilePath);
+			    var path = PathUtils.GetMenusPath("Permissions.config");
 			    if (FileUtils.IsFileExists(path))
 			    {
 			        var doc = new XmlDocument();

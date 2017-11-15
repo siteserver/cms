@@ -10,6 +10,48 @@ namespace BaiRong.Core.Provider
 {
     public class UserLogDao : DataProviderBase
     {
+        public override string TableName => "bairong_UserLog";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.UserName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.IpAddress),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.Action),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.Summary),
+                DataType = DataType.VarChar,
+                Length = 255
+            }
+        };
+
         private const string ParmUserName = "@UserName";
         private const string ParmIpAddress = "@IPAddress";
         private const string ParmAddDate = "@AddDate";
@@ -25,8 +67,8 @@ namespace BaiRong.Core.Provider
                     GetParameter(ParmUserName, DataType.VarChar, 50, userLog.UserName),
                     GetParameter(ParmIpAddress, DataType.VarChar, 50, userLog.IpAddress),
                     GetParameter(ParmAddDate, DataType.DateTime, userLog.AddDate),
-                    GetParameter(ParmAction, DataType.NVarChar, 255, userLog.Action),
-                    GetParameter(ParmSummary, DataType.NVarChar, 255, userLog.Summary)
+                    GetParameter(ParmAction, DataType.VarChar, 255, userLog.Action),
+                    GetParameter(ParmSummary, DataType.VarChar, 255, userLog.Summary)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -149,7 +191,8 @@ namespace BaiRong.Core.Provider
         {
             var retval = DateTime.MinValue;
             //const string sqlString = "SELECT TOP 1 AddDate FROM bairong_UserLog WHERE UserName = @UserName ORDER BY ID DESC";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_UserLog", "AddDate", "WHERE UserName = @UserName ORDER BY ID DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_UserLog", "AddDate", "WHERE UserName = @UserName",
+                "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
 			{
@@ -171,7 +214,8 @@ namespace BaiRong.Core.Provider
         {
             var retval = DateTime.MinValue;
             //const string sqlString = "SELECT TOP 1 AddDate FROM bairong_UserLog WHERE UserName = @UserName AND Action = '清空数据库日志' ORDER BY ID DESC";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_UserLog", "AddDate", "WHERE UserName = @UserName AND Action = '清空数据库日志' ORDER BY ID DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_UserLog", "AddDate",
+                "WHERE UserName = @UserName AND Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
 			{
@@ -206,7 +250,7 @@ namespace BaiRong.Core.Provider
             };
             if (!string.IsNullOrEmpty(action))
             {
-                parameters.Add(GetParameter(ParmAction, DataType.NVarChar, 255, action));
+                parameters.Add(GetParameter(ParmAction, DataType.VarChar, 255, action));
             }
 
             using (var rdr = ExecuteReader(sqlString, parameters.ToArray()))

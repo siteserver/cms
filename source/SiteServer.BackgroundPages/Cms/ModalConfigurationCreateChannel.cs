@@ -9,20 +9,20 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalConfigurationCreateChannel : BasePageCms
     {
-        public RadioButtonList IsCreateChannelIfContentChanged;
+        public DropDownList DdlIsCreateChannelIfContentChanged;
 
-        protected ListBox NodeIDCollection;
+        protected ListBox LbNodeId;
 
-		private int nodeID;
+		private int _nodeId;
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenWindowString("栏目生成设置",
+            return PageUtils.GetOpenLayerString("栏目生成设置",
                 PageUtils.GetCmsUrl(nameof(ModalConfigurationCreateChannel), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"NodeID", nodeId.ToString()}
-                }), 550, 400);
+                }), 550, 500);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -30,18 +30,18 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
-            nodeID = Body.GetQueryInt("NodeID");
+            _nodeId = Body.GetQueryInt("NodeID");
 
 			if (!IsPostBack)
 			{
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
+                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
 
-                EBooleanUtils.AddListItems(IsCreateChannelIfContentChanged, "生成", "不生成");
-                ControlUtils.SelectListItemsIgnoreCase(IsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
+                EBooleanUtils.AddListItems(DdlIsCreateChannelIfContentChanged, "生成", "不生成");
+                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
 
                 //NodeManager.AddListItemsForAddContent(this.NodeIDCollection.Items, base.PublishmentSystemInfo, false);
-                NodeManager.AddListItemsForCreateChannel(NodeIDCollection.Items, PublishmentSystemInfo, false, Body.AdminName);
-                ControlUtils.SelectListItems(NodeIDCollection, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIDsIfContentChanged));
+                NodeManager.AddListItemsForCreateChannel(LbNodeId.Items, PublishmentSystemInfo, false, Body.AdminName);
+                ControlUtils.SelectListItems(LbNodeId, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIDsIfContentChanged));
 			}
 		}
 
@@ -51,14 +51,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
+                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
 
-                nodeInfo.Additional.IsCreateChannelIfContentChanged = TranslateUtils.ToBool(IsCreateChannelIfContentChanged.SelectedValue);
-                nodeInfo.Additional.CreateChannelIDsIfContentChanged = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollection);
+                nodeInfo.Additional.IsCreateChannelIfContentChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfContentChanged.SelectedValue);
+                nodeInfo.Additional.CreateChannelIDsIfContentChanged = ControlUtils.GetSelectedListControlValueCollection(LbNodeId);
 
                 DataProvider.NodeDao.UpdateNodeInfo(nodeInfo);
 
-                Body.AddSiteLog(PublishmentSystemId, nodeID, 0, "设置栏目变动生成页面", $"栏目:{nodeInfo.NodeName}");
+                Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "设置栏目变动生成页面", $"栏目:{nodeInfo.NodeName}");
                 isSuccess = true;
             }
             catch (Exception ex)
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isSuccess)
             {
-                PageUtils.CloseModalPageAndRedirect(Page, PageConfigurationCreateTrigger.GetRedirectUrl(PublishmentSystemId, nodeID));
+                PageUtils.CloseModalPageAndRedirect(Page, PageConfigurationCreateTrigger.GetRedirectUrl(PublishmentSystemId, _nodeId));
             }
         }
 	}

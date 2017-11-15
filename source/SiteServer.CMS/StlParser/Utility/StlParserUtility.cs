@@ -544,10 +544,10 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 dbItemIndex = contextInfo.ItemContainer.ContentItem.ItemIndex;
             }
-            else if (contextInfo.ContextType == EContextType.InputContent)
-            {
-                dbItemIndex = contextInfo.ItemContainer.InputItem.ItemIndex;
-            }
+            //else if (contextInfo.ContextType == EContextType.InputContent)
+            //{
+            //    dbItemIndex = contextInfo.ItemContainer.InputItem.ItemIndex;
+            //}
             else if (contextInfo.ContextType == EContextType.SqlContent)
             {
                 dbItemIndex = contextInfo.ItemContainer.SqlItem.ItemIndex;

@@ -2,6 +2,7 @@
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.BackgroundPages.Settings;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages
         {
             if (IsForbidden) return; // 检测是否允许访问本页面
 
-            if (PageUtils.DetermineRedirectToInstaller()) return; // 检测系统是否需要安装，如果需要转到安装页面。
+            if (SystemManager.DetermineRedirectToInstaller()) return; // 检测系统是否需要安装，如果需要转到安装页面。
 
             if (!Body.IsAdminLoggin) // 检测管理员是否登录
             {

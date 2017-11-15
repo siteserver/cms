@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
-using BaiRong.Core.IO;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Net;
@@ -156,7 +155,7 @@ namespace SiteServer.CMS.Plugin
                 }
                 else
                 {
-                    var columnNameList = BaiRongDataProvider.DatabaseDao.GetColumnNameList(tableName, true);
+                    var columnNameList = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnNameList(tableName);
                     foreach (var tableColumn in contentTable.ContentTableColumns)
                     {
                         if (columnNameList.Contains(tableColumn.AttributeName.ToLower())) continue;

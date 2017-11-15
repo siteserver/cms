@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"RelatedIdentity", relatedIdentity.ToString()}
-                }), 560, 200);
+                }), 760, 200);
         }
 
         public void Page_Load(object sender, EventArgs e)

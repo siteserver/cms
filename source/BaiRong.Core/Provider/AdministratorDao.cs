@@ -21,14 +21,14 @@ namespace BaiRong.Core.Provider
             new TableColumnInfo
             {
                 ColumnName = nameof(AdministratorInfo.UserName),
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 255,
                 IsPrimaryKey = true
             },
             new TableColumnInfo
             {
                 ColumnName = nameof(AdministratorInfo.Password),
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 255
             },
             new TableColumnInfo
@@ -40,7 +40,7 @@ namespace BaiRong.Core.Provider
             new TableColumnInfo
             {
                 ColumnName = nameof(AdministratorInfo.PasswordSalt),
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 128
             },
             new TableColumnInfo
@@ -66,13 +66,13 @@ namespace BaiRong.Core.Provider
             new TableColumnInfo
             {
                 ColumnName = nameof(AdministratorInfo.CreatorUserName),
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 255
             },
             new TableColumnInfo
             {
                 ColumnName = nameof(AdministratorInfo.IsLockedOut),
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 18
             },
             new TableColumnInfo
@@ -99,13 +99,13 @@ namespace BaiRong.Core.Provider
             new TableColumnInfo
             {
                 ColumnName = nameof(AdministratorInfo.DisplayName),
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 50
             },
             new TableColumnInfo
             {
                 ColumnName = nameof(AdministratorInfo.Email),
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 50
             },
             new TableColumnInfo
@@ -116,41 +116,57 @@ namespace BaiRong.Core.Provider
             }
         };
 
-        private const string SqlSelectUser = "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectUser =
+            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE UserName = @UserName";
 
-        private const string SqlSelectUserByEmail = "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE Email = @Email";
+        private const string SqlSelectUserByEmail =
+            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE Email = @Email";
 
-        private const string SqlSelectUserByMobile = "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE Mobile = @Mobile";
+        private const string SqlSelectUserByMobile =
+            "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator WHERE Mobile = @Mobile";
 
         private const string SqlSelectUsername = "SELECT UserName FROM bairong_Administrator WHERE UserName = @UserName";
 
-        private const string SqlSelectUsernameByEmail = "SELECT UserName FROM bairong_Administrator WHERE Email = @Email";
+        private const string SqlSelectUsernameByEmail =
+            "SELECT UserName FROM bairong_Administrator WHERE Email = @Email";
 
-        private const string SqlSelectUsernameByMobile = "SELECT UserName FROM bairong_Administrator WHERE Mobile = @Mobile";
+        private const string SqlSelectUsernameByMobile =
+            "SELECT UserName FROM bairong_Administrator WHERE Mobile = @Mobile";
 
-        private const string SqlSelectMobileByUsername = "SELECT Mobile FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectMobileByUsername =
+            "SELECT Mobile FROM bairong_Administrator WHERE UserName = @UserName";
 
-        private const string SqlSelectCreatorUserName = "SELECT CreatorUserName FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectCreatorUserName =
+            "SELECT CreatorUserName FROM bairong_Administrator WHERE UserName = @UserName";
 
-        private const string SqlSelectDisplayName = "SELECT DisplayName FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectDisplayName =
+            "SELECT DisplayName FROM bairong_Administrator WHERE UserName = @UserName";
 
-        private const string SqlSelectDepartmentId = "SELECT DepartmentID FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectDepartmentId =
+            "SELECT DepartmentID FROM bairong_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectAreaId = "SELECT AreaID FROM bairong_Administrator WHERE UserName = @UserName";
 
-        private const string SqlSelectPublishmentsystemidCollection = "SELECT PublishmentSystemIDCollection FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectPublishmentsystemidCollection =
+            "SELECT PublishmentSystemIDCollection FROM bairong_Administrator WHERE UserName = @UserName";
 
-        private const string SqlSelectPublishmentsystemid = "SELECT PublishmentSystemID FROM bairong_Administrator WHERE UserName = @UserName";
+        private const string SqlSelectPublishmentsystemid =
+            "SELECT PublishmentSystemID FROM bairong_Administrator WHERE UserName = @UserName";
 
-        private const string SqlInsertUser = "INSERT INTO bairong_Administrator (UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreationDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CreatorUserName, @IsLockedOut, @PublishmentSystemIDCollection, @PublishmentSystemID, @DepartmentID, @AreaID, @DisplayName, @Email, @Mobile)";
+        private const string SqlInsertUser =
+            "INSERT INTO bairong_Administrator (UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreationDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CreatorUserName, @IsLockedOut, @PublishmentSystemIDCollection, @PublishmentSystemID, @DepartmentID, @AreaID, @DisplayName, @Email, @Mobile)";
 
-        private const string SqlUpdateUser = "UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, IsLockedOut = @IsLockedOut, PublishmentSystemIDCollection = @PublishmentSystemIDCollection, PublishmentSystemID = @PublishmentSystemID, DepartmentID = @DepartmentID, AreaID = @AreaID, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile WHERE UserName = @UserName";
+        private const string SqlUpdateUser =
+            "UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, IsLockedOut = @IsLockedOut, PublishmentSystemIDCollection = @PublishmentSystemIDCollection, PublishmentSystemID = @PublishmentSystemID, DepartmentID = @DepartmentID, AreaID = @AreaID, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile WHERE UserName = @UserName";
 
-        private const string SqlUpdatePublishmentsystemid = "UPDATE bairong_Administrator SET PublishmentSystemID = @PublishmentSystemID WHERE UserName = @UserName";
+        private const string SqlUpdatePublishmentsystemid =
+            "UPDATE bairong_Administrator SET PublishmentSystemID = @PublishmentSystemID WHERE UserName = @UserName";
 
-        private const string SqlUpdatePublishmentsystemidCollection = "UPDATE bairong_Administrator SET PublishmentSystemIDCollection = @PublishmentSystemIDCollection WHERE UserName = @UserName";
+        private const string SqlUpdatePublishmentsystemidCollection =
+            "UPDATE bairong_Administrator SET PublishmentSystemIDCollection = @PublishmentSystemIDCollection WHERE UserName = @UserName";
 
-        private const string SqlUpdatePassword = "UPDATE bairong_Administrator SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt WHERE UserName = @UserName";
+        private const string SqlUpdatePassword =
+            "UPDATE bairong_Administrator SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt WHERE UserName = @UserName";
 
         private const string SqlDeleteUser = "DELETE FROM bairong_Administrator WHERE UserName = @UserName";
 
@@ -176,22 +192,23 @@ namespace BaiRong.Core.Provider
         {
             IDataParameter[] insertParms =
             {
-                GetParameter(ParmUsername, DataType.NVarChar, 255, info.UserName),
-                GetParameter(ParmPassword, DataType.NVarChar, 255, info.Password),
-                GetParameter(ParmPasswordFormat, DataType.VarChar, 50, EPasswordFormatUtils.GetValue(info.PasswordFormat)),
-                GetParameter(ParmPasswordSalt, DataType.NVarChar, 128, info.PasswordSalt),
+                GetParameter(ParmUsername, DataType.VarChar, 255, info.UserName),
+                GetParameter(ParmPassword, DataType.VarChar, 255, info.Password),
+                GetParameter(ParmPasswordFormat, DataType.VarChar, 50,
+                    EPasswordFormatUtils.GetValue(info.PasswordFormat)),
+                GetParameter(ParmPasswordSalt, DataType.VarChar, 128, info.PasswordSalt),
                 GetParameter(ParmCreationDate, DataType.DateTime, info.CreationDate),
                 GetParameter(ParmLastActivityDate, DataType.DateTime, info.LastActivityDate),
                 GetParameter(ParmCountOfLogin, DataType.Integer, info.CountOfLogin),
                 GetParameter(ParmCountOfFailedLogin, DataType.Integer, info.CountOfFailedLogin),
-                GetParameter(ParmCreatorUsername, DataType.NVarChar, 255, info.CreatorUserName),
+                GetParameter(ParmCreatorUsername, DataType.VarChar, 255, info.CreatorUserName),
                 GetParameter(ParmIsLockedOut, DataType.VarChar, 18, info.IsLockedOut.ToString()),
                 GetParameter(ParmPublishmentsystemidCollection, DataType.VarChar, 50, info.PublishmentSystemIdCollection),
                 GetParameter(ParmPublishmentsystemid, DataType.Integer, info.PublishmentSystemId),
                 GetParameter(ParmDepartmentId, DataType.Integer, info.DepartmentId),
                 GetParameter(ParmAreaId, DataType.Integer, info.AreaId),
-                GetParameter(ParmDisplayname, DataType.NVarChar, 255, info.DisplayName),
-                GetParameter(ParmEmail, DataType.NVarChar, 255, info.Email),
+                GetParameter(ParmDisplayname, DataType.VarChar, 255, info.DisplayName),
+                GetParameter(ParmEmail, DataType.VarChar, 255, info.Email),
                 GetParameter(ParmMobile, DataType.VarChar, 20, info.Mobile)
             };
 
@@ -213,10 +230,10 @@ namespace BaiRong.Core.Provider
                 GetParameter(ParmPublishmentsystemid, DataType.Integer, info.PublishmentSystemId),
                 GetParameter(ParmDepartmentId, DataType.Integer, info.DepartmentId),
                 GetParameter(ParmAreaId, DataType.Integer, info.AreaId),
-                GetParameter(ParmDisplayname, DataType.NVarChar, 255, info.DisplayName),
-                GetParameter(ParmEmail, DataType.NVarChar, 255, info.Email),
+                GetParameter(ParmDisplayname, DataType.VarChar, 255, info.DisplayName),
+                GetParameter(ParmEmail, DataType.VarChar, 255, info.Email),
                 GetParameter(ParmMobile, DataType.VarChar, 20, info.Mobile),
-                GetParameter(ParmUsername, DataType.NVarChar, 255, info.UserName)
+                GetParameter(ParmUsername, DataType.VarChar, 255, info.UserName)
             };
 
             ExecuteNonQuery(SqlUpdateUser, parms);
@@ -229,76 +246,80 @@ namespace BaiRong.Core.Provider
 
         public void UpdateLastActivityDateAndCountOfFailedLogin(string userName)
         {
-            if (!string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName)) return;
+
+            var sqlString =
+                $"UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.GetAddOne("CountOfFailedLogin")} WHERE UserName = @UserName";
+
+            IDataParameter[] updateParms =
             {
-                var sqlString = $"UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.GetAddOne("CountOfFailedLogin")} WHERE UserName = @UserName";
+                GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
+            };
 
-                IDataParameter[] updateParms = {
-                    GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),
-                    GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
-                };
+            ExecuteNonQuery(sqlString, updateParms);
 
-                ExecuteNonQuery(sqlString, updateParms);
-
-                AdminManager.RemoveCache(userName);
-            }
+            AdminManager.RemoveCache(userName);
         }
 
         public void UpdateLastActivityDateAndCountOfLogin(string userName)
         {
-            if (!string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName)) return;
+
+            var sqlString =
+                $"UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.GetAddOne("CountOfLogin")}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
+
+            IDataParameter[] updateParms =
             {
-                var sqlString = $"UPDATE bairong_Administrator SET LastActivityDate = @LastActivityDate, {SqlUtils.GetAddOne("CountOfLogin")}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
+                GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
+            };
 
-                IDataParameter[] updateParms = {
-                    GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),
-                    GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
-                };
+            ExecuteNonQuery(sqlString, updateParms);
 
-                ExecuteNonQuery(sqlString, updateParms);
-
-                AdminManager.RemoveCache(userName);
-            }
+            AdminManager.RemoveCache(userName);
         }
 
         public void UpdatePublishmentSystemIdCollection(string userName, string publishmentSystemIdCollection)
         {
-            if (!string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName)) return;
+
+            IDataParameter[] updateParms =
             {
-                IDataParameter[] updateParms = {
-                    GetParameter(ParmPublishmentsystemidCollection, DataType.VarChar, 50, publishmentSystemIdCollection),
-                    GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
-                };
+                GetParameter(ParmPublishmentsystemidCollection, DataType.VarChar, 50, publishmentSystemIdCollection),
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
+            };
 
-                ExecuteNonQuery(SqlUpdatePublishmentsystemidCollection, updateParms);
+            ExecuteNonQuery(SqlUpdatePublishmentsystemidCollection, updateParms);
 
-                AdminManager.RemoveCache(userName);
-            }
+            AdminManager.RemoveCache(userName);
         }
 
         public void UpdatePublishmentSystemId(string userName, int publishmentSystemId)
         {
-            if (!string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName)) return;
+
+            IDataParameter[] updateParms =
             {
-                IDataParameter[] updateParms = {
-                    GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId),
-                    GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
-                };
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
+            };
 
-                ExecuteNonQuery(SqlUpdatePublishmentsystemid, updateParms);
+            ExecuteNonQuery(SqlUpdatePublishmentsystemid, updateParms);
 
-                AdminManager.RemoveCache(userName);
-            }
+            AdminManager.RemoveCache(userName);
         }
 
-        private bool ChangePassword(string userName, EPasswordFormat passwordFormat, string passwordSalt, string password)
+        private bool ChangePassword(string userName, EPasswordFormat passwordFormat, string passwordSalt,
+            string password)
         {
             var isSuccess = false;
-            IDataParameter[] updateParms = {
-                GetParameter(ParmPassword, DataType.NVarChar, 255, password),
+            IDataParameter[] updateParms =
+            {
+                GetParameter(ParmPassword, DataType.VarChar, 255, password),
                 GetParameter(ParmPasswordFormat, DataType.VarChar, 50, EPasswordFormatUtils.GetValue(passwordFormat)),
-                GetParameter(ParmPasswordSalt, DataType.NVarChar, 128, passwordSalt),
-                GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
+                GetParameter(ParmPasswordSalt, DataType.VarChar, 128, passwordSalt),
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
             try
@@ -317,8 +338,9 @@ namespace BaiRong.Core.Provider
 
         public void Delete(string userName)
         {
-            IDataParameter[] deleteParms = {
-                GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
+            IDataParameter[] deleteParms =
+            {
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
             ExecuteNonQuery(SqlDeleteUser, deleteParms);
@@ -376,7 +398,7 @@ namespace BaiRong.Core.Provider
                 sqlString = SqlSelectUser;
                 parms = new IDataParameter[]
                 {
-                    GetParameter(ParmUsername, DataType.NVarChar, 255, account)
+                    GetParameter(ParmUsername, DataType.VarChar, 255, account)
                 };
             }
 
@@ -385,7 +407,12 @@ namespace BaiRong.Core.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new AdministratorInfo(GetString(rdr, i++), GetString(rdr, i++), EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+                    info = new AdministratorInfo(GetString(rdr, i++), GetString(rdr, i++),
+                        EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++),
+                        GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
+                        GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
+                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                        GetString(rdr, i));
                 }
                 rdr.Close();
             }
@@ -399,7 +426,7 @@ namespace BaiRong.Core.Provider
 
             IDataParameter[] parms =
             {
-                GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(SqlSelectUser, parms))
@@ -407,7 +434,12 @@ namespace BaiRong.Core.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new AdministratorInfo(GetString(rdr, i++), GetString(rdr, i++), EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+                    info = new AdministratorInfo(GetString(rdr, i++), GetString(rdr, i++),
+                        EPasswordFormatUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++),
+                        GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
+                        GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
+                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                        GetString(rdr, i));
                 }
                 rdr.Close();
             }
@@ -419,8 +451,9 @@ namespace BaiRong.Core.Provider
         {
             var departmentId = 0;
 
-            IDataParameter[] parms = {
-                GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
+            IDataParameter[] parms =
+            {
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(SqlSelectDepartmentId, parms))
@@ -439,8 +472,9 @@ namespace BaiRong.Core.Provider
         {
             var areaId = 0;
 
-            IDataParameter[] parms = {
-                GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
+            IDataParameter[] parms =
+            {
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(SqlSelectAreaId, parms))
@@ -460,7 +494,8 @@ namespace BaiRong.Core.Provider
             string sqlString;
             if (departmentId == 0)
             {
-                sqlString = "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator";
+                sqlString =
+                    "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator";
                 if (!isConsoleAdministrator)
                 {
                     sqlString =
@@ -480,7 +515,8 @@ namespace BaiRong.Core.Provider
             return sqlString;
         }
 
-        public string GetSelectCommand(string searchWord, string roleName, int dayOfLastActivity, bool isConsoleAdministrator, string creatorUserName, int departmentId, int areaId)
+        public string GetSelectCommand(string searchWord, string roleName, int dayOfLastActivity,
+            bool isConsoleAdministrator, string creatorUserName, int departmentId, int areaId)
         {
             var whereBuilder = new StringBuilder();
 
@@ -544,7 +580,9 @@ namespace BaiRong.Core.Provider
                 }
             }
 
-            var sqlString = "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator " + whereString;
+            var sqlString =
+                "SELECT UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, PublishmentSystemIDCollection, PublishmentSystemID, DepartmentID, AreaID, DisplayName, Email, Mobile FROM bairong_Administrator " +
+                whereString;
 
             return sqlString;
         }
@@ -563,8 +601,9 @@ namespace BaiRong.Core.Provider
 
             var exists = false;
 
-            IDataParameter[] parms = {
-                GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
+            IDataParameter[] parms =
+            {
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(SqlSelectUsername, parms))
@@ -587,8 +626,9 @@ namespace BaiRong.Core.Provider
 
             var userName = string.Empty;
 
-            IDataParameter[] parms = {
-                GetParameter(ParmEmail, DataType.NVarChar, 50, email)
+            IDataParameter[] parms =
+            {
+                GetParameter(ParmEmail, DataType.VarChar, 50, email)
             };
 
             using (var rdr = ExecuteReader(SqlSelectUsernameByEmail, parms))
@@ -611,7 +651,8 @@ namespace BaiRong.Core.Provider
 
             var userName = string.Empty;
 
-            IDataParameter[] parms = {
+            IDataParameter[] parms =
+            {
                 GetParameter(ParmMobile, DataType.VarChar, 50, mobile)
             };
 
@@ -635,8 +676,9 @@ namespace BaiRong.Core.Provider
 
             var mobile = string.Empty;
 
-            IDataParameter[] parms = {
-                GetParameter(ParmUsername, DataType.NVarChar, 50, userName)
+            IDataParameter[] parms =
+            {
+                GetParameter(ParmUsername, DataType.VarChar, 50, userName)
             };
 
             using (var rdr = ExecuteReader(SqlSelectMobileByUsername, parms))
@@ -654,8 +696,9 @@ namespace BaiRong.Core.Provider
         {
             var creatorUserName = string.Empty;
 
-            IDataParameter[] parms = {
-                GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
+            IDataParameter[] parms =
+            {
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(SqlSelectCreatorUserName, parms))
@@ -673,8 +716,9 @@ namespace BaiRong.Core.Provider
         {
             var displayName = string.Empty;
 
-            IDataParameter[] parms = {
-                GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
+            IDataParameter[] parms =
+            {
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(SqlSelectDisplayName, parms))
@@ -693,8 +737,9 @@ namespace BaiRong.Core.Provider
         {
             var publishmentSystemIdList = new List<int>();
 
-            IDataParameter[] parms = {
-                GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
+            IDataParameter[] parms =
+            {
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(SqlSelectPublishmentsystemidCollection, parms))
@@ -716,8 +761,9 @@ namespace BaiRong.Core.Provider
         {
             var publishmentSystemId = 0;
 
-            IDataParameter[] parms = {
-                GetParameter(ParmUsername, DataType.NVarChar, 255, userName)
+            IDataParameter[] parms =
+            {
+                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(SqlSelectPublishmentsystemid, parms))
@@ -736,10 +782,12 @@ namespace BaiRong.Core.Provider
             var arraylist = new ArrayList();
             if (creatorUserName != null)
             {
-                const string sqlString = "SELECT UserName FROM bairong_Administrator WHERE CreatorUserName = @CreatorUserName";
+                const string sqlString =
+                    "SELECT UserName FROM bairong_Administrator WHERE CreatorUserName = @CreatorUserName";
 
-                IDataParameter[] parms = {
-                    GetParameter(ParmCreatorUsername, DataType.NVarChar, 255, creatorUserName)
+                IDataParameter[] parms =
+                {
+                    GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName)
                 };
 
                 using (var rdr = ExecuteReader(sqlString, parms))
@@ -921,7 +969,9 @@ namespace BaiRong.Core.Provider
                 errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.AdminPasswordMinLength}";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(userInfo.Password, ConfigManager.SystemConfigInfo.AdminPasswordRestriction))
+            if (
+                !EUserPasswordRestrictionUtils.IsValid(userInfo.Password,
+                    ConfigManager.SystemConfigInfo.AdminPasswordRestriction))
             {
                 errorMessage =
                     $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.AdminPasswordRestriction))}";
@@ -957,7 +1007,8 @@ namespace BaiRong.Core.Provider
                 errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.AdminPasswordMinLength}";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.AdminPasswordRestriction))
+            if (
+                !EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.AdminPasswordRestriction))
             {
                 errorMessage =
                     $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.AdminPasswordRestriction))}";
@@ -1002,7 +1053,8 @@ namespace BaiRong.Core.Provider
 
             if (ConfigManager.SystemConfigInfo.IsAdminLockLogin)
             {
-                if (adminInfo.CountOfFailedLogin > 0 && adminInfo.CountOfFailedLogin >= ConfigManager.SystemConfigInfo.AdminLockLoginCount)
+                if (adminInfo.CountOfFailedLogin > 0 &&
+                    adminInfo.CountOfFailedLogin >= ConfigManager.SystemConfigInfo.AdminLockLoginCount)
                 {
                     var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.AdminLockLoginType);
                     if (lockType == EUserLockType.Forever)
@@ -1024,7 +1076,8 @@ namespace BaiRong.Core.Provider
                 }
             }
 
-            if (CheckPassword(password, adminInfo.Password, adminInfo.PasswordFormat, adminInfo.PasswordSalt)) return true;
+            if (CheckPassword(password, adminInfo.Password, adminInfo.PasswordFormat, adminInfo.PasswordSalt))
+                return true;
 
             errorMessage = "账号或密码不正确";
             return false;
@@ -1055,7 +1108,8 @@ namespace BaiRong.Core.Provider
             return retval;
         }
 
-        public bool CheckPassword(string password, string dbpassword, EPasswordFormat passwordFormat, string passwordSalt)
+        public bool CheckPassword(string password, string dbpassword, EPasswordFormat passwordFormat,
+            string passwordSalt)
         {
             var pass1 = password;
             var pass2 = DecodePassword(dbpassword, passwordFormat, passwordSalt);

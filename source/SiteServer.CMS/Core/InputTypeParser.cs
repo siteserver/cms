@@ -216,7 +216,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             var checkBoxList = new CheckBoxList
             {
@@ -256,7 +256,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
             var radioButtonList = new RadioButtonList
             {
                 CssClass = "radiobuttonlist",
@@ -286,7 +286,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             builder.Append(
                 $@"<select id=""{attributeName}"">");
@@ -307,7 +307,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             builder.Append(
                 $@"<select id=""{attributeName}"" multiple>");
@@ -379,7 +379,7 @@ $(function(){{
                 var style = ERelatedFieldStyleUtils.GetEnumType(styleInfo.Additional.RelatedFieldStyle);
 
                 builder.Append($@"
-<span id=""c_{attributeName}_1"">{prefixes[0]}<select name=""{attributeName}"" id=""{attributeName}_1"" onchange=""getRelatedField_{fieldInfo.RelatedFieldID}(2);"">
+<span id=""c_{attributeName}_1"">{prefixes[0]}<select name=""{attributeName}"" id=""{attributeName}_1"" onchange=""getRelatedField_{fieldInfo.RelatedFieldId}(2);"">
 	<option value="""">请选择</option>");
 
                 var value = string.Empty;
@@ -390,7 +390,7 @@ $(function(){{
                     var selected = (!string.IsNullOrEmpty(itemInfo.ItemValue) && value == itemInfo.ItemValue) ? @" selected=""selected""" : string.Empty;
                     if (!string.IsNullOrEmpty(selected)) isLoad = true;
                     builder.Append($@"
-	<option value=""{itemInfo.ItemValue}"" itemID=""{itemInfo.ID}""{selected}>{itemInfo.ItemName}</option>");
+	<option value=""{itemInfo.ItemValue}"" itemID=""{itemInfo.Id}""{selected}>{itemInfo.ItemName}</option>");
                 }
 
                 builder.Append($@"
@@ -403,14 +403,14 @@ $(function(){{
                         builder.Append($@"<span id=""c_{attributeName}_{i}"" style=""display:none"">");
                         builder.Append(style == ERelatedFieldStyle.Virtical ? @"<br />" : "&nbsp;");
                         builder.Append($@"
-{prefixes[i - 1]}<select name=""{attributeName}"" id=""{attributeName}_{i}"" onchange=""getRelatedField_{fieldInfo.RelatedFieldID}({i} + 1);""></select>{suffixes[i - 1]}</span>
+{prefixes[i - 1]}<select name=""{attributeName}"" id=""{attributeName}_{i}"" onchange=""getRelatedField_{fieldInfo.RelatedFieldId}({i} + 1);""></select>{suffixes[i - 1]}</span>
 ");
                     }
                 }
 
                 builder.Append($@"
 <script>
-function getRelatedField_{fieldInfo.RelatedFieldID}(level){{
+function getRelatedField_{fieldInfo.RelatedFieldId}(level){{
     var attributeName = '{styleInfo.AttributeName}';
     var totalLevel = {fieldInfo.TotalLevel};
     for(i=level;i<=totalLevel;i++){{
@@ -442,7 +442,7 @@ function getRelatedField_{fieldInfo.RelatedFieldID}(level){{
             }});
             if (show) $('#c_' + attributeName + '_' + level).show();
             if (isLoad && level <= totalLevel){{
-                getRelatedField_{fieldInfo.RelatedFieldID}(level + 1);
+                getRelatedField_{fieldInfo.RelatedFieldId}(level + 1);
             }}
         }}, 'jsonp');
     }}
@@ -453,7 +453,7 @@ function getRelatedField_{fieldInfo.RelatedFieldID}(level){{
                 {
                     builder.Append($@"
 $(document).ready(function(){{
-    getRelatedField_{fieldInfo.RelatedFieldID}(2);
+    getRelatedField_{fieldInfo.RelatedFieldId}(2);
 }});
 ");
                 }

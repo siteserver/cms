@@ -3,49 +3,149 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using SiteServer.CMS.Core;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
 	public class SeoMetaDao : DataProviderBase
 	{
-        private const string SqlSelectSeoMeta = "SELECT SeoMetaID, PublishmentSystemID, SeoMetaName, [IsDefault], [PageTitle], [Keywords], [Description], [Copyright], [Author], [Email], [Language], [Charset], [Distribution], [Rating], [Robots], [RevisitAfter], [Expires] FROM siteserver_SeoMeta WHERE SeoMetaID = @SeoMetaID";
+        public override string TableName => "siteserver_SeoMeta";
 
-		private const string SqlSelectAllSeoMeta = "SELECT SeoMetaID, PublishmentSystemID, SeoMetaName, [IsDefault], [PageTitle], [Keywords], [Description], [Copyright], [Author], [Email], [Language], [Charset], [Distribution], [Rating], [Robots], [RevisitAfter], [Expires] FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY SeoMetaID";
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.SeoMetaId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.SeoMetaName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.IsDefault),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.PageTitle),
+                DataType = DataType.VarChar,
+                Length = 80
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Keywords),
+                DataType = DataType.VarChar,
+                Length = 100
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Description),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Copyright),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Author),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Email),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Language),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Charset),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Distribution),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Rating),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Robots),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.RevisitAfter),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SeoMetaInfo.Expires),
+                DataType = DataType.VarChar,
+                Length = 50
+            }
+        };
 
-        private const string SqlSelectSeoMetaBySeoMetaName = "SELECT SeoMetaID, PublishmentSystemID, SeoMetaName, [IsDefault], [PageTitle], [Keywords], [Description], [Copyright], [Author], [Email], [Language], [Charset], [Distribution], [Rating], [Robots], [RevisitAfter], [Expires] FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID AND SeoMetaName = @SeoMetaName";
+        private const string SqlSelectSeoMeta = "SELECT SeoMetaID, PublishmentSystemID, SeoMetaName, IsDefault, PageTitle, Keywords, Description, Copyright, Author, Email, Language, Charset, Distribution, Rating, Robots, RevisitAfter, Expires FROM siteserver_SeoMeta WHERE SeoMetaID = @SeoMetaID";
 
-        private const string SqlSelectDefaultSeoMeta = "SELECT SeoMetaID, PublishmentSystemID, SeoMetaName, [IsDefault], [PageTitle], [Keywords], [Description], [Copyright], [Author], [Email], [Language], [Charset], [Distribution], [Rating], [Robots], [RevisitAfter], [Expires] FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID AND [IsDefault] = @IsDefault";
+        private const string SqlSelectAllSeoMeta = "SELECT SeoMetaID, PublishmentSystemID, SeoMetaName, IsDefault, PageTitle, Keywords, Description, Copyright, Author, Email, Language, Charset, Distribution, Rating, Robots, RevisitAfter, Expires FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY SeoMetaID";
 
-        private const string SqlSelectDefaultSeoMetaId = "SELECT SeoMetaID FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID AND [IsDefault] = @IsDefault";
+        private const string SqlSelectSeoMetaBySeoMetaName = "SELECT SeoMetaID, PublishmentSystemID, SeoMetaName, IsDefault, PageTitle, Keywords, Description, Copyright, Author, Email, Language, Charset, Distribution, Rating, Robots, RevisitAfter, Expires FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID AND SeoMetaName = @SeoMetaName";
 
-        private const string SqlSelectAllSeoMetaByPublishmentSystemId = "SELECT SeoMetaID, PublishmentSystemID, SeoMetaName, [IsDefault], [PageTitle], [Keywords], [Description], [Copyright], [Author], [Email], [Language], [Charset], [Distribution], [Rating], [Robots], [RevisitAfter], [Expires] FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY SeoMetaID";
+        private const string SqlSelectDefaultSeoMeta = "SELECT SeoMetaID, PublishmentSystemID, SeoMetaName, IsDefault, PageTitle, Keywords, Description, Copyright, Author, Email, Language, Charset, Distribution, Rating, Robots, RevisitAfter, Expires FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID AND IsDefault = @IsDefault";
 
-		private const string SqlSelectSeoMetaNames = "SELECT SeoMetaName FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID";
+        private const string SqlSelectDefaultSeoMetaId = "SELECT SeoMetaID FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID AND IsDefault = @IsDefault";
 
-		private const string SqlSelectSeoMetaCount = "SELECT COUNT(SeoMetaID) FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID";
+        private const string SqlSelectAllSeoMetaByPublishmentSystemId = "SELECT SeoMetaID, PublishmentSystemID, SeoMetaName, IsDefault, PageTitle, Keywords, Description, Copyright, Author, Email, Language, Charset, Distribution, Rating, Robots, RevisitAfter, Expires FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY SeoMetaID";
 
-		private const string SqlSelectSeoMetaName = "SELECT SeoMetaName FROM siteserver_SeoMeta WHERE SeoMetaID = @SeoMetaID";
+        private const string SqlSelectSeoMetaNames = "SELECT SeoMetaName FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID";
 
-		private const string SqlSelectSeoMetaIdBySeoMetaName = "SELECT SeoMetaID FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID AND SeoMetaName = @SeoMetaName";
+        private const string SqlSelectSeoMetaCount = "SELECT COUNT(SeoMetaID) FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID";
 
-        private const string SqlUpdateSeoMeta = "UPDATE siteserver_SeoMeta SET SeoMetaName = @SeoMetaName, [IsDefault] = @IsDefault, [PageTitle] = @PageTitle, [Keywords] = @Keywords, [Description] = @Description, [Copyright] = @Copyright, [Author] = @Author, [Email] = @Email, [Language] = @Language, [Charset] = @Charset, [Distribution] = @Distribution, [Rating] = @Rating, [Robots] = @Robots, [RevisitAfter] = @RevisitAfter, [Expires] = @Expires WHERE SeoMetaID = @SeoMetaID";
+        private const string SqlSelectSeoMetaName = "SELECT SeoMetaName FROM siteserver_SeoMeta WHERE SeoMetaID = @SeoMetaID";
 
-		private const string SqlUpdateAllIsDefault = "UPDATE siteserver_SeoMeta SET [IsDefault] = @IsDefault WHERE PublishmentSystemID = @PublishmentSystemID";
+        private const string SqlSelectSeoMetaIdBySeoMetaName = "SELECT SeoMetaID FROM siteserver_SeoMeta WHERE PublishmentSystemID = @PublishmentSystemID AND SeoMetaName = @SeoMetaName";
 
-		private const string SqlUpdateIsDefault = "UPDATE siteserver_SeoMeta SET [IsDefault] = @IsDefault WHERE SeoMetaID = @SeoMetaID";
+        private const string SqlUpdateSeoMeta = "UPDATE siteserver_SeoMeta SET SeoMetaName = @SeoMetaName, IsDefault = @IsDefault, PageTitle = @PageTitle, Keywords = @Keywords, Description = @Description, Copyright = @Copyright, Author = @Author, Email = @Email, Language = @Language, Charset = @Charset, Distribution = @Distribution, Rating = @Rating, Robots = @Robots, RevisitAfter = @RevisitAfter, Expires = @Expires WHERE SeoMetaID = @SeoMetaID";
 
-		private const string SqlDeleteSeoMeta = "DELETE FROM siteserver_SeoMeta WHERE SeoMetaID = @SeoMetaID";
+        private const string SqlUpdateAllIsDefault = "UPDATE siteserver_SeoMeta SET IsDefault = @IsDefault WHERE PublishmentSystemID = @PublishmentSystemID";
 
-		//siteserver_SeoMetasInNodes
-		private const string SqlInsertMatch = "INSERT INTO siteserver_SeoMetasInNodes (NodeID, IsChannel, SeoMetaID, PublishmentSystemID) VALUES (@NodeID, @IsChannel, @SeoMetaID, @PublishmentSystemID)";
+        private const string SqlUpdateIsDefault = "UPDATE siteserver_SeoMeta SET IsDefault = @IsDefault WHERE SeoMetaID = @SeoMetaID";
 
-		private const string SqlDeleteMatchByNodeId = "DELETE FROM siteserver_SeoMetasInNodes WHERE NodeID = @NodeID AND IsChannel = @IsChannel";
-
-		private const string SqlSelectSeoMetaIdByNodeId = "SELECT SeoMetaID FROM siteserver_SeoMetasInNodes WHERE NodeID = @NodeID AND IsChannel = @IsChannel";
+        private const string SqlDeleteSeoMeta = "DELETE FROM siteserver_SeoMeta WHERE SeoMetaID = @SeoMetaID";
 
 		private const string ParmSeoMetaId = "@SeoMetaID";
 		private const string ParmPublishmentSystemId = "@PublishmentSystemID";
@@ -65,10 +165,6 @@ namespace SiteServer.CMS.Provider
 		private const string ParmRevisitAfter = "@RevisitAfter";
 		private const string ParmExpires = "@Expires";
 
-		//siteserver_SeoMetasInNodes
-		private const string ParmNodeId = "@NodeID";
-		private const string ParmIsChannel = "@IsChannel";
-
 		public void Insert(SeoMetaInfo info)
 		{
 			if (info.IsDefault)
@@ -83,12 +179,12 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
 				GetParameter(ParmSeoMetaName, DataType.VarChar, 50, info.SeoMetaName),
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, info.IsDefault.ToString()),
-				GetParameter(ParmPageTitle, DataType.NVarChar, 80, info.PageTitle),
-				GetParameter(ParmKeywords, DataType.NVarChar, 100, info.Keywords),
-				GetParameter(ParmDescription, DataType.NVarChar, 200, info.Description),
-				GetParameter(ParmCopyright, DataType.NVarChar, 255, info.Copyright),
-				GetParameter(ParmAuthor, DataType.NVarChar, 50, info.Author),
-				GetParameter(ParmEmail, DataType.NVarChar, 50, info.Email),
+				GetParameter(ParmPageTitle, DataType.VarChar, 80, info.PageTitle),
+				GetParameter(ParmKeywords, DataType.VarChar, 100, info.Keywords),
+				GetParameter(ParmDescription, DataType.VarChar, 200, info.Description),
+				GetParameter(ParmCopyright, DataType.VarChar, 255, info.Copyright),
+				GetParameter(ParmAuthor, DataType.VarChar, 50, info.Author),
+				GetParameter(ParmEmail, DataType.VarChar, 50, info.Email),
 				GetParameter(ParmLanguage, DataType.VarChar, 50, info.Language),
 				GetParameter(ParmCharset, DataType.VarChar, 50, info.Charset),
 				GetParameter(ParmDistribution, DataType.VarChar, 50, info.Distribution),
@@ -112,12 +208,12 @@ namespace SiteServer.CMS.Provider
 			{
 				GetParameter(ParmSeoMetaName, DataType.VarChar, 50, info.SeoMetaName),
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, info.IsDefault.ToString()),
-				GetParameter(ParmPageTitle, DataType.NVarChar, 80, info.PageTitle),
-				GetParameter(ParmKeywords, DataType.NVarChar, 100, info.Keywords),
-				GetParameter(ParmDescription, DataType.NVarChar, 200, info.Description),
-				GetParameter(ParmCopyright, DataType.NVarChar, 255, info.Copyright),
-				GetParameter(ParmAuthor, DataType.NVarChar, 50, info.Author),
-				GetParameter(ParmEmail, DataType.NVarChar, 50, info.Email),
+				GetParameter(ParmPageTitle, DataType.VarChar, 80, info.PageTitle),
+				GetParameter(ParmKeywords, DataType.VarChar, 100, info.Keywords),
+				GetParameter(ParmDescription, DataType.VarChar, 200, info.Description),
+				GetParameter(ParmCopyright, DataType.VarChar, 255, info.Copyright),
+				GetParameter(ParmAuthor, DataType.VarChar, 50, info.Author),
+				GetParameter(ParmEmail, DataType.VarChar, 50, info.Email),
 				GetParameter(ParmLanguage, DataType.VarChar, 50, info.Language),
 				GetParameter(ParmCharset, DataType.VarChar, 50, info.Charset),
 				GetParameter(ParmDistribution, DataType.VarChar, 50, info.Distribution),
@@ -414,97 +510,5 @@ namespace SiteServer.CMS.Provider
 
 			return list;
 		}
-
-		//siteserver_SeoMetasInNodes
-        public void InsertMatch(int publishmentSystemId, int nodeId, int seoMetaId, bool isChannel)
-		{
-			var lastSeoMetaId = GetSeoMetaIdByNodeId(nodeId, isChannel);
-			if (lastSeoMetaId != 0)
-			{
-                DeleteMatch(publishmentSystemId, nodeId, isChannel);
-			}
-
-			var insertParms = new IDataParameter[]
-			{
-				GetParameter(ParmNodeId, DataType.Integer, nodeId),
-				GetParameter(ParmIsChannel, DataType.VarChar, 18, isChannel.ToString()),
-				GetParameter(ParmSeoMetaId, DataType.Integer, seoMetaId),
-				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-			};
-							
-			ExecuteNonQuery(SqlInsertMatch, insertParms);
-            SeoManager.RemoveCache(publishmentSystemId);
-		}
-
-        public void DeleteMatch(int publishmentSystemId, int nodeId, bool isChannel)
-		{
-			var parms = new IDataParameter[]
-			{
-				GetParameter(ParmNodeId, DataType.Integer, nodeId),
-				GetParameter(ParmIsChannel, DataType.VarChar, 18, isChannel.ToString()),
-			};
-							
-			ExecuteNonQuery(SqlDeleteMatchByNodeId, parms);
-            SeoManager.RemoveCache(publishmentSystemId);
-		}
-
-
-        public int GetSeoMetaIdByNodeId(int nodeId, bool isChannel)
-		{
-			var seoMetaId = 0;
-
-			var parms = new IDataParameter[]
-			{
-				GetParameter(ParmNodeId, DataType.Integer, nodeId),
-				GetParameter(ParmIsChannel, DataType.VarChar, 18, isChannel.ToString())
-			};
-
-			using (var rdr = ExecuteReader(SqlSelectSeoMetaIdByNodeId, parms))
-			{
-				if (rdr.Read())
-				{
-                    seoMetaId = GetInt(rdr, 0);
-                }
-				rdr.Close();
-			}
-
-			return seoMetaId;
-		}
-
-        public List<int>[] GetSeoMetaLists(int publishmentSystemId)
-        {
-            var sqlString = "SELECT NodeID, IsChannel FROM siteserver_SeoMetasInNodes WHERE PublishmentSystemID = " + publishmentSystemId;
-
-            var list1 = new List<int>();
-            var list2 = new List<int>();
-
-            using (var rdr = ExecuteReader(sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var nodeId = GetInt(rdr, 0);
-                    var isChannel = GetBool(rdr, 1);
-
-                    if (isChannel)
-                    {
-                        if (!list1.Contains(nodeId))
-                        {
-                            list1.Add(nodeId);
-                        }
-                    }
-                    else
-                    {
-                        if (!list2.Contains(nodeId))
-                        {
-                            list2.Add(nodeId);
-                        }
-                    }
-                }
-                rdr.Close();
-            }
-
-            return new[] { list1, list2 };
-        }
-
 	}
 }

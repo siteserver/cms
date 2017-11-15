@@ -10,70 +10,56 @@ namespace SiteServer.BackgroundPages.Plugins
 {
 	public class PageSeoMetaMatch : BasePageCms
     {
-		public ListBox NodeIDCollectionToMatch;
-		public ListBox ChannelSeoMetaID;
-		public ListBox ContentSeoMetaID;
+		public ListBox NodeIdCollectionToMatch;
+		public ListBox ChannelSeoMetaId;
+		public ListBox ContentSeoMetaId;
 		
-		bool[] IsLastNodeArray;
-		string defaultSeoMetaName;
+		bool[] _isLastNodeArray;
+		string _defaultSeoMetaName;
 
-		public string GetTitle(int nodeID, string nodeName, ENodeType nodeType, int parentsCount, bool isLastNode)
+		public string GetTitle(int nodeId, string nodeName, ENodeType nodeType, int parentsCount, bool isLastNode)
 		{
 			var str = "";
-            if (nodeID == PublishmentSystemId)
+            if (nodeId == PublishmentSystemId)
 			{
 				isLastNode = true;
 			}
 			if (isLastNode == false)
 			{
-				IsLastNodeArray[parentsCount] = false;
+				_isLastNodeArray[parentsCount] = false;
 			}
 			else
 			{
-				IsLastNodeArray[parentsCount] = true;
+				_isLastNodeArray[parentsCount] = true;
 			}
 			for (var i = 0; i < parentsCount; i++)
 			{
-				if (IsLastNodeArray[i])
-				{
-					str = string.Concat(str, "　");
-				}
-				else
-				{
-					str = string.Concat(str, "│");
-				}
+			    str = string.Concat(str, _isLastNodeArray[i] ? "　" : "│");
 			}
-			if (isLastNode)
-			{
-				str = string.Concat(str, "└");
-			}
-			else
-			{
-				str = string.Concat(str, "├");
-			}
-			str = string.Concat(str, StringUtils.MaxLengthText(nodeName, 8));
+		    str = string.Concat(str, isLastNode ? "└" : "├");
+		    str = string.Concat(str, StringUtils.MaxLengthText(nodeName, 8));
 
-			var channelSeoMetaID = DataProvider.SeoMetaDao.GetSeoMetaIdByNodeId(nodeID, true);
+			var channelSeoMetaId = DataProvider.SeoMetasInNodesDao.GetSeoMetaIdByNodeId(nodeId, true);
 			var channelSeoMetaName = string.Empty;
-			if (channelSeoMetaID != 0)
+			if (channelSeoMetaId != 0)
 			{
-				channelSeoMetaName = DataProvider.SeoMetaDao.GetSeoMetaName(channelSeoMetaID);
+				channelSeoMetaName = DataProvider.SeoMetaDao.GetSeoMetaName(channelSeoMetaId);
 			}
 			if (string.IsNullOrEmpty(channelSeoMetaName))
 			{
-				channelSeoMetaName = defaultSeoMetaName;
+				channelSeoMetaName = _defaultSeoMetaName;
 			}
 			str = string.Concat(str, $" ({channelSeoMetaName})");
 
-			var contentSeoMetaID = DataProvider.SeoMetaDao.GetSeoMetaIdByNodeId(nodeID, false);
+			var contentSeoMetaId = DataProvider.SeoMetasInNodesDao.GetSeoMetaIdByNodeId(nodeId, false);
 			var contentSeoMetaName = string.Empty;
-			if (contentSeoMetaID != 0)
+			if (contentSeoMetaId != 0)
 			{
-				contentSeoMetaName = DataProvider.SeoMetaDao.GetSeoMetaName(contentSeoMetaID);
+				contentSeoMetaName = DataProvider.SeoMetaDao.GetSeoMetaName(contentSeoMetaId);
 			}
 			if (string.IsNullOrEmpty(contentSeoMetaName))
 			{
-				contentSeoMetaName = defaultSeoMetaName;
+				contentSeoMetaName = _defaultSeoMetaName;
 			}
 			str = string.Concat(str, $" ({contentSeoMetaName})");
 			
@@ -87,15 +73,8 @@ namespace SiteServer.BackgroundPages.Plugins
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-            var defaultSeoMetaID = DataProvider.SeoMetaDao.GetDefaultSeoMetaId(PublishmentSystemId);
-			if (defaultSeoMetaID == 0)
-			{
-				defaultSeoMetaName = "<无>";
-			}
-			else
-			{
-				defaultSeoMetaName = DataProvider.SeoMetaDao.GetSeoMetaName(defaultSeoMetaID);
-			}
+            var defaultSeoMetaId = DataProvider.SeoMetaDao.GetDefaultSeoMetaId(PublishmentSystemId);
+			_defaultSeoMetaName = defaultSeoMetaId == 0 ? "<无>" : DataProvider.SeoMetaDao.GetSeoMetaName(defaultSeoMetaId);
 
 			if (!IsPostBack)
 			{
@@ -106,40 +85,40 @@ namespace SiteServer.BackgroundPages.Plugins
 
 		public void BindListBox()
 		{
-			var selectedNodeIDArrayList = new ArrayList();
-			foreach (ListItem listitem in NodeIDCollectionToMatch.Items)
+			var selectedNodeIdArrayList = new ArrayList();
+			foreach (ListItem listitem in NodeIdCollectionToMatch.Items)
 			{
-				if (listitem.Selected) selectedNodeIDArrayList.Add(listitem.Value);
+				if (listitem.Selected) selectedNodeIdArrayList.Add(listitem.Value);
 			}
-			var selectedChannelSeoMetaID = ChannelSeoMetaID.SelectedValue;
-			var selectedContentSeoMetaID = ContentSeoMetaID.SelectedValue;
+			var selectedChannelSeoMetaId = ChannelSeoMetaId.SelectedValue;
+			var selectedContentSeoMetaId = ContentSeoMetaId.SelectedValue;
 
-			NodeIDCollectionToMatch.Items.Clear();
-			ChannelSeoMetaID.Items.Clear();
-			ContentSeoMetaID.Items.Clear();
+			NodeIdCollectionToMatch.Items.Clear();
+			ChannelSeoMetaId.Items.Clear();
+			ContentSeoMetaId.Items.Clear();
             var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
             var nodeCount = nodeIdList.Count;
-			IsLastNodeArray = new bool[nodeCount];
-            foreach (int theNodeID in nodeIdList)
+			_isLastNodeArray = new bool[nodeCount];
+            foreach (int theNodeId in nodeIdList)
 			{
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeID);
+                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeId);
 				var listitem = new ListItem(GetTitle(nodeInfo.NodeId, nodeInfo.NodeName, nodeInfo.NodeType, nodeInfo.ParentsCount, nodeInfo.IsLastNode), nodeInfo.NodeId.ToString());
-				NodeIDCollectionToMatch.Items.Add(listitem);
+				NodeIdCollectionToMatch.Items.Add(listitem);
 			}
 
             var seoMetaInfoArrayList = DataProvider.SeoMetaDao.GetSeoMetaInfoArrayListByPublishmentSystemId(PublishmentSystemId);
 			foreach (SeoMetaInfo seoMetaInfo in seoMetaInfoArrayList)
 			{
 				var listitem = new ListItem(seoMetaInfo.SeoMetaName, seoMetaInfo.SeoMetaId.ToString());
-				ChannelSeoMetaID.Items.Add(listitem);
-				ContentSeoMetaID.Items.Add(listitem);
+				ChannelSeoMetaId.Items.Add(listitem);
+				ContentSeoMetaId.Items.Add(listitem);
 			}
 
-			var stringArray = new string[selectedNodeIDArrayList.Count];
-			selectedNodeIDArrayList.CopyTo(stringArray);
-			ControlUtils.SelectListItems(NodeIDCollectionToMatch, stringArray);
-			ControlUtils.SelectListItems(ChannelSeoMetaID, selectedChannelSeoMetaID);
-			ControlUtils.SelectListItems(ContentSeoMetaID, selectedContentSeoMetaID);
+			var stringArray = new string[selectedNodeIdArrayList.Count];
+			selectedNodeIdArrayList.CopyTo(stringArray);
+			ControlUtils.SelectListItems(NodeIdCollectionToMatch, stringArray);
+			ControlUtils.SelectListItems(ChannelSeoMetaId, selectedChannelSeoMetaId);
+			ControlUtils.SelectListItems(ContentSeoMetaId, selectedContentSeoMetaId);
 		}
 
 
@@ -149,17 +128,17 @@ namespace SiteServer.BackgroundPages.Plugins
 			{
 				if (Validate(true, true))
 				{
-					var nodeIDArrayList = new ArrayList();
-					foreach (ListItem item in NodeIDCollectionToMatch.Items)
+					var nodeIdArrayList = new ArrayList();
+					foreach (ListItem item in NodeIdCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeID = int.Parse(item.Value);
-							nodeIDArrayList.Add(nodeID);
+							var nodeId = int.Parse(item.Value);
+							nodeIdArrayList.Add(nodeId);
 						}
 					}
-					var channelSeoMetaID = int.Parse(ChannelSeoMetaID.SelectedValue);
-					Process(nodeIDArrayList, channelSeoMetaID, true);
+					var channelSeoMetaId = int.Parse(ChannelSeoMetaId.SelectedValue);
+					Process(nodeIdArrayList, channelSeoMetaId, true);
 				}
 			}
 		}
@@ -170,17 +149,17 @@ namespace SiteServer.BackgroundPages.Plugins
 			{
 				if (Validate(false, true))
 				{
-					var nodeIDArrayList = new ArrayList();
-					foreach (ListItem item in NodeIDCollectionToMatch.Items)
+					var nodeIdArrayList = new ArrayList();
+					foreach (ListItem item in NodeIdCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeID = int.Parse(item.Value);
-							nodeIDArrayList.Add(nodeID);
+							var nodeId = int.Parse(item.Value);
+							nodeIdArrayList.Add(nodeId);
 						}
 					}
-					var channelSeoMetaID = 0;
-					Process(nodeIDArrayList, channelSeoMetaID, true);
+					var channelSeoMetaId = 0;
+					Process(nodeIdArrayList, channelSeoMetaId, true);
 				}
 			}
 		}
@@ -191,17 +170,17 @@ namespace SiteServer.BackgroundPages.Plugins
 			{
 				if (Validate(true, false))
 				{
-					var nodeIDArrayList = new ArrayList();
-					foreach (ListItem item in NodeIDCollectionToMatch.Items)
+					var nodeIdArrayList = new ArrayList();
+					foreach (ListItem item in NodeIdCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeID = int.Parse(item.Value);
-							nodeIDArrayList.Add(nodeID);
+							var nodeId = int.Parse(item.Value);
+							nodeIdArrayList.Add(nodeId);
 						}
 					}
-					var contentSeoMetaID = int.Parse(ContentSeoMetaID.SelectedValue);
-					Process(nodeIDArrayList, contentSeoMetaID, false);
+					var contentSeoMetaId = int.Parse(ContentSeoMetaId.SelectedValue);
+					Process(nodeIdArrayList, contentSeoMetaId, false);
 				}
 			}
 		}
@@ -212,24 +191,24 @@ namespace SiteServer.BackgroundPages.Plugins
 			{
 				if (Validate(false, false))
 				{
-					var nodeIDArrayList = new ArrayList();
-					foreach (ListItem item in NodeIDCollectionToMatch.Items)
+					var nodeIdArrayList = new ArrayList();
+					foreach (ListItem item in NodeIdCollectionToMatch.Items)
 					{
 						if (item.Selected)
 						{
-							var nodeID = int.Parse(item.Value);
-							nodeIDArrayList.Add(nodeID);
+							var nodeId = int.Parse(item.Value);
+							nodeIdArrayList.Add(nodeId);
 						}
 					}
-					var contentSeoMetaID = 0;
-					Process(nodeIDArrayList, contentSeoMetaID, false);
+					var contentSeoMetaId = 0;
+					Process(nodeIdArrayList, contentSeoMetaId, false);
 				}
 			}
 		}
 
 		private bool Validate(bool isMatch, bool isChannelSeoMeta)
 		{
-			if (NodeIDCollectionToMatch.SelectedIndex < 0)
+			if (NodeIdCollectionToMatch.SelectedIndex < 0)
 			{
 				FailMessage("请选择栏目！");
 				return false;
@@ -238,7 +217,7 @@ namespace SiteServer.BackgroundPages.Plugins
 			{
 				if (isChannelSeoMeta)
 				{
-					if (ChannelSeoMetaID.SelectedIndex < 0)
+					if (ChannelSeoMetaId.SelectedIndex < 0)
 					{
                         FailMessage("请选择栏目页元数据！");
 						return false;
@@ -246,7 +225,7 @@ namespace SiteServer.BackgroundPages.Plugins
 				}
 				else
 				{
-					if (ContentSeoMetaID.SelectedIndex < 0)
+					if (ContentSeoMetaId.SelectedIndex < 0)
 					{
                         FailMessage("请选择内容页元数据！");
 						return false;
@@ -256,31 +235,24 @@ namespace SiteServer.BackgroundPages.Plugins
 			return true;
 		}
 
-		private void Process(ArrayList nodeIDArrayList, int seoMetaID, bool isChannel)
+		private void Process(ArrayList nodeIdArrayList, int seoMetaId, bool isChannel)
 		{
-			if (nodeIDArrayList != null && nodeIDArrayList.Count > 0)
+			if (nodeIdArrayList != null && nodeIdArrayList.Count > 0)
 			{
-				foreach (int nodeID in nodeIDArrayList)
+				foreach (int nodeId in nodeIdArrayList)
 				{
-					if (seoMetaID == 0)
+					if (seoMetaId == 0)
 					{
-						DataProvider.SeoMetaDao.DeleteMatch(PublishmentSystemId, nodeID, isChannel);
+						DataProvider.SeoMetasInNodesDao.DeleteMatch(PublishmentSystemId, nodeId, isChannel);
 					}
 					else
 					{
-                        DataProvider.SeoMetaDao.InsertMatch(PublishmentSystemId, nodeID, seoMetaID, isChannel);
+                        DataProvider.SeoMetasInNodesDao.InsertMatch(PublishmentSystemId, nodeId, seoMetaId, isChannel);
 					}
 				}
 			}
 			BindListBox();
-			if (seoMetaID == 0)
-			{
-				SuccessMessage("取消匹配成功！");
-			}
-			else
-			{
-				SuccessMessage("模板匹配成功！");
-			}
+		    SuccessMessage(seoMetaId == 0 ? "取消匹配成功！" : "模板匹配成功！");
 		}
 
 	}

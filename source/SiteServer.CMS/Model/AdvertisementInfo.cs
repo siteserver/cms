@@ -5,112 +5,58 @@ namespace SiteServer.CMS.Model
 {
 	public class AdvertisementInfo
 	{
-		private string advertisementName;
-		private int publishmentSystemID;
-		private EAdvertisementType advertisementType;
-		private bool isDateLimited;
-		private DateTime startDate;
-		private DateTime endDate;
-		private DateTime addDate;
-        private string nodeIDCollectionToChannel;
-        private string nodeIDCollectionToContent;
-        private string fileTemplateIDCollection;
-        private string settings;
-
-		public AdvertisementInfo()
+	    public AdvertisementInfo()
 		{
-			advertisementName = string.Empty;
-			publishmentSystemID = 0;
-			advertisementType = EAdvertisementType.FloatImage;
-			isDateLimited = false;
-			startDate = DateTime.Now;
-			endDate = DateTime.Now;
-			addDate = DateTime.Now;
-			nodeIDCollectionToChannel = string.Empty;
-            nodeIDCollectionToContent = string.Empty;
-            fileTemplateIDCollection = string.Empty;
-            settings = string.Empty;
+			AdvertisementName = string.Empty;
+			PublishmentSystemId = 0;
+			AdvertisementType = EAdvertisementType.FloatImage;
+			IsDateLimited = false;
+			StartDate = DateTime.Now;
+			EndDate = DateTime.Now;
+			AddDate = DateTime.Now;
+			NodeIdCollectionToChannel = string.Empty;
+            NodeIdCollectionToContent = string.Empty;
+            FileTemplateIdCollection = string.Empty;
+            Settings = string.Empty;
 		}
 
-        public AdvertisementInfo(string advertisementName, int publishmentSystemID, EAdvertisementType advertisementType, bool isDateLimited, DateTime startDate, DateTime endDate, DateTime addDate, string nodeIDCollectionToChannel, string nodeIDCollectionToContent, string fileTemplateIDCollection, string settings) 
+        public AdvertisementInfo(string advertisementName, int publishmentSystemId, EAdvertisementType advertisementType, bool isDateLimited, DateTime startDate, DateTime endDate, DateTime addDate, string nodeIdCollectionToChannel, string nodeIdCollectionToContent, string fileTemplateIdCollection, string settings) 
 		{
-			this.advertisementName = advertisementName;
-			this.publishmentSystemID = publishmentSystemID;
-			this.advertisementType = advertisementType;
-			this.isDateLimited = isDateLimited;
-			this.startDate = startDate;
-			this.endDate = endDate;
-			this.addDate = addDate;
-            this.nodeIDCollectionToChannel = nodeIDCollectionToChannel;
-            this.nodeIDCollectionToContent = nodeIDCollectionToContent;
-            this.fileTemplateIDCollection = fileTemplateIDCollection;
-            this.settings = settings;
+			AdvertisementName = advertisementName;
+			PublishmentSystemId = publishmentSystemId;
+			AdvertisementType = advertisementType;
+			IsDateLimited = isDateLimited;
+			StartDate = startDate;
+			EndDate = endDate;
+			AddDate = addDate;
+            NodeIdCollectionToChannel = nodeIdCollectionToChannel;
+            NodeIdCollectionToContent = nodeIdCollectionToContent;
+            FileTemplateIdCollection = fileTemplateIdCollection;
+            Settings = settings;
 		}
 
-		public string AdvertisementName
-		{
-			get{ return advertisementName; }
-			set{ advertisementName = value; }
-		}
+        public int Id { get; set; }
 
-		public int PublishmentSystemID
-		{
-			get{ return publishmentSystemID; }
-			set{ publishmentSystemID = value; }
-		}
+        public string AdvertisementName { get; set; }
 
-		public EAdvertisementType AdvertisementType
-		{
-			get{ return advertisementType; }
-			set{ advertisementType = value; }
-		}
+	    public int PublishmentSystemId { get; set; }
 
-		public bool IsDateLimited
-		{
-			get{ return isDateLimited; }
-			set{ isDateLimited = value; }
-		}
+	    public EAdvertisementType AdvertisementType { get; set; }
 
-		public DateTime StartDate
-		{
-			get{ return startDate; }
-			set{ startDate = value; }
-		}
+	    public bool IsDateLimited { get; set; }
 
-		public DateTime EndDate
-		{
-			get{ return endDate; }
-			set{ endDate = value; }
-		}
+	    public DateTime StartDate { get; set; }
 
-		public DateTime AddDate
-		{
-			get{ return addDate; }
-			set{ addDate = value; }
-		}
+	    public DateTime EndDate { get; set; }
 
-        public string NodeIDCollectionToChannel
-		{
-            get { return nodeIDCollectionToChannel; }
-            set { nodeIDCollectionToChannel = value; }
-		}
+	    public DateTime AddDate { get; set; }
 
-        public string NodeIDCollectionToContent
-        {
-            get { return nodeIDCollectionToContent; }
-            set { nodeIDCollectionToContent = value; }
-        }
+	    public string NodeIdCollectionToChannel { get; set; }
 
-        public string FileTemplateIDCollection
-        {
-            get { return fileTemplateIDCollection; }
-            set { fileTemplateIDCollection = value; }
-        }
+	    public string NodeIdCollectionToContent { get; set; }
 
-        public string Settings
-        {
-            get { return settings; }
-            set { settings = value; }
-        }
+	    public string FileTemplateIdCollection { get; set; }
+
+	    public string Settings { get; set; }
 	}
 }

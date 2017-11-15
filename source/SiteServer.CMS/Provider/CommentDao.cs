@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
@@ -13,6 +13,60 @@ namespace SiteServer.CMS.Provider
     public class CommentDao : DataProviderBase
     {
         public override string TableName => "siteserver_Comment";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CommentInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CommentInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CommentInfo.NodeId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CommentInfo.ContentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CommentInfo.GoodCount),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CommentInfo.UserName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CommentInfo.IsChecked),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CommentInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CommentInfo.Content),
+                DataType = DataType.VarChar,
+                Length = 500
+            }
+        };
 
         private const string ParmId = "@ID";
         private const string ParmPublishmentSystemId = "@PublishmentSystemID";
@@ -26,8 +80,6 @@ namespace SiteServer.CMS.Provider
 
         public int Insert(CommentInfo commentInfo)
         {
-            int commentId;
-
             const string sqlString = "INSERT INTO siteserver_Comment(PublishmentSystemID, NodeID, ContentID, GoodCount, UserName, IsChecked, AddDate, Content) VALUES (@PublishmentSystemID, @NodeID, @ContentID, @GoodCount, @UserName, @IsChecked, @AddDate, @Content)";
 
             var parms = new IDataParameter[]
@@ -36,30 +88,13 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmNodeId, DataType.Integer, commentInfo.NodeId),
                 GetParameter(ParmContentId, DataType.Integer, commentInfo.ContentId),
                 GetParameter(ParmGoodCount, DataType.Integer, commentInfo.GoodCount),
-                GetParameter(ParmUserName, DataType.NVarChar, 50, commentInfo.UserName),
+                GetParameter(ParmUserName, DataType.VarChar, 50, commentInfo.UserName),
                 GetParameter(ParmIsChecked, DataType.VarChar, 18, commentInfo.IsChecked.ToString()),
                 GetParameter(ParmAddDate, DataType.DateTime, commentInfo.AddDate),
-				GetParameter(ParmContent, DataType.NVarChar, 500, commentInfo.Content)
+				GetParameter(ParmContent, DataType.VarChar, 500, commentInfo.Content)
 			};
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        commentId = ExecuteNonQueryAndReturnId(trans, sqlString, parms);
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
+            var commentId = ExecuteNonQueryAndReturningId(sqlString, nameof(CommentInfo.Id), parms);
 
             if (commentInfo.IsChecked)
             {
@@ -168,11 +203,15 @@ namespace SiteServer.CMS.Provider
             if (requestOffset > 0)
             {
                 //offsetWhereString = $"AND ID NOT IN (SELECT TOP {requestOffset} ID FROM siteserver_Comment WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked ORDER BY ID DESC)";
-                offsetWhereString = $"AND ID NOT IN ({SqlUtils.GetInTopSqlString("siteserver_Comment", "ID", "WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked ORDER BY ID DESC", requestOffset)})";
+                offsetWhereString =
+                    $"AND ID NOT IN ({SqlUtils.GetInTopSqlString("siteserver_Comment", "ID", "WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked", "ORDER BY ID DESC", requestOffset)})";
             }
             //var sqlString =
             //    $"SELECT TOP {requestCount} ID, PublishmentSystemID, NodeID, ContentID, GoodCount, UserName, IsChecked, AddDate, Content FROM siteserver_Comment WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked {offsetWhereString} ORDER BY ID DESC";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_Comment", "ID, PublishmentSystemID, NodeID, ContentID, GoodCount, UserName, IsChecked, AddDate, Content", $"WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked {offsetWhereString} ORDER BY ID DESC", requestCount);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_Comment",
+                "ID, PublishmentSystemID, NodeID, ContentID, GoodCount, UserName, IsChecked, AddDate, Content",
+                $"WHERE PublishmentSystemID = @PublishmentSystemID AND NodeID = @NodeID AND ContentID = @ContentID AND IsChecked = @IsChecked {offsetWhereString}",
+                "ORDER BY ID DESC", requestCount);
 
             using (var rdr = ExecuteReader(sqlString, parms))
             {

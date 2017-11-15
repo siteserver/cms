@@ -20,14 +20,6 @@ namespace SiteServer.Plugin.Apis
 
         string GetApiHttpUrl(string action = "", string id = "");
 
-        string GetHomeUrl(string relatedUrl = "");
-
-        string GetHomeLoginUrl(string returnUrl);
-
-        string GetHomeLogoutUrl(string returnUrl);
-
-        string GetHomeRegisterUrl(string returnUrl);
-
         string GetPublishmentSystemUrl(int publishmentSystemId);
 
         string GetPublishmentSystemUrlByFilePath(string filePath);

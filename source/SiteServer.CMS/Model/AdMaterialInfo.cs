@@ -4,167 +4,80 @@ namespace SiteServer.CMS.Model
 {
 	public class AdMaterialInfo
 	{
-        private int adMaterialID;
-        private int publishmentSystemID;
-        private int advID;
-        private string adMaterialName;
-        private EAdvType adMaterialType;
-        private string code;
-        private string textWord;
-        private string textLink;
-        private string textColor;
-        private int textFontSize;
-        private string imageUrl;
-        private string imageLink;
-        private int imageWidth;
-        private int imageHeight;
-        private string imageAlt;
-        private int weight;
-        private bool isEnabled;
-
-		public AdMaterialInfo()
+	    public AdMaterialInfo()
 		{
-            adMaterialID = 0;
-            publishmentSystemID=0;
-            advID = 0;
-            adMaterialName = string.Empty;
-            adMaterialType = EAdvType.HtmlCode;
-            code = string.Empty;
-            textWord = string.Empty;
-            textLink = string.Empty;
-            textColor = string.Empty;
-            textFontSize = 0;
-            imageUrl = string.Empty;
-            imageLink = string.Empty;
-            imageWidth = 0;
-            imageHeight = 0;
-            imageAlt = string.Empty;
-            weight = 0;
-            isEnabled = true;
+            AdMaterialId = 0;
+            PublishmentSystemId=0;
+            AdvId = 0;
+            AdMaterialName = string.Empty;
+            AdMaterialType = EAdvType.HtmlCode;
+            Code = string.Empty;
+            TextWord = string.Empty;
+            TextLink = string.Empty;
+            TextColor = string.Empty;
+            TextFontSize = 0;
+            ImageUrl = string.Empty;
+            ImageLink = string.Empty;
+            ImageWidth = 0;
+            ImageHeight = 0;
+            ImageAlt = string.Empty;
+            Weight = 0;
+            IsEnabled = true;
         }
 
-        public AdMaterialInfo(int adMaterialID, int publishmentSystemID,int advID, string adMaterialName, EAdvType adMaterialType, string code, string textWord, string textLink, string textColor, int textFontSize, string imageUrl, string imageLink, int imageWidth, int imageHeight, string imageAlt, int weight, bool isEnabled) 
+        public AdMaterialInfo(int adMaterialId, int publishmentSystemId,int advId, string adMaterialName, EAdvType adMaterialType, string code, string textWord, string textLink, string textColor, int textFontSize, string imageUrl, string imageLink, int imageWidth, int imageHeight, string imageAlt, int weight, bool isEnabled) 
 		{
-            this.adMaterialID = adMaterialID;
-            this.publishmentSystemID = publishmentSystemID;
-            this.advID = advID;
-            this.adMaterialName = adMaterialName;
-            this.adMaterialType = adMaterialType;
-            this.code = code;
-            this.textWord = textWord;
-            this.textLink = textLink;
-            this.textColor = textColor;
-            this.textFontSize = textFontSize;
-            this.imageUrl = imageUrl;
-            this.imageLink = imageLink;
-            this.imageWidth = imageWidth;
-            this.imageHeight = imageHeight;
-            this.imageAlt = imageAlt;
-            this.weight = weight;
-            this.isEnabled = isEnabled;
+            AdMaterialId = adMaterialId;
+            PublishmentSystemId = publishmentSystemId;
+            AdvId = advId;
+            AdMaterialName = adMaterialName;
+            AdMaterialType = adMaterialType;
+            Code = code;
+            TextWord = textWord;
+            TextLink = textLink;
+            TextColor = textColor;
+            TextFontSize = textFontSize;
+            ImageUrl = imageUrl;
+            ImageLink = imageLink;
+            ImageWidth = imageWidth;
+            ImageHeight = imageHeight;
+            ImageAlt = imageAlt;
+            Weight = weight;
+            IsEnabled = isEnabled;
 		}
          
-        public int AdMaterialID
-		{
-			get{ return adMaterialID; }
-            set { adMaterialID = value; }
-		}
+        public int AdMaterialId { get; set; }
 
-        public int PublishmentSystemID
-        {
-            get { return publishmentSystemID; }
-            set { publishmentSystemID = value; }
-        }
+	    public int PublishmentSystemId { get; set; }
 
-        public int AdvID
-        {
-            get { return advID; }
-            set { advID = value; }
-        }
+	    public int AdvId { get; set; }
 
-        public string AdMaterialName
-        {
-            get { return adMaterialName; }
-            set { adMaterialName = value; }
-        }
+	    public string AdMaterialName { get; set; }
 
-        public EAdvType AdMaterialType
-		{
-			get{ return adMaterialType; }
-            set { adMaterialType = value; }
-		}
+	    public EAdvType AdMaterialType { get; set; }
 
-        public string Code
-        {
-            get { return code; }
-            set { code = value; }
-        }
-          
-        public string TextWord
-        {
-            get { return textWord; }
-            set { textWord = value; }
-        }
+	    public string Code { get; set; }
 
-        public string TextLink
-        {
-            get { return textLink; }
-            set { textLink = value; }
-        }
+	    public string TextWord { get; set; }
 
-        public string TextColor
-        {
-            get { return textColor; }
-            set { textColor = value; }
-        }
+	    public string TextLink { get; set; }
 
-        public int TextFontSize
-        {
-            get { return textFontSize; }
-            set { textFontSize = value; }
-        }
+	    public string TextColor { get; set; }
 
-        public string ImageUrl
-        {
-            get { return imageUrl; }
-            set { imageUrl = value; }
-        }
+	    public int TextFontSize { get; set; }
 
-        public string ImageLink
-        {
-            get { return imageLink; }
-            set { imageLink = value; }
-        }
+	    public string ImageUrl { get; set; }
 
-        public int ImageWidth
-        {
-            get { return imageWidth; }
-            set { imageWidth = value; }
-        }
+	    public string ImageLink { get; set; }
 
-        public int ImageHeight
-        {
-            get { return imageHeight; }
-            set { imageHeight = value; }
-        }
+	    public int ImageWidth { get; set; }
 
-        public string ImageAlt
-        {
-            get { return imageAlt; }
-            set { imageAlt = value; }
-        }
+	    public int ImageHeight { get; set; }
 
-        public int Weight
-        {
-            get { return weight; }
-            set { weight = value; }
-        }
+	    public string ImageAlt { get; set; }
 
-        public bool IsEnabled
-        {
-            get { return isEnabled; }
-            set { isEnabled = value; }
-        }
-         
+	    public int Weight { get; set; }
+
+	    public bool IsEnabled { get; set; }
 	}
 }

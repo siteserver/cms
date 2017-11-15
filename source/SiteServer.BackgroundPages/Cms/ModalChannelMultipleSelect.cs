@@ -25,13 +25,13 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int publishmentSystemId, bool isPublishmentSystemSelect,
             string jsMethod)
         {
-            return PageUtils.GetOpenWindowString("选择目标栏目",
+            return PageUtils.GetOpenLayerString("选择目标栏目",
                 PageUtils.GetCmsUrl(nameof(ModalChannelMultipleSelect), new NameValueCollection
                 {
                     {"publishmentSystemID", publishmentSystemId.ToString()},
                     {"isPublishmentSystemSelect", isPublishmentSystemSelect.ToString()},
                     {"jsMethod", jsMethod}
-                }), 600, 580, true);
+                }), 650, 580);
         }
 
         public static string GetOpenWindowString(int publishmentSystemId, bool isPublishmentSystemSelect)

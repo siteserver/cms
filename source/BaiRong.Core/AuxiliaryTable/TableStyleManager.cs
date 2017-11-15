@@ -266,8 +266,8 @@ namespace BaiRong.Core.AuxiliaryTable
         {
             if (styleItems == null || styleItems.Count <= 0) return;
 
-            BaiRongDataProvider.TableStyleDao.DeleteStyleItems(tableStyleId);
-            BaiRongDataProvider.TableStyleDao.InsertStyleItems(styleItems);
+            BaiRongDataProvider.TableStyleItemDao.DeleteStyleItems(tableStyleId);
+            BaiRongDataProvider.TableStyleItemDao.InsertStyleItems(styleItems);
         }
 
         public static void Delete(int relatedIdentity, string tableName, string attributeName)
@@ -362,7 +362,7 @@ namespace BaiRong.Core.AuxiliaryTable
                 var styleInfo = (TableStyleInfo)entries.GetValue(key);
                 if (InputTypeUtils.IsWithStyleItems(InputTypeUtils.GetEnumType(styleInfo.InputType)))
                 {
-                    styleInfo.StyleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                    styleInfo.StyleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                 }
                 var tableStyleInfoWithItemList = dict.ContainsKey(styleInfo.AttributeName) ? dict[styleInfo.AttributeName] : new List<TableStyleInfo>();
                 tableStyleInfoWithItemList.Add(styleInfo);
@@ -580,10 +580,10 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 retval = ChannelAttribute.HiddenAttributes.Contains(attributeName.ToLower());
             }
-            else if (tableStyle == ETableStyle.InputContent)
-            {
-                retval = InputContentAttribute.AllAttributes.Contains(attributeName.ToLower());
-            }
+            //else if (tableStyle == ETableStyle.InputContent)
+            //{
+            //    retval = InputContentAttribute.AllAttributes.Contains(attributeName.ToLower());
+            //}
             return retval;
         }
     }

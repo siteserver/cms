@@ -2,7 +2,6 @@
 using System.Text;
 using System.Web.UI.HtmlControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;

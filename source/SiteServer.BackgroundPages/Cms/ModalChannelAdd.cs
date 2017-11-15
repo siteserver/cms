@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowString("添加栏目",
+            return PageUtils.GetOpenLayerString("添加栏目",
                 PageUtils.GetCmsUrl(nameof(ModalChannelAdd), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},

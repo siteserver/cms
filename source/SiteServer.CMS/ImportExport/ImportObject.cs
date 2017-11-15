@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Text;
 using Atom.Core;
 using BaiRong.Core;
-using BaiRong.Core.IO;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
@@ -175,26 +174,26 @@ namespace SiteServer.CMS.ImportExport
         }
 
 
-        public void ImportInput(string inputDirectoryPath, bool overwrite)
-        {
-            if (DirectoryUtils.IsDirectoryExists(inputDirectoryPath))
-            {
-                var inputIe = new InputIe(_publishmentSystemInfo.PublishmentSystemId, inputDirectoryPath);
-                inputIe.ImportInput(overwrite);
-            }
-        }
+        //public void ImportInput(string inputDirectoryPath, bool overwrite)
+        //{
+        //    if (DirectoryUtils.IsDirectoryExists(inputDirectoryPath))
+        //    {
+        //        var inputIe = new InputIe(_publishmentSystemInfo.PublishmentSystemId, inputDirectoryPath);
+        //        inputIe.ImportInput(overwrite);
+        //    }
+        //}
 
-        public void ImportInputByZipFile(string zipFilePath, bool overwrite)
-        {
-            var directoryPath = PathUtils.GetTemporaryFilesPath("Input");
-            DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
-            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
+        //public void ImportInputByZipFile(string zipFilePath, bool overwrite)
+        //{
+        //    var directoryPath = PathUtils.GetTemporaryFilesPath("Input");
+        //    DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
+        //    DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            ZipUtils.UnpackFiles(zipFilePath, directoryPath);
+        //    ZipUtils.UnpackFiles(zipFilePath, directoryPath);
 
-            var inputIe = new InputIe(_publishmentSystemInfo.PublishmentSystemId, directoryPath);
-            inputIe.ImportInput(overwrite);
-        }
+        //    var inputIe = new InputIe(_publishmentSystemInfo.PublishmentSystemId, directoryPath);
+        //    inputIe.ImportInput(overwrite);
+        //}
 
         public void ImportRelatedFieldByZipFile(string zipFilePath, bool overwrite)
         {
@@ -588,50 +587,50 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.MoveDirectory(siteContentDirectoryPath, _publishmentSystemPath, isOverride);
         }
 
-        public void ImportInputContentsByCsvFile(InputInfo inputInfo, string excelFilePath, int importStart, int importCount, bool isChecked)
-        {
-            var contentInfoList = ExcelObject.GetInputContentsByCsvFile(excelFilePath, _publishmentSystemInfo, inputInfo);
-            contentInfoList.Reverse();
+        //public void ImportInputContentsByCsvFile(InputInfo inputInfo, string excelFilePath, int importStart, int importCount, bool isChecked)
+        //{
+        //    var contentInfoList = ExcelObject.GetInputContentsByCsvFile(excelFilePath, _publishmentSystemInfo, inputInfo);
+        //    contentInfoList.Reverse();
 
-            if (importStart > 1 || importCount > 0)
-            {
-                var theList = new List<InputContentInfo>();
+        //    if (importStart > 1 || importCount > 0)
+        //    {
+        //        var theList = new List<InputContentInfo>();
 
-                if (importStart == 0)
-                {
-                    importStart = 1;
-                }
-                if (importCount == 0)
-                {
-                    importCount = contentInfoList.Count;
-                }
+        //        if (importStart == 0)
+        //        {
+        //            importStart = 1;
+        //        }
+        //        if (importCount == 0)
+        //        {
+        //            importCount = contentInfoList.Count;
+        //        }
 
-                var firstIndex = contentInfoList.Count - importStart - importCount + 1;
-                if (firstIndex <= 0)
-                {
-                    firstIndex = 0;
-                }
+        //        var firstIndex = contentInfoList.Count - importStart - importCount + 1;
+        //        if (firstIndex <= 0)
+        //        {
+        //            firstIndex = 0;
+        //        }
 
-                var addCount = 0;
-                for (var i = 0; i < contentInfoList.Count; i++)
-                {
-                    if (addCount >= importCount) break;
-                    if (i >= firstIndex)
-                    {
-                        theList.Add(contentInfoList[i]);
-                        addCount++;
-                    }
-                }
+        //        var addCount = 0;
+        //        for (var i = 0; i < contentInfoList.Count; i++)
+        //        {
+        //            if (addCount >= importCount) break;
+        //            if (i >= firstIndex)
+        //            {
+        //                theList.Add(contentInfoList[i]);
+        //                addCount++;
+        //            }
+        //        }
 
-                contentInfoList = theList;
-            }
+        //        contentInfoList = theList;
+        //    }
 
-            foreach (var contentInfo in contentInfoList)
-            {
-                contentInfo.IsChecked = isChecked;
-                DataProvider.InputContentDao.Insert(contentInfo);
-            }
-        }
+        //    foreach (var contentInfo in contentInfoList)
+        //    {
+        //        contentInfo.IsChecked = isChecked;
+        //        DataProvider.InputContentDao.Insert(contentInfo);
+        //    }
+        //}
 
         public static ArrayList GetSiteContentFilePathArrayList(string siteContentDirectoryPath)
         {

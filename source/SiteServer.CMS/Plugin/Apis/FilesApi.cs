@@ -71,26 +71,6 @@ namespace SiteServer.CMS.Plugin.Apis
             return Controllers.Http.PluginHttpApi.GetUrl(PageUtils.OuterApiUrl, _metadata.Id, name, id);
         }
 
-        public string GetHomeUrl(string relatedUrl = "")
-        {
-            return HomeUtils.GetUrl(PageUtils.OuterApiUrl, relatedUrl);
-        }
-
-        public string GetHomeLoginUrl(string returnUrl)
-        {
-            return HomeUtils.GetLoginUrl(PageUtils.OuterApiUrl, returnUrl);
-        }
-
-        public string GetHomeLogoutUrl(string returnUrl)
-        {
-            return HomeUtils.GetLogoutUrl(PageUtils.OuterApiUrl, returnUrl);
-        }
-
-        public string GetHomeRegisterUrl(string returnUrl)
-        {
-            return HomeUtils.GetRegisterUrl(PageUtils.OuterApiUrl, returnUrl);
-        }
-
         public string GetPublishmentSystemUrl(int publishmentSystemId)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);

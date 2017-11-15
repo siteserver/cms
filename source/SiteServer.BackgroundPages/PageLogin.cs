@@ -2,6 +2,7 @@
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
 {
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages
                     LtlMessage.Text = GetMessageHtml(Body.GetQueryString("error"));
                 }
 
-                PageUtils.DetermineRedirectToInstaller(); // 判断是否需要安装，如果需要则转到安装页面。
+                SystemManager.DetermineRedirectToInstaller(); // 判断是否需要安装，如果需要则转到安装页面。
 
                 LtlValidateCodeImage.Text =
                         $@"<a href=""javascript:;"" onclick=""$('#imgVerify').attr('src', $('#imgVerify').attr('src') + '&' + new Date().getTime())""><img id=""imgVerify"" name=""imgVerify"" src=""{PageValidateCode.GetRedirectUrl(_vcManager.GetCookieName())}"" align=""absmiddle"" /></a>";
@@ -43,11 +44,11 @@ namespace SiteServer.BackgroundPages
             catch
             {
                 // 再次探测是否需要安装或升级
-                if (AppManager.IsNeedInstall())
+                if (SystemManager.IsNeedInstall())
                 {
                     PageUtils.Redirect("installer/default.aspx");
                 }
-                else if (AppManager.IsNeedUpgrade())
+                else if (SystemManager.IsNeedUpgrade())
                 {
                     PageUtils.Redirect("upgrade/default.aspx");
                 }

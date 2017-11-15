@@ -1,46 +1,58 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalAddToGroup" Trace="false"%>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <!DOCTYPE html>
+  <html class="modalPage">
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-<bairong:alerts runat="server"></bairong:alerts>
+  <head>
+    <meta charset="utf-8">
+    <!--#include file="../inc/head.html"-->
+    <script language="javascript">
+      function selectChannel(nodeNames, nodeID) {
+        $('#nodeNames').html(nodeNames);
+        $('#nodeID').val(nodeID);
+      }
+    </script>
+  </head>
 
-  <table class="table table-noborder table-hover">
-    <tr>
-      <td>
-        <asp:CheckBoxList ID="cblGroupNameCollection" RepeatColumns="2" RepeatDirection="Horizontal" class="noborder" Width="100%" runat="server"/>
-      </td>
-    </tr>
-    <tr>
-      <td>
+  <body>
+    <!--#include file="../inc/openWindow.html"-->
+
+    <form runat="server">
+      <bairong:alerts runat="server" />
+
+      <div class="form-horizontal">
+        
+        <div class="form-group">
+          <label class="col-xs-1 control-label"></label>
+          <div class="col-xs-10">
+            <asp:CheckBoxList ID="CblGroupNameCollection" RepeatDirection="Horizontal" class="checkbox checkbox-primary" runat="server"/>
+          </div>
+          <div class="col-xs-1">
+
+          </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-1 control-label"></label>
+            <div class="col-xs-10">
+                <asp:Button id="BtnAddGroup" class="btn btn-success" runat="server"></asp:Button>
+            </div>
+            <div class="col-xs-1">
+  
+            </div>
+          </div>
+
         <hr />
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <ul class="breadcrumb">
-        <table width="100%">
-          <tr>
-          <td>
-            <label class="checkbox inline"><input type="checkbox" onClick="_checkFormAll(this.checked);"> 全选</label>
-          </td>
-          <td class="align-right">
-              <asp:Button ID="btnAddGroup" class="btn" runat="server"></asp:Button>
-          </td>
-        </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
 
-</form>
-</body>
-</html>
+        <div class="form-group m-b-0">
+            <div class="col-xs-11 text-right">
+              <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
+              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
+            </div>
+            <div class="col-xs-1"></div>
+          </div>
+      </div>
+
+    </form>
+  </body>
+
+  </html>

@@ -55,13 +55,13 @@ namespace SiteServer.BackgroundPages.Plugins
 
             DdlSqlDatabaseType.Items.Add(new ListItem
             {
-                Text = "SqlServer",
-                Value = "SqlServer"
+                Text = EDatabaseTypeUtils.GetValue(EDatabaseType.SqlServer),
+                Value = EDatabaseTypeUtils.GetValue(EDatabaseType.SqlServer)
             });
             DdlSqlDatabaseType.Items.Add(new ListItem
             {
-                Text = "MySql",
-                Value = "MySql"
+                Text = EDatabaseTypeUtils.GetValue(EDatabaseType.MySql),
+                Value = EDatabaseTypeUtils.GetValue(EDatabaseType.MySql)
             });
 
             EBooleanUtils.AddListItems(DdlIsTrustedConnection, "Windows 身份验证", "用户名密码验证");
@@ -136,8 +136,8 @@ namespace SiteServer.BackgroundPages.Plugins
             string errorMessage;
             List<string> databaseNameList;
             var connectionStringWithoutDatabaseName = GetConnectionString(false);
-            var isMySql = StringUtils.EqualsIgnoreCase(DdlSqlDatabaseType.SelectedValue, "MySql");
-            var isConnectValid = BaiRongDataProvider.DatabaseDao.ConnectToServer(isMySql, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
+            var databaseType = EDatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
+            var isConnectValid = BaiRongDataProvider.DatabaseDao.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
 
             if (isConnectValid)
             {

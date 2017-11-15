@@ -7,8 +7,10 @@ using BaiRong.Core.Model;
 using SiteServer.Plugin.Apis;
 using WxPayAPI;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Web;
+using BaiRong.Core.ThirdParty.Jdpay;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -33,7 +35,7 @@ namespace SiteServer.CMS.Plugin.Apis
             }
         }
 
-        public string ChargeByAlipayPc(string productName, decimal amount, string orderNo, string successUrl)
+        public string ChargeByAlipayPc(string productName, decimal amount, string orderNo, string returnUrl, string notifyUrl)
         {
             var config = GetConfig();
             if (!config.IsAlipayPc) return null;
@@ -53,7 +55,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.notify_url = string.Empty;
 
                 // 页面跳转同步通知页面路径，需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
-                BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.return_url = successUrl;
+                BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.return_url = returnUrl;
 
                 // 字符编码格式 目前支持 gbk 或 utf-8
                 BaiRong.Core.ThirdParty.Alipay.MApi.Pc.Config.input_charset = "utf-8";
@@ -109,9 +111,9 @@ namespace SiteServer.CMS.Plugin.Apis
 
             var request = new AlipayTradePagePayRequest();
             // 设置同步回调地址
-            request.SetReturnUrl(successUrl);
+            request.SetReturnUrl(returnUrl);
             // 设置异步通知接收地址
-            request.SetNotifyUrl("");
+            request.SetNotifyUrl(notifyUrl);
             // 将业务model载入到request
             request.SetBizModel(model);
 
@@ -128,7 +130,7 @@ namespace SiteServer.CMS.Plugin.Apis
             }
         }
 
-        public string ChargeByAlipayMobi(string productName, decimal amount, string orderNo, string successUrl)
+        public string ChargeByAlipayMobi(string productName, decimal amount, string orderNo, string returnUrl, string notifyUrl)
         {
             var config = GetConfig();
             if (!config.IsAlipayMobi) return null;
@@ -148,7 +150,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.notify_url = string.Empty;
 
                 // 页面跳转同步通知页面路径，需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
-                BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.return_url = successUrl;
+                BaiRong.Core.ThirdParty.Alipay.MApi.Mobi.Config.return_url = returnUrl;
 
                 //把请求参数打包成数组
                 var sParaTemp = new SortedDictionary<string, string>
@@ -163,7 +165,7 @@ namespace SiteServer.CMS.Plugin.Apis
                     {"out_trade_no", orderNo},
                     {"subject", productName},
                     {"total_fee", amount.ToString("N2")},
-                    {"show_url", successUrl},
+                    {"show_url", returnUrl},
                     {"body", string.Empty}
                 };
                 //商户订单号，商户网站订单系统中唯一订单号，必填
@@ -194,9 +196,9 @@ namespace SiteServer.CMS.Plugin.Apis
 
             AlipayTradeWapPayRequest request = new AlipayTradeWapPayRequest();
             // 设置同步回调地址
-            request.SetReturnUrl(successUrl);
+            request.SetReturnUrl(returnUrl);
             // 设置异步通知接收地址
-            request.SetNotifyUrl("");
+            request.SetNotifyUrl(notifyUrl);
             // 将业务model载入到request
             request.SetBizModel(model);
 
@@ -305,8 +307,8 @@ namespace SiteServer.CMS.Plugin.Apis
             var result = new WxPayData();
             result.FromXml(response);
 
-            Log.Info(this.GetType().ToString(), "ChargeByWeixin : " + response);
-            Log.Info(this.GetType().ToString(), "notify_url : " + data.GetValue("notify_url"));
+            Log.Info(GetType().ToString(), "ChargeByWeixin : " + response);
+            Log.Info(GetType().ToString(), "notify_url : " + data.GetValue("notify_url"));
 
             if (!result.IsSet("code_url"))
             {
@@ -348,7 +350,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
             //接收从微信后台POST过来的数据
             System.IO.Stream s = request.InputStream;
-            int count = 0;
+            int count;
             byte[] buffer = new byte[1024];
             StringBuilder builder = new StringBuilder();
             while ((count = s.Read(buffer, 0, 1024)) > 0)
@@ -359,7 +361,7 @@ namespace SiteServer.CMS.Plugin.Apis
             s.Close();
             s.Dispose();
 
-            Log.Info(this.GetType().ToString(), "NotifyByWeixin : " + builder);
+            Log.Info(GetType().ToString(), "NotifyByWeixin : " + builder);
 
             //转换数据格式并验证签名
             WxPayData notifyData = new WxPayData();
@@ -373,7 +375,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 WxPayData res = new WxPayData();
                 res.SetValue("return_code", "FAIL");
                 res.SetValue("return_msg", ex.Message);
-                Log.Error(this.GetType().ToString(), "Sign check error : " + res.ToXml());
+                Log.Error(GetType().ToString(), "Sign check error : " + res.ToXml());
                 responseXml = res.ToXml();
                 return;
             }
@@ -383,7 +385,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 WxPayData res = new WxPayData();
                 res.SetValue("return_code", "FAIL");
                 res.SetValue("return_msg", "回调数据异常");
-                Log.Info(this.GetType().ToString(), "The data WeChat post is error : " + res.ToXml());
+                Log.Info(GetType().ToString(), "The data WeChat post is error : " + res.ToXml());
                 responseXml = res.ToXml();
                 return;
             }
@@ -393,27 +395,132 @@ namespace SiteServer.CMS.Plugin.Apis
             data.SetValue("return_code", "SUCCESS");
             data.SetValue("return_msg", "OK");
 
-            Log.Info(this.GetType().ToString(), "UnifiedOrder success , send data to WeChat : " + data.ToXml());
+            Log.Info(GetType().ToString(), "UnifiedOrder success , send data to WeChat : " + data.ToXml());
             isPaied = true;
             responseXml = data.ToXml();
         }
 
-        public bool IsUnionpayPc
+        public bool IsJdpay
         {
             get
             {
                 var config = GetConfig();
-                return config.IsUnionpayPc;
+                return config.IsJdpay;
             }
         }
 
-        public bool IsUnionpayMobi
+        public string ChargeByJdpay(string productName, decimal amount, string orderNo, string returnUrl, string notifyUrl)
         {
-            get
+            var config = GetConfig();
+            if (!config.IsJdpay) return null;
+
+            var orderInfoDic = new SortedDictionary<string, string>
             {
-                var config = GetConfig();
-                return config.IsUnionpayMobi;
+                {"version", "V2.0"},
+                {"merchant", config.JdpayMerchant},
+                {"device", "111"},
+                {"tradeNum", orderNo},
+                {"tradeName", productName},
+                {"tradeDesc", "交易描述"},
+                {"tradeTime", DateTime.Now.ToString("yyyyMMddHHmmss", DateTimeFormatInfo.InvariantInfo)},
+                {"amount", Convert.ToInt32(amount * 100).ToString()},
+                {"currency", "CNY"},
+                {"note", "备注"},
+                {"callbackUrl", returnUrl},
+                {"notifyUrl", notifyUrl},
+                {"ip", PageUtils.GetIpAddress()},
+                {"specCardNo", string.Empty},
+                {"specId", string.Empty},
+                {"specName", string.Empty},
+                {"userType", string.Empty},
+                {"userId", config.JdpayUserId},
+                {"expireTime", string.Empty},
+                {"orderType", "1"},
+                {"industryCategoryCode", string.Empty}
+            };
+
+            var priKey = config.JdpayPrivateKey;
+            var desKey = config.JdpayDesKey;
+            var unSignedKeyList = new List<string> {"sign"};
+            var signStr = SignUtil.signRemoveSelectedKeys(orderInfoDic, priKey, unSignedKeyList);
+            orderInfoDic.Add("sign", signStr);
+            byte[] key = Convert.FromBase64String(desKey);
+            //当模式为ECB时，IV无用,java默认使用的ECB
+            if (!string.IsNullOrEmpty(orderInfoDic["device"]))
+            {
+                //String desStr = Des3.Des3EncryptECB(key, orderInfoDic["device"));
+                orderInfoDic["device"] = Des3.Des3EncryptECB(key, orderInfoDic["device"]);
+                //String str = Des3.Des3DecryptECB(key, desStr);
             }
+            orderInfoDic["tradeNum"] = Des3.Des3EncryptECB(key, orderInfoDic["tradeNum"]);
+            if (!string.IsNullOrEmpty(orderInfoDic["tradeName"]))
+            {
+                orderInfoDic["tradeName"] = Des3.Des3EncryptECB(key, orderInfoDic["tradeName"]);
+            }
+            if (!string.IsNullOrEmpty(orderInfoDic["tradeDesc"]))
+            {
+                orderInfoDic["tradeDesc"] = Des3.Des3EncryptECB(key, orderInfoDic["tradeDesc"]);
+            }
+            orderInfoDic["tradeTime"] =Des3.Des3EncryptECB(key, orderInfoDic["tradeTime"]);
+            orderInfoDic["amount"] =Des3.Des3EncryptECB(key, orderInfoDic["amount"]);
+            orderInfoDic["currency"] = Des3.Des3EncryptECB(key, orderInfoDic["currency"]);
+            if (!string.IsNullOrEmpty(orderInfoDic["note"]))
+            {
+                orderInfoDic["note"] = Des3.Des3EncryptECB(key, orderInfoDic["note"]);
+            }
+            orderInfoDic["callbackUrl"] = Des3.Des3EncryptECB(key, orderInfoDic["callbackUrl"]);
+            orderInfoDic["notifyUrl"] = Des3.Des3EncryptECB(key, orderInfoDic["notifyUrl"]);
+            orderInfoDic["ip"] = Des3.Des3EncryptECB(key, orderInfoDic["ip"]);
+            if (!string.IsNullOrEmpty(orderInfoDic["userType"]))
+            {
+                orderInfoDic["userType"] = Des3.Des3EncryptECB(key, orderInfoDic["userType"]);
+            }
+            if (!string.IsNullOrEmpty(orderInfoDic["userId"]))
+            {
+                orderInfoDic["userId"] = Des3.Des3EncryptECB(key, orderInfoDic["userId"]);
+            }
+            if (!string.IsNullOrEmpty(orderInfoDic["expireTime"]))
+            {
+                orderInfoDic["expireTime"] = Des3.Des3EncryptECB(key, orderInfoDic["expireTime"]);
+            }
+            if (!string.IsNullOrEmpty(orderInfoDic["orderType"]))
+            {
+                orderInfoDic["orderType"] = Des3.Des3EncryptECB(key, orderInfoDic["orderType"]);
+            }
+            if (!string.IsNullOrEmpty(orderInfoDic["industryCategoryCode"]))
+            {
+                orderInfoDic["industryCategoryCode"] = Des3.Des3EncryptECB(key, orderInfoDic["industryCategoryCode"]);
+            }
+            if (!string.IsNullOrEmpty(orderInfoDic["specCardNo"]))
+            {
+                orderInfoDic["specCardNo"] = Des3.Des3EncryptECB(key, orderInfoDic["specCardNo"]);
+            }
+            if (!string.IsNullOrEmpty(orderInfoDic["specId"]))
+            {
+                orderInfoDic["specId"] = Des3.Des3EncryptECB(key, orderInfoDic["specId"]);
+            }
+            if (!string.IsNullOrEmpty(orderInfoDic["specName"]))
+            {
+                orderInfoDic["specName"] = Des3.Des3EncryptECB(key, orderInfoDic["specName"]);
+            }
+
+            
+            //商户订单号，商户网站订单系统中唯一订单号，必填
+            //其他业务参数根据在线开发文档，添加参数.文档地址:https://doc.open.alipay.com/doc2/detail.htm?spm=a219a.7629140.0.0.O9yorI&treeId=62&articleId=103740&docType=1
+            //如sParaTemp.Add("参数名","参数值");
+
+            StringBuilder sbHtml = new StringBuilder();
+
+            sbHtml.Append("<form id='jdpaysubmit' name='jdpaysubmit' action='https://wepay.jd.com/jdpay/saveOrder' method='post'>");
+
+            foreach (KeyValuePair<string, string> temp in orderInfoDic)
+            {
+                sbHtml.Append("<input type='hidden' name='" + temp.Key + "' value='" + temp.Value + "'/>");
+            }
+
+            sbHtml.Append("<script>document.forms['jdpaysubmit'].submit();</script>");
+
+            return sbHtml.ToString();
         }
     }
 }

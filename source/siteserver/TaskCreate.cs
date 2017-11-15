@@ -18,15 +18,15 @@ namespace siteserver
             var createChannel = createTypeArrayList.Contains(ECreateTypeUtils.GetValue(ECreateType.Channel));
             var createContent = createTypeArrayList.Contains(ECreateTypeUtils.GetValue(ECreateType.Content));
             var createFile = createTypeArrayList.Contains(ECreateTypeUtils.GetValue(ECreateType.File));
-            if (taskInfo.PublishmentSystemID != 0)
+            if (taskInfo.PublishmentSystemId != 0)
             {
-                var nodeIdList = taskCreateInfo.IsCreateAll ? DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(taskInfo.PublishmentSystemID) : TranslateUtils.StringCollectionToIntList(taskCreateInfo.ChannelIDCollection);
+                var nodeIdList = taskCreateInfo.IsCreateAll ? DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(taskInfo.PublishmentSystemId) : TranslateUtils.StringCollectionToIntList(taskCreateInfo.ChannelIdCollection);
 
-                Create(createChannel, createContent, createFile, taskInfo, taskInfo.PublishmentSystemID, nodeIdList);
+                Create(createChannel, createContent, createFile, taskInfo, taskInfo.PublishmentSystemId, nodeIdList);
             }
             else
             {
-                var publishmentSystemIdList = taskCreateInfo.IsCreateAll ? PublishmentSystemManager.GetPublishmentSystemIdList() : TranslateUtils.StringCollectionToIntList(taskCreateInfo.ChannelIDCollection);
+                var publishmentSystemIdList = taskCreateInfo.IsCreateAll ? PublishmentSystemManager.GetPublishmentSystemIdList() : TranslateUtils.StringCollectionToIntList(taskCreateInfo.ChannelIdCollection);
                 foreach (var publishmentSystemId in publishmentSystemIdList)
                 {
                     var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemId);
@@ -71,7 +71,7 @@ namespace siteserver
 
             if (taskInfo.ServiceType == EServiceType.Create && taskInfo.FrequencyType == EFrequencyType.OnlyOnce)
             {
-                DataProvider.TaskDao.Delete(taskInfo.TaskID);
+                DataProvider.TaskDao.Delete(taskInfo.TaskId);
             }
         }
     }

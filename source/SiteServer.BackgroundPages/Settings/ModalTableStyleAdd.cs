@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Settings
                 tbHeight.Text = _styleInfo.Additional.Height.ToString();
                 tbWidth.Text = _styleInfo.Additional.Width;
 
-                var styleItems = _styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
+                var styleItems = _styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
                 tbItemCount.Text = styleItems.Count.ToString();
                 MyRepeater.DataSource = TableStyleManager.GetStyleItemDataSet(styleItems.Count, styleItems);
                 MyRepeater.ItemDataBound += MyRepeater_ItemDataBound;
@@ -203,7 +203,7 @@ namespace SiteServer.BackgroundPages.Settings
                     List<TableStyleItemInfo> styleItems = null;
                     if (_styleInfo.TableStyleId != 0)
                     {
-                        styleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
+                        styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
                     }
                     MyRepeater.DataSource = TableStyleManager.GetStyleItemDataSet(count, styleItems);
                     MyRepeater.DataBind();

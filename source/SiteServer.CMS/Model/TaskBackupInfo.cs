@@ -1,5 +1,4 @@
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin.Models;
 
@@ -19,15 +18,15 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("BackupType", EBackupTypeUtils.GetValue(value)); }
 		}
 
-        public string PublishmentSystemIDCollection
+        public string PublishmentSystemIdCollection
         {
-            get { return GetExtendedAttribute("PublishmentSystemIDCollection"); }
-            set { SetExtendedAttribute("PublishmentSystemIDCollection", value); }
+            get { return GetExtendedAttribute("PublishmentSystemIdCollection"); }
+            set { SetExtendedAttribute("PublishmentSystemIdCollection", value); }
         }
 
         public bool IsBackupAll
         {
-            get { return GetBool("IsBackupAll", false); }
+            get { return GetBool("IsBackupAll"); }
             set { SetExtendedAttribute("IsBackupAll", value.ToString()); }
         }
 	}

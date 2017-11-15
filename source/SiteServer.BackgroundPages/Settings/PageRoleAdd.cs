@@ -201,7 +201,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                         BaiRongDataProvider.PermissionsInRolesDao.UpdateRoleAndGeneralPermissions(_theRoleName, TbDescription.Text, generalPermissionArrayList);
 
-                        DataProvider.PermissionsDao.UpdatePublishmentPermissions(_theRoleName, publishmentSystemPermissionsInRolesInfoList);
+                        DataProvider.SystemPermissionsDao.UpdatePublishmentPermissions(_theRoleName, publishmentSystemPermissionsInRolesInfoList);
 
                         PermissionsManager.ClearAllCache();
 
@@ -233,7 +233,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                         try
                         {
-                            DataProvider.PermissionsDao.InsertRoleAndPermissions(TbRoleName.Text, Body.AdminName, TbDescription.Text, generalPermissionList, publishmentSystemPermissionsInRolesInfoList);
+                            DataProvider.SystemPermissionsDao.InsertRoleAndPermissions(TbRoleName.Text, Body.AdminName, TbDescription.Text, generalPermissionList, publishmentSystemPermissionsInRolesInfoList);
 
                             PermissionsManager.ClearAllCache();
 

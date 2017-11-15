@@ -115,9 +115,6 @@ namespace SiteServer.BackgroundPages.Cms
             //spContents.SortMode = SortMode.DESC;
             //spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisType.OrderByTaxisDesc);
             SpContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisTypeUtils.GetEnumType(_nodeInfo.Additional.DefaultTaxisType));
-
-            //分页的时候，不去查询总条数，直接使用栏目的属性：ContentNum
-            SpContents.IsQueryTotalCount = false;
             SpContents.TotalCount = _nodeInfo.ContentNum;
 
             if (!IsPostBack)

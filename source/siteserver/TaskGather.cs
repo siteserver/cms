@@ -11,16 +11,16 @@ namespace siteserver
         public static bool Execute(TaskInfo taskInfo)
         {
             var taskGatherInfo = new TaskGatherInfo(taskInfo.ServiceParameters);
-            if (taskInfo.PublishmentSystemID != 0)
+            if (taskInfo.PublishmentSystemId != 0)
             {
                 var webGatherNames = TranslateUtils.StringCollectionToStringList(taskGatherInfo.WebGatherNames);
                 var databaseGatherNames = TranslateUtils.StringCollectionToStringList(taskGatherInfo.DatabaseGatherNames);
                 var fileGatherNames = TranslateUtils.StringCollectionToStringList(taskGatherInfo.FileGatherNames);
-                Gather(taskInfo.PublishmentSystemID, webGatherNames, databaseGatherNames, fileGatherNames);
+                Gather(taskInfo.PublishmentSystemId, webGatherNames, databaseGatherNames, fileGatherNames);
             }
             else
             {
-                var publishmentSystemIDArrayList = TranslateUtils.StringCollectionToIntList(taskGatherInfo.PublishmentSystemIDCollection);
+                var publishmentSystemIDArrayList = TranslateUtils.StringCollectionToIntList(taskGatherInfo.PublishmentSystemIdCollection);
                 foreach (int publishmentSystemID in publishmentSystemIDArrayList)
                 {
                     var webGatherNames = DataProvider.GatherRuleDao.GetGatherRuleNameArrayList(publishmentSystemID);

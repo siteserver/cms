@@ -12,7 +12,7 @@ namespace siteserver
         {
             if (taskInfo != null && ex != null)
             {
-                var logInfo = new TaskLogInfo(0, taskInfo.TaskID, false, ex.Message, DateTime.Now);
+                var logInfo = new TaskLogInfo(0, taskInfo.TaskId, false, ex.Message, DateTime.Now);
                 DataProvider.TaskLogDao.Insert(logInfo);
             }
         }

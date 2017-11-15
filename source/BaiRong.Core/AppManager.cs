@@ -34,21 +34,6 @@ namespace BaiRong.Core
             return TranslateUtils.ToDouble(version);
         }
 
-        public static bool IsNeedUpgrade()
-        {
-            return !StringUtils.EqualsIgnoreCase(Version, BaiRongDataProvider.ConfigDao.GetDatabaseVersion());
-        }
-
-        public static bool IsNeedInstall()
-        {
-            var isNeedInstall = !BaiRongDataProvider.ConfigDao.IsInitialized();
-            if (isNeedInstall)
-            {
-                isNeedInstall = !BaiRongDataProvider.ConfigDao.IsInitialized();
-            }
-            return isNeedInstall;
-        }
-
         public const string IdSite = "Site";
         public const string IdPlugins = "Plugins";
         public const string IdSettings = "Settings";

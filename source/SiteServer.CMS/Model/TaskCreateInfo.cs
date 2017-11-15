@@ -1,5 +1,4 @@
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
@@ -14,14 +13,14 @@ namespace SiteServer.CMS.Model
 
         public bool IsCreateAll
         {
-            get { return GetBool("IsCreateAll", false); }
+            get { return GetBool("IsCreateAll"); }
             set { SetExtendedAttribute("IsCreateAll", value.ToString()); }
         }
 
-        public string ChannelIDCollection
+        public string ChannelIdCollection
 		{
-            get { return GetExtendedAttribute("ChannelIDCollection"); }
-            set { SetExtendedAttribute("ChannelIDCollection", value); }
+            get { return GetExtendedAttribute("ChannelIdCollection"); }
+            set { SetExtendedAttribute("ChannelIdCollection", value); }
 		}
 
         public string CreateTypes

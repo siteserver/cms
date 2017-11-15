@@ -111,7 +111,7 @@ namespace SiteServer.CMS.ImportExport
                 var seoFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileSeo);
                 var stlTagPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileStlTag);
                 var gatherRuleFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileGatherRule);
-                var inputDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Input);
+                //var inputDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Input);
                 var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
                 var siteContentDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
@@ -135,7 +135,7 @@ namespace SiteServer.CMS.ImportExport
 
                 importObject.ImportGatherRule(gatherRuleFilePath, true);
 
-                importObject.ImportInput(inputDirectoryPath, true);
+                //importObject.ImportInput(inputDirectoryPath, true);
 
                 importObject.ImportConfiguration(configurationFilePath);
 
@@ -182,8 +182,8 @@ namespace SiteServer.CMS.ImportExport
             var gatherRuleFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileGatherRule);
             exportObject.ExportGatherRule(gatherRuleFilePath);
             //导出提交表单
-            var inputDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Input);
-            exportObject.ExportInput(inputDirectoryPath);
+            //var inputDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Input);
+            //exportObject.ExportInput(inputDirectoryPath);
             //导出站点属性以及站点属性表单
             var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
             exportObject.ExportConfiguration(configurationFilePath);

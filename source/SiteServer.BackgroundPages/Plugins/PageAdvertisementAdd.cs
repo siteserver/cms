@@ -201,9 +201,9 @@ namespace SiteServer.BackgroundPages.Plugins
                     IsDateLimited.Checked = adInfo.IsDateLimited;
                     StartDate.Text = DateUtils.GetDateAndTimeString(adInfo.StartDate);
                     EndDate.Text = DateUtils.GetDateAndTimeString(adInfo.EndDate);
-                    ControlUtils.SelectListItems(NodeIDCollectionToChannel, TranslateUtils.StringCollectionToStringList(adInfo.NodeIDCollectionToChannel));
-                    ControlUtils.SelectListItems(NodeIDCollectionToContent, TranslateUtils.StringCollectionToStringList(adInfo.NodeIDCollectionToContent));
-                    ControlUtils.SelectListItems(FileTemplateIDCollection, TranslateUtils.StringCollectionToStringList(adInfo.FileTemplateIDCollection));
+                    ControlUtils.SelectListItems(NodeIDCollectionToChannel, TranslateUtils.StringCollectionToStringList(adInfo.NodeIdCollectionToChannel));
+                    ControlUtils.SelectListItems(NodeIDCollectionToContent, TranslateUtils.StringCollectionToStringList(adInfo.NodeIdCollectionToContent));
+                    ControlUtils.SelectListItems(FileTemplateIDCollection, TranslateUtils.StringCollectionToStringList(adInfo.FileTemplateIdCollection));
 
                     if (adInfo.AdvertisementType == EAdvertisementType.FloatImage)
                     {

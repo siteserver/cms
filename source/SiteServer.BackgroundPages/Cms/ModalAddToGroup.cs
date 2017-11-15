@@ -9,8 +9,8 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalAddToGroup : BasePageCms
     {
-        protected CheckBoxList cblGroupNameCollection;
-        protected Button btnAddGroup;
+        protected CheckBoxList CblGroupNameCollection;
+        protected Button BtnAddGroup;
 
         private bool _isContent;
         private Dictionary<int, List<int>> _idsDictionary = new Dictionary<int, List<int>>();
@@ -18,33 +18,33 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToContentForMultiChannels(int publishmentSystemId)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("添加到内容组",
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("添加到内容组",
                 PageUtils.GetCmsUrl(nameof(ModalAddToGroup), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"IsContent", "True"}
-                }), "IDsCollection", "请选择需要设置组别的内容！", 450, 420);
+                }), "IDsCollection", "请选择需要设置组别的内容！", 650, 550);
         }
 
         public static string GetOpenWindowStringToContent(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("添加到内容组",
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("添加到内容组",
                 PageUtils.GetCmsUrl(nameof(ModalAddToGroup), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"NodeID", nodeId.ToString()},
                     {"IsContent", "True"}
-                }), "ContentIDCollection", "请选择需要设置组别的内容！", 450, 420);
+                }), "ContentIDCollection", "请选择需要设置组别的内容！", 650, 550);
         }
 
         public static string GetOpenWindowStringToChannel(int publishmentSystemId)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("添加到栏目组",
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("添加到栏目组",
                 PageUtils.GetCmsUrl(nameof(ModalAddToGroup), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"IsContent", "False"}
-                }), "ChannelIDCollection", "请选择需要设置组别的栏目！", 450, 420);
+                }), "ChannelIDCollection", "请选择需要设置组别的栏目！", 650, 550);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -59,12 +59,12 @@ namespace SiteServer.BackgroundPages.Cms
             }
             if (_isContent)
             {
-                btnAddGroup.Text = " 新建内容组";
+                BtnAddGroup.Text = " 新建内容组";
                 _idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
             }
             else
             {
-                btnAddGroup.Text = " 新建栏目组";
+                BtnAddGroup.Text = " 新建栏目组";
                 _nodeIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
             }
             if (!IsPostBack)
@@ -75,10 +75,10 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var groupName in contentGroupNameList)
                     {
                         var item = new ListItem(groupName, groupName);
-                        cblGroupNameCollection.Items.Add(item);
+                        CblGroupNameCollection.Items.Add(item);
                     }
                     var showPopWinString = ModalContentGroupAdd.GetOpenWindowString(PublishmentSystemId);
-                    btnAddGroup.Attributes.Add("onclick", showPopWinString);
+                    BtnAddGroup.Attributes.Add("onclick", showPopWinString);
                 }
                 else
                 {
@@ -86,11 +86,11 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var groupName in nodeGroupNameList)
                     {
                         var item = new ListItem(groupName, groupName);
-                        cblGroupNameCollection.Items.Add(item);
+                        CblGroupNameCollection.Items.Add(item);
                     }
 
                     var showPopWinString = ModalNodeGroupAdd.GetOpenWindowString(PublishmentSystemId);
-                    btnAddGroup.Attributes.Add("onclick", showPopWinString);
+                    BtnAddGroup.Attributes.Add("onclick", showPopWinString);
                 }
             }
         }
@@ -104,7 +104,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (_isContent)
                 {
                     var groupNameList = new List<string>();
-                    foreach (ListItem item in cblGroupNameCollection.Items)
+                    foreach (ListItem item in CblGroupNameCollection.Items)
                     {
                         if (item.Selected)
                         {
@@ -133,7 +133,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
 
                     var groupNameList = new List<string>();
-                    foreach (ListItem item in cblGroupNameCollection.Items)
+                    foreach (ListItem item in CblGroupNameCollection.Items)
                     {
                         if (item.Selected) groupNameList.Add(item.Value);
                     }

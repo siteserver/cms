@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public const int Width = 560;
         public const int Height = 260;
-        public const string TypeInput = "INPUT";
+        //public const string TypeInput = "INPUT";
         public const string TypeRelatedField = "RELATED_FIELD";
         public const string TypeTagstyle = "TAGSTYLE";
         public const string TypeGatherrule = "GATHERRULE";
@@ -30,10 +30,10 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 title = "导入采集规则";
             }
-            else if (StringUtils.EqualsIgnoreCase(type, TypeInput))
-            {
-                title = "导入提交表单";
-            }
+            //else if (StringUtils.EqualsIgnoreCase(type, TypeInput))
+            //{
+            //    title = "导入提交表单";
+            //}
             else if (StringUtils.EqualsIgnoreCase(type, TypeRelatedField))
             {
                 title = "导入联动字段";
@@ -94,36 +94,36 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(_type, TypeInput))
-            {
-                if (myFile.PostedFile != null && "" != myFile.PostedFile.FileName)
-                {
-                    var filePath = myFile.PostedFile.FileName;
-                    if (EFileSystemTypeUtils.GetEnumType(Path.GetExtension(filePath)) != EFileSystemType.Zip)
-                    {
-                        FailMessage("必须上传ZIP文件");
-                        return;
-                    }
+            //else if (StringUtils.EqualsIgnoreCase(_type, TypeInput))
+            //{
+            //    if (myFile.PostedFile != null && "" != myFile.PostedFile.FileName)
+            //    {
+            //        var filePath = myFile.PostedFile.FileName;
+            //        if (EFileSystemTypeUtils.GetEnumType(Path.GetExtension(filePath)) != EFileSystemType.Zip)
+            //        {
+            //            FailMessage("必须上传ZIP文件");
+            //            return;
+            //        }
 
-                    try
-                    {
-                        var localFilePath = PathUtils.GetTemporaryFilesPath(Path.GetFileName(filePath));
+            //        try
+            //        {
+            //            var localFilePath = PathUtils.GetTemporaryFilesPath(Path.GetFileName(filePath));
 
-                        myFile.PostedFile.SaveAs(localFilePath);
+            //            myFile.PostedFile.SaveAs(localFilePath);
 
-                        var importObject = new ImportObject(PublishmentSystemId);
-                        importObject.ImportInputByZipFile(localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue));
+            //            var importObject = new ImportObject(PublishmentSystemId);
+            //            importObject.ImportInputByZipFile(localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue));
 
-                        Body.AddSiteLog(PublishmentSystemId, "导入提交表单");
+            //            Body.AddSiteLog(PublishmentSystemId, "导入提交表单");
 
-                        PageUtils.CloseModalPage(Page);
-                    }
-                    catch (Exception ex)
-                    {
-                        FailMessage(ex, "导入提交表单失败！");
-                    }
-                }
-            }
+            //            PageUtils.CloseModalPage(Page);
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            FailMessage(ex, "导入提交表单失败！");
+            //        }
+            //    }
+            //}
             else if (StringUtils.EqualsIgnoreCase(_type, TypeRelatedField))
             {
                 if (myFile.PostedFile != null && "" != myFile.PostedFile.FileName)

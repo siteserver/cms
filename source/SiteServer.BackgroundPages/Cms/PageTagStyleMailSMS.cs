@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         private int _styleId;
         private ETableStyle _tableStyle;
-        private ITagStyleMailSMSBaseInfo _mailSmsInfo;
+        private ITagStyleMailSmsBaseInfo _mailSmsInfo;
 
         public static string GetRedirectUrl(int publishmentSystemId, int styleId, ETableStyle tableStyle, int relatedIdentity)
         {
@@ -66,20 +66,20 @@ namespace SiteServer.BackgroundPages.Cms
 
                 //短信
 
-                ControlUtils.SelectListItemsIgnoreCase(rblIsSMS, _mailSmsInfo.IsSMS.ToString());
+                ControlUtils.SelectListItemsIgnoreCase(rblIsSMS, _mailSmsInfo.IsSms.ToString());
                 rblIsSMS_SelectedIndexChanged(null, EventArgs.Empty);
 
-                ControlUtils.SelectListItemsIgnoreCase(rblSMSReceiver, ETriStateUtils.GetValue(_mailSmsInfo.SMSReceiver));
+                ControlUtils.SelectListItemsIgnoreCase(rblSMSReceiver, ETriStateUtils.GetValue(_mailSmsInfo.SmsReceiver));
                 rblSMSReceiver_SelectedIndexChanged(null, EventArgs.Empty);
 
-                tbSMSTo.Text = _mailSmsInfo.SMSTo;
+                tbSMSTo.Text = _mailSmsInfo.SmsTo;
 
                 foreach (var styleInfo in styleInfoList)
                 {
                     if (styleInfo.IsVisible)
                     {
                         var listItem = new ListItem(styleInfo.DisplayName + "(" + styleInfo.AttributeName + ")", styleInfo.AttributeName);
-                        if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, _mailSmsInfo.SMSFiledName))
+                        if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, _mailSmsInfo.SmsFiledName))
                         {
                             listItem.Selected = true;
                         }
@@ -87,10 +87,10 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                ControlUtils.SelectListItemsIgnoreCase(rblIsSMSTemplate, _mailSmsInfo.IsSMSTemplate.ToString());
+                ControlUtils.SelectListItemsIgnoreCase(rblIsSMSTemplate, _mailSmsInfo.IsSmsTemplate.ToString());
                 rblIsSMSTemplate_SelectedIndexChanged(null, EventArgs.Empty);
 
-                tbSMSContent.Text = _mailSmsInfo.SMSContent;
+                tbSMSContent.Text = _mailSmsInfo.SmsContent;
 
                 if (string.IsNullOrEmpty(tbSMSContent.Text))
                 {
@@ -103,17 +103,17 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                _mailSmsInfo.IsSMS = TranslateUtils.ToBool(rblIsSMS.SelectedValue);
-                _mailSmsInfo.SMSReceiver = ETriStateUtils.GetEnumType(rblSMSReceiver.SelectedValue);
-                _mailSmsInfo.SMSTo = tbSMSTo.Text;
-                _mailSmsInfo.SMSFiledName = ddlSMSFiledName.SelectedValue;
-                _mailSmsInfo.IsSMSTemplate = TranslateUtils.ToBool(rblIsSMSTemplate.SelectedValue);
-                _mailSmsInfo.SMSContent = tbSMSContent.Text;
+                _mailSmsInfo.IsSms = TranslateUtils.ToBool(rblIsSMS.SelectedValue);
+                _mailSmsInfo.SmsReceiver = ETriStateUtils.GetEnumType(rblSMSReceiver.SelectedValue);
+                _mailSmsInfo.SmsTo = tbSMSTo.Text;
+                _mailSmsInfo.SmsFiledName = ddlSMSFiledName.SelectedValue;
+                _mailSmsInfo.IsSmsTemplate = TranslateUtils.ToBool(rblIsSMSTemplate.SelectedValue);
+                _mailSmsInfo.SmsContent = tbSMSContent.Text;
 
                 try
                 {
                     var tagStyleInfo = DataProvider.TagStyleDao.GetTagStyleInfo(_styleId);
-                    tagStyleInfo.SettingsXML = _mailSmsInfo.ToString();
+                    tagStyleInfo.SettingsXml = _mailSmsInfo.ToString();
                     DataProvider.TagStyleDao.Update(tagStyleInfo);
                     SuccessMessage("邮件/短信发送设置修改成功！");
                 }

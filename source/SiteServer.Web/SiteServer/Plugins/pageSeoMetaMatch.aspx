@@ -27,7 +27,7 @@
         </tr>
         <tr>
           <td>
-            <asp:ListBox ID="NodeIDCollectionToMatch" SelectionMode="Multiple" Rows="25" style="width:auto" runat="server"></asp:ListBox>
+            <asp:ListBox ID="NodeIdCollectionToMatch" SelectionMode="Multiple" Rows="25" style="width:auto" runat="server"></asp:ListBox>
           </td>
           <td class="center">
             <asp:Button class="btn" id="MatchChannelSeoMetaButton" text="<- 匹配" onclick="MatchChannelSeoMetaButton_OnClick" runat="server" />
@@ -36,7 +36,7 @@
             <asp:Button class="btn" id="RemoveChannelSeoMetaButton" text="-> 取消" onclick="RemoveChannelSeoMetaButton_OnClick" runat="server" />
           </td>
           <td>
-            <asp:ListBox ID="ChannelSeoMetaID" SelectionMode="Single" Rows="25" runat="server"></asp:ListBox>
+            <asp:ListBox ID="ChannelSeoMetaId" SelectionMode="Single" Rows="25" runat="server"></asp:ListBox>
           </td>
           <td class="center">
             <asp:Button class="btn" id="MatchContentSeoMetaButton" text="<- 匹配" onclick="MatchContentSeoMetaButton_OnClick" runat="server" />
@@ -45,7 +45,7 @@
             <asp:Button class="btn" id="RemoveContentSeoMetaButton" text="-> 取消" onclick="RemoveContentSeoMetaButton_OnClick" runat="server" />
           </td>
           <td>
-            <asp:ListBox ID="ContentSeoMetaID" SelectionMode="Single" Rows="25" runat="server"></asp:ListBox>
+            <asp:ListBox ID="ContentSeoMetaId" SelectionMode="Single" Rows="25" runat="server"></asp:ListBox>
           </td>
         </tr>
       </table>

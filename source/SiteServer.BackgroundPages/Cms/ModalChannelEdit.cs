@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public ChannelAuxiliaryControl channelControl;
 
-        public Button btnSubmit;
+        public Button BtnSubmit;
 
         private int _nodeId;
         private string _returnUrl;
@@ -101,7 +101,7 @@ namespace SiteServer.BackgroundPages.Cms
                         FilePathRow.Visible = false;
                     }
 
-                    btnSubmit.Attributes.Add("onclick", "if (UE && UE.getEditor('Content', {{allowDivTransToP: false}})){ UE.getEditor('Content', {{allowDivTransToP: false}}).sync(); }");
+                    BtnSubmit.Attributes.Add("onclick", "if (UE && UE.getEditor('Content', {{allowDivTransToP: false}})){ UE.getEditor('Content', {{allowDivTransToP: false}}).sync(); }");
 
                     if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ChannelEditAttributes))
                     {

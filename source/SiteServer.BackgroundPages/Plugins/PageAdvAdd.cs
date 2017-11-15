@@ -122,9 +122,9 @@ namespace SiteServer.BackgroundPages.Plugins
                     IsDateLimited.Checked = advInfo.IsDateLimited;
                     StartDate.Text = DateUtils.GetDateAndTimeString(advInfo.StartDate);
                     EndDate.Text = DateUtils.GetDateAndTimeString(advInfo.EndDate);
-                    ControlUtils.SelectListItems(NodeIDCollectionToChannel, TranslateUtils.StringCollectionToStringList(advInfo.NodeIDCollectionToChannel));
-                    ControlUtils.SelectListItems(NodeIDCollectionToContent, TranslateUtils.StringCollectionToStringList(advInfo.NodeIDCollectionToContent));
-                    ControlUtils.SelectListItems(FileTemplateIDCollection, TranslateUtils.StringCollectionToStringList(advInfo.FileTemplateIDCollection));
+                    ControlUtils.SelectListItems(NodeIDCollectionToChannel, TranslateUtils.StringCollectionToStringList(advInfo.NodeIdCollectionToChannel));
+                    ControlUtils.SelectListItems(NodeIDCollectionToContent, TranslateUtils.StringCollectionToStringList(advInfo.NodeIdCollectionToContent));
+                    ControlUtils.SelectListItems(FileTemplateIDCollection, TranslateUtils.StringCollectionToStringList(advInfo.FileTemplateIdCollection));
                     LevelType.SelectedValue = EAdvLevelTypeUtils.GetValue(advInfo.LevelType);
                     Level.SelectedValue = advInfo.Level.ToString();
                     IsWeight.Checked = advInfo.IsWeight;
@@ -200,9 +200,9 @@ namespace SiteServer.BackgroundPages.Plugins
                         advInfo.IsDateLimited = IsDateLimited.Checked;
                         advInfo.StartDate = TranslateUtils.ToDateTime(StartDate.Text);
                         advInfo.EndDate = TranslateUtils.ToDateTime(EndDate.Text);
-                        advInfo.NodeIDCollectionToChannel = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollectionToChannel);
-                        advInfo.NodeIDCollectionToContent = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollectionToContent);
-                        advInfo.FileTemplateIDCollection = ControlUtils.GetSelectedListControlValueCollection(FileTemplateIDCollection);
+                        advInfo.NodeIdCollectionToChannel = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollectionToChannel);
+                        advInfo.NodeIdCollectionToContent = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollectionToContent);
+                        advInfo.FileTemplateIdCollection = ControlUtils.GetSelectedListControlValueCollection(FileTemplateIDCollection);
                         advInfo.LevelType = EAdvLevelTypeUtils.GetEnumType(LevelType.SelectedValue);
                         advInfo.Level = TranslateUtils.ToInt(Level.SelectedValue);
                         advInfo.IsWeight = IsWeight.Checked;
@@ -219,17 +219,17 @@ namespace SiteServer.BackgroundPages.Plugins
                     else
                     {
                         var advInfo = new AdvInfo();
-                        advInfo.AdAreaID = _adAreadId;
-                        advInfo.PublishmentSystemID = PublishmentSystemId;
+                        advInfo.AdAreaId = _adAreadId;
+                        advInfo.PublishmentSystemId = PublishmentSystemId;
                         advInfo.AdvName = AdvName.Text;
                         advInfo.Summary = Summary.Text;
                         advInfo.IsEnabled = TranslateUtils.ToBool(IsEnabled.SelectedValue);
                         advInfo.IsDateLimited = IsDateLimited.Checked;
                         advInfo.StartDate = TranslateUtils.ToDateTime(StartDate.Text);
                         advInfo.EndDate = TranslateUtils.ToDateTime(EndDate.Text);
-                        advInfo.NodeIDCollectionToChannel = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollectionToChannel);
-                        advInfo.NodeIDCollectionToContent = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollectionToContent);
-                        advInfo.FileTemplateIDCollection = ControlUtils.GetSelectedListControlValueCollection(FileTemplateIDCollection);
+                        advInfo.NodeIdCollectionToChannel = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollectionToChannel);
+                        advInfo.NodeIdCollectionToContent = ControlUtils.GetSelectedListControlValueCollection(NodeIDCollectionToContent);
+                        advInfo.FileTemplateIdCollection = ControlUtils.GetSelectedListControlValueCollection(FileTemplateIDCollection);
                         advInfo.LevelType = EAdvLevelTypeUtils.GetEnumType(LevelType.SelectedValue);
                         advInfo.Level = TranslateUtils.ToInt(Level.SelectedValue);
                         advInfo.IsWeight = IsWeight.Checked;

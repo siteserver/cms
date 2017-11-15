@@ -5,6 +5,7 @@ using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
@@ -16,6 +17,66 @@ namespace SiteServer.CMS.Provider
     public class PublishmentSystemDao : DataProviderBase
     {
         public override string TableName => "siteserver_PublishmentSystem";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PublishmentSystemInfo.PublishmentSystemId),
+                DataType = DataType.Integer,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PublishmentSystemInfo.PublishmentSystemName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PublishmentSystemInfo.AuxiliaryTableForContent),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PublishmentSystemInfo.IsCheckContentUseLevel),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PublishmentSystemInfo.CheckContentLevel),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PublishmentSystemInfo.PublishmentSystemDir),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PublishmentSystemInfo.IsHeadquarters),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PublishmentSystemInfo.ParentPublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PublishmentSystemInfo.Taxis),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PublishmentSystemInfo.SettingsXml),
+                DataType = DataType.Text
+            }
+        };
 
         private const string SqlSelectPublishmentSystemAll = "SELECT PublishmentSystemID, PublishmentSystemName, AuxiliaryTableForContent, IsCheckContentUseLevel, CheckContentLevel, PublishmentSystemDir, IsHeadquarters, ParentPublishmentSystemID, Taxis, SettingsXML FROM siteserver_PublishmentSystem ORDER BY Taxis";
 
@@ -53,7 +114,7 @@ namespace SiteServer.CMS.Provider
             var insertParms = new IDataParameter[]
 			{
 				GetParameter(ParmPublishmentsystemId, DataType.Integer, info.PublishmentSystemId),
-				GetParameter(ParmPublishmentsystemName, DataType.NVarChar, 50, info.PublishmentSystemName),
+				GetParameter(ParmPublishmentsystemName, DataType.VarChar, 50, info.PublishmentSystemName),
 				GetParameter(ParmAuxiliaryTableForContent, DataType.VarChar, 50, info.AuxiliaryTableForContent),
 				GetParameter(ParmIsCheckContentUseLevel, DataType.VarChar, 18, info.IsCheckContentUseLevel.ToString()),
 				GetParameter(ParmCheckContentLevel, DataType.Integer, info.CheckContentLevel),
@@ -61,7 +122,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmIsHeadquarters, DataType.VarChar, 18, info.IsHeadquarters.ToString()),
                 GetParameter(ParmParentPublishmentsystemid, DataType.Integer, info.ParentPublishmentSystemId),
                 GetParameter(ParmTaxis, DataType.Integer, taxis),
-				GetParameter(ParmSettingsXml, DataType.NText, info.Additional.ToString())
+				GetParameter(ParmSettingsXml, DataType.Text, info.Additional.ToString())
 			};
 
             ExecuteNonQuery(trans, SqlInsertPublishmentSystem, insertParms);
@@ -92,7 +153,7 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemName, DataType.NVarChar, 50, info.PublishmentSystemName),
+				GetParameter(ParmPublishmentsystemName, DataType.VarChar, 50, info.PublishmentSystemName),
 				GetParameter(ParmAuxiliaryTableForContent, DataType.VarChar, 50, info.AuxiliaryTableForContent),
 				GetParameter(ParmIsCheckContentUseLevel, DataType.VarChar, 18, info.IsCheckContentUseLevel.ToString()),
 				GetParameter(ParmCheckContentLevel, DataType.Integer, info.CheckContentLevel),
@@ -100,7 +161,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmIsHeadquarters, DataType.VarChar, 18, info.IsHeadquarters.ToString()),
                 GetParameter(ParmParentPublishmentsystemid, DataType.Integer, info.ParentPublishmentSystemId),
                 GetParameter(ParmTaxis, DataType.Integer, info.Taxis),
-				GetParameter(ParmSettingsXml, DataType.NText, info.Additional.ToString()),
+				GetParameter(ParmSettingsXml, DataType.Text, info.Additional.ToString()),
 				GetParameter(ParmPublishmentsystemId, DataType.Integer, info.PublishmentSystemId)
 			};
 
@@ -345,7 +406,7 @@ namespace SiteServer.CMS.Provider
             //sbSql.AppendFormat(" WHERE Taxis > (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {0}) ", publishmentSystemId);
             //sbSql.AppendFormat(" ORDER BY Taxis ");
 
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_PublishmentSystem", "PublishmentSystemID, Taxis", $"WHERE Taxis > (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {publishmentSystemId}) ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_PublishmentSystem", "PublishmentSystemID, Taxis", $"WHERE Taxis > (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {publishmentSystemId})", "ORDER BY Taxis", 1);
 
             var lowerId = 0;
             var lowerTaxis = 0;
@@ -376,7 +437,7 @@ namespace SiteServer.CMS.Provider
             //sbSql.AppendFormat(" WHERE Taxis < (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {0}) ", publishmentSystemId);
             //sbSql.AppendFormat(" ORDER BY Taxis DESC");
 
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_PublishmentSystem", "PublishmentSystemID, Taxis", $"WHERE Taxis < (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {publishmentSystemId}) ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_PublishmentSystem", "PublishmentSystemID, Taxis", $"WHERE Taxis < (SELECT Taxis FROM siteserver_PublishmentSystem WHERE PublishmentSystemID = {publishmentSystemId})", "ORDER BY Taxis DESC", 1);
 
             var higherId = 0;
             var higherTaxis = 0;

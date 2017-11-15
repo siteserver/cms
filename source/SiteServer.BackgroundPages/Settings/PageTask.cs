@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var taskInfo = (TaskInfo)e.Item.DataItem;
 
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(taskInfo.PublishmentSystemID);
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(taskInfo.PublishmentSystemId);
                 if (publishmentSystemInfo == null)
                 {
                     e.Item.Visible = false;
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var urlTask = PageUtils.GetSettingsUrl(nameof(PageTask), new NameValueCollection
                 {
                     {"Enabled", "True"},
-                    {"TaskID", taskInfo.TaskID.ToString()},
+                    {"TaskID", taskInfo.TaskId.ToString()},
                     {"IsEnabled", (!taskInfo.IsEnabled).ToString() }
                 });
                 ltlEnabledHtml.Text =
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Settings
                     var urlDelete = PageUtils.GetSettingsUrl(nameof(PageTask), new NameValueCollection
                     {
                         {"Delete", "True"},
-                        {"TaskID", taskInfo.TaskID.ToString()},
+                        {"TaskID", taskInfo.TaskId.ToString()},
                     });
 
                     ltlDeleteHtml.Text =

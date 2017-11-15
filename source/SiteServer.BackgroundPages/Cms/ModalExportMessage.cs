@@ -16,16 +16,16 @@ namespace SiteServer.BackgroundPages.Cms
     {
         private string _exportType;
 
-        public const int Width = 380;
+        public const int Width = 580;
         public const int Height = 250;
         public const string ExportTypeContentZip = "ContentZip";
         public const string ExportTypeContentAccess = "ContentAccess";
         public const string ExportTypeContentExcel = "ContentExcel";
         public const string ExportTypeContentTxtZip = "ContentTxtZip";
-        public const string ExportTypeInputContent = "InputContent";
+        //public const string ExportTypeInputContent = "InputContent";
         public const string ExportTypeComment = "Comment";
         public const string ExportTypeGatherRule = "GatherRule";
-        public const string ExportTypeInput = "Input";
+        //public const string ExportTypeInput = "Input";
         public const string ExportTypeRelatedField = "RelatedField";
         public const string ExportTypeTagStyle = "TagStyle";
         public const string ExportTypeChannel = "Channel";
@@ -54,15 +54,15 @@ namespace SiteServer.BackgroundPages.Cms
                     });
         }
 
-        public static string GetOpenWindowStringToInputContent(int publishmentSystemId, int inputId)
-        {
-            return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", publishmentSystemId.ToString()},
-                        {"InputID", inputId.ToString()},
-                        {"ExportType", ExportTypeInputContent}
-                    }), Width, Height, true);
-        }
+        //public static string GetOpenWindowStringToInputContent(int publishmentSystemId, int inputId)
+        //{
+        //    return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+        //            {
+        //                {"PublishmentSystemID", publishmentSystemId.ToString()},
+        //                {"InputID", inputId.ToString()},
+        //                {"ExportType", ExportTypeInputContent}
+        //            }), Width, Height, true);
+        //}
 
         public static string GetOpenWindowStringToComment(int publishmentSystemId, int nodeId, int contentId)
         {
@@ -84,15 +84,15 @@ namespace SiteServer.BackgroundPages.Cms
                     }), checkBoxId, alertString, Width, Height, true);
         }
 
-        public static string GetOpenWindowStringToInput(int publishmentSystemId, int inputId)
-        {
-            return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", publishmentSystemId.ToString()},
-                        {"InputID", inputId.ToString()},
-                        {"ExportType", ExportTypeInput}
-                    }), Width, Height, true);
-        }
+        //public static string GetOpenWindowStringToInput(int publishmentSystemId, int inputId)
+        //{
+        //    return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+        //            {
+        //                {"PublishmentSystemID", publishmentSystemId.ToString()},
+        //                {"InputID", inputId.ToString()},
+        //                {"ExportType", ExportTypeInput}
+        //            }), Width, Height, true);
+        //}
 
         public static string GetOpenWindowStringToTagStyle(int publishmentSystemId, int styleId)
         {
@@ -197,11 +197,11 @@ namespace SiteServer.BackgroundPages.Cms
                         var isDelete = Body.GetQueryBool("IsDelete");
                         fileName = ExportTrackingContents(startDateString, endDateString, nodeId, contentId, totalNum, isDelete);
                     }
-                    else if (_exportType == ExportTypeInputContent)
-                    {
-                        var inputId = Body.GetQueryInt("InputID");
-                        fileName = ExportInputContent(inputId);
-                    }
+                    //else if (_exportType == ExportTypeInputContent)
+                    //{
+                    //    var inputId = Body.GetQueryInt("InputID");
+                    //    fileName = ExportInputContent(inputId);
+                    //}
                     else if (_exportType == ExportTypeComment)
                     {
                         var nodeId = Body.GetQueryInt("NodeID");
@@ -213,11 +213,11 @@ namespace SiteServer.BackgroundPages.Cms
                         var gatherRuleNameArrayList = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("GatherRuleNameCollection"));
                         fileName = ExportGatherRule(gatherRuleNameArrayList);
                     }
-                    else if (_exportType == ExportTypeInput)
-                    {
-                        var inputId = Body.GetQueryInt("InputID");
-                        fileName = ExportInput(inputId);
-                    }
+                    //else if (_exportType == ExportTypeInput)
+                    //{
+                    //    var inputId = Body.GetQueryInt("InputID");
+                    //    fileName = ExportInput(inputId);
+                    //}
                     else if (_exportType == ExportTypeRelatedField)
                     {
                         var relatedFieldId = Body.GetQueryInt("RelatedFieldID");
@@ -340,16 +340,16 @@ namespace SiteServer.BackgroundPages.Cms
             return docFileName;
         }
 
-        private string ExportInputContent(int inputId)
-        {
-            var inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
+        //private string ExportInputContent(int inputId)
+        //{
+        //    var inputInfo = DataProvider.InputDao.GetInputInfo(inputId);
 
-            string docFileName = $"{inputInfo.InputName}.csv";
-            var filePath = PathUtils.GetTemporaryFilesPath(docFileName);
-            ExcelObject.CreateExcelFileForInputContents(filePath, PublishmentSystemInfo, inputInfo);
+        //    string docFileName = $"{inputInfo.InputName}.csv";
+        //    var filePath = PathUtils.GetTemporaryFilesPath(docFileName);
+        //    ExcelObject.CreateExcelFileForInputContents(filePath, PublishmentSystemInfo, inputInfo);
 
-            return docFileName;
-        }
+        //    return docFileName;
+        //}
 
         private string ExportComment(int nodeId, int contentId)
         {
@@ -377,11 +377,11 @@ namespace SiteServer.BackgroundPages.Cms
             return docFileName;
         }
 
-        private string ExportInput(int inputId)
-        {
-            var exportObject = new ExportObject(PublishmentSystemId);
-            return exportObject.ExportInput(inputId);
-        }
+        //private string ExportInput(int inputId)
+        //{
+        //    var exportObject = new ExportObject(PublishmentSystemId);
+        //    return exportObject.ExportInput(inputId);
+        //}
 
         private string ExportRelatedField(int relatedFieldId)
         {

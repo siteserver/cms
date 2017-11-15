@@ -18,7 +18,9 @@ namespace SiteServer.CMS.Model
 			Description = description;
 		}
 
-		public string ContentGroupName { get; set; }
+        public int Id { get; set; }
+
+        public string ContentGroupName { get; set; }
 
 	    public int PublishmentSystemId { get; set; }
 

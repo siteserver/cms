@@ -10,7 +10,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageConfigurationWaterMark : BasePageCms
     {
-		public RadioButtonList IsWaterMark;
+		public DropDownList IsWaterMark;
 		public Literal WaterMarkPosition;
 		public Control WaterMarkPositionRow;
 		public DropDownList WaterMarkTransparency;
@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 		public TextBox WaterMarkMinWidth;
 		public TextBox WaterMarkMinHeight;
 		public Control WaterMarkMinRow;
-		public RadioButtonList IsImageWaterMark;
+		public DropDownList IsImageWaterMark;
 		public Control IsImageWaterMarkRow;
 		public TextBox WaterMarkFormatString;
 		public Control WaterMarkFormatStringRow;
@@ -90,12 +90,12 @@ namespace SiteServer.BackgroundPages.Cms
 				if (selectPosition == i)
 				{
 					object obj1 = WaterMarkPosition.Text;
-					WaterMarkPosition.Text = string.Concat(new object[]{obj1, "<td width=\"33%\" style=\"font-size:18px;\" align=\"center\"><input type=\"radio\" id=\"WaterMarkPosition\" name=\"WaterMarkPosition\" value=\"", i, "\" checked>#", i, "</td>"});
+					WaterMarkPosition.Text = string.Concat(obj1, "<td width=\"33%\" style=\"font-size:18px;\" align=\"center\"><input type=\"radio\" id=\"WaterMarkPosition\" name=\"WaterMarkPosition\" value=\"", i, "\" checked>#", i, "</td>");
 				}
 				else
 				{
 					object obj2 = WaterMarkPosition.Text;
-					WaterMarkPosition.Text = string.Concat(new object[]{obj2, "<td width=\"33%\" style=\"font-size:18px;\" align=\"center\"><input type=\"radio\" id=\"WaterMarkPosition\" name=\"WaterMarkPosition\" value=\"", i, "\" >#", i, "</td>"});
+					WaterMarkPosition.Text = string.Concat(obj2, "<td width=\"33%\" style=\"font-size:18px;\" align=\"center\"><input type=\"radio\" id=\"WaterMarkPosition\" name=\"WaterMarkPosition\" value=\"", i, "\" >#", i, "</td>");
 				}
 				if ((i % 3) == 0)
 				{

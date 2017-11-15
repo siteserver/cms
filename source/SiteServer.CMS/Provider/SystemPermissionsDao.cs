@@ -2,14 +2,53 @@
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class SystemPermissionsDao : DataProviderBase
     {
+        public override string TableName => "siteserver_SystemPermissions";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SystemPermissionsInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SystemPermissionsInfo.RoleName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SystemPermissionsInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SystemPermissionsInfo.NodeIdCollection),
+                DataType = DataType.Text
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SystemPermissionsInfo.ChannelPermissions),
+                DataType = DataType.Text
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(SystemPermissionsInfo.WebsitePermissions),
+                DataType = DataType.Text
+            }
+        };
+
         private const string SqlSelectAllByRoleName = "SELECT RoleName, PublishmentSystemID, NodeIDCollection, ChannelPermissions, WebsitePermissions FROM siteserver_SystemPermissions WHERE RoleName = @RoleName ORDER BY PublishmentSystemID DESC";
 
         private const string SqlInsert = "INSERT INTO siteserver_SystemPermissions (RoleName, PublishmentSystemID, NodeIDCollection, ChannelPermissions, WebsitePermissions) VALUES (@RoleName, @PublishmentSystemID, @NodeIDCollection, @ChannelPermissions, @WebsitePermissions)";
@@ -30,7 +69,7 @@ namespace SiteServer.CMS.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, DataType.NVarChar, 255, info.RoleName),
+				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, info.RoleName),
 				GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
 				GetParameter(ParmNodeIdCollection, DataType.Text, info.NodeIdCollection),
 				GetParameter(ParmChannelPermissions, DataType.Text, info.ChannelPermissions),
@@ -45,7 +84,7 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, DataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName)
 			};
 
             ExecuteNonQuery(trans, SqlDelete, parms);
@@ -57,7 +96,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, DataType.NVarChar, 255, roleName),
+				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
@@ -72,7 +111,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, DataType.NVarChar, 255, roleName),
+				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
@@ -94,7 +133,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, DataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllByRoleName, parms))
@@ -233,7 +272,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmRoleRoleName, DataType.NVarChar, 255, roleName),
+                GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
@@ -269,7 +308,7 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
             {
-                GetParameter(ParmRoleRoleName, DataType.NVarChar, 255, info.RoleName),
+                GetParameter(ParmRoleRoleName, DataType.VarChar, 255, info.RoleName),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
                 GetParameter(ParmNodeIdCollection, DataType.Text, info.NodeIdCollection),
                 GetParameter(ParmChannelPermissions, DataType.Text, info.ChannelPermissions),
@@ -321,6 +360,92 @@ namespace SiteServer.CMS.Provider
             }
 
             return permissionList;
+        }
+
+        public void InsertRoleAndPermissions(string roleName, string creatorUserName, string description, List<string> generalPermissionList, List<SystemPermissionsInfo> systemPermissionsInfoList)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var trans = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        if (generalPermissionList != null && generalPermissionList.Count > 0)
+                        {
+                            var permissionsInRolesInfo = new PermissionsInRolesInfo(roleName, TranslateUtils.ObjectCollectionToString(generalPermissionList));
+                            BaiRongDataProvider.PermissionsInRolesDao.InsertWithTrans(permissionsInRolesInfo, trans);
+                        }
+
+                        foreach (var systemPermissionsInfo in systemPermissionsInfoList)
+                        {
+                            systemPermissionsInfo.RoleName = roleName;
+                            InsertWithTrans(systemPermissionsInfo, trans);
+                        }
+
+                        trans.Commit();
+                    }
+                    catch
+                    {
+                        trans.Rollback();
+                        throw;
+                    }
+                }
+            }
+            BaiRongDataProvider.RoleDao.InsertRole(roleName, creatorUserName, description);
+        }
+
+        public void UpdatePublishmentPermissions(string roleName, List<SystemPermissionsInfo> systemPermissionsInfoList)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var trans = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        DeleteWithTrans(roleName, trans);
+                        foreach (var systemPermissionsInfo in systemPermissionsInfoList)
+                        {
+                            systemPermissionsInfo.RoleName = roleName;
+                            InsertWithTrans(systemPermissionsInfo, trans);
+                        }
+
+                        trans.Commit();
+                    }
+                    catch
+                    {
+                        trans.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        public void DeleteRoleAndPermissions(string roleName)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var trans = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        DeleteWithTrans(roleName, trans);
+
+                        BaiRongDataProvider.PermissionsInRolesDao.DeleteWithTrans(roleName, trans);
+
+                        trans.Commit();
+                    }
+                    catch
+                    {
+                        trans.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+            BaiRongDataProvider.RoleDao.DeleteRole(roleName);
         }
     }
 }

@@ -7,7 +7,6 @@ using BaiRong.Core.IO;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
@@ -194,10 +193,10 @@ namespace SiteServer.CMS.Core
             {
                 tableStyle = ETableStyle.Channel;
             }
-            else if (StringUtils.EqualsIgnoreCase(tableName, DataProvider.InputContentDao.TableName))
-            {
-                tableStyle = ETableStyle.InputContent;
-            }
+            //else if (StringUtils.EqualsIgnoreCase(tableName, DataProvider.InputContentDao.TableName))
+            //{
+            //    tableStyle = ETableStyle.InputContent;
+            //}
             return tableStyle;
         }
 

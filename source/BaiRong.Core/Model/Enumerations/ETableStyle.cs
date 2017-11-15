@@ -8,7 +8,7 @@ namespace BaiRong.Core.Model.Enumerations
         BackgroundContent,	    //内容        
         Custom,                 //自定义
         Channel,			    //栏目
-        InputContent,           //提交表单
+        //InputContent,           //提交表单
         Site,                   //站点
     }
 
@@ -28,10 +28,10 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Channel";
             }
-            if (type == ETableStyle.InputContent)
-            {
-                return "InputContent";
-            }
+            //if (type == ETableStyle.InputContent)
+            //{
+            //    return "InputContent";
+            //}
             if (type == ETableStyle.Site)
             {
                 return "Site";
@@ -53,10 +53,10 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "栏目";
             }
-            if (type == ETableStyle.InputContent)
-            {
-                return "提交表单";
-            }
+            //if (type == ETableStyle.InputContent)
+            //{
+            //    return "提交表单";
+            //}
             if (type == ETableStyle.Site)
             {
                 return "站点";
@@ -80,10 +80,10 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 retval = ETableStyle.Channel;
             }
-            else if (Equals(ETableStyle.InputContent, typeStr))
-            {
-                retval = ETableStyle.InputContent;
-            }
+            //else if (Equals(ETableStyle.InputContent, typeStr))
+            //{
+            //    retval = ETableStyle.InputContent;
+            //}
             else if (Equals(ETableStyle.Site, typeStr))
             {
                 retval = ETableStyle.Site;

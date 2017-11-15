@@ -16,6 +16,13 @@ namespace BaiRong.Core.Provider
         {
             new TableColumnInfo
             {
+                ColumnName = nameof(ConfigInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
                 ColumnName = nameof(ConfigInfo.IsInitialized),
                 DataType = DataType.VarChar,
                 Length = 18
@@ -34,7 +41,7 @@ namespace BaiRong.Core.Provider
             new TableColumnInfo
             {
                 ColumnName = nameof(ConfigInfo.SystemConfig),
-                DataType = DataType.NText
+                DataType = DataType.Text
             }
         };
 
@@ -60,7 +67,7 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmIsInitialized, DataType.VarChar, 18, info.IsInitialized.ToString()),
 				GetParameter(ParmDatabaseVersion, DataType.VarChar, 50, info.DatabaseVersion),
                 GetParameter(ParmUpdateDate, DataType.DateTime, info.UpdateDate),
-                GetParameter(ParmSystemConfig, DataType.NText, info.SystemConfigInfo.ToString())
+                GetParameter(ParmSystemConfig, DataType.Text, info.SystemConfigInfo.ToString())
             };
 
             ExecuteNonQuery(SqlInsertConfig, insertParms);
@@ -74,7 +81,7 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmIsInitialized, DataType.VarChar, 18, info.IsInitialized.ToString()),
 				GetParameter(ParmDatabaseVersion, DataType.VarChar, 50, info.DatabaseVersion),
                 GetParameter(ParmUpdateDate, DataType.DateTime, info.UpdateDate),
-                GetParameter(ParmSystemConfig, DataType.NText, info.SystemConfigInfo.ToString())
+                GetParameter(ParmSystemConfig, DataType.Text, info.SystemConfigInfo.ToString())
             };
 
             ExecuteNonQuery(SqlUpdateConfig, updateParms);
@@ -146,19 +153,6 @@ namespace BaiRong.Core.Provider
 
 			return info;
 		}
-
-        public string GetGuid(string key)
-        {
-            key = "guid_" + key;
-
-            var guid = ConfigManager.SystemConfigInfo.GetExtendedAttribute(key);
-            if (!string.IsNullOrEmpty(guid)) return guid;
-
-            guid = StringUtils.GetShortGuid();
-            ConfigManager.SystemConfigInfo.SetExtendedAttribute(key, guid);
-            BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
-            return guid;
-        }
 
         public void InitializeConfig()
         {

@@ -293,8 +293,7 @@ namespace BaiRong.Core
 
         public static string GetMenusPath(params string[] paths)
         {
-            var directoryPath = WebConfigUtils.PhysicalApplicationPath;
-            return Combine(directoryPath, DirectoryUtils.SiteFiles.DirectoryName, "Configuration/Menus", Combine(paths));
+            return Combine(SiteServerAssets.GetPath("menus"), Combine(paths));
         }
 
         public static string GetUpgradeSqlFilePath(EDatabaseType databaseType, bool isTable)

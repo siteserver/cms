@@ -4,17 +4,77 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class TemplateDao : DataProviderBase
     {
+        public override string TableName => "siteserver_Template";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateInfo.TemplateId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateInfo.TemplateName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateInfo.TemplateType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateInfo.RelatedFileName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateInfo.CreatedFileFullName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateInfo.CreatedFileExtName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateInfo.Charset),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateInfo.IsDefault),
+                DataType = DataType.VarChar,
+                Length = 18
+            }
+        };
+
         private const string SqlSelectTemplateByTemplateName = "SELECT TemplateID, PublishmentSystemID, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID AND TemplateType = @TemplateType AND TemplateName = @TemplateName";
 
         private const string SqlSelectAllTemplateByType = "SELECT TemplateID, PublishmentSystemID, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE PublishmentSystemID = @PublishmentSystemID AND TemplateType = @TemplateType ORDER BY RelatedFileName";
@@ -49,7 +109,6 @@ namespace SiteServer.CMS.Provider
 
         public int Insert(TemplateInfo templateInfo, string templateContent, string administratorName)
         {
-            int templateId;
             if (templateInfo.IsDefault)
             {
                 SetAllTemplateDefaultToFalse(templateInfo.PublishmentSystemId, templateInfo.TemplateType);
@@ -60,32 +119,16 @@ namespace SiteServer.CMS.Provider
             var insertParms = new IDataParameter[]
 			{
 				GetParameter(ParmPublishmentSystemId, DataType.Integer, templateInfo.PublishmentSystemId),
-				GetParameter(ParmTemplateName, DataType.NVarChar, 50, templateInfo.TemplateName),
+				GetParameter(ParmTemplateName, DataType.VarChar, 50, templateInfo.TemplateName),
 				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateInfo.TemplateType)),
-				GetParameter(ParmRelatedFileName, DataType.NVarChar, 50, templateInfo.RelatedFileName),
-				GetParameter(ParmCreatedFileFullName, DataType.NVarChar, 50, templateInfo.CreatedFileFullName),
+				GetParameter(ParmRelatedFileName, DataType.VarChar, 50, templateInfo.RelatedFileName),
+				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, templateInfo.CreatedFileFullName),
 				GetParameter(ParmCreatedFileExtName, DataType.VarChar, 50, templateInfo.CreatedFileExtName),
                 GetParameter(ParmCharset, DataType.VarChar, 50, ECharsetUtils.GetValue(templateInfo.Charset)),
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, templateInfo.IsDefault.ToString())
 			};
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        templateId = ExecuteNonQueryAndReturnId(trans, sqlInsertTemplate, insertParms);
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
+            var templateId = ExecuteNonQueryAndReturningId(sqlInsertTemplate, nameof(TemplateInfo.TemplateId), insertParms);
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(templateInfo.PublishmentSystemId);
             TemplateManager.WriteContentToTemplateFile(publishmentSystemInfo, templateInfo, templateContent, administratorName);
@@ -104,10 +147,10 @@ namespace SiteServer.CMS.Provider
 
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmTemplateName, DataType.NVarChar, 50, templateInfo.TemplateName),
+				GetParameter(ParmTemplateName, DataType.VarChar, 50, templateInfo.TemplateName),
 				GetParameter(ParmTemplateType, DataType.VarChar, 50, ETemplateTypeUtils.GetValue(templateInfo.TemplateType)),
-				GetParameter(ParmRelatedFileName, DataType.NVarChar, 50, templateInfo.RelatedFileName),
-				GetParameter(ParmCreatedFileFullName, DataType.NVarChar, 50, templateInfo.CreatedFileFullName),
+				GetParameter(ParmRelatedFileName, DataType.VarChar, 50, templateInfo.RelatedFileName),
+				GetParameter(ParmCreatedFileFullName, DataType.VarChar, 50, templateInfo.CreatedFileFullName),
 				GetParameter(ParmCreatedFileExtName, DataType.VarChar, 50, templateInfo.CreatedFileExtName),
 				GetParameter(ParmCharset, DataType.VarChar, 50, ECharsetUtils.GetValue(templateInfo.Charset)),
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, templateInfo.IsDefault.ToString()),
@@ -198,7 +241,7 @@ namespace SiteServer.CMS.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
-				GetParameter(ParmTemplateName, DataType.NVarChar, 50, importTemplateName)
+				GetParameter(ParmTemplateName, DataType.VarChar, 50, importTemplateName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTemplateByTemplateName, parms))
@@ -445,33 +488,17 @@ namespace SiteServer.CMS.Provider
                 }
                 return 0;
             }
-            else if (templateType == ETemplateType.FileTemplate)
+            if (templateType == ETemplateType.FileTemplate)
             {
                 return 1;
             }
-            else if (templateType == ETemplateType.ChannelTemplate)
+            if (templateType == ETemplateType.ChannelTemplate)
             {
-                if (isDefault)
-                {
-                    sqlString =
-                        $"SELECT count(*) FROM siteserver_Node WHERE (ChannelTemplateID = {templateId} OR ChannelTemplateID = 0) AND PublishmentSystemID = {publishmentSystemId}";
-                }
-                else
-                {
-                    sqlString = $"SELECT count(*) FROM siteserver_Node WHERE ChannelTemplateID = {templateId}";
-                }
+                sqlString = isDefault ? $"SELECT count(*) FROM siteserver_Node WHERE (ChannelTemplateID = {templateId} OR ChannelTemplateID = 0) AND PublishmentSystemID = {publishmentSystemId}" : $"SELECT count(*) FROM siteserver_Node WHERE ChannelTemplateID = {templateId}";
             }
             else if (templateType == ETemplateType.ContentTemplate)
             {
-                if (isDefault)
-                {
-                    sqlString =
-                        $"SELECT count(*) FROM siteserver_Node WHERE (ContentTemplateID = {templateId} OR ContentTemplateID = 0) AND PublishmentSystemID = {publishmentSystemId}";
-                }
-                else
-                {
-                    sqlString = $"SELECT count(*) FROM siteserver_Node WHERE ContentTemplateID = {templateId}";
-                }
+                sqlString = isDefault ? $"SELECT count(*) FROM siteserver_Node WHERE (ContentTemplateID = {templateId} OR ContentTemplateID = 0) AND PublishmentSystemID = {publishmentSystemId}" : $"SELECT count(*) FROM siteserver_Node WHERE ContentTemplateID = {templateId}";
             }
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
@@ -484,29 +511,11 @@ namespace SiteServer.CMS.Provider
 
             if (templateInfo.TemplateType == ETemplateType.ChannelTemplate)
             {
-                if (templateInfo.IsDefault)
-                {
-                    sqlString =
-                        $"SELECT NodeID FROM siteserver_Node WHERE (ChannelTemplateID = {templateInfo.TemplateId} OR ChannelTemplateID = 0) AND PublishmentSystemID = {templateInfo.PublishmentSystemId}";
-                }
-                else
-                {
-                    sqlString =
-                        $"SELECT NodeID FROM siteserver_Node WHERE ChannelTemplateID = {templateInfo.TemplateId} AND PublishmentSystemID = {templateInfo.PublishmentSystemId}";
-                }
+                sqlString = templateInfo.IsDefault ? $"SELECT NodeID FROM siteserver_Node WHERE (ChannelTemplateID = {templateInfo.TemplateId} OR ChannelTemplateID = 0) AND PublishmentSystemID = {templateInfo.PublishmentSystemId}" : $"SELECT NodeID FROM siteserver_Node WHERE ChannelTemplateID = {templateInfo.TemplateId} AND PublishmentSystemID = {templateInfo.PublishmentSystemId}";
             }
             else if (templateInfo.TemplateType == ETemplateType.ContentTemplate)
             {
-                if (templateInfo.IsDefault)
-                {
-                    sqlString =
-                        $"SELECT NodeID FROM siteserver_Node WHERE (ContentTemplateID = {templateInfo.TemplateId} OR ContentTemplateID = 0) AND PublishmentSystemID = {templateInfo.PublishmentSystemId}";
-                }
-                else
-                {
-                    sqlString =
-                        $"SELECT NodeID FROM siteserver_Node WHERE ContentTemplateID = {templateInfo.TemplateId} AND PublishmentSystemID = {templateInfo.PublishmentSystemId}";
-                }
+                sqlString = templateInfo.IsDefault ? $"SELECT NodeID FROM siteserver_Node WHERE (ContentTemplateID = {templateInfo.TemplateId} OR ContentTemplateID = 0) AND PublishmentSystemID = {templateInfo.PublishmentSystemId}" : $"SELECT NodeID FROM siteserver_Node WHERE ContentTemplateID = {templateInfo.TemplateId} AND PublishmentSystemID = {templateInfo.PublishmentSystemId}";
             }
 
             if (!string.IsNullOrEmpty(sqlString))

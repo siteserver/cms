@@ -3,16 +3,47 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class KeywordDao : DataProviderBase
     {
+        public override string TableName => "siteserver_Keyword";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(KeywordInfo.KeywordId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(KeywordInfo.Keyword),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(KeywordInfo.Alternative),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(KeywordInfo.Grade),
+                DataType = DataType.VarChar,
+                Length = 50
+            }
+        };
+
         private const string ParmKeywordId = "@KeywordID";
         private const string ParmKeyword = "@Keyword";
         private const string ParmAlternative = "@Alternative";
@@ -34,9 +65,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmKeyword, DataType.NVarChar,50, keywordInfo.Keyword),
-                GetParameter(ParmAlternative, DataType.NVarChar,50, keywordInfo.Alternative),
-                GetParameter(ParmGrade, DataType.NVarChar, 50, EKeywordGradeUtils.GetValue(keywordInfo.Grade))
+                GetParameter(ParmKeyword, DataType.VarChar,50, keywordInfo.Keyword),
+                GetParameter(ParmAlternative, DataType.VarChar,50, keywordInfo.Alternative),
+                GetParameter(ParmGrade, DataType.VarChar, 50, EKeywordGradeUtils.GetValue(keywordInfo.Grade))
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -52,10 +83,10 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmKeyword, DataType.NVarChar,50, keywordInfo.Keyword),
-                GetParameter(ParmAlternative, DataType.NVarChar,50, keywordInfo.Alternative),
-                GetParameter(ParmGrade, DataType.NVarChar, 50, EKeywordGradeUtils.GetValue(keywordInfo.Grade)),
-                GetParameter(ParmKeywordId, DataType.Integer, keywordInfo.KeywordID)
+                GetParameter(ParmKeyword, DataType.VarChar,50, keywordInfo.Keyword),
+                GetParameter(ParmAlternative, DataType.VarChar,50, keywordInfo.Alternative),
+                GetParameter(ParmGrade, DataType.VarChar, 50, EKeywordGradeUtils.GetValue(keywordInfo.Grade)),
+                GetParameter(ParmKeywordId, DataType.Integer, keywordInfo.KeywordId)
             };
             ExecuteNonQuery(SqlUpdate, parms);
         }
@@ -109,7 +140,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmKeyword, DataType.NVarChar, 50, keyword)
+                GetParameter(ParmKeyword, DataType.VarChar, 50, keyword)
             };
             using (var rdr = ExecuteReader(SqlSelectKeyword, parms))
             {
@@ -162,9 +193,7 @@ namespace SiteServer.CMS.Provider
         {
             //string sqlString =
             //    $"SELECT Keyword FROM siteserver_Keyword WHERE CHARINDEX(Keyword, '{PageUtils.FilterSql(content)}') > 0";
-
-            var inStr = WebConfigUtils.DatabaseType == EDatabaseType.MySql ? $"INSTR('{PageUtils.FilterSql(content)}', Keyword) > 0" : $"CHARINDEX(Keyword, '{PageUtils.FilterSql(content)}') > 0";
-            var sqlString = $"SELECT Keyword FROM siteserver_Keyword WHERE {inStr}";
+            var sqlString = $"SELECT Keyword FROM siteserver_Keyword WHERE {SqlUtils.GetInStrReverse(PageUtils.FilterSql(content), nameof(KeywordInfo.Keyword))}";
             return BaiRongDataProvider.DatabaseDao.GetStringList(sqlString);
         }
     }

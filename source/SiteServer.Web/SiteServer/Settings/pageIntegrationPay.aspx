@@ -71,29 +71,16 @@
                 </tr>
               </tbody>
               <tbody>
-                <tr style="cursor: pointer">
+                <tr style="cursor: pointer" onclick="location.href='pageIntegrationPayJdpay.aspx'">
                   <td>
-                    <div><img src="../images/channel_unionpay.gif">银联网关支付</div>
+                    <div><img src="../images/channel_jdpay.gif">京东支付</div>
                   </td>
                   <td>
-                    <div class="m-t-15">PC 端网页</div>
-                  </td>
-                  <td>
-                    <div class="m-t-15">
-                      <asp:Literal id="LtlUnionpayPc" runat="server" />
-                    </div>
-                  </td>
-                </tr>
-                <tr style="cursor: pointer">
-                  <td>
-                    <div><img src="../images/channel_unionpay.gif">银联手机支付</div>
-                  </td>
-                  <td>
-                    <div class="m-t-15">移动网页</div>
+                    <div class="m-t-15">PC 端网页/移动网页</div>
                   </td>
                   <td>
                     <div class="m-t-15">
-                      <asp:Literal id="LtlUnionpayMobi" runat="server" />
+                      <asp:Literal id="LtlJdpay" runat="server" />
                     </div>
                   </td>
                 </tr>

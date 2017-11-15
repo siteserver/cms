@@ -90,10 +90,10 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 btnReturn.Attributes.Add("onclick", $"location.href='{PageTableStyleContent.GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)}';return false;");
             }
-            else if (_tableStyle == ETableStyle.InputContent)
-            {
-                btnReturn.Attributes.Add("onclick", $"location.href='{PageInput.GetRedirectUrl(PublishmentSystemId)}';return false;");
-            }
+            //else if (_tableStyle == ETableStyle.InputContent)
+            //{
+            //    btnReturn.Attributes.Add("onclick", $"location.href='{PageInput.GetRedirectUrl(PublishmentSystemId)}';return false;");
+            //}
             else if (_tableStyle == ETableStyle.Site)
             {
                 btnReturn.Attributes.Add("onclick", $"location.href='{PageConfigurationSiteAttributes.GetRedirectUrl(PublishmentSystemId)}';return false;");

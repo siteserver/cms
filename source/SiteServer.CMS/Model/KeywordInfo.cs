@@ -4,49 +4,28 @@ namespace SiteServer.CMS.Model
 {
     public class KeywordInfo
     {
-        private int keywordID;
-        private string keyword;
-        private string alternative;
-        private EKeywordGrade grade;
-
         public KeywordInfo()
         {
-            keywordID = 0;
-            keyword = string.Empty;
-            alternative = string.Empty;
-            grade = EKeywordGrade.Normal;
+            KeywordId = 0;
+            Keyword = string.Empty;
+            Alternative = string.Empty;
+            Grade = EKeywordGrade.Normal;
         }
 
-        public KeywordInfo(int keywordID, string keyword, string alternative, EKeywordGrade grade)
+        public KeywordInfo(int keywordId, string keyword, string alternative, EKeywordGrade grade)
         {
-            this.keywordID = keywordID;
-            this.keyword = keyword;
-            this.alternative = alternative;
-            this.grade = grade;
+            KeywordId = keywordId;
+            Keyword = keyword;
+            Alternative = alternative;
+            Grade = grade;
         }
 
-        public int KeywordID
-        {
-            get { return keywordID; }
-            set { keywordID = value; }
-        }
+        public int KeywordId { get; set; }
 
-        public string Keyword
-        {
-            get { return keyword; }
-            set { keyword = value; }
-        }
+        public string Keyword { get; set; }
 
-        public string Alternative
-        {
-            get { return alternative; }
-            set { alternative = value; }
-        }
+        public string Alternative { get; set; }
 
-        public EKeywordGrade Grade
-        {
-            get { return grade; }
-            set { grade = value; }
-        }
+        public EKeywordGrade Grade { get; set; }
     }
 }

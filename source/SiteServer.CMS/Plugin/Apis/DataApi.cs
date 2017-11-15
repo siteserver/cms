@@ -1,4 +1,5 @@
-﻿using BaiRong.Core;
+﻿using System;
+using BaiRong.Core;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.Plugin.Apis;
@@ -60,14 +61,26 @@ namespace SiteServer.CMS.Plugin.Apis
             {
                 if (_dbHelper != null) return _dbHelper;
 
-                if (EDatabaseTypeUtils.Equals(DatabaseType, EDatabaseType.MySql))
+                var databaseType = EDatabaseTypeUtils.GetEnumType(DatabaseType);
+
+                switch (databaseType)
                 {
-                    _dbHelper = new MySql();
+                    case EDatabaseType.MySql:
+                        _dbHelper = new MySql();
+                        break;
+                    case EDatabaseType.SqlServer:
+                        _dbHelper = new SqlServer();
+                        break;
+                    case EDatabaseType.PostgreSql:
+                        _dbHelper = new PostgreSql();
+                        break;
+                    case EDatabaseType.Oracle:
+                        _dbHelper = new Oracle();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
-                else
-                {
-                    _dbHelper = new SqlServer();
-                }
+
                 return _dbHelper;
             }
         }

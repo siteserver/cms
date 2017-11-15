@@ -1,12 +1,51 @@
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using SiteServer.Plugin;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class StarSettingDao : DataProviderBase
 	{
+        public override string TableName => "siteserver_StarSetting";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = "StarSettingId",
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "PublishmentSystemId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "ChannelId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "ContentId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "TotalCount",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "PointAverage",
+                DataType = DataType.Decimal
+            }
+        };
+
         private const string SqlSelectStarSetting = "SELECT TotalCount, PointAverage FROM siteserver_StarSetting WHERE PublishmentSystemID = @PublishmentSystemID AND ContentID = @ContentID";
 
         private const string SqlSelectStarSettingId = "SELECT StarSettingID FROM siteserver_StarSetting WHERE PublishmentSystemID = @PublishmentSystemID AND ContentID = @ContentID";

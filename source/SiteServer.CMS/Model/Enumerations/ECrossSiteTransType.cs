@@ -75,7 +75,7 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ECrossSiteTransType GetEnumType(string typeStr)
 		{
-            var retval = ECrossSiteTransType.None;
+            var retval = ECrossSiteTransType.AllSite;
 
             if (Equals(ECrossSiteTransType.None, typeStr))
             {

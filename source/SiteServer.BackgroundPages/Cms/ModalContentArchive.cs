@@ -18,12 +18,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("内容归档", PageUtils.GetCmsUrl(nameof(ModalContentArchive), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("内容归档", PageUtils.GetCmsUrl(nameof(ModalContentArchive), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
-            }), "ContentIDCollection", "请选择需要归档的内容！", 400, 200);
+            }), "ContentIDCollection", "请选择需要归档的内容！", 400, 230);
         }
 
 		public void Page_Load(object sender, EventArgs e)

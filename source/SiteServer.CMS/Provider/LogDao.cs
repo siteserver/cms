@@ -3,13 +3,70 @@ using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using SiteServer.Plugin;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class LogDao : DataProviderBase
     {
+        public override string TableName => "siteserver_Log";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(Model.LogInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(Model.LogInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(Model.LogInfo.ChannelId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(Model.LogInfo.ContentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(Model.LogInfo.UserName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(Model.LogInfo.IpAddress),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(Model.LogInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(Model.LogInfo.Action),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(Model.LogInfo.Summary),
+                DataType = DataType.VarChar,
+                Length = 255
+            }
+        };
+
         private const string ParmPublishmentsystemid = "@PublishmentSystemID";
         private const string ParmChannelid = "@ChannelID";
         private const string ParmContentid = "@ContentID";
@@ -25,14 +82,14 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmPublishmentsystemid, DataType.Integer, log.PublishmentSystemID),
-                GetParameter(ParmChannelid, DataType.Integer, log.ChannelID),
-                GetParameter(ParmContentid, DataType.Integer, log.ContentID),
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, log.PublishmentSystemId),
+                GetParameter(ParmChannelid, DataType.Integer, log.ChannelId),
+                GetParameter(ParmContentid, DataType.Integer, log.ContentId),
 				GetParameter(ParmUserName, DataType.VarChar, 50, log.UserName),
-				GetParameter(ParmIpAddress, DataType.VarChar, 50, log.IPAddress),
+				GetParameter(ParmIpAddress, DataType.VarChar, 50, log.IpAddress),
                 GetParameter(ParmAddDate, DataType.DateTime, log.AddDate),
-				GetParameter(ParmAction, DataType.NVarChar, 255, log.Action),
-				GetParameter(ParmSummary, DataType.NVarChar, 255, log.Summary)
+				GetParameter(ParmAction, DataType.VarChar, 255, log.Action),
+				GetParameter(ParmSummary, DataType.VarChar, 255, log.Summary)
 			};
 
             ExecuteNonQuery(sqlString, parms);

@@ -7,7 +7,7 @@ namespace BaiRong.Core.Model
 	    public TableColumnInfo()
 		{
 			ColumnName = string.Empty;
-			DataType = DataType.NVarChar;
+			DataType = DataType.VarChar;
 			Length = 0;
 			IsPrimaryKey = false;
 			IsIdentity = false;

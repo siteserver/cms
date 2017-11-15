@@ -112,10 +112,10 @@ namespace BaiRong.Core.Model.Enumerations
             return GetOrderByString(ETableStyle.BackgroundContent, taxisType);
         }
 
-        public static string GetInputContentOrderByString(ETaxisType taxisType)
-        {
-            return GetOrderByString(ETableStyle.InputContent, taxisType);
-        }
+        //public static string GetInputContentOrderByString(ETaxisType taxisType)
+        //{
+        //    return GetOrderByString(ETableStyle.InputContent, taxisType);
+        //}
 
         public static string GetChannelOrderByString(ETaxisType taxisType)
         {
@@ -275,37 +275,37 @@ namespace BaiRong.Core.Model.Enumerations
                     retval = SqlUtils.GetOrderByRandom();
                 }
             }
-            else if (tableStyle == ETableStyle.InputContent)
-            {
-                if (taxisType == ETaxisType.OrderById)
-                {
-                    retval = "ORDER BY ID ASC";
-                }
-                else if (taxisType == ETaxisType.OrderByIdDesc)
-                {
-                    retval = "ORDER BY ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByAddDate)
-                {
-                    retval = "ORDER BY AddDate ASC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByAddDateDesc)
-                {
-                    retval = "ORDER BY AddDate DESC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByTaxis)
-                {
-                    retval = "ORDER BY Taxis ASC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByTaxisDesc)
-                {
-                    retval = "ORDER BY Taxis DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByRandom)
-                {
-                    retval = SqlUtils.GetOrderByRandom();
-                }
-            }
+            //else if (tableStyle == ETableStyle.InputContent)
+            //{
+            //    if (taxisType == ETaxisType.OrderById)
+            //    {
+            //        retval = "ORDER BY ID ASC";
+            //    }
+            //    else if (taxisType == ETaxisType.OrderByIdDesc)
+            //    {
+            //        retval = "ORDER BY ID DESC";
+            //    }
+            //    else if (taxisType == ETaxisType.OrderByAddDate)
+            //    {
+            //        retval = "ORDER BY AddDate ASC, ID DESC";
+            //    }
+            //    else if (taxisType == ETaxisType.OrderByAddDateDesc)
+            //    {
+            //        retval = "ORDER BY AddDate DESC, ID DESC";
+            //    }
+            //    else if (taxisType == ETaxisType.OrderByTaxis)
+            //    {
+            //        retval = "ORDER BY Taxis ASC, ID DESC";
+            //    }
+            //    else if (taxisType == ETaxisType.OrderByTaxisDesc)
+            //    {
+            //        retval = "ORDER BY Taxis DESC";
+            //    }
+            //    else if (taxisType == ETaxisType.OrderByRandom)
+            //    {
+            //        retval = SqlUtils.GetOrderByRandom();
+            //    }
+            //}
             return retval;
         }
 

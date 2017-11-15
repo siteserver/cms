@@ -50,6 +50,12 @@ namespace SiteServer.Plugin.Models
 
         bool IsTop { get; set; }
 
+        bool IsRecommend { get; set; }
+
+        bool IsHot { get; set; }
+
+        bool IsColor { get; set; }
+
         DateTime AddDate { get; set; }
 
         ExtendedAttributes Attributes { get; }

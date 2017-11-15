@@ -880,16 +880,6 @@ namespace BaiRong.Core
             return directoryUrl;
         }
 
-        /// <summary>
-        /// 判断是否需要安装，并转到页面。
-        /// </summary>
-        public static bool DetermineRedirectToInstaller()
-        {
-            if (!AppManager.IsNeedInstall()) return false;
-            Redirect(GetAdminDirectoryUrl("Installer"));
-            return true;
-        }
-
         public static void RedirectToErrorPage(string errorMessage)
         {
             Redirect(GetAdminDirectoryUrl($"error.aspx?ErrorMessage={StringUtils.ValueToUrl(errorMessage)}"));
@@ -1269,6 +1259,103 @@ namespace BaiRong.Core
                     .ToString().ToLower()}');}};return false;";
         }
 
+        public static string GetOpenLayerString(string title, string pageUrl)
+        {
+            return GetOpenLayerString(title, pageUrl, 0, 0);
+        }
+
+        public static string GetOpenLayerString(string title, string pageUrl, int width, int height)
+        {
+            string areaWidth = $"'{width}px'";
+            string areaHeight = $"'{height}px'";
+            var offsetLeft = "''";
+            var offsetRight = "''";
+            if (width == 0)
+            {
+                areaWidth = "($(window).width() - 50) +'px'";
+                offsetRight = "'25px'";
+            }
+            if (height == 0)
+            {
+                areaHeight = "($(window).height() - 50) +'px'";
+                offsetLeft = "'25px'";
+            }
+            return
+                $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}'}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});return false;";
+        }
+
+        public static string GetOpenLayerStringWithTextBoxValue(string title, string pageUrl, string textBoxId)
+        {
+            return GetOpenLayerStringWithTextBoxValue(title, pageUrl, textBoxId, 0, 0);
+        }
+
+        public static string GetOpenLayerStringWithTextBoxValue(string title, string pageUrl, string textBoxId, int width, int height)
+        {
+            string areaWidth = $"'{width}px'";
+            string areaHeight = $"'{height}px'";
+            var offsetLeft = "''";
+            var offsetRight = "''";
+            if (width == 0)
+            {
+                areaWidth = "($(window).width() - 50) +'px'";
+                offsetRight = "'25px'";
+            }
+            if (height == 0)
+            {
+                areaHeight = "($(window).height() - 50) +'px'";
+                offsetLeft = "'25px'";
+            }
+            return
+                $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{textBoxId}=' + $('#{textBoxId}').val()}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});return false;";
+        }
+
+        public static string GetOpenLayerStringWithCheckBoxValue(string title, string pageUrl, string checkBoxId, string alertText)
+        {
+            return GetOpenLayerStringWithCheckBoxValue(title, pageUrl, checkBoxId, alertText, 0, 0);
+        }
+
+        public static string GetOpenLayerStringWithCheckBoxValue(string title, string pageUrl, string checkBoxId, string alertText, int width, int height)
+        {
+            string areaWidth = $"'{width}px'";
+            string areaHeight = $"'{height}px'";
+            var offsetLeft = "''";
+            var offsetRight = "''";
+            if (width == 0)
+            {
+                areaWidth = "($(window).width() - 50) +'px'";
+                offsetRight = "'25px'";
+            }
+            if (height == 0)
+            {
+                areaHeight = "($(window).height() - 50) +'px'";
+                offsetLeft = "'25px'";
+            }
+
+            if (string.IsNullOrEmpty(alertText))
+            {
+                return
+                    $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId}'))}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});return false;";
+            }
+            return
+                $@"if (!_alertCheckBoxCollection(document.getElementsByName('{checkBoxId}'), '{alertText}')){{$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId}'))}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});}};return false;";
+        }
+
+        public static string GetOpenLayerStringWithTwoCheckBoxValue(string title, string pageUrl, string checkBoxId1, string checkBoxId2, string alertText, int width, int height)
+        {
+            var offset = string.Empty;
+            if (width == 0)
+            {
+                offset = "offset: ['0px','0px'],";
+            }
+            if (height == 0)
+            {
+                offset = "offset: ['0px','0px'],";
+            }
+
+            return
+                $@"var collectionValue1 = _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId1}'));var collectionValue2 = _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId2}'));if (collectionValue1.length == 0 && collectionValue2.length == 0){{alert('{alertText}');}}else{{$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId1}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId1}')) + '&{checkBoxId2}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId2}'))}}, area: [{width}, {height}], {offset}}});}};return false;";
+        }
+
         public static void SetCancelAttribute(IAttributeAccessor accessor)
         {
             accessor.SetAttribute("onclick", HidePopWin);
@@ -1277,7 +1364,7 @@ namespace BaiRong.Core
         public static void CloseModalPage(Page page)
         {
             page.Response.Clear();
-            page.Response.Write($"<script>{HidePopWin}window.parent.location.reload(false);</script>");
+            page.Response.Write($"<script>window.parent.location.reload(false);{HidePopWin}</script>");
             //page.Response.End();
         }
 
@@ -1317,101 +1404,6 @@ namespace BaiRong.Core
             page.Response.Write($"<script>{scripts}</script>");
             page.Response.Write($"<script>{HidePopWin}</script>");
             //page.Response.End();
-        }
-
-        public static string GetOpenLayerString(string title, string pageUrl)
-        {
-            return GetOpenLayerString(title, pageUrl, 0, 0);
-        }
-
-        public static string GetOpenLayerString(string title, string pageUrl, int width, int height)
-        {
-            string areaWidth = $"'{width}px'";
-            string areaHeight = $"'{height}px'";
-            var offsetLeft = "''";
-            var offsetRight = "''";
-            if (width == 0)
-            {
-                areaWidth = "($(window).width() - 10) +'px'";
-                offsetRight = "'0px'";
-            }
-            if (height == 0)
-            {
-                areaHeight = "($(window).height() - 10) +'px'";
-                offsetLeft = "'0px'";
-            }
-            return
-                $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}'}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});return false;";
-        }
-
-        public static string GetOpenLayerStringWithTextBoxValue(string title, string pageUrl, string textBoxId)
-        {
-            return GetOpenLayerStringWithTextBoxValue(title, pageUrl, textBoxId, 0, 0);
-        }
-
-        public static string GetOpenLayerStringWithTextBoxValue(string title, string pageUrl, string textBoxId, int width, int height)
-        {
-            string areaWidth = $"'{width}px'";
-            string areaHeight = $"'{height}px'";
-            var offset = string.Empty;
-            if (width == 0)
-            {
-                areaWidth = "($(window).width() - 10) +'px'";
-                offset = "offset: ['0px','0px'],";
-            }
-            if (height == 0)
-            {
-                areaHeight = "($(window).height() - 10) +'px'";
-                offset = "offset: ['0px','0px'],";
-            }
-            return
-                $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{textBoxId}=' + $('#{textBoxId}').val()}}, area: [{areaWidth}, {areaHeight}], {offset}}});return false;";
-        }
-
-        public static string GetOpenLayerStringWithCheckBoxValue(string title, string pageUrl, string checkBoxId, string alertText)
-        {
-            return GetOpenLayerStringWithCheckBoxValue(title, pageUrl, checkBoxId, alertText, 0, 0);
-        }
-
-        public static string GetOpenLayerStringWithCheckBoxValue(string title, string pageUrl, string checkBoxId, string alertText, int width, int height)
-        {
-            string areaWidth = $"'{width}px'";
-            string areaHeight = $"'{height}px'";
-            var offset = string.Empty;
-            if (width == 0)
-            {
-                areaWidth = "($(window).width() - 10) +'px'";
-                offset = "offset: ['0px','0px'],";
-            }
-            if (height == 0)
-            {
-                areaHeight = "($(window).height() - 10) +'px'";
-                offset = "offset: ['0px','0px'],";
-            }
-
-            if (string.IsNullOrEmpty(alertText))
-            {
-                return
-                    $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId}'))}}, area: [{areaWidth}, {areaHeight}], {offset}}});return false;";
-            }
-            return
-                $@"if (!_alertCheckBoxCollection(document.getElementsByName('{checkBoxId}'), '{alertText}')){{$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId}'))}}, area: [{areaWidth}, {areaHeight}], {offset}}});}};return false;";
-        }
-
-        public static string GetOpenLayerStringWithTwoCheckBoxValue(string title, string pageUrl, string checkBoxId1, string checkBoxId2, string alertText, int width, int height)
-        {
-            var offset = string.Empty;
-            if (width == 0)
-            {
-                offset = "offset: ['0px','0px'],";
-            }
-            if (height == 0)
-            {
-                offset = "offset: ['0px','0px'],";
-            }
-
-            return
-                $@"var collectionValue1 = _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId1}'));var collectionValue2 = _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId2}'));if (collectionValue1.length == 0 && collectionValue2.length == 0){{alert('{alertText}');}}else{{$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId1}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId1}')) + '&{checkBoxId2}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId2}'))}}, area: [{width}, {height}], {offset}}});}};return false;";
         }
 
         public static void ResponseScripts(Page page, string scripts)

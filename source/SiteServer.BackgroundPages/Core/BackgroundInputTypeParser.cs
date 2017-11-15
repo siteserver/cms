@@ -407,7 +407,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             var checkBoxList = new CheckBoxList
             {
@@ -461,7 +461,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
             var radioButtonList = new RadioButtonList
             {
                 CssClass = "radiobuttonlist",
@@ -514,7 +514,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             var selectedValue = !string.IsNullOrEmpty(formCollection?[attributeName]) ? formCollection[attributeName] : null;
             //验证属性
@@ -552,7 +552,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             var selectedValues = !string.IsNullOrEmpty(formCollection?[attributeName]) ? formCollection[attributeName] : string.Empty;
             var selectedValueArrayList = TranslateUtils.StringCollectionToStringList(selectedValues);
@@ -897,7 +897,7 @@ function add_{0}(val,foucs){{
 
                 builder.Append(string.Format(@"
 <span id=""c_{0}_1"">{1}<select name=""{0}"" id=""{0}_1"" class=""select"" onchange=""getRelatedField_{2}(2);"">
-	<option value="""">请选择</option>", attributeName, prefixes[0], fieldInfo.RelatedFieldID));
+	<option value="""">请选择</option>", attributeName, prefixes[0], fieldInfo.RelatedFieldId));
 
                 var values = formCollection[attributeName];
                 var value = string.Empty;
@@ -912,7 +912,7 @@ function add_{0}(val,foucs){{
                     var selected = !string.IsNullOrEmpty(itemInfo.ItemValue) && value == itemInfo.ItemValue ? @" selected=""selected""" : string.Empty;
                     if (!string.IsNullOrEmpty(selected)) isLoad = true;
                     builder.Append($@"
-	<option value=""{itemInfo.ItemValue}"" itemID=""{itemInfo.ID}""{selected}>{itemInfo.ItemName}</option>");
+	<option value=""{itemInfo.ItemValue}"" itemID=""{itemInfo.Id}""{selected}>{itemInfo.ItemName}</option>");
                 }
 
                 builder.Append($@"
@@ -926,7 +926,7 @@ function add_{0}(val,foucs){{
                         builder.Append(style == ERelatedFieldStyle.Virtical ? @"<br />" : "&nbsp;");
                         builder.Append(string.Format(@"
 {0}<select name=""{1}"" id=""{1}_{2}"" class=""select"" onchange=""getRelatedField_{3}({2} + 1);""></select>{4}</span>
-", prefixes[i - 1], attributeName, i, fieldInfo.RelatedFieldID, suffixes[i - 1]));
+", prefixes[i - 1], attributeName, i, fieldInfo.RelatedFieldId, suffixes[i - 1]));
                     }
                 }
 
@@ -969,13 +969,13 @@ function getRelatedField_{0}(level){{
         }}, 'jsonp');
     }}
 }}
-", fieldInfo.RelatedFieldID, styleInfo.AttributeName, fieldInfo.TotalLevel, ActionsRelatedField.GetUrl(PageUtils.InnerApiUrl, publishmentSystemInfo.PublishmentSystemId, styleInfo.Additional.RelatedFieldId, 0), values));
+", fieldInfo.RelatedFieldId, styleInfo.AttributeName, fieldInfo.TotalLevel, ActionsRelatedField.GetUrl(PageUtils.InnerApiUrl, publishmentSystemInfo.PublishmentSystemId, styleInfo.Additional.RelatedFieldId, 0), values));
 
                 if (isLoad)
                 {
                     builder.Append($@"
 $(document).ready(function(){{
-    getRelatedField_{fieldInfo.RelatedFieldID}(2);
+    getRelatedField_{fieldInfo.RelatedFieldId}(2);
 }});
 ");
                 }

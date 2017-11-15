@@ -14,14 +14,13 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageTableStyleContent : BasePageCms
     {
-        public DropDownList NodeIDDropDownList;
+        public DropDownList DdlNodeId;
+        public DataGrid DgContents;
 
-        public DataGrid dgContents;
-
-        public Button AddStyle;
-        public Button AddStyles;
-        public Button Import;
-        public Button Export;
+        public Button BtnAddStyle;
+        public Button BtnAddStyles;
+        public Button BtnImport;
+        public Button BtnExport;
 
         private NodeInfo _nodeInfo;
         private string _tableName;
@@ -68,19 +67,19 @@ namespace SiteServer.BackgroundPages.Cms
 
                 InfoMessage(
                     $"在此编辑内容模型字段,子栏目默认继承父栏目字段设置; 辅助表:{BaiRongDataProvider.TableCollectionDao.GetTableCnName(_tableName)}({_tableName})");
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
-                ControlUtils.SelectListItems(NodeIDDropDownList, nodeId.ToString());
+                NodeManager.AddListItems(DdlNodeId.Items, PublishmentSystemInfo, false, true, Body.AdminName);
+                ControlUtils.SelectListItems(DdlNodeId, nodeId.ToString());
 
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
 
-                dgContents.DataSource = styleInfoList;
-                dgContents.ItemDataBound += dgContents_ItemDataBound;
-                dgContents.DataBind();
+                DgContents.DataSource = styleInfoList;
+                DgContents.ItemDataBound += DgContents_ItemDataBound;
+                DgContents.DataBind();
 
-                AddStyle.Attributes.Add("onclick", ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, 0, _relatedIdentities, _tableName, string.Empty, _tableStyle, _redirectUrl));
-                AddStyles.Attributes.Add("onclick", ModalTableStylesAdd.GetOpenWindowString(PublishmentSystemId, _relatedIdentities, _tableName, _tableStyle, _redirectUrl));
-                Import.Attributes.Add("onclick", ModalTableStyleImport.GetOpenWindowString(_tableName, _tableStyle, PublishmentSystemId, nodeId));
-                Export.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToSingleTableStyle(_tableStyle, _tableName, PublishmentSystemId, nodeId));
+                BtnAddStyle.Attributes.Add("onclick", ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, 0, _relatedIdentities, _tableName, string.Empty, _tableStyle, _redirectUrl));
+                BtnAddStyles.Attributes.Add("onclick", ModalTableStylesAdd.GetOpenWindowString(PublishmentSystemId, _relatedIdentities, _tableName, _tableStyle, _redirectUrl));
+                BtnImport.Attributes.Add("onclick", ModalTableStyleImport.GetOpenWindowString(_tableName, _tableStyle, PublishmentSystemId, nodeId));
+                BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToSingleTableStyle(_tableStyle, _tableName, PublishmentSystemId, nodeId));
             }
         }
 
@@ -140,107 +139,96 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Redirect(object sender, EventArgs e)
         {
-            PageUtils.Redirect(GetRedirectUrl(PublishmentSystemId, TranslateUtils.ToInt(NodeIDDropDownList.SelectedValue)));
+            PageUtils.Redirect(GetRedirectUrl(PublishmentSystemId, TranslateUtils.ToInt(DdlNodeId.SelectedValue)));
         }
 
-        void dgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
+        private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
+
+            var styleInfo = (TableStyleInfo)e.Item.DataItem;
+
+            var ltlAttributeName = (Literal)e.Item.FindControl("ltlAttributeName");
+            var ltlDisplayName = (Literal)e.Item.FindControl("ltlDisplayName");
+            var ltlInputType = (Literal)e.Item.FindControl("ltlInputType");
+            var ltlFieldType = (Literal)e.Item.FindControl("ltlFieldType");
+            var ltlIsVisible = (Literal)e.Item.FindControl("ltlIsVisible");
+            var ltlValidate = (Literal)e.Item.FindControl("ltlValidate");
+            var ltlEditStyle = (Literal)e.Item.FindControl("ltlEditStyle");
+            var ltlEditValidate = (Literal)e.Item.FindControl("ltlEditValidate");
+            var upLinkButton = (HyperLink)e.Item.FindControl("UpLinkButton");
+            var downLinkButton = (HyperLink)e.Item.FindControl("DownLinkButton");
+
+            var showPopWinString = ModalTableMetadataView.GetOpenWindowString(_tableType, _tableName, styleInfo.AttributeName);
+            ltlAttributeName.Text =
+                $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{styleInfo.AttributeName}</a>";
+
+            ltlDisplayName.Text = styleInfo.DisplayName;
+            ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
+            ltlFieldType.Text = TableManager.IsAttributeNameExists(_tableStyle, _tableName, styleInfo.AttributeName) ? $"真实 {TableManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}" : "虚拟字段";
+
+            ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
+            ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
+
+            showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _tableStyle, _redirectUrl);
+            var editText = "添加";
+            if (styleInfo.RelatedIdentity == _nodeInfo.NodeId)//数据库中有样式
             {
-                var styleInfo = e.Item.DataItem as TableStyleInfo;
+                editText = "修改";
+            }
+            ltlEditStyle.Text = $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{editText}</a>";
 
-                var ltlAttributeName = e.Item.FindControl("ltlAttributeName") as Literal;
-                var ltlDataType = e.Item.FindControl("ltlDataType") as Literal;
-                var ltlDisplayName = e.Item.FindControl("ltlDisplayName") as Literal;
-                var ltlInputType = e.Item.FindControl("ltlInputType") as Literal;
-                var ltlFieldType = e.Item.FindControl("ltlFieldType") as Literal; ;
-                var ltlIsVisible = e.Item.FindControl("ltlIsVisible") as Literal;
-                var ltlValidate = e.Item.FindControl("ltlValidate") as Literal;
-                var ltlEditStyle = e.Item.FindControl("ltlEditStyle") as Literal;
-                var ltlEditValidate = e.Item.FindControl("ltlEditValidate") as Literal;
-                var upLinkButton = e.Item.FindControl("UpLinkButton") as HyperLink;
-                var downLinkButton = e.Item.FindControl("DownLinkButton") as HyperLink;
+            showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _tableStyle, _redirectUrl);
+            ltlEditValidate.Text = $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">设置</a>";
 
-                var showPopWinString = ModalTableMetadataView.GetOpenWindowString(_tableType, _tableName, styleInfo.AttributeName);
-                ltlAttributeName.Text =
-                    $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{styleInfo.AttributeName}</a>";
-
-                ltlDisplayName.Text = styleInfo.DisplayName;
-                ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
-                if (TableManager.IsAttributeNameExists(_tableStyle, _tableName, styleInfo.AttributeName))
+            if (styleInfo.RelatedIdentity == _nodeInfo.NodeId)//数据库中有样式
+            {
+                var urlStyle = PageUtils.GetCmsUrl(nameof(PageTableStyleContent), new NameValueCollection
                 {
-                    ltlFieldType.Text =
-                        $"真实 {TableManager.GetTableMetadataDataType(_tableName, styleInfo.AttributeName)}";
-                }
-                else
+                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                    {"NodeID", _nodeInfo.NodeId.ToString()},
+                    {"DeleteStyle", true.ToString()},
+                    {"TableName", _tableName},
+                    {"AttributeName", styleInfo.AttributeName}
+                });
+                ltlEditStyle.Text +=
+                    $@"&nbsp;&nbsp;<a href=""{urlStyle}"" onClick=""javascript:return confirm('此操作将删除对应显示样式，确认吗？');"">删除</a>";
+            }
+
+            //if (TableStyleManager.IsMetadata(this.tableStyle, styleInfo.AttributeName) || styleInfo.RelatedIdentity != this.nodeInfo.NodeID)
+            //{
+            //    isTaxisVisible = false;
+            //}
+            //else
+            //{
+            var isTaxisVisible = !TableStyleManager.IsExistsInParents(_relatedIdentities, _tableName, styleInfo.AttributeName);
+            //}
+
+            if (!isTaxisVisible)
+            {
+                upLinkButton.Visible = downLinkButton.Visible = false;
+            }
+            else
+            {
+                var tableMetadataId = BaiRongDataProvider.TableMetadataDao.GetTableMetadataId(styleInfo.TableName, styleInfo.AttributeName);
+                upLinkButton.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageTableStyleContent), new NameValueCollection
                 {
-                    ltlFieldType.Text = "虚拟字段";
-                }
-
-                ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-                ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
-
-                showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _tableStyle, _redirectUrl);
-                var editText = "添加";
-                if (styleInfo.RelatedIdentity == _nodeInfo.NodeId)//数据库中有样式
+                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                    {"NodeID", _nodeInfo.NodeId.ToString()},
+                    {"SetTaxis", true.ToString()},
+                    {"TableStyleID", styleInfo.TableStyleId.ToString()},
+                    {"Direction", "UP"},
+                    {"TableMetadataId", tableMetadataId.ToString()}
+                });
+                downLinkButton.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageTableStyleContent), new NameValueCollection
                 {
-                    editText = "修改";
-                }
-                ltlEditStyle.Text = $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{editText}</a>";
-
-                showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _tableStyle, _redirectUrl);
-                ltlEditValidate.Text = $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">设置</a>";
-
-                if (styleInfo.RelatedIdentity == _nodeInfo.NodeId)//数据库中有样式
-                {
-                    var urlStyle = PageUtils.GetCmsUrl(nameof(PageTableStyleContent), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"NodeID", _nodeInfo.NodeId.ToString()},
-                        {"DeleteStyle", true.ToString()},
-                        {"TableName", _tableName},
-                        {"AttributeName", styleInfo.AttributeName}
-                    });
-                    ltlEditStyle.Text +=
-                        $@"&nbsp;&nbsp;<a href=""{urlStyle}"" onClick=""javascript:return confirm('此操作将删除对应显示样式，确认吗？');"">删除</a>";
-                }
-
-                var isTaxisVisible = true;
-                //if (TableStyleManager.IsMetadata(this.tableStyle, styleInfo.AttributeName) || styleInfo.RelatedIdentity != this.nodeInfo.NodeID)
-                //{
-                //    isTaxisVisible = false;
-                //}
-                //else
-                //{
-                isTaxisVisible = !TableStyleManager.IsExistsInParents(_relatedIdentities, _tableName, styleInfo.AttributeName);
-                //}
-
-                if (!isTaxisVisible)
-                {
-                    upLinkButton.Visible = downLinkButton.Visible = false;
-                }
-                else
-                {
-                    var tableMetadataId = BaiRongDataProvider.TableMetadataDao.GetTableMetadataId(styleInfo.TableName, styleInfo.AttributeName);
-                    upLinkButton.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageTableStyleContent), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"NodeID", _nodeInfo.NodeId.ToString()},
-                        {"SetTaxis", true.ToString()},
-                        {"TableStyleID", styleInfo.TableStyleId.ToString()},
-                        {"Direction", "UP"},
-                        {"TableMetadataId", tableMetadataId.ToString()}
-                    });
-                    downLinkButton.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageTableStyleContent), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"NodeID", _nodeInfo.NodeId.ToString()},
-                        {"SetTaxis", true.ToString()},
-                        {"TableStyleID", styleInfo.TableStyleId.ToString()},
-                        {"Direction", "DOWN"},
-                        {"TableMetadataId", tableMetadataId.ToString()}
-                    });
-                }
+                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                    {"NodeID", _nodeInfo.NodeId.ToString()},
+                    {"SetTaxis", true.ToString()},
+                    {"TableStyleID", styleInfo.TableStyleId.ToString()},
+                    {"Direction", "DOWN"},
+                    {"TableMetadataId", tableMetadataId.ToString()}
+                });
             }
         }
     }

@@ -386,6 +386,10 @@ namespace SiteServer.Plugin.Models
         /// <exception cref="System.ArgumentNullException">Thrown if transaction.Connection is null</exception>
         int ExecuteNonQuery(IDbTransaction transaction, CommandType commandType, string commandText, params IDataParameter[] commandParameters);
 
+        int ExecuteNonQueryAndReturningId(string connectionString, CommandType commandType, string commandText, string idColumnName, params IDataParameter[] commandParameters);
+
+        int ExecuteNonQueryAndReturningId(IDbTransaction transaction, CommandType commandType, string commandText, string idColumnName, params IDataParameter[] commandParameters);
+
         /// <summary>
         /// Execute a stored procedure via an IDbCommand (that returns no resultset) against the specified 
         /// IDbTransaction using the provided parameter values.  This method will query the database to discover the parameters for the 

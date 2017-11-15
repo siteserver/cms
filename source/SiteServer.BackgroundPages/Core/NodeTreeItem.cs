@@ -153,7 +153,7 @@ namespace SiteServer.BackgroundPages.Core
 <script language=""JavaScript"">
 function getTreeLevel(e) {
 	var length = 0;
-	if (!isNull(e)){
+	if (e){
 		if (e.tagName == 'TR') {
 			length = parseInt(e.getAttribute('treeItemLevel'));
 		}
@@ -162,7 +162,7 @@ function getTreeLevel(e) {
 }
 
 function getTrElement(element){
-	if (isNull(element)) return;
+	if (!element) return;
 	for (element = element.parentNode;;){
 		if (element != null && element.tagName == 'TR'){
 			break;
@@ -174,13 +174,13 @@ function getTrElement(element){
 }
 
 function getImgClickableElementByTr(element){
-	if (isNull(element) || element.tagName != 'TR') return;
+	if (!element || element.tagName != 'TR') return;
 	var img = null;
-	if (!isNull(element.childNodes)){
+	if (element.childNodes){
 		var imgCol = element.getElementsByTagName('IMG');
-		if (!isNull(imgCol)){
+		if (imgCol){
 			for (x=0;x<imgCol.length;x++){
-				if (!isNull(imgCol.item(x).getAttribute('isOpen'))){
+				if (imgCol.item(x).getAttribute('isOpen')){
 					img = imgCol.item(x);
 					break;
 				}
@@ -203,7 +203,7 @@ function fontWeightLink(element){
 
 var completedNodeID = null;
 function displayChildren(img){
-	if (isNull(img)) return;
+	if (!img) return;
 
 	var tr = getTrElement(img);
 
@@ -211,7 +211,7 @@ function displayChildren(img){
     var isByAjax = img.getAttribute('isAjax') == 'true';
     var nodeID = img.getAttribute('id');
 
-	if (!isNull(img) && img.getAttribute('isOpen') != null){
+	if (img && img.getAttribute('isOpen') != null){
 		if (img.getAttribute('isOpen') == 'false'){
 			img.setAttribute('isOpen', 'true');
             img.setAttribute('src', '{iconMinusUrl}');
@@ -236,8 +236,8 @@ function displayChildren(img){
 	    var collection = new Array();
 	    var index = 0;
 
-	    for ( var e = tr.nextSibling; !isNull(e) ; e = e.nextSibling) {
-		    if (!isNull(e) && !isNull(e.tagName) && e.tagName == 'TR'){
+	    for ( var e = tr.nextSibling; e != null ; e = e.nextSibling) {
+		    if (e && e.tagName && e.tagName == 'TR'){
 		        var currentLevel = getTreeLevel(e);
 		        if (currentLevel <= level) break;
 		        if(e.style.display == '') {
@@ -246,8 +246,8 @@ function displayChildren(img){
 			        if (currentLevel != level + 1) continue;
 			        e.style.display = '';
 			        var imgClickable = getImgClickableElementByTr(e);
-			        if (!isNull(imgClickable)){
-				        if (!isNull(imgClickable.getAttribute('isOpen')) && imgClickable.getAttribute('isOpen') =='true'){
+			        if (imgClickable){
+				        if (imgClickable.getAttribute('isOpen') && imgClickable.getAttribute('isOpen') =='true'){
 					        imgClickable.setAttribute('isOpen', 'false');
                             imgClickable.setAttribute('src', '{iconPlusUrl}');
 					        collection[index] = imgClickable;

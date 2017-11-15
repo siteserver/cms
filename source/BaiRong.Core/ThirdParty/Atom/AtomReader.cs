@@ -1,4 +1,4 @@
-/* 
+﻿/* 
   	* AtomReader.cs
 	* [ part of Atom.NET library: http://atomnet.sourceforge.net ]
 	* Author: Lawrence Oluyede

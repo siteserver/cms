@@ -21,16 +21,25 @@ namespace SiteServer.CMS.Model
         }
 
         public int Id { get; set; }
+
         public ECreateType CreateType { get; set; }
+
         public int PublishmentSystemId { get; set; }
+
         public int ChannelId { get; set; }
+
         public int ContentId { get; set; }
+
         public int TemplateId { get; set; }
+
         public string TaskName { get; set; }
+
         public string TimeSpan { get; set; }
 
         public bool IsSuccess { get; set; }
+
         public string ErrorMessage { get; set; }
+
         public DateTime AddDate { get; set; }
     }
 }

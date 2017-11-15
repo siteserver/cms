@@ -40,7 +40,9 @@ namespace SiteServer.CMS.Model
             LastGatherDate = lastGatherDate;
 		}
 
-		public string GatherRuleName { get; set; }
+        public int Id { get; set; }
+
+        public string GatherRuleName { get; set; }
 
 	    public int PublishmentSystemId { get; set; }
 

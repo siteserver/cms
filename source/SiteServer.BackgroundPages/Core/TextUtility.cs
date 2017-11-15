@@ -9,11 +9,9 @@ using System.Collections.Specialized;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.CMS.Controllers.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin.Features;
-using SiteServer.CMS.Core.User;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -262,18 +260,11 @@ namespace SiteServer.BackgroundPages.Core
                 var pluginChannel = pluginChannels[pluginId];
                 if (pluginChannel?.ContentLinks != null && pluginChannel.ContentLinks.Count > 0)
                 {
-                    var apiUrl = PluginJsonApi.GetUrl(PageUtils.OuterApiUrl, pluginId);
-                    apiUrl = PageUtils.AddProtocolToUrl(apiUrl);
                     foreach (var link in pluginChannel.ContentLinks)
                     {
-                        var href = PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, link.Href), new NameValueCollection
-                    {
-                        {"apiUrl", apiUrl},
-                        {"publishmentSystemId", publishmentSystemInfo.PublishmentSystemId.ToString()},
-                        {"channelId", contentInfo.NodeId.ToString()},
-                        {"contentId", contentInfo.Id.ToString()},
-                        {"returnUrl", StringUtils.ValueToUrl(pageUrl)}
-                    });
+                        var href = PluginUtils.GetMenuContentHref(pluginId, link.Href,
+                            publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id,
+                            StringUtils.ValueToUrl(pageUrl));
                         builder.Append(
                             $@"<td class=""center"" width=""80""><a href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a></td>");
                     }
@@ -357,18 +348,11 @@ namespace SiteServer.BackgroundPages.Core
                 var pluginChannel = pluginChannels[pluginId];
                 if (pluginChannel?.ContentLinks != null && pluginChannel.ContentLinks.Count > 0)
                 {
-                    var apiUrl = PluginJsonApi.GetUrl(PageUtils.OuterApiUrl, pluginId);
-                    apiUrl = PageUtils.AddProtocolToUrl(apiUrl);
                     foreach (var link in pluginChannel.ContentLinks)
                     {
-                        var href = PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, link.Href), new NameValueCollection
-                    {
-                        {"apiUrl", apiUrl},
-                        {"publishmentSystemId", publishmentSystemInfo.PublishmentSystemId.ToString()},
-                        {"channelId", contentInfo.NodeId.ToString()},
-                        {"contentId", contentInfo.Id.ToString()},
-                        {"returnUrl", StringUtils.ValueToUrl(pageUrl)}
-                    });
+                        var href = PluginUtils.GetMenuContentHref(pluginId, link.Href,
+                            publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id,
+                            StringUtils.ValueToUrl(pageUrl));
                         builder.Append(
                             $@"<a style=""margin:0 5px"" href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a>");
                     }

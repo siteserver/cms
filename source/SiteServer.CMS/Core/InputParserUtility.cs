@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Web.UI.HtmlControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
@@ -70,7 +68,7 @@ namespace SiteServer.CMS.Core
                 var selectedTexts = new ArrayList();
                 var selectedValues = TranslateUtils.StringCollectionToStringList(content);
                 var styleItems = styleInfo.StyleItems ??
-                                 BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                                 BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                 foreach (var itemInfo in styleItems)
                 {
                     if (selectedValues.Contains(itemInfo.ItemValue))
@@ -141,7 +139,7 @@ namespace SiteServer.CMS.Core
                 var selectedTexts = new ArrayList();
                 var selectedValues = TranslateUtils.StringCollectionToStringList(value);
                 var styleItems = styleInfo.StyleItems ??
-                                 BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                                 BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                 foreach (var itemInfo in styleItems)
                 {
                     if (selectedValues.Contains(itemInfo.ItemValue))

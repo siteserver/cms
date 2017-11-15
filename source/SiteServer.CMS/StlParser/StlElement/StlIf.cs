@@ -4,7 +4,6 @@ using System.Text;
 using System.Web.UI;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -677,13 +676,13 @@ function {functionName}(pageNum)
                     theValue = DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, testTypeStr, "{0}");
                 }
             }
-            else if (contextInfo.ContextType == EContextType.InputContent)
-            {
-                if (contextInfo.ItemContainer.InputItem != null)
-                {
-                    theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
-                }
-            }
+            //else if (contextInfo.ContextType == EContextType.InputContent)
+            //{
+            //    if (contextInfo.ItemContainer.InputItem != null)
+            //    {
+            //        theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
+            //    }
+            //}
             else if (contextInfo.ContextType == EContextType.SqlContent)
             {
                 if (contextInfo.ItemContainer.SqlItem != null)
@@ -706,10 +705,10 @@ function {functionName}(pageNum)
                     {
                         theValue = DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, testTypeStr, "{0}");
                     }
-                    else if (contextInfo.ItemContainer.InputItem != null)
-                    {
-                        theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
-                    }
+                    //else if (contextInfo.ItemContainer.InputItem != null)
+                    //{
+                    //    theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
+                    //}
                     //else if (contextInfo.ItemContainer.ContentItem != null)
                     //{
                     //    theValue = DataBinder.Eval(contextInfo.ItemContainer.ContentItem.DataItem, testTypeStr, "{0}");
@@ -831,13 +830,13 @@ function {functionName}(pageNum)
                     addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, "AddDate");
                 }
             }
-            else if (contextInfo.ContextType == EContextType.InputContent)
-            {
-                if (contextInfo.ItemContainer.InputItem != null)
-                {
-                    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.AddDate);
-                }
-            }
+            //else if (contextInfo.ContextType == EContextType.InputContent)
+            //{
+            //    if (contextInfo.ItemContainer.InputItem != null)
+            //    {
+            //        addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.AddDate);
+            //    }
+            //}
             else
             {
                 if (contextInfo.ItemContainer != null)
@@ -846,10 +845,10 @@ function {functionName}(pageNum)
                     {
                         addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, "AddDate");
                     }
-                    else if (contextInfo.ItemContainer.InputItem != null)
-                    {
-                        addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.AddDate);
-                    }
+                    //else if (contextInfo.ItemContainer.InputItem != null)
+                    //{
+                    //    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.AddDate);
+                    //}
                     //else if (contextInfo.ItemContainer.ContentItem != null)
                     //{
                     //    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.ContentItem.DataItem, ContentAttribute.AddDate);

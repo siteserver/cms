@@ -3,7 +3,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 
@@ -64,11 +63,11 @@ namespace SiteServer.CMS.StlParser.Utility
                 _pageInfo.CommentItems.Push(itemInfo);
                 literal.Text = TemplateUtility.GetCommentsTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
             }
-            else if (_contextType == EContextType.InputContent)
-            {
-                _pageInfo.InputItems.Push(itemInfo);
-                literal.Text = TemplateUtility.GetInputContentsTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
-            }
+            //else if (_contextType == EContextType.InputContent)
+            //{
+            //    _pageInfo.InputItems.Push(itemInfo);
+            //    literal.Text = TemplateUtility.GetInputContentsTemplateString(_templateString, container.ClientID, _pageInfo, _contextType, _contextInfo);
+            //}
             else if (_contextType == EContextType.SqlContent)
             {
                 _pageInfo.SqlItems.Push(itemInfo);

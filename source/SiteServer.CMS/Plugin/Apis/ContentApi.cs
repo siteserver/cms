@@ -67,7 +67,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 {
                     AttributeName = ContentAttribute.Title,
                     DisplayName = "标题",
-                    DataType = nameof(DataType.NVarChar),
+                    DataType = nameof(DataType.VarChar),
                     DataLength = 255,
                     InputType = nameof(InputType.Text),
                     IsRequired = true,
@@ -83,7 +83,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 {
                     AttributeName = styleInfo.AttributeName,
                     DisplayName = styleInfo.DisplayName,
-                    DataType = nameof(DataType.NVarChar),
+                    DataType = nameof(DataType.VarChar),
                     DataLength = 50,
                     InputType = styleInfo.InputType,
                     DefaultValue = styleInfo.DefaultValue,

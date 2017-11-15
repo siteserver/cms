@@ -1,16 +1,83 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class TagStyleDao : DataProviderBase
 	{
+        public override string TableName => "siteserver_TagStyle";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.StyleId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.StyleName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.ElementName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.IsTemplate),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.StyleTemplate),
+                DataType = DataType.Text
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.ScriptTemplate),
+                DataType = DataType.Text
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.ContentTemplate),
+                DataType = DataType.Text
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.SuccessTemplate),
+                DataType = DataType.Text
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.FailureTemplate),
+                DataType = DataType.Text
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagStyleInfo.SettingsXml),
+                DataType = DataType.Text
+            }
+        };
+
         private const string SqlUpdate = "UPDATE siteserver_TagStyle SET StyleName = @StyleName, IsTemplate = @IsTemplate, StyleTemplate = @StyleTemplate, ScriptTemplate = @ScriptTemplate, ContentTemplate = @ContentTemplate, SuccessTemplate = @SuccessTemplate, FailureTemplate = @FailureTemplate, SettingsXML = @SettingsXML WHERE StyleID = @StyleID";
 
         private const string SqlDelete = "DELETE FROM siteserver_TagStyle WHERE StyleID = @StyleID";
@@ -37,63 +104,43 @@ namespace SiteServer.CMS.Provider
 
 		public int Insert(TagStyleInfo tagStyleInfo) 
 		{
-            int styleId;
-
-            var sqlString = "INSERT INTO siteserver_TagStyle (StyleName, ElementName, PublishmentSystemID, IsTemplate, StyleTemplate, ScriptTemplate, ContentTemplate, SuccessTemplate, FailureTemplate, SettingsXML) VALUES (@StyleName, @ElementName, @PublishmentSystemID, @IsTemplate, @StyleTemplate, @ScriptTemplate, @ContentTemplate, @SuccessTemplate, @FailureTemplate, @SettingsXML)";
+            const string sqlString = "INSERT INTO siteserver_TagStyle (StyleName, ElementName, PublishmentSystemID, IsTemplate, StyleTemplate, ScriptTemplate, ContentTemplate, SuccessTemplate, FailureTemplate, SettingsXML) VALUES (@StyleName, @ElementName, @PublishmentSystemID, @IsTemplate, @StyleTemplate, @ScriptTemplate, @ContentTemplate, @SuccessTemplate, @FailureTemplate, @SettingsXML)";
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmStyleName, DataType.NVarChar, 50, tagStyleInfo.StyleName),
+				GetParameter(ParmStyleName, DataType.VarChar, 50, tagStyleInfo.StyleName),
                 GetParameter(ParmElementName, DataType.VarChar, 50, tagStyleInfo.ElementName),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, tagStyleInfo.PublishmentSystemID),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, tagStyleInfo.PublishmentSystemId),
                 GetParameter(ParmIstemplate, DataType.VarChar, 18, tagStyleInfo.IsTemplate.ToString()),
-                GetParameter(ParmStyleTemplate, DataType.NText, tagStyleInfo.StyleTemplate),
-                GetParameter(ParmScriptTemplate, DataType.NText, tagStyleInfo.ScriptTemplate),
-                GetParameter(ParmContentTemplate, DataType.NText, tagStyleInfo.ContentTemplate),
-                GetParameter(ParmSuccessTemplate, DataType.NText, tagStyleInfo.SuccessTemplate),
-                GetParameter(ParmFailureTemplate, DataType.NText, tagStyleInfo.FailureTemplate),
-                GetParameter(ParmSettingsXml, DataType.NText, tagStyleInfo.SettingsXML)
+                GetParameter(ParmStyleTemplate, DataType.Text, tagStyleInfo.StyleTemplate),
+                GetParameter(ParmScriptTemplate, DataType.Text, tagStyleInfo.ScriptTemplate),
+                GetParameter(ParmContentTemplate, DataType.Text, tagStyleInfo.ContentTemplate),
+                GetParameter(ParmSuccessTemplate, DataType.Text, tagStyleInfo.SuccessTemplate),
+                GetParameter(ParmFailureTemplate, DataType.Text, tagStyleInfo.FailureTemplate),
+                GetParameter(ParmSettingsXml, DataType.Text, tagStyleInfo.SettingsXml)
 			};
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        styleId = ExecuteNonQueryAndReturnId(trans, sqlString, parms);
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-
-            return styleId;
+            return ExecuteNonQueryAndReturningId(sqlString, nameof(TagStyleInfo.StyleId), parms);
 		}
 
         public void Update(TagStyleInfo tagStyleInfo) 
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmStyleName, DataType.NVarChar, 50, tagStyleInfo.StyleName),
+				GetParameter(ParmStyleName, DataType.VarChar, 50, tagStyleInfo.StyleName),
                 GetParameter(ParmIstemplate, DataType.VarChar, 18, tagStyleInfo.IsTemplate.ToString()),
-                GetParameter(ParmStyleTemplate, DataType.NText, tagStyleInfo.StyleTemplate),
-                GetParameter(ParmScriptTemplate, DataType.NText, tagStyleInfo.ScriptTemplate),
-                GetParameter(ParmContentTemplate, DataType.NText, tagStyleInfo.ContentTemplate),
-                GetParameter(ParmSuccessTemplate, DataType.NText, tagStyleInfo.SuccessTemplate),
-                GetParameter(ParmFailureTemplate, DataType.NText, tagStyleInfo.FailureTemplate),
-                GetParameter(ParmSettingsXml, DataType.NText, tagStyleInfo.SettingsXML),
-				GetParameter(ParmStyleId, DataType.Integer, tagStyleInfo.StyleID)
+                GetParameter(ParmStyleTemplate, DataType.Text, tagStyleInfo.StyleTemplate),
+                GetParameter(ParmScriptTemplate, DataType.Text, tagStyleInfo.ScriptTemplate),
+                GetParameter(ParmContentTemplate, DataType.Text, tagStyleInfo.ContentTemplate),
+                GetParameter(ParmSuccessTemplate, DataType.Text, tagStyleInfo.SuccessTemplate),
+                GetParameter(ParmFailureTemplate, DataType.Text, tagStyleInfo.FailureTemplate),
+                GetParameter(ParmSettingsXml, DataType.Text, tagStyleInfo.SettingsXml),
+				GetParameter(ParmStyleId, DataType.Integer, tagStyleInfo.StyleId)
 			};
 
             ExecuteNonQuery(SqlUpdate, parms);
 
-            TagStyleManager.RemoveCache(tagStyleInfo.PublishmentSystemID, tagStyleInfo.ElementName, tagStyleInfo.StyleName);
+            TagStyleManager.RemoveCache(tagStyleInfo.PublishmentSystemId, tagStyleInfo.ElementName, tagStyleInfo.StyleName);
 		}
 
 		public void Delete(int styleId)
@@ -138,7 +185,7 @@ namespace SiteServer.CMS.Provider
 			{
                 GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId),
                 GetParameter(ParmElementName, DataType.VarChar, 50, elementName),
-                GetParameter(ParmStyleName, DataType.NVarChar, 50, styleName)
+                GetParameter(ParmStyleName, DataType.VarChar, 50, styleName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))

@@ -34,7 +34,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public Stack CommentItems { get; }
 
-        public Stack InputItems { get; }
+        //public Stack InputItems { get; }
 
         public Stack SqlItems { get; }
 
@@ -104,7 +104,7 @@ namespace SiteServer.CMS.StlParser.Model
             ChannelItems = new Stack<ChannelItemInfo>(5);
             ContentItems = new Stack<ContentItemInfo>(5);
             CommentItems = new Stack(5);
-            InputItems = new Stack(5);
+            //InputItems = new Stack(5);
             SqlItems = new Stack(5);
             SiteItems = new Stack(5);
             PhotoItems = new Stack(5);
@@ -139,11 +139,8 @@ namespace SiteServer.CMS.StlParser.Model
 
             if (pageJsName == Components.Jquery)
             {
-                if (PublishmentSystemInfo.Additional.IsCreateWithJQuery)
-                {
-                    retval =
-                        $"<script type=\"text/javascript\">!window.jQuery&&document.write('<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}\" language=\"javascript\"></'+'script>');</script>";
-                }
+                retval =
+                        $"<script src=\"{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}\" type=\"text/javascript\"></script>";
             }
             else if (pageJsName == Components.Vue)
             {

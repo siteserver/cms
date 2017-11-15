@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
             var relatedFieldInfo = new RelatedFieldInfo
             {
                 RelatedFieldName = RelatedFieldName.Text,
-                PublishmentSystemID = PublishmentSystemId,
+                PublishmentSystemId = PublishmentSystemId,
                 TotalLevel = TranslateUtils.ToInt(TotalLevel.SelectedValue)
             };
             var prefix = new ArrayList
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				try
 				{
-                    relatedFieldInfo.RelatedFieldID = Body.GetQueryInt("RelatedFieldID");
+                    relatedFieldInfo.RelatedFieldId = Body.GetQueryInt("RelatedFieldID");
                     DataProvider.RelatedFieldDao.Update(relatedFieldInfo);
                     Body.AddSiteLog(PublishmentSystemId, "修改联动字段", $"联动字段:{relatedFieldInfo.RelatedFieldName}");
 					isChanged = true;

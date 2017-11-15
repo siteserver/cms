@@ -7,7 +7,6 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -104,7 +103,7 @@ namespace SiteServer.BackgroundPages.Settings
                     DefaultValue.Text = styleInfo.DefaultValue;
                     IsHorizontal.Text = StringUtils.GetBoolText(styleInfo.IsHorizontal);
 
-                    var styleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                    var styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                     MyRepeater.DataSource = TableStyleManager.GetStyleItemDataSet(styleItems.Count, styleItems);
                     MyRepeater.ItemDataBound += MyRepeater_ItemDataBound;
                     MyRepeater.DataBind();

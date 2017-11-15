@@ -5,7 +5,6 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -18,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
         protected CheckBox IsHot;
         protected CheckBox IsColor;
         protected CheckBox IsTop;
-        protected HtmlInputHidden hdType;
+        protected HtmlInputHidden HihType;
         protected TextBox Hits;
 
         private int _nodeId;
@@ -28,20 +27,20 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"nodeID", nodeId.ToString()}
-            }), "ContentIDCollection", "请选择需要设置属性的内容！", 300, 240);
+            }), "ContentIDCollection", "请选择需要设置属性的内容！", 450, 350);
         }
 
         public static string GetOpenWindowStringWithCheckBoxValue(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"nodeID", nodeId.ToString()}
-            }), "ContentIDCollection", "请选择需要设置属性的内容！", 300, 240);
+            }), "ContentIDCollection", "请选择需要设置属性的内容！", 450, 350);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -62,13 +61,13 @@ namespace SiteServer.BackgroundPages.Cms
 				
             try
             {
-                if (hdType.Value == "1")
+                if (HihType.Value == "1")
                 {
                     if (IsRecommend.Checked || IsHot.Checked || IsColor.Checked || IsTop.Checked)
                     {
-                        foreach (int contentID in _idArrayList)
+                        foreach (var contentId in _idArrayList)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentID) as BackgroundContentInfo;
+                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentId) as BackgroundContentInfo;
                             if (contentInfo != null)
                             {
                                 if (IsRecommend.Checked)
@@ -96,13 +95,13 @@ namespace SiteServer.BackgroundPages.Cms
                         isChanged = true;
                     }
                 }
-                else if (hdType.Value == "2")
+                else if (HihType.Value == "2")
                 {
                     if (IsRecommend.Checked || IsHot.Checked || IsColor.Checked || IsTop.Checked)
                     {
-                        foreach (int contentID in _idArrayList)
+                        foreach (var contentId in _idArrayList)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentID) as BackgroundContentInfo;
+                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentId) as BackgroundContentInfo;
                             if (contentInfo != null)
                             {
                                 if (IsRecommend.Checked)
@@ -130,13 +129,13 @@ namespace SiteServer.BackgroundPages.Cms
                         isChanged = true;
                     }
                 }
-                else if (hdType.Value == "3")
+                else if (HihType.Value == "3")
                 {
                     var hits = TranslateUtils.ToInt(Hits.Text);
 
-                    foreach (int contentID in _idArrayList)
+                    foreach (var contentId in _idArrayList)
                     {
-                        BaiRongDataProvider.ContentDao.SetValue(_tableName, contentID, ContentAttribute.Hits, hits.ToString());
+                        BaiRongDataProvider.ContentDao.SetValue(_tableName, contentId, ContentAttribute.Hits, hits.ToString());
                     }
 
                     Body.AddSiteLog(PublishmentSystemId, "设置内容点击量");

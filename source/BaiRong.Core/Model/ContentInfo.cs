@@ -103,8 +103,8 @@ namespace BaiRong.Core.Model
 			PublishmentSystemId = 0;
 			AddUserName = string.Empty;
 			LastEditUserName = string.Empty;
-			LastEditDate = DateTime.Now;
             WritingUserName = string.Empty;
+            LastEditDate = DateTime.Now;
             Taxis = 0;
 			ContentGroupNameCollection = string.Empty;
             Tags = string.Empty;

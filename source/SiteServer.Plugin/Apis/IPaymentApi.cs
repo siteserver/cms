@@ -6,11 +6,11 @@ namespace SiteServer.Plugin.Apis
     {
         bool IsAlipayPc { get; }
 
-        string ChargeByAlipayPc(string productName, decimal amount, string orderNo, string successUrl);
+        string ChargeByAlipayPc(string productName, decimal amount, string orderNo, string returnUrl, string notifyUrl);
 
         bool IsAlipayMobi { get; }
 
-        string ChargeByAlipayMobi(string productName, decimal amount, string orderNo, string successUrl);
+        string ChargeByAlipayMobi(string productName, decimal amount, string orderNo, string returnUrl, string notifyUrl);
 
         bool IsWeixin { get; }
 
@@ -18,8 +18,8 @@ namespace SiteServer.Plugin.Apis
 
         void NotifyByWeixin(HttpRequest request, out bool isPaied, out string responseXml);
 
-        bool IsUnionpayPc { get; }
+        bool IsJdpay { get; }
 
-        bool IsUnionpayMobi { get; }
+        string ChargeByJdpay(string productName, decimal amount, string orderNo, string returnUrl, string notifyUrl);
     }
 }

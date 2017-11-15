@@ -4,14 +4,106 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class GatherDatabaseRuleDao : DataProviderBase
     {
+        public override string TableName => "siteserver_GatherDatabaseRule";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.GatherRuleName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.ConnectionString),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.RelatedTableName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.RelatedIdentity),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.RelatedOrderBy),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.WhereString),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.TableMatchId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.NodeId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.GatherNum),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.IsChecked),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.IsAutoCreate),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.IsOrderByDesc),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(GatherDatabaseRuleInfo.LastGatherDate),
+                DataType = DataType.DateTime
+            }
+        };
+
         private const string SqlSelectGatherRule = "SELECT GatherRuleName, PublishmentSystemID, ConnectionString, RelatedTableName, RelatedIdentity, RelatedOrderBy, WhereString, TableMatchID, NodeID, GatherNum, IsChecked, IsOrderByDesc, LastGatherDate, IsAutoCreate FROM siteserver_GatherDatabaseRule WHERE GatherRuleName = @GatherRuleName AND PublishmentSystemID = @PublishmentSystemID";
 
         private const string SqlSelectTableMatchId = "SELECT TableMatchID FROM siteserver_GatherDatabaseRule WHERE GatherRuleName = @GatherRuleName AND PublishmentSystemID = @PublishmentSystemID";
@@ -50,13 +142,13 @@ UPDATE siteserver_GatherDatabaseRule SET ConnectionString = @ConnectionString, R
         {
             var insertParms = new IDataParameter[]
             {
-                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherDatabaseRuleInfo.GatherRuleName),
+                GetParameter(ParmGatherRuleName, DataType.VarChar, 50, gatherDatabaseRuleInfo.GatherRuleName),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, gatherDatabaseRuleInfo.PublishmentSystemId),
                 GetParameter(ParmConnectionString, DataType.VarChar, 255, gatherDatabaseRuleInfo.ConnectionString),
                 GetParameter(ParmRelatedTableName, DataType.VarChar, 255, gatherDatabaseRuleInfo.RelatedTableName),
                 GetParameter(ParmRelatedIdentity, DataType.VarChar, 255, gatherDatabaseRuleInfo.RelatedIdentity),
                 GetParameter(ParmRelatedOrderBy, DataType.VarChar, 255, gatherDatabaseRuleInfo.RelatedOrderBy),
-                GetParameter(ParmWhereString, DataType.NVarChar, 255, gatherDatabaseRuleInfo.WhereString),
+                GetParameter(ParmWhereString, DataType.VarChar, 255, gatherDatabaseRuleInfo.WhereString),
                 GetParameter(ParmTableMatchId, DataType.Integer, gatherDatabaseRuleInfo.TableMatchId),
                 GetParameter(ParmNodeId, DataType.Integer, gatherDatabaseRuleInfo.NodeId),
                 GetParameter(ParmGatherNum, DataType.Integer, gatherDatabaseRuleInfo.GatherNum),
@@ -74,7 +166,7 @@ UPDATE siteserver_GatherDatabaseRule SET ConnectionString = @ConnectionString, R
             var parms = new IDataParameter[]
             {
                 GetParameter(ParmLastGatherDate, DataType.DateTime, DateTime.Now),
-                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherRuleName),
+                GetParameter(ParmGatherRuleName, DataType.VarChar, 50, gatherRuleName),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
@@ -89,14 +181,14 @@ UPDATE siteserver_GatherDatabaseRule SET ConnectionString = @ConnectionString, R
                 GetParameter(ParmRelatedTableName, DataType.VarChar, 255, gatherDatabaseRuleInfo.RelatedTableName),
                 GetParameter(ParmRelatedIdentity, DataType.VarChar, 255, gatherDatabaseRuleInfo.RelatedIdentity),
                 GetParameter(ParmRelatedOrderBy, DataType.VarChar, 255, gatherDatabaseRuleInfo.RelatedOrderBy),
-                GetParameter(ParmWhereString, DataType.NVarChar, 255, gatherDatabaseRuleInfo.WhereString),
+                GetParameter(ParmWhereString, DataType.VarChar, 255, gatherDatabaseRuleInfo.WhereString),
                 GetParameter(ParmTableMatchId, DataType.Integer, gatherDatabaseRuleInfo.TableMatchId),
                 GetParameter(ParmNodeId, DataType.Integer, gatherDatabaseRuleInfo.NodeId),
                 GetParameter(ParmGatherNum, DataType.Integer, gatherDatabaseRuleInfo.GatherNum),
                 GetParameter(ParmIsChecked, DataType.VarChar, 18, gatherDatabaseRuleInfo.IsChecked.ToString()),
                 GetParameter(ParmIsOrderByDesc, DataType.VarChar, 18, gatherDatabaseRuleInfo.IsOrderByDesc.ToString()),
                 GetParameter(ParmLastGatherDate, DataType.DateTime, gatherDatabaseRuleInfo.LastGatherDate),
-                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherDatabaseRuleInfo.GatherRuleName),
+                GetParameter(ParmGatherRuleName, DataType.VarChar, 50, gatherDatabaseRuleInfo.GatherRuleName),
                 GetParameter(ParmIsAutoCreate, DataType.VarChar, 18, gatherDatabaseRuleInfo.IsAutoCreate.ToString()),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, gatherDatabaseRuleInfo.PublishmentSystemId)
             };
@@ -109,7 +201,7 @@ UPDATE siteserver_GatherDatabaseRule SET ConnectionString = @ConnectionString, R
         {
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherRuleName),
+                GetParameter(ParmGatherRuleName, DataType.VarChar, 50, gatherRuleName),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
@@ -122,7 +214,7 @@ UPDATE siteserver_GatherDatabaseRule SET ConnectionString = @ConnectionString, R
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherRuleName),
+                GetParameter(ParmGatherRuleName, DataType.VarChar, 50, gatherRuleName),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
@@ -165,7 +257,7 @@ UPDATE siteserver_GatherDatabaseRule SET ConnectionString = @ConnectionString, R
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, importGatherRuleName),
+                GetParameter(ParmGatherRuleName, DataType.VarChar, 50, importGatherRuleName),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
@@ -242,7 +334,7 @@ UPDATE siteserver_GatherDatabaseRule SET ConnectionString = @ConnectionString, R
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmGatherRuleName, DataType.NVarChar, 50, gatherRuleName),
+                GetParameter(ParmGatherRuleName, DataType.VarChar, 50, gatherRuleName),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 

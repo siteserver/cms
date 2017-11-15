@@ -28,13 +28,13 @@ namespace SiteServer.CMS.StlParser.Model
             }
         }
 
-        public static void PopInputItem(PageInfo pageInfo)
-        {
-            if (pageInfo.InputItems.Count > 0)
-            {
-                pageInfo.InputItems.Pop();
-            }
-        }
+        //public static void PopInputItem(PageInfo pageInfo)
+        //{
+        //    if (pageInfo.InputItems.Count > 0)
+        //    {
+        //        pageInfo.InputItems.Pop();
+        //    }
+        //}
 
         public static void PopSqlItem(PageInfo pageInfo)
         {
@@ -49,6 +49,14 @@ namespace SiteServer.CMS.StlParser.Model
             if (pageInfo.PhotoItems.Count > 0)
             {
                 pageInfo.PhotoItems.Pop();
+            }
+        }
+
+        public static void PopSiteItems(PageInfo pageInfo)
+        {
+            if (pageInfo.SiteItems.Count > 0)
+            {
+                pageInfo.SiteItems.Pop();
             }
         }
 
@@ -75,10 +83,10 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 dbItemContainer.CommentItem = (DbItemInfo)pageInfo.CommentItems.Peek();
             }
-            if (pageInfo.InputItems.Count > 0)
-            {
-                dbItemContainer.InputItem = (DbItemInfo)pageInfo.InputItems.Peek();
-            }
+            //if (pageInfo.InputItems.Count > 0)
+            //{
+            //    dbItemContainer.InputItem = (DbItemInfo)pageInfo.InputItems.Peek();
+            //}
             if (pageInfo.SqlItems.Count > 0)
             {
                 dbItemContainer.SqlItem = (DbItemInfo)pageInfo.SqlItems.Peek();
@@ -104,7 +112,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public DbItemInfo CommentItem { get; private set; }
 
-        public DbItemInfo InputItem { get; private set; }
+        //public DbItemInfo InputItem { get; private set; }
 
         public DbItemInfo SqlItem { get; private set; }
 

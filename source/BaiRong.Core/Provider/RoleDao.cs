@@ -1,12 +1,39 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class RoleDao : DataProviderBase
 	{
+        public override string TableName => "bairong_Roles";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = "RoleName",
+                DataType = DataType.VarChar,
+                Length = 255,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "CreatorUserName",
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Description",
+                DataType = DataType.VarChar,
+                Length = 255
+            }
+        };
+
         private const string ParmRoleName = "@RoleName";
         private const string ParmCreatorUsername= "@CreatorUserName";
         private const string ParmDescription = "@Description";
@@ -17,7 +44,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT Description FROM bairong_Roles WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -37,7 +64,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT CreatorUserName FROM bairong_Roles WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms)) 
@@ -83,7 +110,7 @@ namespace BaiRong.Core.Provider
                 var sqlString = "SELECT RoleName FROM bairong_Roles WHERE CreatorUserName = @CreatorUserName";
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter(ParmCreatorUsername, DataType.NVarChar, 255, creatorUserName)
+				    GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName)
 			    };
 
                 using (var rdr = ExecuteReader(sqlString, parms)) 
@@ -112,9 +139,9 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName),
-                GetParameter(ParmCreatorUsername, DataType.NVarChar, 255, creatorUserName),
-                GetParameter(ParmDescription, DataType.NVarChar, 255, description)
+				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName),
+                GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName),
+                GetParameter(ParmDescription, DataType.VarChar, 255, description)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -126,8 +153,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmDescription, DataType.NVarChar, 255, description),
-                GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName)
+                GetParameter(ParmDescription, DataType.VarChar, 255, description),
+                GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -143,7 +170,7 @@ namespace BaiRong.Core.Provider
 
                 var parms = new IDataParameter[]
 			    {
-                    GetParameter(ParmRoleName, DataType.NVarChar, 255, roleName)
+                    GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);
@@ -162,7 +189,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT RoleName FROM bairong_Roles WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-                GetParameter("@RoleName", DataType.NVarChar, 255, roleName)
+                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
 			};
             using (var rdr = ExecuteReader(sqlString, parms))
             {

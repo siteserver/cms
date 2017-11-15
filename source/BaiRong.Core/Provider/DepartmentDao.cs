@@ -9,6 +9,79 @@ namespace BaiRong.Core.Provider
 {
     public class DepartmentDao : DataProviderBase
 	{
+        public override string TableName => "bairong_Department";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.DepartmentId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.DepartmentName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.Code),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.ParentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.ParentsPath),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.ParentsCount),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.ChildrenCount),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.IsLastNode),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.Taxis),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.Summary),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.CountOfAdmin),
+                DataType = DataType.Integer
+            }
+        };
+
         private const string SqlSelect = "SELECT DepartmentID, DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin FROM bairong_Department WHERE DepartmentID = @DepartmentID";
 
         private const string SqlSelectAll = "SELECT DepartmentID, DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin FROM bairong_Department ORDER BY TAXIS";
@@ -56,16 +129,16 @@ namespace BaiRong.Core.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmName, DataType.NVarChar, 255, departmentInfo.DepartmentName),
+				GetParameter(ParmName, DataType.VarChar, 255, departmentInfo.DepartmentName),
                 GetParameter(ParmCode, DataType.VarChar, 50, departmentInfo.Code),
 				GetParameter(ParmParentId, DataType.Integer, departmentInfo.ParentId),
-				GetParameter(ParmParentsPath, DataType.NVarChar, 255, departmentInfo.ParentsPath),
+				GetParameter(ParmParentsPath, DataType.VarChar, 255, departmentInfo.ParentsPath),
 				GetParameter(ParmParentsCount, DataType.Integer, departmentInfo.ParentsCount),
 				GetParameter(ParmChildrenCount, DataType.Integer, 0),
 				GetParameter(ParmIsLastNode, DataType.VarChar, 18, true.ToString()),
 				GetParameter(ParmTaxis, DataType.Integer, departmentInfo.Taxis),
 				GetParameter(ParmAddDate, DataType.DateTime, departmentInfo.AddDate),
-				GetParameter(ParmSummary, DataType.NVarChar, 255, departmentInfo.Summary),
+				GetParameter(ParmSummary, DataType.VarChar, 255, departmentInfo.Summary),
 				GetParameter(ParmCountOfAdmin, DataType.Integer, departmentInfo.CountOfAdmin)
 			};
 
@@ -73,7 +146,7 @@ namespace BaiRong.Core.Provider
                 $"UPDATE bairong_Department SET {SqlUtils.GetAddOne("Taxis")} WHERE (Taxis >= {departmentInfo.Taxis})";
             ExecuteNonQuery(trans, sqlString);
 
-            departmentInfo.DepartmentId = ExecuteNonQueryAndReturnId(trans, sqlInsert, insertParms);
+            departmentInfo.DepartmentId = ExecuteNonQueryAndReturningId(trans, sqlInsert, nameof(DepartmentInfo.DepartmentId), insertParms);
 
             if (!string.IsNullOrEmpty(departmentInfo.ParentsPath))
             {
@@ -90,7 +163,7 @@ namespace BaiRong.Core.Provider
             //    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN (SELECT TOP 1 DepartmentID FROM bairong_Department WHERE ParentID = {departmentInfo.ParentId} ORDER BY Taxis DESC))";
 
             sqlString =
-                $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.GetInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {departmentInfo.ParentId} ORDER BY Taxis DESC", 1)}))";
+                $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.GetInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {departmentInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
 
             ExecuteNonQuery(trans, sqlString);
 
@@ -121,7 +194,9 @@ namespace BaiRong.Core.Provider
             //WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis < @Taxis)
             //ORDER BY Taxis DESC";
 
-            var sqlString = SqlUtils.GetTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath", "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis < @Taxis) ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath",
+                "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis < @Taxis)",
+                "ORDER BY Taxis DESC", 1);
 
             var parms = new IDataParameter[]
 			{
@@ -168,7 +243,9 @@ namespace BaiRong.Core.Provider
             //WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis > @Taxis)
             //ORDER BY Taxis";
 
-            var sqlString = SqlUtils.GetTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath", "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis > @Taxis) ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath",
+                "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis > @Taxis)",
+                "ORDER BY Taxis", 1);
 
             var parms = new IDataParameter[]
 			{
@@ -242,7 +319,7 @@ namespace BaiRong.Core.Provider
                 //    $"UPDATE bairong_Department SET IsLastNode = '{true.ToString()}' WHERE (DepartmentID IN (SELECT TOP 1 DepartmentID FROM bairong_Department WHERE ParentID = {parentId} ORDER BY Taxis DESC))";
 
                 sqlString =
-                    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.GetInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {parentId} ORDER BY Taxis DESC", 1)}))";
+                    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.GetInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)}))";
 
                 ExecuteNonQuery(sqlString);
             }
@@ -296,13 +373,13 @@ namespace BaiRong.Core.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmName, DataType.NVarChar, 255, departmentInfo.DepartmentName),
+				GetParameter(ParmName, DataType.VarChar, 255, departmentInfo.DepartmentName),
                 GetParameter(ParmCode, DataType.VarChar, 50, departmentInfo.Code),
-				GetParameter(ParmParentsPath, DataType.NVarChar, 255, departmentInfo.ParentsPath),
+				GetParameter(ParmParentsPath, DataType.VarChar, 255, departmentInfo.ParentsPath),
 				GetParameter(ParmParentsCount, DataType.Integer, departmentInfo.ParentsCount),
 				GetParameter(ParmChildrenCount, DataType.Integer, departmentInfo.ChildrenCount),
 				GetParameter(ParmIsLastNode, DataType.VarChar, 18, departmentInfo.IsLastNode.ToString()),
-				GetParameter(ParmSummary, DataType.NVarChar, 255, departmentInfo.Summary),
+				GetParameter(ParmSummary, DataType.VarChar, 255, departmentInfo.Summary),
 				GetParameter(ParmCountOfAdmin, DataType.Integer, departmentInfo.CountOfAdmin),
 				GetParameter(ParmId, DataType.Integer, departmentInfo.DepartmentId)
 			};

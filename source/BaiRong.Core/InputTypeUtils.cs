@@ -268,7 +268,7 @@ namespace BaiRong.Core
             {
                 listControl.Items.Add(GetListItem(InputType.Text, false));
                 listControl.Items.Add(GetListItem(InputType.TextArea, false));
-                if (dataType == DataType.NText || dataType == DataType.Text)
+                if (dataType == DataType.Text)
                 {
                     listControl.Items.Add(GetListItem(InputType.TextEditor, false));
                 }

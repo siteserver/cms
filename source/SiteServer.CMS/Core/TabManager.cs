@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.Tabs;
 using SiteServer.CMS.Plugin;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
@@ -77,8 +76,7 @@ namespace SiteServer.CMS.Core
 
             if (!string.IsNullOrEmpty(topId))
             {
-                var directoryPath = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Configuration, "Menus");
-                var filePath = PathUtils.Combine(directoryPath, $"{topId}.config");
+                var filePath = PathUtils.GetMenusPath($"{topId}.config");
                 var tabCollection = TabCollection.GetTabs(filePath);
                 if (tabCollection?.Tabs != null)
                 {

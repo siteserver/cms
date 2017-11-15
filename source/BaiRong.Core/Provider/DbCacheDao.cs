@@ -23,7 +23,7 @@ namespace BaiRong.Core.Provider
             new TableColumnInfo
             {
                 ColumnName = "CacheValue",
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 500
             },
             new TableColumnInfo
@@ -70,7 +70,7 @@ namespace BaiRong.Core.Provider
                         var insertParms = new IDataParameter[]
                         {
                             GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey),
-                            GetParameter(ParmCacheValue, DataType.NVarChar, 500, cacheValue),
+                            GetParameter(ParmCacheValue, DataType.VarChar, 500, cacheValue),
                             GetParameter(ParmAddDate, DataType.DateTime, DateTime.Now)
                         };
 

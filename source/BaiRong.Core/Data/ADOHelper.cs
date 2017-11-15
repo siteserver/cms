@@ -27,9 +27,6 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 using System.Xml;
-using System.Diagnostics;
-using System.Text;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 
 namespace BaiRong.Core.Data
@@ -437,7 +434,7 @@ namespace BaiRong.Core.Data
 		{
 			if( command == null ) throw new ArgumentNullException( "command" );
 			if( commandText == null || commandText.Length == 0 ) throw new ArgumentNullException( "commandText" );
-		    if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+		    if (WebConfigUtils.DatabaseType != EDatabaseType.SqlServer)
 		    {
 		        commandText = commandText.Replace("[", string.Empty).Replace("]", string.Empty);
 		    }
@@ -523,25 +520,15 @@ namespace BaiRong.Core.Data
 
 				var ds = new DataSet();
 
-				try
-				{
+                // Fill the DataSet using default values for DataTable names, etc
+                da.Fill(ds);
 
-					// Fill the DataSet using default values for DataTable names, etc
-					da.Fill(ds);
-				}
-				catch (Exception ex)
-				{
-					// Don't just throw ex.  It changes the call stack.  But we want the ex around for debugging, so...
-					Debug.WriteLine(ex);
-					throw;
-				}
-				
-				// Detach the IDataParameters from the command object, so they can be used again
-				// Don't do this...screws up output params -- cjb 
-				//command.Parameters.Clear();
+                // Detach the IDataParameters from the command object, so they can be used again
+                // Don't do this...screws up output params -- cjb 
+                //command.Parameters.Clear();
 
-				// Return the DataSet
-				return ds;
+                // Return the DataSet
+                return ds;
 			}
 			finally
 			{
@@ -961,23 +948,136 @@ namespace BaiRong.Core.Data
 			}
 		}
 
-		/// <summary>
-		/// Execute a stored procedure via an IDbCommand (that returns no resultset) against the database specified in 
-		/// the connection string using the provided parameter values.  This method will query the database to discover the parameters for the 
-		/// stored procedure (the first time each stored procedure is called), and assign the values based on parameter order.
-		/// </summary>
-		/// <remarks>
-		/// This method provides no access to output parameters or the stored procedure's return value parameter.
-		/// 
-		/// </remarks>
-		/// <param name="connectionString">A valid connection string for an IDbConnection</param>
-		/// <param name="spName">The name of the stored prcedure</param>
-		/// <param name="parameterValues">An array of objects to be assigned as the input values of the stored procedure</param>
-		/// <returns>An int representing the number of rows affected by the command</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown if connectionString is null</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown if spName is null</exception>
-		/// <exception cref="System.ArgumentException">Thrown if the parameter count does not match the number of values supplied</exception>
-		public virtual int ExecuteSpNonQuery(string connectionString, string spName, params object[] parameterValues)
+        public virtual int ExecuteNonQueryAndReturningId(string connectionString, CommandType commandType, string commandText,
+	        string idColumnName, params IDataParameter[] commandParameters)
+	    {
+            if (connectionString == null || connectionString.Length == 0) throw new ArgumentNullException("connectionString");
+
+	        int id;
+
+	        using (var conn = GetConnection(connectionString))
+            {
+                conn.Open();
+                using (var trans = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        id = ExecuteNonQueryAndReturningId(trans, commandType, commandText,
+                            idColumnName, commandParameters);
+
+                        trans.Commit();
+                    }
+                    catch
+                    {
+                        trans.Rollback();
+                        throw;
+                    }
+                }
+            }
+
+	        return id;
+	    }
+
+        public virtual int ExecuteNonQueryAndReturningId(IDbTransaction trans, CommandType commandType, string commandText, string idColumnName, params IDataParameter[] commandParameters)
+        {
+            if (string.IsNullOrEmpty(commandText)) return 0;
+
+            var id = 0;
+
+            switch (WebConfigUtils.DatabaseType)
+            {
+                case EDatabaseType.MySql:
+                    ExecuteNonQuery(trans, commandType, commandText, commandParameters);
+
+                    using (var rdr = ExecuteReader(trans, commandType, $"SELECT @@IDENTITY AS '{idColumnName}'"))
+                    {
+                        if (rdr.Read() && !rdr.IsDBNull(0))
+                        {
+                            id = rdr.GetInt32(0);
+                        }
+                        rdr.Close();
+                    }
+
+                    if (id == 0)
+                    {
+                        trans.Rollback();
+                    }
+                    break;
+                case EDatabaseType.SqlServer:
+                    ExecuteNonQuery(trans, commandType, commandText, commandParameters);
+
+                    using (var rdr = ExecuteReader(trans, commandType, $"SELECT @@IDENTITY AS '{idColumnName}'"))
+                    {
+                        if (rdr.Read() && !rdr.IsDBNull(0))
+                        {
+                            id = Convert.ToInt32(rdr[0]);
+                        }
+                        rdr.Close();
+                    }
+
+                    if (id == 0)
+                    {
+                        trans.Rollback();
+                    }
+                    break;
+                case EDatabaseType.PostgreSql:
+                    commandText += " RETURNING " + idColumnName;
+
+                    using (var rdr = ExecuteReader(trans, commandType, commandText, commandParameters))
+                    {
+                        if (rdr.Read() && !rdr.IsDBNull(0))
+                        {
+                            id = rdr.GetInt32(0);
+                        }
+                        rdr.Close();
+                    }
+
+                    if (id == 0)
+                    {
+                        trans.Rollback();
+                    }
+                    break;
+                case EDatabaseType.Oracle:
+                    commandText += " RETURNING " + idColumnName + " INTO v_id";
+
+                    using (var rdr = ExecuteReader(trans, commandType, commandText, commandParameters))
+                    {
+                        if (rdr.Read() && !rdr.IsDBNull(0))
+                        {
+                            id = rdr.GetInt32(0);
+                        }
+                        rdr.Close();
+                    }
+
+                    if (id == 0)
+                    {
+                        trans.Rollback();
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return id;
+        }
+
+        /// <summary>
+        /// Execute a stored procedure via an IDbCommand (that returns no resultset) against the database specified in 
+        /// the connection string using the provided parameter values.  This method will query the database to discover the parameters for the 
+        /// stored procedure (the first time each stored procedure is called), and assign the values based on parameter order.
+        /// </summary>
+        /// <remarks>
+        /// This method provides no access to output parameters or the stored procedure's return value parameter.
+        /// 
+        /// </remarks>
+        /// <param name="connectionString">A valid connection string for an IDbConnection</param>
+        /// <param name="spName">The name of the stored prcedure</param>
+        /// <param name="parameterValues">An array of objects to be assigned as the input values of the stored procedure</param>
+        /// <returns>An int representing the number of rows affected by the command</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown if connectionString is null</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown if spName is null</exception>
+        /// <exception cref="System.ArgumentException">Thrown if the parameter count does not match the number of values supplied</exception>
+        public virtual int ExecuteSpNonQuery(string connectionString, string spName, params object[] parameterValues)
 		{
 			if( connectionString == null || connectionString.Length == 0 ) throw new ArgumentNullException( "connectionString" );
 			if( spName == null || spName.Length == 0 ) throw new ArgumentNullException( "spName" );
@@ -1266,17 +1366,8 @@ namespace BaiRong.Core.Data
 			}
 			else
 			{
-				try
-				{
-					dataReader = command.ExecuteReader(CommandBehavior.CloseConnection);
-				}
-				catch (Exception ex)
-				{
-					// Don't just throw ex.  It changes the call stack.  But we want the ex around for debugging, so...
-					Debug.WriteLine(ex);
-					throw;
-				}
-			}
+                dataReader = command.ExecuteReader(CommandBehavior.CloseConnection);
+            }
 			
 			ClearCommand( command );
 
@@ -2046,12 +2137,10 @@ namespace BaiRong.Core.Data
 
 				return ExecuteXmlReader(cmd);
 			}
-			catch (Exception ex)
+			catch
 			{	
 				if( mustCloseConnection )
 					connection.Close();
-				// Don't just throw ex.  It changes the call stack.  But we want the ex around for debugging, so...
-				Debug.WriteLine(ex);
 				throw;
 			}
 		}
@@ -2855,18 +2944,9 @@ namespace BaiRong.Core.Data
 				
 				if( dataAdapter is DbDataAdapter ) 
 				{
-					// Update the DataSet changes in the data source
-					try
-					{
-						rowsAffected = ((DbDataAdapter)dataAdapter).Update(dataSet, tableName);
-					} 
-					catch (Exception ex) 
-					{
-						// Don't just throw ex.  It changes the call stack.  But we want the ex around for debugging, so...
-						Debug.WriteLine(ex);
-						throw;
-					}
-				}
+                    // Update the DataSet changes in the data source
+                    rowsAffected = ((DbDataAdapter)dataAdapter).Update(dataSet, tableName);
+                }
 				else
 				{
 					dataAdapter.TableMappings.Add(tableName, "Table"); 

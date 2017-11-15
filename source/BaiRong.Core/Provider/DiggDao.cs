@@ -1,13 +1,46 @@
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using SiteServer.Plugin;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class DiggDao : DataProviderBase
 	{
+        public override string TableName => "bairong_Digg";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = "DiggId",
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "PublishmentSystemId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "RelatedIdentity",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Good",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Bad",
+                DataType = DataType.Integer
+            }
+        };
+
         private const string SqlSelectDigg = "SELECT Good, Bad FROM bairong_Digg WHERE PublishmentSystemID = @PublishmentSystemID AND RelatedIdentity = @RelatedIdentity";
 
         private const string SqlSelectDiggId = "SELECT DiggID FROM bairong_Digg WHERE PublishmentSystemID = @PublishmentSystemID AND RelatedIdentity = @RelatedIdentity";
@@ -19,12 +52,12 @@ namespace BaiRong.Core.Provider
         private const string ParmPublishmentSystemId = "@PublishmentSystemID";
 		private const string ParmRelatedIdentity = "@RelatedIdentity";
         private const string ParmGood = "@Good";
-        private const string ParmBad = "@Bad";		
+        private const string ParmBad = "@Bad";
 
 		private void Insert(int publishmentSystemId, int relatedIdentity, bool isGood)
 		{
-            var good = (isGood) ? 1 : 0;
-            var bad = (isGood) ? 0 : 1;
+            var good = isGood ? 1 : 0;
+            var bad = isGood ? 0 : 1;
 
             var sqlString = "INSERT INTO bairong_Digg (PublishmentSystemID, RelatedIdentity, Good, Bad) VALUES (@PublishmentSystemID, @RelatedIdentity, @Good, @Bad)";
 

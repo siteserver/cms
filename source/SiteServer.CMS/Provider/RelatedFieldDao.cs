@@ -1,15 +1,57 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class RelatedFieldDao : DataProviderBase
 	{
+        public override string TableName => "siteserver_RelatedField";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldInfo.RelatedFieldId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldInfo.RelatedFieldName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldInfo.TotalLevel),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldInfo.Prefixes),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(RelatedFieldInfo.Suffixes),
+                DataType = DataType.VarChar,
+                Length = 255
+            }
+        };
+
         private const string SqlUpdate = "UPDATE siteserver_RelatedField SET RelatedFieldName = @RelatedFieldName, TotalLevel = @TotalLevel, Prefixes = @Prefixes, Suffixes = @Suffixes WHERE RelatedFieldID = @RelatedFieldID";
         private const string SqlDelete = "DELETE FROM siteserver_RelatedField WHERE RelatedFieldID = @RelatedFieldID";
 
@@ -22,49 +64,29 @@ namespace SiteServer.CMS.Provider
 
 		public int Insert(RelatedFieldInfo relatedFieldInfo) 
 		{
-            int relatedFieldId;
-
-            var sqlString = "INSERT INTO siteserver_RelatedField (RelatedFieldName, PublishmentSystemID, TotalLevel, Prefixes, Suffixes) VALUES (@RelatedFieldName, @PublishmentSystemID, @TotalLevel, @Prefixes, @Suffixes)";
+            const string sqlString = "INSERT INTO siteserver_RelatedField (RelatedFieldName, PublishmentSystemID, TotalLevel, Prefixes, Suffixes) VALUES (@RelatedFieldName, @PublishmentSystemID, @TotalLevel, @Prefixes, @Suffixes)";
 
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldName, DataType.NVarChar, 50, relatedFieldInfo.RelatedFieldName),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, relatedFieldInfo.PublishmentSystemID),
+				GetParameter(ParmRelatedFieldName, DataType.VarChar, 50, relatedFieldInfo.RelatedFieldName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, relatedFieldInfo.PublishmentSystemId),
                 GetParameter(ParmTotalLevel, DataType.Integer, relatedFieldInfo.TotalLevel),
-                GetParameter(ParmPrefixes, DataType.NVarChar, 255, relatedFieldInfo.Prefixes),
-                GetParameter(ParmSuffixes, DataType.NVarChar, 255, relatedFieldInfo.Suffixes),
+                GetParameter(ParmPrefixes, DataType.VarChar, 255, relatedFieldInfo.Prefixes),
+                GetParameter(ParmSuffixes, DataType.VarChar, 255, relatedFieldInfo.Suffixes),
 			};
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        relatedFieldId = ExecuteNonQueryAndReturnId(trans, sqlString, insertParms);
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-
-            return relatedFieldId;
+            return ExecuteNonQueryAndReturningId(sqlString, nameof(RelatedFieldInfo.RelatedFieldId), insertParms);
 		}
 
         public void Update(RelatedFieldInfo relatedFieldInfo) 
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldName, DataType.NVarChar, 50, relatedFieldInfo.RelatedFieldName),
+				GetParameter(ParmRelatedFieldName, DataType.VarChar, 50, relatedFieldInfo.RelatedFieldName),
                 GetParameter(ParmTotalLevel, DataType.Integer, relatedFieldInfo.TotalLevel),
-                GetParameter(ParmPrefixes, DataType.NVarChar, 255, relatedFieldInfo.Prefixes),
-                GetParameter(ParmSuffixes, DataType.NVarChar, 255, relatedFieldInfo.Suffixes),
-				GetParameter(ParmRelatedFieldId, DataType.Integer, relatedFieldInfo.RelatedFieldID)
+                GetParameter(ParmPrefixes, DataType.VarChar, 255, relatedFieldInfo.Prefixes),
+                GetParameter(ParmSuffixes, DataType.VarChar, 255, relatedFieldInfo.Suffixes),
+				GetParameter(ParmRelatedFieldId, DataType.Integer, relatedFieldInfo.RelatedFieldId)
 			};
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -112,7 +134,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmRelatedFieldName, DataType.NVarChar, 255, relatedFieldName)			 
+				GetParameter(ParmRelatedFieldName, DataType.VarChar, 255, relatedFieldName)			 
 			};
 
             using (var rdr = ExecuteReader(sqlString, selectParms))

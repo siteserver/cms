@@ -106,7 +106,7 @@ namespace SiteServer.BackgroundPages.Settings
                 catch (Exception ex)
                 {
                     FailMessage(ex, "<br>辅助表创建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
-                    var sqlString = BaiRongDataProvider.TableMetadataDao.GetCreateAuxiliaryTableSqlString(_tableName);
+                    var sqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(_tableName);
                     LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                     _showSqlTable = true;
                 }
@@ -146,14 +146,14 @@ namespace SiteServer.BackgroundPages.Settings
                 {
 
                     FailMessage(ex, "<br>辅助表重建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
-                    var sqlString = BaiRongDataProvider.TableMetadataDao.GetCreateAuxiliaryTableSqlString(_tableName);
+                    var sqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(_tableName);
                     LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                     _showSqlTable = true;
                 }
             }
             else if (Body.IsQueryExists("ShowCrateDBCommand"))
             {
-                var sqlString = BaiRongDataProvider.TableMetadataDao.GetCreateAuxiliaryTableSqlString(_tableName);
+                var sqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(_tableName);
                 LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
             }
             else if (Body.IsQueryExists("SetTaxis"))

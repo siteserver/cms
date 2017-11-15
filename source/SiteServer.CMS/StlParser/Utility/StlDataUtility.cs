@@ -296,29 +296,29 @@ namespace SiteServer.CMS.StlParser.Utility
                         orderByString = orderValue;
                     }
                 }
-                else if (tableStyle == ETableStyle.InputContent)
-                {
-                    if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByTaxisDesc;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByTaxis;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByAddDateDesc;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByAddDate;
-                    }
-                    else
-                    {
-                        orderByString = orderValue;
-                    }
-                }
+                //else if (tableStyle == ETableStyle.InputContent)
+                //{
+                //    if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
+                //    {
+                //        taxisType = ETaxisType.OrderByTaxisDesc;
+                //    }
+                //    else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
+                //    {
+                //        taxisType = ETaxisType.OrderByTaxis;
+                //    }
+                //    else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
+                //    {
+                //        taxisType = ETaxisType.OrderByAddDateDesc;
+                //    }
+                //    else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
+                //    {
+                //        taxisType = ETaxisType.OrderByAddDate;
+                //    }
+                //    else
+                //    {
+                //        orderByString = orderValue;
+                //    }
+                //}
             }
             List<int> orderedContentIdList = null;
             if (taxisType == ETaxisType.OrderByHits)
@@ -434,21 +434,21 @@ namespace SiteServer.CMS.StlParser.Utility
             return BaiRongDataProvider.DatabaseDao.GetDataSet(sqlString);
         }
 
-        public static IEnumerable GetInputContentsDataSource(int publishmentSystemId, int inputId, ListInfo listInfo)
-        {
-            var isReplyExists = listInfo.Others.Get(StlInputContents.AttributeIsReply) != null;
-            var isReply = TranslateUtils.ToBool(listInfo.Others.Get(StlInputContents.AttributeIsReply));
-            var sqlString = InputContent.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others);
-            return BaiRongDataProvider.DatabaseDao.GetDataSource(sqlString);
-        }
+        //public static IEnumerable GetInputContentsDataSource(int publishmentSystemId, int inputId, ListInfo listInfo)
+        //{
+        //    var isReplyExists = listInfo.Others.Get(StlInputContents.AttributeIsReply) != null;
+        //    var isReply = TranslateUtils.ToBool(listInfo.Others.Get(StlInputContents.AttributeIsReply));
+        //    var sqlString = InputContent.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others);
+        //    return BaiRongDataProvider.DatabaseDao.GetDataSource(sqlString);
+        //}
 
-        public static DataSet GetPageInputContentsDataSet(int publishmentSystemId, int inputId, ListInfo listInfo)
-        {
-            var isReplyExists = listInfo.Others.Get(StlInputContents.AttributeIsReply) != null;
-            var isReply = TranslateUtils.ToBool(listInfo.Others.Get(StlInputContents.AttributeIsReply));
-            var sqlString = InputContent.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others);
-            return BaiRongDataProvider.DatabaseDao.GetDataSet(sqlString);
-        }
+        //public static DataSet GetPageInputContentsDataSet(int publishmentSystemId, int inputId, ListInfo listInfo)
+        //{
+        //    var isReplyExists = listInfo.Others.Get(StlInputContents.AttributeIsReply) != null;
+        //    var isReply = TranslateUtils.ToBool(listInfo.Others.Get(StlInputContents.AttributeIsReply));
+        //    var sqlString = InputContent.GetSelectSqlStringWithChecked(publishmentSystemId, inputId, isReplyExists, isReply, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.OrderByString, listInfo.Others);
+        //    return BaiRongDataProvider.DatabaseDao.GetDataSet(sqlString);
+        //}
 
         public static DataSet GetChannelsDataSource(int publishmentSystemId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where)
         {

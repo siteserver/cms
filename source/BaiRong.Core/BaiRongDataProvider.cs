@@ -66,6 +66,9 @@ namespace BaiRong.Core
         private static TableStyleDao _tableStyleDao;
         public static TableStyleDao TableStyleDao => _tableStyleDao ?? (_tableStyleDao = new TableStyleDao());
 
+        private static TableStyleItemDao _tableStyleItemDao;
+        public static TableStyleItemDao TableStyleItemDao => _tableStyleItemDao ?? (_tableStyleItemDao = new TableStyleItemDao());
+
         private static TagDao _tagDao;
         public static TagDao TagDao => _tagDao ?? (_tagDao = new TagDao());
 
@@ -97,6 +100,7 @@ namespace BaiRong.Core
             TableMatchDao,
             TableMetadataDao,
             TableStyleDao,
+            TableStyleItemDao,
             TagDao,
             UserDao,
             UserLogDao

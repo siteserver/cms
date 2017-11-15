@@ -10,8 +10,8 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalChannelSelect : BasePageCms
     {
-        public Literal ltlPublishmentSystem;
-        public Repeater rptChannel;
+        public Literal LtlPublishmentSystem;
+        public Repeater RptChannel;
 
         private readonly NameValueCollection _additional = new NameValueCollection();
         private bool _isProtocol;
@@ -25,12 +25,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, bool isProtocol)
         {
-            return PageUtils.GetOpenWindowString("栏目选择",
+            return PageUtils.GetOpenLayerString("栏目选择",
                 PageUtils.GetCmsUrl(nameof(ModalChannelSelect), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"isProtocol", isProtocol.ToString()}
-                }), 460, 450, true);
+                }), 460, 450);
         }
 
         public static string GetRedirectUrl(int publishmentSystemId, int nodeId)
@@ -44,13 +44,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringByItemIndex(int publishmentSystemId, string jsMethod, string itemIndex)
         {
-            return PageUtils.GetOpenWindowString("栏目选择",
+            return PageUtils.GetOpenLayerString("栏目选择",
                 PageUtils.GetCmsUrl(nameof(ModalChannelSelect), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"jsMethod", jsMethod},
                     {"itemIndex", itemIndex}
-                }), 460, 450, true);
+                }), 460, 450);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -101,7 +101,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {"jsMethod", _jsMethod},
                         {"itemIndex", _itemIndex.ToString()}
                     });
-                    ltlPublishmentSystem.Text = $"<a href='{linkUrl}'>{nodeInfo.NodeName}</a>";
+                    LtlPublishmentSystem.Text = $"<a href='{linkUrl}'>{nodeInfo.NodeName}</a>";
                     ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.ChannelSelect, null));
                     BindGrid();
                 }
@@ -112,9 +112,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             try
             {
-                rptChannel.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, PublishmentSystemId);
-                rptChannel.ItemDataBound += rptChannel_ItemDataBound;
-                rptChannel.DataBind();
+                RptChannel.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, PublishmentSystemId);
+                RptChannel.ItemDataBound += rptChannel_ItemDataBound;
+                RptChannel.DataBind();
             }
             catch (Exception ex)
             {

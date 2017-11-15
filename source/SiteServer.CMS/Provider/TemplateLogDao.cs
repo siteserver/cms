@@ -2,14 +2,58 @@
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class TemplateLogDao : DataProviderBase
     {
+        public override string TableName => "siteserver_TemplateLog";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateLogInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateLogInfo.TemplateId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateLogInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateLogInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateLogInfo.AddUserName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateLogInfo.ContentLength),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateLogInfo.TemplateContent),
+                DataType = DataType.Text
+            }
+        };
+
         private const string ParmTemplateId = "@TemplateID";
         private const string ParmPublishmentSystemId = "@PublishmentSystemID";
         private const string ParmAddDate = "@AddDate";
@@ -26,9 +70,9 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmTemplateId, DataType.Integer, logInfo.TemplateId),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, logInfo.PublishmentSystemId),
                 GetParameter(ParmAddDate, DataType.DateTime, logInfo.AddDate),
-                GetParameter(ParmAddUserName, DataType.NVarChar, 255, logInfo.AddUserName),
+                GetParameter(ParmAddUserName, DataType.VarChar, 255, logInfo.AddUserName),
                 GetParameter(ParmContentLength, DataType.Integer, logInfo.ContentLength),
-				GetParameter(ParmTemplateContent, DataType.NText, logInfo.TemplateContent)
+				GetParameter(ParmTemplateContent, DataType.Text, logInfo.TemplateContent)
 			};
 
             ExecuteNonQuery(sqlString, parms);

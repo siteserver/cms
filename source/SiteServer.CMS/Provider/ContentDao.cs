@@ -102,7 +102,7 @@ namespace SiteServer.CMS.Provider
             if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor)
             {
                 string sqlString =
-                    $"SELECT Id, {BackgroundContentAttribute.Content} FROM {SqlUtils.GetTableName(tableName)} WHERE (PublishmentSystemId = {publishmentSystemInfo.PublishmentSystemId})";
+                    $"SELECT Id, {BackgroundContentAttribute.Content} FROM {tableName} WHERE (PublishmentSystemId = {publishmentSystemInfo.PublishmentSystemId})";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
@@ -114,7 +114,7 @@ namespace SiteServer.CMS.Provider
                         {
                             content = ContentUtility.GetAutoPageContent(content, publishmentSystemInfo.Additional.AutoPageWordNum);
                             string updateString =
-                                $"UPDATE {SqlUtils.GetTableName(tableName)} SET {BackgroundContentAttribute.Content} = '{content}' WHERE Id = {contentId}";
+                                $"UPDATE {tableName} SET {BackgroundContentAttribute.Content} = '{content}' WHERE Id = {contentId}";
                             try
                             {
                                 ExecuteNonQuery(updateString);
@@ -342,7 +342,7 @@ namespace SiteServer.CMS.Provider
                 DataProvider.NodeDao.UpdateAdditional(nodeInfo);
 
                 string sqlString =
-                    $"DELETE FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeInfo.NodeId} AND SourceId = {SourceManager.Preview}";
+                    $"DELETE FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeInfo.NodeId} AND SourceId = {SourceManager.Preview}";
                 BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
             }
         }
@@ -601,7 +601,7 @@ namespace SiteServer.CMS.Provider
         {
             contentGroupName = PageUtils.FilterSql(contentGroupName);
             string sqlString =
-                $"SELECT * FROM {SqlUtils.GetTableName(tableName)} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId > 0 AND (ContentGroupNameCollection LIKE '{contentGroupName},%' OR ContentGroupNameCollection LIKE '%,{contentGroupName}' OR ContentGroupNameCollection  LIKE '%,{contentGroupName},%'  OR ContentGroupNameCollection='{contentGroupName}')";
+                $"SELECT * FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId > 0 AND (ContentGroupNameCollection LIKE '{contentGroupName},%' OR ContentGroupNameCollection LIKE '%,{contentGroupName}' OR ContentGroupNameCollection  LIKE '%,{contentGroupName},%'  OR ContentGroupNameCollection='{contentGroupName}')";
             return sqlString;
         }
 
@@ -663,7 +663,7 @@ namespace SiteServer.CMS.Provider
             var taxisDirection = isDesc ? "ASC" : "DESC";//升序,但由于页面排序是按Taxis的Desc排序的，所以这里sql里面的ASC/DESC取反
 
             string sqlString =
-                $"SELECT Id, IsTop FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId} OR NodeId = -{nodeId} ORDER BY {attributeName} {taxisDirection}";
+                $"SELECT Id, IsTop FROM {tableName} WHERE NodeId = {nodeId} OR NodeId = -{nodeId} ORDER BY {attributeName} {taxisDirection}";
             var sqlList = new List<string>();
 
             using (var rdr = ExecuteReader(sqlString))
@@ -675,7 +675,7 @@ namespace SiteServer.CMS.Provider
                     var isTop = GetBool(rdr, 1);
 
                     sqlList.Add(
-                        $"UPDATE {SqlUtils.GetTableName(tableName)} SET Taxis = {taxis++}, IsTop = '{isTop}' WHERE Id = {id}");
+                        $"UPDATE {tableName} SET Taxis = {taxis++}, IsTop = '{isTop}' WHERE Id = {id}");
                 }
                 rdr.Close();
             }
@@ -710,7 +710,7 @@ namespace SiteServer.CMS.Provider
         public List<int> GetIdListBySameTitleInOneNode(string tableName, int nodeId, string title)
         {
             var list = new List<int>();
-            string sql = $"SELECT Id FROM {SqlUtils.GetTableName(tableName)} WHERE NodeId = {nodeId} AND Title = '{title}'";
+            string sql = $"SELECT Id FROM {tableName} WHERE NodeId = {nodeId} AND Title = '{title}'";
             using (var rdr = ExecuteReader(sql))
             {
                 while (rdr.Read())
@@ -737,35 +737,67 @@ namespace SiteServer.CMS.Provider
             var secondWhere = string.IsNullOrEmpty(whereString) ? string.Empty : $"AND {whereString}";
             var order = string.IsNullOrEmpty(orderString) ? "IsTop DESC, Id DESC" : orderString;
 
-            string sqlString;
+            var sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order}";
             if (limit > 0 && offset > 0)
             {
-                sqlString = $@"SELECT TOP {limit} * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
-                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+                switch (WebConfigUtils.DatabaseType)
                 {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
+                    case EDatabaseType.MySql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
+                        break;
+                    case EDatabaseType.SqlServer:
+                        sqlString = $@"SELECT TOP {limit} * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
+                        break;
+                    case EDatabaseType.PostgreSql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
+                        break;
+                    case EDatabaseType.Oracle:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
             else if (limit > 0)
             {
-                sqlString = $@"SELECT TOP {limit} * FROM {tableName} {secondWhere} ORDER BY {order}";
-                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+                switch (WebConfigUtils.DatabaseType)
                 {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
+                    case EDatabaseType.MySql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
+                        break;
+                    case EDatabaseType.SqlServer:
+                        sqlString = $@"SELECT TOP {limit} * FROM {tableName} {secondWhere} ORDER BY {order}";
+                        break;
+                    case EDatabaseType.PostgreSql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
+                        break;
+                    case EDatabaseType.Oracle:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} FETCH FIRST {limit} ROWS ONLY";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
             else if (offset > 0)
             {
-                sqlString =
-                    $@"SELECT * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
-                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+                switch (WebConfigUtils.DatabaseType)
                 {
-                    sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
+                    case EDatabaseType.MySql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
+                        break;
+                    case EDatabaseType.SqlServer:
+                        sqlString =
+                            $@"SELECT * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
+                        break;
+                    case EDatabaseType.PostgreSql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
+                        break;
+                    case EDatabaseType.Oracle:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} OFFSET {offset} ROWS";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
-            }
-            else
-            {
-                sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order}";
             }
 
             using (var rdr = ExecuteReader(sqlString))

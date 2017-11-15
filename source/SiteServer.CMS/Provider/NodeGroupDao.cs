@@ -3,15 +3,49 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
 	public class NodeGroupDao : DataProviderBase
 	{
+        public override string TableName => "siteserver_NodeGroup";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(NodeGroupInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(NodeGroupInfo.NodeGroupName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(NodeGroupInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(NodeGroupInfo.Taxis),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(NodeGroupInfo.Description),
+                DataType = DataType.Text
+            }
+        };
+
         private const string SqlInsertNodegroup = "INSERT INTO siteserver_NodeGroup (NodeGroupName, PublishmentSystemID, Taxis, Description) VALUES (@NodeGroupName, @PublishmentSystemID, @Taxis, @Description)";
 		private const string SqlUpdateNodegroup = "UPDATE siteserver_NodeGroup SET Description = @Description WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID";
 		private const string SqlDeleteNodegroup = "DELETE FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID";
@@ -24,15 +58,15 @@ namespace SiteServer.CMS.Provider
 
 		public void Insert(NodeGroupInfo nodeGroup) 
 		{
-            var maxTaxis = GetMaxTaxis(nodeGroup.PublishmentSystemID);
+            var maxTaxis = GetMaxTaxis(nodeGroup.PublishmentSystemId);
             nodeGroup.Taxis = maxTaxis + 1;
 
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, DataType.NVarChar, 255, nodeGroup.NodeGroupName),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, nodeGroup.PublishmentSystemID),
+				GetParameter(ParmGroupName, DataType.VarChar, 255, nodeGroup.NodeGroupName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, nodeGroup.PublishmentSystemId),
                 GetParameter(ParmTaxis, DataType.Integer, nodeGroup.Taxis),
-				GetParameter(ParmDescription, DataType.NText, nodeGroup.Description)
+				GetParameter(ParmDescription, DataType.Text, nodeGroup.Description)
 			};
 
             ExecuteNonQuery(SqlInsertNodegroup, insertParms);
@@ -42,9 +76,9 @@ namespace SiteServer.CMS.Provider
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmDescription, DataType.NText, nodeGroup.Description),
-				GetParameter(ParmGroupName, DataType.NVarChar, 255, nodeGroup.NodeGroupName),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, nodeGroup.PublishmentSystemID)
+				GetParameter(ParmDescription, DataType.Text, nodeGroup.Description),
+				GetParameter(ParmGroupName, DataType.VarChar, 255, nodeGroup.NodeGroupName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, nodeGroup.PublishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlUpdateNodegroup, updateParms);
@@ -54,7 +88,7 @@ namespace SiteServer.CMS.Provider
 		{
 			var nodeGroupParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName),
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
@@ -79,7 +113,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName),
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 			
@@ -104,7 +138,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName),
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 			
@@ -180,7 +214,7 @@ namespace SiteServer.CMS.Provider
             var sqlString = "SELECT Taxis FROM siteserver_NodeGroup WHERE (NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID)";
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName),
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString, parms);
@@ -192,7 +226,7 @@ namespace SiteServer.CMS.Provider
                 $"UPDATE siteserver_NodeGroup SET Taxis = {taxis} WHERE (NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID)";
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName),
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
             ExecuteNonQuery(sqlString, parms);
@@ -219,14 +253,16 @@ namespace SiteServer.CMS.Provider
         {
             //Get Higher Taxis and ID
             //var sqlString = "SELECT TOP 1 NodeGroupName, Taxis FROM siteserver_NodeGroup WHERE (Taxis > (SELECT Taxis FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID) AND PublishmentSystemID = @PublishmentSystemID) ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_NodeGroup", "NodeGroupName, Taxis", "WHERE (Taxis > (SELECT Taxis FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID) AND PublishmentSystemID = @PublishmentSystemID) ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_NodeGroup", "NodeGroupName, Taxis",
+                "WHERE (Taxis > (SELECT Taxis FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID) AND PublishmentSystemID = @PublishmentSystemID)",
+                "ORDER BY Taxis", 1);
 
             var higherGroupName = string.Empty;
             var higherTaxis = 0;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName),
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
@@ -258,13 +294,15 @@ namespace SiteServer.CMS.Provider
         {
             //Get Lower Taxis and ID
             //var sqlString = "SELECT TOP 1 NodeGroupName, Taxis FROM siteserver_NodeGroup WHERE (Taxis < (SELECT Taxis FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID) AND PublishmentSystemID = @PublishmentSystemID) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_NodeGroup", "NodeGroupName, Taxis", "WHERE (Taxis < (SELECT Taxis FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID) AND PublishmentSystemID = @PublishmentSystemID) ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_NodeGroup", "NodeGroupName, Taxis",
+                "WHERE (Taxis < (SELECT Taxis FROM siteserver_NodeGroup WHERE NodeGroupName = @NodeGroupName AND PublishmentSystemID = @PublishmentSystemID) AND PublishmentSystemID = @PublishmentSystemID)",
+                "ORDER BY Taxis DESC", 1);
 
             var lowerGroupName = string.Empty;
             var lowerTaxis = 0;
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, DataType.NVarChar, 255, groupName),
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
             using (var rdr = ExecuteReader(sqlString, parms))

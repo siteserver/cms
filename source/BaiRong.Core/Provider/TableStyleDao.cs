@@ -6,13 +6,100 @@ using BaiRong.Core.Collection;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class TableStyleDao : DataProviderBase
     {
+        public override string TableName => "bairong_TableStyle";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.TableStyleId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.RelatedIdentity),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.TableName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.AttributeName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.Taxis),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.DisplayName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.HelpText),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.IsVisible),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.IsVisibleInList),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.IsSingleLine),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.InputType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.DefaultValue),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.IsHorizontal),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableStyleInfo.ExtendValues),
+                DataType = DataType.Text
+            }
+        };
+
         private const string SqlSelectTableStyle = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
 
         private const string SqlSelectTableStyleId = "SELECT TableStyleID FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
@@ -29,10 +116,7 @@ namespace BaiRong.Core.Provider
 
         private const string SqlUpdateTableStyleTaxis = "UPDATE bairong_TableStyle SET Taxis = @Taxis WHERE TableStyleID = @TableStyleID";
 
-        //AuxiliaryTableStyleItemInfo
-        private const string SqlSelectAllStyleItem = "SELECT TableStyleItemID, TableStyleID, ItemTitle, ItemValue, IsSelected FROM bairong_TableStyleItem WHERE (TableStyleID = @TableStyleID)";
-
-        private const string SqlDeleteStyleItems = "DELETE FROM bairong_TableStyleItem WHERE TableStyleID = @TableStyleID";
+        private const string SqlInsertTableStyle = "INSERT INTO bairong_TableStyle (RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues) VALUES (@RelatedIdentity, @TableName, @AttributeName, @Taxis, @DisplayName, @HelpText, @IsVisible, @IsVisibleInList, @IsSingleLine, @InputType, @DefaultValue, @IsHorizontal, @ExtendValues)";
 
         private const string ParmTableStyleId = "@TableStyleID";
         private const string ParmRelatedIdentity = "@RelatedIdentity";
@@ -49,11 +133,6 @@ namespace BaiRong.Core.Provider
         private const string ParmIsHorizontal = "@IsHorizontal";
         private const string ParmExtendValues = "@ExtendValues";
 
-        //AuxiliaryTableStyleItemInfo
-        private const string ParmItemTitle = "@ItemTitle";
-        private const string ParmItemValue = "@ItemValue";
-        private const string ParmIsSelected = "@IsSelected";
-
         public int Insert(TableStyleInfo styleInfo, ETableStyle tableStyle)
         {
             return Insert(styleInfo, tableStyle, false);
@@ -62,20 +141,6 @@ namespace BaiRong.Core.Provider
         public int InsertWithTaxis(TableStyleInfo styleInfo, ETableStyle tableStyle)
         {
             return Insert(styleInfo, tableStyle, true);
-        }
-
-        private string GetInsertTableStyleSqlString()
-        {
-            var sqlInsertTableStyle = "INSERT INTO bairong_TableStyle (RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues) VALUES (@RelatedIdentity, @TableName, @AttributeName, @Taxis, @DisplayName, @HelpText, @IsVisible, @IsVisibleInList, @IsSingleLine, @InputType, @DefaultValue, @IsHorizontal, @ExtendValues)";
-
-            return sqlInsertTableStyle;
-        }
-
-        private string GetInsertTableStyleItemSqlString()
-        {
-            var sqlInsertStyleItem = "INSERT INTO bairong_TableStyleItem (TableStyleID, ItemTitle, ItemValue, IsSelected) VALUES (@TableStyleID, @ItemTitle, @ItemValue, @IsSelected)";
-
-            return sqlInsertStyleItem;
         }
 
         private int Insert(TableStyleInfo styleInfo, ETableStyle tableStyle, bool isWithTaxis)
@@ -93,7 +158,7 @@ namespace BaiRong.Core.Provider
                 GetParameter(ParmTableName, DataType.VarChar, 50, styleInfo.TableName),
 				GetParameter(ParmAttributeName, DataType.VarChar, 50, styleInfo.AttributeName),
                 GetParameter(ParmTaxis, DataType.Integer, styleInfo.Taxis),
-                GetParameter(ParmDisplayName, DataType.NVarChar, 255, styleInfo.DisplayName),
+                GetParameter(ParmDisplayName, DataType.VarChar, 255, styleInfo.DisplayName),
                 GetParameter(ParmHelpText, DataType.VarChar, 255, styleInfo.HelpText),
                 GetParameter(ParmIsVisible, DataType.VarChar, 18, styleInfo.IsVisible.ToString()),
                 GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, styleInfo.IsVisibleInList.ToString()),
@@ -101,11 +166,8 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmInputType, DataType.VarChar, 50, styleInfo.InputType),
                 GetParameter(ParmDefaultValue, DataType.VarChar, 255, styleInfo.DefaultValue),
                 GetParameter(ParmIsHorizontal, DataType.VarChar, 18, styleInfo.IsHorizontal.ToString()),
-                GetParameter(ParmExtendValues, DataType.NText, styleInfo.Additional.ToString())
+                GetParameter(ParmExtendValues, DataType.Text, styleInfo.Additional.ToString())
 			};
-
-            var sqlInsertTableStyle = GetInsertTableStyleSqlString();
-            var sqlInsertStyleItem = GetInsertTableStyleItemSqlString();
 
             using (var conn = GetConnection())
             {
@@ -114,24 +176,9 @@ namespace BaiRong.Core.Provider
                 {
                     try
                     {
-                        tableStyleId = ExecuteNonQueryAndReturnId(trans, sqlInsertTableStyle, insertParms);
+                        tableStyleId = ExecuteNonQueryAndReturningId(trans, SqlInsertTableStyle, nameof(TableStyleInfo.TableStyleId), insertParms);
 
-                        if (styleInfo.StyleItems != null && styleInfo.StyleItems.Count > 0)
-                        {
-                            foreach (var itemInfo in styleInfo.StyleItems)
-                            {
-                                var insertItemParms = new IDataParameter[]
-							    {
-								    GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId),
-								    GetParameter(ParmItemTitle, DataType.NVarChar, 255, itemInfo.ItemTitle),
-								    GetParameter(ParmItemValue, DataType.VarChar, 255, itemInfo.ItemValue),
-								    GetParameter(ParmIsSelected, DataType.VarChar, 18, itemInfo.IsSelected.ToString())
-							    };
-
-                                ExecuteNonQuery(trans, sqlInsertStyleItem, insertItemParms);
-
-                            }
-                        }
+                        BaiRongDataProvider.TableStyleItemDao.Insert(trans, tableStyleId, styleInfo.StyleItems);
 
                         trans.Commit();
                     }
@@ -167,7 +214,7 @@ namespace BaiRong.Core.Provider
                 GetParameter(ParmTableName, DataType.VarChar, 50, styleInfo.TableName),
 			    GetParameter(ParmAttributeName, DataType.VarChar, 50, styleInfo.AttributeName),
                 GetParameter(ParmTaxis, DataType.Integer, styleInfo.Taxis),
-                GetParameter(ParmDisplayName, DataType.NVarChar, 255, styleInfo.DisplayName),
+                GetParameter(ParmDisplayName, DataType.VarChar, 255, styleInfo.DisplayName),
                 GetParameter(ParmHelpText, DataType.VarChar, 255, styleInfo.HelpText),
                 GetParameter(ParmIsVisible, DataType.VarChar, 18, styleInfo.IsVisible.ToString()),
                 GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, styleInfo.IsVisibleInList.ToString()),
@@ -175,102 +222,19 @@ namespace BaiRong.Core.Provider
 			    GetParameter(ParmInputType, DataType.VarChar, 50, styleInfo.InputType),
                 GetParameter(ParmDefaultValue, DataType.VarChar, 255, styleInfo.DefaultValue),
                 GetParameter(ParmIsHorizontal, DataType.VarChar, 18, styleInfo.IsHorizontal.ToString()),
-                GetParameter(ParmExtendValues, DataType.NText, styleInfo.Additional.ToString())
+                GetParameter(ParmExtendValues, DataType.Text, styleInfo.Additional.ToString())
 		    };
-
-            var sqlInsertTableStyle = GetInsertTableStyleSqlString();
-            var sqlInsertStyleItem = GetInsertTableStyleItemSqlString();
 
             if (styleInfo.StyleItems == null || styleInfo.StyleItems.Count == 0)
             {
-                ExecuteNonQuery(trans, sqlInsertTableStyle, insertParms);
+                ExecuteNonQuery(trans, SqlInsertTableStyle, insertParms);
             }
             else
             {
-                var tableStyleId = ExecuteNonQueryAndReturnId(trans, sqlInsertTableStyle, insertParms);
+                var tableStyleId = ExecuteNonQueryAndReturningId(trans, SqlInsertTableStyle, nameof(TableStyleInfo.TableStyleId), insertParms);
 
-                foreach (var itemInfo in styleInfo.StyleItems)
-                {
-                    var insertItemParms = new IDataParameter[]
-				    {
-					    GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId),
-					    GetParameter(ParmItemTitle, DataType.NVarChar, 255, itemInfo.ItemTitle),
-					    GetParameter(ParmItemValue, DataType.VarChar, 255, itemInfo.ItemValue),
-					    GetParameter(ParmIsSelected, DataType.VarChar, 18, itemInfo.IsSelected.ToString())
-				    };
-
-                    ExecuteNonQuery(trans, sqlInsertStyleItem, insertItemParms);
-
-                }
+                BaiRongDataProvider.TableStyleItemDao.Insert(trans, tableStyleId, styleInfo.StyleItems);
             }
-        }
-
-        public void InsertStyleItems(List<TableStyleItemInfo> styleItems)
-        {
-            var sqlInsertStyleItem = GetInsertTableStyleItemSqlString();
-
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        foreach (var itemInfo in styleItems)
-                        {
-                            var insertItemParms = new IDataParameter[]
-							{
-								GetParameter(ParmTableStyleId, DataType.Integer, itemInfo.TableStyleId),
-								GetParameter(ParmItemTitle, DataType.NVarChar, 255, itemInfo.ItemTitle),
-								GetParameter(ParmItemValue, DataType.VarChar, 255, itemInfo.ItemValue),
-								GetParameter(ParmIsSelected, DataType.VarChar, 18, itemInfo.IsSelected.ToString())
-							};
-
-                            ExecuteNonQuery(trans, sqlInsertStyleItem, insertItemParms);
-
-                        }
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-        }
-
-        public void DeleteStyleItems(int tableStyleId)
-        {
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId)
-			};
-
-            ExecuteNonQuery(SqlDeleteStyleItems, parms);
-        }
-
-        public List<TableStyleItemInfo> GetStyleItemInfoList(int tableStyleId)
-        {
-            var styleItems = new List<TableStyleItemInfo>();
-
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId)
-			};
-
-            using (var rdr = ExecuteReader(SqlSelectAllStyleItem, parms))
-            {
-                while (rdr.Read())
-                {
-                    var i = 0;
-                    var info = new TableStyleItemInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i));
-                    styleItems.Add(info);
-                }
-                rdr.Close();
-            }
-            return styleItems;
         }
 
         public void Update(TableStyleInfo info)
@@ -279,7 +243,7 @@ namespace BaiRong.Core.Provider
 			{
 				GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
                 GetParameter(ParmTaxis, DataType.Integer, info.Taxis),
-                GetParameter(ParmDisplayName, DataType.NVarChar, 255, info.DisplayName),
+                GetParameter(ParmDisplayName, DataType.VarChar, 255, info.DisplayName),
                 GetParameter(ParmHelpText, DataType.VarChar, 255, info.HelpText),
                 GetParameter(ParmIsVisible, DataType.VarChar, 18, info.IsVisible.ToString()),
 	            GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, info.IsVisibleInList.ToString()),
@@ -287,7 +251,7 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmInputType, DataType.VarChar, 50, info.InputType),
                 GetParameter(ParmDefaultValue, DataType.VarChar, 255, info.DefaultValue),
                 GetParameter(ParmIsHorizontal, DataType.VarChar, 18, info.IsHorizontal.ToString()),
-                GetParameter(ParmExtendValues, DataType.NText, info.Additional.ToString()),
+                GetParameter(ParmExtendValues, DataType.Text, info.Additional.ToString()),
                 GetParameter(ParmTableStyleId, DataType.Integer, info.TableStyleId)
 			};
 
@@ -483,7 +447,7 @@ namespace BaiRong.Core.Provider
                     var styleInfo = GetTableStyleInfoByReader(rdr);
                     if (InputTypeUtils.Equals(styleInfo.InputType, InputType.CheckBox) || InputTypeUtils.Equals(styleInfo.InputType, InputType.Radio) || InputTypeUtils.Equals(styleInfo.InputType, InputType.SelectMultiple) || InputTypeUtils.Equals(styleInfo.InputType, InputType.SelectOne))
                     {
-                        var styleItems = GetStyleItemInfoList(styleInfo.TableStyleId);
+                        var styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                         if (styleItems != null && styleItems.Count > 0)
                         {
                             styleInfo.StyleItems = styleItems;
@@ -520,7 +484,9 @@ namespace BaiRong.Core.Provider
             if (styleInfo != null)
             {
                 //var sqlString = "SELECT TOP 1 TableStyleID, Taxis FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND Taxis > (SELECT Taxis FROM bairong_TableStyle WHERE TableStyleID = @TableStyleID) ORDER BY Taxis";
-                var sqlString = SqlUtils.GetTopSqlString("bairong_TableStyle", "TableStyleID, Taxis", "WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND Taxis > (SELECT Taxis FROM bairong_TableStyle WHERE TableStyleID = @TableStyleID) ORDER BY Taxis", 1);
+                var sqlString = SqlUtils.GetTopSqlString("bairong_TableStyle", "TableStyleID, Taxis",
+                    "WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND Taxis > (SELECT Taxis FROM bairong_TableStyle WHERE TableStyleID = @TableStyleID)",
+                    "ORDER BY Taxis", 1);
 
                 var higherId = 0;
                 var higherTaxis = 0;
@@ -556,7 +522,9 @@ namespace BaiRong.Core.Provider
             if (styleInfo != null)
             {
                 //var sqlString = "SELECT TOP 1 TableStyleID, Taxis FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND Taxis < (SELECT Taxis FROM bairong_TableStyle WHERE TableStyleID = @TableStyleID) ORDER BY Taxis DESC";
-                var sqlString = SqlUtils.GetTopSqlString("bairong_TableStyle", "TableStyleID, Taxis", "WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND Taxis < (SELECT Taxis FROM bairong_TableStyle WHERE TableStyleID = @TableStyleID) ORDER BY Taxis DESC", 1);
+                var sqlString = SqlUtils.GetTopSqlString("bairong_TableStyle", "TableStyleID, Taxis",
+                    "WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND Taxis < (SELECT Taxis FROM bairong_TableStyle WHERE TableStyleID = @TableStyleID)",
+                    "ORDER BY Taxis DESC", 1);
                 var lowerId = 0;
                 var lowerTaxis = 0;
 

@@ -33,6 +33,16 @@ namespace BaiRong.Core.Data
             return GetParameterInner(parameterName, dataType, 0, value);
         }
 
+        protected IDbDataParameter GetParameter(string parameterName, DataType dataType, bool value)
+        {
+            return GetParameterInner(parameterName, dataType, 0, value);
+        }
+
+        protected IDbDataParameter GetParameter(string parameterName, DataType dataType, decimal value)
+        {
+            return GetParameterInner(parameterName, dataType, 0, value);
+        }
+
         protected IDbDataParameter GetParameter(string parameterName, DataType dataType, DateTime value)
         {
             return GetParameterInner(parameterName, dataType, 0, value);
@@ -207,34 +217,14 @@ namespace BaiRong.Core.Data
             return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteNonQuery(ConnectionString, CommandType.Text, commandText) : 0;
         }
 
-        protected int ExecuteNonQueryAndReturnId(IDbTransaction trans, string commandText, params IDataParameter[] commandParameters)
+        protected int ExecuteNonQueryAndReturningId(string commandText, string idColumnName, params IDataParameter[] commandParameters)
         {
-            if (string.IsNullOrEmpty(commandText)) return 0;
-
-            var id = 0;
-            WebConfigUtils.Helper.ExecuteNonQuery(trans, CommandType.Text, commandText, commandParameters);
-
-            using (var rdr = ExecuteReader(trans, "SELECT @@IDENTITY AS 'ID'"))
-            {
-                if (rdr.Read())
-                {
-                    id = TranslateUtils.ToInt(GetString(rdr, 0));
-                }
-                rdr.Close();
-            }
-
-            if (id == 0)
-            {
-                trans.Rollback();
-            }
-
-            return id;
+            return !string.IsNullOrEmpty(commandText) && !string.IsNullOrEmpty(idColumnName) ? WebConfigUtils.Helper.ExecuteNonQueryAndReturningId(ConnectionString, CommandType.Text, commandText, idColumnName, commandParameters) : 0;
         }
 
-
-        protected int ExecuteNonQueryAndReturnId(IDbTransaction trans, string commandText)
+        protected int ExecuteNonQueryAndReturningId(IDbTransaction trans, string commandText, string idColumnName, params IDataParameter[] commandParameters)
         {
-            return ExecuteNonQueryAndReturnId(trans, commandText, null);
+            return !string.IsNullOrEmpty(commandText) && !string.IsNullOrEmpty(idColumnName) ? WebConfigUtils.Helper.ExecuteNonQueryAndReturningId(trans, CommandType.Text, commandText, idColumnName, commandParameters) : 0;
         }
 
 

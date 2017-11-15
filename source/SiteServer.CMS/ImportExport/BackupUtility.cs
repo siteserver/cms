@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using BaiRong.Core;
-using BaiRong.Core.IO;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
 
@@ -65,8 +64,8 @@ namespace SiteServer.CMS.ImportExport
             exportObject.ExportAd(adFilePath);
             var gatherRuleFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileGatherRule);
             exportObject.ExportGatherRule(gatherRuleFilePath);
-            var inputDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.Input);
-            exportObject.ExportInput(inputDirectoryPath);
+            //var inputDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.Input);
+            //exportObject.ExportInput(inputDirectoryPath);
             var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             exportObject.ExportConfiguration(configurationFilePath);
             exportObject.ExportMetadata(publishmentSystemInfo.PublishmentSystemName, publishmentSystemInfo.Additional.WebUrl, string.Empty, string.Empty, metadataPath);
@@ -146,8 +145,8 @@ namespace SiteServer.CMS.ImportExport
             importObject.ImportGatherRule(gatherRuleFilePath, isOverride);
 
             //导入提交表单
-            var inputDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Input);
-            importObject.ImportInput(inputDirectoryPath, isOverride);
+            //var inputDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Input);
+            //importObject.ImportInput(inputDirectoryPath, isOverride);
 
             //导入站点设置
             var configurationFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);

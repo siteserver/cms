@@ -5,7 +5,8 @@ namespace BaiRong.Core.Model
 	public class ConfigInfo
 	{
 	    public ConfigInfo()
-		{
+	    {
+	        Id = 0;
             IsInitialized = false;
             DatabaseVersion = string.Empty;
             UpdateDate = DateTime.Now;
@@ -19,6 +20,8 @@ namespace BaiRong.Core.Model
             UpdateDate = updateDate;
             SystemConfig = systemConfig;
 		}
+
+        public int Id { get; set; }
 
         public bool IsInitialized { get; set; }
 

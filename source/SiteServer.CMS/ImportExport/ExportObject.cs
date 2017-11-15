@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using BaiRong.Core;
-using BaiRong.Core.IO;
 using BaiRong.Core.IO.FileManagement;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
@@ -212,36 +211,36 @@ namespace SiteServer.CMS.ImportExport
             gatherRuleIe.ExportGatherRule(gatherRuleInfoArrayList);
         }
 
-        public void ExportInput(string inputDirectoryPath)
-        {
-            DirectoryUtils.CreateDirectoryIfNotExists(inputDirectoryPath);
+        //public void ExportInput(string inputDirectoryPath)
+        //{
+        //    DirectoryUtils.CreateDirectoryIfNotExists(inputDirectoryPath);
 
-            var inputIe = new InputIe(_publishmentSystemInfo.PublishmentSystemId, inputDirectoryPath);
-            var inputIdList = DataProvider.InputDao.GetInputIdList(_publishmentSystemInfo.PublishmentSystemId);
-            foreach (var inputId in inputIdList)
-            {
-                inputIe.ExportInput(inputId);
-            }
-        }
+        //    var inputIe = new InputIe(_publishmentSystemInfo.PublishmentSystemId, inputDirectoryPath);
+        //    var inputIdList = DataProvider.InputDao.GetInputIdList(_publishmentSystemInfo.PublishmentSystemId);
+        //    foreach (var inputId in inputIdList)
+        //    {
+        //        inputIe.ExportInput(inputId);
+        //    }
+        //}
 
-        public string ExportInput(int inputId)
-        {
-            var directoryPath = PathUtils.GetTemporaryFilesPath("input");
-            var filePath = PathUtils.GetTemporaryFilesPath("input.zip");
+        //public string ExportInput(int inputId)
+        //{
+        //    var directoryPath = PathUtils.GetTemporaryFilesPath("input");
+        //    var filePath = PathUtils.GetTemporaryFilesPath("input.zip");
 
-            FileUtils.DeleteFileIfExists(filePath);
-            DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
-            DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
+        //    FileUtils.DeleteFileIfExists(filePath);
+        //    DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
+        //    DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            var inputIe = new InputIe(_publishmentSystemInfo.PublishmentSystemId, directoryPath);
-            inputIe.ExportInput(inputId);
+        //    var inputIe = new InputIe(_publishmentSystemInfo.PublishmentSystemId, directoryPath);
+        //    inputIe.ExportInput(inputId);
 
-            ZipUtils.PackFiles(filePath, directoryPath);
+        //    ZipUtils.PackFiles(filePath, directoryPath);
 
-            DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
+        //    DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
 
-            return PathUtils.GetFileName(filePath);
-        }
+        //    return PathUtils.GetFileName(filePath);
+        //}
 
         public void ExportRelatedField(string relatedFieldDirectoryPath)
         {

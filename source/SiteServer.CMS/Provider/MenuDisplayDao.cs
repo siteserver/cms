@@ -1,17 +1,206 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Core.SystemData;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
 	public class MenuDisplayDao : DataProviderBase
 	{
-		private const string SqlSelectMenuDisplay = "SELECT MenuDisplayID, PublishmentSystemID, MenuDisplayName, Vertical, FontFamily, FontSize, FontWeight, FontStyle, MenuItemHAlign, MenuItemVAlign, FontColor, MenuItemBgColor, FontColorHilite, MenuHiliteBgColor, XPosition, YPosition, HideOnMouseOut, MenuWidth, MenuItemHeight, MenuItemPadding, MenuItemSpacing, MenuItemIndent, HideTimeout, MenuBgOpaque, MenuBorder, BGColor, MenuBorderBgColor, MenuLiteBgColor, ChildMenuIcon, AddDate, IsDefault, Description FROM siteserver_MenuDisplay WHERE MenuDisplayID = @MenuDisplayID";
+        public override string TableName => "siteserver_MenuDisplay";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuDisplayId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuDisplayName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.Vertical),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.FontFamily),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.FontSize),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.FontWeight),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.FontStyle),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuItemHAlign),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuItemVAlign),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.FontColor),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuItemBgColor),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.FontColorHilite),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuHiliteBgColor),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.XPosition),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.YPosition),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.HideOnMouseOut),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuWidth),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuItemHeight),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuItemPadding),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuItemSpacing),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuItemIndent),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.HideTimeout),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuBgOpaque),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuBorder),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.BgColor),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuBorderBgColor),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.MenuLiteBgColor),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.ChildMenuIcon),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.IsDefault),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(MenuDisplayInfo.Description),
+                DataType = DataType.Text
+            }
+        };
+
+        private const string SqlSelectMenuDisplay = "SELECT MenuDisplayID, PublishmentSystemID, MenuDisplayName, Vertical, FontFamily, FontSize, FontWeight, FontStyle, MenuItemHAlign, MenuItemVAlign, FontColor, MenuItemBgColor, FontColorHilite, MenuHiliteBgColor, XPosition, YPosition, HideOnMouseOut, MenuWidth, MenuItemHeight, MenuItemPadding, MenuItemSpacing, MenuItemIndent, HideTimeout, MenuBgOpaque, MenuBorder, BGColor, MenuBorderBgColor, MenuLiteBgColor, ChildMenuIcon, AddDate, IsDefault, Description FROM siteserver_MenuDisplay WHERE MenuDisplayID = @MenuDisplayID";
 
 		private const string SqlSelectMenuDisplayByMenuDisplayName = "SELECT MenuDisplayID, PublishmentSystemID, MenuDisplayName, Vertical, FontFamily, FontSize, FontWeight, FontStyle, MenuItemHAlign, MenuItemVAlign, FontColor, MenuItemBgColor, FontColorHilite, MenuHiliteBgColor, XPosition, YPosition, HideOnMouseOut, MenuWidth, MenuItemHeight, MenuItemPadding, MenuItemSpacing, MenuItemIndent, HideTimeout, MenuBgOpaque, MenuBorder, BGColor, MenuBorderBgColor, MenuLiteBgColor, ChildMenuIcon, AddDate, IsDefault, Description FROM siteserver_MenuDisplay WHERE PublishmentSystemID = @PublishmentSystemID AND MenuDisplayName = @MenuDisplayName";
 
@@ -102,7 +291,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmChildMenuIcon, DataType.VarChar, 200, info.ChildMenuIcon),
 				GetParameter(ParmAddDate, DataType.DateTime, info.AddDate),
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, info.IsDefault.ToString()),
-				GetParameter(ParmDescription, DataType.NText, info.Description)
+				GetParameter(ParmDescription, DataType.Text, info.Description)
 			};
 
             ExecuteNonQuery(sqlString, insertParms);
@@ -146,7 +335,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmChildMenuIcon, DataType.VarChar, 200, info.ChildMenuIcon),
 				GetParameter(ParmAddDate, DataType.DateTime, info.AddDate),
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, info.IsDefault.ToString()),
-				GetParameter(ParmDescription, DataType.NText, info.Description),
+				GetParameter(ParmDescription, DataType.Text, info.Description),
 				GetParameter(ParmMenuDisplayId, DataType.Integer, info.MenuDisplayId)
 			};
 

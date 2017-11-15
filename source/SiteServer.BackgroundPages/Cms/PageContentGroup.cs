@@ -9,8 +9,8 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageContentGroup : BasePageCms
     {
-		public DataGrid dgContents;
-		public Button AddGroup;
+		public DataGrid DgContents;
+		public Button BtnAddGroup;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
@@ -56,19 +56,17 @@ namespace SiteServer.BackgroundPages.Cms
                         case "DOWN":
                             DataProvider.ContentGroupDao.UpdateTaxisToDown(PublishmentSystemId, groupName);
                             break;
-                        default:
-                            break;
                     }
                     SuccessMessage("排序成功！");
                     AddWaitAndRedirectScript(GetRedirectUrl(PublishmentSystemId));
                 }
 
-                dgContents.DataSource = DataProvider.ContentGroupDao.GetDataSource(PublishmentSystemId);
-                dgContents.ItemDataBound += dgContents_ItemDataBound;
-                dgContents.DataBind();
+                DgContents.DataSource = DataProvider.ContentGroupDao.GetDataSource(PublishmentSystemId);
+                DgContents.ItemDataBound += DgContents_ItemDataBound;
+                DgContents.DataBind();
 
                 var showPopWinString = ModalContentGroupAdd.GetOpenWindowString(PublishmentSystemId);
-				AddGroup.Attributes.Add("onclick", showPopWinString);
+                BtnAddGroup.Attributes.Add("onclick", showPopWinString);
 			}
 		}
 
@@ -100,30 +98,29 @@ namespace SiteServer.BackgroundPages.Cms
                 $"<a href=\"{urlGroup}\" onClick=\"javascript:return confirm('此操作将删除内容组“{groupName}”，确认吗？');\">删除</a>";
 		}
 
-        void dgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
+        private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
+
+            var groupName = SqlUtils.EvalString(e.Item.DataItem, "ContentGroupName");
+
+            var upLinkButton = (HyperLink)e.Item.FindControl("UpLinkButton");
+            var downLinkButton = (HyperLink)e.Item.FindControl("DownLinkButton");
+
+            upLinkButton.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageContentGroup), new NameValueCollection
             {
-                var groupName = SqlUtils.EvalString(e.Item.DataItem, "ContentGroupName");
-
-                var upLinkButton = e.Item.FindControl("UpLinkButton") as HyperLink;
-                var downLinkButton = e.Item.FindControl("DownLinkButton") as HyperLink;
-
-                upLinkButton.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageContentGroup), new NameValueCollection
-                {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                    {"GroupName", groupName},
-                    {"SetTaxis", true.ToString()},
-                    {"Direction", "UP"}
-                });
-                downLinkButton.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageContentGroup), new NameValueCollection
-                {
-                    {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                    {"GroupName", groupName},
-                    {"SetTaxis", true.ToString()},
-                    {"Direction", "DOWN"}
-                });
-            }
+                {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                {"GroupName", groupName},
+                {"SetTaxis", true.ToString()},
+                {"Direction", "UP"}
+            });
+            downLinkButton.NavigateUrl = PageUtils.GetCmsUrl(nameof(PageContentGroup), new NameValueCollection
+            {
+                {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                {"GroupName", groupName},
+                {"SetTaxis", true.ToString()},
+                {"Direction", "DOWN"}
+            });
         }
 	}
 }

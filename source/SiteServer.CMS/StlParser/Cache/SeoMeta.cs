@@ -19,7 +19,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetIntCache(cacheKey);
                 if (retval == -1)
                 {
-                    retval = DataProvider.SeoMetaDao.GetSeoMetaIdByNodeId(nodeId, isChannel);
+                    retval = DataProvider.SeoMetasInNodesDao.GetSeoMetaIdByNodeId(nodeId, isChannel);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }

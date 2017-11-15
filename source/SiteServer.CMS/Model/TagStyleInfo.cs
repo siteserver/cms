@@ -2,112 +2,56 @@ namespace SiteServer.CMS.Model
 {
 	public class TagStyleInfo
 	{
-        private int styleID;
-        private string styleName;
-        private string elementName;
-		private int publishmentSystemID;
-        private bool isTemplate;
-        private string styleTemplate;
-        private string scriptTemplate;
-        private string contentTemplate;
-        private string successTemplate;
-        private string failureTemplate;
-        private string settingsXML;
-
-		public TagStyleInfo()
+	    public TagStyleInfo()
 		{
-            styleID = 0;
-            styleName = string.Empty;
-            elementName = string.Empty;
-			publishmentSystemID = 0;
-            isTemplate = false;
-            styleTemplate = string.Empty;
-            scriptTemplate = string.Empty;
-            contentTemplate = string.Empty;
-            successTemplate = string.Empty;
-            failureTemplate = string.Empty;
-            settingsXML = string.Empty;
+            StyleId = 0;
+            StyleName = string.Empty;
+            ElementName = string.Empty;
+			PublishmentSystemId = 0;
+            IsTemplate = false;
+            StyleTemplate = string.Empty;
+            ScriptTemplate = string.Empty;
+            ContentTemplate = string.Empty;
+            SuccessTemplate = string.Empty;
+            FailureTemplate = string.Empty;
+            SettingsXml = string.Empty;
 		}
 
-        public TagStyleInfo(int styleID, string styleName, string elementName, int publishmentSystemID, bool isTemplate, string styleTemplate, string scriptTemplate, string contentTemplate, string successTemplate, string failureTemplate, string settingsXML) 
+        public TagStyleInfo(int styleId, string styleName, string elementName, int publishmentSystemId, bool isTemplate, string styleTemplate, string scriptTemplate, string contentTemplate, string successTemplate, string failureTemplate, string settingsXml) 
 		{
-            this.styleID = styleID;
-            this.styleName = styleName;
-            this.elementName = elementName;
-            this.publishmentSystemID = publishmentSystemID;
-            this.isTemplate = isTemplate;
-            this.styleTemplate = styleTemplate;
-            this.scriptTemplate = scriptTemplate;
-            this.contentTemplate = contentTemplate;
-            this.successTemplate = successTemplate;
-            this.failureTemplate = failureTemplate;
-            this.settingsXML = settingsXML;
+            StyleId = styleId;
+            StyleName = styleName;
+            ElementName = elementName;
+            PublishmentSystemId = publishmentSystemId;
+            IsTemplate = isTemplate;
+            StyleTemplate = styleTemplate;
+            ScriptTemplate = scriptTemplate;
+            ContentTemplate = contentTemplate;
+            SuccessTemplate = successTemplate;
+            FailureTemplate = failureTemplate;
+            SettingsXml = settingsXml;
 		}
 
-        public int StyleID
-        {
-            get { return styleID; }
-            set { styleID = value; }
-        }
+        public int StyleId { get; set; }
 
-        public string StyleName
-		{
-            get { return styleName; }
-            set { styleName = value; }
-		}
+	    public string StyleName { get; set; }
 
-        public string ElementName
-        {
-            get { return elementName; }
-            set { elementName = value; }
-        }
+	    public string ElementName { get; set; }
 
-		public int PublishmentSystemID
-		{
-			get{ return publishmentSystemID; }
-			set{ publishmentSystemID = value; }
-		}
+	    public int PublishmentSystemId { get; set; }
 
-        public bool IsTemplate
-        {
-            get { return isTemplate; }
-            set { isTemplate = value; }
-        }
+	    public bool IsTemplate { get; set; }
 
-        public string StyleTemplate
-        {
-            get { return styleTemplate; }
-            set { styleTemplate = value; }
-        }
+	    public string StyleTemplate { get; set; }
 
-        public string ScriptTemplate
-        {
-            get { return scriptTemplate; }
-            set { scriptTemplate = value; }
-        }
+	    public string ScriptTemplate { get; set; }
 
-        public string ContentTemplate
-        {
-            get { return contentTemplate; }
-            set { contentTemplate = value; }
-        }
+	    public string ContentTemplate { get; set; }
 
-        public string SuccessTemplate
-        {
-            get { return successTemplate; }
-            set { successTemplate = value; }
-        }
+	    public string SuccessTemplate { get; set; }
 
-        public string FailureTemplate
-        {
-            get { return failureTemplate; }
-            set { failureTemplate = value; }
-        }
+	    public string FailureTemplate { get; set; }
 
-        public string SettingsXML
-        {
-            get { return settingsXML; }
-            set { settingsXML = value; }
-        }
+	    public string SettingsXml { get; set; }
 	}
 }

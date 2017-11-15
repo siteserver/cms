@@ -49,7 +49,7 @@ namespace BaiRong.Core.Provider
             new TableColumnInfo
             {
                 ColumnName = nameof(ContentCheckInfo.UserName),
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 255
             },
             new TableColumnInfo
@@ -71,7 +71,7 @@ namespace BaiRong.Core.Provider
             new TableColumnInfo
             {
                 ColumnName = nameof(ContentCheckInfo.Reasons),
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 255
             }
         };
@@ -105,11 +105,11 @@ namespace BaiRong.Core.Provider
                 GetParameter(ParmNodeid, DataType.Integer, checkInfo.NodeId),
                 GetParameter(ParmContentid, DataType.Integer, checkInfo.ContentId),
                 GetParameter(ParmIsAdmin, DataType.VarChar, 18, checkInfo.IsAdmin.ToString()),
-                GetParameter(ParmUserName, DataType.NVarChar, 255, checkInfo.UserName),
+                GetParameter(ParmUserName, DataType.VarChar, 255, checkInfo.UserName),
                 GetParameter(ParmIsChecked, DataType.VarChar, 18, checkInfo.IsChecked.ToString()),
                 GetParameter(ParmCheckedLevel, DataType.Integer, checkInfo.CheckedLevel),
                 GetParameter(ParmCheckDate, DataType.DateTime, checkInfo.CheckDate),
-                GetParameter(ParmReasons, DataType.NVarChar, 255, checkInfo.Reasons),
+                GetParameter(ParmReasons, DataType.VarChar, 255, checkInfo.Reasons),
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -152,7 +152,7 @@ namespace BaiRong.Core.Provider
             ContentCheckInfo checkInfo = null;
 
             //var sqlString = "SELECT TOP 1 CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons FROM bairong_ContentCheck WHERE TableName = @TableName AND ContentID = @ContentID ORDER BY CheckID DESC";
-            var sqlString = SqlUtils.GetTopSqlString(TableName, "CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons", "WHERE TableName = @TableName AND ContentID = @ContentID ORDER BY CheckID DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString(TableName, "CheckID, TableName, PublishmentSystemID, NodeID, ContentID, IsAdmin, UserName, IsChecked, CheckedLevel, CheckDate, Reasons", "WHERE TableName = @TableName AND ContentID = @ContentID", "ORDER BY CheckID DESC", 1);
 
             var parms = new IDataParameter[]
 			{
@@ -173,9 +173,9 @@ namespace BaiRong.Core.Provider
             return checkInfo;
         }
 
-		public List<ContentCheckInfo> GetCheckInfoArrayList(string tableName, int contentId)
+		public List<ContentCheckInfo> GetCheckInfoList(string tableName, int contentId)
 		{
-			var arraylist = new List<ContentCheckInfo>();
+			var list = new List<ContentCheckInfo>();
 
             var parms = new IDataParameter[]
 			{
@@ -188,12 +188,12 @@ namespace BaiRong.Core.Provider
 				while (rdr.Read())
 				{
 				    var i = 0;
-                    arraylist.Add(new ContentCheckInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i)));
+                    list.Add(new ContentCheckInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i)));
 				}
 				rdr.Close();
 			}
 
-			return arraylist;
+			return list;
 		}
 	}
 }

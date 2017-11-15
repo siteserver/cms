@@ -38,7 +38,6 @@ namespace BaiRong.Core
             public const string UserFiles = "UserFiles";
             public const string BackupFiles = "BackupFiles";
             public const string TemporaryFiles = "TemporaryFiles";
-            public const string Configuration = "Configuration";
             public const string Plugins = "Plugins";
         }
 
@@ -48,7 +47,7 @@ namespace BaiRong.Core
             //文件夹
             public const string SiteTemplateMetadata = "SiteTemplateMetadata";//存储频道模板元数据的文件夹名称
             public const string SiteContent = "SiteContent";//频道内容导入导出临时文件夹名
-            public const string Input = "Input";//提交表单导入导出临时文件夹名
+            //public const string Input = "Input";//提交表单导入导出临时文件夹名
             public const string Table = "Table";//辅助表导入导出临时文件夹名
             public const string RelatedField = "RelatedField";//关联字段导入导出临时文件夹名
             public const string Photo = "Photo";//相册导入导出临时文件夹名

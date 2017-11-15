@@ -4,58 +4,32 @@ namespace SiteServer.CMS.Model
 {
     public class TaskLogInfo
     {
-        private int id;
-        private int taskID;
-        private bool isSuccess;
-        private string errorMessage;
-        private DateTime addDate;
-
         public TaskLogInfo()
         {
-            id = 0;
-            taskID = 0;
-            isSuccess = false;
-            errorMessage = string.Empty;
-            addDate = DateTime.Now;
+            Id = 0;
+            TaskId = 0;
+            IsSuccess = false;
+            ErrorMessage = string.Empty;
+            AddDate = DateTime.Now;
         }
 
-        public TaskLogInfo(int id, int taskID, bool isSuccess, string errorMessage, DateTime addDate)
+        public TaskLogInfo(int id, int taskId, bool isSuccess, string errorMessage, DateTime addDate)
         {
-            this.id = id;
-            this.taskID = taskID;
-            this.isSuccess = isSuccess;
-            this.errorMessage = errorMessage;
-            this.addDate = addDate;
+            Id = id;
+            TaskId = taskId;
+            IsSuccess = isSuccess;
+            ErrorMessage = errorMessage;
+            AddDate = addDate;
         }
 
-        public int ID
-        {
-            get { return id; }
-            set { id = value; }
-        }
+        public int Id { get; set; }
 
-        public int TaskID
-        {
-            get { return taskID; }
-            set { taskID = value; }
-        }
+        public int TaskId { get; set; }
 
-        public bool IsSuccess
-        {
-            get { return isSuccess; }
-            set { isSuccess = value; }
-        }
+        public bool IsSuccess { get; set; }
 
-        public string ErrorMessage
-        {
-            get { return errorMessage; }
-            set { errorMessage = value; }
-        }
+        public string ErrorMessage { get; set; }
 
-        public DateTime AddDate
-        {
-            get { return addDate; }
-            set { addDate = value; }
-        }
+        public DateTime AddDate { get; set; }
     }
 }

@@ -3,17 +3,90 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Core.Advertisement;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
 	public class AdvertisementDao : DataProviderBase
 	{
-		// Static constants
+        public override string TableName => "siteserver_Advertisement";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.AdvertisementName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.AdvertisementType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.IsDateLimited),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.StartDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.EndDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.NodeIdCollectionToChannel),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.NodeIdCollectionToContent),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.FileTemplateIdCollection),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.Settings),
+                DataType = DataType.Text
+            }
+        };
+
         private const string SqlInsertAd = "INSERT INTO siteserver_Advertisement (AdvertisementName, PublishmentSystemID, AdvertisementType, IsDateLimited, StartDate, EndDate, AddDate, NodeIDCollectionToChannel, NodeIDCollectionToContent, FileTemplateIDCollection, Settings) VALUES (@AdvertisementName, @PublishmentSystemID, @AdvertisementType, @IsDateLimited, @StartDate, @EndDate, @AddDate, @NodeIDCollectionToChannel, @NodeIDCollectionToContent, @FileTemplateIDCollection, @Settings)";
 
         private const string SqlUpdateAd = "UPDATE siteserver_Advertisement SET AdvertisementType = @AdvertisementType, IsDateLimited = @IsDateLimited, StartDate = @StartDate, EndDate = @EndDate, NodeIDCollectionToChannel = @NodeIDCollectionToChannel, NodeIDCollectionToContent = @NodeIDCollectionToContent, FileTemplateIDCollection = @FileTemplateIDCollection, Settings = @Settings WHERE AdvertisementName = @AdvertisementName AND PublishmentSystemID = @PublishmentSystemID";
@@ -48,20 +121,20 @@ namespace SiteServer.CMS.Provider
 			var adParms = new IDataParameter[]
 			{
 				GetParameter(ParmAdName, DataType.VarChar, 50, adInfo.AdvertisementName),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, adInfo.PublishmentSystemID),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, adInfo.PublishmentSystemId),
 				GetParameter(ParmAdType, DataType.VarChar, 50, EAdvertisementTypeUtils.GetValue(adInfo.AdvertisementType)),
 				GetParameter(ParmIsDateLimited, DataType.VarChar, 18, adInfo.IsDateLimited.ToString()),
 				GetParameter(ParmStartDate, DataType.DateTime, adInfo.StartDate),
 				GetParameter(ParmEndDate, DataType.DateTime, adInfo.EndDate),
 				GetParameter(ParmAddDate, DataType.DateTime, adInfo.AddDate),
-				GetParameter(ParmNodeIdCollectionToChannel, DataType.NVarChar, 255, adInfo.NodeIDCollectionToChannel),
-                GetParameter(ParmNodeIdCollectionToContent, DataType.NVarChar, 255, adInfo.NodeIDCollectionToContent),
-                GetParameter(ParmFileTemplateIdCollection, DataType.NVarChar, 255, adInfo.FileTemplateIDCollection),
-                GetParameter(ParmSettings, DataType.NText, adInfo.Settings)
+				GetParameter(ParmNodeIdCollectionToChannel, DataType.VarChar, 255, adInfo.NodeIdCollectionToChannel),
+                GetParameter(ParmNodeIdCollectionToContent, DataType.VarChar, 255, adInfo.NodeIdCollectionToContent),
+                GetParameter(ParmFileTemplateIdCollection, DataType.VarChar, 255, adInfo.FileTemplateIdCollection),
+                GetParameter(ParmSettings, DataType.Text, adInfo.Settings)
 			};
 
             ExecuteNonQuery(SqlInsertAd, adParms);
-            AdvertisementManager.RemoveCache(adInfo.PublishmentSystemID);
+            AdvertisementManager.RemoveCache(adInfo.PublishmentSystemId);
 		}
 
 		public void Update(AdvertisementInfo adInfo)
@@ -72,17 +145,17 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmIsDateLimited, DataType.VarChar, 18, adInfo.IsDateLimited.ToString()),
 				GetParameter(ParmStartDate, DataType.DateTime, adInfo.StartDate),
 				GetParameter(ParmEndDate, DataType.DateTime, adInfo.EndDate),
-				GetParameter(ParmNodeIdCollectionToChannel, DataType.NVarChar, 255, adInfo.NodeIDCollectionToChannel),
-                GetParameter(ParmNodeIdCollectionToContent, DataType.NVarChar, 255, adInfo.NodeIDCollectionToContent),
-                GetParameter(ParmFileTemplateIdCollection, DataType.NVarChar, 255, adInfo.FileTemplateIDCollection),
-                GetParameter(ParmSettings, DataType.NText, adInfo.Settings),
+				GetParameter(ParmNodeIdCollectionToChannel, DataType.VarChar, 255, adInfo.NodeIdCollectionToChannel),
+                GetParameter(ParmNodeIdCollectionToContent, DataType.VarChar, 255, adInfo.NodeIdCollectionToContent),
+                GetParameter(ParmFileTemplateIdCollection, DataType.VarChar, 255, adInfo.FileTemplateIdCollection),
+                GetParameter(ParmSettings, DataType.Text, adInfo.Settings),
 				GetParameter(ParmAdName, DataType.VarChar, 50, adInfo.AdvertisementName),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, adInfo.PublishmentSystemID)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, adInfo.PublishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlUpdateAd, adParms);
 
-            AdvertisementManager.RemoveCache(adInfo.PublishmentSystemID);
+            AdvertisementManager.RemoveCache(adInfo.PublishmentSystemId);
 		}
 
 		public void Delete(string advertisementName, int publishmentSystemId)

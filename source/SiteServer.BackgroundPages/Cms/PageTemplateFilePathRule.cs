@@ -10,7 +10,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageTemplateFilePathRule : BasePageCms
     {
-        public Repeater rptContents;
+        public Repeater RptContents;
 
         private int _currentNodeId;
         private NameValueCollection _additional;
@@ -48,9 +48,9 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                rptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
-                rptContents.ItemDataBound += rptContents_ItemDataBound;
-                rptContents.DataBind();
+                RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+                RptContents.ItemDataBound += rptContents_ItemDataBound;
+                RptContents.DataBind();
 			}
 		}
 

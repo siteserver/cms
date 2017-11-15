@@ -69,8 +69,8 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlIf.ElementName.ToLower(), StlIf.Parse},
             {StlImage.ElementName.ToLower(), StlImage.Parse},
             {StlInclude.ElementName.ToLower(), StlInclude.Parse},
-            {StlInputContent.ElementName.ToLower(), StlInputContent.Parse},
-            {StlInputContents.ElementName.ToLower(), StlInputContents.Parse},
+            //{StlInputContent.ElementName.ToLower(), StlInputContent.Parse},
+            //{StlInputContents.ElementName.ToLower(), StlInputContents.Parse},
             {StlLocation.ElementName.ToLower(), StlLocation.Parse},
             {StlMarquee.ElementName.ToLower(), StlMarquee.Parse},
             {StlMenu.ElementName.ToLower(), StlMenu.Parse},
@@ -101,7 +101,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlPageContents.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
             {StlPageChannels.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
             {StlPageSqlContents.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
-            {StlPageInputContents.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
+            //{StlPageInputContents.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
             {StlPageItems.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey}
         };
 

@@ -117,7 +117,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
                 var feed = ExportTableStyleInfo(tableStyleInfo);
-                var styleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
+                var styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
                 if (styleItems != null && styleItems.Count > 0)
                 {
                     foreach (var styleItemInfo in styleItems)
@@ -142,7 +142,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
                 var feed = ExportTableStyleInfo(tableStyleInfo);
-                var styleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
+                var styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
                 if (styleItems != null && styleItems.Count > 0)
                 {
                     foreach (var styleItemInfo in styleItems)
@@ -223,7 +223,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 ETableStyle tableStyle;
 
-                if (BaiRongDataProvider.TableCollectionDao.IsTableExists(tableName))
+                if (BaiRongDataProvider.TableCollectionDao.IsTableExistsAndCreated(tableName))
                 {
                     var tableType = BaiRongDataProvider.TableCollectionDao.GetTableType(tableName);
                     tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(tableType);

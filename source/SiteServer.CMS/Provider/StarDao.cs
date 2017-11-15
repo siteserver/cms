@@ -2,13 +2,63 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using SiteServer.Plugin;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class StarDao : DataProviderBase
 	{
+        public override string TableName => "siteserver_Star";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = "StarId",
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "PublishmentSystemId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "ChannelId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "ContentId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "UserName",
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Point",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Message",
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "AddDate",
+                DataType = DataType.DateTime
+            }
+        };
+
         private const string SqlSelectStar = "SELECT Point FROM siteserver_Star WHERE PublishmentSystemID = @PublishmentSystemID AND ContentID = @ContentID";
 
         private const string ParmPublishmentSystemId = "@PublishmentSystemID";
@@ -28,9 +78,9 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
 				GetParameter(ParmChannelId, DataType.Integer, channelId),
                 GetParameter(ParmContentId, DataType.Integer, contentId),
-				GetParameter(ParmUserName, DataType.NVarChar, 255, userName),
+				GetParameter(ParmUserName, DataType.VarChar, 255, userName),
 				GetParameter(ParmPoint, DataType.Integer, point),
-                GetParameter(ParmMessage, DataType.NVarChar, 255, message),
+                GetParameter(ParmMessage, DataType.VarChar, 255, message),
                 GetParameter(ParmAdddate, DataType.DateTime, addDate)
 			};
 

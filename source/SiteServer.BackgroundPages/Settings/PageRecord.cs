@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Data;
@@ -9,7 +10,7 @@ using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageRecord : BasePage
+	public class PageRecord : Page
     {
         public TextBox TbKeyword;
         public DateTimeTextBox TbDateFrom;
@@ -21,55 +22,36 @@ namespace SiteServer.BackgroundPages.Settings
 		public Button BtnDelete;
 		public Button BtnDeleteAll;
 
-        protected override bool IsSinglePage => true;
-
         public void Page_Load(object sender, EventArgs e)
         {
-            if (IsForbidden) return;
             if (!BaiRongDataProvider.RecordDao.IsRecord()) return;
 
-            if (Body.IsQueryExists("Delete"))
+            if (!string.IsNullOrEmpty(Request.QueryString["Delete"]))
             {
-                var list = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDCollection"));
-                try
-                {
-                    BaiRongDataProvider.RecordDao.Delete(list);
-                    SuccessDeleteMessage();
-                }
-                catch (Exception ex)
-                {
-                    FailDeleteMessage(ex);
-                }
+                var list = TranslateUtils.StringCollectionToIntList(Request.QueryString["IdCollection"]);
+                BaiRongDataProvider.RecordDao.Delete(list);
             }
-            else if (Body.IsQueryExists("DeleteAll"))
+            else if (!string.IsNullOrEmpty(Request.QueryString["DeleteAll"]))
             {
-                try
-                {
-                    BaiRongDataProvider.RecordDao.DeleteAll();
-                    SuccessDeleteMessage();
-                }
-                catch (Exception ex)
-                {
-                    FailDeleteMessage(ex);
-                }
+                BaiRongDataProvider.RecordDao.DeleteAll();
             }
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = 100;
 
-            SpContents.SelectCommand = !Body.IsQueryExists("Keyword") ? BaiRongDataProvider.RecordDao.GetSelectCommend() : BaiRongDataProvider.RecordDao.GetSelectCommend(Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"));
+            SpContents.SelectCommand = string.IsNullOrEmpty(Request.QueryString["Keyword"]) ? BaiRongDataProvider.RecordDao.GetSelectCommend() : BaiRongDataProvider.RecordDao.GetSelectCommend(Request.QueryString["Keyword"], Request.QueryString["DateFrom"], Request.QueryString["DateTo"]);
 
             SpContents.SortField = "Id";
             SpContents.SortMode = SortMode.DESC;
-            RptContents.ItemDataBound += rptContents_ItemDataBound;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
 
 			if(!IsPostBack)
 			{
-                if (Body.IsQueryExists("Keyword"))
+                if (!string.IsNullOrEmpty(Request.QueryString["Keyword"]))
                 {
-                    TbKeyword.Text = Body.GetQueryString("Keyword");
-                    TbDateFrom.Text = Body.GetQueryString("DateFrom");
-                    TbDateTo.Text = Body.GetQueryString("DateTo");
+                    TbKeyword.Text = Request.QueryString["Keyword"];
+                    TbDateFrom.Text = Request.QueryString["DateFrom"];
+                    TbDateTo.Text = Request.QueryString["DateTo"];
                 }
 
                 BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageRecord), new NameValueCollection
@@ -86,21 +68,19 @@ namespace SiteServer.BackgroundPages.Settings
 			}
 		}
 
-        void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private static void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
-            {
-                
-                var ltlText = (Literal)e.Item.FindControl("ltlText");
-                var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
-                var ltlSource = (Literal)e.Item.FindControl("ltlSource");
-                var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-                ltlText.Text = SqlUtils.EvalString(e.Item.DataItem, "Text");
-                ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
-                ltlSource.Text = SqlUtils.EvalString(e.Item.DataItem, "Source");
-                ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"), EDateFormatType.Day, ETimeFormatType.LongTime);
-            }
+            var ltlText = (Literal)e.Item.FindControl("ltlText");
+            var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
+            var ltlSource = (Literal)e.Item.FindControl("ltlSource");
+            var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
+
+            ltlText.Text = SqlUtils.EvalString(e.Item.DataItem, "Text");
+            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, "Summary");
+            ltlSource.Text = SqlUtils.EvalString(e.Item.DataItem, "Source");
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"), EDateFormatType.Day, ETimeFormatType.LongTime);
         }
 
         public void Search_OnClick(object sender, EventArgs e)

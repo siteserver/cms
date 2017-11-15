@@ -104,8 +104,6 @@ namespace SiteServer.BackgroundPages.Cms
                 SpContents.SortMode = Body.GetQueryString("strDirection").Equals("0") ? SortMode.ASC : SortMode.DESC;
             }
 
-            //分页的时候，不去查询总条数，直接使用栏目的属性：ContentNum
-            SpContents.IsQueryTotalCount = false;
             SpContents.TotalCount = _nodeInfo.ContentNum;
 
             RptChannels.DataSource = DataProvider.NodeDao.GetNodeIdListByScopeType(_nodeInfo.NodeId, _nodeInfo.ChildrenCount, EScopeType.Children, string.Empty, string.Empty, string.Empty);

@@ -11,6 +11,48 @@ namespace BaiRong.Core.Provider
 {
     public class LogDao : DataProviderBase
     {
+        public override string TableName => "bairong_Log";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(LogInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(LogInfo.UserName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(LogInfo.IpAddress),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(LogInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(LogInfo.Action),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(LogInfo.Summary),
+                DataType = DataType.VarChar,
+                Length = 255
+            }
+        };
+
         private const string ParmUserName = "@UserName";
         private const string ParmIpAddress = "@IPAddress";
         private const string ParmAddDate = "@AddDate";
@@ -26,8 +68,8 @@ namespace BaiRong.Core.Provider
                     GetParameter(ParmUserName, DataType.VarChar, 50, log.UserName),
                     GetParameter(ParmIpAddress, DataType.VarChar, 50, log.IpAddress),
                     GetParameter(ParmAddDate, DataType.DateTime, log.AddDate),
-                    GetParameter(ParmAction, DataType.NVarChar, 255, log.Action),
-                    GetParameter(ParmSummary, DataType.NVarChar, 255, log.Summary)
+                    GetParameter(ParmAction, DataType.VarChar, 255, log.Action),
+                    GetParameter(ParmSummary, DataType.VarChar, 255, log.Summary)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -130,7 +172,7 @@ namespace BaiRong.Core.Provider
         public DateTime GetLastRemoveLogDate(string userName)
         {
             var retval = DateTime.MinValue;
-            var sqlString = SqlUtils.GetTopSqlString("bairong_Log", "AddDate", "WHERE Action = '清空数据库日志' ORDER BY ID DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_Log", "AddDate", "WHERE Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
 			{

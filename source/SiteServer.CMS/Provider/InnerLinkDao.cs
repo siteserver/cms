@@ -2,15 +2,45 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
 	public class InnerLinkDao : DataProviderBase
 	{
-		private const string SqlInsertInnerLink = "INSERT INTO siteserver_InnerLink VALUES (@InnerLinkName, @PublishmentSystemID, @LinkUrl)";
+        public override string TableName => "siteserver_InnerLink";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(InnerLinkInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(InnerLinkInfo.InnerLinkName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(InnerLinkInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(InnerLinkInfo.LinkUrl),
+                DataType = DataType.VarChar,
+                Length = 200
+            }
+        };
+
+        private const string SqlInsertInnerLink = "INSERT INTO siteserver_InnerLink VALUES (@InnerLinkName, @PublishmentSystemID, @LinkUrl)";
 		private const string SqlUpdateInnerLink = "UPDATE siteserver_InnerLink SET LinkUrl = @LinkUrl WHERE InnerLinkName = @InnerLinkName AND PublishmentSystemID = @PublishmentSystemID";
 		private const string SqlDeleteInnerLink = "DELETE FROM siteserver_InnerLink WHERE InnerLinkName = @InnerLinkName AND PublishmentSystemID = @PublishmentSystemID";
 
@@ -22,8 +52,8 @@ namespace SiteServer.CMS.Provider
 		{
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmInnerLinkName, DataType.NVarChar, 255, innerLinkInfo.InnerLinkName),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, innerLinkInfo.PublishmentSystemID),
+				GetParameter(ParmInnerLinkName, DataType.VarChar, 255, innerLinkInfo.InnerLinkName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, innerLinkInfo.PublishmentSystemId),
 				GetParameter(ParmLinkUrl, DataType.VarChar, 200, innerLinkInfo.LinkUrl)
 			};
 
@@ -35,8 +65,8 @@ namespace SiteServer.CMS.Provider
 			var updateParms = new IDataParameter[]
 			{
 				GetParameter(ParmLinkUrl, DataType.VarChar, 200, innerLinkInfo.LinkUrl),
-				GetParameter(ParmInnerLinkName, DataType.NVarChar, 255, innerLinkInfo.InnerLinkName),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, innerLinkInfo.PublishmentSystemID)
+				GetParameter(ParmInnerLinkName, DataType.VarChar, 255, innerLinkInfo.InnerLinkName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, innerLinkInfo.PublishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlUpdateInnerLink, updateParms);
@@ -46,7 +76,7 @@ namespace SiteServer.CMS.Provider
 		{
 			var innerLinkParms = new IDataParameter[]
 			{
-				GetParameter(ParmInnerLinkName, DataType.NVarChar, 255, innerLinkName),
+				GetParameter(ParmInnerLinkName, DataType.VarChar, 255, innerLinkName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
@@ -64,7 +94,7 @@ namespace SiteServer.CMS.Provider
 			}
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmInnerLinkName, DataType.NVarChar, 255, innerLinkName),
+				GetParameter(ParmInnerLinkName, DataType.VarChar, 255, innerLinkName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)				 
 			};
             using (var rdr = ExecuteReader(sqlString, selectParms)) 
@@ -91,7 +121,7 @@ namespace SiteServer.CMS.Provider
             }
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmInnerLinkName, DataType.NVarChar, 255, innerLinkName),
+				GetParameter(ParmInnerLinkName, DataType.VarChar, 255, innerLinkName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)				 
 			};
             using (var rdr = ExecuteReader(sqlString, selectParms))
@@ -113,7 +143,7 @@ namespace SiteServer.CMS.Provider
             var sqlString = "SELECT InnerLinkName, PublishmentSystemID, LinkUrl FROM siteserver_InnerLink WHERE InnerLinkName = @InnerLinkName AND PublishmentSystemID = @PublishmentSystemID";
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmInnerLinkName, DataType.NVarChar, 255, innerLinkName),
+				GetParameter(ParmInnerLinkName, DataType.VarChar, 255, innerLinkName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)				 
 			};
 			using (var rdr = ExecuteReader(sqlString,selectParms)) 

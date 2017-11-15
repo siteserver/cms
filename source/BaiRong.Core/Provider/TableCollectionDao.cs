@@ -12,7 +12,59 @@ namespace BaiRong.Core.Provider
 {
     public class TableCollectionDao : DataProviderBase
 	{
-		// Static constants
+        public override string TableName => "bairong_TableCollection";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.TableEnName),
+                DataType = DataType.VarChar,
+                Length = 50,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.TableCnName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.AttributeNum),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.AuxiliaryTableType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.IsCreatedInDb),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.IsChangedAfterCreatedInDb),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.IsDefault),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.Description),
+                DataType = DataType.Text   
+            }
+        };
+
         private const string SqlSelectTable = "SELECT TableENName, TableCNName, AttributeNum, AuxiliaryTableType, IsCreatedInDB, IsChangedAfterCreatedInDB, IsDefault, Description FROM bairong_TableCollection WHERE TableENName = @TableENName";
 		private const string SqlSelectTableType = "SELECT AuxiliaryTableType FROM bairong_TableCollection WHERE TableENName = @TableENName";
         private const string SqlSelectTableCnname = "SELECT TableCNName FROM bairong_TableCollection WHERE TableENName = @TableENName";
@@ -41,13 +93,13 @@ namespace BaiRong.Core.Provider
 			var insertParms = new IDataParameter[]
 			{
 				GetParameter(ParmTableEnname, DataType.VarChar, 50, info.TableEnName),
-				GetParameter(ParmTableCnname, DataType.NVarChar, 50, info.TableCnName),
+				GetParameter(ParmTableCnname, DataType.VarChar, 50, info.TableCnName),
 				GetParameter(ParmAttributeNum, DataType.Integer, info.AttributeNum),
 				GetParameter(ParmTableType, DataType.VarChar, 50, EAuxiliaryTableTypeUtils.GetValue(info.AuxiliaryTableType)),
 				GetParameter(ParmIsCreatedInDb, DataType.VarChar, 18, false.ToString()),
 				GetParameter(ParmIsChangedAfterCreatedInDb, DataType.VarChar, 18, false.ToString()),
                 GetParameter(ParmIsDefault, DataType.VarChar, 18, info.IsDefault.ToString()),
-				GetParameter(ParmDescription, DataType.NText, info.Description)
+				GetParameter(ParmDescription, DataType.Text, info.Description)
 			};
 							
 			using (var conn = GetConnection()) 
@@ -75,13 +127,13 @@ namespace BaiRong.Core.Provider
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmTableCnname, DataType.NVarChar, 50, info.TableCnName),
+				GetParameter(ParmTableCnname, DataType.VarChar, 50, info.TableCnName),
 				GetParameter(ParmAttributeNum, DataType.Integer, info.AttributeNum),
 				GetParameter(ParmTableType, DataType.VarChar, 50, EAuxiliaryTableTypeUtils.GetValue(info.AuxiliaryTableType)),
 				GetParameter(ParmIsCreatedInDb, DataType.VarChar, 18, info.IsCreatedInDb.ToString()),
 				GetParameter(ParmIsChangedAfterCreatedInDb, DataType.VarChar, 18, info.IsChangedAfterCreatedInDb.ToString()),
                 GetParameter(ParmIsDefault, DataType.VarChar, 18, info.IsDefault.ToString()),
-				GetParameter(ParmDescription, DataType.NText, info.Description),
+				GetParameter(ParmDescription, DataType.Text, info.Description),
 				GetParameter(ParmTableEnname, DataType.VarChar, 50, info.TableEnName)
 			};
 
@@ -403,7 +455,7 @@ namespace BaiRong.Core.Provider
 		    return count;
 		}
 
-        public bool IsTableExists(EAuxiliaryTableType tableType)
+        public bool IsTableExistsAndCreated(EAuxiliaryTableType tableType)
         {
             var isExists = false;
 
@@ -421,12 +473,30 @@ namespace BaiRong.Core.Provider
             return isExists;
         }
 
-        public bool IsTableExists(string tableName)
+        public bool IsTableExistsAndCreated(string tableName)
         {
             var isExists = false;
 
             string sqlString =
                 $"SELECT TableENName FROM bairong_TableCollection WHERE TableENName = '{PageUtils.FilterSql(tableName)}' AND IsCreatedInDB = 'True'";
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read() && !rdr.IsDBNull(0))
+                {
+                    isExists = true;
+                }
+                rdr.Close();
+            }
+
+            return isExists;
+        }
+
+        public bool IsTableExists(string tableName)
+        {
+            var isExists = false;
+
+            string sqlString =
+                $"SELECT TableENName FROM bairong_TableCollection WHERE TableENName = '{PageUtils.FilterSql(tableName)}'";
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))
@@ -461,12 +531,15 @@ namespace BaiRong.Core.Provider
         public void CreateAllAuxiliaryTableIfNotExists()
         {
             //添加后台内容表
-            if (!IsTableExists(EAuxiliaryTableType.BackgroundContent))
+            if (!IsTableExistsAndCreated(EAuxiliaryTableType.BackgroundContent))
             {
                 var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.BackgroundContent);
-                var tableInfo = new AuxiliaryTableInfo(tableName, "后台内容表", 0, EAuxiliaryTableType.BackgroundContent, false, false, true, string.Empty);
-                BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
+                if (!IsTableExists(tableName))
+                {
+                    var tableInfo = new AuxiliaryTableInfo(tableName, "后台内容表", 0, EAuxiliaryTableType.BackgroundContent, false, false, true, string.Empty);
+                    Insert(tableInfo);
+                }
+                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableName);
             }
         }
 	}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.SqlClient;
 using System.Web.UI;
@@ -9,8 +10,6 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -238,7 +237,7 @@ namespace SiteServer.BackgroundPages.Plugins
             }
             else
             {
-                var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetTableColumnInfoList(GetDatabaseConnectionString(), DatabaseName.SelectedValue, RelatedTableName.SelectedValue);
+                var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(GetDatabaseConnectionString(), DatabaseName.SelectedValue, RelatedTableName.SelectedValue);
                 RelatedIdentity.Items.Clear();
                 RelatedOrderBy.Items.Clear();
                 var item = new ListItem("请选择主键字段名称", string.Empty);
@@ -271,14 +270,14 @@ namespace SiteServer.BackgroundPages.Plugins
 
         private string GetConnectionString()
         {
-            string retval = retval =
+            string retval =
                 $"server={DatabaseServer.Text};uid={UserName.Text};pwd={PasswordHidden.Value}";
             return retval;
         }
 
         private string GetDatabaseConnectionString()
         {
-            string retval = retval = $"{GetConnectionString()};database={DatabaseName.SelectedValue}";
+            string retval = $"{GetConnectionString()};database={DatabaseName.SelectedValue}";
             return retval;
         }
 
@@ -380,11 +379,10 @@ namespace SiteServer.BackgroundPages.Plugins
                 return false;
             }
 
+            List<string> databaseNameList;
             try
             {
-                var connection = new SqlConnection(GetConnectionString());
-                connection.Open();
-                connection.Close();
+                databaseNameList = BaiRongDataProvider.DatabaseDao.GetDatabaseNameList(WebConfigUtils.DatabaseType, GetConnectionString());
             }
             catch (Exception e)
             {
@@ -392,7 +390,6 @@ namespace SiteServer.BackgroundPages.Plugins
                 return false;
             }
 
-            var databaseNameList = BaiRongDataProvider.DatabaseDao.GetDatabaseNameList(GetConnectionString());
             DatabaseName.Items.Clear();
             var item = new ListItem("请选择数据库", string.Empty);
             DatabaseName.Items.Add(item);
@@ -602,7 +599,7 @@ namespace SiteServer.BackgroundPages.Plugins
             Columns.Items.Clear();
             ColumnsToMatch.Items.Clear();
 
-            var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetTableColumnInfoList(GetDatabaseConnectionString(), DatabaseName.SelectedValue, RelatedTableName.SelectedValue);
+            var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(GetDatabaseConnectionString(), DatabaseName.SelectedValue, RelatedTableName.SelectedValue);
             var columnToMatchArrayList = new ArrayList();
             foreach (var tableColumnInfo in tableColumnInfoList)
             {

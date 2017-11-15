@@ -307,6 +307,22 @@ namespace SiteServer.Plugin.Models
             return string.Empty;
         }
 
+        public string ToString(List<string> lowerCaseExcludeAttributeNames)
+        {
+            if (_extendedAttributes == null || _extendedAttributes.Count <= 0 || lowerCaseExcludeAttributeNames == null)
+                return string.Empty;
+
+            var nvc = new NameValueCollection();
+            foreach (string key in _extendedAttributes.Keys)
+            {
+                if (!lowerCaseExcludeAttributeNames.Contains(key))
+                {
+                    nvc[key] = _extendedAttributes[key];
+                }
+            }
+            return NameValueCollectionToString(nvc);
+        }
+
         public static ExtendedAttributes Parse(string str)
         {
             return new ExtendedAttributes

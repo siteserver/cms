@@ -106,7 +106,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var arraylist = DataProvider.RelatedFieldDao.GetRelatedFieldInfoArrayList(PublishmentSystemId);
                 foreach (RelatedFieldInfo rfInfo in arraylist)
                 {
-                    var listItem = new ListItem(rfInfo.RelatedFieldName, rfInfo.RelatedFieldID.ToString());
+                    var listItem = new ListItem(rfInfo.RelatedFieldName, rfInfo.RelatedFieldId.ToString());
                     DdlRelatedFieldId.Items.Add(listItem);
                 }
 
@@ -138,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
                 TbHeight.Text = _styleInfo.Additional.Height.ToString();
                 TbWidth.Text = _styleInfo.Additional.Width;
 
-                var styleItems = _styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
+                var styleItems = _styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
                 TbItemCount.Text = styleItems.Count.ToString();
                 RptItems.DataSource = TableStyleManager.GetStyleItemDataSet(styleItems.Count, styleItems);
                 RptItems.ItemDataBound += MyRepeater_ItemDataBound;
@@ -228,7 +228,7 @@ namespace SiteServer.BackgroundPages.Cms
                     List<TableStyleItemInfo> styleItems = null;
                     if (_styleInfo.TableStyleId != 0)
                     {
-                        styleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
+                        styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
                     }
                     RptItems.DataSource = TableStyleManager.GetStyleItemDataSet(count, styleItems);
                     RptItems.DataBind();

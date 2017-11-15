@@ -1,31 +1,61 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageConfigurationCreateTrigger" %>
 <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <!DOCTYPE html>
+  <html>
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
-  <bairong:alerts text="在此设置各栏目生成页面的规则，同时可以设置当栏目下内容改变后需要的生成栏目" runat="server"></bairong:alerts>
+  <head>
+    <meta charset="utf-8">
+    <!--#include file="../inc/head.html"-->
+  </head>
 
-  <table class="table table-bordered table-hover">
-    <tr class="info thead">
-      <td>栏目名</td>
-      <td>内容变动时需要生成的栏目</td>
-      <td width="80">&nbsp;</td>
-    </tr>
-    <asp:Repeater ID="rptContents" runat="server">
-      <itemtemplate>
-        <asp:Literal id="ltlHtml" runat="server" />
-      </itemtemplate>
-    </asp:Repeater>
-  </table>
+  <body>
+    <!--#include file="../inc/openWindow.html"-->
 
-</form>
-</body>
-</html>
+    <form class="container" runat="server">
+      <bairong:alerts runat="server" />
+
+      <div class="raw">
+        <div class="card-box">
+          <h4 class="m-t-0 header-title">
+            <b>页面生成触发器</b>
+          </h4>
+          <p class="text-muted font-13 m-b-25">
+              在此设置各栏目生成页面的规则，同时可以设置当栏目下内容改变后需要的生成栏目
+          </p>
+
+          <ul class="nav nav-pills m-b-30">
+            <li class="">
+              <a href="pageTemplateFilePathRule.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面命名规则</a>
+            </li>
+            <li class="">
+              <a href="pageConfigurationCreate.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面生成设置</a>
+            </li>
+            <li class="active">
+              <a href="javascript:;">页面生成触发器</a>
+            </li>
+          </ul>
+
+          <div class="form-horizontal">
+
+            <table class="table table-hover m-0">
+              <tr class="info thead">
+                <td>栏目名</td>
+                <td>内容变动时需要生成的栏目</td>
+                <td class="center" style="width:80px;">&nbsp;</td>
+              </tr>
+              <asp:Repeater ID="RptContents" runat="server">
+                <itemtemplate>
+                  <asp:Literal id="ltlHtml" runat="server" />
+                </itemtemplate>
+              </asp:Repeater>
+            </table>
+
+          </div>
+
+        </div>
+      </div>
+
+    </form>
+  </body>
+
+  </html>

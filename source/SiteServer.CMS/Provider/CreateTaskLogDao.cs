@@ -3,16 +3,84 @@ using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class CreateTaskLogDao : DataProviderBase
     {
+        public override string TableName => "siteserver_CreateTaskLog";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.CreateType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.ChannelId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.ContentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.TemplateId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.TaskName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.TimeSpan),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.IsSuccess),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.ErrorMessage),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskLogInfo.AddDate),
+                DataType = DataType.DateTime
+            }
+        };
+
         private const string ParmCreateType = "@CreateType";
         private const string ParmPublishmentSystemId = "@PublishmentSystemId";
         private const string ParmChannelId = "@ChannelId";
@@ -32,15 +100,15 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmCreateType, DataType.NVarChar, 50, ECreateTypeUtils.GetValue(log.CreateType)),
+                GetParameter(ParmCreateType, DataType.VarChar, 50, ECreateTypeUtils.GetValue(log.CreateType)),
                 GetParameter(ParmPublishmentSystemId, DataType.Integer, log.PublishmentSystemId),
                 GetParameter(ParmChannelId, DataType.Integer, log.ChannelId),
                 GetParameter(ParmContentId, DataType.Integer, log.ContentId),
                 GetParameter(ParmTemplateId, DataType.Integer, log.TemplateId),
-                GetParameter(ParmTaskName, DataType.NVarChar, 50, log.TaskName),
-                GetParameter(ParmTimeSpan, DataType.NVarChar, 50, log.TimeSpan),
+                GetParameter(ParmTaskName, DataType.VarChar, 50, log.TaskName),
+                GetParameter(ParmTimeSpan, DataType.VarChar, 50, log.TimeSpan),
                 GetParameter(ParmIsSuccess, DataType.VarChar, 18, log.IsSuccess.ToString()),
-                GetParameter(ParmErrorMessage, DataType.NVarChar, 255, log.ErrorMessage),
+                GetParameter(ParmErrorMessage, DataType.VarChar, 255, log.ErrorMessage),
                 GetParameter(ParmAddDate, DataType.DateTime, log.AddDate)
             };
 
@@ -75,7 +143,7 @@ namespace SiteServer.CMS.Provider
 
             if (publishmentSystemId > 0)
             {
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTaskLog", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", "WHERE PublishmentSystemId = @PublishmentSystemId", totalNum);
+                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTaskLog", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", "WHERE PublishmentSystemId = @PublishmentSystemId", string.Empty, totalNum);
 
                 var parms = new IDataParameter[]
                 {
@@ -95,7 +163,7 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTaskLog", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", string.Empty, totalNum);
+                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTaskLog", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId, TaskName, TimeSpan, IsSuccess, ErrorMessage, AddDate", string.Empty, string.Empty, totalNum);
 
                 using (var rdr = ExecuteReader(sqlString))
                 {

@@ -49,7 +49,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                 if (StringUtils.EqualsIgnoreCase(type, PhotoId))
                 {
-                    parsedContent = photoInfo.ID.ToString();
+                    parsedContent = photoInfo.Id.ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, SmallUrl))
                 {

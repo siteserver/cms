@@ -8,13 +8,12 @@ using System.Threading;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using Newtonsoft.Json;
-using SiteServer.CMS.Controllers.Json;
 using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Plugin
 {
-    internal static class PluginUtils
+    public static class PluginUtils
     {
         internal const string PluginConfigName = "plugin.config";
 
@@ -89,7 +88,29 @@ namespace SiteServer.CMS.Plugin
             return retval;
         }
 
-        internal static PluginMenu GetSiteMenu(string pluginId, PluginMenu metadataMenu, int siteId, int i)
+        public static string GetMenuHref(string pluginId, string href)
+        {
+            return PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
+            {
+                {"apiUrl", PageUtils.AddProtocolToUrl(PageUtils.OuterApiUrl)},
+                {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
+            });
+        }
+
+        public static string GetMenuContentHref(string pluginId, string href, int publishmentSystemId, int channelId, int contentId, string returnUrl)
+        {
+            return PageUtils.AddQueryString(PageUtils.GetPluginDirectoryUrl(pluginId, href), new NameValueCollection
+            {
+                {"apiUrl", PageUtils.AddProtocolToUrl(PageUtils.OuterApiUrl)},
+                {"publishmentSystemId", publishmentSystemId.ToString()},
+                {"channelId", channelId.ToString()},
+                {"contentId", contentId.ToString()},
+                {"returnUrl", returnUrl},
+                {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
+            });
+        }
+
+        internal static PluginMenu GetSiteMenu(string pluginId, PluginMenu metadataMenu, int i)
         {
             var menu = new PluginMenu
             {
@@ -106,13 +127,7 @@ namespace SiteServer.CMS.Plugin
             }
             if (!string.IsNullOrEmpty(menu.Href))
             {
-                menu.Href = PageUtils.GetPluginDirectoryUrl(pluginId, menu.Href);
-                menu.Href = PageUtils.AddQueryString(menu.Href, new NameValueCollection
-                {
-                    {"apiUrl", PluginJsonApi.GetUrl(PageUtils.OuterApiUrl, pluginId)},
-                    {"siteId", siteId.ToString()},
-                    {"v", StringUtils.GetRandomInt(1, 1000).ToString()}
-                });
+                menu.Href = GetMenuHref(pluginId, menu.Href);
             }
             if (string.IsNullOrEmpty(menu.Target))
             {
@@ -125,7 +140,7 @@ namespace SiteServer.CMS.Plugin
                 var x = 1;
                 foreach (var childMetadataMenu in metadataMenu.Menus)
                 {
-                    var child = GetSiteMenu(pluginId, childMetadataMenu, siteId, x++);
+                    var child = GetSiteMenu(pluginId, childMetadataMenu, x++);
 
                     chlildren.Add(child);
                 }

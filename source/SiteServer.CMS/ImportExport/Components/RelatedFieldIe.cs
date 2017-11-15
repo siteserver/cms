@@ -18,11 +18,11 @@ namespace SiteServer.CMS.ImportExport.Components
 
         public void ExportRelatedField(RelatedFieldInfo relatedFieldInfo)
 		{
-            var filePath = _directoryPath + PathUtils.SeparatorChar + relatedFieldInfo.RelatedFieldID + ".xml";
+            var filePath = _directoryPath + PathUtils.SeparatorChar + relatedFieldInfo.RelatedFieldId + ".xml";
 
             var feed = ExportRelatedFieldInfo(relatedFieldInfo);
 
-            var relatedFieldItemInfoList = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(relatedFieldInfo.RelatedFieldID, 0);
+            var relatedFieldItemInfoList = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(relatedFieldInfo.RelatedFieldId, 0);
 
             foreach (var relatedFieldItemInfo in relatedFieldItemInfoList)
 			{
@@ -35,9 +35,9 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, "RelatedFieldID", relatedFieldInfo.RelatedFieldID.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, "RelatedFieldID", relatedFieldInfo.RelatedFieldId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "RelatedFieldName", relatedFieldInfo.RelatedFieldName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "PublishmentSystemID", relatedFieldInfo.PublishmentSystemID.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, "PublishmentSystemID", relatedFieldInfo.PublishmentSystemId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "TotalLevel", relatedFieldInfo.TotalLevel.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "Prefixes", relatedFieldInfo.Prefixes);
             AtomUtility.AddDcElement(feed.AdditionalElements, "Suffixes", relatedFieldInfo.Suffixes);
@@ -49,17 +49,17 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ID", relatedFieldItemInfo.ID.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, "RelatedFieldID", relatedFieldItemInfo.RelatedFieldID.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, "ID", relatedFieldItemInfo.Id.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, "RelatedFieldID", relatedFieldItemInfo.RelatedFieldId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "ItemName", relatedFieldItemInfo.ItemName);
             AtomUtility.AddDcElement(entry.AdditionalElements, "ItemValue", relatedFieldItemInfo.ItemValue);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ParentID", relatedFieldItemInfo.ParentID.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, "ParentID", relatedFieldItemInfo.ParentId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "Taxis", relatedFieldItemInfo.Taxis.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "Level", level.ToString());
 
             feed.Entries.Add(entry);
 
-            var relatedFieldItemInfoList = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(relatedFieldItemInfo.RelatedFieldID, relatedFieldItemInfo.ID);
+            var relatedFieldItemInfoList = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(relatedFieldItemInfo.RelatedFieldId, relatedFieldItemInfo.Id);
 
             foreach (var itemInfo in relatedFieldItemInfoList)
             {
@@ -88,7 +88,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 {
                     if (overwrite)
                     {
-                        DataProvider.RelatedFieldDao.Delete(srcRelatedFieldInfo.RelatedFieldID);
+                        DataProvider.RelatedFieldDao.Delete(srcRelatedFieldInfo.RelatedFieldId);
                     }
                     else
                     {

@@ -1,5 +1,4 @@
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
@@ -14,7 +13,7 @@ namespace SiteServer.CMS.Model
 
         public int GatherNum
         {
-            get { return GetInt("GatherNum", 0); }
+            get { return GetInt("GatherNum"); }
             set { SetExtendedAttribute("GatherNum", value.ToString()); }
         }
 
@@ -32,13 +31,13 @@ namespace SiteServer.CMS.Model
 
         public bool IsEmptyContentAllowed
         {
-            get { return GetBool("IsEmptyContentAllowed", false); }
+            get { return GetBool("IsEmptyContentAllowed"); }
             set { SetExtendedAttribute("IsEmptyContentAllowed", value.ToString()); }
         }
 
         public bool IsSameTitleAllowed
         {
-            get { return GetBool("IsSameTitleAllowed", false); }
+            get { return GetBool("IsSameTitleAllowed"); }
             set { SetExtendedAttribute("IsSameTitleAllowed", value.ToString()); }
         }
 
@@ -50,7 +49,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsAutoCreate
         {
-            get { return GetBool("IsAutoCreate", false); }
+            get { return GetBool("IsAutoCreate"); }
             set { SetExtendedAttribute("IsAutoCreate", value.ToString()); }
         }
 

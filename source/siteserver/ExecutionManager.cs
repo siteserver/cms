@@ -77,7 +77,7 @@ namespace siteserver
                         if (taskExecution.Execute(taskInfo))
                         {
                             isExecute = true;
-                            var logInfo = new TaskLogInfo(0, taskInfo.TaskID, true, string.Empty, DateTime.Now);
+                            var logInfo = new TaskLogInfo(0, taskInfo.TaskId, true, string.Empty, DateTime.Now);
                             DataProvider.TaskLogDao.Insert(logInfo);
                         }
                     }
@@ -86,7 +86,7 @@ namespace siteserver
                         ExecutionUtils.LogError(taskInfo, ex);
                     }
 
-                    DataProvider.TaskDao.UpdateLastExecuteDate(taskInfo.TaskID);
+                    DataProvider.TaskDao.UpdateLastExecuteDate(taskInfo.TaskId);
                 }
             }
             catch (Exception ex)

@@ -1,82 +1,80 @@
 ﻿using System.Collections;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
-using BaiRong.Core.IO;
 using SiteServer.CMS.Model;
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
     public class ExcelObject
     {
-        public static void CreateExcelFileForInputContents(string filePath, PublishmentSystemInfo publishmentSystemInfo,
-            InputInfo inputInfo)
-        {
-            DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
-            FileUtils.DeleteFileIfExists(filePath);
+        //public static void CreateExcelFileForInputContents(string filePath, PublishmentSystemInfo publishmentSystemInfo,
+        //    InputInfo inputInfo)
+        //{
+        //    DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
+        //    FileUtils.DeleteFileIfExists(filePath);
 
-            var head = new List<string>();
-            var rows = new List<List<string>>();
+        //    var head = new List<string>();
+        //    var rows = new List<List<string>>();
 
-            var relatedidentityes = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent,
-                publishmentSystemInfo.PublishmentSystemId, inputInfo.InputId);
-            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent,
-                DataProvider.InputContentDao.TableName, relatedidentityes);
+        //    var relatedidentityes = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent,
+        //        publishmentSystemInfo.PublishmentSystemId, inputInfo.InputId);
+        //    var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent,
+        //        DataProvider.InputContentDao.TableName, relatedidentityes);
 
-            if (tableStyleInfoList.Count == 0)
-            {
-                throw new Exception("表单无字段，无法导出");
-            }
+        //    if (tableStyleInfoList.Count == 0)
+        //    {
+        //        throw new Exception("表单无字段，无法导出");
+        //    }
 
-            foreach (var tableStyleInfo in tableStyleInfoList)
-            {
-                head.Add(tableStyleInfo.DisplayName);
-            }
+        //    foreach (var tableStyleInfo in tableStyleInfoList)
+        //    {
+        //        head.Add(tableStyleInfo.DisplayName);
+        //    }
 
-            if (inputInfo.IsReply)
-            {
-                head.Add("回复");
-            }
-            head.Add("添加时间");
+        //    if (inputInfo.IsReply)
+        //    {
+        //        head.Add("回复");
+        //    }
+        //    head.Add("添加时间");
 
-            var contentIdList = DataProvider.InputContentDao.GetContentIdListWithChecked(inputInfo.InputId);
-            foreach (var contentId in contentIdList)
-            {
-                var contentInfo = DataProvider.InputContentDao.GetContentInfo(contentId);
-                if (contentInfo != null)
-                {
-                    var row = new List<string>();
+        //    var contentIdList = DataProvider.InputContentDao.GetContentIdListWithChecked(inputInfo.InputId);
+        //    foreach (var contentId in contentIdList)
+        //    {
+        //        var contentInfo = DataProvider.InputContentDao.GetContentInfo(contentId);
+        //        if (contentInfo != null)
+        //        {
+        //            var row = new List<string>();
 
-                    foreach (var tableStyleInfo in tableStyleInfoList)
-                    {
-                        var value = contentInfo.GetExtendedAttribute(tableStyleInfo.AttributeName);
+        //            foreach (var tableStyleInfo in tableStyleInfoList)
+        //            {
+        //                var value = contentInfo.GetExtendedAttribute(tableStyleInfo.AttributeName);
 
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            value = InputParserUtility.GetContentByTableStyle(value, publishmentSystemInfo,
-                                ETableStyle.InputContent, tableStyleInfo);
-                        }
+        //                if (!string.IsNullOrEmpty(value))
+        //                {
+        //                    value = InputParserUtility.GetContentByTableStyle(value, publishmentSystemInfo,
+        //                        ETableStyle.InputContent, tableStyleInfo);
+        //                }
 
-                        row.Add(StringUtils.StripTags(value));
-                    }
+        //                row.Add(StringUtils.StripTags(value));
+        //            }
 
-                    if (inputInfo.IsReply)
-                    {
-                        row.Add(StringUtils.StripTags(contentInfo.Reply));
-                    }
-                    row.Add(DateUtils.GetDateAndTimeString(contentInfo.AddDate));
+        //            if (inputInfo.IsReply)
+        //            {
+        //                row.Add(StringUtils.StripTags(contentInfo.Reply));
+        //            }
+        //            row.Add(DateUtils.GetDateAndTimeString(contentInfo.AddDate));
 
-                    rows.Add(row);
-                }
-            }
+        //            rows.Add(row);
+        //        }
+        //    }
 
-            CsvUtils.Export(filePath, head, rows);
-        }
+        //    CsvUtils.Export(filePath, head, rows);
+        //}
 
         public static void CreateExcelFileForContents(string filePath, PublishmentSystemInfo publishmentSystemInfo,
             NodeInfo nodeInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
@@ -611,67 +609,67 @@ namespace SiteServer.CMS.Core.Office
             return contentInfoList;
         }
 
-        public static List<InputContentInfo> GetInputContentsByCsvFile(string filePath, PublishmentSystemInfo publishmentSystemInfo,
-            InputInfo inputInfo)
-        {
-            var contentInfoList = new List<InputContentInfo>();
+        //public static List<InputContentInfo> GetInputContentsByCsvFile(string filePath, PublishmentSystemInfo publishmentSystemInfo,
+        //    InputInfo inputInfo)
+        //{
+        //    var contentInfoList = new List<InputContentInfo>();
 
-            List<string> head;
-            List<List<string>> rows;
-            CsvUtils.Import(filePath, out head, out rows);
+        //    List<string> head;
+        //    List<List<string>> rows;
+        //    CsvUtils.Import(filePath, out head, out rows);
 
-            if (rows.Count > 0)
-            {
-                var relatedidentityes = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent,
-                    publishmentSystemInfo.PublishmentSystemId, inputInfo.InputId);
-                var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent,
-                    DataProvider.InputContentDao.TableName, relatedidentityes);
+        //    if (rows.Count > 0)
+        //    {
+        //        var relatedidentityes = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent,
+        //            publishmentSystemInfo.PublishmentSystemId, inputInfo.InputId);
+        //        var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent,
+        //            DataProvider.InputContentDao.TableName, relatedidentityes);
 
-                var nameValueCollection = new NameValueCollection();
+        //        var nameValueCollection = new NameValueCollection();
 
-                foreach (var styleInfo in tableStyleInfoList)
-                {
-                    nameValueCollection[styleInfo.DisplayName] = styleInfo.AttributeName.ToLower();
-                }
+        //        foreach (var styleInfo in tableStyleInfoList)
+        //        {
+        //            nameValueCollection[styleInfo.DisplayName] = styleInfo.AttributeName.ToLower();
+        //        }
 
-                nameValueCollection["回复"] = InputContentAttribute.Reply.ToLower();
-                nameValueCollection["添加时间"] = InputContentAttribute.AddDate.ToLower();
+        //        nameValueCollection["回复"] = InputContentAttribute.Reply.ToLower();
+        //        nameValueCollection["添加时间"] = InputContentAttribute.AddDate.ToLower();
 
-                var attributeNames = new List<string>();
-                foreach (var columnName in head)
-                {
-                    if (!string.IsNullOrEmpty(nameValueCollection[columnName]))
-                    {
-                        attributeNames.Add(nameValueCollection[columnName]);
-                    }
-                    else
-                    {
-                        attributeNames.Add(columnName);
-                    }
-                }
+        //        var attributeNames = new List<string>();
+        //        foreach (var columnName in head)
+        //        {
+        //            if (!string.IsNullOrEmpty(nameValueCollection[columnName]))
+        //            {
+        //                attributeNames.Add(nameValueCollection[columnName]);
+        //            }
+        //            else
+        //            {
+        //                attributeNames.Add(columnName);
+        //            }
+        //        }
 
-                foreach (var row in rows)
-                {
-                    if (row.Count != attributeNames.Count) continue;
+        //        foreach (var row in rows)
+        //        {
+        //            if (row.Count != attributeNames.Count) continue;
 
-                    var contentInfo = new InputContentInfo(0, inputInfo.InputId, 0, true, string.Empty, string.Empty,
-                        DateTime.Now, string.Empty);
+        //            var contentInfo = new InputContentInfo(0, inputInfo.InputId, 0, true, string.Empty, string.Empty,
+        //                DateTime.Now, string.Empty);
 
-                    for (var i = 0; i < attributeNames.Count; i++)
-                    {
-                        var attributeName = attributeNames[i];
-                        if (!string.IsNullOrEmpty(attributeName))
-                        {
-                            var value = row[i];
-                            contentInfo.SetExtendedAttribute(attributeName, value);
-                        }
-                    }
+        //            for (var i = 0; i < attributeNames.Count; i++)
+        //            {
+        //                var attributeName = attributeNames[i];
+        //                if (!string.IsNullOrEmpty(attributeName))
+        //                {
+        //                    var value = row[i];
+        //                    contentInfo.SetExtendedAttribute(attributeName, value);
+        //                }
+        //            }
 
-                    contentInfoList.Add(contentInfo);
-                }
-            }
+        //            contentInfoList.Add(contentInfo);
+        //        }
+        //    }
 
-            return contentInfoList;
-        }
+        //    return contentInfoList;
+        //}
     }
 }

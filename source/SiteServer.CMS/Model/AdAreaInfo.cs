@@ -4,85 +4,45 @@ namespace SiteServer.CMS.Model
 {
 	public class AdAreaInfo
 	{
-        private int adAreaID;
-	    private int publishmentSystemID;
-        private string adAreaName;
-        private int width;
-        private int height;
-        private string summary;
-        private bool isEnabled;
-        private DateTime addDate;
-
-		public AdAreaInfo()
+	    public AdAreaInfo()
 		{
-            adAreaID = 0;
-			publishmentSystemID = 0;
-            adAreaName = string.Empty;
-            width = 0;
-            height = 0;
-            summary = string.Empty;
-            isEnabled = true;
-            addDate = DateTime.Now;
+            AdAreaId = 0;
+			PublishmentSystemId = 0;
+            AdAreaName = string.Empty;
+            Width = 0;
+            Height = 0;
+            Summary = string.Empty;
+            IsEnabled = true;
+            AddDate = DateTime.Now;
 			 
 		}
 
-        public AdAreaInfo(int adAreaID, int publishmentSystemID, string adAreaName, int width, int height, string summary, bool isEnabled, DateTime addDate) 
+        public AdAreaInfo(int adAreaId, int publishmentSystemId, string adAreaName, int width, int height, string summary, bool isEnabled, DateTime addDate) 
 		{
-            this.adAreaID = adAreaID;
-            this.publishmentSystemID = publishmentSystemID;
-            this.adAreaName = adAreaName;
-            this.width = width;
-            this.height = height;
-            this.summary = summary;
-            this.isEnabled = isEnabled;
-            this.addDate = addDate;
+            AdAreaId = adAreaId;
+            PublishmentSystemId = publishmentSystemId;
+            AdAreaName = adAreaName;
+            Width = width;
+            Height = height;
+            Summary = summary;
+            IsEnabled = isEnabled;
+            AddDate = addDate;
 		}
 
-        public int AdAreaID
-		{
-            get { return adAreaID; }
-            set { adAreaID = value; }
-		}
+        public int AdAreaId { get; set; }
 
-		public int PublishmentSystemID
-		{
-			get{ return publishmentSystemID; }
-			set{ publishmentSystemID = value; }
-		}
+	    public int PublishmentSystemId { get; set; }
 
-        public string AdAreaName
-        {
-            get { return adAreaName; }
-            set { adAreaName = value; }
-        }
-        public int  Width
-        {
-            get { return width; }
-            set { width = value; }
-        }
+	    public string AdAreaName { get; set; }
 
-        public int Height
-        {
-            get { return height; }
-            set { height = value; }
-        }
+	    public int Width { get; set; }
 
-        public string Summary
-        {
-            get { return summary; }
-            set { summary = value; }
-        }
+	    public int Height { get; set; }
 
-        public bool IsEnabled
-        {
-            get { return isEnabled; }
-            set { isEnabled = value; }
-        }
-          
-		public DateTime AddDate
-		{
-			get{ return addDate ; }
-            set { addDate = value; }
-		}
+	    public string Summary { get; set; }
+
+	    public bool IsEnabled { get; set; }
+
+	    public DateTime AddDate { get; set; }
 	}
 }

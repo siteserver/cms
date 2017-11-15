@@ -30,18 +30,18 @@ namespace BaiRong.Core.Provider
             new TableColumnInfo
             {
                 ColumnName = nameof(ErrorLogInfo.Message),
-                DataType = DataType.NVarChar,
+                DataType = DataType.VarChar,
                 Length = 255
             },
             new TableColumnInfo
             {
                 ColumnName = nameof(ErrorLogInfo.Stacktrace),
-                DataType = DataType.NText
+                DataType = DataType.Text
             },
             new TableColumnInfo
             {
                 ColumnName = nameof(ErrorLogInfo.Summary),
-                DataType = DataType.NText
+                DataType = DataType.Text
             },
             new TableColumnInfo
             {
@@ -63,9 +63,9 @@ namespace BaiRong.Core.Provider
             var parms = new IDataParameter[]
             {
                 GetParameter(ParmPluginId, DataType.VarChar, 200, logInfo.PluginId),
-                GetParameter(ParmMessage, DataType.NVarChar, 255, logInfo.Message),
-                GetParameter(ParmStacktrace, DataType.NText, logInfo.Stacktrace),
-                GetParameter(ParmSummary, DataType.NText, logInfo.Summary),
+                GetParameter(ParmMessage, DataType.VarChar, 255, logInfo.Message),
+                GetParameter(ParmStacktrace, DataType.Text, logInfo.Stacktrace),
+                GetParameter(ParmSummary, DataType.Text, logInfo.Summary),
                 GetParameter(ParmAddDate, DataType.DateTime, logInfo.AddDate),
             };
 

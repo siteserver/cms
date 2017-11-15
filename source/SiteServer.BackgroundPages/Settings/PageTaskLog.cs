@@ -139,7 +139,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var taskID = SqlUtils.EvalInt(e.Item.DataItem, "TaskID");
                 var taskInfo = DataProvider.TaskDao.GetTaskInfo(taskID);
 
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(taskInfo.PublishmentSystemID);
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(taskInfo.PublishmentSystemId);
                 if (publishmentSystemInfo == null)
                 {
                     e.Item.Visible = false;

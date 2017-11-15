@@ -1,17 +1,69 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class AdAreaDao : DataProviderBase
     {
-        private const string SqlInsertAdarea = "INSERT INTO siteserver_AdArea ( PublishmentSystemID,AdAreaName, Width, Height, Summary, IsEnabled, AddDate) VALUES (@PublishmentSystemID, @AdAreaName, @Width, @Height, @Summary, @IsEnabled,@AddDate)";
+        public override string TableName => "siteserver_AdArea";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdAreaInfo.AdAreaId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdAreaInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdAreaInfo.AdAreaName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdAreaInfo.Width),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdAreaInfo.Height),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdAreaInfo.Summary),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdAreaInfo.IsEnabled),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdAreaInfo.AddDate),
+                DataType = DataType.DateTime
+            }
+        };
+
+        private const string SqlInsertAdarea = "INSERT INTO siteserver_AdArea (PublishmentSystemID,AdAreaName, Width, Height, Summary, IsEnabled, AddDate) VALUES (@PublishmentSystemID, @AdAreaName, @Width, @Height, @Summary, @IsEnabled,@AddDate)";
 
         private const string SqlUpdateAdarea = "UPDATE siteserver_AdArea SET AdAreaName = @AdAreaName, Width = @Width,Height=@Height, Summary = @Summary, IsEnabled = @IsEnabled, AddDate = @AddDate WHERE AdAreaID = @AdAreaID AND PublishmentSystemID = @PublishmentSystemID";
 
@@ -23,7 +75,7 @@ namespace SiteServer.CMS.Provider
 
         private const string SqlSelectAdareaName = "SELECT AdAreaName FROM siteserver_AdArea WHERE AdAreaName = @AdAreaName AND PublishmentSystemID = @PublishmentSystemID";
 
-        private const string SqlSelectAllAdarea = "SELECT AdAreaID, PublishmentSystemID,AdAreaName, Width, Height, Summary, IsEnabled,AddDate FROM siteserver_AdArea WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY AddDate DESC";
+        private const string SqlSelectAllAdarea = "SELECT AdAreaID, PublishmentSystemID,AdAreaName, Width, Height, Summary, IsEnabled, AddDate FROM siteserver_AdArea WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY AddDate DESC";
 
         private const string ParmAdareaId = "@AdAreaID";
         private const string ParmPublishmentsystemid = "@PublishmentSystemID";
@@ -38,11 +90,11 @@ namespace SiteServer.CMS.Provider
         {
             var adParms = new IDataParameter[]
 			{ 
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, adAreaInfo.PublishmentSystemID),
-			    GetParameter(ParmAdareaName, DataType.NVarChar,255, adAreaInfo.AdAreaName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, adAreaInfo.PublishmentSystemId),
+			    GetParameter(ParmAdareaName, DataType.VarChar,255, adAreaInfo.AdAreaName),
                 GetParameter(ParmWidth, DataType.Integer, adAreaInfo.Width),
                 GetParameter(ParmHight, DataType.Integer, adAreaInfo.Height),
-                GetParameter(ParmSummary, DataType.NVarChar, 255, adAreaInfo.Summary),
+                GetParameter(ParmSummary, DataType.VarChar, 255, adAreaInfo.Summary),
                 GetParameter(ParmIsEnabled, DataType.VarChar,18, adAreaInfo.IsEnabled.ToString()),
                 GetParameter(ParmAddDate, DataType.DateTime, adAreaInfo.AddDate)
               
@@ -55,14 +107,14 @@ namespace SiteServer.CMS.Provider
         {
             var adParms = new IDataParameter[]
 			{
-			    GetParameter(ParmAdareaName, DataType.NVarChar,255, adAreaInfo.AdAreaName),
+			    GetParameter(ParmAdareaName, DataType.VarChar,255, adAreaInfo.AdAreaName),
                 GetParameter(ParmWidth, DataType.Integer, adAreaInfo.Width),
                 GetParameter(ParmHight, DataType.Integer, adAreaInfo.Height),
                 GetParameter(ParmSummary, DataType.Text, 255, adAreaInfo.Summary),
                 GetParameter(ParmIsEnabled, DataType.VarChar,18, adAreaInfo.IsEnabled.ToString()),
                 GetParameter(ParmAddDate, DataType.DateTime, adAreaInfo.AddDate),
-                GetParameter(ParmAdareaId, DataType.Integer, adAreaInfo.AdAreaID),
-				GetParameter(ParmPublishmentsystemid, DataType.Integer, adAreaInfo.PublishmentSystemID)
+                GetParameter(ParmAdareaId, DataType.Integer, adAreaInfo.AdAreaId),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, adAreaInfo.PublishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlUpdateAdarea, adParms);
@@ -72,7 +124,7 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
 			{
-			    GetParameter(ParmAdareaName, DataType.NVarChar,255, adAreaName),
+			    GetParameter(ParmAdareaName, DataType.VarChar,255, adAreaName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
             ExecuteNonQuery(SqlDeleteAdarea, parms);
@@ -85,7 +137,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdareaName, DataType.NVarChar,255, adAreaName),
+				GetParameter(ParmAdareaName, DataType.VarChar,255, adAreaName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
@@ -131,7 +183,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdareaName, DataType.NVarChar,255, adAreaName),
+				GetParameter(ParmAdareaName, DataType.VarChar,255, adAreaName),
 				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 

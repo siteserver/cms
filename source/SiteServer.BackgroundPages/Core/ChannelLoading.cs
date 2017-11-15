@@ -68,16 +68,16 @@ namespace SiteServer.BackgroundPages.Core
     <td>{title}</td>
     <td>{nodeInfo.NodeGroupNameCollection}</td>
     <td><nobr>{nodeInfo.NodeIndexName}</nobr></td>
-    <td class=""center"">
+    <td class=""text-center"">
 	    {upLink}
     </td>
-    <td class=""center"">
+    <td class=""text-center"">
 	    {downLink}
     </td>
-    <td class=""center"">
+    <td class=""text-center"">
 	    {editUrl}
     </td>
-    <td class=""center"">
+    <td class=""text-center"">
 	    {checkBoxHtml}
     </td>
 </tr>
@@ -128,7 +128,7 @@ namespace SiteServer.BackgroundPages.Core
 	<td>
 		<nobr>{filePath}</nobr>
 	</td>
-	<td class=""center"">
+	<td class=""text-center"">
 		{editLink}
 	</td>
 </tr>
@@ -173,7 +173,7 @@ namespace SiteServer.BackgroundPages.Core
 	<td>
 		{nodeNames}
 	</td>
-	<td class=""center"">
+	<td class=""text-center"">
 		{editChannelLink}
 	</td>
 </tr>
@@ -195,44 +195,7 @@ namespace SiteServer.BackgroundPages.Core
 <tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
 	<td>{title}</td>
 	<td>{contribute}</td>
-	<td class=""center"" width=""50"">{editLink}</td>
-</tr>
-";
-            }
-            else if (loadingType == ELoadingType.ConfigurationSignin)
-            {
-                var editLink = string.Empty;
-
-                if (enabled)
-                {
-                    var showPopWinString = ModalConfigurationSignin.GetOpenWindowString(nodeInfo.PublishmentSystemId, nodeInfo.NodeId);
-                    editLink = $"<a href=\"javascript:;\" onclick=\"{showPopWinString}\">更改</a>";
-                }
-
-                //string contribute = CrossSiteTransUtility.GetDescription(nodeInfo.PublishmentSystemID, nodeInfo);
-                var isSign = nodeInfo.Additional.IsSignin ? "是" : "否";
-                //if (!string.IsNullOrEmpty(nodeInfo.Additional.SigninUserGroupCollection))
-                //{
-                //    ArrayList groupIDlist = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.SigninUserGroupCollection);
-                //    UserGroupInfo userGroupInfo = null;
-                //    foreach (int groupID in groupIDlist)
-                //    {
-                //        userGroupInfo = DataProvider.UserGroupDAO.GetUserGroupMessage(groupID);
-                //        SignUser += userGroupInfo.GroupName + ',';
-                //    }
-                //    SignUser = SignUser.TrimEnd(',');
-                //}
-                //else
-                //{
-                var signUser = nodeInfo.Additional.SigninUserNameCollection;
-                //}
-
-                rowHtml = $@"
-<tr treeItemLevel=""{nodeInfo.ParentsCount + 1}"">
-	<td>{title}</td>
-    <td>{signUser}</td>
-	<td class=""center"">{isSign}</td>
-	<td class=""center"">{editLink}</td>
+	<td class=""text-center"" width=""50"">{editLink}</td>
 </tr>
 ";
             }

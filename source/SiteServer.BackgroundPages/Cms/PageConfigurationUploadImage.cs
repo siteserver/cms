@@ -9,8 +9,8 @@ namespace SiteServer.BackgroundPages.Cms
 	public class PageConfigurationUploadImage : BasePageCms
     {
 		public TextBox TbImageUploadDirectoryName;
-		public RadioButtonList RblImageUploadDateFormatString;
-		public RadioButtonList RblIsImageUploadChangeFileName;
+		public DropDownList DdlImageUploadDateFormatString;
+		public DropDownList DdlIsImageUploadChangeFileName;
         public TextBox TbImageUploadTypeCollection;
         public DropDownList DdlImageUploadTypeUnit;
         public TextBox TbImageUploadTypeMaxSize;
@@ -28,13 +28,13 @@ namespace SiteServer.BackgroundPages.Cms
 
             TbImageUploadDirectoryName.Text = PublishmentSystemInfo.Additional.ImageUploadDirectoryName;
 
-            RblImageUploadDateFormatString.Items.Add(new ListItem("按年存入不同目录(不推荐)", EDateFormatTypeUtils.GetValue(EDateFormatType.Year)));
-            RblImageUploadDateFormatString.Items.Add(new ListItem("按年/月存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Month)));
-            RblImageUploadDateFormatString.Items.Add(new ListItem("按年/月/日存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Day)));
-            ControlUtils.SelectListItemsIgnoreCase(RblImageUploadDateFormatString, PublishmentSystemInfo.Additional.ImageUploadDateFormatString);
+            DdlImageUploadDateFormatString.Items.Add(new ListItem("按年存入不同目录(不推荐)", EDateFormatTypeUtils.GetValue(EDateFormatType.Year)));
+            DdlImageUploadDateFormatString.Items.Add(new ListItem("按年/月存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Month)));
+            DdlImageUploadDateFormatString.Items.Add(new ListItem("按年/月/日存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Day)));
+            ControlUtils.SelectListItemsIgnoreCase(DdlImageUploadDateFormatString, PublishmentSystemInfo.Additional.ImageUploadDateFormatString);
 
-            EBooleanUtils.AddListItems(RblIsImageUploadChangeFileName, "自动修改文件名", "保持文件名不变");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsImageUploadChangeFileName, PublishmentSystemInfo.Additional.IsImageUploadChangeFileName.ToString());
+            EBooleanUtils.AddListItems(DdlIsImageUploadChangeFileName, "自动修改文件名", "保持文件名不变");
+            ControlUtils.SelectListItemsIgnoreCase(DdlIsImageUploadChangeFileName, PublishmentSystemInfo.Additional.IsImageUploadChangeFileName.ToString());
 
             TbImageUploadTypeCollection.Text = PublishmentSystemInfo.Additional.ImageUploadTypeCollection.Replace("|", ",");
             var mbSize = GetMbSize(PublishmentSystemInfo.Additional.ImageUploadTypeMaxSize);
@@ -69,8 +69,8 @@ namespace SiteServer.BackgroundPages.Cms
 
 		    PublishmentSystemInfo.Additional.ImageUploadDirectoryName = TbImageUploadDirectoryName.Text;
 
-		    PublishmentSystemInfo.Additional.ImageUploadDateFormatString = EDateFormatTypeUtils.GetValue(EDateFormatTypeUtils.GetEnumType(RblImageUploadDateFormatString.SelectedValue));
-		    PublishmentSystemInfo.Additional.IsImageUploadChangeFileName = TranslateUtils.ToBool(RblIsImageUploadChangeFileName.SelectedValue);
+		    PublishmentSystemInfo.Additional.ImageUploadDateFormatString = EDateFormatTypeUtils.GetValue(EDateFormatTypeUtils.GetEnumType(DdlImageUploadDateFormatString.SelectedValue));
+		    PublishmentSystemInfo.Additional.IsImageUploadChangeFileName = TranslateUtils.ToBool(DdlIsImageUploadChangeFileName.SelectedValue);
 
 		    PublishmentSystemInfo.Additional.ImageUploadTypeCollection = TbImageUploadTypeCollection.Text.Replace(",", "|");
 		    var kbSize = int.Parse(TbImageUploadTypeMaxSize.Text);

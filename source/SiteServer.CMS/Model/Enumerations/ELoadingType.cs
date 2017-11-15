@@ -10,8 +10,7 @@ namespace SiteServer.CMS.Model.Enumerations
         SiteAnalysis,
         TemplateFilePathRule,
         ConfigurationCreateDetails,
-        ConfigurationCrossSiteTrans,
-        ConfigurationSignin
+        ConfigurationCrossSiteTrans
     }
 
     public class ELoadingTypeUtils
@@ -45,10 +44,6 @@ namespace SiteServer.CMS.Model.Enumerations
             if (type == ELoadingType.ConfigurationCrossSiteTrans)
             {
                 return "ConfigurationCrossSiteTrans";
-            }
-            if (type == ELoadingType.ConfigurationSignin)
-            {
-                return "ConfigurationSignin";
             }
             throw new Exception();
         }
@@ -84,10 +79,6 @@ namespace SiteServer.CMS.Model.Enumerations
             else if (Equals(ELoadingType.ConfigurationCrossSiteTrans, typeStr))
             {
                 retval = ELoadingType.ConfigurationCrossSiteTrans;
-            }
-            else if (Equals(ELoadingType.ConfigurationSignin, typeStr))
-            {
-                retval = ELoadingType.ConfigurationSignin;
             }
 
             return retval;

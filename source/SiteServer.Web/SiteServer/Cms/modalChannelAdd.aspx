@@ -1,83 +1,118 @@
 ﻿<%@ Page Language="C#" ValidateRequest="false" Inherits="SiteServer.BackgroundPages.Cms.ModalChannelAdd" Trace="false" %>
   <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
-    <html>
+    <html class="modalPage">
 
     <head>
       <meta charset="utf-8">
-      <!--#include file="../inc/header.aspx"-->
+      <!--#include file="../inc/head.html"-->
+      <script language="javascript">
+        function selectChannel(nodeNames, nodeID) {
+          $('#nodeNames').html(nodeNames);
+          $('#nodeID').val(nodeID);
+        }
+      </script>
     </head>
 
     <body>
       <!--#include file="../inc/openWindow.html"-->
-      <form class="form-inline" runat="server">
-        <asp:Button ID="btnSubmit" UseSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" Style="display: none" />
-        <bairong:Alerts runat="server"></bairong:Alerts>
 
-        <script language="javascript">
-          function selectChannel(nodeNames, nodeID) {
-            $('#nodeNames').html(nodeNames);
-            $('#nodeID').val(nodeID);
-          }
-        </script>
+      <form runat="server">
+        <bairong:alerts runat="server" />
 
-        <table class="table noborder">
-          <tr>
-            <td width="100">父栏目： </td>
-            <td colspan="3">
-              <div class="fill_box">
-                <div class="addr_base addr_normal">
-                  <b id="nodeNames"></b>
-                  <input id="nodeID" name="nodeID" value="0" type="hidden">
-                </div>
-              </div>
-              <asp:HyperLink id="HlSelectChannel" class="btn_pencil" runat="server"><span class="pencil"></span>　选择</asp:HyperLink>
+        <div class="form-horizontal">
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">父栏目</label>
+            <div class="col-sm-9 help-block text-danger">
+              <span id="nodeNames" class="m-l-10 m-r-10"></span>
+              <input id="nodeID" name="nodeID" value="0" type="hidden">
+              <asp:HyperLink id="HlSelectChannel" class="btn btn-success" runat="server">选择</asp:HyperLink>
               <asp:Literal ID="LtlSelectChannelScript" runat="server"></asp:Literal>
-            </td>
-          </tr>
-          <tr>
-            <td width="100">内容模型：</td>
-            <td width="230">
-              <asp:DropDownList ID="DdlContentModelId" runat="server"></asp:DropDownList>
-            </td>
-            <asp:PlaceHolder id="PhPlugins" runat="server">
-                <td width="100">栏目插件：</td>
-                <td>
-                  <asp:CheckBoxList ID="CblPlugins" CssClass="checkboxlist" RepeatDirection="Horizontal" runat="server"></asp:CheckBoxList>
-                </td>
-            </asp:PlaceHolder>
-          </tr>
-          <tr>
-            <td>栏目模板：</td>
-            <td>
-              <asp:DropDownList ID="DdlChannelTemplateId" DataTextField="TemplateName" DataValueField="TemplateId" runat="server"></asp:DropDownList>
-            </td>
-            <td width="100">内容模板：</td>
-            <td>
-              <asp:DropDownList ID="DdlContentTemplateId" DataTextField="TemplateName" DataValueField="TemplateId" runat="server"></asp:DropDownList>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="4">
-              <asp:CheckBox Text="将栏目名称作为栏目索引" ID="CbIsNameToIndex" runat="server" />
-            </td>
-          </tr>
-          <tr>
-            <td colspan="4">
-              <div class="alert alert-info">
-                栏目之间用换行分割，下级栏目在栏目前添加“－”字符，索引可以放到括号中，如：
+            </div>
+            <div class="col-sm-1">
+              
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">内容模型</label>
+            <div class="col-sm-4">
+              <asp:DropDownList class="form-control" ID="DdlContentModelId" runat="server"></asp:DropDownList>
+            </div>
+            <div class="col-sm-6">
+
+            </div>
+          </div>
+          <asp:PlaceHolder id="PhPlugins" runat="server">
+            <div class="form-group" id="FilePathRow" runat="server">
+              <label class="col-sm-2 control-label">栏目插件</label>
+              <div class="col-sm-9">
+                <asp:CheckBoxList ID="CblPlugins" CssClass="checkbox checkbox-primary" RepeatDirection="Horizontal" runat="server"></asp:CheckBoxList>
+              </div>
+              <div class="col-sm-1"></div>
+            </div>
+          </asp:PlaceHolder>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">栏目模板</label>
+            <div class="col-sm-4">
+              <asp:DropDownList class="form-control" ID="DdlChannelTemplateId" DataTextField="TemplateName" DataValueField="TemplateId"
+                runat="server"></asp:DropDownList>
+            </div>
+            <div class="col-sm-6">
+
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">内容模板</label>
+            <div class="col-sm-4">
+              <asp:DropDownList class="form-control" ID="DdlContentTemplateId" DataTextField="TemplateName" DataValueField="TemplateId"
+                runat="server"></asp:DropDownList>
+            </div>
+            <div class="col-sm-6">
+
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">栏目索引</label>
+            <div class="col-sm-4">
+              <asp:CheckBox class="checkbox checkbox-primary" Text="将栏目名称作为栏目索引" ID="CbIsNameToIndex" runat="server" />
+            </div>
+            <div class="col-sm-6">
+
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">说明</label>
+            <div class="col-sm-10 help-block">
+              栏目之间用换行分割，下级栏目在栏目前添加“－”字符，索引可以放到括号中，如：
+              <code>
                 <br> 栏目一(栏目索引)
                 <br> －下级栏目(下级索引)
                 <br> －－下下级栏目
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="4" class="center">
-              <asp:TextBox Style="width: 98%; height: 240px" TextMode="MultiLine" ID="TbNodeNames" runat="server" />
-            </td>
-          </tr>
-        </table>
+              </code>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-1 control-label"></label>
+            <div class="col-sm-10">
+              <asp:TextBox class="form-control" Style="width: 98%; height: 240px" TextMode="MultiLine" ID="TbNodeNames" runat="server"
+              />
+            </div>
+            <div class="col-sm-1">
+
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="form-group m-b-0">
+            <div class="col-sm-11 text-right">
+              <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
+              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
+            </div>
+            <div class="col-sm-1"></div>
+          </div>
+        </div>
 
       </form>
     </body>

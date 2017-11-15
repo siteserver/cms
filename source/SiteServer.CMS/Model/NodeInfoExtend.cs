@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using BaiRong.Core;
-using BaiRong.Core.Model;
+﻿using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin.Models;
@@ -85,7 +83,7 @@ namespace SiteServer.CMS.Model
 
         public bool TransIsAutomatic
         {
-            get { return GetBool("TransIsAutomatic", false); }
+            get { return GetBool("TransIsAutomatic"); }
             set { SetExtendedAttribute("TransIsAutomatic", value.ToString()); }
         }
 
@@ -98,7 +96,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsPreviewContents
         {
-            get { return GetBool("IsPreviewContents", false); }
+            get { return GetBool("IsPreviewContents"); }
             set { SetExtendedAttribute("IsPreviewContents", value.ToString()); }
         }
 
@@ -108,43 +106,7 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("DefaultTaxisType", value); }
         }
 
-        /****************内容签收设置********************/
-
-        public bool IsSignin
-        {
-            get { return GetBool("IsSignin", false); }
-            set { SetExtendedAttribute("IsSignin", value.ToString()); }
-        }
-
-        public bool IsSigninGroup
-        {
-            get { return GetBool("IsSigninGroup", true); }
-            set { SetExtendedAttribute("IsSigninGroup", value.ToString()); }
-        }
-
-        public string SigninUserGroupCollection
-        {
-            get { return GetExtendedAttribute("SigninUserGroupCollection"); }
-            set { SetExtendedAttribute("SigninUserGroupCollection", value); }
-        }
-
-        public string SigninUserNameCollection
-        {
-            get { return GetExtendedAttribute("SigninUserNameCollection"); }
-            set { SetExtendedAttribute("SigninUserNameCollection", value); }
-        }
-
-        public int SigninPriority
-        {
-            get { return TranslateUtils.ToInt(GetExtendedAttribute("SigninPriority")); }
-            set { SetExtendedAttribute("SigninPriority", value.ToString()); }
-        }
-
-        public string SigninEndDate
-        {
-            get { return GetExtendedAttribute("SigninEndDate"); }
-            set { SetExtendedAttribute("SigninEndDate", value); }
-        }
+        /****************others********************/
 
         public string PluginIds
         {

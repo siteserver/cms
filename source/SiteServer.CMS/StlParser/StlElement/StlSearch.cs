@@ -2,7 +2,6 @@
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;

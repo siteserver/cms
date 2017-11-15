@@ -27,8 +27,12 @@ namespace BaiRong.Core.Model
         public string WeixinMchId { get; set; }
         public string WeixinKey { get; set; }
 
-        public bool IsUnionpayPc { get; set; }
-
-        public bool IsUnionpayMobi { get; set; }
+        public bool IsJdpay { get; set; }
+        public string JdpayMerchant { get; set; }
+        public string JdpayUserId { get; set; }
+        public string JdpayMd5Key { get; set; }
+        public string JdpayDesKey { get; set; }
+        public string JdpayPublicKey { get; set; }
+        public string JdpayPrivateKey { get; set; }
     }
 }

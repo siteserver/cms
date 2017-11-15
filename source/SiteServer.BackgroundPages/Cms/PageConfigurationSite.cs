@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public DropDownList DdlCharset;
         public TextBox TbPageSize;
-        public RadioButtonList RblIsCreateDoubleClick;
+        public DropDownList DdlIsCreateDoubleClick;
 
 		public void Page_Load(object sender, EventArgs e)
         {
@@ -40,8 +40,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                 TbPageSize.Text = PublishmentSystemInfo.Additional.PageSize.ToString();
 
-                EBooleanUtils.AddListItems(RblIsCreateDoubleClick, "启用双击生成", "不启用");
-                ControlUtils.SelectListItemsIgnoreCase(RblIsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
+                EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
+                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
             }
 		}
 
@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
 		    }
 
 		    PublishmentSystemInfo.Additional.PageSize = TranslateUtils.ToInt(TbPageSize.Text, PublishmentSystemInfo.Additional.PageSize);
-		    PublishmentSystemInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(RblIsCreateDoubleClick.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
                 
 		    try
 		    {

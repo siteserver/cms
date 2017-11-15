@@ -1,16 +1,125 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class AdvDao : DataProviderBase
     {
+        public override string TableName => "siteserver_Adv";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.AdvId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.AdAreaId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.AdvName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.Summary),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.IsEnabled),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.IsDateLimited),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.StartDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.EndDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.LevelType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.Level),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.IsWeight),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.Weight),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.RotateType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.RotateInterval),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.NodeIdCollectionToChannel),
+                DataType = DataType.VarChar,
+                Length = 4000
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.NodeIdCollectionToContent),
+                DataType = DataType.VarChar,
+                Length = 4000
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvInfo.FileTemplateIdCollection),
+                DataType = DataType.VarChar,
+                Length = 4000
+            }
+        };
+
         private const string SqlInsertAdv = "INSERT INTO siteserver_Adv (PublishmentSystemID,AdAreaID,AdvName,Summary, IsEnabled, IsDateLimited, StartDate, EndDate,LevelType,Level,IsWeight,Weight,RotateType,RotateInterval,NodeIDCollectionToChannel,NodeIDCollectionToContent,FileTemplateIDCollection) VALUES (@PublishmentSystemID,@AdAreaID,@AdvName, @Summary, @IsEnabled, @IsDateLimited, @StartDate, @EndDate,@LevelType,@Level,@IsWeight,@Weight,@RotateType,@RotateInterval,@NodeIDCollectionToChannel,@NodeIDCollectionToContent,@FileTemplateIDCollection)";
 
         private const string SqlUpdateAdv = "UPDATE siteserver_Adv SET AdAreaID=@AdAreaID,AdvName=@AdvName, Summary = @Summary,IsEnabled = @IsEnabled, IsDateLimited = @IsDateLimited, StartDate = @StartDate, EndDate = @EndDate,LevelType=@LevelType,Level=@Level,IsWeight=@IsWeight,Weight=@Weight,RotateType=@RotateType,RotateInterval=@RotateInterval,NodeIDCollectionToChannel=@NodeIDCollectionToChannel,NodeIDCollectionToContent=@NodeIDCollectionToContent,FileTemplateIDCollection=@FileTemplateIDCollection WHERE AdvID = @AdvID AND PublishmentSystemID = @PublishmentSystemID";
@@ -49,23 +158,23 @@ namespace SiteServer.CMS.Provider
         {
             var adParms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentsystemid, DataType.Integer, advInfo.PublishmentSystemID),
-                GetParameter(ParmAdvAreaid, DataType.Integer, advInfo.AdAreaID),
-                GetParameter(ParmAdvName, DataType.NVarChar, 50, advInfo.AdvName),
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, advInfo.PublishmentSystemId),
+                GetParameter(ParmAdvAreaid, DataType.Integer, advInfo.AdAreaId),
+                GetParameter(ParmAdvName, DataType.VarChar, 50, advInfo.AdvName),
                 GetParameter(ParmSummary, DataType.Text, advInfo.Summary),
                 GetParameter(ParmIsEnabled, DataType.VarChar, 18, advInfo.IsEnabled.ToString()),
                 GetParameter(ParmIsDateLimited, DataType.VarChar, 18, advInfo.IsDateLimited.ToString()),
                 GetParameter(ParmStartDate, DataType.DateTime, advInfo.StartDate),
                 GetParameter(ParmEndDate, DataType.DateTime, advInfo.EndDate),
-                GetParameter(ParmLevelType, DataType.NVarChar, 50,EAdvLevelTypeUtils.GetValue(advInfo.LevelType)),
+                GetParameter(ParmLevelType, DataType.VarChar, 50,EAdvLevelTypeUtils.GetValue(advInfo.LevelType)),
                 GetParameter(ParmLevel , DataType.Integer, advInfo.Level),
                 GetParameter(ParmIsWeight, DataType.VarChar, 18, advInfo.IsWeight.ToString()),
                 GetParameter(ParmWeight , DataType.Integer,advInfo.Weight ),
-                GetParameter(ParmRotateType, DataType.NVarChar,50,EAdvRotateTypeUtils.GetValue(advInfo.RotateType)),
+                GetParameter(ParmRotateType, DataType.VarChar,50,EAdvRotateTypeUtils.GetValue(advInfo.RotateType)),
                 GetParameter(ParmRotateInterval, DataType.Integer, advInfo.RotateInterval),
-                GetParameter(ParmNodeIdCollectionToChannel, DataType.NVarChar, 4000, advInfo.NodeIDCollectionToChannel),
-                GetParameter(ParmNodeIdCollectionToContent, DataType.NVarChar, 4000, advInfo.NodeIDCollectionToContent),
-                GetParameter(ParmFiletemplateIdCollection, DataType.NVarChar,4000, advInfo.FileTemplateIDCollection)
+                GetParameter(ParmNodeIdCollectionToChannel, DataType.VarChar, 4000, advInfo.NodeIdCollectionToChannel),
+                GetParameter(ParmNodeIdCollectionToContent, DataType.VarChar, 4000, advInfo.NodeIdCollectionToContent),
+                GetParameter(ParmFiletemplateIdCollection, DataType.VarChar,4000, advInfo.FileTemplateIdCollection)
 
             };
 
@@ -76,24 +185,24 @@ namespace SiteServer.CMS.Provider
         {
             var adParms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentsystemid, DataType.Integer, advInfo.PublishmentSystemID),
-                GetParameter(ParmAdvAreaid, DataType.Integer, advInfo.AdAreaID),
-                GetParameter(ParmAdvName, DataType.NVarChar, 50, advInfo.AdvName),
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, advInfo.PublishmentSystemId),
+                GetParameter(ParmAdvAreaid, DataType.Integer, advInfo.AdAreaId),
+                GetParameter(ParmAdvName, DataType.VarChar, 50, advInfo.AdvName),
                 GetParameter(ParmSummary, DataType.Text, advInfo.Summary),
                 GetParameter(ParmIsEnabled, DataType.VarChar, 18, advInfo.IsEnabled.ToString()),
                 GetParameter(ParmIsDateLimited, DataType.VarChar, 18, advInfo.IsDateLimited.ToString()),
                 GetParameter(ParmStartDate, DataType.DateTime, advInfo.StartDate),
                 GetParameter(ParmEndDate, DataType.DateTime, advInfo.EndDate),
-                GetParameter(ParmLevelType, DataType.NVarChar, 50,EAdvLevelTypeUtils.GetValue(advInfo.LevelType)),
+                GetParameter(ParmLevelType, DataType.VarChar, 50,EAdvLevelTypeUtils.GetValue(advInfo.LevelType)),
                 GetParameter(ParmLevel , DataType.Integer, advInfo.Level),
                 GetParameter(ParmIsWeight, DataType.VarChar, 18, advInfo.IsWeight.ToString()),
                 GetParameter(ParmWeight , DataType.Integer,advInfo.Weight ),
-                GetParameter(ParmRotateType, DataType.NVarChar,50,EAdvRotateTypeUtils.GetValue(advInfo.RotateType)),
+                GetParameter(ParmRotateType, DataType.VarChar,50,EAdvRotateTypeUtils.GetValue(advInfo.RotateType)),
                 GetParameter(ParmRotateInterval, DataType.Integer, advInfo.RotateInterval),
-                GetParameter(ParmNodeIdCollectionToChannel, DataType.NVarChar, 4000, advInfo.NodeIDCollectionToChannel),
-                GetParameter(ParmNodeIdCollectionToContent, DataType.NVarChar, 4000, advInfo.NodeIDCollectionToContent),
-                GetParameter(ParmFiletemplateIdCollection, DataType.NVarChar,4000, advInfo.FileTemplateIDCollection),
-                GetParameter(ParmAdvId, DataType.Integer, advInfo.AdvID)
+                GetParameter(ParmNodeIdCollectionToChannel, DataType.VarChar, 4000, advInfo.NodeIdCollectionToChannel),
+                GetParameter(ParmNodeIdCollectionToContent, DataType.VarChar, 4000, advInfo.NodeIdCollectionToContent),
+                GetParameter(ParmFiletemplateIdCollection, DataType.VarChar,4000, advInfo.FileTemplateIdCollection),
+                GetParameter(ParmAdvId, DataType.Integer, advInfo.AdvId)
 
             };
 
@@ -150,7 +259,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmAdvName, DataType.NVarChar, 50, adertName),
+                GetParameter(ParmAdvName, DataType.VarChar, 50, adertName),
                 GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
             };
 
