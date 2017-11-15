@@ -1,0 +1,1248 @@
+<docs>
+  <DefaultCtor>
+    <summary>
+      Initializes a new instance of the <see cref="MySqlConnection"/> class.
+    </summary>
+    <remarks>
+      When a new instance of <see cref="MySqlConnection"/> is created, the read/write
+      properties are set to the following initial values unless they are specifically
+      set using their associated keywords in the <see cref="ConnectionString"/> property.
+      <para/>
+      <list type="table">
+        <listheader>
+          <term>Properties</term>
+          <term>Initial Value</term>
+        </listheader>
+        <item>
+          <term>
+            <see cref="ConnectionString"/>
+          </term>
+          <term>empty string ("")</term>
+        </item>
+        <item>
+          <term>
+            <see cref="ConnectionTimeout"/>
+          </term>
+          <term>15</term>
+        </item>
+        <item>
+          <term>
+            <see cref="Database"/>
+          </term>
+          <term>empty string ("")</term>
+        </item>
+        <item>
+          <term>
+            <see cref="DataSource"/>
+          </term>
+          <term>empty string ("")</term>
+        </item>
+        <item>
+          <term>
+            <see cref="ServerVersion"/>
+          </term>
+          <term>empty string ("")</term>
+        </item>
+      </list>
+      <para/>
+      You can change the value for these properties only by using the <B>ConnectionString</B> property.
+    </remarks>
+    <example>
+    </example>
+    <overloads>
+      <summary>
+        Initializes a new instance of the <see cref="MySqlConnection"/> class.
+      </summary>
+    </overloads>
+  </DefaultCtor>
+
+  <Ctor1>
+    <summary>
+      Initializes a new instance of the <see cref="MySqlConnection"/> class when given a string containing the connection string.
+    </summary>
+    <remarks>
+      When a new instance of <see cref="MySqlConnection"/> is created, the read/write
+      properties are set to the following initial values unless they are specifically
+      set using their associated keywords in the <see cref="ConnectionString"/> property.
+      <para/>
+      <list type="table">
+        <listheader>
+          <term>Properties</term>
+          <term>Initial Value</term>
+        </listheader>
+        <item>
+          <term>
+            <see cref="ConnectionString"/>
+          </term>
+          <term>empty string ("")</term>
+        </item>
+        <item>
+          <term>
+            <see cref="ConnectionTimeout"/>
+          </term>
+          <term>15</term>
+        </item>
+        <item>
+          <term>
+            <see cref="Database"/>
+          </term>
+          <term>empty string ("")</term>
+        </item>
+        <item>
+          <term>
+            <see cref="DataSource"/>
+          </term>
+          <term>empty string ("")</term>
+        </item>
+        <item>
+          <term>
+            <see cref="ServerVersion"/>
+          </term>
+          <term>empty string ("")</term>
+        </item>
+      </list>
+      <para/>
+      You can change the value for these properties only by using the <B>ConnectionString</B> property.
+    </remarks>
+    <example>
+    </example>
+    <param name="connectionString">The connection properties used to open the MySQL database. </param>
+  </Ctor1>
+
+  <Open>
+    <summary>Opens a database connection with the property settings specified by the ConnectionString.</summary>
+    <exception cref="InvalidOperationException">Cannot open a connection without specifying a data source or server.</exception>
+    <exception cref="MySqlException">A connection-level error occurred while opening the connection.</exception>
+    <remarks>
+      <para>
+        The <see cref="MySqlConnection"/> draws an open connection from the connection pool if one is available.
+        Otherwise, it establishes a new connection to an instance of MySQL.
+      </para>
+    </remarks>
+    <example>
+      The following example creates a <see cref="MySqlConnection"/>, opens it,
+      displays some of its properties, then closes the connection.
+
+      <code lang="vbnet">
+        Public Sub CreateMySqlConnection(myConnString As String)
+        Dim myConnection As New MySqlConnection(myConnString)
+        myConnection.Open()
+        MessageBox.Show("ServerVersion: " + myConnection.ServerVersion _
+        + ControlChars.Cr + "State: " + myConnection.State.ToString())
+        myConnection.Close()
+        End Sub
+      </code>
+      <code lang="C#">
+        public void CreateMySqlConnection(string myConnString)
+        {
+        MySqlConnection myConnection = new MySqlConnection(myConnString);
+        myConnection.Open();
+        MessageBox.Show("ServerVersion: " + myConnection.ServerVersion +
+        "\nState: " + myConnection.State.ToString());
+        myConnection.Close();
+        }
+      </code>
+    </example>
+  </Open>
+
+  <Database>
+    <summary>Gets the name of the current database or the database to be used after a connection is opened.</summary>
+    <returns>The name of the current database or the name of the database to be used after a connection is opened. The default value is an empty string.</returns>
+    <remarks>
+      <para>
+        The <B>Database</B> property does not update dynamically.
+        If you change the current database using a SQL statement, then this property
+        may reflect the wrong value.  If you change the current database using the <see cref="ChangeDatabase"/>
+        method, this property is updated to reflect the new database.
+      </para>
+    </remarks>
+    <example>
+      The following example creates a <see cref="MySqlConnection"/> and displays
+      some of its read-only properties.
+
+      <code lang="vbnet">
+        Public Sub CreateMySqlConnection()
+        Dim myConnString As String = _
+        "Persist Security Info=False;database=test;server=localhost;user id=joeuser;pwd=pass"
+        Dim myConnection As New MySqlConnection( myConnString )
+        myConnection.Open()
+        MessageBox.Show( "Server Version: " + myConnection.ServerVersion _
+        + ControlChars.NewLine + "Database: " + myConnection.Database )
+        myConnection.ChangeDatabase( "test2" )
+        MessageBox.Show( "ServerVersion: " + myConnection.ServerVersion _
+        + ControlChars.NewLine + "Database: " + myConnection.Database )
+        myConnection.Close()
+        End Sub
+      </code>
+
+      <code lang="C#">
+        public void CreateMySqlConnection()
+        {
+        string myConnString =
+        "Persist Security Info=False;database=test;server=localhost;user id=joeuser;pwd=pass";
+        MySqlConnection myConnection = new MySqlConnection( myConnString );
+        myConnection.Open();
+        MessageBox.Show( "Server Version: " + myConnection.ServerVersion
+        + "\nDatabase: " + myConnection.Database );
+        myConnection.ChangeDatabase( "test2" );
+        MessageBox.Show( "ServerVersion: " + myConnection.ServerVersion
+        + "\nDatabase: " + myConnection.Database );
+        myConnection.Close();
+        }
+      </code>
+    </example>
+  </Database>
+
+  <State>
+    <summary>Gets the current state of the connection.</summary>
+    <returns>
+      A bitwise combination of the <see cref="System.Data.ConnectionState"/> values. The default is <B>Closed</B>.
+    </returns>
+    <remarks>
+      The allowed state changes are:
+      <list type="bullet">
+        <item>
+          From <B>Closed</B> to <B>Open</B>, using the <B>Open</B> method of the connection object.
+        </item>
+        <item>
+          From <B>Open</B> to <B>Closed</B>, using either the <B>Close</B> method or the <B>Dispose</B> method of the connection object.
+        </item>
+      </list>
+    </remarks>
+    <example>
+      The following example creates a <see cref="MySqlConnection"/>, opens it,
+      displays some of its properties, then closes the connection.
+
+      <code lang="vbnet">
+        Public Sub CreateMySqlConnection(myConnString As String)
+        Dim myConnection As New MySqlConnection(myConnString)
+        myConnection.Open()
+        MessageBox.Show("ServerVersion: " + myConnection.ServerVersion _
+        + ControlChars.Cr + "State: " + myConnection.State.ToString())
+        myConnection.Close()
+        End Sub
+      </code>
+      <code lang="C#">
+        public void CreateMySqlConnection(string myConnString)
+        {
+        MySqlConnection myConnection = new MySqlConnection(myConnString);
+        myConnection.Open();
+        MessageBox.Show("ServerVersion: " + myConnection.ServerVersion +
+        "\nState: " + myConnection.State.ToString());
+        myConnection.Close();
+        }
+      </code>
+    </example>
+  </State>
+
+  <ServerVersion>
+    <summary>Gets a string containing the version of the MySQL server to which the client is connected.</summary>
+    <returns>The version of the instance of MySQL.</returns>
+    <exception cref="InvalidOperationException">The connection is closed.</exception>
+    <example>
+      The following example creates a <see cref="MySqlConnection"/>, opens it,
+      displays some of its properties, then closes the connection.
+
+      <code lang="vbnet">
+        Public Sub CreateMySqlConnection(myConnString As String)
+        Dim myConnection As New MySqlConnection(myConnString)
+        myConnection.Open()
+        MessageBox.Show("ServerVersion: " + myConnection.ServerVersion _
+        + ControlChars.Cr + "State: " + myConnection.State.ToString())
+        myConnection.Close()
+        End Sub
+      </code>
+      <code lang="C#">
+        public void CreateMySqlConnection(string myConnString)
+        {
+        MySqlConnection myConnection = new MySqlConnection(myConnString);
+        myConnection.Open();
+        MessageBox.Show("ServerVersion: " + myConnection.ServerVersion +
+        "\nState: " + myConnection.State.ToString());
+        myConnection.Close();
+        }
+      </code>
+    </example>
+  </ServerVersion>
+
+  <Close>
+    <summary>Closes the connection to the database. This is the preferred method of closing any open connection.</summary>
+    <remarks>
+      <para>
+        The <B>Close</B> method rolls back any pending transactions. It then releases
+        the connection to the connection pool, or closes the connection if connection
+        pooling is disabled.
+      </para>
+      <para>
+        An application can call <B>Close</B> more than one time. No exception is
+        generated.
+      </para>
+    </remarks>
+    <example>
+      The following example creates a <see cref="MySqlConnection"/>, opens it,
+      displays some of its properties, then closes the connection.
+
+      <code lang="vbnet">
+        Public Sub CreateMySqlConnection(myConnString As String)
+        Dim myConnection As New MySqlConnection(myConnString)
+        myConnection.Open()
+        MessageBox.Show("ServerVersion: " + myConnection.ServerVersion _
+        + ControlChars.Cr + "State: " + myConnection.State.ToString())
+        myConnection.Close()
+        End Sub
+      </code>
+      <code lang="C#">
+        public void CreateMySqlConnection(string myConnString)
+        {
+        MySqlConnection myConnection = new MySqlConnection(myConnString);
+        myConnection.Open();
+        MessageBox.Show("ServerVersion: " + myConnection.ServerVersion +
+        "\nState: " + myConnection.State.ToString());
+        myConnection.Close();
+        }
+      </code>
+    </example>
+  </Close>
+
+  <CreateCommand>
+    <summary>
+      Creates and returns a <see cref="MySqlCommand"/> object associated with the <see cref="MySqlConnection"/>.
+    </summary>
+    <returns>
+      A <see cref="MySqlCommand"/> object.
+    </returns>
+  </CreateCommand>
+
+  <BeginTransaction>
+    <summary>Begins a database transaction.</summary>
+    <returns>An object representing the new transaction.</returns>
+    <exception cref="InvalidOperationException">Parallel transactions are not supported.</exception>
+    <remarks>
+      <para>This command is equivalent to the MySQL BEGIN TRANSACTION command.</para>
+      <para>
+        You must explicitly commit or roll back the transaction using the <see cref="MySqlTransaction.Commit"/> or
+        <see cref="MySqlTransaction.Rollback"/> method.
+        <note>
+          If you do not specify an isolation level, the default isolation level is used. To specify an isolation
+          level with the <see cref="BeginTransaction()"/> method, use the overload that takes the <I>iso</I> parameter.  Also
+          note that any attempt to begin a transaction while a transaction is in progress will throw an exception on MySQL 4.1 and higher.
+          On MySQL 4.0, an exception will not be thrown because servers 4.0 and earlier did not report their transacation status.
+        </note>
+      </para>
+    </remarks>
+    <example>
+      The following example creates a <see cref="MySqlConnection"/> and a
+      <see cref="MySqlTransaction"/>.  It also demonstrates how to use the <B>BeginTransaction</B>, a
+      <see cref="MySqlTransaction.Commit"/>, and <see cref="MySqlTransaction.Rollback"/> methods.
+      <code lang="vbnet">
+        Public Sub RunTransaction(myConnString As String)
+        Dim myConnection As New MySqlConnection(myConnString)
+        myConnection.Open()
+
+        Dim myCommand As MySqlCommand = myConnection.CreateCommand()
+        Dim myTrans As MySqlTransaction
+
+        ' Start a local transaction
+        myTrans = myConnection.BeginTransaction()
+        ' Must assign both transaction object and connection
+        ' to Command object for a pending local transaction
+        myCommand.Connection = myConnection
+        myCommand.Transaction = myTrans
+
+        Try
+        myCommand.CommandText = "Insert into Test (id, desc) VALUES (100, 'Description')"
+        myCommand.ExecuteNonQuery()
+        myCommand.CommandText = "Insert into Test (id, desc) VALUES (101, 'Description')"
+        myCommand.ExecuteNonQuery()
+        myTrans.Commit()
+        Console.WriteLine("Both records are written to database.")
+        Catch e As Exception
+        Try
+        myTrans.Rollback()
+        Catch ex As MySqlException
+        If Not myTrans.Connection Is Nothing Then
+        Console.WriteLine("An exception of type " + ex.GetType().ToString() + _
+        " was encountered while attempting to roll back the transaction.")
+        End If
+        End Try
+
+        Console.WriteLine("An exception of type " + e.GetType().ToString() + _
+        "was encountered while inserting the data.")
+        Console.WriteLine("Neither record was written to database.")
+        Finally
+        myConnection.Close()
+        End Try
+        End Sub
+      </code>
+      <code lang="C#">
+        public void RunTransaction(string myConnString)
+        {
+        MySqlConnection myConnection = new MySqlConnection(myConnString);
+        myConnection.Open();
+
+        MySqlCommand myCommand = myConnection.CreateCommand();
+        MySqlTransaction myTrans;
+
+        // Start a local transaction
+        myTrans = myConnection.BeginTransaction();
+        // Must assign both transaction object and connection
+        // to Command object for a pending local transaction
+        myCommand.Connection = myConnection;
+        myCommand.Transaction = myTrans;
+
+        try
+        {
+        myCommand.CommandText = "insert into Test (id, desc) VALUES (100, 'Description')";
+        myCommand.ExecuteNonQuery();
+        myCommand.CommandText = "insert into Test (id, desc) VALUES (101, 'Description')";
+        myCommand.ExecuteNonQuery();
+        myTrans.Commit();
+        Console.WriteLine("Both records are written to database.");
+        }
+        catch(Exception e)
+        {
+        try
+        {
+        myTrans.Rollback();
+        }
+        catch (SqlException ex)
+        {
+        if (myTrans.Connection != null)
+        {
+        Console.WriteLine("An exception of type " + ex.GetType() +
+        " was encountered while attempting to roll back the transaction.");
+        }
+        }
+
+        Console.WriteLine("An exception of type " + e.GetType() +
+        " was encountered while inserting the data.");
+        Console.WriteLine("Neither record was written to database.");
+        }
+        finally
+        {
+        myConnection.Close();
+        }
+        }
+      </code>
+    </example>
+  </BeginTransaction>
+
+  <BeginTransaction1>
+    <summary>Begins a database transaction with the specified isolation level.</summary>
+    <param name="iso">The isolation level under which the transaction should run. </param>
+    <returns>An object representing the new transaction.</returns>
+    <exception cref="InvalidOperationException">Parallel exceptions are not supported.</exception>
+    <remarks>
+      <para>This command is equivalent to the MySQL BEGIN TRANSACTION command.</para>
+      <para>
+        You must explicitly commit or roll back the transaction using the <see cref="MySqlTransaction.Commit"/> or
+        <see cref="MySqlTransaction.Rollback"/> method.
+        <note>
+          If you do not specify an isolation level, the default isolation level is used. To specify an isolation
+          level with the <see cref="BeginTransaction()"/> method, use the overload that takes the <I>iso</I> parameter.
+          Also note that any attempt to begin a transaction while a transaction is in progress will throw an exception on MySQL 4.1 and higher.
+          On MySQL 4.0, an exception will not be thrown because servers 4.0 and earlier did not report their transacation status.
+        </note>
+      </para>
+    </remarks>
+    <example>
+      The following example creates a <see cref="MySqlConnection"/> and a
+      <see cref="MySqlTransaction"/>.  It also demonstrates how to use the <B>BeginTransaction</B>, a
+      <see cref="MySqlTransaction.Commit"/>, and <see cref="MySqlTransaction.Rollback"/> methods.
+      <code lang="vbnet">
+        Public Sub RunTransaction(myConnString As String)
+        Dim myConnection As New MySqlConnection(myConnString)
+        myConnection.Open()
+
+        Dim myCommand As MySqlCommand = myConnection.CreateCommand()
+        Dim myTrans As MySqlTransaction
+
+        ' Start a local transaction
+        myTrans = myConnection.BeginTransaction()
+        ' Must assign both transaction object and connection
+        ' to Command object for a pending local transaction
+        myCommand.Connection = myConnection
+        myCommand.Transaction = myTrans
+
+        Try
+        myCommand.CommandText = "Insert into Test (id, desc) VALUES (100, 'Description')"
+        myCommand.ExecuteNonQuery()
+        myCommand.CommandText = "Insert into Test (id, desc) VALUES (101, 'Description')"
+        myCommand.ExecuteNonQuery()
+        myTrans.Commit()
+        Console.WriteLine("Both records are written to database.")
+        Catch e As Exception
+        Try
+        myTrans.Rollback()
+        Catch ex As MySqlException
+        If Not myTrans.Connection Is Nothing Then
+        Console.WriteLine("An exception of type " + ex.GetType().ToString() + _
+        " was encountered while attempting to roll back the transaction.")
+        End If
+        End Try
+
+        Console.WriteLine("An exception of type " + e.GetType().ToString() + _
+        "was encountered while inserting the data.")
+        Console.WriteLine("Neither record was written to database.")
+        Finally
+        myConnection.Close()
+        End Try
+        End Sub
+      </code>
+      <code lang="C#">
+        public void RunTransaction(string myConnString)
+        {
+        MySqlConnection myConnection = new MySqlConnection(myConnString);
+        myConnection.Open();
+
+        MySqlCommand myCommand = myConnection.CreateCommand();
+        MySqlTransaction myTrans;
+
+        // Start a local transaction
+        myTrans = myConnection.BeginTransaction();
+        // Must assign both transaction object and connection
+        // to Command object for a pending local transaction
+        myCommand.Connection = myConnection;
+        myCommand.Transaction = myTrans;
+
+        try
+        {
+        myCommand.CommandText = "insert into Test (id, desc) VALUES (100, 'Description')";
+        myCommand.ExecuteNonQuery();
+        myCommand.CommandText = "insert into Test (id, desc) VALUES (101, 'Description')";
+        myCommand.ExecuteNonQuery();
+        myTrans.Commit();
+        Console.WriteLine("Both records are written to database.");
+        }
+        catch(Exception e)
+        {
+        try
+        {
+        myTrans.Rollback();
+        }
+        catch (SqlException ex)
+        {
+        if (myTrans.Connection != null)
+        {
+        Console.WriteLine("An exception of type " + ex.GetType() +
+        " was encountered while attempting to roll back the transaction.");
+        }
+        }
+
+        Console.WriteLine("An exception of type " + e.GetType() +
+        " was encountered while inserting the data.");
+        Console.WriteLine("Neither record was written to database.");
+        }
+        finally
+        {
+        myConnection.Close();
+        }
+        }
+      </code>
+    </example>
+  </BeginTransaction1>
+
+  <ChangeDatabase>
+    <summary>Changes the current database for an open MySqlConnection.</summary>
+    <param name="databaseName">The name of the database to use.</param>
+    <remarks>
+      <para>
+        The value supplied in the <I>database</I> parameter must be a valid database
+        name. The <I>database</I> parameter cannot contain a null value, an empty
+        string, or a string with only blank characters.
+      </para>
+
+      <para>
+        When you are using connection pooling against MySQL, and you close
+        the connection, it is returned to the connection pool. The next time the
+        connection is retrieved from the pool, the reset connection request
+        executes before the user performs any operations.
+      </para>
+    </remarks>
+    <exception cref="ArgumentException">The database name is not valid.</exception>
+    <exception cref="InvalidOperationException">The connection is not open.</exception>
+    <exception cref="MySqlException">Cannot change the database.</exception>
+    <example>
+      The following example creates a <see cref="MySqlConnection"/> and displays
+      some of its read-only properties.
+
+      <code lang="vbnet">
+        Public Sub CreateMySqlConnection()
+        Dim myConnString As String = _
+        "Persist Security Info=False;database=test;server=localhost;user id=joeuser;pwd=pass"
+        Dim myConnection As New MySqlConnection( myConnString )
+        myConnection.Open()
+        MessageBox.Show( "Server Version: " + myConnection.ServerVersion _
+        + ControlChars.NewLine + "Database: " + myConnection.Database )
+        myConnection.ChangeDatabase( "test2" )
+        MessageBox.Show( "ServerVersion: " + myConnection.ServerVersion _
+        + ControlChars.NewLine + "Database: " + myConnection.Database )
+        myConnection.Close()
+        End Sub
+      </code>
+
+      <code lang="C#">
+        public void CreateMySqlConnection()
+        {
+        string myConnString =
+        "Persist Security Info=False;database=test;server=localhost;user id=joeuser;pwd=pass";
+        MySqlConnection myConnection = new MySqlConnection( myConnString );
+        myConnection.Open();
+        MessageBox.Show( "Server Version: " + myConnection.ServerVersion
+        + "\nDatabase: " + myConnection.Database );
+        myConnection.ChangeDatabase( "test2" );
+        MessageBox.Show( "ServerVersion: " + myConnection.ServerVersion
+        + "\nDatabase: " + myConnection.Database );
+        myConnection.Close();
+        }
+      </code>
+    </example>
+  </ChangeDatabase>
+
+  <StateChange>
+    <summary>Occurs when the state of the connection changes.</summary>
+    <remarks>
+      <para>
+        The <B>StateChange</B> event fires whenever the <see cref="State"/> changes from
+        closed to opened, or from opened to closed. <B>StateChange</B> fires immediately
+        after the <see cref="MySqlConnection"/> transitions.
+      </para>
+
+      <para>
+        If an event handler throws an exception from within the <B>StateChange</B>
+        event, the exception propagates to the caller of the <see cref="Open"/> or
+        <see cref="Close"/> method.
+      </para>
+
+      <para>
+        The <B>StateChange</B> event is not raised unless you explicitly call
+        <B>Close</B> or <B>Dispose</B>.
+      </para>
+    </remarks>
+    <event cref="StateChange">
+      Raised.
+      <data>
+        <para>
+          The event handler receives an argument of type <see cref="System.Data.StateChangeEventArgs"/>
+          containing data related to this event. The following <B>StateChangeEventArgs</B>
+          properties provide information specific to this event.
+        </para>
+        <list type="table">
+          <listheader>
+            <term>Property</term>
+            <description>Description</description>
+          </listheader>
+          <item>
+            <term>
+              <see cref="System.Data.StateChangeEventArgs.CurrentState"/>
+            </term>
+            <description>
+              Gets the new state of the connection. The connection object will
+              be in the new state already when the event is fired.
+            </description>
+          </item>
+          <item>
+            <term>
+              <see cref="System.Data.StateChangeEventArgs.OriginalState"/>
+            </term>
+            <description>Gets the original state of the connection.</description>
+          </item>
+        </list>
+      </data>
+    </event>
+  </StateChange>
+
+  <InfoMessage>
+    <summary>Occurs when MySQL returns warnings as a result of executing a command or query.</summary>
+    <remarks>
+    </remarks>
+  </InfoMessage>
+
+  <ClassSummary>
+    <summary>
+      Represents an open connection to a MySQL Server database. This class cannot be inherited.
+    </summary>
+    <remarks>
+      <para>
+        A <b>MySqlConnection</b> object represents a session to a MySQL Server
+        data source.  When you create an instance of <B>MySqlConnection</B>, all
+        properties are set to their initial values. For a list of these values, see the
+        <B>MySqlConnection</B> constructor.
+      </para>
+
+      <para>
+        If the <B>MySqlConnection</B> goes out of scope, it is not closed. Therefore,
+        you must explicitly close the connection by calling <see cref="MySqlConnection.Close"/>
+        or <see cref="MySqlConnection.Dispose()"/>.
+      </para>
+    </remarks>
+
+    <example>
+      The following example creates a <see cref="MySqlCommand"/> and
+      a <B>MySqlConnection</B>. The <B>MySqlConnection</B> is opened and set as the
+      <see cref="MySqlCommand.Connection"/> for the <B>MySqlCommand</B>. The example then calls
+      <see cref="MySqlCommand.ExecuteNonQuery"/>, and closes the connection. To accomplish this, the <B>ExecuteNonQuery</B> is
+      passed a connection string and a query string that is a SQL INSERT
+      statement.
+      <code lang="vbnet">
+        <c>
+          Public Sub InsertRow(myConnectionString As String)
+          ' If the connection string is null, use a default.
+          If myConnectionString = "" Then
+          myConnectionString = "Database=Test;Data Source=localhost;User Id=username;Password=pass"
+          End If
+          Dim myConnection As New MySqlConnection(myConnectionString)
+          Dim myInsertQuery As String = "INSERT INTO Orders (id, customerId, amount) Values(1001, 23, 30.66)"
+          Dim myCommand As New MySqlCommand(myInsertQuery)
+          myCommand.Connection = myConnection
+          myConnection.Open()
+          myCommand.ExecuteNonQuery()
+          myCommand.Connection.Close()
+          End Sub
+        </c>
+      </code>
+      <code lang="C#">
+        <c>
+          public void InsertRow(string myConnectionString)
+          {
+          // If the connection string is null, use a default.
+          if(myConnectionString == "")
+          {
+          myConnectionString = "Database=Test;Data Source=localhost;User Id=username;Password=pass";
+          }
+          MySqlConnection myConnection = new MySqlConnection(myConnectionString);
+          string myInsertQuery = "INSERT INTO Orders (id, customerId, amount) Values(1001, 23, 30.66)";
+          MySqlCommand myCommand = new MySqlCommand(myInsertQuery);
+          myCommand.Connection = myConnection;
+          myConnection.Open();
+          myCommand.ExecuteNonQuery();
+          myCommand.Connection.Close();
+          }
+        </c>
+      </code>
+    </example>
+  </ClassSummary>
+
+  <ConnectionTimeout>
+    <summary>
+      Gets the time to wait while trying to establish a connection before terminating the attempt and generating an error.
+    </summary>
+    <exception cref="System.ArgumentException">The value set is less than 0.</exception>
+    <remarks>
+      A value of 0 indicates no limit, and should be avoided in a
+      <see cref="MySqlConnection.ConnectionString"/> because an attempt to connect
+      will wait indefinitely.
+    </remarks>
+    <example>
+      The following example creates a MySqlConnection
+      and sets some of its properties in the connection string.
+      <code lang="vbnet">
+        Public Sub CreateSqlConnection()
+        Dim myConnection As New MySqlConnection()
+        myConnection.ConnectionString = "Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Connect Timeout=30"
+        myConnection.Open()
+        End Sub
+      </code>
+      <code lang="C#">
+        public void CreateSqlConnection()
+        {
+        MySqlConnection myConnection = new MySqlConnection();
+        myConnection.ConnectionString = "Persist Security Info=False;Username=user;Password=pass;database=test1;server=localhost;Connect Timeout=30";
+        myConnection.Open();
+        }
+      </code>
+    </example>
+  </ConnectionTimeout>
+
+
+  <ConnectionString>
+    <summary>
+      Gets or sets the string used to connect to a MySQL Server database.
+    </summary>
+    <remarks>
+      <para>
+        The <B>ConnectionString</B> returned may not be exactly like what was originally
+        set but will be indentical in terms of keyword/value pairs.  Security information
+        will not be included unless the Persist Security Info value is set to true.
+      </para>
+      <para>
+        You can use the <B>ConnectionString</B> property to connect to a database.
+        The following example illustrates a typical connection string.
+      </para>
+      <c>"Persist Security Info=False;database=MyDB;server=MySqlServer;user id=myUser;Password=myPass"</c>
+      <para>
+        The <B>ConnectionString</B> property can be set only when the connection is
+        closed. Many of the connection string values have corresponding read-only
+        properties. When the connection string is set, all of these properties are
+        updated, except when an error is detected. In this case, none of the properties
+        are updated. <see cref="MySqlConnection"/> properties return only those settings contained in the
+        <B>ConnectionString</B>.
+      </para>
+      <para>
+        To connect to a local machine, specify "localhost" for the server. If you do not
+        specify a server, localhost is assumed.
+      </para>
+      <para>
+        Resetting the <B>ConnectionString</B> on a closed connection resets all
+        connection string values (and related properties) including the password. For
+        example, if you set a connection string that includes "Database= MyDb", and
+        then reset the connection string to "Data Source=myserver;User Id=myUser;Password=myPass",
+        the <see cref="MySqlConnection.Database"/> property is no longer set to MyDb.
+      </para>
+      <para>
+        The connection string is parsed immediately after being set. If errors in
+        syntax are found when parsing, a runtime exception, such as <see cref="ArgumentException"/>,
+        is generated. Other errors can be found only when an attempt is made to open the
+        connection.
+      </para>
+      <para>
+        The basic format of a connection string consists of a series of keyword/value
+        pairs separated by semicolons. The equal sign (=) connects each keyword and its
+        value. To include values that contain a semicolon, single-quote character, or
+        double-quote character, the value must be enclosed in double quotes. If the
+        value contains both a semicolon and a double-quote character, the value can be
+        enclosed in single quotes. The single quote is also useful if the value begins
+        with a double-quote character. Conversely, the double quote can be used if the
+        value begins with a single quote. If the value contains both single-quote and
+        double-quote characters, the quote character used to enclose the value must be
+        doubled each time it occurs within the value.
+      </para>
+      <para>
+        To include preceding or trailing spaces in the string value, the value must
+        be enclosed in either single quotes or double quotes. Any leading or trailing
+        spaces around integer, Boolean, or enumerated values are ignored, even if
+        enclosed in quotes. However, spaces within a string literal keyword or value are
+        preserved. Using .NET Framework version 1.1, single or double quotes may be used
+        within a connection string without using delimiters (for example, Data Source=
+        my'Server or Data Source= my"Server), unless a quote character is the first or
+        last character in the value.
+      </para>
+      <para>
+        To include an equal sign (=) in a keyword or value, it must be preceded by
+        another equal sign. For example, in the hypothetical connection string
+      </para>
+      <c>"key==word=value"</c>
+      <para></para>
+      <para>the keyword is "key=word" and the value is "value".</para>
+      <para>
+        If a specific keyword in a keyword= value pair occurs multiple times in a
+        connection string, the last occurrence listed is used in the value set.
+      </para>
+      <para>Keywords are not case sensitive.</para>
+      <para>
+        The following table lists the valid names for keyword values within the
+        <B>ConnectionString</B>.
+      </para>
+
+      <div class="tablediv">
+        <table class="dtTABLE" cellspacing="0">
+          <tr valign="top">
+            <th width="33%">Name</th>
+            <th width="33%">Default</th>
+            <th width="33%">Description</th>
+          </tr>
+          <tr>
+            <td>
+              Connect Timeout<para>  -or-  </para>Connection Timeout
+            </td>
+            <td>15</td>
+            <td>
+              The length of time (in seconds) to wait for a connection to the server before
+              terminating the attempt and generating an error.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Host<para>  -or-  </para>Server<para>  -or-  </para>Data Source<para>  -or-  </para>
+              DataSource<para>  -or-  </para>Address<para>  -or-  </para>Addr<para>  -or-  </para>
+              Network Address
+            </td>
+            <td>localhost</td>
+            <td>
+              <para>
+                The name or network address of the instance of MySQL to which to connect.  Multiple hosts can be
+                specified separated by &amp;.  This can be useful where multiple MySQL servers are configured for replication
+                and you are not concerned about the precise server you are connecting to.  No attempt is made by the provider to
+                synchronize writes to the database so care should be taken when using this option.
+              </para>
+              <para>
+                In Unix environment with Mono, this can be a fully qualified path to MySQL socket filename. With this configuration, the Unix socket will be used instead of TCP/IP socket.
+                Currently only a single socket name can be given so accessing MySQL in a replicated environment using Unix sockets is not currently supported.
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>Port</td>
+            <td>3306</td>
+            <td>
+              The port MySQL is using to listen for connections.  This value is ignored if the connection protocol 
+              is anything but socket.
+            </td>
+          </tr>
+          <tr>
+            <td>Protocol</td>
+            <td>socket</td>
+            <td>
+              Specifies the type of connection to make to the server.<para>Values can be:</para>
+              socket or tcp for a socket connection<br/>
+              pipe for a named pipe connection<br/>
+              unix for a Unix socket connection<br/>
+              memory to use MySQL shared memory
+            </td>
+          </tr>
+          <tr>
+            <td>
+              CharSet<para>  -or  </para>Character Set
+            </td>
+            <td></td>
+            <td>
+              Specifies the character set that should be used to encode all queries sent to the server.
+              Resultsets are still returned in the character set of the data returned.
+            </td>
+          </tr>
+          <tr>
+            <td>Logging</td>
+            <td>false</td>
+            <td>When true, various pieces of information is output to any configured TraceListeners.</td>
+          </tr>
+          <tr>
+            <td>Allow Batch</td>
+            <td>true</td>
+            <td>
+              When true, multiple SQL statements can be sent with one command execution.<br/><br/>
+              -Note-<br/>
+              Starting with MySQL 4.1.1, batch statements should be separated by the server-defined seperator character.<br/>
+              Commands sent to earlier versions of MySQL should be seperated with ';'.
+            </td>
+          </tr>
+          <tr>
+            <td>Encrypt</td>
+            <td>false</td>
+            <td>
+              When <B>true</B>, SSL/TLS encryption is used for all data sent between the
+              client and server if the server has a certificate installed. Recognized values
+              are <B>true</B>, <B>false</B>, <B>yes</B>, and <B>no</B>.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Initial Catalog<para>  -or-  </para>Database
+            </td>
+            <td>mysql</td>
+            <td>The name of the database to use intially</td>
+          </tr>
+          <tr>
+            <td>
+              Password<para>  -or-  </para>pwd
+            </td>
+            <td></td>
+            <td>The password for the MySQL account being used.</td>
+          </tr>
+          <tr>
+            <td>Persist Security Info</td>
+            <td>false</td>
+            <td>
+              When set to <B>false</B> or <B>no</B> (strongly recommended), security-sensitive
+              information, such as the password, is not returned as part of the connection if
+              the connection is open or has ever been in an open state. Resetting the
+              connection string resets all connection string values including the password.
+              Recognized values are <B>true</B>, <B>false</B>, <B>yes</B>, and <B>no</B>.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              User Id<para>  -or-  </para>Username<para>  -or-  </para>Uid<para>  -or-  </para>User name
+            </td>
+            <td></td>
+            <td>The MySQL login account being used.</td>
+          </tr>
+          <tr>
+            <td>Shared Memory Name</td>
+            <td>MYSQL</td>
+            <td>The name of the shared memory object to use for communication if the connection protocol is set to memory.</td>
+          </tr>
+          <tr>
+            <td>Allow Zero Datetime</td>
+            <td>false</td>
+            <td>
+              True to have MySqlDataReader.GetValue() return a MySqlDateTime for date or datetime columns that have illegal values.
+              False will cause a DateTime object to be returned for legal values and an exception will be thrown for illegal values.
+            </td>
+          </tr>
+          <tr>
+            <td>Convert Zero Datetime</td>
+            <td>false</td>
+            <td>
+              True to have MySqlDataReader.GetValue() and MySqlDataReader.GetDateTime()
+              return DateTime.MinValue for date or datetime columns that have illegal values.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Pipe Name<para>  -or-  </para>Pipe
+            </td>
+            <td>mysql</td>
+            <td>
+              When set to the name of a named pipe, the <B>MySqlConnection</B> will attempt to connect to MySQL
+              on that named pipe.<br/><br/>This settings only applies to the Windows platform.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Use Performance Monitor<para>  -or-  </para>UsePerformanceMonitor
+            </td>
+            <td>false</td>
+            <td>
+              Posts performance data that can be tracked using perfmon
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Procedure Cache Size
+            </td>
+            <td>25</td>
+            <td>
+              How many stored procedure definitions can be held in the cache
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Ignore Prepare
+            </td>
+            <td>true</td>
+            <td>
+              Instructs the provider to ignore any attempts to prepare commands.  This option
+              was added to allow a user to disable prepared statements in an entire application
+              without modifying the code.  A user might want to do this if errors or bugs are
+              encountered with MySQL prepared statements.
+            </td>
+          </tr>
+          <tr>
+            <td>Use Procedure Bodies</td>
+            <td>true</td>
+            <td>
+              Instructs the provider to attempt to call the procedure without first resolving the metadata.  This
+              is useful in situations where the calling user does not have access to the mysql.proc table.  To
+              use this mode, the parameters for the procedure must be added to the command in the same order
+              as they appear in the procedure definition and their types must be explicitly set.
+            </td>
+          </tr>
+          <tr>
+            <td>Auto Enlist</td>
+            <td>true</td>
+            <td>
+              Indicates whether the connection should automatically enlist in the current transaction,
+              if there is one.
+            </td>
+          </tr>
+          <tr>
+            <td>Respect Binary Flags</td>
+            <td>true</td>
+            <td>
+              Indicates whether the connection should respect all binary flags sent to the client
+              as part of column metadata.  False will cause the connector to behave like
+              Connector/Net 5.0 and earlier.
+            </td>
+          </tr>
+          <tr>
+            <td>BlobAsUTF8IncludePattern</td>
+            <td>null</td>
+            <td>
+              Pattern that should be used to indicate which blob columns should be treated as UTF-8.
+            </td>
+          </tr>
+          <tr>
+            <td>BlobAsUTF8ExcludePattern</td>
+            <td>null</td>
+            <td>
+              Pattern that should be used to indicate which blob columns should not be treated as UTF-8.
+            </td>
+          </tr>
+          <tr>
+            <td>Default Command Timeout</td>
+            <td>30</td>
+            <td>
+              The default timeout that new MySqlCommand objects will use unless changed.
+            </td>
+          </tr>
+          <tr>
+            <td>Allow User Variables</td>
+            <td>false</td>
+            <td>
+              Should the provider expect user variables in the SQL.
+            </td>
+          </tr>
+          <tr>
+            <td>Interactive -or- Interactive Session</td>
+            <td>false</td>
+            <td>
+              Should this session be considered interactive?
+            </td>
+          </tr>
+          <tr>
+            <td>Functions Return String</td>
+            <td>false</td>
+            <td>
+              Set this option to true to force the return value of SQL functions to be string.
+            </td>
+          </tr>
+          <tr>
+            <td>Use Affected Rows</td>
+            <td>false</td>
+            <td>
+              Set this option to true to cause the affected rows reported to reflect only the 
+              rows that are actually changed.  By default, the number of rows that are matched 
+              is returned.
+            </td>
+          </tr>
+        </table>
+      </div>
+      <para>
+        The following table lists the valid names for connection pooling values within
+        the <B>ConnectionString</B>. For more information about connection pooling, see
+        Connection Pooling for the MySql Data Provider.
+      </para>
+      <div class="tablediv">
+        <table class="dtTABLE" cellspacing="0">
+          <tr valign="top">
+            <th width="33%">Name</th>
+            <th width="33%">Default</th>
+            <th width="33%">Description</th>
+          </tr>
+          <tr>
+            <td>Connection Lifetime</td>
+            <td>0</td>
+            <td>
+              When a connection is returned to the pool, its creation time is compared with
+              the current time, and the connection is destroyed if that time span (in seconds)
+              exceeds the value specified by <B>Connection Lifetime</B>. This is useful in
+              clustered configurations to force load balancing between a running server and a
+              server just brought online.
+              <para>
+                A value of zero (0) causes pooled connections to have the maximum connection
+                timeout.
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>Max Pool Size</td>
+            <td>100</td>
+            <td>The maximum number of connections allowed in the pool.</td>
+          </tr>
+          <tr>
+            <td>Min Pool Size</td>
+            <td>0</td>
+            <td>The minimum number of connections allowed in the pool.</td>
+          </tr>
+          <tr>
+            <td>Pooling</td>
+            <td>true</td>
+            <td>
+              When <B>true</B>, the <B>MySqlConnection</B> object is drawn from the appropriate
+              pool, or if necessary, is created and added to the appropriate pool. Recognized
+              values are <B>true</B>, <B>false</B>, <B>yes</B>, and <B>no</B>.
+            </td>
+          </tr>
+          <tr>
+            <td>Connection Reset</td>
+            <td>false</td>
+            <td>
+              Specifies whether the database connection should be reset when being
+              drawn from the pool.  Leaving this as <b>false</b> will yeild much faster
+              connection opens but the user should understand the side effects
+              of doing this such as temporary tables and user variables from the previous
+              session not being cleared out.
+            </td>
+          </tr>
+          <tr>
+            <td>Cache Server Properties</td>
+            <td>false</td>
+            <td>
+              Specifies whether the server variables are cached between pooled connections.
+              On systems where the variables change infrequently and there are lots of
+              connection attempts, this can speed up things dramatically.
+            </td>
+          </tr>
+        </table>
+      </div>
+      <para>
+        When setting keyword or connection pooling values that require a Boolean
+        value, you can use 'yes' instead of 'true', and 'no' instead of 'false'.
+      </para>
+      <para>
+        <B>Note</B>  The MySql Data Provider uses the native socket protocol to
+        communicate with MySQL.  Therefore, it does not support the use of an ODBC data source name (DSN) when
+        connecting to MySQL because it does not add an ODBC layer.
+      </para>
+      <para>
+        <B>CAUTION</B>  In this release, the application should use caution when constructing a
+        connection string based on user input (for example when retrieving user ID and password information from a
+        dialog box, and appending it to the connection string). The application should
+        ensure that a user cannot embed extra connection string parameters in these
+        values (for example, entering a password as "validpassword;database=somedb" in
+        an attempt to attach to a different database).
+      </para>
+    </remarks>
+    <example>
+      The following example creates a <see cref="MySqlConnection"/> and sets some of its properties
+      <code lang="vbnet">
+        Public Sub CreateConnection()
+        Dim myConnection As New MySqlConnection()
+        myConnection.ConnectionString = "Persist Security Info=False;database=myDB;server=myHost;Connect Timeout=30;user id=myUser; pwd=myPass"
+        myConnection.Open()
+        End Sub 'CreateConnection
+      </code>
+      <code lang="C#">
+        public void CreateConnection()
+        {
+        MySqlConnection myConnection = new MySqlConnection();
+        myConnection.ConnectionString = "Persist Security Info=False;database=myDB;server=myHost;Connect Timeout=30;user id=myUser; pwd=myPass";
+        myConnection.Open();
+        }
+      </code>
+    </example>
+    <example>
+      The following example creates a <see cref="MySqlConnection"/> in Unix environment with Mono installed. MySQL socket filename used in this example is "/var/lib/mysql/mysql.sock". The actual filename depends on your MySQL configuration.
+      <code lang="vbnet">
+        Public Sub CreateConnection()
+        Dim myConnection As New MySqlConnection()
+        myConnection.ConnectionString = "database=myDB;server=/var/lib/mysql/mysql.sock;user id=myUser; pwd=myPass"
+        myConnection.Open()
+        End Sub 'CreateConnection
+      </code>
+      <code lang="C#">
+        public void CreateConnection()
+        {
+        MySqlConnection myConnection = new MySqlConnection();
+        myConnection.ConnectionString = "database=myDB;server=/var/lib/mysql/mysql.sock;user id=myUser; pwd=myPass";
+        myConnection.Open();
+        }
+      </code>
+    </example>
+  </ConnectionString>
+  <ClearPool>
+    <summary>Empties the connection pool associated with the specified connection.</summary>
+    <param name="connection">
+      The <see cref="MySqlConnection"/> associated with the pool to be cleared.
+    </param>
+    <remarks>
+      <para>
+        ClearPool clears the connection pool that is associated with the connection.
+        If additional connections associated with connection are in use at the time of the call,
+        they are marked appropriately and are discarded (instead of being returned to the pool)
+        when Close is called on them.
+      </para>
+    </remarks>
+    </ClearPool>
+
+  <ClearAllPools>
+    <summary>Clears all connection pools.</summary>
+    <remarks>
+      <para>
+        ClearAllPools essentially performs a <see cref="ClearPool"/> on all current connection
+        pools.
+      </para>
+    </remarks>
+  </ClearAllPools>
+
+</docs>
