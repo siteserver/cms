@@ -6,12 +6,65 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class TableCollectionDao : DataProviderBase
 	{
-		// Static constants
+        public override string TableName => "bairong_TableCollection";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.TableEnName),
+                DataType = DataType.VarChar,
+                Length = 50,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.TableCnName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.AttributeNum),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.AuxiliaryTableType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.IsCreatedInDb),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.IsChangedAfterCreatedInDb),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.IsDefault),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AuxiliaryTableInfo.Description),
+                DataType = DataType.Text   
+            }
+        };
+
         private const string SqlSelectTable = "SELECT TableENName, TableCNName, AttributeNum, AuxiliaryTableType, IsCreatedInDB, IsChangedAfterCreatedInDB, IsDefault, Description FROM bairong_TableCollection WHERE TableENName = @TableENName";
 		private const string SqlSelectTableType = "SELECT AuxiliaryTableType FROM bairong_TableCollection WHERE TableENName = @TableENName";
         private const string SqlSelectTableCnname = "SELECT TableCNName FROM bairong_TableCollection WHERE TableENName = @TableENName";
@@ -39,14 +92,14 @@ namespace BaiRong.Core.Provider
 		{
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmTableEnname, EDataType.VarChar, 50, info.TableEnName),
-				GetParameter(ParmTableCnname, EDataType.NVarChar, 50, info.TableCnName),
-				GetParameter(ParmAttributeNum, EDataType.Integer, info.AttributeNum),
-				GetParameter(ParmTableType, EDataType.VarChar, 50, EAuxiliaryTableTypeUtils.GetValue(info.AuxiliaryTableType)),
-				GetParameter(ParmIsCreatedInDb, EDataType.VarChar, 18, false.ToString()),
-				GetParameter(ParmIsChangedAfterCreatedInDb, EDataType.VarChar, 18, false.ToString()),
-                GetParameter(ParmIsDefault, EDataType.VarChar, 18, info.IsDefault.ToString()),
-				GetParameter(ParmDescription, EDataType.NText, info.Description)
+				GetParameter(ParmTableEnname, DataType.VarChar, 50, info.TableEnName),
+				GetParameter(ParmTableCnname, DataType.VarChar, 50, info.TableCnName),
+				GetParameter(ParmAttributeNum, DataType.Integer, info.AttributeNum),
+				GetParameter(ParmTableType, DataType.VarChar, 50, EAuxiliaryTableTypeUtils.GetValue(info.AuxiliaryTableType)),
+				GetParameter(ParmIsCreatedInDb, DataType.VarChar, 18, false.ToString()),
+				GetParameter(ParmIsChangedAfterCreatedInDb, DataType.VarChar, 18, false.ToString()),
+                GetParameter(ParmIsDefault, DataType.VarChar, 18, info.IsDefault.ToString()),
+				GetParameter(ParmDescription, DataType.Text, info.Description)
 			};
 							
 			using (var conn = GetConnection()) 
@@ -74,14 +127,14 @@ namespace BaiRong.Core.Provider
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmTableCnname, EDataType.NVarChar, 50, info.TableCnName),
-				GetParameter(ParmAttributeNum, EDataType.Integer, info.AttributeNum),
-				GetParameter(ParmTableType, EDataType.VarChar, 50, EAuxiliaryTableTypeUtils.GetValue(info.AuxiliaryTableType)),
-				GetParameter(ParmIsCreatedInDb, EDataType.VarChar, 18, info.IsCreatedInDb.ToString()),
-				GetParameter(ParmIsChangedAfterCreatedInDb, EDataType.VarChar, 18, info.IsChangedAfterCreatedInDb.ToString()),
-                GetParameter(ParmIsDefault, EDataType.VarChar, 18, info.IsDefault.ToString()),
-				GetParameter(ParmDescription, EDataType.NText, info.Description),
-				GetParameter(ParmTableEnname, EDataType.VarChar, 50, info.TableEnName)
+				GetParameter(ParmTableCnname, DataType.VarChar, 50, info.TableCnName),
+				GetParameter(ParmAttributeNum, DataType.Integer, info.AttributeNum),
+				GetParameter(ParmTableType, DataType.VarChar, 50, EAuxiliaryTableTypeUtils.GetValue(info.AuxiliaryTableType)),
+				GetParameter(ParmIsCreatedInDb, DataType.VarChar, 18, info.IsCreatedInDb.ToString()),
+				GetParameter(ParmIsChangedAfterCreatedInDb, DataType.VarChar, 18, info.IsChangedAfterCreatedInDb.ToString()),
+                GetParameter(ParmIsDefault, DataType.VarChar, 18, info.IsDefault.ToString()),
+				GetParameter(ParmDescription, DataType.Text, info.Description),
+				GetParameter(ParmTableEnname, DataType.VarChar, 50, info.TableEnName)
 			};
 
             ExecuteNonQuery(SqlUpdateTable, updateParms);
@@ -99,8 +152,8 @@ namespace BaiRong.Core.Provider
 
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmAttributeNum, EDataType.Integer, attributeNum),
-				GetParameter(ParmTableEnname, EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmAttributeNum, DataType.Integer, attributeNum),
+				GetParameter(ParmTableEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             ExecuteNonQuery(SqlUpdateTableAttributeNum, updateParms);
@@ -110,8 +163,8 @@ namespace BaiRong.Core.Provider
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmIsCreatedInDb, EDataType.VarChar, 18, isCreatedInDb.ToString()),
-				GetParameter(ParmTableEnname, EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmIsCreatedInDb, DataType.VarChar, 18, isCreatedInDb.ToString()),
+				GetParameter(ParmTableEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             ExecuteNonQuery(SqlUpdateTableIsCreatedInDb, updateParms);
@@ -122,8 +175,8 @@ namespace BaiRong.Core.Provider
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmIsChangedAfterCreatedInDb, EDataType.VarChar, 18, isChangedAfterCreatedInDb.ToString()),
-				GetParameter(ParmTableEnname, EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmIsChangedAfterCreatedInDb, DataType.VarChar, 18, isChangedAfterCreatedInDb.ToString()),
+				GetParameter(ParmTableEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             ExecuteNonQuery(SqlUpdateTableIsChangedAfterCreatedInDb, updateParms);
@@ -132,10 +185,10 @@ namespace BaiRong.Core.Provider
 
 		public void Delete(string tableEnName)
 		{
-            var isTableExists = BaiRongDataProvider.TableStructureDao.IsTableExists(tableEnName);
+            var isTableExists = BaiRongDataProvider.DatabaseDao.IsTableExists(tableEnName);
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableEnname, EDataType.VarChar, 50, tableEnName),
+				GetParameter(ParmTableEnname, DataType.VarChar, 50, tableEnName),
 			};
 							
 			using (var conn = GetConnection()) 
@@ -170,7 +223,7 @@ namespace BaiRong.Core.Provider
 			
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableEnname, EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableEnname, DataType.VarChar, 50, tableEnName)
 			};
 			
 			using (var rdr = ExecuteReader(SqlSelectTable, parms)) 
@@ -192,7 +245,7 @@ namespace BaiRong.Core.Provider
 			
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableEnname, EDataType.VarChar, 50, tableEnName),
+				GetParameter(ParmTableEnname, DataType.VarChar, 50, tableEnName),
 			};
 			
 			using (var rdr = ExecuteReader(SqlSelectTableType, parms)) 
@@ -213,7 +266,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableEnname, EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableCnname, parms))
@@ -240,8 +293,8 @@ namespace BaiRong.Core.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableType, EDataType.VarChar, 50, EAuxiliaryTableTypeUtils.GetValue(type)),
-				GetParameter(ParmIsCreatedInDb, EDataType.VarChar, 18, true.ToString())
+				GetParameter(ParmTableType, DataType.VarChar, 50, EAuxiliaryTableTypeUtils.GetValue(type)),
+				GetParameter(ParmIsCreatedInDb, DataType.VarChar, 18, true.ToString())
 			};
 
 			var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTableCreatedInDbByAuxiliaryType, parms);
@@ -387,58 +440,6 @@ namespace BaiRong.Core.Provider
                     // ignored
                 }
             }
-            else if (tableType == EAuxiliaryTableType.GovPublicContent)
-            {
-                string sqlString =
-                    $"SELECT COUNT(*) FROM siteserver_PublishmentSystem WHERE (AuxiliaryTableForGovPublic = '{PageUtils.FilterSql(tableEnName)}')";
-                try
-                {
-                    count += BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-            else if (tableType == EAuxiliaryTableType.GovInteractContent)
-            {
-                string sqlString =
-                    $"SELECT COUNT(*) FROM siteserver_PublishmentSystem WHERE (AuxiliaryTableForGovInteract = '{PageUtils.FilterSql(tableEnName)}')";
-                try
-                {
-                    count += BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-            else if (tableType == EAuxiliaryTableType.VoteContent)
-            {
-                string sqlString =
-                    $"SELECT COUNT(*) FROM siteserver_PublishmentSystem WHERE (AuxiliaryTableForVote = '{PageUtils.FilterSql(tableEnName)}')";
-                try
-                {
-                    count += BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-            else if (tableType == EAuxiliaryTableType.JobContent)
-            {
-                string sqlString =
-                    $"SELECT COUNT(*) FROM siteserver_PublishmentSystem WHERE (AuxiliaryTableForJob = '{PageUtils.FilterSql(tableEnName)}')";
-                try
-                {
-                    count += BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
 
             string sqlString2 =
                 $"SELECT COUNT(*) FROM bairong_ContentModel WHERE (TableName = '{PageUtils.FilterSql(tableEnName)}')";
@@ -454,7 +455,7 @@ namespace BaiRong.Core.Provider
 		    return count;
 		}
 
-        public bool IsTableExists(EAuxiliaryTableType tableType)
+        public bool IsTableExistsAndCreated(EAuxiliaryTableType tableType)
         {
             var isExists = false;
 
@@ -472,12 +473,30 @@ namespace BaiRong.Core.Provider
             return isExists;
         }
 
-        public bool IsTableExists(string tableName)
+        public bool IsTableExistsAndCreated(string tableName)
         {
             var isExists = false;
 
             string sqlString =
                 $"SELECT TableENName FROM bairong_TableCollection WHERE TableENName = '{PageUtils.FilterSql(tableName)}' AND IsCreatedInDB = 'True'";
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read() && !rdr.IsDBNull(0))
+                {
+                    isExists = true;
+                }
+                rdr.Close();
+            }
+
+            return isExists;
+        }
+
+        public bool IsTableExists(string tableName)
+        {
+            var isExists = false;
+
+            string sqlString =
+                $"SELECT TableENName FROM bairong_TableCollection WHERE TableENName = '{PageUtils.FilterSql(tableName)}'";
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read() && !rdr.IsDBNull(0))
@@ -512,48 +531,15 @@ namespace BaiRong.Core.Provider
         public void CreateAllAuxiliaryTableIfNotExists()
         {
             //添加后台内容表
-            if (!IsTableExists(EAuxiliaryTableType.BackgroundContent))
+            if (!IsTableExistsAndCreated(EAuxiliaryTableType.BackgroundContent))
             {
                 var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.BackgroundContent);
-                var tableInfo = new AuxiliaryTableInfo(tableName, "后台内容表", 0, EAuxiliaryTableType.BackgroundContent, false, false, true, string.Empty);
-                BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
-            }
-
-            //添加招聘内容表
-            if (!IsTableExists(EAuxiliaryTableType.JobContent))
-            {
-                var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.JobContent);
-                var tableInfo = new AuxiliaryTableInfo(tableName, "招聘内容表", 0, EAuxiliaryTableType.JobContent, false, false, true, string.Empty);
-                BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
-            }
-
-            //添加投票内容表
-            if (!IsTableExists(EAuxiliaryTableType.VoteContent))
-            {
-                var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.VoteContent);
-                var tableInfo = new AuxiliaryTableInfo(tableName, "投票内容表", 0, EAuxiliaryTableType.VoteContent, false, false, true, string.Empty);
-                BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
-            }
-
-            //添加信息公开内容表
-            if (!IsTableExists(EAuxiliaryTableType.GovPublicContent))
-            {
-                var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.GovPublicContent);
-                var tableInfo = new AuxiliaryTableInfo(tableName, "信息公开内容表", 0, EAuxiliaryTableType.GovPublicContent, false, false, true, string.Empty);
-                BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
-            }
-
-            //添加互动交流内容表
-            if (!IsTableExists(EAuxiliaryTableType.GovInteractContent))
-            {
-                var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.GovInteractContent);
-                var tableInfo = new AuxiliaryTableInfo(tableName, "互动交流内容表", 0, EAuxiliaryTableType.GovInteractContent, false, false, true, string.Empty);
-                BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableInfo.TableEnName);
+                if (!IsTableExists(tableName))
+                {
+                    var tableInfo = new AuxiliaryTableInfo(tableName, "后台内容表", 0, EAuxiliaryTableType.BackgroundContent, false, false, true, string.Empty);
+                    Insert(tableInfo);
+                }
+                BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableName);
             }
         }
 	}

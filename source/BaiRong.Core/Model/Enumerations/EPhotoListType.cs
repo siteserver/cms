@@ -5,8 +5,8 @@ namespace BaiRong.Core.Model.Enumerations
 {
     public enum EPhotoListType
     {
-        Large,			    //¥ÛÕº‰Ø¿¿
-        Thumbnail,			//–°Õº‰Ø¿¿
+        Large,			    //Â§ßÂõæÊµèËßà
+        Thumbnail,			//Â∞èÂõæÊµèËßà
     }
 
     public class EPhotoListTypeUtils
@@ -17,30 +17,24 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Large";
             }
-            else if (type == EPhotoListType.Thumbnail)
+            if (type == EPhotoListType.Thumbnail)
             {
                 return "Thumbnail";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EPhotoListType type)
         {
             if (type == EPhotoListType.Large)
             {
-                return "¥ÛÕº‰Ø¿¿";
+                return "Â§ßÂõæÊµèËßà";
             }
-            else if (type == EPhotoListType.Thumbnail)
+            if (type == EPhotoListType.Thumbnail)
             {
-                return "–°Õº‰Ø¿¿";
+                return "Â∞èÂõæÊµèËßà";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EPhotoListType GetEnumType(string typeStr)

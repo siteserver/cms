@@ -12,7 +12,7 @@
 <body>
     <!--#include file="../inc/openWindow.html"-->
     <form class="form-inline" runat="server">
-        <asp:Literal id="ltlBreadCrumb" runat="server" />
+        <asp:Literal id="LtlBreadCrumb" runat="server" />
         <bairong:alerts runat="server" />
 
         <!--#include file="../inc/scripts.aspx"-->

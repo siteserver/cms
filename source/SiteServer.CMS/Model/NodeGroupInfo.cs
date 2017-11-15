@@ -2,50 +2,30 @@ namespace SiteServer.CMS.Model
 {
 	public class NodeGroupInfo
 	{
-		private string nodeGroupName;
-		private int publishmentSystemID;
-        private int taxis;
-		private string description;
-
-		public NodeGroupInfo()
+	    public NodeGroupInfo()
 		{
-			nodeGroupName = string.Empty;
-			publishmentSystemID = 0;
-            taxis = 0;
-			description = string.Empty;
+			NodeGroupName = string.Empty;
+			PublishmentSystemId = 0;
+            Taxis = 0;
+			Description = string.Empty;
 		}
 
-		public NodeGroupInfo(string nodeGroupName, int publishmentSystemID, int taxis, string description) 
+		public NodeGroupInfo(string nodeGroupName, int publishmentSystemId, int taxis, string description) 
 		{
-			this.nodeGroupName = nodeGroupName;
-			this.publishmentSystemID = publishmentSystemID;
-            this.taxis = taxis;
-			this.description = description;
+			NodeGroupName = nodeGroupName;
+			PublishmentSystemId = publishmentSystemId;
+            Taxis = taxis;
+			Description = description;
 		}
 
-		public string NodeGroupName
-		{
-			get{ return nodeGroupName; }
-			set{ nodeGroupName = value; }
-		}
+        public int Id { get; set; }
 
-		public int PublishmentSystemID
-		{
-			get{ return publishmentSystemID; }
-			set{ publishmentSystemID = value; }
-		}
+        public string NodeGroupName { get; set; }
 
-        public int Taxis
-        {
-            get { return taxis; }
-            set { taxis = value; }
-        }
+	    public int PublishmentSystemId { get; set; }
 
-		public string Description
-		{
-			get{ return description; }
-			set{ description = value; }
-		}
+	    public int Taxis { get; set; }
 
+	    public string Description { get; set; }
 	}
 }

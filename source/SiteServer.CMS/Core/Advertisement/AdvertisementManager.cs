@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Core.Advertisement
                 if (CacheUtils.Get(cacheKey) == null)
                 {
                     var arraylists = DataProvider.AdvertisementDao.GetAdvertisementArrayLists(publishmentSystemID);
-                    CacheUtils.Insert(cacheKey, arraylists, 30);
+                    CacheUtils.InsertMinutes(cacheKey, arraylists, 30);
                     return arraylists;
                 }
                 return CacheUtils.Get(cacheKey) as ArrayList[];

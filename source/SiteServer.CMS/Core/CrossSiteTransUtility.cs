@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -15,9 +15,9 @@ namespace SiteServer.CMS.Core
         {
         }
 
-        public static bool IsTranslatable(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
+        public static bool IsCrossSiteTrans(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
         {
-            var isTranslatable = false;
+            var isCrossSiteTrans = false;
 
             if (nodeInfo != null && nodeInfo.Additional.TransType != ECrossSiteTransType.None)
             {
@@ -26,43 +26,43 @@ namespace SiteServer.CMS.Core
                 {
                     if (transType == ECrossSiteTransType.AllParentSite)
                     {
-                        var parentPublishmentSystemID = PublishmentSystemManager.GetParentPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
-                        if (parentPublishmentSystemID != 0)
+                        var parentPublishmentSystemId = PublishmentSystemManager.GetParentPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
+                        if (parentPublishmentSystemId != 0)
                         {
-                            isTranslatable = true;
+                            isCrossSiteTrans = true;
                         }
                     }
                     else if (transType == ECrossSiteTransType.SelfSite)
                     {
-                        isTranslatable = true;
+                        isCrossSiteTrans = true;
                     }
                     else if (transType == ECrossSiteTransType.AllSite)
                     {
-                        isTranslatable = true;
+                        isCrossSiteTrans = true;
                     }
                     else if (transType == ECrossSiteTransType.SpecifiedSite)
                     {
-                        if (nodeInfo.Additional.TransPublishmentSystemID > 0)
+                        if (nodeInfo.Additional.TransPublishmentSystemId > 0)
                         {
-                            var thePublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(nodeInfo.Additional.TransPublishmentSystemID);
+                            var thePublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(nodeInfo.Additional.TransPublishmentSystemId);
                             if (thePublishmentSystemInfo != null)
                             {
-                                isTranslatable = true;
+                                isCrossSiteTrans = true;
                             }
                         }
                     }
                     else if (transType == ECrossSiteTransType.ParentSite)
                     {
-                        var parentPublishmentSystemID = PublishmentSystemManager.GetParentPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
-                        if (parentPublishmentSystemID != 0)
+                        var parentPublishmentSystemId = PublishmentSystemManager.GetParentPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
+                        if (parentPublishmentSystemId != 0)
                         {
-                            isTranslatable = true;
+                            isCrossSiteTrans = true;
                         }
                     }
                 }
             }
 
-            return isTranslatable;
+            return isCrossSiteTrans;
         }
 
         public static bool IsAutomatic(NodeInfo nodeInfo)
@@ -80,92 +80,86 @@ namespace SiteServer.CMS.Core
             return isAutomatic;
         }
 
-        public static void LoadPublishmentSystemIDDropDownList(DropDownList publishmentSystemIDDropDownList, PublishmentSystemInfo publishmentSystemInfo, int nodeID)
+        public static void LoadPublishmentSystemIdDropDownList(DropDownList publishmentSystemIdDropDownList, PublishmentSystemInfo publishmentSystemInfo, int nodeId)
         {
-            publishmentSystemIDDropDownList.Items.Clear();
+            publishmentSystemIdDropDownList.Items.Clear();
 
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeID);
+            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
             if (nodeInfo.Additional.TransType == ECrossSiteTransType.SelfSite || nodeInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite || nodeInfo.Additional.TransType == ECrossSiteTransType.ParentSite)
             {
-                int thePublishmentSystemID;
+                int thePublishmentSystemId;
                 if (nodeInfo.Additional.TransType == ECrossSiteTransType.SelfSite)
                 {
-                    thePublishmentSystemID = publishmentSystemInfo.PublishmentSystemId;
+                    thePublishmentSystemId = publishmentSystemInfo.PublishmentSystemId;
                 }
                 else if (nodeInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite)
                 {
-                    thePublishmentSystemID = nodeInfo.Additional.TransPublishmentSystemID;
+                    thePublishmentSystemId = nodeInfo.Additional.TransPublishmentSystemId;
                 }
                 else
                 {
-                    thePublishmentSystemID = PublishmentSystemManager.GetParentPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
+                    thePublishmentSystemId = PublishmentSystemManager.GetParentPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
                 }
-                if (thePublishmentSystemID > 0)
+                if (thePublishmentSystemId > 0)
                 {
-                    var thePublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(thePublishmentSystemID);
+                    var thePublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(thePublishmentSystemId);
                     if (thePublishmentSystemInfo != null)
                     {
                         var listitem = new ListItem(thePublishmentSystemInfo.PublishmentSystemName, thePublishmentSystemInfo.PublishmentSystemId.ToString());
-                        publishmentSystemIDDropDownList.Items.Add(listitem);
+                        publishmentSystemIdDropDownList.Items.Add(listitem);
                     }
                 }
             }
-            else if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllParentSite || nodeInfo.Additional.TransType == ECrossSiteTransType.AllSite)
+            else if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllParentSite)
             {
                 var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdList();
 
                 var allParentPublishmentSystemIdList = new List<int>();
-                if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllParentSite)
-                {
-                    PublishmentSystemManager.GetAllParentPublishmentSystemIdList(allParentPublishmentSystemIdList, publishmentSystemIdList, publishmentSystemInfo.PublishmentSystemId);
-                }
+                PublishmentSystemManager.GetAllParentPublishmentSystemIdList(allParentPublishmentSystemIdList, publishmentSystemIdList, publishmentSystemInfo.PublishmentSystemId);
 
-                foreach (int psId in publishmentSystemIdList)
+                foreach (var psId in publishmentSystemIdList)
                 {
                     if (psId == publishmentSystemInfo.PublishmentSystemId) continue;
                     var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psId);
-                    var show = false;
-                    if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllSite)
-                    {
-                        show = true;
-                    }
-                    else if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllParentSite)
-                    {
-                        if (psInfo.IsHeadquarters || allParentPublishmentSystemIdList.Contains(psInfo.PublishmentSystemId))
-                        {
-                            show = true;
-                        }
-                    }
+                    var show = psInfo.IsHeadquarters || allParentPublishmentSystemIdList.Contains(psInfo.PublishmentSystemId);
                     if (show)
                     {
                         var listitem = new ListItem(psInfo.PublishmentSystemName, psId.ToString());
                         if (psInfo.IsHeadquarters) listitem.Selected = true;
-                        publishmentSystemIDDropDownList.Items.Add(listitem);
+                        publishmentSystemIdDropDownList.Items.Add(listitem);
                     }
+                }
+            }
+            else if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllSite)
+            {
+                var publishmentSystemIdList = PublishmentSystemManager.GetPublishmentSystemIdList();
+
+                foreach (var psId in publishmentSystemIdList)
+                {
+                    var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psId);
+                    var listitem = new ListItem(psInfo.PublishmentSystemName, psId.ToString());
+                    if (psInfo.IsHeadquarters) listitem.Selected = true;
+                    publishmentSystemIdDropDownList.Items.Add(listitem);
                 }
             }
         }
 
-        public static void LoadNodeIDListBox(ListBox nodeIDListBox, PublishmentSystemInfo publishmentSystemInfo, int psID, NodeInfo nodeInfo, string administratorName)
+        public static void LoadNodeIdListBox(ListBox nodeIdListBox, PublishmentSystemInfo publishmentSystemInfo, int psId, NodeInfo nodeInfo, string administratorName)
         {
-            nodeIDListBox.Items.Clear();
+            nodeIdListBox.Items.Clear();
 
-            var isUseNodeNames = false;
-            if (nodeInfo.Additional.TransType == ECrossSiteTransType.AllParentSite || nodeInfo.Additional.TransType == ECrossSiteTransType.AllSite)
-            {
-                isUseNodeNames = true;
-            }
+            var isUseNodeNames = nodeInfo.Additional.TransType == ECrossSiteTransType.AllParentSite || nodeInfo.Additional.TransType == ECrossSiteTransType.AllSite;
 
             if (!isUseNodeNames)
             {
-                var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.TransNodeIDs);
-                foreach (int theNodeID in nodeIDArrayList)
+                var nodeIdList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.TransNodeIds);
+                foreach (var theNodeId in nodeIdList)
                 {
-                    var theNodeInfo = NodeManager.GetNodeInfo(psID, theNodeID);
+                    var theNodeInfo = NodeManager.GetNodeInfo(psId, theNodeId);
                     if (theNodeInfo != null)
                     {
                         var listitem = new ListItem(theNodeInfo.NodeName, theNodeInfo.NodeId.ToString());
-                        nodeIDListBox.Items.Add(listitem);
+                        nodeIdListBox.Items.Add(listitem);
                     }
                 }
             }
@@ -174,18 +168,18 @@ namespace SiteServer.CMS.Core
                 if (!string.IsNullOrEmpty(nodeInfo.Additional.TransNodeNames))
                 {
                     var nodeNameArrayList = TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.TransNodeNames);
-                    var dic = NodeManager.GetNodeInfoHashtableByPublishmentSystemId(psID);
+                    var dic = NodeManager.GetNodeInfoDictionaryByPublishmentSystemId(psId);
                     if (dic != null)
                     {
-                        foreach (string nodeName in nodeNameArrayList)
+                        foreach (var nodeName in nodeNameArrayList)
                         {
                             foreach (var theNodeId in dic.Keys)
                             {
-                                var theNodeInfo = NodeManager.GetNodeInfo(psID, (int)theNodeId);
+                                var theNodeInfo = NodeManager.GetNodeInfo(psId, theNodeId);
                                 if (theNodeInfo.NodeName == nodeName)
                                 {
                                     var listitem = new ListItem(theNodeInfo.NodeName, theNodeInfo.NodeId.ToString());
-                                    nodeIDListBox.Items.Add(listitem);
+                                    nodeIdListBox.Items.Add(listitem);
                                     break;
                                 }
                             }
@@ -194,12 +188,12 @@ namespace SiteServer.CMS.Core
                 }
                 else
                 {
-                    NodeManager.AddListItemsForAddContent(nodeIDListBox.Items, PublishmentSystemManager.GetPublishmentSystemInfo(psID), false, administratorName);
+                    NodeManager.AddListItemsForAddContent(nodeIdListBox.Items, PublishmentSystemManager.GetPublishmentSystemInfo(psId), false, administratorName);
                 }
             }
         }
 
-        public static string GetDescription(int publishmentSystemID, NodeInfo nodeInfo)
+        public static string GetDescription(int publishmentSystemId, NodeInfo nodeInfo)
         {
             var results = string.Empty;
 
@@ -220,28 +214,28 @@ namespace SiteServer.CMS.Core
 
                     if (nodeInfo.Additional.TransType == ECrossSiteTransType.SelfSite)
                     {
-                        publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemID);
+                        publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
                     }
                     else if (nodeInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite)
                     {
-                        publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(nodeInfo.Additional.TransPublishmentSystemID);
+                        publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(nodeInfo.Additional.TransPublishmentSystemId);
                     }
                     else
                     {
-                        var parentPublishmentSystemID = PublishmentSystemManager.GetParentPublishmentSystemId(publishmentSystemID);
-                        if (parentPublishmentSystemID != 0)
+                        var parentPublishmentSystemId = PublishmentSystemManager.GetParentPublishmentSystemId(publishmentSystemId);
+                        if (parentPublishmentSystemId != 0)
                         {
-                            publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(parentPublishmentSystemID);
+                            publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(parentPublishmentSystemId);
                         }
                     }
 
-                    if (publishmentSystemInfo != null && !string.IsNullOrEmpty(nodeInfo.Additional.TransNodeIDs))
+                    if (publishmentSystemInfo != null && !string.IsNullOrEmpty(nodeInfo.Additional.TransNodeIds))
                     {
                         var nodeNameBuilder = new StringBuilder();
-                        var nodeIDArrayList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.TransNodeIDs);
-                        foreach (int nodeID in nodeIDArrayList)
+                        var nodeIdArrayList = TranslateUtils.StringCollectionToIntList(nodeInfo.Additional.TransNodeIds);
+                        foreach (int nodeId in nodeIdArrayList)
                         {
-                            var theNodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeID);
+                            var theNodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
                             if (theNodeInfo != null)
                             {
                                 nodeNameBuilder.Append(theNodeInfo.NodeName).Append(",");
@@ -258,60 +252,49 @@ namespace SiteServer.CMS.Core
             return results;
         }
 
-        public static void TransContentInfo(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, int contentID, PublishmentSystemInfo targetPublishmentSystemInfo, int targetNodeID)
+        public static void TransContentInfo(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, int contentId, PublishmentSystemInfo targetPublishmentSystemInfo, int targetNodeId)
         {
-            var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeID);
+            var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeId);
 
             var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentID);
+            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
             FileUtility.MoveFileByContentInfo(publishmentSystemInfo, targetPublishmentSystemInfo, contentInfo);
             contentInfo.PublishmentSystemId = targetPublishmentSystemInfo.PublishmentSystemId;
             contentInfo.SourceId = nodeInfo.NodeId;
-            contentInfo.NodeId = targetNodeID;
-            if (targetPublishmentSystemInfo.Additional.IsCrossSiteTransChecked)
-            {
-                contentInfo.IsChecked = true;
-            }
-            else
-            {
-                contentInfo.IsChecked = false;
-            }
+            contentInfo.NodeId = targetNodeId;
+            contentInfo.IsChecked = targetPublishmentSystemInfo.Additional.IsCrossSiteTransChecked;
             contentInfo.CheckedLevel = 0;
 
             //复制
             if (Equals(nodeInfo.Additional.TransDoneType, ETranslateContentType.Copy))
             {
-                contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
+                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
             }
             //引用地址
             else if (Equals(nodeInfo.Additional.TransDoneType, ETranslateContentType.Reference))
             {
                 contentInfo.PublishmentSystemId = targetPublishmentSystemInfo.PublishmentSystemId;
                 contentInfo.SourceId = nodeInfo.NodeId;
-                contentInfo.NodeId = targetNodeID;
-                contentInfo.ReferenceId = contentID;
-                contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
+                contentInfo.NodeId = targetNodeId;
+                contentInfo.ReferenceId = contentId;
+                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
             }
             //引用内容
             else if (Equals(nodeInfo.Additional.TransDoneType, ETranslateContentType.ReferenceContent))
             {
                 contentInfo.PublishmentSystemId = targetPublishmentSystemInfo.PublishmentSystemId;
                 contentInfo.SourceId = nodeInfo.NodeId;
-                contentInfo.NodeId = targetNodeID;
-                contentInfo.ReferenceId = contentID;
-                contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
+                contentInfo.NodeId = targetNodeId;
+                contentInfo.ReferenceId = contentId;
+                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
             }
-
 
             if (!string.IsNullOrEmpty(targetTableName))
             {
-                var theContentID = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
+                DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 
                 #region 复制资源
-                var targetPulishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemInfo.PublishmentSystemId);
-                var targetTableStyle = NodeManager.GetTableStyle(targetPulishmentSystemInfo, targetNodeID);
-                var targetContentInfo = DataProvider.ContentDao.GetContentInfo(targetTableStyle, targetTableName, theContentID);
                 //资源：图片，文件，视频
                 if (!string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.ImageUrl)))
                 {
@@ -341,9 +324,9 @@ namespace SiteServer.CMS.Core
                 {
                     var sourceFileUrls = TranslateUtils.StringCollectionToStringList(contentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
 
-                    foreach (string FileUrl in sourceFileUrls)
+                    foreach (string fileUrl in sourceFileUrls)
                     {
-                        var sourceFileUrl = PathUtility.MapPath(publishmentSystemInfo, FileUrl);
+                        var sourceFileUrl = PathUtility.MapPath(publishmentSystemInfo, fileUrl);
                         CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl, publishmentSystemInfo);
                     }
                 }

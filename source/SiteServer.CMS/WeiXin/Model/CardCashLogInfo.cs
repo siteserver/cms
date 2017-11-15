@@ -12,56 +12,47 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string UserName = "UserName";
-        public const string CardID = "CardID";
-        public const string CardSNID = "CardSNID";
-        public const string CashType = "CashType";
-        public const string Amount = "Amount";
-        public const string CurAmount = "CurAmount";
-        public const string ConsumeType = "ConsumeType";
-        public const string Operator = "Operator";
-        public const string Description = "Description";
-        public const string AddDate = "AddDate";
+        public const string Id = nameof(CardCashLogInfo.Id);
+        public const string PublishmentSystemId = nameof(CardCashLogInfo.PublishmentSystemId);
+        public const string UserName = nameof(CardCashLogInfo.UserName);
+        public const string CardId = nameof(CardCashLogInfo.CardId);
+        public const string CardSnId = nameof(CardCashLogInfo.CardSnId);
+        public const string CashType = nameof(CardCashLogInfo.CashType);
+        public const string Amount = nameof(CardCashLogInfo.Amount);
+        public const string CurAmount = nameof(CardCashLogInfo.CurAmount);
+        public const string ConsumeType = nameof(CardCashLogInfo.ConsumeType);
+        public const string Operator = nameof(CardCashLogInfo.Operator);
+        public const string Description = nameof(CardCashLogInfo.Description);
+        public const string AddDate = nameof(CardCashLogInfo.AddDate);
          
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(UserName);
-                    allAttributes.Add(CardID);
-                    allAttributes.Add(CardSNID);
-                    allAttributes.Add(CashType);
-                    allAttributes.Add(Amount);
-                    allAttributes.Add(CurAmount);
-                    allAttributes.Add(ConsumeType);
-                    allAttributes.Add(Operator);
-                    allAttributes.Add(Description);
-                    allAttributes.Add(AddDate);
-                     
-                 }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            UserName,
+            CardId,
+            CardSnId,
+            CashType,
+            Amount,
+            CurAmount,
+            ConsumeType,
+            Operator,
+            Description,
+            AddDate
+        });
     }
+
     public class CardCashLogInfo : BaseInfo
     {
         public CardCashLogInfo() { }
         public CardCashLogInfo(object dataItem) : base(dataItem) { }
         public CardCashLogInfo(NameValueCollection form) : base(form) { }
         public CardCashLogInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
+        public int PublishmentSystemId { get; set; }
         public string UserName { get; set; }
-        public int CardID { get; set; }
-        public int CardSNID { get; set; }
+        public int CardId { get; set; }
+        public int CardSnId { get; set; }
         public string CashType { get; set; }
         public decimal Amount { get; set; }
         public decimal CurAmount { get; set; }
@@ -70,12 +61,6 @@ namespace SiteServer.CMS.WeiXin.Model
         public string Description { get; set; }
         public DateTime AddDate { get; set; }
          
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return CardCashLogAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => CardCashLogAttribute.AllAttributes;
     }
 }

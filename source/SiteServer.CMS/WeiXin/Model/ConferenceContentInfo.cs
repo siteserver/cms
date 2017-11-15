@@ -12,60 +12,52 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string ConferenceID = "ConferenceID";
-        public const string IPAddress = "IPAddress";
-        public const string CookieSN = "CookieSN";
-        public const string WXOpenID = "WXOpenID";
-        public const string UserName = "UserName";
-        public const string AddDate = "AddDate";
-        public const string RealName = "RealName";
-        public const string Mobile = "Mobile";
-        public const string Email = "Email";
-        public const string Company = "Company";
-        public const string Position = "Position";
-        public const string Note = "Note";
+        public const string Id = nameof(ConferenceContentInfo.Id);
+        public const string PublishmentSystemId = nameof(ConferenceContentInfo.PublishmentSystemId);
+        public const string ConferenceId = nameof(ConferenceContentInfo.ConferenceId);
+        public const string IpAddress = nameof(ConferenceContentInfo.IpAddress);
+        public const string CookieSn = nameof(ConferenceContentInfo.CookieSn);
+        public const string WxOpenId = nameof(ConferenceContentInfo.WxOpenId);
+        public const string UserName = nameof(ConferenceContentInfo.UserName);
+        public const string AddDate = nameof(ConferenceContentInfo.AddDate);
+        public const string RealName = nameof(ConferenceContentInfo.RealName);
+        public const string Mobile = nameof(ConferenceContentInfo.Mobile);
+        public const string Email = nameof(ConferenceContentInfo.Email);
+        public const string Company = nameof(ConferenceContentInfo.Company);
+        public const string Position = nameof(ConferenceContentInfo.Position);
+        public const string Note = nameof(ConferenceContentInfo.Note);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(ConferenceID);
-                    allAttributes.Add(IPAddress);
-                    allAttributes.Add(CookieSN);
-                    allAttributes.Add(WXOpenID);
-                    allAttributes.Add(UserName);
-                    allAttributes.Add(AddDate);
-                    allAttributes.Add(RealName);
-                    allAttributes.Add(Mobile);
-                    allAttributes.Add(Email);
-                    allAttributes.Add(Company);
-                    allAttributes.Add(Position);
-                    allAttributes.Add(Note);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            PublishmentSystemId,
+            ConferenceId,
+            IpAddress,
+            CookieSn,
+            WxOpenId,
+            UserName,
+            AddDate,
+            RealName,
+            Mobile,
+            Email,
+            Company,
+            Position,
+            Note
+        });
     }
+
     public class ConferenceContentInfo : BaseInfo
     {
         public ConferenceContentInfo() { }
         public ConferenceContentInfo(object dataItem) : base(dataItem) { }
         public ConferenceContentInfo(NameValueCollection form) : base(form) { }
         public ConferenceContentInfo(IDataReader rdr) : base(rdr) { }
-        public int PublishmentSystemID { get; set; }
-        public int ConferenceID { get; set; }
-        public string IPAddress { get; set; }
-        public string CookieSN { get; set; }
-        public string WXOpenID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int ConferenceId { get; set; }
+        public string IpAddress { get; set; }
+        public string CookieSn { get; set; }
+        public string WxOpenId { get; set; }
         public string UserName { get; set; }
         public DateTime AddDate { get; set; }
         public string RealName { get; set; }
@@ -75,12 +67,6 @@ namespace SiteServer.CMS.WeiXin.Model
         public string Position { get; set; }
         public string Note { get; set; }
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return ConferenceContentAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => ConferenceContentAttribute.AllAttributes;
     }
 }

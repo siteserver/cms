@@ -8,10 +8,10 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Permissions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
             _nodeId = Body.GetQueryInt("NodeID");
@@ -87,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if(!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "内容回收站", AppManager.Cms.Permission.WebSite.ContentTrash);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "内容回收站", AppManager.Permissions.WebSite.ContentTrash);
 
                 if (Body.IsQueryExists("IsDeleteAll"))
                 {
@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
                     AddWaitAndRedirectScript(PageUrl);
                     return;
                 }
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, true, false, Body.AdministratorName);
+                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, true, false, Body.AdminName);
 
                 if (_tableStyleInfoList != null)
                 {
@@ -152,7 +152,7 @@ namespace SiteServer.BackgroundPages.Cms
                 spContents.DataBind();
 			}
 
-            if (!HasChannelPermissions(this._nodeId, AppManager.Cms.Permission.Channel.ContentDelete))
+            if (!HasChannelPermissions(this._nodeId, AppManager.Permissions.Channel.ContentDelete))
             {
                 Delete.Visible = false;
                 DeleteAll.Visible = false;
@@ -205,7 +205,7 @@ namespace SiteServer.BackgroundPages.Cms
         private string GetEditUrl(BackgroundContentInfo contentInfo)
         {
             var url = string.Empty;
-            if (HasChannelPermissions(contentInfo.NodeId, AppManager.Cms.Permission.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+            if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
             {
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, contentInfo.NodeId);
                 url =

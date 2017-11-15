@@ -37,7 +37,7 @@ namespace SiteServer.CMS.ImportExport.Components
             var entry = AtomUtility.GetEmptyEntry();
 
             AtomUtility.AddDcElement(entry.AdditionalElements, "TagName", stlTagInfo.TagName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "PublishmentSystemID", stlTagInfo.PublishmentSystemID.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, "PublishmentSystemID", stlTagInfo.PublishmentSystemId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "TagDescription", stlTagInfo.TagDescription);
             AtomUtility.AddDcElement(entry.AdditionalElements, "TagContent", stlTagInfo.TagContent);
             
@@ -58,7 +58,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     var stlTagInfo = new StlTagInfo
                     {
                         TagName = tagName,
-                        PublishmentSystemID = _publishmentSystemId,
+                        PublishmentSystemId = _publishmentSystemId,
                         TagDescription = AtomUtility.GetDcElementContent(entry.AdditionalElements, "TagDescription"),
                         TagContent = AtomUtility.GetDcElementContent(entry.AdditionalElements, "TagContent")
                     };

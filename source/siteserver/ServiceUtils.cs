@@ -1,5 +1,8 @@
 using System;
+using System.IO;
 using BaiRong.Core;
+using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 
 namespace siteserver
 {

@@ -1,27 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Permissions;
-using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Share;
+using SiteServer.CMS.Core.Permissions;
 
 namespace SiteServer.BackgroundPages
 {
     public class BasePage : Page
     {
-        public Literal ltlBreadCrumb;
-        public Message messageCtrl;
+        public Literal LtlBreadCrumb; // 面包屑(头部导航 + 左边一级二级菜单 + 其他)
 
         private MessageUtils.Message.EMessageType _messageType;
         private string _message = string.Empty;
         private string _scripts = string.Empty;
 
-        protected virtual bool IsAccessable => false;
+        protected virtual bool IsAccessable => false; // 页面默认情况下是不能直接访问
 
-        protected virtual bool IsSinglePage => false;
+        protected virtual bool IsSinglePage => false; // 是否为单页（即是否需要放在框架页内运行,false表示需要）
 
         protected bool IsForbidden { get; private set; }
 
@@ -29,7 +25,7 @@ namespace SiteServer.BackgroundPages
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
-            _messageType = messageType;
+            _messageType = messageType; 
             _message = ex != null ? $"{message}<!-- {ex} -->" : message;
         }
 
@@ -39,7 +35,7 @@ namespace SiteServer.BackgroundPages
 
             Body = new RequestBody();
 
-            if (!IsAccessable && !Body.IsAdministratorLoggin)
+            if (!IsAccessable && !Body.IsAdminLoggin) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {
                 IsForbidden = true;
                 PageUtils.RedirectToLoginPage();
@@ -47,27 +43,20 @@ namespace SiteServer.BackgroundPages
 
             //防止csrf攻击
             Response.AddHeader("X-Frame-Options", "SAMEORIGIN");
+            //tell Chrome to disable its XSS protection
+            Response.AddHeader("X-XSS-Protection", "0");
         }
 
         protected override void Render(HtmlTextWriter writer)
         {
             if (!string.IsNullOrEmpty(_message))
             {
-                if (messageCtrl != null)
-                {
-                    messageCtrl.IsShowImmidiatary = true;
-                    messageCtrl.MessageType = _messageType;
-                    messageCtrl.Content = _message;
-                }
-                else
-                {
-                    MessageUtils.SaveMessage(_messageType, _message);
-                }
+                MessageUtils.SaveMessage(_messageType, _message);
             }
 
             base.Render(writer);
 
-            if (!IsAccessable && !IsSinglePage)
+            if (!IsAccessable && !IsSinglePage) // 页面不能直接访问且不是单页，需要加一段框架检测代码，检测页面是否运行在框架内
             {
                 writer.Write($@"<script type=""text/javascript"">
 if (window.top.location.href.toLowerCase().indexOf(""main.aspx"") == -1){{
@@ -182,104 +171,31 @@ $('.operation-area').hide();
             return ControlUtils.FindControlBySelfAndChildren(controlId, this);
         }
 
-        public virtual void BreadCrumb(string leftMenuId, string pageTitle, string permission)
+        public void BreadCrumbPlugins(string pageTitle, string permission)
         {
-
-        }
-
-        public void BreadCrumbSys(string leftMenuId, string pageTitle, string permission)
-        {
-            if (ltlBreadCrumb != null)
+            if (LtlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                var topTitle = AppManager.GetTopMenuName(AppManager.IdSys);
-                var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSys, topTitle, leftMenuId, leftTitle, String.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdPlugins, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
             {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, permission);
             }
         }
 
-        public void BreadCrumbAdmin(string leftMenuId, string pageTitle, string permission)
+        public void BreadCrumbSettings(string pageTitle, string permission)
         {
-            if (ltlBreadCrumb != null)
+            if (LtlBreadCrumb != null)
             {
                 var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                var topTitle = AppManager.GetTopMenuName(AppManager.IdAdmin);
-                var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdAdmin, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
+                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSettings, pageUrl, pageTitle, string.Empty);
             }
 
             if (!string.IsNullOrEmpty(permission))
             {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
-            }
-        }
-
-        public void BreadCrumbUser(string leftMenuId, string pageTitle, string permission)
-        {
-            if (ltlBreadCrumb != null)
-            {
-                var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                var topTitle = AppManager.GetTopMenuName(AppManager.IdUser);
-                var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdUser, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
-            }
-
-            if (!string.IsNullOrEmpty(permission))
-            {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
-            }
-        }
-
-        public void BreadCrumbAnalysis(string leftMenuId, string pageTitle, string permission)
-        {
-            if (ltlBreadCrumb != null)
-            {
-                var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                var topTitle = AppManager.GetTopMenuName(AppManager.IdAnalysis);
-                var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdAnalysis, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
-            }
-
-            if (!string.IsNullOrEmpty(permission))
-            {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
-            }
-        }
-
-        public void BreadCrumbSettings(string leftMenuId, string pageTitle, string permission)
-        {
-            if (ltlBreadCrumb != null)
-            {
-                var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                var topTitle = AppManager.GetTopMenuName(AppManager.IdSettings);
-                var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSettings, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
-            }
-
-            if (!string.IsNullOrEmpty(permission))
-            {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
-            }
-        }
-
-        public void BreadCrumbService(string leftMenuId, string pageTitle, string permission)
-        {
-            if (ltlBreadCrumb != null)
-            {
-                var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                var topTitle = AppManager.GetTopMenuName(AppManager.IdService);
-                var leftTitle = AppManager.GetLeftMenuName(leftMenuId);
-                ltlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdService, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, string.Empty);
-            }
-
-            if (!string.IsNullOrEmpty(permission))
-            {
-                AdminManager.VerifyAdministratorPermissions(Body.AdministratorName, permission);
+                PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, permission);
             }
         }
 
@@ -332,48 +248,32 @@ $('.operation-area').hide();
         public static string GetShowImageScript(string objString, string imageClientId, string publishmentSystemUrl)
         {
             return
-                $"showImage({objString}, '{imageClientId}', '{WebConfigUtils.ApplicationPath}', '{publishmentSystemUrl}')";
+                $"showImage({objString}, '{imageClientId}', '{PageUtils.ApplicationPath}', '{publishmentSystemUrl}')";
         }
 
-        public static List<Analytics> ParseJsonStringToName(string json)
+        public string SwalError(string title, string message)
         {
-            var analytics = new List<Analytics>();
-            if (json.IndexOf("count", StringComparison.Ordinal) != -1)
-            {
-                json = json.Substring(json.IndexOf("count", StringComparison.Ordinal));
-                json = json.TrimEnd('}');
-                json = json.TrimEnd(']');
-                json = json.TrimEnd('}');
-                json = json.Replace("}", "");
-                json = json.Replace("{", "");
-                json = json.Replace("\"", "");
-                var arr = json.Split(',');
-                var a = new Analytics[arr.Length / 2];
-                for (var i = 0; i < arr.Length / 2; i++)
-                {
-                    a[i] = new Analytics();
-                }
-                for (var i = 0; i < arr.Length; i++)
-                {
-                    var arr1 = arr[i].Split(':');
-                    var j = i / 2;
+            var script = $@"swal({{
+  title: '{title}',
+  text: '{StringUtils.ReplaceNewline(message, string.Empty)}',
+  icon: 'error',
+  button: '关 闭',
+}});";
+            ClientScript.RegisterClientScriptBlock(GetType(), nameof(SwalError), script, true);
 
-                    if (arr1[0] == "count")
-                    {
-                        a[j].Count = Convert.ToInt32((arr1[1]));
+            return script;
+        }
 
-                    }
-                    if (arr1[0] == "metric")
-                    {
-                        a[j].Metric = arr1[1];
-                    }
-                    if (i % 2 == 1)
-                    {
-                        analytics.Add(a[i / 2]);
-                    }
-                }
-            }
-            return analytics;
+        public string SwalDom(string title, string elementId)
+        {
+            var script = $@"swal({{
+  title: '{title}',
+  content: $('#{elementId}')[0],
+  button: '关 闭',
+}});";
+            ClientScript.RegisterClientScriptBlock(GetType(), nameof(SwalDom), script, true);
+
+            return script;
         }
     }
 }

@@ -35,9 +35,9 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ID", photoInfo.ID.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, "PublishmentSystemID", photoInfo.PublishmentSystemID.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ContentID", photoInfo.ContentID.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, "ID", photoInfo.Id.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, "PublishmentSystemID", photoInfo.PublishmentSystemId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, "ContentID", photoInfo.ContentId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "SmallUrl", photoInfo.SmallUrl);
             AtomUtility.AddDcElement(entry.AdditionalElements, "MiddleUrl", photoInfo.MiddleUrl);
             AtomUtility.AddDcElement(entry.AdditionalElements, "LargeUrl", photoInfo.LargeUrl);

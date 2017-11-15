@@ -1,17 +1,92 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Core.Advertisement;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
 	public class AdvertisementDao : DataProviderBase
 	{
-		// Static constants
+        public override string TableName => "siteserver_Advertisement";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.AdvertisementName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.AdvertisementType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.IsDateLimited),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.StartDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.EndDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.NodeIdCollectionToChannel),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.NodeIdCollectionToContent),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.FileTemplateIdCollection),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(AdvertisementInfo.Settings),
+                DataType = DataType.Text
+            }
+        };
+
         private const string SqlInsertAd = "INSERT INTO siteserver_Advertisement (AdvertisementName, PublishmentSystemID, AdvertisementType, IsDateLimited, StartDate, EndDate, AddDate, NodeIDCollectionToChannel, NodeIDCollectionToContent, FileTemplateIDCollection, Settings) VALUES (@AdvertisementName, @PublishmentSystemID, @AdvertisementType, @IsDateLimited, @StartDate, @EndDate, @AddDate, @NodeIDCollectionToChannel, @NodeIDCollectionToContent, @FileTemplateIDCollection, @Settings)";
 
         private const string SqlUpdateAd = "UPDATE siteserver_Advertisement SET AdvertisementType = @AdvertisementType, IsDateLimited = @IsDateLimited, StartDate = @StartDate, EndDate = @EndDate, NodeIDCollectionToChannel = @NodeIDCollectionToChannel, NodeIDCollectionToContent = @NodeIDCollectionToContent, FileTemplateIDCollection = @FileTemplateIDCollection, Settings = @Settings WHERE AdvertisementName = @AdvertisementName AND PublishmentSystemID = @PublishmentSystemID";
@@ -45,50 +120,50 @@ namespace SiteServer.CMS.Provider
 		{
 			var adParms = new IDataParameter[]
 			{
-				GetParameter(ParmAdName, EDataType.VarChar, 50, adInfo.AdvertisementName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, adInfo.PublishmentSystemID),
-				GetParameter(ParmAdType, EDataType.VarChar, 50, EAdvertisementTypeUtils.GetValue(adInfo.AdvertisementType)),
-				GetParameter(ParmIsDateLimited, EDataType.VarChar, 18, adInfo.IsDateLimited.ToString()),
-				GetParameter(ParmStartDate, EDataType.DateTime, adInfo.StartDate),
-				GetParameter(ParmEndDate, EDataType.DateTime, adInfo.EndDate),
-				GetParameter(ParmAddDate, EDataType.DateTime, adInfo.AddDate),
-				GetParameter(ParmNodeIdCollectionToChannel, EDataType.NVarChar, 255, adInfo.NodeIDCollectionToChannel),
-                GetParameter(ParmNodeIdCollectionToContent, EDataType.NVarChar, 255, adInfo.NodeIDCollectionToContent),
-                GetParameter(ParmFileTemplateIdCollection, EDataType.NVarChar, 255, adInfo.FileTemplateIDCollection),
-                GetParameter(ParmSettings, EDataType.NText, adInfo.Settings)
+				GetParameter(ParmAdName, DataType.VarChar, 50, adInfo.AdvertisementName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, adInfo.PublishmentSystemId),
+				GetParameter(ParmAdType, DataType.VarChar, 50, EAdvertisementTypeUtils.GetValue(adInfo.AdvertisementType)),
+				GetParameter(ParmIsDateLimited, DataType.VarChar, 18, adInfo.IsDateLimited.ToString()),
+				GetParameter(ParmStartDate, DataType.DateTime, adInfo.StartDate),
+				GetParameter(ParmEndDate, DataType.DateTime, adInfo.EndDate),
+				GetParameter(ParmAddDate, DataType.DateTime, adInfo.AddDate),
+				GetParameter(ParmNodeIdCollectionToChannel, DataType.VarChar, 255, adInfo.NodeIdCollectionToChannel),
+                GetParameter(ParmNodeIdCollectionToContent, DataType.VarChar, 255, adInfo.NodeIdCollectionToContent),
+                GetParameter(ParmFileTemplateIdCollection, DataType.VarChar, 255, adInfo.FileTemplateIdCollection),
+                GetParameter(ParmSettings, DataType.Text, adInfo.Settings)
 			};
 
             ExecuteNonQuery(SqlInsertAd, adParms);
-            AdvertisementManager.RemoveCache(adInfo.PublishmentSystemID);
+            AdvertisementManager.RemoveCache(adInfo.PublishmentSystemId);
 		}
 
 		public void Update(AdvertisementInfo adInfo)
 		{
 			var adParms = new IDataParameter[]
 			{
-				GetParameter(ParmAdType, EDataType.VarChar, 50, EAdvertisementTypeUtils.GetValue(adInfo.AdvertisementType)),
-				GetParameter(ParmIsDateLimited, EDataType.VarChar, 18, adInfo.IsDateLimited.ToString()),
-				GetParameter(ParmStartDate, EDataType.DateTime, adInfo.StartDate),
-				GetParameter(ParmEndDate, EDataType.DateTime, adInfo.EndDate),
-				GetParameter(ParmNodeIdCollectionToChannel, EDataType.NVarChar, 255, adInfo.NodeIDCollectionToChannel),
-                GetParameter(ParmNodeIdCollectionToContent, EDataType.NVarChar, 255, adInfo.NodeIDCollectionToContent),
-                GetParameter(ParmFileTemplateIdCollection, EDataType.NVarChar, 255, adInfo.FileTemplateIDCollection),
-                GetParameter(ParmSettings, EDataType.NText, adInfo.Settings),
-				GetParameter(ParmAdName, EDataType.VarChar, 50, adInfo.AdvertisementName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, adInfo.PublishmentSystemID)
+				GetParameter(ParmAdType, DataType.VarChar, 50, EAdvertisementTypeUtils.GetValue(adInfo.AdvertisementType)),
+				GetParameter(ParmIsDateLimited, DataType.VarChar, 18, adInfo.IsDateLimited.ToString()),
+				GetParameter(ParmStartDate, DataType.DateTime, adInfo.StartDate),
+				GetParameter(ParmEndDate, DataType.DateTime, adInfo.EndDate),
+				GetParameter(ParmNodeIdCollectionToChannel, DataType.VarChar, 255, adInfo.NodeIdCollectionToChannel),
+                GetParameter(ParmNodeIdCollectionToContent, DataType.VarChar, 255, adInfo.NodeIdCollectionToContent),
+                GetParameter(ParmFileTemplateIdCollection, DataType.VarChar, 255, adInfo.FileTemplateIdCollection),
+                GetParameter(ParmSettings, DataType.Text, adInfo.Settings),
+				GetParameter(ParmAdName, DataType.VarChar, 50, adInfo.AdvertisementName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, adInfo.PublishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlUpdateAd, adParms);
 
-            AdvertisementManager.RemoveCache(adInfo.PublishmentSystemID);
+            AdvertisementManager.RemoveCache(adInfo.PublishmentSystemId);
 		}
 
 		public void Delete(string advertisementName, int publishmentSystemId)
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdName, EDataType.VarChar, 50, advertisementName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmAdName, DataType.VarChar, 50, advertisementName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlDeleteAd, parms);
@@ -101,8 +176,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdName, EDataType.VarChar, 50, advertisementName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmAdName, DataType.VarChar, 50, advertisementName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 			
 			using (var rdr = ExecuteReader(SqlSelectAd, parms)) 
@@ -124,8 +199,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdName, EDataType.VarChar, 50, advertisementName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmAdName, DataType.VarChar, 50, advertisementName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectAdType, parms)) 
@@ -146,8 +221,8 @@ namespace SiteServer.CMS.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdName, EDataType.VarChar, 50, advertisementName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmAdName, DataType.VarChar, 50, advertisementName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 			
 			using (var rdr = ExecuteReader(SqlSelectAdName, parms)) 
@@ -166,7 +241,7 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
 			var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllAd, parms);
@@ -177,17 +252,17 @@ namespace SiteServer.CMS.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAdType, EDataType.VarChar, 50, EAdvertisementTypeUtils.GetValue(advertisementType)),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmAdType, DataType.VarChar, 50, EAdvertisementTypeUtils.GetValue(advertisementType)),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
 			var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllAdByType, parms);
 			return enumerable;
 		}
 
-		public ArrayList GetAdvertisementNameArrayList(int publishmentSystemId)
+		public List<string> GetAdvertisementNameList(int publishmentSystemId)
 		{
-			var arraylist = new ArrayList();
+			var list = new List<string>();
             string sqlString =
                 $"SELECT AdvertisementName FROM siteserver_Advertisement WHERE PublishmentSystemID = {publishmentSystemId}";
 
@@ -196,12 +271,12 @@ namespace SiteServer.CMS.Provider
                 while (rdr.Read())
                 {
                     var advertisementName = GetString(rdr, 0);
-                    arraylist.Add(advertisementName);
+                    list.Add(advertisementName);
                 }
                 rdr.Close();
             }
 
-			return arraylist;
+			return list;
 		}
 
         public ArrayList[] GetAdvertisementArrayLists(int publishmentSystemId)

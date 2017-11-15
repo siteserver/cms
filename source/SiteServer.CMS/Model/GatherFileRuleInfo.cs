@@ -67,7 +67,9 @@ namespace SiteServer.CMS.Model
             ContentAttributesXml = contentAttributesXml;
 		}
 
-		public string GatherRuleName { get; set; }
+        public int Id { get; set; }
+
+        public string GatherRuleName { get; set; }
 
 	    public int PublishmentSystemId { get; set; }
 

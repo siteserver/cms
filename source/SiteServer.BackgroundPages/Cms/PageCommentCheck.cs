@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 {"Check", true.ToString()}
                             }), "IDsCollection", "IDsCollection", "请选择需要审核的评论！", "此操作将审核所选评论，确认吗？"));
 
-                if (HasChannelPermissions(PublishmentSystemId, AppManager.Cms.Permission.Channel.CommentDelete))
+                if (HasChannelPermissions(PublishmentSystemId, AppManager.Permissions.Channel.CommentDelete))
                 {
                     BtnDelete.Attributes.Add("onclick",
                         PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
@@ -126,7 +126,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var linkUrl = PageActions.GetRedirectUrl(PublishmentSystemId, commentInfo.NodeId,
+                    var linkUrl = BackgroundPages.PageRedirect.GetRedirectUrlToContent(PublishmentSystemId, commentInfo.NodeId,
                         commentInfo.ContentId);
                     var tableName = NodeManager.GetTableName(PublishmentSystemInfo,
                         NodeManager.GetNodeInfo(PublishmentSystemId, PublishmentSystemId));

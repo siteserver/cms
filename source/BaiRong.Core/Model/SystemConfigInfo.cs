@@ -1,8 +1,9 @@
 ﻿using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Model
 {
-    public class SystemConfigInfo : ExtendedAttributes
+    public class SystemConfigInfo : ExtendedAttributes, ISystemConfigInfo
     {
         public SystemConfigInfo(string systemConfig)
         {
@@ -12,19 +13,41 @@ namespace BaiRong.Core.Model
 
         public override string ToString()
         {
-            return TranslateUtils.NameValueCollectionToString(Attributes);
+            return TranslateUtils.NameValueCollectionToString(GetExtendedAttributes());
         }
 
-        public string Cipherkey
+        public bool IsUrlGlobalSetting
         {
-            get { return GetString("Cipherkey", string.Empty); }
-            set { SetExtendedAttribute("Cipherkey", value); }
+            get { return GetBool("IsUrlGlobalSetting", true); }
+            set { SetExtendedAttribute("IsUrlGlobalSetting", value.ToString()); }
         }
 
-        public ERestrictionType RestrictionType
+        public bool IsSeparatedWeb
         {
-            get { return ERestrictionTypeUtils.GetEnumType(GetString("RestrictionType", string.Empty)); }
-            set { SetExtendedAttribute("RestrictionType", ERestrictionTypeUtils.GetValue(value)); }
+            get { return GetBool("IsSeparatedWeb"); }
+            set { SetExtendedAttribute("IsSeparatedWeb", value.ToString()); }
+        }
+
+        public string WebUrl => IsSeparatedWeb ? SeparatedWebUrl : "/";
+
+        public string SeparatedWebUrl
+        {
+            get { return GetString("SeparatedWebUrl"); }
+            set { SetExtendedAttribute("SeparatedWebUrl", value); }
+        }
+
+        public bool IsSeparatedApi
+        {
+            get { return GetBool("IsSeparatedApi"); }
+            set { SetExtendedAttribute("IsSeparatedApi", value.ToString()); }
+        }
+
+        public string ApiUrl => IsSeparatedApi ? SeparatedApiUrl : "/api";
+
+        public string SeparatedApiUrl
+        {
+            get { return GetString("SeparatedApiUrl"); }
+            set { SetExtendedAttribute("SeparatedApiUrl", value); }
         }
 
         public bool IsLogAdmin
@@ -45,54 +68,6 @@ namespace BaiRong.Core.Model
             set { SetExtendedAttribute("IsLogTask", value.ToString()); }
         }
 
-        public bool IsSmsAliDaYu
-        {
-            get { return GetBool("IsSmsAliDaYu", false); }
-            set { SetExtendedAttribute("IsSmsAliDaYu", value.ToString()); }
-        }
-
-        public string SmsAliDaYuAppKey
-        {
-            get { return GetString("SmsAliDaYuAppKey", string.Empty); }
-            set { SetExtendedAttribute("SmsAliDaYuAppKey", value); }
-        }
-
-        public string SmsAliDaYuAppSecret
-        {
-            get { return GetString("SmsAliDaYuAppSecret", string.Empty); }
-            set { SetExtendedAttribute("SmsAliDaYuAppSecret", value); }
-        }
-
-        public string SmsAliDaYuSignName
-        {
-            get { return GetString("SmsAliDaYuSignName", string.Empty); }
-            set { SetExtendedAttribute("SmsAliDaYuSignName", value); }
-        }
-
-        public string SmsAliDaYuCodeTplId
-        {
-            get { return GetString("SmsAliDaYuCodeTplId", string.Empty); }
-            set { SetExtendedAttribute("SmsAliDaYuCodeTplId", value); }
-        }
-
-        public bool IsSmsYunPian
-        {
-            get { return GetBool("IsSmsYunPian", false); }
-            set { SetExtendedAttribute("IsSmsYunPian", value.ToString()); }
-        }
-
-        public string SmsYunPianApiKey
-        {
-            get { return GetString("SmsYunPianApiKey", string.Empty); }
-            set { SetExtendedAttribute("SmsYunPianApiKey", value); }
-        }
-
-        public string SmsYunPianCodeTplId
-        {
-            get { return GetString("SmsYunPianCodeTplId", string.Empty); }
-            set { SetExtendedAttribute("SmsYunPianCodeTplId", value); }
-        }
-
         /// <summary>
         /// 是否只查看自己添加的内容
         /// 如果是，那么管理员只能查看自己添加的内容
@@ -102,17 +77,14 @@ namespace BaiRong.Core.Model
         /// </summary>
         public bool IsViewContentOnlySelf
         {
-            get { return GetBool("IsViewContentOnlySelf", false); }
+            get { return GetBool("IsViewContentOnlySelf"); }
             set { SetExtendedAttribute("IsViewContentOnlySelf", value.ToString()); }
         }
 
-        #region Log Settings
-        /// <summary>
-        /// 是否开启时间阈值
-        /// </summary>
+        // 是否开启时间阈值
         public bool IsTimeThreshold
         {
-            get { return GetBool("IsTimeThreshold", false); }
+            get { return GetBool("IsTimeThreshold"); }
             set { SetExtendedAttribute("IsTimeThreshold", value.ToString()); }
         }
 
@@ -122,63 +94,152 @@ namespace BaiRong.Core.Model
             set { SetExtendedAttribute("TimeThreshold", value.ToString()); }
         }
 
-        /// <summary>
-        /// 是否开启条数阈值
-        /// </summary>
-        public bool IsCounterThreshold
+        public ESmsProviderType SmsProviderType
         {
-            get { return GetBool("IsCounterThreshold", false); }
-            set { SetExtendedAttribute("IsCounterThreshold", value.ToString()); }
+            get { return ESmsProviderTypeUtils.GetEnumType(GetString("SmsProviderType", ESmsProviderTypeUtils.GetValue(ESmsProviderType.None))); }
+            set { SetExtendedAttribute("SmsProviderType", ESmsProviderTypeUtils.GetValue(value)); }
         }
 
-        public int CounterThreshold
+        public string SmsAppKey
         {
-            get { return GetInt("CounterThreshold", 3); }
-            set { SetExtendedAttribute("CounterThreshold", value.ToString()); }
+            get { return GetString("SmsAppKey", string.Empty); }
+            set { SetExtendedAttribute("SmsAppKey", value); }
         }
 
-        #endregion
-
-        public int LoginUserNameMinLength
+        public string IntegrationPayConfigJson
         {
-            get { return GetInt("LoginUserNameMinLength", 0); }
-            set { SetExtendedAttribute("LoginUserNameMinLength", value.ToString()); }
+            get { return GetString("IntegrationPayConfigJson", string.Empty); }
+            set { SetExtendedAttribute("IntegrationPayConfigJson", value); }
         }
 
-        public int LoginPasswordMinLength
+        /****************管理员设置********************/
+
+        public int AdminUserNameMinLength
         {
-            get { return GetInt("LoginPasswordMinLength", 6); }
-            set { SetExtendedAttribute("LoginPasswordMinLength", value.ToString()); }
+            get { return GetInt("AdminUserNameMinLength"); }
+            set { SetExtendedAttribute("AdminUserNameMinLength", value.ToString()); }
         }
 
-        public EUserPasswordRestriction LoginPasswordRestriction
+        public int AdminPasswordMinLength
         {
-            get { return EUserPasswordRestrictionUtils.GetEnumType(GetString("LoginPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.None))); }
-            set { SetExtendedAttribute("LoginPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(value)); }
+            get { return GetInt("AdminPasswordMinLength", 6); }
+            set { SetExtendedAttribute("AdminPasswordMinLength", value.ToString()); }
         }
 
-        public bool IsLoginFailToLock
+        public string AdminPasswordRestriction
         {
-            get { return GetBool("IsLoginFailToLock", false); }
-            set { SetExtendedAttribute("IsLoginFailToLock", value.ToString()); }
+            get { return GetString("AdminPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit)); }
+            set { SetExtendedAttribute("AdminPasswordRestriction", value); }
         }
 
-        public int LoginFailToLockCount
+        public bool IsAdminLockLogin
         {
-            get { return GetInt("LoginFailToLockCount", 3); }
-            set { SetExtendedAttribute("LoginFailToLockCount", value.ToString()); }
+            get { return GetBool("IsAdminLockLogin"); }
+            set { SetExtendedAttribute("IsAdminLockLogin", value.ToString()); }
         }
 
-        public string LoginLockingType
+        public int AdminLockLoginCount
         {
-            get { return GetString("LoginLockingType", "Forever"); }
-            set { SetExtendedAttribute("LoginLockingType", value); }
+            get { return GetInt("AdminLockLoginCount", 3); }
+            set { SetExtendedAttribute("AdminLockLoginCount", value.ToString()); }
         }
 
-        public int LoginLockingHours
+        public string AdminLockLoginType
         {
-            get { return GetInt("LoginLockingHours", 3); }
-            set { SetExtendedAttribute("LoginLockingHours", value.ToString()); }
+            get { return GetString("AdminLockLoginType", EUserLockTypeUtils.GetValue(EUserLockType.Hours)); }
+            set { SetExtendedAttribute("AdminLockLoginType", value); }
+        }
+
+        public int AdminLockLoginHours
+        {
+            get { return GetInt("AdminLockLoginHours", 3); }
+            set { SetExtendedAttribute("AdminLockLoginHours", value.ToString()); }
+        }
+
+        public bool IsAdminFindPassword
+        {
+            get { return GetBool("IsAdminFindPassword"); }
+            set { SetExtendedAttribute("IsAdminFindPassword", value.ToString()); }
+        }
+
+        public string AdminFindPasswordSmsTplId
+        {
+            get { return GetString("AdminFindPasswordSmsTplId", string.Empty); }
+            set { SetExtendedAttribute("AdminFindPasswordSmsTplId", value); }
+        }
+
+        /****************用户设置********************/
+
+        public bool IsUserRegistrationAllowed
+        {
+            get { return GetBool("IsUserRegistrationAllowed", true); }
+            set { SetExtendedAttribute("IsUserRegistrationAllowed", value.ToString()); }
+        }
+
+        public int UserPasswordMinLength
+        {
+            get { return GetInt("UserPasswordMinLength", 6); }
+            set { SetExtendedAttribute("UserPasswordMinLength", value.ToString()); }
+        }
+
+        public string UserPasswordRestriction
+        {
+            get { return GetString("UserPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit)); }
+            set { SetExtendedAttribute("UserPasswordRestriction", value); }
+        }
+
+        public string UserRegistrationVerifyType
+        {
+            get { return GetString("UserRegistrationVerifyType", EUserVerifyTypeUtils.GetValue(EUserVerifyType.None)); }
+            set { SetExtendedAttribute("UserRegistrationVerifyType", value); }
+        }
+
+        public string UserRegistrationSmsTplId
+        {
+            get { return GetString("UserRegistrationSmsTplId", string.Empty); }
+            set { SetExtendedAttribute("UserRegistrationSmsTplId", value); }
+        }
+
+        public int UserRegistrationMinMinutes
+        {
+            get { return GetInt("UserRegistrationMinMinutes"); }
+            set { SetExtendedAttribute("UserRegistrationMinMinutes", value.ToString()); }
+        }
+
+        public bool IsUserFindPassword
+        {
+            get { return GetBool("IsUserFindPassword"); }
+            set { SetExtendedAttribute("IsUserFindPassword", value.ToString()); }
+        }
+
+        public string UserFindPasswordSmsTplId
+        {
+            get { return GetString("UserFindPasswordSmsTplId", string.Empty); }
+            set { SetExtendedAttribute("UserFindPasswordSmsTplId", value); }
+        }
+
+        public bool IsUserLockLogin
+        {
+            get { return GetBool("IsUserLockLogin"); }
+            set { SetExtendedAttribute("IsUserLockLogin", value.ToString()); }
+        }
+
+        public int UserLockLoginCount
+        {
+            get { return GetInt("UserLockLoginCount", 3); }
+            set { SetExtendedAttribute("UserLockLoginCount", value.ToString()); }
+        }
+
+        public string UserLockLoginType
+        {
+            get { return GetString("UserLockLoginType", "Hours"); }
+            set { SetExtendedAttribute("UserLockLoginType", value); }
+        }
+
+        public int UserLockLoginHours
+        {
+            get { return GetInt("UserLockLoginHours", 3); }
+            set { SetExtendedAttribute("UserLockLoginHours", value.ToString()); }
         }
     }
 }

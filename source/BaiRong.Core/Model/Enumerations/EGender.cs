@@ -14,42 +14,36 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(EGender type)
 		{
-			if (type == EGender.NotSet)
+		    if (type == EGender.NotSet)
 			{
 				return "NotSet";
 			}
-			else if (type == EGender.Male)
-			{
-				return "Male";
-			}
-			else if (type == EGender.Female)
-			{
-				return "Female";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGender.Male)
+		    {
+		        return "Male";
+		    }
+		    if (type == EGender.Female)
+		    {
+		        return "Female";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EGender type)
 		{
-			if (type == EGender.NotSet)
+		    if (type == EGender.NotSet)
 			{
-				return "Î´ÉèÖÃ";
+				return "æœªè®¾ç½®";
 			}
-			else if (type == EGender.Male)
-			{
-				return "ÄÐ";
-			}
-			else if (type == EGender.Female)
-			{
-				return "Å®";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EGender.Male)
+		    {
+		        return "ç”·";
+		    }
+		    if (type == EGender.Female)
+		    {
+		        return "å¥³";
+		    }
+		    throw new Exception();
 		}
 
 		public static EGender GetEnumType(string typeStr)

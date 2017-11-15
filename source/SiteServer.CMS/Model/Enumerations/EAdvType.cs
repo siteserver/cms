@@ -5,10 +5,10 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EAdvType
     {
-        JsCode,         //JS¥˙¬Î
-        HtmlCode,       //HTML¥˙¬Î
-        Text,           //Œƒ◊÷
-        Image,          //Õº∆¨
+        JsCode,         //JS‰ª£Á†Å
+        HtmlCode,       //HTML‰ª£Á†Å
+        Text,           //ÊñáÂ≠ó
+        Image,          //ÂõæÁâá
         Flash           //Flash
     }
 
@@ -20,53 +20,47 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "JsCode";
             }
-            else if (type == EAdvType.HtmlCode)
+            if (type == EAdvType.HtmlCode)
             {
                 return "HtmlCode";
             }
-            else if (type == EAdvType.Text)
+            if (type == EAdvType.Text)
             {
                 return "Text";
             }
-            else if (type == EAdvType.Image)
+            if (type == EAdvType.Image)
             {
                 return "Image";
             }
-            else if (type == EAdvType.Flash)
+            if (type == EAdvType.Flash)
             {
                 return "Flash";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EAdvType type)
         {
             if (type == EAdvType.JsCode)
             {
-                return "JS¥˙¬Î";
+                return "JS‰ª£Á†Å";
             } if (type == EAdvType.HtmlCode)
             {
-                return "HTML¥˙¬Î";
+                return "HTML‰ª£Á†Å";
             }
-            else if (type == EAdvType.Text)
+            if (type == EAdvType.Text)
             {
-                return "Œƒ◊÷";
+                return "ÊñáÂ≠ó";
             }
-            else if (type == EAdvType.Image)
+            if (type == EAdvType.Image)
             {
-                return "Õº∆¨";
+                return "ÂõæÁâá";
             }
-            else if (type == EAdvType.Flash)
+            if (type == EAdvType.Flash)
             {
                 return "Flash";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EAdvType GetEnumType(string typeStr)

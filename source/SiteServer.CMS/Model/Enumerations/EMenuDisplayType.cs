@@ -6,51 +6,45 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum EMenuDisplayType
 	{
-		UseChildrenNodeToDisplay,	//ÏÔÊ¾´ËÀ¸Ä¿µÄ×ÓÀ¸Ä¿
-		UseNodeGroupToDisplay,		//ÏÔÊ¾ÊôÓÚÀ¸Ä¿×éÖĞµÄÀ¸Ä¿
-		Both						//ÏÔÊ¾Í¬Ê±Âú×ãÒÔÉÏÁ½Ìõ¼şµÄÀ¸Ä¿
+		UseChildrenNodeToDisplay,	//æ˜¾ç¤ºæ­¤æ ç›®çš„å­æ ç›®
+		UseNodeGroupToDisplay,		//æ˜¾ç¤ºå±äºæ ç›®ç»„ä¸­çš„æ ç›®
+		Both						//æ˜¾ç¤ºåŒæ—¶æ»¡è¶³ä»¥ä¸Šä¸¤æ¡ä»¶çš„æ ç›®
 	}
 
 	public class EMenuDisplayTypeUtils
 	{
 		public static string GetValue(EMenuDisplayType type)
 		{
-			if (type == EMenuDisplayType.UseChildrenNodeToDisplay)
+		    if (type == EMenuDisplayType.UseChildrenNodeToDisplay)
 			{
 				return "UseChildrenNodeToDisplay";
 			}
-			else if (type == EMenuDisplayType.UseNodeGroupToDisplay)
-			{
-				return "UseNodeGroupToDisplay";
-			}
-			else if (type == EMenuDisplayType.Both)
-			{
-				return "Both";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EMenuDisplayType.UseNodeGroupToDisplay)
+		    {
+		        return "UseNodeGroupToDisplay";
+		    }
+		    if (type == EMenuDisplayType.Both)
+		    {
+		        return "Both";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EMenuDisplayType type)
 		{
-			if (type == EMenuDisplayType.UseChildrenNodeToDisplay)
+		    if (type == EMenuDisplayType.UseChildrenNodeToDisplay)
 			{
-				return "ÏÔÊ¾´ËÀ¸Ä¿µÄ×ÓÀ¸Ä¿";
+				return "æ˜¾ç¤ºæ­¤æ ç›®çš„å­æ ç›®";
 			}
-			else if (type == EMenuDisplayType.UseNodeGroupToDisplay)
-			{
-				return "ÏÔÊ¾ÊôÓÚÀ¸Ä¿×éÖĞµÄÀ¸Ä¿";
-			}
-			else if (type == EMenuDisplayType.Both)
-			{
-				return "ÏÔÊ¾Í¬Ê±Âú×ãÒÔÉÏÁ½Ìõ¼şµÄÀ¸Ä¿";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EMenuDisplayType.UseNodeGroupToDisplay)
+		    {
+		        return "æ˜¾ç¤ºå±äºæ ç›®ç»„ä¸­çš„æ ç›®";
+		    }
+		    if (type == EMenuDisplayType.Both)
+		    {
+		        return "æ˜¾ç¤ºåŒæ—¶æ»¡è¶³ä»¥ä¸Šä¸¤æ¡ä»¶çš„æ ç›®";
+		    }
+		    throw new Exception();
 		}
 
 		public static EMenuDisplayType GetEnumType(string typeStr)

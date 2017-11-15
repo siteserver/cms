@@ -2,13 +2,59 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class TemplateMatchDao : DataProviderBase
     {
+        public override string TableName => "siteserver_TemplateMatch";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.NodeId),
+                DataType = DataType.Integer,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.ChannelTemplateId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.ContentTemplateId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.FilePath),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.ChannelFilePathRule),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TemplateMatchInfo.ContentFilePathRule),
+                DataType = DataType.VarChar,
+                Length = 200
+            }
+        };
+
         private const string SqlSelect = "SELECT NodeID, PublishmentSystemID, ChannelTemplateID, ContentTemplateID, FilePath, ChannelFilePathRule, ContentFilePathRule FROM siteserver_TemplateMatch WHERE NodeID = @NodeID";
 
         private const string SqlInsert = "INSERT INTO siteserver_TemplateMatch (NodeID, PublishmentSystemID, ChannelTemplateID, ContentTemplateID, FilePath, ChannelFilePathRule, ContentFilePathRule) VALUES (@NodeID, @PublishmentSystemID, @ChannelTemplateID, @ContentTemplateID, @FilePath, @ChannelFilePathRule, @ContentFilePathRule)";
@@ -29,13 +75,13 @@ namespace SiteServer.CMS.Provider
         {
             var insertParms = new IDataParameter[]
 		    {
-                GetParameter(ParmNodeId, EDataType.Integer, info.NodeId),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, info.PublishmentSystemId),
-			    GetParameter(ParmChannelTemplateId, EDataType.Integer, info.ChannelTemplateId),
-                GetParameter(ParmContentTemplateId, EDataType.Integer, info.ContentTemplateId),
-                GetParameter(ParmFilepath, EDataType.VarChar, 200, info.FilePath),
-                GetParameter(ParmChannelFilepathRule, EDataType.VarChar, 200, info.ChannelFilePathRule),
-                GetParameter(ParmContentFilepathRule, EDataType.VarChar, 200, info.ContentFilePathRule)
+                GetParameter(ParmNodeId, DataType.Integer, info.NodeId),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
+			    GetParameter(ParmChannelTemplateId, DataType.Integer, info.ChannelTemplateId),
+                GetParameter(ParmContentTemplateId, DataType.Integer, info.ContentTemplateId),
+                GetParameter(ParmFilepath, DataType.VarChar, 200, info.FilePath),
+                GetParameter(ParmChannelFilepathRule, DataType.VarChar, 200, info.ChannelFilePathRule),
+                GetParameter(ParmContentFilepathRule, DataType.VarChar, 200, info.ContentFilePathRule)
 		    };
 
             ExecuteNonQuery(SqlInsert, insertParms);
@@ -45,12 +91,12 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 		    {
-			    GetParameter(ParmChannelTemplateId, EDataType.Integer, info.ChannelTemplateId),
-                GetParameter(ParmContentTemplateId, EDataType.Integer, info.ContentTemplateId),
-                GetParameter(ParmFilepath, EDataType.VarChar, 200, info.FilePath),
-                GetParameter(ParmChannelFilepathRule, EDataType.VarChar, 200, info.ChannelFilePathRule),
-                GetParameter(ParmContentFilepathRule, EDataType.VarChar, 200, info.ContentFilePathRule),
-                GetParameter(ParmNodeId, EDataType.Integer, info.NodeId)
+			    GetParameter(ParmChannelTemplateId, DataType.Integer, info.ChannelTemplateId),
+                GetParameter(ParmContentTemplateId, DataType.Integer, info.ContentTemplateId),
+                GetParameter(ParmFilepath, DataType.VarChar, 200, info.FilePath),
+                GetParameter(ParmChannelFilepathRule, DataType.VarChar, 200, info.ChannelFilePathRule),
+                GetParameter(ParmContentFilepathRule, DataType.VarChar, 200, info.ContentFilePathRule),
+                GetParameter(ParmNodeId, DataType.Integer, info.NodeId)
 		    };
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -61,7 +107,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -73,7 +119,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmNodeId, EDataType.Integer, nodeId)
+				GetParameter(ParmNodeId, DataType.Integer, nodeId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms))

@@ -2,8 +2,6 @@
 using System.Web.Http;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
-using SiteServer.API.Model;
 using SiteServer.CMS.Controllers.Users;
 using SiteServer.CMS.Core;
 
@@ -111,7 +109,7 @@ namespace SiteServer.API.Controllers.Users
                 }
 
                 BaiRongDataProvider.UserDao.Update(userInfo);
-                return Ok(new User(userInfo));
+                return Ok(userInfo);
             }
             catch (Exception ex)
             {

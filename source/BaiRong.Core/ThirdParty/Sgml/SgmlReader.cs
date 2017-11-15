@@ -3,7 +3,7 @@ using System.Xml;
 using System.IO;
 using System.Text;
 
-namespace BaiRong.Core.Text.Sgml
+namespace BaiRong.Core.ThirdParty.Sgml
 {
     /// <summary>
     /// SGML is case insensitive, so here you can choose between converting

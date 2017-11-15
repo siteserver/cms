@@ -5,69 +5,63 @@ namespace BaiRong.Core.Model.Enumerations
 {
 	public enum EScopeType
 	{
-		Self,					//±¾¼¶À¸Ä¿
-		Children,				//×ÓÀ¸Ä¿
-		SelfAndChildren,		//±¾¼¶À¸Ä¿¼°×ÓÀ¸Ä¿
-		Descendant,				//ËùÓĞ×ÓÀ¸Ä¿
-		All		                //È«²¿
+		Self,					//æœ¬çº§æ ç›®
+		Children,				//å­æ ç›®
+		SelfAndChildren,		//æœ¬çº§æ ç›®åŠå­æ ç›®
+		Descendant,				//æ‰€æœ‰å­æ ç›®
+		All		                //å…¨éƒ¨
 	}
 
 	public class EScopeTypeUtils
 	{
 		public static string GetValue(EScopeType type)
 		{
-			if (type == EScopeType.Self)
+		    if (type == EScopeType.Self)
 			{
 				return "Self";
 			}
-			else if (type == EScopeType.Children)
-			{
-				return "Children";
-			}
-			else if (type == EScopeType.SelfAndChildren)
-			{
-				return "SelfAndChildren";
-			}
-			else if (type == EScopeType.Descendant)
-			{
-				return "Descendant";
-			}
-            else if (type == EScopeType.All)
-			{
-                return "All";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EScopeType.Children)
+		    {
+		        return "Children";
+		    }
+		    if (type == EScopeType.SelfAndChildren)
+		    {
+		        return "SelfAndChildren";
+		    }
+		    if (type == EScopeType.Descendant)
+		    {
+		        return "Descendant";
+		    }
+		    if (type == EScopeType.All)
+		    {
+		        return "All";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EScopeType type)
 		{
-			if (type == EScopeType.Children)
+		    if (type == EScopeType.Children)
 			{
-				return "×ÓÀ¸Ä¿";
+				return "å­æ ç›®";
 			}
-			else if (type == EScopeType.Descendant)
-			{
-				return "ËùÓĞ×ÓÀ¸Ä¿";
-			}
-			else if (type == EScopeType.Self)
-			{
-				return "±¾¼¶À¸Ä¿";
-			}
-			else if (type == EScopeType.SelfAndChildren)
-			{
-				return "±¾¼¶À¸Ä¿¼°×ÓÀ¸Ä¿";
-			}
-			else if (type == EScopeType.All)
-			{
-				return "È«²¿";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EScopeType.Descendant)
+		    {
+		        return "æ‰€æœ‰å­æ ç›®";
+		    }
+		    if (type == EScopeType.Self)
+		    {
+		        return "æœ¬çº§æ ç›®";
+		    }
+		    if (type == EScopeType.SelfAndChildren)
+		    {
+		        return "æœ¬çº§æ ç›®åŠå­æ ç›®";
+		    }
+		    if (type == EScopeType.All)
+		    {
+		        return "å…¨éƒ¨";
+		    }
+		    throw new Exception();
 		}
 
 		public static EScopeType GetEnumType(string typeStr)

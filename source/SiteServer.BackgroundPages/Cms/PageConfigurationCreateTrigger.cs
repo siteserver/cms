@@ -10,7 +10,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageConfigurationCreateTrigger : BasePageCms
     {
-        public Repeater rptContents;
+        public Repeater RptContents;
 
         private int _currentNodeId;
 
@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, AppManager.Cms.LeftMenu.Create.IdConfigurationCreate, "页面生成触发器", AppManager.Cms.Permission.WebSite.Create);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "页面生成触发器", AppManager.Permissions.WebSite.Create);
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.ConfigurationCreateDetails, null));
 
@@ -53,9 +53,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             try
             {
-                rptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
-                rptContents.ItemDataBound += rptContents_ItemDataBound;
-                rptContents.DataBind();
+                RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+                RptContents.ItemDataBound += rptContents_ItemDataBound;
+                RptContents.DataBind();
             }
             catch (Exception ex)
             {
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
             if (ltlHtml != null)
             {
-                ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ConfigurationCreateDetails, null, Body.AdministratorName);
+                ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ConfigurationCreateDetails, null, Body.AdminName);
             }
         }
 	}

@@ -1,13 +1,56 @@
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
 	public class TableMatchDao : DataProviderBase
 	{
-		private const string SqlSelectTableMatch = "SELECT TableMatchID, ConnectionString, TableName, ConnectionStringToMatch, TableNameToMatch, ColumnsMap FROM bairong_TableMatch WHERE TableMatchID = @TableMatchID";
+        public override string TableName => "bairong_TableMatch";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMatchInfo.TableMatchId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMatchInfo.ConnectionString),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMatchInfo.TableName),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMatchInfo.ConnectionStringToMatch),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMatchInfo.TableNameToMatch),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMatchInfo.ColumnsMap),
+                DataType = DataType.Text
+            }
+        };
+
+        private const string SqlSelectTableMatch = "SELECT TableMatchID, ConnectionString, TableName, ConnectionStringToMatch, TableNameToMatch, ColumnsMap FROM bairong_TableMatch WHERE TableMatchID = @TableMatchID";
 
 		private const string SqlUpdateTableMatch = "UPDATE bairong_TableMatch SET ConnectionString = @ConnectionString, TableName = @TableName, ConnectionStringToMatch = @ConnectionStringToMatch, TableNameToMatch = @TableNameToMatch, ColumnsMap = @ColumnsMap WHERE TableMatchID = @TableMatchID";
 
@@ -22,51 +65,30 @@ namespace BaiRong.Core.Provider
 
 		public int Insert(TableMatchInfo tableMatchInfo)
 		{
-			int tableMatchId;
-
-            var sqlString = "INSERT INTO bairong_TableMatch (ConnectionString, TableName, ConnectionStringToMatch, TableNameToMatch, ColumnsMap) VALUES (@ConnectionString, @TableName, @ConnectionStringToMatch, @TableNameToMatch, @ColumnsMap)";
+            const string sqlString = "INSERT INTO bairong_TableMatch (ConnectionString, TableName, ConnectionStringToMatch, TableNameToMatch, ColumnsMap) VALUES (@ConnectionString, @TableName, @ConnectionStringToMatch, @TableNameToMatch, @ColumnsMap)";
 
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmConnectionString, EDataType.VarChar, 200, tableMatchInfo.ConnectionString),
-				GetParameter(ParmTableName, EDataType.VarChar, 200, tableMatchInfo.TableName),
-				GetParameter(ParmConnectionStringToMatch, EDataType.VarChar, 200, tableMatchInfo.ConnectionStringToMatch),
-				GetParameter(ParmTableNameToMatch, EDataType.VarChar, 200, tableMatchInfo.TableNameToMatch),
-				GetParameter(ParmColumnsMap, EDataType.NText, TranslateUtils.NameValueCollectionToString(tableMatchInfo.ColumnsMap))
+				GetParameter(ParmConnectionString, DataType.VarChar, 200, tableMatchInfo.ConnectionString),
+				GetParameter(ParmTableName, DataType.VarChar, 200, tableMatchInfo.TableName),
+				GetParameter(ParmConnectionStringToMatch, DataType.VarChar, 200, tableMatchInfo.ConnectionStringToMatch),
+				GetParameter(ParmTableNameToMatch, DataType.VarChar, 200, tableMatchInfo.TableNameToMatch),
+				GetParameter(ParmColumnsMap, DataType.Text, TranslateUtils.NameValueCollectionToString(tableMatchInfo.ColumnsMap))
 			};
 
-			using (var conn = GetConnection()) 
-			{
-				conn.Open();
-				using (var trans = conn.BeginTransaction()) 
-				{
-					try 
-					{
-                        tableMatchId = ExecuteNonQueryAndReturnId(trans, sqlString, insertParms);
-
-						trans.Commit();
-					}
-					catch
-					{
-						trans.Rollback();
-						throw;
-					}
-				}
-			}
-
-			return tableMatchId;
+            return ExecuteNonQueryAndReturningId(sqlString, nameof(TableMatchInfo.TableMatchId), insertParms);
 		}
 
 		public void Update(TableMatchInfo tableMatchInfo)
 		{
 			var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmConnectionString, EDataType.VarChar, 200, tableMatchInfo.ConnectionString),
-				GetParameter(ParmTableName, EDataType.VarChar, 200, tableMatchInfo.TableName),
-				GetParameter(ParmConnectionStringToMatch, EDataType.VarChar, 200, tableMatchInfo.ConnectionStringToMatch),
-				GetParameter(ParmTableNameToMatch, EDataType.VarChar, 200, tableMatchInfo.TableNameToMatch),
-				GetParameter(ParmColumnsMap, EDataType.NText, TranslateUtils.NameValueCollectionToString(tableMatchInfo.ColumnsMap)),
-				GetParameter(ParmTableMatchId, EDataType.Integer, tableMatchInfo.TableMatchId)
+				GetParameter(ParmConnectionString, DataType.VarChar, 200, tableMatchInfo.ConnectionString),
+				GetParameter(ParmTableName, DataType.VarChar, 200, tableMatchInfo.TableName),
+				GetParameter(ParmConnectionStringToMatch, DataType.VarChar, 200, tableMatchInfo.ConnectionStringToMatch),
+				GetParameter(ParmTableNameToMatch, DataType.VarChar, 200, tableMatchInfo.TableNameToMatch),
+				GetParameter(ParmColumnsMap, DataType.Text, TranslateUtils.NameValueCollectionToString(tableMatchInfo.ColumnsMap)),
+				GetParameter(ParmTableMatchId, DataType.Integer, tableMatchInfo.TableMatchId)
 			};
 
 			using (var conn = GetConnection()) 
@@ -80,7 +102,7 @@ namespace BaiRong.Core.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMatchId, EDataType.Integer, tableMatchId)
+				GetParameter(ParmTableMatchId, DataType.Integer, tableMatchId)
 			};
 							
 			using (var conn = GetConnection()) 
@@ -96,7 +118,7 @@ namespace BaiRong.Core.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMatchId, EDataType.Integer, tableMatchId)
+				GetParameter(ParmTableMatchId, DataType.Integer, tableMatchId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectTableMatch, parms))

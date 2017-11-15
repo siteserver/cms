@@ -4,55 +4,49 @@ using System.Web.UI.WebControls;
 namespace SiteServer.CMS.Model.Enumerations
 {
 	/// <summary>
-	/// ÅúÁ¿×ªÒÆÀàĞÍ
+	/// æ‰¹é‡è½¬ç§»ç±»å‹
 	/// </summary>
 	public enum ETranslateType
 	{
-		Content,				//½ö×ªÒÆÄÚÈİ
-		Channel,				//½ö×ªÒÆÀ¸Ä¿
-		All						//×ªÒÆÀ¸Ä¿¼°ÄÚÈİ
+		Content,				//ä»…è½¬ç§»å†…å®¹
+		Channel,				//ä»…è½¬ç§»æ ç›®
+		All						//è½¬ç§»æ ç›®åŠå†…å®¹
 	}
 
 	public class ETranslateTypeUtils
 	{
 		public static string GetValue(ETranslateType type)
 		{
-			if (type == ETranslateType.Content)
+		    if (type == ETranslateType.Content)
 			{
 				return "Content";
 			}
-			else if (type == ETranslateType.Channel)
-			{
-				return "Channel";
-			}
-			else if (type == ETranslateType.All)
-			{
-				return "All";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETranslateType.Channel)
+		    {
+		        return "Channel";
+		    }
+		    if (type == ETranslateType.All)
+		    {
+		        return "All";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ETranslateType type)
 		{
-			if (type == ETranslateType.Content)
+		    if (type == ETranslateType.Content)
 			{
-				return "½ö×ªÒÆÄÚÈİ";
+				return "ä»…è½¬ç§»å†…å®¹";
 			}
-			else if (type == ETranslateType.Channel)
-			{
-				return "½ö×ªÒÆÀ¸Ä¿";
-			}
-			else if (type == ETranslateType.All)
-			{
-				return "×ªÒÆÀ¸Ä¿¼°ÄÚÈİ";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETranslateType.Channel)
+		    {
+		        return "ä»…è½¬ç§»æ ç›®";
+		    }
+		    if (type == ETranslateType.All)
+		    {
+		        return "è½¬ç§»æ ç›®åŠå†…å®¹";
+		    }
+		    throw new Exception();
 		}
 
 		public static ETranslateType GetEnumType(string typeStr)

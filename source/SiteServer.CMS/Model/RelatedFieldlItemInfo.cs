@@ -2,67 +2,36 @@ namespace SiteServer.CMS.Model
 {
 	public class RelatedFieldItemInfo
 	{
-        private int id;
-        private int relatedFieldID;
-        private string itemName;
-        private string itemValue;
-        private int parentID;
-        private int taxis;
-
-		public RelatedFieldItemInfo()
+	    public RelatedFieldItemInfo()
 		{
-            id = 0;
-            relatedFieldID = 0;
-            itemName = string.Empty;
-            itemValue = string.Empty;
-            parentID = 0;
-            taxis = 0;
+            Id = 0;
+            RelatedFieldId = 0;
+            ItemName = string.Empty;
+            ItemValue = string.Empty;
+            ParentId = 0;
+            Taxis = 0;
 		}
 
-        public RelatedFieldItemInfo(int id, int relatedFieldID, string itemName, string itemValue, int parentID, int taxis)
+        public RelatedFieldItemInfo(int id, int relatedFieldId, string itemName, string itemValue, int parentId, int taxis)
 		{
-            this.id = id;
-            this.relatedFieldID = relatedFieldID;
-            this.itemName = itemName;
-            this.itemValue = itemValue;
-            this.parentID = parentID;
-            this.taxis = taxis;
+            Id = id;
+            RelatedFieldId = relatedFieldId;
+            ItemName = itemName;
+            ItemValue = itemValue;
+            ParentId = parentId;
+            Taxis = taxis;
 		}
 
-        public int ID
-		{
-            get { return id; }
-            set { id = value; }
-		}
+        public int Id { get; set; }
 
-        public int RelatedFieldID
-        {
-            get { return relatedFieldID; }
-            set { relatedFieldID = value; }
-        }
+	    public int RelatedFieldId { get; set; }
 
-        public string ItemName
-        {
-            get { return itemName; }
-            set { itemName = value; }
-        }
+	    public string ItemName { get; set; }
 
-        public string ItemValue
-        {
-            get { return itemValue; }
-            set { itemValue = value; }
-        }
+	    public string ItemValue { get; set; }
 
-        public int ParentID
-		{
-            get { return parentID; }
-            set { parentID = value; }
-		}
+	    public int ParentId { get; set; }
 
-        public int Taxis
-        {
-            get { return taxis; }
-            set { taxis = value; }
-        }
+	    public int Taxis { get; set; }
 	}
 }

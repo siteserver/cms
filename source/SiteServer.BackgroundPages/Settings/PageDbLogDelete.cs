@@ -1,6 +1,5 @@
 ﻿using System;
 using BaiRong.Core;
-using BaiRong.Core.Text;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -14,13 +13,13 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings(AppManager.Settings.LeftMenu.Utility, "清空数据库日志", AppManager.Settings.Permission.SettingsUtility);
+                BreadCrumbSettings("清空数据库日志", AppManager.Permissions.Settings.Utility);
             }
         }
 
         public string GetLastExecuteDate()
         {
-            var dt = BaiRongDataProvider.LogDao.GetLastRemoveLogDate(Body.AdministratorName);
+            var dt = BaiRongDataProvider.LogDao.GetLastRemoveLogDate(Body.AdminName);
             return dt == DateTime.MinValue ? "无记录" : DateUtils.GetDateAndTimeString(dt);
         }
 

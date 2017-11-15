@@ -5,60 +5,54 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EPositionType
 	{
-		LeftTop,				//◊Û…œ
-		LeftBottom,				//◊Ûœ¬
-		RightTop,               //”“…œ
-        RightBottom             //”“œ¬
+		LeftTop,				//Â∑¶‰∏ä
+		LeftBottom,				//Â∑¶‰∏ã
+		RightTop,               //Âè≥‰∏ä
+        RightBottom             //Âè≥‰∏ã
 	}
 
     public class EPositionTypeUtils
 	{
 		public static string GetValue(EPositionType type)
 		{
-            if (type == EPositionType.LeftTop)
+		    if (type == EPositionType.LeftTop)
 			{
                 return "LeftTop";
 			}
-            else if (type == EPositionType.LeftBottom)
-			{
-                return "LeftBottom";
-			}
-            else if (type == EPositionType.RightTop)
-			{
-                return "RightTop";
-            }
-            else if (type == EPositionType.RightBottom)
-            {
-                return "RightBottom";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EPositionType.LeftBottom)
+		    {
+		        return "LeftBottom";
+		    }
+		    if (type == EPositionType.RightTop)
+		    {
+		        return "RightTop";
+		    }
+		    if (type == EPositionType.RightBottom)
+		    {
+		        return "RightBottom";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EPositionType type)
 		{
-            if (type == EPositionType.LeftTop)
+		    if (type == EPositionType.LeftTop)
             {
-                return "◊Û…œ";
+                return "Â∑¶‰∏ä";
             }
-            else if (type == EPositionType.LeftBottom)
-            {
-                return "◊Ûœ¬";
-            }
-            else if (type == EPositionType.RightTop)
-            {
-                return "”“…œ";
-            }
-            else if (type == EPositionType.RightBottom)
-            {
-                return "”“œ¬";
-            }
-            else
-            {
-                throw new Exception();
-            }
+		    if (type == EPositionType.LeftBottom)
+		    {
+		        return "Â∑¶‰∏ã";
+		    }
+		    if (type == EPositionType.RightTop)
+		    {
+		        return "Âè≥‰∏ä";
+		    }
+		    if (type == EPositionType.RightBottom)
+		    {
+		        return "Âè≥‰∏ã";
+		    }
+		    throw new Exception();
 		}
 
 		public static EPositionType GetEnumType(string typeStr)

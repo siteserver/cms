@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
 
   <bairong:alerts text="选择需要生成的文件页后点击“生成选定文件”即可生成对应的文件页面。" runat="server" />
 

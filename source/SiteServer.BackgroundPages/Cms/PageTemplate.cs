@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "模板管理", AppManager.Cms.Permission.WebSite.Template);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "模板管理", AppManager.Permissions.WebSite.Template);
 
 				DdlTemplateType.Items.Add(new ListItem("<所有类型>", string.Empty));
                 ETemplateTypeUtils.AddListItems(DdlTemplateType);
@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (templateType == ETemplateType.IndexPageTemplate || templateType == ETemplateType.FileTemplate)
                 {
-                    var url = PageUtility.ParseNavigationUrl(PublishmentSystemInfo, createdFileFullName);
+                    var url = PageUtility.ParseNavigationUrl(PublishmentSystemInfo, createdFileFullName, true);
                     ltlFileName.Text = $"<a href='{url}' target='_blank'>{createdFileFullName}</a>";
                 }
 

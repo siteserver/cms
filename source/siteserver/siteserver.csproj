@@ -34,7 +34,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -85,6 +85,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="commands\Decode.cs" />
+    <Compile Include="commands\Plugin.cs" />
+    <Compile Include="commands\Encode.cs" />
+    <Compile Include="commands\Build.cs" />
+    <Compile Include="commands\Test.cs" />
+    <Compile Include="commands\Run.cs" />
     <Compile Include="ServiceUtils.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="ExecutionManager.cs" />
@@ -96,7 +102,7 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +117,10 @@
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{61a793e1-3e99-4bdc-bc20-7298ca3e0000}</Project>
       <Name>SiteServer.CMS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{8451ecdd-2ea4-4966-bb0a-7bbc40138e80}</Project>
+      <Name>SiteServer.Plugin</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

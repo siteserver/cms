@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Web.Http;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 using SiteServer.CMS.Controllers.Writing;
 using SiteServer.CMS.Core;
 
@@ -57,7 +56,7 @@ namespace SiteServer.API.Controllers.Writing
                 //    }
                 //}
 
-                InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, postCollection, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, postCollection, contentInfo.GetExtendedAttributes(), ContentAttribute.HiddenAttributes);
 
                 contentInfo.LastEditDate = DateTime.Now;
                 contentInfo.IsChecked = false;

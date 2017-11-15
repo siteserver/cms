@@ -28,11 +28,11 @@ namespace SiteServer.BackgroundPages.Controls
 
 		protected override void Render(HtmlTextWriter writer)
 		{
-            if (isShowImmidiatary)
+            if (isShowImmidiatary) // 有直接显示的消息
             {
                 writer.Write(MessageUtils.GetMessageHtml(messageType, content, this));
             }
-            else
+            else // 没有直接显示的消息则去cookies中检查是否有消息需要显示
             {
                 writer.Write(MessageUtils.GetMessageHtml(this));
             }

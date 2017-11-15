@@ -3,6 +3,7 @@
 *.pdb
 *.zip
 *.log
+*.nupkg
 node_modules/
 /build/
 /.vs/

@@ -5,49 +5,40 @@ namespace SiteServer.CMS.Model.Enumerations
     public enum ECreateType
 	{
         None,
-        Index,
         Channel,
         Content,
         File,
-        AllContent,
+        AllContent
     }
 
     public class ECreateTypeUtils
 	{
 		public static string GetValue(ECreateType type)
 		{
-            if (type == ECreateType.Index)
-			{
-                return "Index";
-            }
-            else if (type == ECreateType.Channel)
-            {
-                return "Channel";
-            }
-            else if (type == ECreateType.Content)
-            {
-                return "Content";
-            }
-            else if (type == ECreateType.File)
-			{
-                return "File";
-            }
-            else if (type == ECreateType.AllContent)
-            {
-                return "AllContent";
-            }
-            return string.Empty;
+		    if (type == ECreateType.Channel)
+		    {
+		        return "Channel";
+		    }
+		    if (type == ECreateType.Content)
+		    {
+		        return "Content";
+		    }
+		    if (type == ECreateType.File)
+		    {
+		        return "File";
+		    }
+		    if (type == ECreateType.AllContent)
+		    {
+		        return "AllContent";
+		    }
+		    return string.Empty;
 		}
 
 		public static ECreateType GetEnumType(string typeStr)
 		{
             var retval = ECreateType.None;
 
-            if (Equals(ECreateType.Index, typeStr))
-            {
-                retval = ECreateType.Index;
-            }
-            else if (Equals(ECreateType.Channel, typeStr))
+            if (Equals(ECreateType.Channel, typeStr))
             {
                 retval = ECreateType.Channel;
             }
@@ -69,23 +60,19 @@ namespace SiteServer.CMS.Model.Enumerations
 
         public static string GetText(ECreateType createType)
         {
-            if (createType == ECreateType.Index)
-            {
-                return "首页";
-            }
-            else if (createType == ECreateType.Channel)
+            if (createType == ECreateType.Channel)
             {
                 return "栏目页";
             }
-            else if (createType == ECreateType.Content)
+            if (createType == ECreateType.Content)
             {
                 return "内容页";
             }
-            else if (createType == ECreateType.File)
+            if (createType == ECreateType.File)
             {
                 return "文件页";
             }
-            else if (createType == ECreateType.AllContent)
+            if (createType == ECreateType.AllContent)
             {
                 return "栏目下所有内容页";
             }
@@ -122,7 +109,6 @@ namespace SiteServer.CMS.Model.Enumerations
         {
             if (listControl != null)
             {
-                listControl.Items.Add(GetListItem(ECreateType.Index, false));
                 listControl.Items.Add(GetListItem(ECreateType.Channel, false));
                 listControl.Items.Add(GetListItem(ECreateType.Content, false));
                 listControl.Items.Add(GetListItem(ECreateType.File, false));

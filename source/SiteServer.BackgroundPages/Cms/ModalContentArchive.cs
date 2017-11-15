@@ -14,16 +14,16 @@ namespace SiteServer.BackgroundPages.Cms
         private int _nodeId;
         private ETableStyle _tableStyle;
         private string _returnUrl;
-        private List<int> _contentIdArrayList;
+        private List<int> _contentIdList;
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("内容归档", PageUtils.GetCmsUrl(nameof(ModalContentArchive), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("内容归档", PageUtils.GetCmsUrl(nameof(ModalContentArchive), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
-            }), "ContentIDCollection", "请选择需要归档的内容！", 400, 200);
+            }), "ContentIDCollection", "请选择需要归档的内容！", 400, 230);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
             _nodeId = Body.GetQueryInt("NodeID");
             _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeId);
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
-            _contentIdArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
+            _contentIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -44,14 +44,14 @@ namespace SiteServer.BackgroundPages.Cms
             ArchiveManager.CreateArchiveTableIfNotExists(PublishmentSystemInfo, tableName);
             var tableNameOfArchive = TableManager.GetTableNameOfArchive(tableName);
 
-            foreach (int contentID in _contentIdArrayList)
+            foreach (var contentId in _contentIdList)
             {
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, tableName, contentID);
+                var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, tableName, contentId);
                 contentInfo.LastEditDate = DateTime.Now;
                 DataProvider.ContentDao.Insert(tableNameOfArchive, PublishmentSystemInfo, contentInfo);
             }
 
-            DataProvider.ContentDao.DeleteContents(PublishmentSystemId, tableName, _contentIdArrayList, _nodeId);
+            DataProvider.ContentDao.DeleteContents(PublishmentSystemId, tableName, _contentIdList, _nodeId);
 
             CreateManager.CreateContentTrigger(PublishmentSystemId, _nodeId);
 

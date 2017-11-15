@@ -8,6 +8,8 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -16,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox AttributeNames;
         public RadioButtonList IsVisible;
         public RadioButtonList IsSingleLine;
-        public DropDownList InputType;
+        public DropDownList DdlInputType;
         public TextBox DefaultValue;
         public Control DateTip;
         public DropDownList IsHorizontal;
@@ -74,11 +76,11 @@ namespace SiteServer.BackgroundPages.Cms
                 IsHorizontal.Items[0].Value = true.ToString();
                 IsHorizontal.Items[1].Value = false.ToString();
 
-                EInputTypeUtils.AddListItems(InputType);
+                InputTypeUtils.AddListItems(DdlInputType);
 
                 var styleInfo = TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, string.Empty, _relatedIdentities);
 
-                ControlUtils.SelectListItems(InputType, EInputTypeUtils.GetValue(EInputTypeUtils.GetEnumType(styleInfo.InputType)));
+                ControlUtils.SelectListItems(DdlInputType, InputTypeUtils.GetValue(InputTypeUtils.GetEnumType(styleInfo.InputType)));
                 ControlUtils.SelectListItems(IsVisible, styleInfo.IsVisible.ToString());
                 ControlUtils.SelectListItems(IsSingleLine, styleInfo.IsSingleLine.ToString());
                 DefaultValue.Text = styleInfo.DefaultValue;
@@ -86,7 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
                 Columns.Text = styleInfo.Additional.Columns.ToString();
 
                 Height.Text = styleInfo.Additional.Height.ToString();
-                Width.Text = styleInfo.Additional.Width.ToString();
+                Width.Text = styleInfo.Additional.Width;
 
                 ItemCount.Text = "0";
 
@@ -102,30 +104,30 @@ namespace SiteServer.BackgroundPages.Cms
             Height.Enabled = true;
 
             DefaultValue.TextMode = TextBoxMode.MultiLine;
-            var inputType = EInputTypeUtils.GetEnumType(InputType.SelectedValue);
-            if (inputType == EInputType.CheckBox || inputType == EInputType.Radio || inputType == EInputType.SelectMultiple || inputType == EInputType.SelectOne)
+            var inputType = InputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
+            if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
                 RowItemCount.Visible = RowSetItems.Visible = true;
-                if (inputType == EInputType.CheckBox || inputType == EInputType.Radio)
+                if (inputType == InputType.CheckBox || inputType == InputType.Radio)
                 {
                     RowRepeat.Visible = true;
                 }
             }
-            else if (inputType == EInputType.TextEditor)
+            else if (inputType == InputType.TextEditor)
             {
                 RowDefaultValue.Visible = RowHeightAndWidth.Visible = true;
             }
-            else if (inputType == EInputType.TextArea)
+            else if (inputType == InputType.TextArea)
             {
                 RowDefaultValue.Visible = RowHeightAndWidth.Visible = true;
             }
-            else if (inputType == EInputType.Text)
+            else if (inputType == InputType.Text)
             {
                 RowDefaultValue.Visible = RowHeightAndWidth.Visible = true;
                 Height.Enabled = false;
                 DefaultValue.TextMode = TextBoxMode.SingleLine;
             }
-            else if (inputType == EInputType.Date || inputType == EInputType.DateTime)
+            else if (inputType == InputType.Date || inputType == InputType.DateTime)
             {
                 DateTip.Visible = RowDefaultValue.Visible = true;
                 DefaultValue.TextMode = TextBoxMode.SingleLine;
@@ -152,11 +154,9 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var isChanged = false;
+            var inputType = InputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
 
-            var inputType = EInputTypeUtils.GetEnumType(InputType.SelectedValue);
-
-            if (inputType == EInputType.CheckBox || inputType == EInputType.Radio || inputType == EInputType.SelectMultiple || inputType == EInputType.SelectOne)
+            if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
                 var itemCount = TranslateUtils.ToInt(ItemCount.Text);
                 if (itemCount == 0)
@@ -166,7 +166,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            isChanged = InsertTableStyleInfo(inputType);
+            var isChanged = InsertTableStyleInfo(inputType);
 
             if (isChanged)
             {
@@ -174,13 +174,13 @@ namespace SiteServer.BackgroundPages.Cms
             }
 		}
 
-        private bool InsertTableStyleInfo(EInputType inputType)
+        private bool InsertTableStyleInfo(InputType inputType)
         {
             var isChanged = false;
 
             var attributeNameArray = AttributeNames.Text.Split('\n');
 
-            var relatedIdentity = (int)_relatedIdentities[0];
+            var relatedIdentity = _relatedIdentities[0];
             var styleInfoArrayList = new ArrayList();
 
             foreach (var itemString in attributeNameArray)
@@ -206,36 +206,50 @@ namespace SiteServer.BackgroundPages.Cms
                         displayName = attributeName;
                     }
 
+                    if (_tableStyle == ETableStyle.Site)
+                    {
+                        if (string.IsNullOrEmpty(attributeName))
+                        {
+                            FailMessage("操作失败，字段名不能为空！");
+                            return false;
+                        }
+                        else if (StringUtils.StartsWithIgnoreCase(attributeName, "Site"))
+                        {
+                            FailMessage("操作失败，字段名不能以site开始！");
+                            return false;
+                        }
+                    }
+
                     if (TableStyleManager.IsExists(relatedIdentity, _tableName, attributeName) || TableStyleManager.IsExistsInParents(_relatedIdentities, _tableName, attributeName))
                     {
                         FailMessage($@"显示样式添加失败：字段名""{attributeName}""已存在");
                         return false;
                     }
 
-                    var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, TranslateUtils.ToBool(IsVisible.SelectedValue), false, TranslateUtils.ToBool(IsSingleLine.SelectedValue), EInputTypeUtils.GetValue(inputType), DefaultValue.Text, TranslateUtils.ToBool(IsHorizontal.SelectedValue), string.Empty);
+                    var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, TranslateUtils.ToBool(IsVisible.SelectedValue), false, TranslateUtils.ToBool(IsSingleLine.SelectedValue), InputTypeUtils.GetValue(inputType), DefaultValue.Text, TranslateUtils.ToBool(IsHorizontal.SelectedValue), string.Empty);
                     styleInfo.Additional.Columns = TranslateUtils.ToInt(Columns.Text);
                     styleInfo.Additional.Height = TranslateUtils.ToInt(Height.Text);
                     styleInfo.Additional.Width = Width.Text;
 
-                    if (inputType == EInputType.CheckBox || inputType == EInputType.Radio || inputType == EInputType.SelectMultiple || inputType == EInputType.SelectOne)
+                    if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
                     {
                         styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
                         var isHasSelected = false;
                         foreach (RepeaterItem item in MyRepeater.Items)
                         {
-                            var ItemTitle = (TextBox)item.FindControl("ItemTitle");
-                            var ItemValue = (TextBox)item.FindControl("ItemValue");
-                            var IsSelected = (CheckBox)item.FindControl("IsSelected");
+                            var itemTitle = (TextBox)item.FindControl("ItemTitle");
+                            var itemValue = (TextBox)item.FindControl("ItemValue");
+                            var isSelected = (CheckBox)item.FindControl("IsSelected");
 
-                            if ((inputType != EInputType.SelectMultiple && inputType != EInputType.CheckBox) && isHasSelected && IsSelected.Checked)
+                            if ((inputType != InputType.SelectMultiple && inputType != InputType.CheckBox) && isHasSelected && isSelected.Checked)
                             {
                                 FailMessage("操作失败，只能有一个初始化时选定项！");
                                 return false;
                             }
-                            if (IsSelected.Checked) isHasSelected = true;
+                            if (isSelected.Checked) isHasSelected = true;
 
-                            var itemInfo = new TableStyleItemInfo(0, 0, ItemTitle.Text, ItemValue.Text, IsSelected.Checked);
+                            var itemInfo = new TableStyleItemInfo(0, 0, itemTitle.Text, itemValue.Text, isSelected.Checked);
                             styleInfo.StyleItems.Add(itemInfo);
                         }
                     }

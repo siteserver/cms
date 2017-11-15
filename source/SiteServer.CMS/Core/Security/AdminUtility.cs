@@ -1,6 +1,6 @@
 using BaiRong.Core;
 using System.Collections.Generic;
-using BaiRong.Core.Permissions;
+using SiteServer.CMS.Core.Permissions;
 
 namespace SiteServer.CMS.Core.Security
 {
@@ -37,7 +37,8 @@ namespace SiteServer.CMS.Core.Security
             {
                 return;
             }
-            RequestBody.AdministratorLogout();
+            var body = new RequestBody();
+            body.AdminLogout();
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 
@@ -95,7 +96,8 @@ namespace SiteServer.CMS.Core.Security
             {
                 return;
             }
-            RequestBody.AdministratorLogout();
+            var body = new RequestBody();
+            body.AdminLogout();
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 
@@ -136,7 +138,7 @@ namespace SiteServer.CMS.Core.Security
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsConsoleAdministrator || permissions.IsSystemAdministrator)
                 return false;
-            if (HasChannelPermissions(administratorName, publishmentSystemId, nodeId, AppManager.Cms.Permission.Channel.ContentCheck))
+            if (HasChannelPermissions(administratorName, publishmentSystemId, nodeId, AppManager.Permissions.Channel.ContentCheck))
                 return false;
             return ConfigManager.SystemConfigInfo.IsViewContentOnlySelf;
         }

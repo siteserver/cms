@@ -1,4 +1,39 @@
-<script type="text/javascript" language="javascript">
+<script src="../assets/bootstrap/bootstrap-3.3.6.min.js"></script>
+<div id="openWindowModal" class="modal fade" tabindex="-1" role="dialog" style="display: none">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <iframe id="openWindowIFrame" style="width:100%;height:100%;background-color:#ffffff;" scrolling="auto" frameborder="0" width="100%"
+                    height="100%"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button id="openWindowBtn" type="button" class="btn btn-primary waves-effect waves-light">确 定</button>
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">取 消</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<div id="openTipsModal" class="modal hide" style="display: none">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal">×</button>
+        <h3>提示</h3>
+    </div>
+    <div class="modal-body">
+        <div id="alertType" class="alert alert-info"></div>
+    </div>
+    <div class="modal-footer">
+        <button id="openTipsBtn" class="btn btn-primary" data-loading-text="提交中...">确 定</button>
+        <button id="closeTipsBtn" class="btn" data-dismiss="modal" aria-hidden="true">关 闭</button>
+    </div>
+</div>
+<script>
     jQuery.fn.center = function () {
         this.css("position", "absolute");
         var t = ($(window).height() - this.height() - 150) / 2;
@@ -12,25 +47,29 @@
         this.css("left", left + "px");
         return this;
     }
+
     function openWindow(title, url, width, height, isCloseOnly) {
-        if (width == '0') width = $(window).width() - 40;
-        if (height == '0') height = $(window).height() - 60;
-        if (!width) width = 450;
-        if (!height) height = 350;
-        $('#openWindowModal h3').html(title);
+        console.log(width);
+        console.log(height);
+        if (width == '0' || !width) width = $(window).width() - 40;
+        if (height == '0' || !height) height = $(window).height() - 60;
+        console.log(width);
+        console.log(height);
+        $('#openWindowModal').width(width);
+        $('#openWindowModal h4').html(title);
         $('#openWindowBtn').show();
         if (isCloseOnly == 'true') $('#openWindowBtn').hide();
         $('#openWindowIFrame').attr('src', url);
-        $('#openWindowModal').width(width);
         $('#openWindowModal .modal-body').css('max-height', '9999px');
-        $('#openWindowModal').height(height);
-        $('#openWindowModal .modal-body').height(height - 110);
         $('#openWindowIFrame').height(height - 120);
         $('#openWindowModal').center();
-        //$("body").eq(0).css("overflow","hidden");
-        $('#openWindowModal').modal({ keyboard: true });
+        $('#openWindowModal').modal({
+            keyboard: true,
+            width: width
+        });
         return false;
     }
+
     function closeWindow() {
         $('#openWindowModal').modal('hide');
     }
@@ -84,6 +123,7 @@
             $("#Submit").attr("onclick", "").click();
         });
     }
+
     function showTips(tips, type) {
         $('.alert').hide();
         $('#alert').removeClass();
@@ -101,30 +141,3 @@
         $('#alert').show();
     }
 </script>
-<div id="openWindowModal" class="modal hide fade form-horizontal">
-    <div class="modal-header" style="height:30px;">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3></h3>
-    </div>
-    <div class="modal-body" style="width:100%; height:100%; padding:5px 0; margin:0;">
-        <iframe id="openWindowIFrame" style="width:100%;height:100%;background-color:#ffffff;" scrolling="auto" frameborder="0" width="100%" height="100%"></iframe>
-    </div>
-    <div class="modal-footer">
-        <button id="openWindowBtn" class="btn btn-primary" data-loading-text="提交中...">确 定</button>
-        <button class="btn" data-dismiss="modal" aria-hidden="true">取 消</button>
-    </div>
-</div>
-
-<div id="openTipsModal" class="modal hide">
-    <div class="modal-header">
-        <button class="close" data-dismiss="modal">×</button>
-        <h3>提示</h3>
-    </div>
-    <div class="modal-body">
-        <div id="alertType" class="alert alert-info"></div>
-    </div>
-    <div class="modal-footer">
-        <button id="openTipsBtn" class="btn btn-primary" data-loading-text="提交中...">确 定</button>
-        <button id="closeTipsBtn" class="btn" data-dismiss="modal" aria-hidden="true">关 闭</button>
-    </div>
-</div>

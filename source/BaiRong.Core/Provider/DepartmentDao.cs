@@ -3,12 +3,85 @@ using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class DepartmentDao : DataProviderBase
 	{
+        public override string TableName => "bairong_Department";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.DepartmentId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.DepartmentName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.Code),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.ParentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.ParentsPath),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.ParentsCount),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.ChildrenCount),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.IsLastNode),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.Taxis),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.Summary),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(DepartmentInfo.CountOfAdmin),
+                DataType = DataType.Integer
+            }
+        };
+
         private const string SqlSelect = "SELECT DepartmentID, DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin FROM bairong_Department WHERE DepartmentID = @DepartmentID";
 
         private const string SqlSelectAll = "SELECT DepartmentID, DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin FROM bairong_Department ORDER BY TAXIS";
@@ -56,24 +129,24 @@ namespace BaiRong.Core.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmName, EDataType.NVarChar, 255, departmentInfo.DepartmentName),
-                GetParameter(ParmCode, EDataType.VarChar, 50, departmentInfo.Code),
-				GetParameter(ParmParentId, EDataType.Integer, departmentInfo.ParentId),
-				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, departmentInfo.ParentsPath),
-				GetParameter(ParmParentsCount, EDataType.Integer, departmentInfo.ParentsCount),
-				GetParameter(ParmChildrenCount, EDataType.Integer, 0),
-				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, true.ToString()),
-				GetParameter(ParmTaxis, EDataType.Integer, departmentInfo.Taxis),
-				GetParameter(ParmAddDate, EDataType.DateTime, departmentInfo.AddDate),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, departmentInfo.Summary),
-				GetParameter(ParmCountOfAdmin, EDataType.Integer, departmentInfo.CountOfAdmin)
+				GetParameter(ParmName, DataType.VarChar, 255, departmentInfo.DepartmentName),
+                GetParameter(ParmCode, DataType.VarChar, 50, departmentInfo.Code),
+				GetParameter(ParmParentId, DataType.Integer, departmentInfo.ParentId),
+				GetParameter(ParmParentsPath, DataType.VarChar, 255, departmentInfo.ParentsPath),
+				GetParameter(ParmParentsCount, DataType.Integer, departmentInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, DataType.Integer, 0),
+				GetParameter(ParmIsLastNode, DataType.VarChar, 18, true.ToString()),
+				GetParameter(ParmTaxis, DataType.Integer, departmentInfo.Taxis),
+				GetParameter(ParmAddDate, DataType.DateTime, departmentInfo.AddDate),
+				GetParameter(ParmSummary, DataType.VarChar, 255, departmentInfo.Summary),
+				GetParameter(ParmCountOfAdmin, DataType.Integer, departmentInfo.CountOfAdmin)
 			};
 
             string sqlString =
                 $"UPDATE bairong_Department SET {SqlUtils.GetAddOne("Taxis")} WHERE (Taxis >= {departmentInfo.Taxis})";
             ExecuteNonQuery(trans, sqlString);
 
-            departmentInfo.DepartmentId = ExecuteNonQueryAndReturnId(trans, sqlInsert, insertParms);
+            departmentInfo.DepartmentId = ExecuteNonQueryAndReturningId(trans, sqlInsert, nameof(DepartmentInfo.DepartmentId), insertParms);
 
             if (!string.IsNullOrEmpty(departmentInfo.ParentsPath))
             {
@@ -90,7 +163,7 @@ namespace BaiRong.Core.Provider
             //    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN (SELECT TOP 1 DepartmentID FROM bairong_Department WHERE ParentID = {departmentInfo.ParentId} ORDER BY Taxis DESC))";
 
             sqlString =
-                $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.GetInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {departmentInfo.ParentId} ORDER BY Taxis DESC", 1)}))";
+                $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.GetInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {departmentInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
 
             ExecuteNonQuery(trans, sqlString);
 
@@ -121,13 +194,15 @@ namespace BaiRong.Core.Provider
             //WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis < @Taxis)
             //ORDER BY Taxis DESC";
 
-            var sqlString = SqlUtils.GetTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath", "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis < @Taxis) ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath",
+                "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis < @Taxis)",
+                "ORDER BY Taxis DESC", 1);
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmParentId, EDataType.Integer, departmentInfo.ParentId),
-				GetParameter(ParmId, EDataType.Integer, departmentInfo.DepartmentId),
-				GetParameter(ParmTaxis, EDataType.Integer, departmentInfo.Taxis),
+				GetParameter(ParmParentId, DataType.Integer, departmentInfo.ParentId),
+				GetParameter(ParmId, DataType.Integer, departmentInfo.DepartmentId),
+				GetParameter(ParmTaxis, DataType.Integer, departmentInfo.Taxis),
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -168,13 +243,15 @@ namespace BaiRong.Core.Provider
             //WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis > @Taxis)
             //ORDER BY Taxis";
 
-            var sqlString = SqlUtils.GetTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath", "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis > @Taxis) ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_Department", "DepartmentID, ChildrenCount, ParentsPath",
+                "WHERE (ParentID = @ParentID) AND (DepartmentID <> @DepartmentID) AND (Taxis > @Taxis)",
+                "ORDER BY Taxis", 1);
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmParentId, EDataType.Integer, departmentInfo.ParentId),
-				GetParameter(ParmId, EDataType.Integer, departmentInfo.DepartmentId),
-				GetParameter(ParmTaxis, EDataType.Integer, departmentInfo.Taxis)
+				GetParameter(ParmParentId, DataType.Integer, departmentInfo.ParentId),
+				GetParameter(ParmId, DataType.Integer, departmentInfo.DepartmentId),
+				GetParameter(ParmTaxis, DataType.Integer, departmentInfo.Taxis)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -232,8 +309,8 @@ namespace BaiRong.Core.Provider
 
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter(ParmIsLastNode, EDataType.VarChar, 18, false.ToString()),
-				    GetParameter(ParmParentId, EDataType.Integer, parentId)
+				    GetParameter(ParmIsLastNode, DataType.VarChar, 18, false.ToString()),
+				    GetParameter(ParmParentId, DataType.Integer, parentId)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);
@@ -242,7 +319,7 @@ namespace BaiRong.Core.Provider
                 //    $"UPDATE bairong_Department SET IsLastNode = '{true.ToString()}' WHERE (DepartmentID IN (SELECT TOP 1 DepartmentID FROM bairong_Department WHERE ParentID = {parentId} ORDER BY Taxis DESC))";
 
                 sqlString =
-                    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.GetInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {parentId} ORDER BY Taxis DESC", 1)}))";
+                    $"UPDATE bairong_Department SET IsLastNode = '{true}' WHERE (DepartmentID IN ({SqlUtils.GetInTopSqlString("bairong_Department", "DepartmentID", $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)}))";
 
                 ExecuteNonQuery(sqlString);
             }
@@ -296,15 +373,15 @@ namespace BaiRong.Core.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmName, EDataType.NVarChar, 255, departmentInfo.DepartmentName),
-                GetParameter(ParmCode, EDataType.VarChar, 50, departmentInfo.Code),
-				GetParameter(ParmParentsPath, EDataType.NVarChar, 255, departmentInfo.ParentsPath),
-				GetParameter(ParmParentsCount, EDataType.Integer, departmentInfo.ParentsCount),
-				GetParameter(ParmChildrenCount, EDataType.Integer, departmentInfo.ChildrenCount),
-				GetParameter(ParmIsLastNode, EDataType.VarChar, 18, departmentInfo.IsLastNode.ToString()),
-				GetParameter(ParmSummary, EDataType.NVarChar, 255, departmentInfo.Summary),
-				GetParameter(ParmCountOfAdmin, EDataType.Integer, departmentInfo.CountOfAdmin),
-				GetParameter(ParmId, EDataType.Integer, departmentInfo.DepartmentId)
+				GetParameter(ParmName, DataType.VarChar, 255, departmentInfo.DepartmentName),
+                GetParameter(ParmCode, DataType.VarChar, 50, departmentInfo.Code),
+				GetParameter(ParmParentsPath, DataType.VarChar, 255, departmentInfo.ParentsPath),
+				GetParameter(ParmParentsCount, DataType.Integer, departmentInfo.ParentsCount),
+				GetParameter(ParmChildrenCount, DataType.Integer, departmentInfo.ChildrenCount),
+				GetParameter(ParmIsLastNode, DataType.VarChar, 18, departmentInfo.IsLastNode.ToString()),
+				GetParameter(ParmSummary, DataType.VarChar, 255, departmentInfo.Summary),
+				GetParameter(ParmCountOfAdmin, DataType.Integer, departmentInfo.CountOfAdmin),
+				GetParameter(ParmId, DataType.Integer, departmentInfo.DepartmentId)
 			};
 
             ExecuteNonQuery(SqlUpdate, updateParms);
@@ -391,7 +468,7 @@ namespace BaiRong.Core.Provider
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmId, EDataType.Integer, departmentId)
+				GetParameter(ParmId, DataType.Integer, departmentId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelect, parms)) 
@@ -429,7 +506,7 @@ namespace BaiRong.Core.Provider
 
 			var nodeParms = new IDataParameter[]
 			{
-				GetParameter(ParmParentId, EDataType.Integer, departmentId)
+				GetParameter(ParmParentId, DataType.Integer, departmentId)
 			};
 
 			using (var rdr = ExecuteReader(SqlSelectCount, nodeParms))

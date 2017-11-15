@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using BaiRong.Core.Model.Enumerations;
 
@@ -28,10 +29,20 @@ namespace BaiRong.Core
 		{
 			DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-			var sw = new StreamWriter(filePath, false, ECharsetUtils.GetEncoding(charset));
-			sw.Write(content);
-			sw.Flush();
-			sw.Close();
+            var file = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
+            using (var writer = new StreamWriter(file, ECharsetUtils.GetEncoding(charset)))
+            {
+                writer.Write(content);
+                writer.Flush();
+                writer.Close();
+
+                file.Close();
+            }
+
+   //         var sw = new StreamWriter(filePath, false, ECharsetUtils.GetEncoding(charset));
+			//sw.Write(content);
+			//sw.Flush();
+			//sw.Close();
 		}
 
         public static void AppendText(string filePath, ECharset charset, string content)
@@ -92,7 +103,7 @@ namespace BaiRong.Core
 			return exists;
 		}
 
-		public static bool DeleteFileIfExists(string filePath)
+        public static bool DeleteFileIfExists(string filePath)
 		{
             var retval = true;
             try
@@ -143,18 +154,18 @@ namespace BaiRong.Core
 		public static bool CopyFile(string sourceFilePath, string destFilePath, bool isOverride)
 		{
             var retval = true;
-            try
-            {
-              DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
-                
-                File.Copy(sourceFilePath, destFilePath, isOverride);
+		    try
+		    {
+		        DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
 
-            }
-            catch
-            {
-                retval = false;
-            }
-            return retval;
+		        File.Copy(sourceFilePath, destFilePath, isOverride);
+
+		    }
+		    catch
+		    {
+		        retval = false;
+		    }
+		    return retval;
 		}
 
         //public static bool MoveFile(string sourceFilePath, string destFilePath)
@@ -194,6 +205,17 @@ namespace BaiRong.Core
         {
             var encoding = EncodingType.GetType(filePath);
             return ECharsetUtils.GetEnumType(encoding.BodyName);
+        }
+
+	    public static string ComputeHash(string filePath)
+	    {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(filePath))
+                {
+                    return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "‌​").ToLower();
+                }
+            }
         }
 
         public class EncodingType

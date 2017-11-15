@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using BaiRong.Core;
 using SiteServer.CMS.Model;
-using System;
 using BaiRong.Core.Model.Enumerations;
 
 namespace SiteServer.CMS.Core
@@ -43,7 +42,7 @@ namespace SiteServer.CMS.Core
             var publishmentSystemUrl = string.Empty;
             if (publishmentSystemInfo != null)
             {
-                publishmentSystemUrl = publishmentSystemInfo.PublishmentSystemUrl;
+                publishmentSystemUrl = publishmentSystemInfo.Additional.WebUrl;
                 if (isSaveImage && !string.IsNullOrEmpty(content))
                 {
                     content = PathUtility.SaveImage(publishmentSystemInfo, content);
@@ -95,7 +94,7 @@ namespace SiteServer.CMS.Core
         /// <returns></returns>
         public static string TextEditorContentDecode(string content, PublishmentSystemInfo publishmentSystemInfo, bool isFromBack)
         {
-            var publishmentSystemUrl = publishmentSystemInfo != null ? publishmentSystemInfo.PublishmentSystemUrl : WebConfigUtils.ApplicationPath;
+            var publishmentSystemUrl = publishmentSystemInfo != null ? publishmentSystemInfo.Additional.WebUrl : PageUtils.ApplicationPath;
             return TextEditorContentDecode(content, publishmentSystemUrl, publishmentSystemInfo?.Additional.EditorUploadFilePre, isFromBack);
         }
 

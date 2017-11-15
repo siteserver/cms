@@ -236,9 +236,4 @@ function _getCookie(name)
 $(function() {
 	 $('[rel=tooltip]').tooltip && $('[rel=tooltip]').tooltip();
 	 $('.left-table tr[treeitemlevel=1]').css('font-size', '14px');
-	 $('html').click(function(){
-	 	if (window.top && window.top.hideMenu) {
-			window.top.hideMenu();
-		}
-	 });
 });

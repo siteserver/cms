@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
@@ -12,13 +11,13 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalContentExport : BasePageCms
     {
-        public RadioButtonList rblExportType;
-        public DropDownList ddlPeriods;
-        public DateTimeTextBox tbStartDate;
-        public DateTimeTextBox tbEndDate;
-        public PlaceHolder phDisplayAttributes;
-        public CheckBoxList cblDisplayAttributes;
-        public DropDownList ddlIsChecked;
+        public DropDownList DdlExportType;
+        public DropDownList DdlPeriods;
+        public DateTimeTextBox TbStartDate;
+        public DateTimeTextBox TbEndDate;
+        public PlaceHolder PhDisplayAttributes;
+        public CheckBoxList CblDisplayAttributes;
+        public DropDownList DdlIsChecked;
 
         private int _nodeId;
 
@@ -36,16 +35,18 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-            var modelInfo = ContentModelManager.GetContentModelInfo(PublishmentSystemInfo, nodeInfo.ContentModelId);
-            var tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(modelInfo.TableType);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, modelInfo.TableName, relatedIdentities);
+            var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
+            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
             styleInfoList = ContentUtility.GetAllTableStyleInfoList(PublishmentSystemInfo, tableStyle, styleInfoList);
 
             foreach (var styleInfo in styleInfoList)
             {
-                var listItem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                listItem.Selected = styleInfo.IsVisible;
-                cblDisplayAttributes.Items.Add(listItem);
+                var listItem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName)
+                {
+                    Selected = styleInfo.IsVisible
+                };
+                CblDisplayAttributes.Items.Add(listItem);
             }
         }
 
@@ -67,41 +68,41 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ConfigExportType))
                 {
-                    rblExportType.SelectedValue = PublishmentSystemInfo.Additional.ConfigExportType;
+                    DdlExportType.SelectedValue = PublishmentSystemInfo.Additional.ConfigExportType;
                 }
                 if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ConfigExportPeriods))
                 {
-                    ddlPeriods.SelectedValue = PublishmentSystemInfo.Additional.ConfigExportPeriods;
+                    DdlPeriods.SelectedValue = PublishmentSystemInfo.Additional.ConfigExportPeriods;
                 }
                 if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ConfigExportDisplayAttributes))
                 {
                     var displayAttributes = TranslateUtils.StringCollectionToStringList(PublishmentSystemInfo.Additional.ConfigExportDisplayAttributes);
-                    ControlUtils.SelectListItems(cblDisplayAttributes, displayAttributes);
+                    ControlUtils.SelectListItems(CblDisplayAttributes, displayAttributes);
                 }
                 if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ConfigExportIsChecked))
                 {
-                    ddlIsChecked.SelectedValue = PublishmentSystemInfo.Additional.ConfigExportIsChecked;
+                    DdlIsChecked.SelectedValue = PublishmentSystemInfo.Additional.ConfigExportIsChecked;
                 }
             }
             else
             {
-                PublishmentSystemInfo.Additional.ConfigExportType = rblExportType.SelectedValue;
-                PublishmentSystemInfo.Additional.ConfigExportPeriods = ddlPeriods.SelectedValue;
-                PublishmentSystemInfo.Additional.ConfigExportDisplayAttributes = ControlUtils.GetSelectedListControlValueCollection(cblDisplayAttributes);
-                PublishmentSystemInfo.Additional.ConfigExportIsChecked = ddlIsChecked.SelectedValue;
+                PublishmentSystemInfo.Additional.ConfigExportType = DdlExportType.SelectedValue;
+                PublishmentSystemInfo.Additional.ConfigExportPeriods = DdlPeriods.SelectedValue;
+                PublishmentSystemInfo.Additional.ConfigExportDisplayAttributes = ControlUtils.GetSelectedListControlValueCollection(CblDisplayAttributes);
+                PublishmentSystemInfo.Additional.ConfigExportIsChecked = DdlIsChecked.SelectedValue;
                 DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
             }
         }
 
-        public void rblExportType_SelectedIndexChanged(object sender, EventArgs e)
+        public void DdlExportType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            phDisplayAttributes.Visible = rblExportType.SelectedValue != "ContentZip";
+            PhDisplayAttributes.Visible = DdlExportType.SelectedValue != "ContentZip";
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var displayAttributes = ControlUtils.GetSelectedListControlValueCollection(cblDisplayAttributes);
-            if (phDisplayAttributes.Visible && string.IsNullOrEmpty(displayAttributes))
+            var displayAttributes = ControlUtils.GetSelectedListControlValueCollection(CblDisplayAttributes);
+            if (PhDisplayAttributes.Visible && string.IsNullOrEmpty(displayAttributes))
             {
                 FailMessage("必须至少选择一项！");
                 return;
@@ -112,23 +113,23 @@ namespace SiteServer.BackgroundPages.Cms
             var isPeriods = false;
             var startDate = string.Empty;
             var endDate = string.Empty;
-            if (ddlPeriods.SelectedValue != "0")
+            if (DdlPeriods.SelectedValue != "0")
             {
                 isPeriods = true;
-                if (ddlPeriods.SelectedValue == "-1")
+                if (DdlPeriods.SelectedValue == "-1")
                 {
-                    startDate = tbStartDate.Text;
-                    endDate = tbEndDate.Text;
+                    startDate = TbStartDate.Text;
+                    endDate = TbEndDate.Text;
                 }
                 else
                 {
-                    var days = int.Parse(ddlPeriods.SelectedValue);
+                    var days = int.Parse(DdlPeriods.SelectedValue);
                     startDate = DateUtils.GetDateString(DateTime.Now.AddDays(-days));
                     endDate = DateUtils.GetDateString(DateTime.Now);
                 }
             }
-            var checkedState = ETriStateUtils.GetEnumType(ddlPeriods.SelectedValue);
-            var redirectUrl = ModalExportMessage.GetRedirectUrlStringToExportContent(PublishmentSystemId, _nodeId, rblExportType.SelectedValue, Body.GetQueryString("ContentIDCollection"), displayAttributes, isPeriods, startDate, endDate, checkedState);
+            var checkedState = ETriStateUtils.GetEnumType(DdlPeriods.SelectedValue);
+            var redirectUrl = ModalExportMessage.GetRedirectUrlStringToExportContent(PublishmentSystemId, _nodeId, DdlExportType.SelectedValue, Body.GetQueryString("ContentIDCollection"), displayAttributes, isPeriods, startDate, endDate, checkedState);
             PageUtils.Redirect(redirectUrl);
 		}
 	}

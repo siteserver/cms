@@ -18,38 +18,32 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "None";
             }
-            else if (type == EUserPasswordRestriction.LetterAndDigit)
+            if (type == EUserPasswordRestriction.LetterAndDigit)
             {
                 return "LetterAndDigit";
             }
-            else if (type == EUserPasswordRestriction.LetterAndDigitAndSymbol)
+            if (type == EUserPasswordRestriction.LetterAndDigitAndSymbol)
             {
                 return "LetterAndDigitAndSymbol";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EUserPasswordRestriction type)
         {
             if (type == EUserPasswordRestriction.None)
             {
-                return "²»ÏŞÖÆ";
+                return "ä¸é™åˆ¶";
             }
-            else if (type == EUserPasswordRestriction.LetterAndDigit)
+            if (type == EUserPasswordRestriction.LetterAndDigit)
             {
-                return "×ÖÄ¸ºÍÊı×Ö×éºÏ";
+                return "å­—æ¯å’Œæ•°å­—ç»„åˆ";
             }
-            else if (type == EUserPasswordRestriction.LetterAndDigitAndSymbol)
+            if (type == EUserPasswordRestriction.LetterAndDigitAndSymbol)
             {
-                return "×ÖÄ¸¡¢Êı×ÖÒÔ¼°·ûºÅ×éºÏ";
+                return "å­—æ¯ã€æ•°å­—ä»¥åŠç¬¦å·ç»„åˆ";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EUserPasswordRestriction GetEnumType(string typeStr)
@@ -107,8 +101,9 @@ namespace BaiRong.Core.Model.Enumerations
             }
         }
 
-        public static bool IsValid(string password, EUserPasswordRestriction restriction)
+        public static bool IsValid(string password, string restrictionStr)
         {
+            var restriction = GetEnumType(restrictionStr);
             var isValid = false;
             if (!string.IsNullOrEmpty(password))
             {

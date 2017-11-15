@@ -5,16 +5,16 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EAdvLevel
     {
-        Level1,       //1¼¶
-        Level2,       //2¼¶
-        Level3,       //3¼¶
-        Level4,       //4¼¶
-        Level5,       //5¼¶
-        Level6,       //6¼¶
-        Level7,       //7¼¶
-        Level8,       //8¼¶
-        Level9,       //9¼¶
-        Level10       //10¼¶
+        Level1,       //1çº§
+        Level2,       //2çº§
+        Level3,       //3çº§
+        Level4,       //4çº§
+        Level5,       //5çº§
+        Level6,       //6çº§
+        Level7,       //7çº§
+        Level8,       //8çº§
+        Level9,       //9çº§
+        Level10       //10çº§
     }
 
     public class EAdvLevelUtils
@@ -25,94 +25,88 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "1";
             }
-            else if (type == EAdvLevel.Level2)
+            if (type == EAdvLevel.Level2)
             {
                 return "2";
             }
-            else if (type == EAdvLevel.Level3)
+            if (type == EAdvLevel.Level3)
             {
                 return "3";
             }
-            else if (type == EAdvLevel.Level4)
+            if (type == EAdvLevel.Level4)
             {
                 return "4";
             }
-            else if (type == EAdvLevel.Level5)
+            if (type == EAdvLevel.Level5)
             {
                 return "5";
             }
-            else if (type == EAdvLevel.Level6)
+            if (type == EAdvLevel.Level6)
             {
                 return "6";
             }
-            else if (type == EAdvLevel.Level7)
+            if (type == EAdvLevel.Level7)
             {
                 return "7";
             }
-            else if (type == EAdvLevel.Level8)
+            if (type == EAdvLevel.Level8)
             {
                 return "8";
             }
-            else if (type == EAdvLevel.Level9)
+            if (type == EAdvLevel.Level9)
             {
                 return "9";
             }
-            else if (type == EAdvLevel.Level10)
+            if (type == EAdvLevel.Level10)
             {
                 return "10";
             }
-           else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EAdvLevel type)
         {
             if (type == EAdvLevel.Level1)
             {
-                return "1¼¶";
-            } 
-            else if (type == EAdvLevel.Level2)
-            {
-                return "2¼¶";
+                return "1çº§";
             }
-            else if (type == EAdvLevel.Level3)
+            if (type == EAdvLevel.Level2)
             {
-                return "3¼¶";
+                return "2çº§";
             }
-            else if (type == EAdvLevel.Level4)
+            if (type == EAdvLevel.Level3)
             {
-                return "4¼¶";
+                return "3çº§";
             }
-            else if (type == EAdvLevel.Level5)
+            if (type == EAdvLevel.Level4)
             {
-                return "5¼¶";
+                return "4çº§";
             }
-            else if (type == EAdvLevel.Level6)
+            if (type == EAdvLevel.Level5)
             {
-                return "6¼¶";
+                return "5çº§";
             }
-            else if (type == EAdvLevel.Level7)
+            if (type == EAdvLevel.Level6)
             {
-                return "7¼¶";
+                return "6çº§";
             }
-            else if (type == EAdvLevel.Level8)
+            if (type == EAdvLevel.Level7)
             {
-                return "8¼¶";
+                return "7çº§";
             }
-            else if (type == EAdvLevel.Level9)
+            if (type == EAdvLevel.Level8)
             {
-                return "9¼¶";
+                return "8çº§";
             }
-            else if (type == EAdvLevel.Level10)
+            if (type == EAdvLevel.Level9)
             {
-                return "10¼¶";
+                return "9çº§";
             }
-            else
+            if (type == EAdvLevel.Level10)
             {
-                throw new Exception();
+                return "10çº§";
             }
+            throw new Exception();
         }
 
         public static EAdvLevel GetEnumType(string typeStr)

@@ -13,14 +13,13 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlIsTranslate;
         public DropDownList DdlIsSaveImageInTextEditor;
         public DropDownList DdlIsAutoPageInTextEditor;
+        public PlaceHolder PhAutoPage;
         public TextBox TbAutoPageWordNum;
-        public DropDownList DdlIsAutoSaveContent;
-        public TextBox TbAutoSaveContentInterval;
-        public RadioButtonList RblIsContentTitleBreakLine;
-        public RadioButtonList RblIsCheckContentUseLevel;
+        public DropDownList DdlIsContentTitleBreakLine;
+        public DropDownList DdlIsCheckContentUseLevel;
         public PlaceHolder PhCheckContentLevel; 
         public DropDownList DdlCheckContentLevel;
-        public RadioButtonList RblIsAutoCheckKeywords;
+        public DropDownList DdlIsAutoCheckKeywords;
         public TextBox TbEditorUploadFilePre;
 
         public void Page_Load(object sender, EventArgs e)
@@ -31,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "内容管理设置", AppManager.Cms.Permission.WebSite.Configration);
+            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "内容管理设置", AppManager.Permissions.WebSite.Configration);
 
             EBooleanUtils.AddListItems(DdlIsGroupContent, "使用内容组", "不使用内容组");
             ControlUtils.SelectListItemsIgnoreCase(DdlIsGroupContent, PublishmentSystemInfo.Additional.IsGroupContent.ToString());
@@ -48,27 +47,23 @@ namespace SiteServer.BackgroundPages.Cms
             EBooleanUtils.AddListItems(DdlIsAutoPageInTextEditor, "自动分页", "手动分页");
             ControlUtils.SelectListItemsIgnoreCase(DdlIsAutoPageInTextEditor, PublishmentSystemInfo.Additional.IsAutoPageInTextEditor.ToString());
 
+            PhAutoPage.Visible = PublishmentSystemInfo.Additional.IsAutoPageInTextEditor;
             TbAutoPageWordNum.Text = PublishmentSystemInfo.Additional.AutoPageWordNum.ToString();
 
-            EBooleanUtils.AddListItems(DdlIsAutoSaveContent, "开启自动保存功能", "关闭自动保存功能");
-            ControlUtils.SelectListItemsIgnoreCase(DdlIsAutoSaveContent, PublishmentSystemInfo.Additional.IsAutoSaveContent.ToString());
-
-            TbAutoSaveContentInterval.Text = PublishmentSystemInfo.Additional.AutoSaveContentInterval.ToString();
-
-            EBooleanUtils.AddListItems(RblIsContentTitleBreakLine, "启用标题换行", "不启用");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsContentTitleBreakLine, PublishmentSystemInfo.Additional.IsContentTitleBreakLine.ToString());
+            EBooleanUtils.AddListItems(DdlIsContentTitleBreakLine, "启用标题换行", "不启用");
+            ControlUtils.SelectListItemsIgnoreCase(DdlIsContentTitleBreakLine, PublishmentSystemInfo.Additional.IsContentTitleBreakLine.ToString());
 
             //保存时，敏感词自动检测
-            EBooleanUtils.AddListItems(RblIsAutoCheckKeywords, "启用敏感词自动检测", "不启用");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsAutoCheckKeywords, PublishmentSystemInfo.Additional.IsAutoCheckKeywords.ToString());
+            EBooleanUtils.AddListItems(DdlIsAutoCheckKeywords, "启用敏感词自动检测", "不启用");
+            ControlUtils.SelectListItemsIgnoreCase(DdlIsAutoCheckKeywords, PublishmentSystemInfo.Additional.IsAutoCheckKeywords.ToString());
 
             //编辑器上传文件URL前缀
             TbEditorUploadFilePre.Text = PublishmentSystemInfo.Additional.EditorUploadFilePre;
 
-            RblIsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制", false.ToString()));
-            RblIsCheckContentUseLevel.Items.Add(new ListItem("多级审核机制", true.ToString()));
+            DdlIsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制", false.ToString()));
+            DdlIsCheckContentUseLevel.Items.Add(new ListItem("多级审核机制", true.ToString()));
 
-            ControlUtils.SelectListItems(RblIsCheckContentUseLevel, PublishmentSystemInfo.IsCheckContentUseLevel.ToString());
+            ControlUtils.SelectListItems(DdlIsCheckContentUseLevel, PublishmentSystemInfo.IsCheckContentUseLevel.ToString());
             if (PublishmentSystemInfo.IsCheckContentUseLevel)
             {
                 ControlUtils.SelectListItems(DdlCheckContentLevel, PublishmentSystemInfo.CheckContentLevel.ToString());
@@ -80,9 +75,14 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-        public void RblIsCheckContentUseLevel_OnSelectedIndexChanged(object sender, EventArgs e)
+        public void DdlIsAutoPageInTextEditor_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            PhCheckContentLevel.Visible = EBooleanUtils.Equals(RblIsCheckContentUseLevel.SelectedValue, EBoolean.True);
+            PhAutoPage.Visible = EBooleanUtils.Equals(DdlIsAutoPageInTextEditor.SelectedValue, EBoolean.True);
+        }
+
+        public void DdlIsCheckContentUseLevel_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhCheckContentLevel.Visible = EBooleanUtils.Equals(DdlIsCheckContentUseLevel.SelectedValue, EBoolean.True);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -112,19 +112,15 @@ namespace SiteServer.BackgroundPages.Cms
 
                 PublishmentSystemInfo.Additional.AutoPageWordNum = TranslateUtils.ToInt(TbAutoPageWordNum.Text, PublishmentSystemInfo.Additional.AutoPageWordNum);
 
-                PublishmentSystemInfo.Additional.IsAutoSaveContent = TranslateUtils.ToBool(DdlIsAutoSaveContent.SelectedValue, false);
-
-                PublishmentSystemInfo.Additional.AutoSaveContentInterval = TranslateUtils.ToInt(TbAutoSaveContentInterval.Text, PublishmentSystemInfo.Additional.AutoSaveContentInterval);
-
-                PublishmentSystemInfo.Additional.IsContentTitleBreakLine = TranslateUtils.ToBool(RblIsContentTitleBreakLine.SelectedValue, true);
+                PublishmentSystemInfo.Additional.IsContentTitleBreakLine = TranslateUtils.ToBool(DdlIsContentTitleBreakLine.SelectedValue, true);
 
                 //敏感词自动检测
-                PublishmentSystemInfo.Additional.IsAutoCheckKeywords = TranslateUtils.ToBool(RblIsAutoCheckKeywords.SelectedValue, true);
+                PublishmentSystemInfo.Additional.IsAutoCheckKeywords = TranslateUtils.ToBool(DdlIsAutoCheckKeywords.SelectedValue, true);
 
                 //编辑器上传文件URL前缀
                 PublishmentSystemInfo.Additional.EditorUploadFilePre = TbEditorUploadFilePre.Text;
 
-                PublishmentSystemInfo.IsCheckContentUseLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
+                PublishmentSystemInfo.IsCheckContentUseLevel = TranslateUtils.ToBool(DdlIsCheckContentUseLevel.SelectedValue);
                 if (PublishmentSystemInfo.IsCheckContentUseLevel)
                 {
                     PublishmentSystemInfo.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);

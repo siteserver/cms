@@ -6,9 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -86,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
             //{
             //    ContentInfo contentInfo = DataProvider.ContentDAO.GetContentInfo(this.tableStyle, this.tableName, this.contentID);
 
-            //    if (contentInfo == null || !string.Equals(Body.AdministratorName, contentInfo.AddUserName))
+            //    if (contentInfo == null || !string.Equals(Body.AdminName, contentInfo.AddUserName))
             //    {
             //        if (!base.HasChannelPermissions(Math.Abs(this.nodeID), AppManager.CMS.Permission.Channel.ContentDelete))
             //        {
@@ -101,14 +99,14 @@ namespace SiteServer.BackgroundPages.Cms
                 BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "删除内容", string.Empty);
 
                 var builder = new StringBuilder();
-                foreach (var nodeID in _idsDictionary.Keys)
+                foreach (var nodeId in _idsDictionary.Keys)
                 {
-                    var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeID);
-                    var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeID);
-                    var contentIDList = _idsDictionary[nodeID];
-                    foreach (int contentID in contentIDList)
+                    var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeId);
+                    var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                    var contentIdList = _idsDictionary[nodeId];
+                    foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentID);
+                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
                         if (contentInfo != null)
                         {
                             builder.Append(
@@ -137,16 +135,16 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    foreach (var nodeID in _idsDictionary.Keys)
+                    foreach (var nodeId in _idsDictionary.Keys)
                     {
-                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeID);
-                        var contentIDList = _idsDictionary[nodeID];
+                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                        var contentIdList = _idsDictionary[nodeId];
 
                         if (!_isDeleteFromTrash)
                         {
                             if (bool.Parse(RetainFiles.SelectedValue) == false)
                             {
-                                DirectoryUtility.DeleteContents(PublishmentSystemInfo, nodeID, contentIDList);
+                                DirectoryUtility.DeleteContents(PublishmentSystemInfo, nodeId, contentIdList);
                                 SuccessMessage("成功删除内容以及生成页面！");
                             }
                             else
@@ -154,26 +152,26 @@ namespace SiteServer.BackgroundPages.Cms
                                 SuccessMessage("成功删除内容，生成页面未被删除！");
                             }
 
-                            if (contentIDList.Count == 1)
+                            if (contentIdList.Count == 1)
                             {
-                                var contentID = contentIDList[0];
-                                var contentTitle = BaiRongDataProvider.ContentDao.GetValue(tableName, contentID, ContentAttribute.Title);
-                                Body.AddSiteLog(PublishmentSystemId, nodeID, contentID, "删除内容",
-                                    $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeID)},内容标题:{contentTitle}");
+                                var contentId = contentIdList[0];
+                                var contentTitle = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                                Body.AddSiteLog(PublishmentSystemId, nodeId, contentId, "删除内容",
+                                    $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId)},内容标题:{contentTitle}");
                             }
                             else
                             {
                                 Body.AddSiteLog(PublishmentSystemId, "批量删除内容",
-                                    $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeID)},内容条数:{contentIDList.Count}");
+                                    $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId)},内容条数:{contentIdList.Count}");
                             }
 
-                            DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIDList);
+                            DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList);
 
                             //引用内容，需要删除
-                            var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent, EAuxiliaryTableType.JobContent, EAuxiliaryTableType.VoteContent);
-                            foreach (AuxiliaryTableInfo table in tableList)
+                            var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent);
+                            foreach (var table in tableList)
                             {
-                                var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, contentIDList);
+                                var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, contentIdList);
                                 if (targetContentIdList.Count > 0)
                                 {
                                     var targetContentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyleUtils.GetEnumType(table.AuxiliaryTableType.ToString()), table.TableEnName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
@@ -181,16 +179,15 @@ namespace SiteServer.BackgroundPages.Cms
                                 }
                             }
 
-                            CreateManager.CreateContentTrigger(PublishmentSystemId, nodeID);
+                            CreateManager.CreateContentTrigger(PublishmentSystemId, nodeId);
                         }
                         else
                         {
                             SuccessMessage("成功从回收站清空内容！");
-                            DataProvider.ContentDao.DeleteContents(PublishmentSystemId, tableName, contentIDList, nodeID);
+                            DataProvider.ContentDao.DeleteContents(PublishmentSystemId, tableName, contentIdList, nodeId);
 
-                            Body.AddSiteLog(PublishmentSystemId, "从回收站清空内容", $"内容条数:{contentIDList.Count}");
+                            Body.AddSiteLog(PublishmentSystemId, "从回收站清空内容", $"内容条数:{contentIdList.Count}");
                         }
-
                     }
 
 
@@ -198,9 +195,8 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 catch (Exception ex)
                 {
+                    LogUtils.AddSystemErrorLog(ex);
                     FailMessage(ex, "删除内容失败！");
-
-                    LogUtils.AddErrorLog(ex);
                 }
             }
         }

@@ -1,8 +1,9 @@
 ﻿using System;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Model
 {
-    public class LogInfo
+    public class LogInfo: ILogInfo
     {
         public const string AdminLogin = "后台管理员登录";
 

@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageTableStyleChannel : BasePageCms
     {
-        public DropDownList DdlNodeIdDropDownList;
+        public DropDownList DdlNodeId;
 		public DataGrid DgContents;
         public Button BtnAddStyle;
         public Button BtnAddStyles;
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if(!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationContentModel, "栏目字段管理", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "栏目字段管理", AppManager.Permissions.WebSite.Configration);
                 
                 //删除样式
                 if (Body.IsQueryExists("DeleteStyle"))
@@ -59,8 +59,8 @@ namespace SiteServer.BackgroundPages.Cms
                     SetTaxis();
                 }
 
-                NodeManager.AddListItems(DdlNodeIdDropDownList.Items, PublishmentSystemInfo, false, true, true, Body.AdministratorName);
-                ControlUtils.SelectListItems(DdlNodeIdDropDownList, nodeId.ToString());
+                NodeManager.AddListItems(DdlNodeId.Items, PublishmentSystemInfo, false, true, Body.AdminName);
+                ControlUtils.SelectListItems(DdlNodeId, nodeId.ToString());
 
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.Channel, _tableName, _relatedIdentities);
 
@@ -116,7 +116,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Redirect(object sender, EventArgs e)
         {
-            PageUtils.Redirect(GetRedirectUrl(PublishmentSystemId, TranslateUtils.ToInt(DdlNodeIdDropDownList.SelectedValue)));
+            PageUtils.Redirect(GetRedirectUrl(PublishmentSystemId, TranslateUtils.ToInt(DdlNodeId.SelectedValue)));
         }
 
         private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
@@ -139,11 +139,11 @@ namespace SiteServer.BackgroundPages.Cms
             ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = EInputTypeUtils.GetText(EInputTypeUtils.GetEnumType(styleInfo.InputType));
+            ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
             ltlFieldType.Text = "虚拟字段";
 
             ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-            ltlValidate.Text = EInputValidateTypeUtils.GetValidateInfo(styleInfo);
+            ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
 
             string showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, ETableStyle.Channel, _redirectUrl);
             var editText = "添加";

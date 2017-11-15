@@ -3,13 +3,50 @@ using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class TaskLogDao : DataProviderBase
     {
+        public override string TableName => "siteserver_TaskLog";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TaskLogInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TaskLogInfo.TaskId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TaskLogInfo.IsSuccess),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TaskLogInfo.ErrorMessage),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TaskLogInfo.AddDate),
+                DataType = DataType.DateTime
+            }
+        };
+
         private const string ParmTaskId = "@TaskID";
         private const string ParmIsSuccess = "@IsSuccess";
         private const string ParmErrorMessage = "@ErrorMessage";
@@ -25,10 +62,10 @@ namespace SiteServer.CMS.Provider
                 
                 var parms = new IDataParameter[]
 			    {
-                    GetParameter(ParmTaskId, EDataType.Integer, log.TaskID),
-                    GetParameter(ParmIsSuccess, EDataType.VarChar, 18, log.IsSuccess.ToString()),
-                    GetParameter(ParmErrorMessage, EDataType.NVarChar, 255, log.ErrorMessage),
-				    GetParameter(ParmAddDate, EDataType.DateTime, log.AddDate)
+                    GetParameter(ParmTaskId, DataType.Integer, log.TaskId),
+                    GetParameter(ParmIsSuccess, DataType.VarChar, 18, log.IsSuccess.ToString()),
+                    GetParameter(ParmErrorMessage, DataType.VarChar, 255, log.ErrorMessage),
+				    GetParameter(ParmAddDate, DataType.DateTime, log.AddDate)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);

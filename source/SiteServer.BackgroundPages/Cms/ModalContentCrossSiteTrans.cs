@@ -10,19 +10,19 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalContentCrossSiteTrans : BasePageCms
     {
-	    protected DropDownList PublishmentSystemIDDropDownList;
-        protected ListBox NodeIDListBox;
+	    protected DropDownList DdlPublishmentSystemId;
+        protected ListBox LbNodeId;
 
         private int _nodeId;
 	    private List<int> _contentIdArrayList;
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("转发所选内容", PageUtils.GetCmsUrl(nameof(ModalContentCrossSiteTrans), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("转发所选内容", PageUtils.GetCmsUrl(nameof(ModalContentCrossSiteTrans), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
-            }), "ContentIDCollection", "请选择需要转发的内容！", 400, 390);
+            }), "ContentIDCollection", "请选择需要转发的内容！", 400, 410);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -36,56 +36,46 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                CrossSiteTransUtility.LoadPublishmentSystemIDDropDownList(PublishmentSystemIDDropDownList, PublishmentSystemInfo, _nodeId);
+                CrossSiteTransUtility.LoadPublishmentSystemIdDropDownList(DdlPublishmentSystemId, PublishmentSystemInfo, _nodeId);
 
-                if (PublishmentSystemIDDropDownList.Items.Count > 0)
+                if (DdlPublishmentSystemId.Items.Count > 0)
                 {
-                    PublishmentSystemID_SelectedIndexChanged(null, EventArgs.Empty);
+                    DdlPublishmentSystemId_SelectedIndexChanged(null, EventArgs.Empty);
                 }
-
-				
 			}
 		}
 
-        public void PublishmentSystemID_SelectedIndexChanged(object sender, EventArgs e)
+        public void DdlPublishmentSystemId_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var psID = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
-            CrossSiteTransUtility.LoadNodeIDListBox(NodeIDListBox, PublishmentSystemInfo, psID, NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId), Body.AdministratorName);
+            var psId = int.Parse(DdlPublishmentSystemId.SelectedValue);
+            CrossSiteTransUtility.LoadNodeIdListBox(LbNodeId, PublishmentSystemInfo, psId, NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId), Body.AdminName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var targetPublishmentSystemID = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
-            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemID);
+            var targetPublishmentSystemId = int.Parse(DdlPublishmentSystemId.SelectedValue);
+            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
             try
             {
-                foreach (ListItem listItem in NodeIDListBox.Items)
+                foreach (ListItem listItem in LbNodeId.Items)
                 {
                     if (listItem.Selected)
                     {
-                        var targetNodeID = TranslateUtils.ToInt(listItem.Value);
-                        if (targetNodeID != 0)
+                        var targetNodeId = TranslateUtils.ToInt(listItem.Value);
+                        if (targetNodeId != 0)
                         {
-                            var targetTableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeID);
-                            var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeID);
+                            var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeId);
                             var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeId);
                             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeId);
-                            foreach (int contentID in _contentIdArrayList)
+                            foreach (var contentId in _contentIdArrayList)
                             {
-                                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentID);
+                                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
                                 FileUtility.MoveFileByContentInfo(PublishmentSystemInfo, targetPublishmentSystemInfo, contentInfo as BackgroundContentInfo);
-                                contentInfo.PublishmentSystemId = targetPublishmentSystemID;
+                                contentInfo.PublishmentSystemId = targetPublishmentSystemId;
                                 contentInfo.SourceId = contentInfo.NodeId;
-                                contentInfo.NodeId = targetNodeID;
+                                contentInfo.NodeId = targetNodeId;
                                 
-                                if (targetPublishmentSystemInfo.Additional.IsCrossSiteTransChecked)
-                                {
-                                    contentInfo.IsChecked = true;
-                                }
-                                else
-                                {
-                                    contentInfo.IsChecked = false;
-                                }
+                                contentInfo.IsChecked = targetPublishmentSystemInfo.Additional.IsCrossSiteTransChecked;
                                 contentInfo.CheckedLevel = 0;
 
                                 DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);

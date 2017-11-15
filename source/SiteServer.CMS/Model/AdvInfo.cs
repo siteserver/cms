@@ -5,176 +5,84 @@ namespace SiteServer.CMS.Model
 {
     public class AdvInfo 
 	{
-        private int advID;
-        private int publishmentSystemID;
-		private int adAreaID;
-        private string advName;
-	    private string summary;
-        private bool isEnabled;
-        private bool isDateLimited;
-		private DateTime startDate;
-		private DateTime endDate;
-        private EAdvLevelType levelType; 
-        private int level;
-        private bool isWeight;
-        private int weight;
-        private EAdvRotateType rotateType;
-        private int rotateInterval;
-        private string nodeIDCollectionToChannel;
-        private string nodeIDCollectionToContent;
-        private string fileTemplateIDCollection;
-
-		public AdvInfo()
+	    public AdvInfo()
 		{
-            advID = 0;
-            publishmentSystemID = 0;
-            adAreaID=0;
-            advName = string.Empty;
-            summary = string.Empty ;
-			isEnabled = true;
-			isDateLimited = false;
-			startDate = DateTime.Now;
-			endDate = DateTime.Now.AddMonths(1);
-            levelType = EAdvLevelType.Hold;
-            level=0;
-            isWeight=false;
-            weight=0;
-            rotateType = EAdvRotateType.Equality;
-            rotateInterval = 0;
-            nodeIDCollectionToChannel = string.Empty;
-            nodeIDCollectionToContent = string.Empty;
-            fileTemplateIDCollection = string.Empty;
+            AdvId = 0;
+            PublishmentSystemId = 0;
+            AdAreaId=0;
+            AdvName = string.Empty;
+            Summary = string.Empty ;
+			IsEnabled = true;
+			IsDateLimited = false;
+			StartDate = DateTime.Now;
+			EndDate = DateTime.Now.AddMonths(1);
+            LevelType = EAdvLevelType.Hold;
+            Level=0;
+            IsWeight=false;
+            Weight=0;
+            RotateType = EAdvRotateType.Equality;
+            RotateInterval = 0;
+            NodeIdCollectionToChannel = string.Empty;
+            NodeIdCollectionToContent = string.Empty;
+            FileTemplateIdCollection = string.Empty;
 		}
 
-        public AdvInfo(int advID, int publishmentSystemID, int adAreaID, string advName, string summary, bool isEnabled, bool isDateLimited, DateTime startDate, DateTime endDate, EAdvLevelType levelType, int level, bool isWeight, int weight, EAdvRotateType rotateType, int rotateInterval, string nodeIDCollectionToChannel, string nodeIDCollectionToContent, string fileTemplateIDCollection) 
+        public AdvInfo(int advId, int publishmentSystemId, int adAreaId, string advName, string summary, bool isEnabled, bool isDateLimited, DateTime startDate, DateTime endDate, EAdvLevelType levelType, int level, bool isWeight, int weight, EAdvRotateType rotateType, int rotateInterval, string nodeIdCollectionToChannel, string nodeIdCollectionToContent, string fileTemplateIdCollection) 
 		{
-            this.advID = advID;
-            this.publishmentSystemID = publishmentSystemID;
-            this.adAreaID =adAreaID;
-            this.advName = advName;
-            this.summary = summary;
-            this.isEnabled = isEnabled;
-            this.isDateLimited = isDateLimited;
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.levelType = levelType;
-            this.level= level;
-            this.isWeight = isWeight;
-            this.weight = weight;
-            this.rotateType = rotateType;
-            this.rotateInterval = rotateInterval;
-            this.nodeIDCollectionToChannel =nodeIDCollectionToChannel;
-            this.nodeIDCollectionToContent = nodeIDCollectionToContent;
-            this.fileTemplateIDCollection = fileTemplateIDCollection;
+            AdvId = advId;
+            PublishmentSystemId = publishmentSystemId;
+            AdAreaId =adAreaId;
+            AdvName = advName;
+            Summary = summary;
+            IsEnabled = isEnabled;
+            IsDateLimited = isDateLimited;
+            StartDate = startDate;
+            EndDate = endDate;
+            LevelType = levelType;
+            Level= level;
+            IsWeight = isWeight;
+            Weight = weight;
+            RotateType = rotateType;
+            RotateInterval = rotateInterval;
+            NodeIdCollectionToChannel =nodeIdCollectionToChannel;
+            NodeIdCollectionToContent = nodeIdCollectionToContent;
+            FileTemplateIdCollection = fileTemplateIdCollection;
 		}
          
-        public int AdvID
-		{
-            get { return advID; }
-            set { advID = value; }
-		}
+        public int AdvId { get; set; }
 
-        public int PublishmentSystemID
-        {
-            get { return publishmentSystemID; }
-            set { publishmentSystemID = value; }
-        }
+	    public int PublishmentSystemId { get; set; }
 
-        public int AdAreaID
-        {
-            get { return adAreaID; }
-            set { adAreaID = value; }
-        }
+	    public int AdAreaId { get; set; }
 
-        public string AdvName
-        {
-            get { return advName; }
-            set { advName = value; }
-        }
-         
-        public string Summary
-        {
-            get { return summary; }
-            set { summary = value; }
-        }
-          
-        public bool IsEnabled
-        {
-            get { return isEnabled; }
-            set { isEnabled = value; }
-        }
+	    public string AdvName { get; set; }
 
-        public bool IsDateLimited
-		{
-			get{ return isDateLimited; }
-			set{ isDateLimited = value; }
-		}
+	    public string Summary { get; set; }
 
-		public DateTime StartDate
-		{
-			get{ return startDate; }
-			set{ startDate = value; }
-		}
+	    public bool IsEnabled { get; set; }
 
-		public DateTime EndDate
-		{
-			get{ return endDate; }
-			set{ endDate = value; }
-		}
+	    public bool IsDateLimited { get; set; }
 
-        public EAdvLevelType LevelType
-        {
-            get { return levelType; }
-            set { levelType = value; }
-        }
+	    public DateTime StartDate { get; set; }
 
-        public int Level 
-        {
-            get { return level; }
-            set { level = value; }
-        }
+	    public DateTime EndDate { get; set; }
 
-        public bool IsWeight
-        {
-            get { return isWeight; }
-            set { isWeight = value; }
-        }
+	    public EAdvLevelType LevelType { get; set; }
 
-        public int Weight
-        {
-            get { return weight; }
-            set { weight = value; }
-        }
+	    public int Level { get; set; }
 
-        public EAdvRotateType RotateType
-        {
-            get { return rotateType; }
-            set { rotateType = value; }
-        }
+	    public bool IsWeight { get; set; }
 
-        public int RotateInterval
-        {
-            get { return rotateInterval; }
-            set { rotateInterval = value; }
-            
-        }
+	    public int Weight { get; set; }
 
-        public string NodeIDCollectionToChannel
-        {
-            get { return nodeIDCollectionToChannel; }
-            set { nodeIDCollectionToChannel = value; }
-        }
+	    public EAdvRotateType RotateType { get; set; }
 
-        public string NodeIDCollectionToContent
-        {
-            get { return nodeIDCollectionToContent; }
-            set { nodeIDCollectionToContent = value; }
-        }
+	    public int RotateInterval { get; set; }
 
-        public string FileTemplateIDCollection
-        {
-            get { return fileTemplateIDCollection ; }
-            set { fileTemplateIDCollection = value; }
-        }
+	    public string NodeIdCollectionToChannel { get; set; }
+
+	    public string NodeIdCollectionToContent { get; set; }
+
+	    public string FileTemplateIdCollection { get; set; }
 	}
 }

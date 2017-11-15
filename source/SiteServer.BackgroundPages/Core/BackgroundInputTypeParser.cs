@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
@@ -14,9 +13,10 @@ using SiteServer.BackgroundPages.Ajax;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Controllers.Sys.Editors;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Wcm.GovInteract;
-using SiteServer.CMS.Wcm.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -40,61 +40,57 @@ namespace SiteServer.BackgroundPages.Core
                 styleInfo.Additional.IsValidate = false;
             }
 
-            if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Text))
+            if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Text))
             {
                 retval = ParseText(publishmentSystemInfo, nodeId, attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, styleInfo, tableStyle);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.TextArea))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextArea))
             {
                 retval = ParseTextArea(attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, styleInfo);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.TextEditor))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
             {
                 retval = ParseTextEditor(publishmentSystemInfo, attributeName, formCollection, isAddAndNotPostBack, pageScripts, styleInfo);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.SelectOne))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.SelectOne))
             {
                 retval = ParseSelectOne(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.SelectMultiple))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.SelectMultiple))
             {
                 retval = ParseSelectMultiple(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.CheckBox))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.CheckBox))
             {
                 retval = ParseCheckBox(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Radio))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Radio))
             {
                 retval = ParseRadio(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Date))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Date))
             {
                 retval = ParseDate(attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, pageScripts, styleInfo);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.DateTime))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.DateTime))
             {
                 retval = ParseDateTime(attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, pageScripts, styleInfo);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Image))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Image))
             {
                 retval = ParseImage(publishmentSystemInfo, attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, styleInfo, tableStyle);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Video))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Video))
             {
                 retval = ParseVideo(publishmentSystemInfo, attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, styleInfo, tableStyle);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.File))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.File))
             {
                 retval = ParseFile(publishmentSystemInfo, attributeName, formCollection, isAddAndNotPostBack, additionalAttributes, styleInfo, tableStyle);
             }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.RelatedField))
+            else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.RelatedField))
             {
                 retval = ParseRelatedField(publishmentSystemInfo, attributeName, formCollection, styleInfo);
-            }
-            else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.SpecifiedValue))
-            {
-                retval = ParseSpecifiedValue(publishmentSystemInfo, nodeId, tableStyle, attributeName, formCollection, isAddAndNotPostBack, styleInfo);
             }
 
             styleInfo.Additional.IsValidate = oriIsValidate;
@@ -209,7 +205,7 @@ $('#{0}_colorContainer').hide();
 ", styleInfo.AttributeName, isFormatted ? string.Empty : "none", formatStrong.ToString().ToLower(), formatEm.ToString().ToLower(), formatU.ToString().ToLower(), formatStrong ? @" btn-success" : string.Empty, formatEm ? " btn-success" : string.Empty, formatU ? " btn-success" : string.Empty, !string.IsNullOrEmpty(formatColor) ? " btn-success" : string.Empty, formatColor));
             }
 
-            if (nodeId > 0 && (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.GovInteractContent || tableStyle == ETableStyle.GovPublicContent || tableStyle == ETableStyle.VoteContent) && styleInfo.AttributeName == ContentAttribute.Title)
+            if (nodeId > 0 && tableStyle == ETableStyle.BackgroundContent && styleInfo.AttributeName == ContentAttribute.Title)
             {
                 builder.Append(@"
 <script type=""text/javascript"">
@@ -308,8 +304,8 @@ $('#Title').keyup(function (e) {
 
             var builder = new StringBuilder();
 
-            var controllerUrl = CMS.Controllers.Files.UEditor.GetUrl(PageUtils.GetApiUrl(), publishmentSystemInfo.PublishmentSystemId);
-            var editorUrl = SiteFilesAssets.GetUrl(PageUtils.GetApiUrl(), "ueditor");
+            var controllerUrl = UEditor.GetUrl(PageUtils.OuterApiUrl, publishmentSystemInfo.PublishmentSystemId);
+            var editorUrl = SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "ueditor");
 
             if (pageScripts["uEditor"] == null)
             {
@@ -411,7 +407,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             var checkBoxList = new CheckBoxList
             {
@@ -465,7 +461,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
             var radioButtonList = new RadioButtonList
             {
                 CssClass = "radiobuttonlist",
@@ -518,7 +514,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             var selectedValue = !string.IsNullOrEmpty(formCollection?[attributeName]) ? formCollection[attributeName] : null;
             //验证属性
@@ -556,7 +552,7 @@ $(function(){{
         {
             var builder = new StringBuilder();
 
-            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+            var styleItems = styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
 
             var selectedValues = !string.IsNullOrEmpty(formCollection?[attributeName]) ? formCollection[attributeName] : string.Empty;
             var selectedValueArrayList = TranslateUtils.StringCollectionToStringList(selectedValues);
@@ -901,7 +897,7 @@ function add_{0}(val,foucs){{
 
                 builder.Append(string.Format(@"
 <span id=""c_{0}_1"">{1}<select name=""{0}"" id=""{0}_1"" class=""select"" onchange=""getRelatedField_{2}(2);"">
-	<option value="""">请选择</option>", attributeName, prefixes[0], fieldInfo.RelatedFieldID));
+	<option value="""">请选择</option>", attributeName, prefixes[0], fieldInfo.RelatedFieldId));
 
                 var values = formCollection[attributeName];
                 var value = string.Empty;
@@ -916,7 +912,7 @@ function add_{0}(val,foucs){{
                     var selected = !string.IsNullOrEmpty(itemInfo.ItemValue) && value == itemInfo.ItemValue ? @" selected=""selected""" : string.Empty;
                     if (!string.IsNullOrEmpty(selected)) isLoad = true;
                     builder.Append($@"
-	<option value=""{itemInfo.ItemValue}"" itemID=""{itemInfo.ID}""{selected}>{itemInfo.ItemName}</option>");
+	<option value=""{itemInfo.ItemValue}"" itemID=""{itemInfo.Id}""{selected}>{itemInfo.ItemName}</option>");
                 }
 
                 builder.Append($@"
@@ -930,7 +926,7 @@ function add_{0}(val,foucs){{
                         builder.Append(style == ERelatedFieldStyle.Virtical ? @"<br />" : "&nbsp;");
                         builder.Append(string.Format(@"
 {0}<select name=""{1}"" id=""{1}_{2}"" class=""select"" onchange=""getRelatedField_{3}({2} + 1);""></select>{4}</span>
-", prefixes[i - 1], attributeName, i, fieldInfo.RelatedFieldID, suffixes[i - 1]));
+", prefixes[i - 1], attributeName, i, fieldInfo.RelatedFieldId, suffixes[i - 1]));
                     }
                 }
 
@@ -973,13 +969,13 @@ function getRelatedField_{0}(level){{
         }}, 'jsonp');
     }}
 }}
-", fieldInfo.RelatedFieldID, styleInfo.AttributeName, fieldInfo.TotalLevel, CMS.Controllers.Stl.ActionsRelatedField.GetUrl(PageUtils.GetApiUrl(), publishmentSystemInfo.PublishmentSystemId, styleInfo.Additional.RelatedFieldId, 0), values));
+", fieldInfo.RelatedFieldId, styleInfo.AttributeName, fieldInfo.TotalLevel, ActionsRelatedField.GetUrl(PageUtils.InnerApiUrl, publishmentSystemInfo.PublishmentSystemId, styleInfo.Additional.RelatedFieldId, 0), values));
 
                 if (isLoad)
                 {
                     builder.Append($@"
 $(document).ready(function(){{
-    getRelatedField_{fieldInfo.RelatedFieldID}(2);
+    getRelatedField_{fieldInfo.RelatedFieldId}(2);
 }});
 ");
                 }
@@ -989,56 +985,6 @@ $(document).ready(function(){{
                 AddHelpText(builder, styleInfo.HelpText);
             }
             return builder.ToString();
-        }
-
-        private static string ParseSpecifiedValue(PublishmentSystemInfo publishmentSystemInfo, int nodeId, ETableStyle tableStyle, string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, TableStyleInfo styleInfo)
-        {
-            if (tableStyle == ETableStyle.GovInteractContent)
-            {
-                if (StringUtils.EqualsIgnoreCase(attributeName, GovInteractContentAttribute.TypeId))
-                {
-                    styleInfo.StyleItems = new List<TableStyleItemInfo>();
-                    var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, "<<请选择>>", string.Empty, false);
-                    styleInfo.StyleItems.Add(itemInfo);
-                    var typeInfoArrayList = DataProvider.GovInteractTypeDao.GetTypeInfoArrayList(nodeId);
-                    foreach (GovInteractTypeInfo typeInfo in typeInfoArrayList)
-                    {
-                        var isSelected = false;
-                        if (!isAddAndNotPostBack)
-                        {
-                            isSelected = formCollection[attributeName] == typeInfo.TypeID.ToString();
-                        }
-                        itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, typeInfo.TypeName, typeInfo.TypeID.ToString(), isSelected);
-                        styleInfo.StyleItems.Add(itemInfo);
-                    }
-                    return ParseSelectOne(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
-                }
-                else if (StringUtils.EqualsIgnoreCase(attributeName, GovInteractContentAttribute.DepartmentId))
-                {
-                    styleInfo.StyleItems = new List<TableStyleItemInfo>();
-                    var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, "<<请选择>>", string.Empty, false);
-                    styleInfo.StyleItems.Add(itemInfo);
-                    var channelInfo = DataProvider.GovInteractChannelDao.GetChannelInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
-                    var departmentIdList = GovInteractManager.GetFirstDepartmentIdList(channelInfo);
-                    foreach (var departmentId in departmentIdList)
-                    {
-                        var departmentInfo = DepartmentManager.GetDepartmentInfo(departmentId);
-                        if (departmentInfo != null)
-                        {
-                            var isSelected = false;
-                            if (!isAddAndNotPostBack)
-                            {
-                                isSelected = formCollection[attributeName] == departmentInfo.DepartmentId.ToString();
-                            }
-                            itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, departmentInfo.DepartmentName, departmentInfo.DepartmentId.ToString(), isSelected);
-                            styleInfo.StyleItems.Add(itemInfo);
-                        }
-                    }
-                    return ParseSelectOne(attributeName, formCollection, isAddAndNotPostBack, styleInfo);
-                }
-            }
-
-            return string.Empty;
         }
 
         private static void AddHelpText(StringBuilder builder, string helpText)
@@ -1057,7 +1003,7 @@ $(document).ready(function(){{
                 if (styleInfo.IsVisible == false) continue;
                 var theValue = GetValueByControl(styleInfo, publishmentSystemInfo, containerControl);
 
-                if (!EInputTypeUtils.EqualsAny(styleInfo.InputType, EInputType.TextEditor, EInputType.Image, EInputType.File, EInputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
+                if (!InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.TextEditor, InputType.Image, InputType.File, InputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
                 {
                     theValue = PageUtils.FilterSqlAndXss(theValue);
                 }
@@ -1078,7 +1024,7 @@ $(document).ready(function(){{
             //}
         }
 
-        public static void AddValuesToAttributes(ETableStyle tableStyle, string tableName, PublishmentSystemInfo publishmentSystemInfo, List<int> relatedIdentities, NameValueCollection formCollection, NameValueCollection attributes, ArrayList dontAddAttributes, bool isSaveImage)
+        public static void AddValuesToAttributes(ETableStyle tableStyle, string tableName, PublishmentSystemInfo publishmentSystemInfo, List<int> relatedIdentities, NameValueCollection formCollection, NameValueCollection attributes, List<string> dontAddAttributes, bool isSaveImage)
         {
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
             foreach (var styleInfo in styleInfoList)
@@ -1086,7 +1032,7 @@ $(document).ready(function(){{
                 if (styleInfo.IsVisible == false || dontAddAttributes.Contains(styleInfo.AttributeName.ToLower())) continue;
                 var theValue = GetValueByForm(styleInfo, publishmentSystemInfo, formCollection, isSaveImage);
 
-                if (!EInputTypeUtils.EqualsAny(styleInfo.InputType, EInputType.TextEditor, EInputType.Image, EInputType.File, EInputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
+                if (!InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.TextEditor, InputType.Image, InputType.File, InputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
                 {
                     theValue = PageUtils.FilterSqlAndXss(theValue);
                 }
@@ -1104,7 +1050,7 @@ $(document).ready(function(){{
                     ExtendedAttributes.SetExtendedAttribute(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
                 }
 
-                if (EInputTypeUtils.EqualsAny(styleInfo.InputType, EInputType.Image, EInputType.Video, EInputType.File))
+                if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.Video, InputType.File))
                 {
                     var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
                     ExtendedAttributes.SetExtendedAttribute(attributes, attributeName, formCollection[attributeName]);
@@ -1124,7 +1070,7 @@ $(document).ready(function(){{
             {
                 if (styleInfo.IsVisible == false || dontAddAttributes.Contains(styleInfo.AttributeName.ToLower())) continue;
                 var theValue = GetValueByForm(styleInfo, publishmentSystemInfo, formCollection);
-                if (!EInputTypeUtils.EqualsAny(styleInfo.InputType, EInputType.TextEditor, EInputType.Image, EInputType.File, EInputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
+                if (!InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.TextEditor, InputType.Image, InputType.File, InputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
                 {
                     theValue = PageUtils.FilterSqlAndXss(theValue);
                 }
@@ -1142,7 +1088,7 @@ $(document).ready(function(){{
                     ExtendedAttributes.SetExtendedAttribute(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
                 }
 
-                if (EInputTypeUtils.EqualsAny(styleInfo.InputType, EInputType.Image, EInputType.Video, EInputType.File))
+                if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.Video, InputType.File))
                 {
                     var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
                     ExtendedAttributes.SetExtendedAttribute(attributes, attributeName, formCollection[attributeName]);
@@ -1158,7 +1104,7 @@ $(document).ready(function(){{
                 if (styleInfo.IsVisible == false) continue;
                 var theValue = GetValueByForm(styleInfo, publishmentSystemInfo, formCollection);
 
-                if (!EInputTypeUtils.EqualsAny(styleInfo.InputType, EInputType.TextEditor, EInputType.Image, EInputType.File, EInputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
+                if (!InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.TextEditor, InputType.Image, InputType.File, InputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
                 {
                     theValue = PageUtils.FilterSqlAndXss(theValue);
                 }
@@ -1184,9 +1130,9 @@ $(document).ready(function(){{
         {
             var theValue = ControlUtils.GetInputValue(containerControl, styleInfo.AttributeName) ?? string.Empty;
 
-            var inputType = EInputTypeUtils.GetEnumType(styleInfo.InputType);
+            var inputType = InputTypeUtils.GetEnumType(styleInfo.InputType);
 
-            if (inputType == EInputType.TextEditor)
+            if (inputType == InputType.TextEditor)
             {
                 theValue = StringUtility.TextEditorContentEncode(theValue, publishmentSystemInfo);
             }
@@ -1212,9 +1158,9 @@ $(document).ready(function(){{
         {
             var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
 
-            var inputType = EInputTypeUtils.GetEnumType(styleInfo.InputType);
+            var inputType = InputTypeUtils.GetEnumType(styleInfo.InputType);
 
-            if (inputType == EInputType.TextEditor)
+            if (inputType == InputType.TextEditor)
             {
                 theValue = StringUtility.TextEditorContentEncode(theValue, publishmentSystemInfo);
                 theValue = ETextEditorTypeUtils.TranslateToStlElement(theValue);
@@ -1227,9 +1173,9 @@ $(document).ready(function(){{
         {
             var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
 
-            var inputType = EInputTypeUtils.GetEnumType(styleInfo.InputType);
+            var inputType = InputTypeUtils.GetEnumType(styleInfo.InputType);
 
-            if (inputType == EInputType.TextEditor)
+            if (inputType == InputType.TextEditor)
             {
                 theValue = StringUtility.TextEditorContentEncode(theValue, publishmentSystemInfo, isSaveImage && publishmentSystemInfo.Additional.IsSaveImageInTextEditor);
                 theValue = ETextEditorTypeUtils.TranslateToStlElement(theValue);

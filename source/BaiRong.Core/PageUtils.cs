@@ -24,7 +24,7 @@ namespace BaiRong.Core
             //			}
             //			if (url.StartsWith("~"))
             //			{
-            //				retval = Combine(HttpContext.Current.Request.ApplicationPath ,url.Substring(1));
+            //				retval = Combine(ApplicationPath ,url.Substring(1));
             //			}
             //			else
             //			{
@@ -32,7 +32,7 @@ namespace BaiRong.Core
             //			}
             //			return retval;
             //            //return AddProtocolToUrl(retval);
-            return ParseNavigationUrl(url, WebConfigUtils.ApplicationPath);
+            return ParseNavigationUrl(url, ApplicationPath);
         }
 
         public static string ParseNavigationUrl(string url, string domainUrl)
@@ -260,18 +260,20 @@ namespace BaiRong.Core
                 }
             }
 
-            return (string.IsNullOrEmpty(scheme)) ? "http" : scheme.Trim().ToLower();
+            return string.IsNullOrEmpty(scheme) ? "http" : scheme.Trim().ToLower();
         }
+
+        public static string ApplicationPath => HttpContext.Current != null ? HttpContext.Current.Request.ApplicationPath : "/";
 
         // 系统根目录访问地址
         public static string GetRootUrl(string relatedUrl)
         {
-            return Combine(WebConfigUtils.ApplicationPath, relatedUrl);
+            return Combine(ApplicationPath, relatedUrl);
         }
 
         public static string GetTemporaryFilesUrl(string relatedUrl)
         {
-            return Combine(WebConfigUtils.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
+            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
         }
 
         public static NameValueCollection GetQueryString(string url)
@@ -388,52 +390,61 @@ namespace BaiRong.Core
 
         public static string GetIpAddress()
         {
-            //取CDN用户真实IP的方法
-            //当用户使用代理时，取到的是代理IP
-            var result = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            if (!string.IsNullOrEmpty(result))
+            var result = string.Empty;
+
+            try
             {
-                //可能有代理
-                if (result.IndexOf(".", StringComparison.Ordinal) == -1)
-                    result = null;
-                else
+                //取CDN用户真实IP的方法
+                //当用户使用代理时，取到的是代理IP
+                result = HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                if (!string.IsNullOrEmpty(result))
                 {
-                    if (result.IndexOf(",", StringComparison.Ordinal) != -1)
+                    //可能有代理
+                    if (result.IndexOf(".", StringComparison.Ordinal) == -1)
+                        result = null;
+                    else
                     {
-                        result = result.Replace("  ", "").Replace("'", "");
-                        var temparyip = result.Split(",;".ToCharArray());
-                        foreach (var t in temparyip)
+                        if (result.IndexOf(",", StringComparison.Ordinal) != -1)
                         {
-                            if (IsIp(t) && t.Substring(0, 3) != "10." && t.Substring(0, 7) != "192.168" && t.Substring(0, 7) != "172.16.")
+                            result = result.Replace("  ", "").Replace("'", "");
+                            var temparyip = result.Split(",;".ToCharArray());
+                            foreach (var t in temparyip)
                             {
-                                result = t;
+                                if (IsIpAddress(t) && t.Substring(0, 3) != "10." && t.Substring(0, 7) != "192.168" && t.Substring(0, 7) != "172.16.")
+                                {
+                                    result = t;
+                                }
                             }
+                            var str = result.Split(',');
+                            if (str.Length > 0)
+                                result = str[0].Trim();
                         }
-                        var str = result.Split(',');
-                        if (str.Length > 0)
-                            result = str[0].Trim();
+                        else if (IsIpAddress(result))
+                            return result;
                     }
-                    else if (IsIp(result))
-                        return result;
+                }
+
+                if (string.IsNullOrEmpty(result))
+                    result = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
+                if (string.IsNullOrEmpty(result))
+                    result = HttpContext.Current.Request.UserHostAddress;
+                if (string.IsNullOrEmpty(result))
+                    result = "localhost";
+
+                if (result == "::1" || result == "127.0.0.1")
+                {
+                    result = "localhost";
                 }
             }
-
-            if (string.IsNullOrEmpty(result))
-                result = HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"];
-            if (string.IsNullOrEmpty(result))
-                result = HttpContext.Current.Request.UserHostAddress;
-            if (string.IsNullOrEmpty(result))
-                result = "localhost";
-
-            if (result == "::1" || result == "127.0.0.1")
+            catch
             {
-                result = "localhost";
+                // ignored
             }
 
             return result;
         }
 
-        public static bool IsIp(string ip)
+        public static bool IsIpAddress(string ip)
         {
             return Regex.IsMatch(ip, @"^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$");
         }
@@ -716,7 +727,7 @@ namespace BaiRong.Core
 
             var newValue = urlString.Replace("\"", "'");
             newValue = HttpUtility.UrlEncode(newValue);
-            newValue = newValue?.Replace("%2f", "/");
+            newValue = newValue.Replace("%2f", "/");
             return newValue;
         }
 
@@ -729,7 +740,7 @@ namespace BaiRong.Core
 
             var newValue = urlString.Replace("\"", "'");
             newValue = HttpUtility.UrlEncode(newValue, Encoding.GetEncoding(encoding));
-            newValue = newValue?.Replace("%2f", "/");
+            newValue = newValue.Replace("%2f", "/");
             return newValue;
         }
 
@@ -742,7 +753,7 @@ namespace BaiRong.Core
 
             var newValue = urlString.Replace("\"", "'");
             newValue = HttpUtility.UrlEncode(newValue, ECharsetUtils.GetEncoding(charset));
-            newValue = newValue?.Replace("%2f", "/");
+            newValue = newValue.Replace("%2f", "/");
             return newValue;
         }
 
@@ -787,7 +798,23 @@ namespace BaiRong.Core
 
         public static string GetAdminDirectoryUrl(string relatedUrl)
         {
-            return Combine(WebConfigUtils.ApplicationPath, FileConfigManager.Instance.AdminDirectoryName, relatedUrl);
+            return Combine(ApplicationPath, WebConfigUtils.AdminDirectory, relatedUrl);
+        }
+
+        public static string GetSiteFilesUrl(string relatedUrl)
+        {
+            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
+        }
+
+        public static string GetPluginDirectoryUrl(string pluginId, string url)
+        {
+            if (string.IsNullOrEmpty(url)) return string.Empty;
+
+            if (!IsProtocolUrl(url))
+            {
+                return StringUtils.StartsWith(url, "@/") ? GetAdminDirectoryUrl(url.Substring(1)) : GetSiteFilesUrl(Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
+            }
+            return url;
         }
 
         public static string GetSiteServerUrl(string className, NameValueCollection queryString)
@@ -795,34 +822,9 @@ namespace BaiRong.Core
             return AddQueryString(GetAdminDirectoryUrl(className.ToLower() + ".aspx"), queryString);
         }
 
-        public static string GetPlatformUrl(string className, NameValueCollection queryString)
+        public static string GetPluginsUrl(string className, NameValueCollection queryString)
         {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("platform", className.ToLower() + ".aspx")), queryString);
-        }
-
-        public static string GetAdminUrl(string className, NameValueCollection queryString)
-        {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("admin", className.ToLower() + ".aspx")), queryString);
-        }
-
-        public static string GetAnalysisUrl(string className, NameValueCollection queryString)
-        {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("analysis", className.ToLower() + ".aspx")), queryString);
-        }
-
-        public static string GetSysUrl(string className, NameValueCollection queryString)
-        {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("sys", className.ToLower() + ".aspx")), queryString);
-        }
-
-        public static string GetUserUrl(string className, NameValueCollection queryString)
-        {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("user", className.ToLower() + ".aspx")), queryString);
-        }
-
-        public static string GetServiceUrl(string className, NameValueCollection queryString)
-        {
-            return AddQueryString(GetAdminDirectoryUrl(Combine("service", className.ToLower() + ".aspx")), queryString);
+            return AddQueryString(GetAdminDirectoryUrl(Combine("plugins", className.ToLower() + ".aspx")), queryString);
         }
 
         public static string GetSettingsUrl(string className, NameValueCollection queryString)
@@ -856,7 +858,7 @@ namespace BaiRong.Core
             {
                 return ParseNavigationUrl(relatedUrl);
             }
-            return Combine(WebConfigUtils.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.UserFiles, userName, relatedUrl);
+            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.UserFiles, userName, relatedUrl);
         }
 
         public static string GetUserFileSystemManagementDirectoryUrl(string userName, string currentRootPath)
@@ -876,16 +878,6 @@ namespace BaiRong.Core
 
             }
             return directoryUrl;
-        }
-
-        /// <summary>
-        /// 判断是否需要安装，并转到页面。
-        /// </summary>
-        public static bool DetermineRedirectToInstaller()
-        {
-            if (!AppManager.IsNeedInstall()) return false;
-            Redirect(GetAdminDirectoryUrl("Installer"));
-            return true;
         }
 
         public static void RedirectToErrorPage(string errorMessage)
@@ -951,15 +943,9 @@ namespace BaiRong.Core
             return GetRootUrl(requestPath);
         }
 
-        public static string GetApiUrl()
-        {
-            return Combine(WebConfigUtils.ApplicationPath, "api").ToLower();
-        }
+        public const string InnerApiUrl = "/api";
 
-        public static string GetHomeUrl()
-        {
-            return Combine(WebConfigUtils.ApplicationPath, "home").ToLower();
-        }
+        public static string OuterApiUrl => ConfigManager.SystemConfigInfo.IsUrlGlobalSetting ? ConfigManager.SystemConfigInfo.ApiUrl : "/api";
 
         public static string ParseConfigRootUrl(string url)
         {
@@ -980,11 +966,11 @@ namespace BaiRong.Core
                 {
                     if (directoryName.Equals("~"))
                     {
-                        directoryUrl = WebConfigUtils.ApplicationPath;
+                        directoryUrl = ApplicationPath;
                     }
                     else if (directoryName.Equals("@"))
                     {
-                        directoryUrl = Combine(WebConfigUtils.ApplicationPath, publishementSystemDir);
+                        directoryUrl = Combine(ApplicationPath, publishementSystemDir);
                     }
                     else
                     {
@@ -1273,6 +1259,103 @@ namespace BaiRong.Core
                     .ToString().ToLower()}');}};return false;";
         }
 
+        public static string GetOpenLayerString(string title, string pageUrl)
+        {
+            return GetOpenLayerString(title, pageUrl, 0, 0);
+        }
+
+        public static string GetOpenLayerString(string title, string pageUrl, int width, int height)
+        {
+            string areaWidth = $"'{width}px'";
+            string areaHeight = $"'{height}px'";
+            var offsetLeft = "''";
+            var offsetRight = "''";
+            if (width == 0)
+            {
+                areaWidth = "($(window).width() - 50) +'px'";
+                offsetRight = "'25px'";
+            }
+            if (height == 0)
+            {
+                areaHeight = "($(window).height() - 50) +'px'";
+                offsetLeft = "'25px'";
+            }
+            return
+                $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}'}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});return false;";
+        }
+
+        public static string GetOpenLayerStringWithTextBoxValue(string title, string pageUrl, string textBoxId)
+        {
+            return GetOpenLayerStringWithTextBoxValue(title, pageUrl, textBoxId, 0, 0);
+        }
+
+        public static string GetOpenLayerStringWithTextBoxValue(string title, string pageUrl, string textBoxId, int width, int height)
+        {
+            string areaWidth = $"'{width}px'";
+            string areaHeight = $"'{height}px'";
+            var offsetLeft = "''";
+            var offsetRight = "''";
+            if (width == 0)
+            {
+                areaWidth = "($(window).width() - 50) +'px'";
+                offsetRight = "'25px'";
+            }
+            if (height == 0)
+            {
+                areaHeight = "($(window).height() - 50) +'px'";
+                offsetLeft = "'25px'";
+            }
+            return
+                $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{textBoxId}=' + $('#{textBoxId}').val()}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});return false;";
+        }
+
+        public static string GetOpenLayerStringWithCheckBoxValue(string title, string pageUrl, string checkBoxId, string alertText)
+        {
+            return GetOpenLayerStringWithCheckBoxValue(title, pageUrl, checkBoxId, alertText, 0, 0);
+        }
+
+        public static string GetOpenLayerStringWithCheckBoxValue(string title, string pageUrl, string checkBoxId, string alertText, int width, int height)
+        {
+            string areaWidth = $"'{width}px'";
+            string areaHeight = $"'{height}px'";
+            var offsetLeft = "''";
+            var offsetRight = "''";
+            if (width == 0)
+            {
+                areaWidth = "($(window).width() - 50) +'px'";
+                offsetRight = "'25px'";
+            }
+            if (height == 0)
+            {
+                areaHeight = "($(window).height() - 50) +'px'";
+                offsetLeft = "'25px'";
+            }
+
+            if (string.IsNullOrEmpty(alertText))
+            {
+                return
+                    $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId}'))}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});return false;";
+            }
+            return
+                $@"if (!_alertCheckBoxCollection(document.getElementsByName('{checkBoxId}'), '{alertText}')){{$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId}'))}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});}};return false;";
+        }
+
+        public static string GetOpenLayerStringWithTwoCheckBoxValue(string title, string pageUrl, string checkBoxId1, string checkBoxId2, string alertText, int width, int height)
+        {
+            var offset = string.Empty;
+            if (width == 0)
+            {
+                offset = "offset: ['0px','0px'],";
+            }
+            if (height == 0)
+            {
+                offset = "offset: ['0px','0px'],";
+            }
+
+            return
+                $@"var collectionValue1 = _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId1}'));var collectionValue2 = _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId2}'));if (collectionValue1.length == 0 && collectionValue2.length == 0){{alert('{alertText}');}}else{{$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId1}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId1}')) + '&{checkBoxId2}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId2}'))}}, area: [{width}, {height}], {offset}}});}};return false;";
+        }
+
         public static void SetCancelAttribute(IAttributeAccessor accessor)
         {
             accessor.SetAttribute("onclick", HidePopWin);
@@ -1281,7 +1364,7 @@ namespace BaiRong.Core
         public static void CloseModalPage(Page page)
         {
             page.Response.Clear();
-            page.Response.Write($"<script>{HidePopWin}window.parent.location.reload(false);</script>");
+            page.Response.Write($"<script>window.parent.location.reload(false);{HidePopWin}</script>");
             //page.Response.End();
         }
 
@@ -1321,101 +1404,6 @@ namespace BaiRong.Core
             page.Response.Write($"<script>{scripts}</script>");
             page.Response.Write($"<script>{HidePopWin}</script>");
             //page.Response.End();
-        }
-
-        public static string GetOpenLayerString(string title, string pageUrl)
-        {
-            return GetOpenLayerString(title, pageUrl, 0, 0);
-        }
-
-        public static string GetOpenLayerString(string title, string pageUrl, int width, int height)
-        {
-            string areaWidth = $"'{width}px'";
-            string areaHeight = $"'{height}px'";
-            var offsetLeft = "''";
-            var offsetRight = "''";
-            if (width == 0)
-            {
-                areaWidth = "($(window).width() - 10) +'px'";
-                offsetRight = "'0px'";
-            }
-            if (height == 0)
-            {
-                areaHeight = "($(window).height() - 10) +'px'";
-                offsetLeft = "'0px'";
-            }
-            return
-                $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}'}}, area: [{areaWidth}, {areaHeight}], offset: [{offsetLeft}, {offsetRight}]}});return false;";
-        }
-
-        public static string GetOpenLayerStringWithTextBoxValue(string title, string pageUrl, string textBoxId)
-        {
-            return GetOpenLayerStringWithTextBoxValue(title, pageUrl, textBoxId, 0, 0);
-        }
-
-        public static string GetOpenLayerStringWithTextBoxValue(string title, string pageUrl, string textBoxId, int width, int height)
-        {
-            string areaWidth = $"'{width}px'";
-            string areaHeight = $"'{height}px'";
-            var offset = string.Empty;
-            if (width == 0)
-            {
-                areaWidth = "($(window).width() - 10) +'px'";
-                offset = "offset: ['0px','0px'],";
-            }
-            if (height == 0)
-            {
-                areaHeight = "($(window).height() - 10) +'px'";
-                offset = "offset: ['0px','0px'],";
-            }
-            return
-                $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{textBoxId}=' + $('#{textBoxId}').val()}}, area: [{areaWidth}, {areaHeight}], {offset}}});return false;";
-        }
-
-        public static string GetOpenLayerStringWithCheckBoxValue(string title, string pageUrl, string checkBoxId, string alertText)
-        {
-            return GetOpenLayerStringWithCheckBoxValue(title, pageUrl, checkBoxId, alertText, 0, 0);
-        }
-
-        public static string GetOpenLayerStringWithCheckBoxValue(string title, string pageUrl, string checkBoxId, string alertText, int width, int height)
-        {
-            string areaWidth = $"'{width}px'";
-            string areaHeight = $"'{height}px'";
-            var offset = string.Empty;
-            if (width == 0)
-            {
-                areaWidth = "($(window).width() - 10) +'px'";
-                offset = "offset: ['0px','0px'],";
-            }
-            if (height == 0)
-            {
-                areaHeight = "($(window).height() - 10) +'px'";
-                offset = "offset: ['0px','0px'],";
-            }
-
-            if (string.IsNullOrEmpty(alertText))
-            {
-                return
-                    $@"$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId}'))}}, area: [{areaWidth}, {areaHeight}], {offset}}});return false;";
-            }
-            return
-                $@"if (!_alertCheckBoxCollection(document.getElementsByName('{checkBoxId}'), '{alertText}')){{$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId}'))}}, area: [{areaWidth}, {areaHeight}], {offset}}});}};return false;";
-        }
-
-        public static string GetOpenLayerStringWithTwoCheckBoxValue(string title, string pageUrl, string checkBoxId1, string checkBoxId2, string alertText, int width, int height)
-        {
-            var offset = string.Empty;
-            if (width == 0)
-            {
-                offset = "offset: ['0px','0px'],";
-            }
-            if (height == 0)
-            {
-                offset = "offset: ['0px','0px'],";
-            }
-
-            return
-                $@"var collectionValue1 = _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId1}'));var collectionValue2 = _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId2}'));if (collectionValue1.length == 0 && collectionValue2.length == 0){{alert('{alertText}');}}else{{$.layer({{type: 2, maxmin: true, shadeClose: true, title: '{title}', shade: [0.1,'#fff'], iframe: {{src: '{pageUrl}' + '&{checkBoxId1}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId1}')) + '&{checkBoxId2}=' + _getCheckBoxCollectionValue(document.getElementsByName('{checkBoxId2}'))}}, area: [{width}, {height}], {offset}}});}};return false;";
         }
 
         public static void ResponseScripts(Page page, string scripts)

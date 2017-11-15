@@ -9,24 +9,25 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalContentGroupAdd : BasePageCms
     {
-		protected TextBox ContentGroupName;
-		protected TextBox Description;
+		protected TextBox TbContentGroupName;
+        public Literal LtlContentGroupName;
+        protected TextBox TbDescription;
 
         public static string GetOpenWindowString(int publishmentSystemId, string groupName)
         {
-            return PageUtils.GetOpenWindowString("修改内容组", PageUtils.GetCmsUrl(nameof(ModalContentGroupAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("修改内容组", PageUtils.GetCmsUrl(nameof(ModalContentGroupAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"GroupName", groupName}
-            }), 400, 280);
+            }), 600, 300);
         }
 
         public static string GetOpenWindowString(int publishmentSystemId)
         {
-            return PageUtils.GetOpenWindowString("添加内容组", PageUtils.GetCmsUrl(nameof(ModalContentGroupAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("添加内容组", PageUtils.GetCmsUrl(nameof(ModalContentGroupAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
-            }), 400, 280);
+            }), 600, 300);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -41,9 +42,10 @@ namespace SiteServer.BackgroundPages.Cms
                     var contentGroupInfo = DataProvider.ContentGroupDao.GetContentGroupInfo(groupName, PublishmentSystemId);
 					if (contentGroupInfo != null)
 					{
-						ContentGroupName.Text = contentGroupInfo.ContentGroupName;
-						ContentGroupName.Enabled = false;
-						Description.Text = contentGroupInfo.Description;
+                        TbContentGroupName.Text = contentGroupInfo.ContentGroupName;
+                        TbContentGroupName.Visible = false;
+                        LtlContentGroupName.Text = $"<strong>{contentGroupInfo.ContentGroupName}</strong>";
+                        TbDescription.Text = contentGroupInfo.Description;
 					}
 				}
 			}
@@ -55,9 +57,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             var contentGroupInfo = new ContentGroupInfo
             {
-                ContentGroupName = PageUtils.FilterXss(ContentGroupName.Text),
+                ContentGroupName = PageUtils.FilterXss(TbContentGroupName.Text),
                 PublishmentSystemId = PublishmentSystemId,
-                Description = Description.Text
+                Description = TbDescription.Text
             };
 
             if (Body.IsQueryExists("GroupName"))
@@ -76,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
 			else
 			{
                 var contentGroupNameList = DataProvider.ContentGroupDao.GetContentGroupNameList(PublishmentSystemId);
-				if (contentGroupNameList.IndexOf(ContentGroupName.Text) != -1)
+				if (contentGroupNameList.IndexOf(TbContentGroupName.Text) != -1)
 				{
                     FailMessage("内容组添加失败，内容组名称已存在！");
 				}

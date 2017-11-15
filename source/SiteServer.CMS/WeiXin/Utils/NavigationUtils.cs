@@ -1,6 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.WeiXin.Data;
@@ -12,7 +12,7 @@ namespace SiteServer.CMS.WeiXin.Utils
 {
 	public class NavigationUtils
     {
-        public static string GetNavigationUrl(PublishmentSystemInfo publishmentSystemInfo, ENavigationType navigationType, EKeywordType keywordType, int functionID, int channelID, int contentID, string url)
+        public static string GetNavigationUrl(PublishmentSystemInfo publishmentSystemInfo, ENavigationType navigationType, EKeywordType keywordType, int functionId, int channelId, int contentId, string url)
         {
             var navigationUrl = string.Empty;
 
@@ -22,23 +22,22 @@ namespace SiteServer.CMS.WeiXin.Utils
             }
             else if (navigationType == ENavigationType.Function)
             {
-                navigationUrl = KeywordManager.GetFunctionUrl(publishmentSystemInfo, keywordType, functionID);
+                navigationUrl = KeywordManager.GetFunctionUrl(publishmentSystemInfo, keywordType, functionId);
             }
             else if (navigationType == ENavigationType.Site)
             {
-                if (contentID > 0)
+                if (contentId > 0)
                 {
-                    var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelID);
-                    var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelID);
+                    var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
+                    var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
 
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentID);
+                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
 
                     navigationUrl = PageUtilityWX.GetContentUrl(publishmentSystemInfo, contentInfo);
                 }
-                else if (channelID > 0)
+                else if (channelId > 0)
                 {
-                    var nodeNames = NodeManager.GetNodeNameNavigation(publishmentSystemInfo.PublishmentSystemId, channelID);
-                    navigationUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelID));
+                    navigationUrl = PageUtilityWX.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId));
                 }
             }
 
@@ -49,31 +48,31 @@ namespace SiteServer.CMS.WeiXin.Utils
         {
             if (publishmentSystemInfo.Additional.WxIsWebMenu && !string.IsNullOrEmpty(publishmentSystemInfo.Additional.WxWebMenuType))
             {
-                var directoryUrl = SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/components/webMenu/{publishmentSystemInfo.Additional.WxWebMenuType}");
-                if (PageUtils.IsProtocolUrl(publishmentSystemInfo.PublishmentSystemUrl))
+                var directoryUrl = SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/components/webMenu/{publishmentSystemInfo.Additional.WxWebMenuType}");
+                if (PageUtils.IsProtocolUrl(publishmentSystemInfo.Additional.WebUrl))
                 {
-                    directoryUrl = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, $"weixin/components/webMenu/{publishmentSystemInfo.Additional.WxWebMenuType}"));
+                    directoryUrl = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, $"weixin/components/webMenu/{publishmentSystemInfo.Additional.WxWebMenuType}"));
                 } 
                  
                 var menuPath = SiteFilesAssets.GetPath($"weixin/components/webMenu/{publishmentSystemInfo.Additional.WxWebMenuType}/template.html");
-                var menuHtml = StlCacheManager.FileContent.GetContentByFilePath(menuPath, ECharset.utf_8);
+                var menuHtml = TemplateManager.GetContentByFilePath(menuPath);
 
-                var startIndex = menuHtml.IndexOf("<!--menu-->");
-                var endIndex = menuHtml.IndexOf("<!--menu-->", startIndex + 1);
+                var startIndex = menuHtml.IndexOf("<!--menu-->", StringComparison.Ordinal);
+                var endIndex = menuHtml.IndexOf("<!--menu-->", startIndex + 1, StringComparison.Ordinal);
                 var menuTemplate = menuHtml.Substring(startIndex, endIndex - startIndex);
 
-                var startSubIndex = menuTemplate.IndexOf("<!--submenu-->");
-                var endSubIndex = menuTemplate.IndexOf("<!--submenu-->", startSubIndex + 1);
+                var startSubIndex = menuTemplate.IndexOf("<!--submenu-->", StringComparison.Ordinal);
+                var endSubIndex = menuTemplate.IndexOf("<!--submenu-->", startSubIndex + 1, StringComparison.Ordinal);
                 var subMenuTemplate = menuTemplate.Substring(startSubIndex, endSubIndex - startSubIndex);
 
                 var menuBuilder = new StringBuilder();
-                var menuInfoList = DataProviderWX.WebMenuDAO.GetMenuInfoList(publishmentSystemInfo.PublishmentSystemId, 0);
+                var menuInfoList = DataProviderWx.WebMenuDao.GetMenuInfoList(publishmentSystemInfo.PublishmentSystemId, 0);
 
                 var index = 0;
                 foreach (var menuInfo in menuInfoList)
                 {
                     var subMenuBuilder = new StringBuilder();
-                    var subMenuInfoList = DataProviderWX.WebMenuDAO.GetMenuInfoList(publishmentSystemInfo.PublishmentSystemId, menuInfo.ID);
+                    var subMenuInfoList = DataProviderWx.WebMenuDao.GetMenuInfoList(publishmentSystemInfo.PublishmentSystemId, menuInfo.Id);
 
                     if (subMenuInfoList != null && subMenuInfoList.Count > 0)
                     {
@@ -82,21 +81,21 @@ namespace SiteServer.CMS.WeiXin.Utils
 
                         foreach (var subMenuInfo in subMenuInfoList)
                         {
-                            var subMenu = subMenuTemplate.Replace("{{url}}", GetNavigationUrl(publishmentSystemInfo, ENavigationTypeUtils.GetEnumType(subMenuInfo.NavigationType), EKeywordTypeUtils.GetEnumType(subMenuInfo.KeywordType), subMenuInfo.FunctionID, subMenuInfo.ChannelID, subMenuInfo.ContentID, subMenuInfo.Url));
+                            var subMenu = subMenuTemplate.Replace("{{url}}", GetNavigationUrl(publishmentSystemInfo, ENavigationTypeUtils.GetEnumType(subMenuInfo.NavigationType), EKeywordTypeUtils.GetEnumType(subMenuInfo.KeywordType), subMenuInfo.FunctionId, subMenuInfo.ChannelId, subMenuInfo.ContentId, subMenuInfo.Url));
                             subMenu = subMenu.Replace("{{menuName}}", subMenuInfo.MenuName);
                             subMenuBuilder.Append(subMenu);
                         }
                     }
-                    var menu = menuTemplate.Substring(0, startSubIndex) + subMenuBuilder.ToString() + menuTemplate.Substring(endSubIndex);
+                    var menu = menuTemplate.Substring(0, startSubIndex) + subMenuBuilder + menuTemplate.Substring(endSubIndex);
 
-                    menu = menu.Replace("{{url}}", GetNavigationUrl(publishmentSystemInfo, ENavigationTypeUtils.GetEnumType(menuInfo.NavigationType), EKeywordTypeUtils.GetEnumType(menuInfo.KeywordType), menuInfo.FunctionID, menuInfo.ChannelID, menuInfo.ContentID, menuInfo.Url));
+                    menu = menu.Replace("{{url}}", GetNavigationUrl(publishmentSystemInfo, ENavigationTypeUtils.GetEnumType(menuInfo.NavigationType), EKeywordTypeUtils.GetEnumType(menuInfo.KeywordType), menuInfo.FunctionId, menuInfo.ChannelId, menuInfo.ContentId, menuInfo.Url));
                     menu = menu.Replace("{{index}}", index.ToString());
                     menu = menu.Replace("{{menuName}}", menuInfo.MenuName);
                     menuBuilder.Append(menu);
                     index++;
                 }
 
-                menuHtml = menuHtml.Substring(0, startIndex) + menuBuilder.ToString() + menuHtml.Substring(endIndex);
+                menuHtml = menuHtml.Substring(0, startIndex) + menuBuilder + menuHtml.Substring(endIndex);
 
                 return $@"
 <link rel=""stylesheet"" type=""text/css"" href=""{directoryUrl}/style.css"" />

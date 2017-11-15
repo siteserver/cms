@@ -25,13 +25,13 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int publishmentSystemId, bool isPublishmentSystemSelect,
             string jsMethod)
         {
-            return PageUtils.GetOpenWindowString("选择目标栏目",
+            return PageUtils.GetOpenLayerString("选择目标栏目",
                 PageUtils.GetCmsUrl(nameof(ModalChannelMultipleSelect), new NameValueCollection
                 {
                     {"publishmentSystemID", publishmentSystemId.ToString()},
                     {"isPublishmentSystemSelect", isPublishmentSystemSelect.ToString()},
                     {"jsMethod", jsMethod}
-                }), 600, 580, true);
+                }), 650, 580);
         }
 
         public static string GetOpenWindowString(int publishmentSystemId, bool isPublishmentSystemSelect)
@@ -149,7 +149,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ["linkUrl"] = GetRedirectUrl(_targetPublishmentSystemId.ToString(), string.Empty)
             };
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, additional, Body.AdministratorName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ChannelSelect, additional, Body.AdminName);
         }
 
         public void DdlPublishmentSystemId_OnSelectedIndexChanged(object sender, EventArgs e)

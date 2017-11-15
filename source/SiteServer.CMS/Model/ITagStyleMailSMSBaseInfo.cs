@@ -2,18 +2,18 @@ using BaiRong.Core.Model.Enumerations;
 
 namespace SiteServer.CMS.Model
 {
-    public interface ITagStyleMailSMSBaseInfo
+    public interface ITagStyleMailSmsBaseInfo
     {
-        bool IsSMS { get; set; }
+        bool IsSms { get; set; }
 
-        ETriState SMSReceiver { get; set; }
+        ETriState SmsReceiver { get; set; }
 
-        string SMSTo { get; set; }
+        string SmsTo { get; set; }
 
-        string SMSFiledName { get; set; }
+        string SmsFiledName { get; set; }
 
-        bool IsSMSTemplate { get; set; }
+        bool IsSmsTemplate { get; set; }
 
-        string SMSContent { get; set; }
+        string SmsContent { get; set; }
     }
 }

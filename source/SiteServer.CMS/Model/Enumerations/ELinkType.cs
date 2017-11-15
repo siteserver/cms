@@ -6,133 +6,126 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum ELinkType
 	{
-		LinkNoRelatedToChannelAndContent,	//Ä¬ÈÏ
-		NoLinkIfContentNotExists,			//ÎÞÄÚÈÝÊ±²»¿ÉÁ´½Ó
-		LinkToOnlyOneContent,				//½öÒ»ÌõÄÚÈÝÊ±Á´½Óµ½´ËÄÚÈÝ
-		NoLinkIfContentNotExistsAndLinkToOnlyOneContent,						//ÎÞÄÚÈÝÊ±²»¿ÉÁ´½Ó£¬½öÒ»ÌõÄÚÈÝÊ±Á´½Óµ½´ËÄÚÈÝ
-		LinkToFirstContent,				//Á´½Óµ½µÚÒ»ÌõÄÚÈÝ
-		NoLinkIfContentNotExistsAndLinkToFirstContent,						//ÎÞÄÚÈÝÊ±²»¿ÉÁ´½Ó£¬ÓÐÄÚÈÝÊ±Á´½Óµ½µÚÒ»ÌõÄÚÈÝ
-		NoLinkIfChannelNotExists,			//ÎÞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó
-		LinkToLastAddChannel,				//Á´½Óµ½×î½üÔö¼ÓµÄ×ÓÀ¸Ä¿
-		LinkToFirstChannel,					//Á´½Óµ½µÚÒ»¸ö×ÓÀ¸Ä¿
-		NoLinkIfChannelNotExistsAndLinkToLastAddChannel,							//ÎÞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó£¬ÓÐÀ¸Ä¿Ê±Á´½Óµ½×î½üÔö¼ÓµÄ×ÓÀ¸Ä¿
-		NoLinkIfChannelNotExistsAndLinkToFirstChannel,						//ÎÞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó£¬ÓÐÀ¸Ä¿Ê±Á´½Óµ½µÚÒ»¸ö×ÓÀ¸Ä¿
-		NoLink								//²»¿ÉÁ´½Ó
+		LinkNoRelatedToChannelAndContent,	                                //é»˜è®¤
+		NoLinkIfContentNotExists,			                                //æ— å†…å®¹æ—¶ä¸å¯é“¾æŽ¥
+		LinkToOnlyOneContent,				                                //ä»…ä¸€æ¡å†…å®¹æ—¶é“¾æŽ¥åˆ°æ­¤å†…å®¹
+		NoLinkIfContentNotExistsAndLinkToOnlyOneContent,					//æ— å†…å®¹æ—¶ä¸å¯é“¾æŽ¥ï¼Œä»…ä¸€æ¡å†…å®¹æ—¶é“¾æŽ¥åˆ°æ­¤å†…å®¹
+		LinkToFirstContent,				                                    //é“¾æŽ¥åˆ°ç¬¬ä¸€æ¡å†…å®¹
+		NoLinkIfContentNotExistsAndLinkToFirstContent,						//æ— å†…å®¹æ—¶ä¸å¯é“¾æŽ¥ï¼Œæœ‰å†…å®¹æ—¶é“¾æŽ¥åˆ°ç¬¬ä¸€æ¡å†…å®¹
+		NoLinkIfChannelNotExists,			                                //æ— æ ç›®æ—¶ä¸å¯é“¾æŽ¥
+		LinkToLastAddChannel,				                                //é“¾æŽ¥åˆ°æœ€è¿‘å¢žåŠ çš„å­æ ç›®
+		LinkToFirstChannel,					                                //é“¾æŽ¥åˆ°ç¬¬ä¸€ä¸ªå­æ ç›®
+		NoLinkIfChannelNotExistsAndLinkToLastAddChannel,					//æ— æ ç›®æ—¶ä¸å¯é“¾æŽ¥ï¼Œæœ‰æ ç›®æ—¶é“¾æŽ¥åˆ°æœ€è¿‘å¢žåŠ çš„å­æ ç›®
+		NoLinkIfChannelNotExistsAndLinkToFirstChannel,						//æ— æ ç›®æ—¶ä¸å¯é“¾æŽ¥ï¼Œæœ‰æ ç›®æ—¶é“¾æŽ¥åˆ°ç¬¬ä¸€ä¸ªå­æ ç›®
+		NoLink								                                //ä¸å¯é“¾æŽ¥
 	}
-
 
 	public class ELinkTypeUtils
 	{
 		public static string GetValue(ELinkType type)
 		{
-			if (type == ELinkType.LinkNoRelatedToChannelAndContent)
+		    if (type == ELinkType.LinkNoRelatedToChannelAndContent)
 			{
 				return "LinkNoRelatedToChannelAndContent";
 			}
-			else if (type == ELinkType.NoLinkIfContentNotExists)
-			{
-				return "NoLinkIfContentNotExists";
-			}
-			else if (type == ELinkType.LinkToOnlyOneContent)
-			{
-				return "LinkToOnlyOneContent";
-			}
-			else if (type == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
-			{
-				return "NoLinkIfContentNotExistsAndLinkToOnlyOneContent";
-			}
-			else if (type == ELinkType.LinkToFirstContent)
-			{
-				return "LinkToFirstContent";
-			}
-			else if (type == ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
-			{
-				return "NoLinkIfContentNotExistsAndLinkToFirstContent";
-			}
-			else if (type == ELinkType.NoLinkIfChannelNotExists)
-			{
-				return "NoLinkIfChannelNotExists";
-			}
-			else if (type == ELinkType.LinkToLastAddChannel)
-			{
-				return "LinkToLastAddChannel";
-			}
-			else if (type == ELinkType.LinkToFirstChannel)
-			{
-				return "LinkToFirstChannel";
-			}
-			else if (type == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
-			{
-				return "NoLinkIfChannelNotExistsAndLinkToLastAddChannel";
-			}
-			else if (type == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
-			{
-				return "NoLinkIfChannelNotExistsAndLinkToFirstChannel";
-			}
-			else if (type == ELinkType.NoLink)
-			{
-				return "NoLink";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ELinkType.NoLinkIfContentNotExists)
+		    {
+		        return "NoLinkIfContentNotExists";
+		    }
+		    if (type == ELinkType.LinkToOnlyOneContent)
+		    {
+		        return "LinkToOnlyOneContent";
+		    }
+		    if (type == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
+		    {
+		        return "NoLinkIfContentNotExistsAndLinkToOnlyOneContent";
+		    }
+		    if (type == ELinkType.LinkToFirstContent)
+		    {
+		        return "LinkToFirstContent";
+		    }
+		    if (type == ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
+		    {
+		        return "NoLinkIfContentNotExistsAndLinkToFirstContent";
+		    }
+		    if (type == ELinkType.NoLinkIfChannelNotExists)
+		    {
+		        return "NoLinkIfChannelNotExists";
+		    }
+		    if (type == ELinkType.LinkToLastAddChannel)
+		    {
+		        return "LinkToLastAddChannel";
+		    }
+		    if (type == ELinkType.LinkToFirstChannel)
+		    {
+		        return "LinkToFirstChannel";
+		    }
+		    if (type == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
+		    {
+		        return "NoLinkIfChannelNotExistsAndLinkToLastAddChannel";
+		    }
+		    if (type == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
+		    {
+		        return "NoLinkIfChannelNotExistsAndLinkToFirstChannel";
+		    }
+		    if (type == ELinkType.NoLink)
+		    {
+		        return "NoLink";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ELinkType type)
 		{
-			if (type == ELinkType.NoLinkIfContentNotExists)
+		    if (type == ELinkType.NoLinkIfContentNotExists)
 			{
-				return "ÎÞÄÚÈÝÊ±²»¿ÉÁ´½Ó";
+				return "æ— å†…å®¹æ—¶ä¸å¯é“¾æŽ¥";
 			}
-			else if (type == ELinkType.LinkToOnlyOneContent)
-			{
-				return "½öÒ»ÌõÄÚÈÝÊ±Á´½Óµ½´ËÄÚÈÝ";
-			}
-			else if (type == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
-			{
-				return "ÎÞÄÚÈÝÊ±²»¿ÉÁ´½Ó£¬½öÒ»ÌõÄÚÈÝÊ±Á´½Óµ½´ËÄÚÈÝ";
-			}
-			else if (type == ELinkType.LinkToFirstContent)
-			{
-				return "Á´½Óµ½µÚÒ»ÌõÄÚÈÝ";
-			}
-			else if (type == ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
-			{
-				return "ÎÞÄÚÈÝÊ±²»¿ÉÁ´½Ó£¬ÓÐÄÚÈÝÊ±Á´½Óµ½µÚÒ»ÌõÄÚÈÝ";
-			}
-			else if (type == ELinkType.NoLinkIfChannelNotExists)
-			{
-				return "ÎÞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó";
-			}
-			else if (type == ELinkType.LinkToLastAddChannel)
-			{
-				return "Á´½Óµ½×î½üÔö¼ÓµÄ×ÓÀ¸Ä¿";
-			}
-			else if (type == ELinkType.LinkToFirstChannel)
-			{
-				return "Á´½Óµ½µÚÒ»¸ö×ÓÀ¸Ä¿";
-			}
-			else if (type == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
-			{
-				return "ÎÞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó£¬ÓÐÀ¸Ä¿Ê±Á´½Óµ½×î½üÔö¼ÓµÄ×ÓÀ¸Ä¿";
-			}
-			else if (type == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
-			{
-				return "ÎÞÀ¸Ä¿Ê±²»¿ÉÁ´½Ó£¬ÓÐÀ¸Ä¿Ê±Á´½Óµ½µÚÒ»¸ö×ÓÀ¸Ä¿";
-			}
-			else if (type == ELinkType.NoLink)
-			{
-				return "²»¿ÉÁ´½Ó";
-			}
-			else if (type == ELinkType.LinkNoRelatedToChannelAndContent)
-			{
-				return "Ä¬ÈÏ";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ELinkType.LinkToOnlyOneContent)
+		    {
+		        return "ä»…ä¸€æ¡å†…å®¹æ—¶é“¾æŽ¥åˆ°æ­¤å†…å®¹";
+		    }
+		    if (type == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
+		    {
+		        return "æ— å†…å®¹æ—¶ä¸å¯é“¾æŽ¥ï¼Œä»…ä¸€æ¡å†…å®¹æ—¶é“¾æŽ¥åˆ°æ­¤å†…å®¹";
+		    }
+		    if (type == ELinkType.LinkToFirstContent)
+		    {
+		        return "é“¾æŽ¥åˆ°ç¬¬ä¸€æ¡å†…å®¹";
+		    }
+		    if (type == ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
+		    {
+		        return "æ— å†…å®¹æ—¶ä¸å¯é“¾æŽ¥ï¼Œæœ‰å†…å®¹æ—¶é“¾æŽ¥åˆ°ç¬¬ä¸€æ¡å†…å®¹";
+		    }
+		    if (type == ELinkType.NoLinkIfChannelNotExists)
+		    {
+		        return "æ— æ ç›®æ—¶ä¸å¯é“¾æŽ¥";
+		    }
+		    if (type == ELinkType.LinkToLastAddChannel)
+		    {
+		        return "é“¾æŽ¥åˆ°æœ€è¿‘å¢žåŠ çš„å­æ ç›®";
+		    }
+		    if (type == ELinkType.LinkToFirstChannel)
+		    {
+		        return "é“¾æŽ¥åˆ°ç¬¬ä¸€ä¸ªå­æ ç›®";
+		    }
+		    if (type == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
+		    {
+		        return "æ— æ ç›®æ—¶ä¸å¯é“¾æŽ¥ï¼Œæœ‰æ ç›®æ—¶é“¾æŽ¥åˆ°æœ€è¿‘å¢žåŠ çš„å­æ ç›®";
+		    }
+		    if (type == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
+		    {
+		        return "æ— æ ç›®æ—¶ä¸å¯é“¾æŽ¥ï¼Œæœ‰æ ç›®æ—¶é“¾æŽ¥åˆ°ç¬¬ä¸€ä¸ªå­æ ç›®";
+		    }
+		    if (type == ELinkType.NoLink)
+		    {
+		        return "ä¸å¯é“¾æŽ¥";
+		    }
+		    if (type == ELinkType.LinkNoRelatedToChannelAndContent)
+		    {
+		        return "é»˜è®¤";
+		    }
+		    throw new Exception();
 		}
 
 		public static ELinkType GetEnumType(string typeStr)
@@ -243,102 +236,36 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 isCreatable = true;
             }
-            else if (nodeInfo.LinkType == ELinkType.NoLink)
-            {
-                isCreatable = false;
-            }
             else if (nodeInfo.LinkType == ELinkType.NoLinkIfContentNotExists)
             {
-                if (nodeInfo.ContentNum == 0)
-                {
-                    isCreatable = false;
-                }
-                else
-                {
-                    isCreatable = true;
-                }
+                isCreatable = nodeInfo.ContentNum != 0;
             }
             else if (nodeInfo.LinkType == ELinkType.LinkToOnlyOneContent)
             {
-                if (nodeInfo.ContentNum == 1)
-                {
-                    isCreatable = false;
-                }
-                else
-                {
-                    isCreatable = true;
-                }
+                isCreatable = nodeInfo.ContentNum != 1;
             }
             else if (nodeInfo.LinkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
             {
-                if (nodeInfo.ContentNum == 0)
-                {
-                    isCreatable = false;
-                }
-                else if (nodeInfo.ContentNum == 1)
-                {
-                    isCreatable = false;
-                }
-                else
+                if (nodeInfo.ContentNum != 0 && nodeInfo.ContentNum != 1)
                 {
                     isCreatable = true;
                 }
             }
             else if (nodeInfo.LinkType == ELinkType.LinkToFirstContent)
             {
-                if (nodeInfo.ContentNum >= 1)
-                {
-                    isCreatable = false;
-                }
-                else
-                {
-                    isCreatable = true;
-                }
-            }
-            else if (nodeInfo.LinkType == ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
-            {
-                isCreatable = false;
+                isCreatable = nodeInfo.ContentNum < 1;
             }
             else if (nodeInfo.LinkType == ELinkType.NoLinkIfChannelNotExists)
             {
-                if (nodeInfo.ChildrenCount == 0)
-                {
-                    isCreatable = false;
-                }
-                else
-                {
-                    isCreatable = true;
-                }
+                isCreatable = nodeInfo.ChildrenCount != 0;
             }
             else if (nodeInfo.LinkType == ELinkType.LinkToLastAddChannel)
             {
-                if (nodeInfo.ChildrenCount > 0)
-                {
-                    isCreatable = false;
-                }
-                else
-                {
-                    isCreatable = true;
-                }
+                isCreatable = nodeInfo.ChildrenCount <= 0;
             }
             else if (nodeInfo.LinkType == ELinkType.LinkToFirstChannel)
             {
-                if (nodeInfo.ChildrenCount > 0)
-                {
-                    isCreatable = false;
-                }
-                else
-                {
-                    isCreatable = true;
-                }
-            }
-            else if (nodeInfo.LinkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
-            {
-                isCreatable = false;
-            }
-            else if (nodeInfo.LinkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
-            {
-                isCreatable = false;
+                isCreatable = nodeInfo.ChildrenCount <= 0;
             }
 
             return isCreatable;

@@ -31,8 +31,9 @@ namespace SiteServer.API.Controllers.Writing
                 var dateTo = PageUtils.FilterSqlAndXss(body.GetPostString("dateTo"));
                 var page = body.GetPostInt("page");
 
-                var user = new User(body.UserInfo);
-                var groupInfo = UserGroupManager.GetGroupInfo(user.GroupId);
+                var user = body.UserInfo;
+                //var groupInfo = UserGroupManager.GetGroupInfo(user.GroupId);
+                var groupInfo = UserGroupManager.GetGroupInfo(0);
                 var adminUserName = groupInfo.Additional.WritingAdminUserName;
 
                 var nodeIdList = new List<int> {nodeId};
@@ -52,7 +53,7 @@ namespace SiteServer.API.Controllers.Writing
                 var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemId, nodeId);
 
-                var sqlString = DataProvider.ContentDao.GetWritingSelectCommend(user.UserName, tableName, publishmentSystemId, nodeIdList, searchType, keyword, dateFrom, dateTo);
+                var sqlString = DataProvider.ContentDao.GetWritingSelectCommend(user.UserName, tableStyle, tableName, publishmentSystemId, nodeIdList, searchType, keyword, dateFrom, dateTo);
 
                 var results = new List<Dictionary<string, object>>();
                 var sqlPager = new SqlPager

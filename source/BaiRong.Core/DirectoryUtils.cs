@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -25,26 +24,11 @@ namespace BaiRong.Core
             public const string DirectoryName = "obj";
         }
 
-        public class SiteServer
-        {
-            public const string DirectoryName = "SiteServer";
-        }
-
-        public class Api
-        {
-            public const string DirectoryName = "Api";
-        }
-
         public class PublishmentSytem
         {
             public const string Include = "Include";
             public const string Template = "Template";
             public const string Content = "Content";
-        }
-
-        public class WebConfig
-        {
-            public const string DirectoryName = "Web.config";
         }
 
         public class SiteFiles
@@ -54,7 +38,7 @@ namespace BaiRong.Core
             public const string UserFiles = "UserFiles";
             public const string BackupFiles = "BackupFiles";
             public const string TemporaryFiles = "TemporaryFiles";
-            public const string Configuration = "Configuration";
+            public const string Plugins = "Plugins";
         }
 
         public class SiteTemplates
@@ -63,7 +47,7 @@ namespace BaiRong.Core
             //文件夹
             public const string SiteTemplateMetadata = "SiteTemplateMetadata";//存储频道模板元数据的文件夹名称
             public const string SiteContent = "SiteContent";//频道内容导入导出临时文件夹名
-            public const string Input = "Input";//提交表单导入导出临时文件夹名
+            //public const string Input = "Input";//提交表单导入导出临时文件夹名
             public const string Table = "Table";//辅助表导入导出临时文件夹名
             public const string RelatedField = "RelatedField";//关联字段导入导出临时文件夹名
             public const string Photo = "Photo";//相册导入导出临时文件夹名
@@ -79,7 +63,6 @@ namespace BaiRong.Core
             public const string FileConfiguration = "Configuration.xml";
             public const string FileSeo = "Seo.xml";
             public const string FileStlTag = "StlTag.xml";
-            public const string FileContentModel = "ContentModel.xml";//自定义添加的内容模型
         }
 
         public static char DirectorySeparatorChar = Path.DirectorySeparatorChar;
@@ -152,16 +135,8 @@ namespace BaiRong.Core
         /// <returns></returns>
         public static string GetDirectoryPath(string path)
         {
-            string directoryPath;
             var ext = Path.GetExtension(path);
-            if (!string.IsNullOrEmpty(ext))		//path为文件路径
-            {
-                directoryPath = Path.GetDirectoryName(path);
-            }
-            else									//path为文件夹路径
-            {
-                directoryPath = path;
-            }
+            var directoryPath = !string.IsNullOrEmpty(ext) ? Path.GetDirectoryName(path) : path;
             return directoryPath;
         }
 
@@ -173,27 +148,12 @@ namespace BaiRong.Core
 
         public static bool IsInDirectory(string parentDirectoryPath, string path)
         {
-            if (string.IsNullOrEmpty(parentDirectoryPath) || string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentNullException();
-            }
+            if (string.IsNullOrEmpty(parentDirectoryPath) || string.IsNullOrEmpty(path)) return false;
 
-            parentDirectoryPath = parentDirectoryPath.Trim().ToLower();
-            path = path.Trim().ToLower();
+            parentDirectoryPath = parentDirectoryPath.Trim().TrimEnd(Path.DirectorySeparatorChar).ToLower();
+            path = path.Trim().TrimEnd(Path.DirectorySeparatorChar).ToLower();
 
-            var ch1 = parentDirectoryPath[parentDirectoryPath.Length - 1];
-            if (ch1 == Path.DirectorySeparatorChar)
-            {
-                parentDirectoryPath = parentDirectoryPath.Substring(0, parentDirectoryPath.Length - 1);
-            }
-
-            var ch2 = path[path.Length - 1];
-            if (ch2 == Path.DirectorySeparatorChar)
-            {
-                path = path.Substring(0, path.Length - 1);
-            }
-
-            return path.StartsWith(parentDirectoryPath);
+            return parentDirectoryPath == path || path.StartsWith(parentDirectoryPath);
         }
 
         public static void MoveDirectory(string srcDirectoryPath, string destDirectoryPath, bool isOverride)
@@ -404,11 +364,7 @@ namespace BaiRong.Core
             if (StringUtils.EqualsIgnoreCase(directoryName, AspnetClient.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, Bin.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, SiteFiles.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, FileConfigManager.Instance.AdminDirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, SiteTemplates.SiteTemplateMetadata)
-                || StringUtils.EqualsIgnoreCase(directoryName, Api.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, "obj")
-                || StringUtils.EqualsIgnoreCase(directoryName, "Properties"))
+                || StringUtils.EqualsIgnoreCase(directoryName, WebConfigUtils.AdminDirectory))
             {
                 return true;
             }
@@ -431,7 +387,7 @@ namespace BaiRong.Core
                 AspnetClient.DirectoryName.ToLower(),
                 Bin.DirectoryName.ToLower(),
                 SiteFiles.DirectoryName.ToLower(),
-                FileConfigManager.Instance.AdminDirectoryName.ToLower(),
+                WebConfigUtils.AdminDirectory.ToLower(),
                 SiteTemplates.SiteTemplateMetadata.ToLower()
             };
         }

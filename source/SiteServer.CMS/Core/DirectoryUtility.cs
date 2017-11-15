@@ -228,9 +228,9 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void DeleteFiles(PublishmentSystemInfo publishmentSystemInfo, ArrayList templateIdArrayList)
+        public static void DeleteFiles(PublishmentSystemInfo publishmentSystemInfo, List<int> templateIdList)
         {
-            foreach (int templateId in templateIdArrayList)
+            foreach (var templateId in templateIdList)
             {
                 var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemInfo.PublishmentSystemId, templateId);
                 if (templateInfo == null || templateInfo.TemplateType != ETemplateType.FileTemplate)
@@ -254,7 +254,6 @@ namespace SiteServer.CMS.Core
 
                 publishmentSystemInfo.IsHeadquarters = true;
                 publishmentSystemInfo.PublishmentSystemDir = string.Empty;
-                publishmentSystemInfo.PublishmentSystemUrl = WebConfigUtils.ApplicationPath;
 
                 DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
                 if (isMoveFiles)
@@ -271,7 +270,6 @@ namespace SiteServer.CMS.Core
             {
                 publishmentSystemInfo.IsHeadquarters = false;
                 publishmentSystemInfo.PublishmentSystemDir = psDir.Trim();
-                publishmentSystemInfo.PublishmentSystemUrl = PageUtils.Combine(WebConfigUtils.ApplicationPath, psDir.Trim());
 
                 DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
 
@@ -297,13 +295,6 @@ namespace SiteServer.CMS.Core
                     }
                 }
             }
-        }
-
-        public static string GetBlogSystemPath(PublishmentSystemInfo publishmentSystemInfo, string blogSystemDir)
-        {
-            var publishmentSystemPath = PathUtility.GetPublishmentSystemPath(publishmentSystemInfo);
-
-            return PathUtils.Combine(publishmentSystemPath, blogSystemDir);
         }
     }
 }

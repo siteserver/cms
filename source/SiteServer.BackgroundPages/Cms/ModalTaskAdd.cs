@@ -8,6 +8,7 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -129,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     if (PublishmentSystemId != 0)
                     {
-                        NodeManager.AddListItems(CreateChannelIDCollection.Items, PublishmentSystemInfo, false, true, Body.AdministratorName);
+                        NodeManager.AddListItems(CreateChannelIDCollection.Items, PublishmentSystemInfo, false, true, Body.AdminName);
                     }
                     else
                     {
@@ -260,7 +261,7 @@ namespace SiteServer.BackgroundPages.Cms
                             }
                             else
                             {
-                                var channelIdList = TranslateUtils.StringCollectionToStringList(taskCreateInfo.ChannelIDCollection);
+                                var channelIdList = TranslateUtils.StringCollectionToStringList(taskCreateInfo.ChannelIdCollection);
                                 ControlUtils.SelectListItems(CreateChannelIDCollection, channelIdList);
                                 CreateIsCreateAll.Checked = false;
                             }
@@ -305,7 +306,7 @@ namespace SiteServer.BackgroundPages.Cms
                             }
                             else
                             {
-                                var publishmentSystemIdList = TranslateUtils.StringCollectionToStringList(taskGatherInfo.PublishmentSystemIDCollection);
+                                var publishmentSystemIdList = TranslateUtils.StringCollectionToStringList(taskGatherInfo.PublishmentSystemIdCollection);
                                 ControlUtils.SelectListItems(GatherListBox, publishmentSystemIdList);
                             }
                         }
@@ -313,7 +314,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             var taskBackupInfo = new TaskBackupInfo(taskInfo.ServiceParameters);
 
-                            if (taskInfo.PublishmentSystemID == 0)
+                            if (taskInfo.PublishmentSystemId == 0)
                             {
                                 if (taskBackupInfo.IsBackupAll)
                                 {
@@ -325,14 +326,14 @@ namespace SiteServer.BackgroundPages.Cms
                                 }
                                 else
                                 {
-                                    var publishmentSystemIdList = TranslateUtils.StringCollectionToStringList(taskBackupInfo.PublishmentSystemIDCollection);
+                                    var publishmentSystemIdList = TranslateUtils.StringCollectionToStringList(taskBackupInfo.PublishmentSystemIdCollection);
                                     ControlUtils.SelectListItems(BackupPublishmentSystemIDCollection, publishmentSystemIdList);
                                     BackupIsBackupAll.Checked = false;
                                 }
                             }
                             else
                             {
-                                ControlUtils.SelectListItems(BackupPublishmentSystemIDCollection, taskInfo.PublishmentSystemID.ToString());
+                                ControlUtils.SelectListItems(BackupPublishmentSystemIDCollection, taskInfo.PublishmentSystemId.ToString());
                             }
 
                             ControlUtils.SelectListItems(BackupType, EBackupTypeUtils.GetValue(taskBackupInfo.BackupType));
@@ -389,7 +390,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var taskCreateInfo = new TaskCreateInfo(string.Empty);
                 taskCreateInfo.IsCreateAll = CreateIsCreateAll.Checked;
-                taskCreateInfo.ChannelIDCollection = TranslateUtils.ObjectCollectionToString(ControlUtils.GetSelectedListControlValueArrayList(CreateChannelIDCollection));
+                taskCreateInfo.ChannelIdCollection = TranslateUtils.ObjectCollectionToString(ControlUtils.GetSelectedListControlValueArrayList(CreateChannelIDCollection));
                 taskCreateInfo.CreateTypes = TranslateUtils.ObjectCollectionToString(ControlUtils.GetSelectedListControlValueArrayList(CreateCreateTypes));
                 serviceParamters = taskCreateInfo;
             }
@@ -427,7 +428,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    taskGatherInfo.PublishmentSystemIDCollection = TranslateUtils.ObjectCollectionToString(ControlUtils.GetSelectedListControlValueArrayList(GatherListBox));
+                    taskGatherInfo.PublishmentSystemIdCollection = TranslateUtils.ObjectCollectionToString(ControlUtils.GetSelectedListControlValueArrayList(GatherListBox));
                 }
                 serviceParamters = taskGatherInfo;
             }
@@ -436,7 +437,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var taskBackupInfo = new TaskBackupInfo(string.Empty);
                 taskBackupInfo.BackupType = EBackupTypeUtils.GetEnumType(BackupType.SelectedValue);
                 taskBackupInfo.IsBackupAll = BackupIsBackupAll.Checked;
-                taskBackupInfo.PublishmentSystemIDCollection = TranslateUtils.ObjectCollectionToString(ControlUtils.GetSelectedListControlValueArrayList(BackupPublishmentSystemIDCollection));
+                taskBackupInfo.PublishmentSystemIdCollection = TranslateUtils.ObjectCollectionToString(ControlUtils.GetSelectedListControlValueArrayList(BackupPublishmentSystemIDCollection));
                 serviceParamters = taskBackupInfo;
             }
 
@@ -484,7 +485,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var taskInfo = new TaskInfo();
                         taskInfo.TaskName = TaskName.Text;
-                        taskInfo.PublishmentSystemID = PublishmentSystemId;
+                        taskInfo.PublishmentSystemId = PublishmentSystemId;
                         taskInfo.ServiceType = _serviceType;
                         taskInfo.FrequencyType = EFrequencyTypeUtils.GetEnumType(FrequencyType.SelectedValue);
                         if (taskInfo.FrequencyType == EFrequencyType.Period)

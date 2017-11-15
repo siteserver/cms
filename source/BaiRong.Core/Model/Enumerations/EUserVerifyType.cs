@@ -17,14 +17,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "None";
             }
-            else if (type == EUserVerifyType.Mobile)
+            if (type == EUserVerifyType.Mobile)
             {
                 return "Mobile";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EUserVerifyType type)
@@ -33,14 +30,11 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "无验证";
             }
-            else if (type == EUserVerifyType.Mobile)
+            if (type == EUserVerifyType.Mobile)
             {
                 return "短信验证";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EUserVerifyType GetEnumType(string typeStr)

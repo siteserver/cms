@@ -4,6 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
+using BaiRong.Core;
+using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Core;
+
 namespace SiteServer.CMS.UEditor
 {
     /// <summary>
@@ -28,11 +32,16 @@ namespace SiteServer.CMS.UEditor
         private string[] FileList;
         private string[] SearchExtensions;
 
-        public ListFileManager(HttpContext context, string pathToList, string[] searchExtensions)
+        public int PublishmentSystemID { get; private set; }
+        public EUploadType UploadType { get; private set; }
+
+        public ListFileManager(HttpContext context, string pathToList, string[] searchExtensions, int publishmentSystemID, EUploadType uploadType)
             : base(context)
         {
             SearchExtensions = searchExtensions.Select(x => x.ToLower()).ToArray();
             PathToList = pathToList;
+            PublishmentSystemID = publishmentSystemID;
+            UploadType = uploadType;
         }
 
         public override void Process()
@@ -51,10 +60,24 @@ namespace SiteServer.CMS.UEditor
             var buildingList = new List<String>();
             try
             {
-                var localPath = Server.MapPath(PathToList);
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(PublishmentSystemID);
+                var publishmentSystemPath = PathUtility.GetPublishmentSystemPath(publishmentSystemInfo); // 本站点物理路径
+                var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\'); // 系统物理路径
+                if (UploadType == EUploadType.Image)
+                {
+                    PathToList = publishmentSystemInfo.Additional.ImageUploadDirectoryName; 
+                }
+                else if(UploadType == EUploadType.File)
+                {
+                    PathToList = publishmentSystemInfo.Additional.FileUploadDirectoryName;
+                }
+
+                //var localPath = Server.MapPath(PathToList);
+                var localPath = PathUtils.Combine(publishmentSystemPath, PathToList);
+
                 buildingList.AddRange(Directory.GetFiles(localPath, "*", SearchOption.AllDirectories)
                     .Where(x => SearchExtensions.Contains(Path.GetExtension(x).ToLower()))
-                    .Select(x => PathToList + x.Substring(localPath.Length).Replace("\\", "/")));
+                    .Select(x => x.Substring(applicationPath.Length).Replace("\\", "/")));
                 Total = buildingList.Count;
                 FileList = buildingList.OrderBy(x => x).Skip(Start).Take(Size).ToArray();
             }

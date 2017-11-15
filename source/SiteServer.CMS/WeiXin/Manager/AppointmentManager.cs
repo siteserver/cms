@@ -16,7 +16,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/appointment/img/start.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/appointment/img/start.jpg"));
             }
             else
             {
@@ -28,7 +28,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/appointment/img/item.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/appointment/img/item.jpg"));
             }
             else
             {
@@ -40,7 +40,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/appointment/img/top.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/appointment/img/top.jpg"));
             }
             else
             {
@@ -52,7 +52,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/appointment/img/result.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/appointment/img/result.jpg"));
             }
             else
             {
@@ -65,7 +65,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(endImageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/appointment/img/end.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/appointment/img/end.jpg"));
             }
             else
             {
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.WeiXin.Manager
             attributes.Add("publishmentSystemID", publishmentSystemInfo.PublishmentSystemId.ToString());
             attributes.Add("appointmentID", appointmentID.ToString());
             attributes.Add("wxOpenID", wxOpenID);
-            var url = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/appointment/index.html"));
+            var url = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/appointment/index.html"));
             return PageUtils.AddQueryString(url, attributes);
         }
 
@@ -90,7 +90,7 @@ namespace SiteServer.CMS.WeiXin.Manager
             attributes.Add("appointmentID", appointmentID.ToString());
             attributes.Add("itemID", itemID.ToString());
             attributes.Add("wxOpenID", wxOpenID);
-            var url = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/appointment/item.html"));
+            var url = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/appointment/item.html"));
             return PageUtils.AddQueryString(url, attributes);
         }
 
@@ -98,11 +98,11 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var appointmentInfoList = DataProviderWX.AppointmentDAO.GetAppointmentInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var appointmentInfoList = DataProviderWx.AppointmentDao.GetAppointmentInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(keywordInfo.PublishmentSystemID);
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(keywordInfo.PublishmentSystemId);
 
             foreach (var appointmentInfo in appointmentInfoList)
             {
@@ -131,11 +131,11 @@ namespace SiteServer.CMS.WeiXin.Manager
                     else
                     {
                         var imageUrl = GetImageUrl(publishmentSystemInfo, appointmentInfo.ImageUrl);
-                        var pageUrl = GetIndexUrl(publishmentSystemInfo, appointmentInfo.ID, wxOpenID);
+                        var pageUrl = GetIndexUrl(publishmentSystemInfo, appointmentInfo.Id, wxOpenID);
                         if (appointmentInfo.ContentIsSingle)
                         {
-                            var itemID = DataProviderWX.AppointmentItemDAO.GetItemID(publishmentSystemInfo.PublishmentSystemId, appointmentInfo.ID);
-                            pageUrl = GetItemUrl(publishmentSystemInfo, appointmentInfo.ID, itemID, wxOpenID);
+                            var itemID = DataProviderWx.AppointmentItemDao.GetItemId(publishmentSystemInfo.PublishmentSystemId, appointmentInfo.Id);
+                            pageUrl = GetItemUrl(publishmentSystemInfo, appointmentInfo.Id, itemID, wxOpenID);
                         }
 
                         article = new Article()

@@ -9,7 +9,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageRelatedField : BasePageCms
     {
-        public DataGrid dgContents;
+        public DataGrid DgContents;
 		public Button AddButton;
         public Button ImportButton;
 
@@ -43,11 +43,11 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationContentModel, "联动字段管理", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "联动字段管理", AppManager.Permissions.WebSite.Configration);
 
-                dgContents.DataSource = DataProvider.RelatedFieldDao.GetDataSource(PublishmentSystemId);
-                dgContents.ItemDataBound += dgContents_ItemDataBound;
-                dgContents.DataBind();
+                DgContents.DataSource = DataProvider.RelatedFieldDao.GetDataSource(PublishmentSystemId);
+                DgContents.ItemDataBound += dgContents_ItemDataBound;
+                DgContents.DataBind();
 
                 var showPopWinString = ModalRelatedFieldAdd.GetOpenWindowString(PublishmentSystemId);
 				AddButton.Attributes.Add("onclick", showPopWinString);

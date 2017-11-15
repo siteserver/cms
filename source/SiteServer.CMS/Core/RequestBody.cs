@@ -6,12 +6,15 @@ using BaiRong.Core;
 using BaiRong.Core.Auth;
 using BaiRong.Core.Auth.JWT;
 using BaiRong.Core.Model;
-using BaiRong.Core.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
 {
-    public class RequestBody
+    public class RequestBody : IRequestContext
     {
         private const string UserAccessToken = "ss_user_access_token";
         private const string AdministratorAccessToken = "ss_administrator_access_token";
@@ -31,16 +34,26 @@ namespace SiteServer.CMS.Core
             }
         }
 
+        public HttpRequest Request => HttpContext.Current.Request;
+
         public string UserName { get; private set; }
 
-        public string AdministratorName { get; private set; }
+        public string AdminName { get; private set; }
 
         public bool IsUserLoggin => !string.IsNullOrEmpty(UserName);
 
-        public bool IsAdministratorLoggin => !string.IsNullOrEmpty(AdministratorName);
+        public bool IsAdminLoggin => !string.IsNullOrEmpty(AdminName);
+
+        public int PublishmentSystemId => GetQueryInt("publishmentSystemId");
+
+        public int ChannelId => GetQueryInt("channelId");
+
+        public int ContentId => GetQueryInt("contentId");
+
+        public string ReturnUrl => GetQueryString("ReturnUrl");
 
         private UserInfo _userInfo;
-        public UserInfo UserInfo
+        public IUserInfo UserInfo
         {
             get
             {
@@ -61,9 +74,9 @@ namespace SiteServer.CMS.Core
             {
                 if (_administratorInfo != null) return _administratorInfo;
 
-                if (!string.IsNullOrEmpty(AdministratorName))
+                if (!string.IsNullOrEmpty(AdminName))
                 {
-                    _administratorInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(AdministratorName);
+                    _administratorInfo = AdminManager.GetAdminInfo(AdminName);
                 }
                 return _administratorInfo ?? (_administratorInfo = new AdministratorInfo());
             }
@@ -92,9 +105,41 @@ namespace SiteServer.CMS.Core
             return !string.IsNullOrEmpty(HttpContext.Current.Request.QueryString[name]) ? TranslateUtils.ToInt(HttpContext.Current.Request.QueryString[name]) : defaultValue;
         }
 
+        public decimal GetQueryDecimal(string name, decimal defaultValue = 0)
+        {
+            return !string.IsNullOrEmpty(HttpContext.Current.Request.QueryString[name]) ? TranslateUtils.ToDecimal(HttpContext.Current.Request.QueryString[name]) : defaultValue;
+        }
+
         public bool GetQueryBool(string name, bool defaultValue = false)
         {
-            return !string.IsNullOrEmpty(HttpContext.Current.Request.QueryString[name]) ? TranslateUtils.ToBool(HttpContext.Current.Request.QueryString[name]) : defaultValue;
+            var str = HttpContext.Current.Request.QueryString[name];
+            var retval = !string.IsNullOrEmpty(str) ? TranslateUtils.ToBool(str) : defaultValue;
+            return retval;
+        }
+
+        public T GetPostObject<T>(string name = "")
+        {
+            string json;
+            if (string.IsNullOrEmpty(name))
+            {
+                var bodyStream = new StreamReader(HttpContext.Current.Request.InputStream);
+                bodyStream.BaseStream.Seek(0, SeekOrigin.Begin);
+                json = bodyStream.ReadToEnd();
+            }
+            else
+            {
+                json = GetPostString(name);
+            }
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+            var timeFormat = new IsoDateTimeConverter
+            {
+                DateTimeFormat = "yyyy-MM-dd HH:mm:ss"
+            };
+            settings.Converters.Add(timeFormat);
+            return JsonConvert.DeserializeObject<T>(json, settings);
         }
 
         public string GetPostString(string name)
@@ -102,19 +147,19 @@ namespace SiteServer.CMS.Core
             return PostData[name]?.ToString();
         }
 
-        public int GetPostInt(string name)
-        {
-            return TranslateUtils.ToInt(PostData[name]?.ToString());
-        }
-
-        public int GetPostInt(string name, int defaultValue)
+        public int GetPostInt(string name, int defaultValue = 0)
         {
             return TranslateUtils.ToInt(PostData[name]?.ToString(), defaultValue);
         }
 
-        public bool GetPostBool(string name)
+        public decimal GetPostDecimal(string name, decimal defaultValue = 0)
         {
-            return TranslateUtils.ToBool(PostData[name]?.ToString());
+            return TranslateUtils.ToDecimal(PostData[name]?.ToString(), defaultValue);
+        }
+
+        public bool GetPostBool(string name, bool defaultValue = false)
+        {
+            return TranslateUtils.ToBool(PostData[name]?.ToString(), defaultValue);
         }
 
         public NameValueCollection GetPostCollection()
@@ -166,7 +211,13 @@ namespace SiteServer.CMS.Core
 
             if (string.IsNullOrEmpty(administratorTokenStr)) return;
 
-            AdministratorName = GetAdministratorToken(administratorTokenStr).AdministratorName;
+            AdminName = GetAdministratorToken(administratorTokenStr).AdministratorName;
+        }
+
+        public string GetUserNameByToken(string token)
+        {
+            var userToken = GetUserToken(token);
+            return userToken?.UserName;
         }
 
         public static UserToken GetUserToken(string tokenStr)
@@ -175,7 +226,7 @@ namespace SiteServer.CMS.Core
 
             try
             {
-                var userToken = JsonWebToken.DecodeToObject<UserToken>(tokenStr, FileConfigManager.Instance.SecretKey);
+                var userToken = JsonWebToken.DecodeToObject<UserToken>(tokenStr, WebConfigUtils.SecretKey);
 
                 if (userToken.AddDate.AddDays(AccessTokenExpireDays) > DateTime.Now)
                 {
@@ -189,13 +240,19 @@ namespace SiteServer.CMS.Core
             return new UserToken();
         }
 
+        public string GetAdminNameByToken(string token)
+        {
+            var userToken = GetAdministratorToken(token);
+            return userToken?.AdministratorName;
+        }
+
         public static AdministratorToken GetAdministratorToken(string tokenStr)
         {
             if (string.IsNullOrEmpty(tokenStr)) return new AdministratorToken();
 
             try
             {
-                var userToken = JsonWebToken.DecodeToObject<AdministratorToken>(tokenStr, FileConfigManager.Instance.SecretKey);
+                var userToken = JsonWebToken.DecodeToObject<AdministratorToken>(tokenStr, WebConfigUtils.SecretKey);
 
                 if (userToken.AddDate.AddDays(AccessTokenExpireDays) > DateTime.Now)
                 {
@@ -209,7 +266,7 @@ namespace SiteServer.CMS.Core
             return new AdministratorToken();
         }
 
-        public static string GetUserTokenStr(string userName)
+        public string GetUserTokenByUserName(string userName)
         {
             if (string.IsNullOrEmpty(userName)) return null;
 
@@ -219,10 +276,10 @@ namespace SiteServer.CMS.Core
                 AddDate = DateTime.Now
             };
 
-            return JsonWebToken.Encode(userToken, FileConfigManager.Instance.SecretKey, JwtHashAlgorithm.HS256);
+            return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
         }
 
-        public static string GetAdministratorTokenStr(string administratorName)
+        public string GetAdminTokenByAdminName(string administratorName)
         {
             if (string.IsNullOrEmpty(administratorName)) return null;
 
@@ -232,7 +289,7 @@ namespace SiteServer.CMS.Core
                 AddDate = DateTime.Now
             };
 
-            return JsonWebToken.Encode(administratorToken, FileConfigManager.Instance.SecretKey, JwtHashAlgorithm.HS256);
+            return JsonWebToken.Encode(administratorToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
         }
 
         public static string CurrentUserName
@@ -255,7 +312,7 @@ namespace SiteServer.CMS.Core
 
             UserName = userName;
             LogUtils.AddUserLoginLog(userName);
-            CookieUtils.SetCookie(UserAccessToken, GetUserTokenStr(userName), DateTime.Now.AddDays(AccessTokenExpireDays));
+            CookieUtils.SetCookie(UserAccessToken, GetUserTokenByUserName(userName), DateTime.Now.AddDays(AccessTokenExpireDays));
         }
 
         public void UserLogout()
@@ -278,28 +335,28 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public void AdministratorLogin(string administratorName)
+        public void AdminLogin(string administratorName)
         {
             if (string.IsNullOrEmpty(administratorName)) return;
 
-            AdministratorName = administratorName;
+            AdminName = administratorName;
             LogUtils.AddAdminLog(administratorName, "管理员登录");
-            CookieUtils.SetCookie(AdministratorAccessToken, GetAdministratorTokenStr(administratorName), DateTime.Now.AddDays(AccessTokenExpireDays));
+            CookieUtils.SetCookie(AdministratorAccessToken, GetAdminTokenByAdminName(administratorName), DateTime.Now.AddDays(AccessTokenExpireDays));
         }
 
-        public static void AdministratorLogout()
+        public void AdminLogout()
         {
             CookieUtils.Erase(AdministratorAccessToken);
         }
 
         public void AddAdminLog(string action, string summary)
         {
-            LogUtils.AddAdminLog(AdministratorName, action, summary);
+            LogUtils.AddAdminLog(AdminName, action, summary);
         }
 
         public void AddAdminLog(string action)
         {
-            LogUtils.AddAdminLog(AdministratorName, action);
+            LogUtils.AddAdminLog(AdminName, action);
         }
 
         public void AddSiteLog(int publishmentSystemId, string action)
@@ -316,7 +373,7 @@ namespace SiteServer.CMS.Core
         {
             if (publishmentSystemId <= 0)
             {
-                LogUtils.AddAdminLog(AdministratorName, action, summary);
+                LogUtils.AddAdminLog(AdminName, action, summary);
             }
             else
             {
@@ -334,7 +391,7 @@ namespace SiteServer.CMS.Core
                     {
                         channelId = -channelId;
                     }
-                    var logInfo = new Model.LogInfo(0, publishmentSystemId, channelId, contentId, AdministratorName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
+                    var logInfo = new Model.LogInfo(0, publishmentSystemId, channelId, contentId, AdminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
                     DataProvider.LogDao.Insert(logInfo);
                 }
                 catch
@@ -342,6 +399,21 @@ namespace SiteServer.CMS.Core
                     // ignored
                 }
             }
+        }
+
+        public void SetCookie(string name, string value, DateTime expires)
+        {
+            CookieUtils.SetCookie(name, value, expires);
+        }
+
+        public string GetCookie(string name)
+        {
+            return CookieUtils.GetCookie(name);
+        }
+
+        public bool IsCookieExists(string name)
+        {
+            return CookieUtils.IsExists(name);
         }
     }
 }

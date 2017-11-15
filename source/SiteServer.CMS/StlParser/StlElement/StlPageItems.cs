@@ -1,31 +1,25 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Parser;
+using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "翻页项容器", Description = "通过 stl:pageItems 标签在模板中插入翻页项的容器，当不需要翻页时容器内的内容不显示")]
     public class StlPageItems
     {
         private StlPageItems() { }
-        public const string ElementName = "stl:pageitems";				//翻页项容器
+        public const string ElementName = "stl:pageItems";
 
-        public const string AttributeAutoHide = "autohide";			    //无分页时自动隐藏
-        public const string AttributeContext = "context";               //所处上下文
+        public const string AttributeContext = "context";
 
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            {AttributeAutoHide, "无分页时自动隐藏"},
-            {AttributeContext, "翻页对象"}
+            {AttributeContext, "所处上下文"}
         };
-
-        public static string Translate(string stlElement)
-        {
-            return TranslateUtils.EncryptStringBySecretKey(stlElement);
-        }
 
         //对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
         public static string Parse(string stlElement, PageInfo pageInfo, int nodeId, int contentId, int currentPageIndex, int pageCount, int totalNum, EContextType contextType)
@@ -36,25 +30,23 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, false);
                 XmlNode node = xmlDocument.DocumentElement;
-                node = node.FirstChild;
+                node = node?.FirstChild;
 
-                var ie = node.Attributes.GetEnumerator();
-                var autoHide = true;
-                while (ie.MoveNext())
+                var ie = node?.Attributes?.GetEnumerator();
+                if (ie != null)
                 {
-                    var attr = (XmlAttribute)ie.Current;
-                    var attributeName = attr.Name.ToLower();
-                    if (attributeName.Equals(AttributeAutoHide))
+                    while (ie.MoveNext())
                     {
-                        autoHide = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(AttributeContext))
-                    {
-                        contextType = EContextTypeUtils.GetEnumType(attr.Value);
+                        var attr = (XmlAttribute)ie.Current;
+
+                        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeContext))
+                        {
+                            contextType = EContextTypeUtils.GetEnumType(attr.Value);
+                        }
                     }
                 }
 
-                if (pageCount <= 1 && autoHide)
+                if (pageCount <= 1)
                 {
                     return string.Empty;
                 }
@@ -64,7 +56,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var length = stlElement.LastIndexOf("<", StringComparison.Ordinal) - index;
                 if (index <= 0 || length <= 0)
                 {
-                    stlElement = node.InnerXml;
+                    stlElement = node?.InnerXml;
                     isXmlContent = true;
                 }
                 else
@@ -77,7 +69,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -90,21 +82,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, false);
                 XmlNode node = xmlDocument.DocumentElement;
-                node = node.FirstChild;
+                node = node?.FirstChild;
 
-                var ie = node.Attributes.GetEnumerator();
-                var autoHide = true;
-                while (ie.MoveNext())
-                {
-                    var attr = (XmlAttribute)ie.Current;
-                    var attributeName = attr.Name.ToLower();
-                    if (attributeName.Equals(AttributeAutoHide))
-                    {
-                        autoHide = TranslateUtils.ToBool(attr.Value);
-                    }
-                }
-
-                if (pageCount <= 1 && autoHide)
+                if (pageCount <= 1)
                 {
                     return string.Empty;
                 }
@@ -114,7 +94,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var length = stlElement.LastIndexOf("<", StringComparison.Ordinal) - index;
                 if (index <= 0 || length <= 0)
                 {
-                    stlElement = node.InnerXml;
+                    stlElement = node?.InnerXml;
                     //isXmlContent = true;
                 }
                 else
@@ -127,7 +107,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -140,21 +120,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var xmlDocument = StlParserUtility.GetXmlDocument(stlElement, false);
                 XmlNode node = xmlDocument.DocumentElement;
-                node = node.FirstChild;
+                node = node?.FirstChild;
 
-                var ie = node.Attributes.GetEnumerator();
-                var autoHide = true;
-                while (ie.MoveNext())
-                {
-                    var attr = (XmlAttribute)ie.Current;
-                    var attributeName = attr.Name.ToLower();
-                    if (attributeName.Equals(AttributeAutoHide))
-                    {
-                        autoHide = TranslateUtils.ToBool(attr.Value);
-                    }
-                }
-
-                if (pageCount <= 1 && autoHide)
+                if (pageCount <= 1)
                 {
                     return string.Empty;
                 }
@@ -163,7 +131,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var length = stlElement.LastIndexOf("<", StringComparison.Ordinal) - index;
                 if (index <= 0 || length <= 0)
                 {
-                    stlElement = node.InnerXml;
+                    stlElement = node?.InnerXml;
                 }
                 else
                 {
@@ -174,7 +142,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;

@@ -3,12 +3,12 @@ using System.Data;
 using System.IO;
 using System.Xml;
 using MySql.Data.MySqlClient;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Data
 {
-    public class MySql : AdoHelper
+    public class MySql : AdoHelper, IDbHelper
     {
-
         #region Overrides
         /// <summary>
         /// Returns an array of SqlParameters of the specified size

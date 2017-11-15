@@ -20,7 +20,8 @@ namespace SiteServer.API.Controllers.Writing
 
                 var publishmentSystemId = body.GetPostInt("publishmentSystemId");
 
-                var groupInfo = UserGroupManager.GetGroupInfo(body.UserInfo.GroupId);
+                //var groupInfo = UserGroupManager.GetGroupInfo(body.UserInfo.GroupId);
+                var groupInfo = UserGroupManager.GetGroupInfo(0);
                 var adminUserName = groupInfo.Additional.WritingAdminUserName;
 
                 var nodeInfoList = PublishmentSystemManager.GetWritingNodeInfoList(adminUserName, publishmentSystemId);

@@ -1,14 +1,12 @@
 ﻿using BaiRong.Core;
-using System.Collections.Specialized;
 using System.Text;
 using System.Collections;
 using SiteServer.CMS.Model;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Wcm.Model;
 using System.Collections.Generic;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
 {
@@ -18,7 +16,7 @@ namespace SiteServer.CMS.Core
         {
         }
 
-        public static string GetSMSContent(List<TableStyleInfo> styleInfoList)
+        public static string GetSmsContent(List<TableStyleInfo> styleInfoList)
         {
             var builder = new StringBuilder();
 
@@ -37,76 +35,20 @@ namespace SiteServer.CMS.Core
             return builder.ToString();
         }
 
-        public static void SendSMSByGovPublicApply(PublishmentSystemInfo publishmentSystemInfo, TagStyleGovPublicApplyInfo tagStyleInfo, GovPublicApplyInfo applyInfo)
+        public static void SendSms(PublishmentSystemInfo publishmentSystemInfo, ITagStyleMailSmsBaseInfo mailSmsInfo, ETableStyle tableStyle, string tableName, int relatedIdentity, ExtendedAttributes contentInfo)
         {
             try
             {
-                if (tagStyleInfo.IsSMS && !string.IsNullOrEmpty(tagStyleInfo.SMSTo))
-                {
-                    var mobiles = tagStyleInfo.SMSTo.Split(';', ',');
-                    var mobileArrayList = new ArrayList();
-
-                    foreach (var mobile in mobiles)
-                    {
-                        if (!string.IsNullOrEmpty(mobile) && StringUtils.IsMobile(mobile) && !mobileArrayList.Contains(mobile))
-                        {
-                            mobileArrayList.Add(mobile);
-                        }
-                    }
-
-                    var builder = new StringBuilder(tagStyleInfo.SMSTitle);
-                    var attributes = new NameValueCollection();
-                    attributes["申请人类型"] = "公民";
-                    if (TranslateUtils.ToBool(applyInfo.GetExtendedAttribute(GovPublicApplyAttribute.IsOrganization)))
-                    {
-                        attributes["申请人类型"] = "法人/其他组织";
-                    }
-                    attributes["申请时间"] = DateUtils.GetDateAndTimeString(applyInfo.AddDate);
-                    foreach (string key in attributes.Keys)
-                    {
-                        var theValue = attributes[key];
-
-                        builder.Append($@"{key}：{theValue},");
-                    }
-
-                    if (builder.Length > 0)
-                    {
-                        builder.Length = builder.Length - 1;
-                    }
-
-                    if (builder.Length > 60)
-                    {
-                        builder.Length = 60;
-                    }
-
-                    //var errorMessage = string.Empty;
-                    //var providerInfo = BaiRongDataProvider.SmsProviderDAO.GetFirstSmsProviderInfo();
-                    //if (providerInfo != null)
-                    //{
-                    //    SmsProviderManager.Send(providerInfo, mobileArrayList, builder.ToString(), out errorMessage);
-                    //}
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-
-        public static void SendSMS(PublishmentSystemInfo publishmentSystemInfo, ITagStyleMailSMSBaseInfo mailSMSInfo, ETableStyle tableStyle, string tableName, int relatedIdentity, ExtendedAttributes contentInfo)
-        {
-            try
-            {
-                if (mailSMSInfo.IsSMS)
+                if (mailSmsInfo.IsSms)
                 {
                     var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, tableStyle, relatedIdentity);
 
                     var smsToArrayList = new ArrayList();
-                    if (mailSMSInfo.SMSReceiver == ETriState.All || mailSMSInfo.SMSReceiver == ETriState.True)
+                    if (mailSmsInfo.SmsReceiver == ETriState.All || mailSmsInfo.SmsReceiver == ETriState.True)
                     {
-                        if (!string.IsNullOrEmpty(mailSMSInfo.SMSTo))
+                        if (!string.IsNullOrEmpty(mailSmsInfo.SmsTo))
                         {
-                            var mobiles = mailSMSInfo.SMSTo.Split(';', ',');
+                            var mobiles = mailSmsInfo.SmsTo.Split(';', ',');
                             foreach (var mobile in mobiles)
                             {
                                 if (!string.IsNullOrEmpty(mobile) && StringUtils.IsMobile(mobile) && !smsToArrayList.Contains(mobile))
@@ -116,9 +58,9 @@ namespace SiteServer.CMS.Core
                             }
                         }
                     }
-                    if (mailSMSInfo.SMSReceiver == ETriState.All || mailSMSInfo.SMSReceiver == ETriState.False)
+                    if (mailSmsInfo.SmsReceiver == ETriState.All || mailSmsInfo.SmsReceiver == ETriState.False)
                     {
-                        var smsTo = contentInfo.GetExtendedAttribute(mailSMSInfo.SMSFiledName);
+                        var smsTo = contentInfo.GetExtendedAttribute(mailSmsInfo.SmsFiledName);
                         if (!string.IsNullOrEmpty(smsTo))
                         {
                             var mobiles = smsTo.Split(';', ',');
@@ -134,13 +76,13 @@ namespace SiteServer.CMS.Core
 
                     var builder = new StringBuilder();
 
-                    if (mailSMSInfo.IsSMSTemplate && !string.IsNullOrEmpty(mailSMSInfo.SMSContent))
+                    if (mailSmsInfo.IsSmsTemplate && !string.IsNullOrEmpty(mailSmsInfo.SmsContent))
                     {
-                        builder.Append(mailSMSInfo.SMSContent);
+                        builder.Append(mailSmsInfo.SmsContent);
                     }
                     else
                     {
-                        builder.Append(GetSMSContent(styleInfoList));
+                        builder.Append(GetSmsContent(styleInfoList));
                     }
 
                     var content = builder.ToString();
@@ -153,15 +95,10 @@ namespace SiteServer.CMS.Core
                     }
 
                     var attributeNameList = TableManager.GetAttributeNameList(tableStyle, tableName);
-                    foreach (string attributeName in attributeNameList)
+                    foreach (var attributeName in attributeNameList)
                     {
                         var theValue = contentInfo.GetExtendedAttribute(attributeName);
                         content = StringUtils.ReplaceIgnoreCase(content, $"[{attributeName}]", theValue);
-                    }
-
-                    if (content.Length > 60)
-                    {
-                        content = content.Substring(0, 60);
                     }
 
                     //var errorMessage = string.Empty;

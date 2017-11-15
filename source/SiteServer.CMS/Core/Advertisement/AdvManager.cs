@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Core.Advertisement
                 {
                     return null;
                 }
-                var advInfoList = DataProvider.AdvDao.GetAdvInfoArrayList(templateType, adAreaInfo.AdAreaID, publishmentSystemID, channelID, fileTemplateID);
+                var advInfoList = DataProvider.AdvDao.GetAdvInfoArrayList(templateType, adAreaInfo.AdAreaId, publishmentSystemID, channelID, fileTemplateID);
                 if (advInfoList.Count <= 0)
                 {
                     return null;
@@ -35,8 +35,8 @@ namespace SiteServer.CMS.Core.Advertisement
         public static string GetSlideAdvHtml(PublishmentSystemInfo publishmentSystemInfo, AdAreaInfo adAreaInfo, AdvInfo advInfo, ArrayList adMaterialInfoList)
         {
             var strHtml = new StringBuilder();
-            strHtml.Append($@"<link href=""{SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "Styles/Css/slideAdv.css")}"" rel=""stylesheet"" />");
-            strHtml.Append($@"<script src=""{SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "JQuery/jquery-1.4.3.min.js")}""></script>");
+            strHtml.Append($@"<link href=""{SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "Styles/Css/slideAdv.css")}"" rel=""stylesheet"" />");
+            strHtml.Append($@"<script src=""{SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "JQuery/jquery-1.4.3.min.js")}""></script>");
             strHtml.AppendFormat(@"
 <script type=""text/javascript"">
     var t = n = 0, count;
@@ -198,7 +198,7 @@ namespace SiteServer.CMS.Core.Advertisement
                     }
                     for (var j = 0; j < k; j++)
                     {
-                        advIDList.Add(info.AdvID);
+                        advIDList.Add(info.AdvId);
                     }
                     standardAdvInfoList.Add(info);
                 }
@@ -222,7 +222,7 @@ namespace SiteServer.CMS.Core.Advertisement
                     var index1 = rd.Next(0, advIDList.Count);
                     foreach (AdvInfo info in standardAdvInfoList)
                     {
-                        if (info.AdvID == (int)advIDList[index1])
+                        if (info.AdvId == (int)advIDList[index1])
                         {
                             advInfo = info;
                         }
@@ -244,7 +244,7 @@ namespace SiteServer.CMS.Core.Advertisement
         {
             AdMaterialInfo adMaterialInfo = null;
             adMaterialInfoList = new ArrayList();
-            var adMaterialInfoArrayList = DataProvider.AdMaterialDao.GetAdMaterialInfoArrayList(advInfo.AdvID, publishmentSystemID);
+            var adMaterialInfoArrayList = DataProvider.AdMaterialDao.GetAdMaterialInfoArrayList(advInfo.AdvId, publishmentSystemID);
             if (adMaterialInfoArrayList.Count > 0)
             {
                 if (advInfo.RotateType == EAdvRotateType.Equality)

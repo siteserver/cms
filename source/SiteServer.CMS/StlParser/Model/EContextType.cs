@@ -9,7 +9,7 @@ namespace SiteServer.CMS.StlParser.Model
         Comment,
         Photo,
         Each,
-        InputContent,
+        //InputContent,
         SqlContent,
         Site,
         Undefined
@@ -39,10 +39,10 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 return "Each";
             }
-            else if (type == EContextType.InputContent)
-            {
-                return "InputContent";
-            }
+            //else if (type == EContextType.InputContent)
+            //{
+            //    return "InputContent";
+            //}
             else if (type == EContextType.SqlContent)
             {
                 return "SqlContent";
@@ -85,10 +85,10 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 retval = EContextType.Each;
             }
-            else if (Equals(EContextType.InputContent, typeStr))
-            {
-                retval = EContextType.InputContent;
-            }
+            //else if (Equals(EContextType.InputContent, typeStr))
+            //{
+            //    retval = EContextType.InputContent;
+            //}
             else if (Equals(EContextType.SqlContent, typeStr))
             {
                 retval = EContextType.SqlContent;

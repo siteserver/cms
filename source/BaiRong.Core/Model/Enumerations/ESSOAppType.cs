@@ -11,20 +11,17 @@ namespace BaiRong.Core.Model.Enumerations
     public class ESSOAppTypeUtils
     {
        public static string GetValue(ESSOAppType type)
-        {
-            if (type == ESSOAppType.SiteServer)
+       {
+           if (type == ESSOAppType.SiteServer)
             {
                 return "SiteServer";
             }
-            else if (type == ESSOAppType.Others)
-            {
-                return "Others";
-            }
-            else
-            {
-                throw new Exception();
-            }
-        }
+           if (type == ESSOAppType.Others)
+           {
+               return "Others";
+           }
+           throw new Exception();
+       }
 
        public static string GetText(ESSOAppType type)
        {
@@ -32,14 +29,11 @@ namespace BaiRong.Core.Model.Enumerations
            {
                return "SiteServer 产品";
            }
-           else if (type == ESSOAppType.Others)
+           if (type == ESSOAppType.Others)
            {
                return "其他";
            }
-           else
-           {
-               throw new Exception();
-           }
+           throw new Exception();
        }
 
        public static ESSOAppType GetEnumType(string typeStr)

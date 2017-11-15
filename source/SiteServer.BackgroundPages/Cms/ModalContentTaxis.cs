@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
+using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 
@@ -11,8 +13,8 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalContentTaxis : BasePageCms
     {
-        protected RadioButtonList TaxisType;
-        protected TextBox TaxisNum;
+        protected RadioButtonList RblTaxisType;
+        protected TextBox TbTaxisNum;
 
         private int _nodeId;
         private string _returnUrl;
@@ -26,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
-            }), "ContentIDCollection", "请选择需要排序的内容！", 300, 220);
+            }), "ContentIDCollection", "请选择需要排序的内容！", 400, 320);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -40,18 +42,23 @@ namespace SiteServer.BackgroundPages.Cms
             _contentIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
             _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeId);
 
-            if (!IsPostBack)
-            {
-                TaxisType.Items.Add(new ListItem("上升", "Up"));
-                TaxisType.Items.Add(new ListItem("下降", "Down"));
-                ControlUtils.SelectListItems(TaxisType, "Up");
-            }
+            if (IsPostBack) return;
+
+            RblTaxisType.Items.Add(new ListItem("上升", "Up"));
+            RblTaxisType.Items.Add(new ListItem("下降", "Down"));
+            ControlUtils.SelectListItems(RblTaxisType, "Up");
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var isUp = TaxisType.SelectedValue == "Up";
-            var taxisNum = int.Parse(TaxisNum.Text);
+            var isUp = RblTaxisType.SelectedValue == "Up";
+            var taxisNum = TranslateUtils.ToInt(TbTaxisNum.Text);
+
+            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
+            if (ETaxisTypeUtils.Equals(nodeInfo.Additional.DefaultTaxisType, ETaxisType.OrderByTaxis))
+            {
+                isUp = !isUp;
+            }
 
             if (isUp == false)
             {

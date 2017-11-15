@@ -1,139 +1,140 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
-using System.Xml;
 using BaiRong.Core;
-using BaiRong.Core.Data;
-using BaiRong.Core.Model.Attributes;
-using SiteServer.CMS.Controllers.Stl;
+using BaiRong.Core.Model;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-    /*
-<stl:if 
-	testType="[Attribute]|TemplateName|ChannelName|TopLevel|UpLevel|UpChannel|SelfOrUpChannel"
-	testOperate="Equals|NotEquals|Empty|NotEmpty|GreatThan|LessThan|In"
-	testValue=""
-	context=""
->
-</stl:if>
-     * */
+    [Stl(Usage = "条件判断", Description = "通过 stl:if 标签在模板中根据条件判断显示内容")]
     public class StlIf
     {
         private StlIf() { }
-        public const string ElementName = "stl:if";                                 //条件判断
+        public const string ElementName = "stl:if";
 
-        private const string AttributeType = "type";			                    //测试类型
-        private const string AttributeOperate = "operate";				            //测试操作
-        private const string AttributeValue = "value";				                //测试值
-        private const string AttributeContext = "context";                          //所处上下文
-        private const string AttributeIsDynamic = "isdynamic";                      //是否动态显示
+        private const string AttributeType = "type";			                                    //测试类型
+        private const string AttributeOperate = "operate";				                            //测试操作
+        private const string AttributeValue = "value";				                                //测试值
+        private const string AttributeContext = "context";                                          //所处上下文
 
-        public const string TypeIsUserLoggin = "IsUserLoggin";
-        public const string TypeIsAdministratorLoggin = "IsAdministratorLoggin";
-        public const string TypeIsUserOrAdministratorLoggin = "IsUserOrAdministratorLoggin";
-        public const string TypeUserGroup = "UserGroup";
-        public const string TypeChannelName = "ChannelName";			            //栏目名称
-        public const string TypeChannelIndex = "ChannelIndex";			            //栏目索引
-        public const string TypeTemplateName = "TemplateName";			            //模板名称
-        public const string TypeTemplateType = "TemplateType";			            //模板类型
-        public const string TypeTopLevel = "TopLevel";			                    //
-        public const string TypeUpChannel = "UpChannel";			                //
-        public const string TypeUpChannelOrSelf = "UpChannelOrSelf";			    //
-        public const string TypeGroupChannel = "GroupChannel";			            //
-        public const string TypeGroupContent = "GroupContent";			            //
-        public const string TypeAddDate = "AddDate";			                    //
-        public const string TypeLastEditDate = "LastEditDate";			            //
-        public const string TypeItemIndex = "ItemIndex";			                //
-        public const string TypeOddItem = "OddItem";			                    //
-
-        public const string OperateEmpty = "Empty";			                    //值为空
-        public const string OperateNotEmpty = "NotEmpty";			                //值不为空
-        public const string OperateEquals = "Equals";			                    //值等于
-        public const string OperateNotEquals = "NotEquals";			            //值不等于
-        public const string OperateGreatThan = "GreatThan";			            //值大于
-        public const string OperateLessThan = "LessThan";			                //值小于
-        public const string OperateIn = "In";			                            //值属于
-        public const string OperateNotIn = "NotIn";                                //值不属于
-
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeType, "测试类型"},
             {AttributeOperate, "测试操作"},
             {AttributeValue, "测试值"},
-            {AttributeContext, "所处上下文"},
-            {AttributeIsDynamic, "是否动态显示"}
+            {AttributeContext, "所处上下文"}
         };
 
-        internal static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
+        public const string TypeIsUserLoggin = "IsUserLoggin";                                      //用户是否已登录
+        public const string TypeIsAdministratorLoggin = "IsAdministratorLoggin";                    //管理员是否已登录
+        public const string TypeIsUserOrAdministratorLoggin = "IsUserOrAdministratorLoggin";        //用户或管理员是否已登录
+        public const string TypeChannelName = "ChannelName";			                            //栏目名称
+        public const string TypeChannelIndex = "ChannelIndex";			                            //栏目索引
+        public const string TypeTemplateName = "TemplateName";			                            //模板名称
+        public const string TypeTemplateType = "TemplateType";			                            //模板类型
+        public const string TypeTopLevel = "TopLevel";			                                    //栏目级别
+        public const string TypeUpChannel = "UpChannel";			                                //上级栏目
+        public const string TypeUpChannelOrSelf = "UpChannelOrSelf";			                    //当前栏目或上级栏目
+        public const string TypeSelfChannel = "SelfChannel";			                            //当前栏目
+        public const string TypeGroupChannel = "GroupChannel";			                            //栏目组名称
+        public const string TypeGroupContent = "GroupContent";			                            //内容组名称
+        public const string TypeAddDate = "AddDate";			                                    //添加时间
+        public const string TypeLastEditDate = "LastEditDate";			                            //最后编辑时间（仅用于判断内容）
+        public const string TypeItemIndex = "ItemIndex";			                                //当前项序号
+        public const string TypeOddItem = "OddItem";			                                    //奇数项
+
+        public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
-            string parsedContent;
-            var contextInfo = contextInfoRef.Clone();
-            try
-            {
-                var testTypeStr = string.Empty;
-                var testOperate = OperateEquals;
-                var testValue = string.Empty;
-                var isDynamic = false;
+            {TypeIsUserLoggin, "用户是否已登录"},
+            {TypeIsAdministratorLoggin, "管理员是否已登录"},
+            {TypeIsUserOrAdministratorLoggin, "用户或管理员是否已登录"},
+            {TypeChannelName, "栏目名称"},
+            {TypeChannelIndex, "栏目索引"},
+            {TypeTemplateName, "模板名称"},
+            {TypeTemplateType, "模板类型"},
+            {TypeTopLevel, "栏目级别"},
+            {TypeUpChannel, "上级栏目"},
+            {TypeUpChannelOrSelf, "当前栏目或上级栏目"},
+            {TypeSelfChannel, "当前栏目"},
+            {TypeGroupChannel, "栏目组名称"},
+            {TypeGroupContent, "内容组名称"},
+            {TypeAddDate, "添加时间"},
+            {TypeLastEditDate, "最后编辑时间（仅用于判断内容）"},
+            {TypeItemIndex, "当前项序号"},
+            {TypeOddItem, "奇数项"}
+        };
 
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+        public const string OperateEmpty = "Empty";
+        public const string OperateNotEmpty = "NotEmpty";			                                //值不为空
+        public const string OperateEquals = "Equals";			                                    //值等于
+        public const string OperateNotEquals = "NotEquals";			                                //值不等于
+        public const string OperateGreatThan = "GreatThan";			                                //值大于
+        public const string OperateLessThan = "LessThan";			                                //值小于
+        public const string OperateIn = "In";			                                            //值属于
+        public const string OperateNotIn = "NotIn";                                                 //值不属于
+
+        public static SortedList<string, string> OperateList => new SortedList<string, string>
+        {
+            {OperateEmpty, "值为空"},
+            {OperateNotEmpty, "值不为空"},
+            {OperateEquals, "值等于"},
+            {OperateNotEquals, "值不等于"},
+            {OperateGreatThan, "值大于"},
+            {OperateLessThan, "值小于"},
+            {OperateIn, "值属于"},
+            {OperateNotIn, "值不属于"}
+        };
+
+
+        internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        {
+            var testTypeStr = string.Empty;
+            var testOperate = OperateEquals;
+            var testValue = string.Empty;
+
+            foreach (var name in contextInfo.Attributes.Keys)
+            {
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeType) || StringUtils.EqualsIgnoreCase(name, "testType"))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributeType) || attributeName == "testtype")
-                        {
-                            testTypeStr = attr.Value;
-                        }
-                        else if (attributeName.Equals(AttributeOperate) || attributeName == "testoperate")
-                        {
-                            testOperate = attr.Value;
-                        }
-                        else if (attributeName.Equals(AttributeValue) || attributeName == "testvalue")
-                        {
-                            testValue = attr.Value;
-                        }
-                        else if (attributeName.Equals(AttributeContext))
-                        {
-                            contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
-                        }
-                        else if (attributeName.Equals(AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                    }
+                    testTypeStr = value;
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(node, pageInfo, contextInfo, testTypeStr, testOperate, testValue);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeOperate) || StringUtils.EqualsIgnoreCase(name, "testOperate"))
+                {
+                    testOperate = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeValue) || StringUtils.EqualsIgnoreCase(name, "testValue"))
+                {
+                    testValue = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
+                {
+                    contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
+                }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
-            }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, testTypeStr, testOperate, testValue);
         }
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string testType, string testOperate, string testValue)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testOperate, string testValue)
         {
             string successTemplateString;
             string failureTemplateString;
 
-            StlParserUtility.GetYesOrNoTemplateString(node, pageInfo, out successTemplateString, out failureTemplateString);
+            StlInnerUtility.GetYesNo(pageInfo, contextInfo.InnerXml, out successTemplateString, out failureTemplateString);
 
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) ||
                 StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) ||
-                StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin) ||
-                StringUtils.EqualsIgnoreCase(testType, TypeUserGroup))
+                StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin))
             {
                 return TestTypeDynamic(pageInfo, contextInfo, testType, testValue, testOperate, successTemplateString,
                     failureTemplateString);
@@ -142,12 +143,12 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isSuccess = false;
             if (StringUtils.EqualsIgnoreCase(testType, TypeChannelName))
             {
-                var channelName = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelID).NodeName;
+                var channelName = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId).NodeName;
                 isSuccess = TestTypeValue(testOperate, testValue, channelName);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeChannelIndex))
             {
-                var channelIndex = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelID).NodeIndexName;
+                var channelIndex = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId).NodeIndexName;
                 isSuccess = TestTypeValue(testOperate, testValue, channelIndex);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeTemplateName))
@@ -160,7 +161,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeTopLevel))
             {
-                var topLevel = NodeManager.GetTopLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelID);
+                var topLevel = NodeManager.GetTopLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
                 isSuccess = IsNumber(topLevel, testOperate, testValue);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeUpChannel))
@@ -171,21 +172,24 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 isSuccess = TestTypeUpChannelOrSelf(pageInfo, contextInfo, testOperate, testValue);
             }
+            else if (StringUtils.EqualsIgnoreCase(testType, TypeSelfChannel))
+            {
+                isSuccess = pageInfo.PageNodeId == contextInfo.ChannelId;
+            }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeGroupChannel))
             {
                 var groupChannels =
                 TranslateUtils.StringCollectionToStringList(
-                    NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelID).NodeGroupNameCollection);
+                    NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId).NodeGroupNameCollection);
                 isSuccess = TestTypeValues(testOperate, testValue, groupChannels);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeGroupContent))
             {
                 if (contextInfo.ContextType == EContextType.Content)
                 {
-                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelID);
-                    var groupContents =
-                        TranslateUtils.StringCollectionToStringList(BaiRongDataProvider.ContentDao.GetValue(tableName,
-                            contextInfo.ContentID, ContentAttribute.ContentGroupNameCollection));
+                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
+                    //var groupContents = TranslateUtils.StringCollectionToStringList(BaiRongDataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
+                    var groupContents = TranslateUtils.StringCollectionToStringList(Content.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
                     isSuccess = TestTypeValues(testOperate, testValue, groupContents);
                 }
             }
@@ -379,10 +383,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
-            var pageUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo);
+            var pageUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
 
             var ifApiUrl = ActionsIf.GetUrl(pageInfo.ApiUrl);
-            var ifApiParms = ActionsIf.GetParameters(pageInfo.PublishmentSystemId, contextInfo.ChannelID, contextInfo.ContentID, pageInfo.TemplateInfo.TemplateId, ajaxDivId, pageUrl, testType, testValue, testOperate, successTemplateString, failureTemplateString);
+            var ifApiParms = ActionsIf.GetParameters(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.TemplateId, ajaxDivId, pageUrl, testType, testValue, testOperate, successTemplateString, failureTemplateString);
 
             var builder = new StringBuilder();
             builder.Append($@"<span id=""{ajaxDivId}""></span>");
@@ -456,8 +460,9 @@ function {functionName}(pageNum)
                 var isIn = false;
                 foreach (var channelIndex in channelIndexes)
                 {
-                    var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
-                    if (ChannelUtility.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
+                    //var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                    var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                    if (NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
                     {
                         isIn = true;
                         break;
@@ -474,8 +479,9 @@ function {functionName}(pageNum)
                 var isIn = false;
                 foreach (var channelIndex in channelIndexes)
                 {
-                    var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
-                    if (ChannelUtility.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
+                    //var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                    var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                    if (NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
                     {
                         isIn = true;
                         break;
@@ -490,7 +496,7 @@ function {functionName}(pageNum)
             {
                 if (string.IsNullOrEmpty(testValue))
                 {
-                    if (ChannelUtility.IsAncestorOrSelf(pageInfo.PublishmentSystemId, contextInfo.ChannelID, pageInfo.PageNodeId))
+                    if (NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, contextInfo.ChannelId, pageInfo.PageNodeId))
                     {
                         isSuccess = true;
                     }
@@ -500,8 +506,9 @@ function {functionName}(pageNum)
                     var channelIndexes = TranslateUtils.StringCollectionToStringList(testValue);
                     foreach (var channelIndex in channelIndexes)
                     {
-                        var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
-                        if (ChannelUtility.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
+                        //var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                        var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                        if (NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
                         {
                             isSuccess = true;
                             break;
@@ -522,9 +529,10 @@ function {functionName}(pageNum)
                 var isIn = false;
                 foreach (var channelIndex in channelIndexes)
                 {
-                    var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                    //var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                    var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
                     if (parentId != pageInfo.PageNodeId &&
-                        ChannelUtility.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
+                        NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
                     {
                         isIn = true;
                         break;
@@ -539,8 +547,8 @@ function {functionName}(pageNum)
             {
                 if (string.IsNullOrEmpty(testValue))
                 {
-                    if (contextInfo.ChannelID != pageInfo.PageNodeId &&
-                        ChannelUtility.IsAncestorOrSelf(pageInfo.PublishmentSystemId, contextInfo.ChannelID, pageInfo.PageNodeId))
+                    if (contextInfo.ChannelId != pageInfo.PageNodeId &&
+                        NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, contextInfo.ChannelId, pageInfo.PageNodeId))
                     {
                         isSuccess = true;
                     }
@@ -548,11 +556,12 @@ function {functionName}(pageNum)
                 else
                 {
                     var channelIndexes = TranslateUtils.StringCollectionToStringList(testValue);
-                    foreach (string channelIndex in channelIndexes)
+                    foreach (var channelIndex in channelIndexes)
                     {
-                        var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                        //var parentId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                        var parentId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
                         if (parentId != pageInfo.PageNodeId &&
-                            ChannelUtility.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
+                            NodeManager.IsAncestorOrSelf(pageInfo.PublishmentSystemId, parentId, pageInfo.PageNodeId))
                         {
                             isSuccess = true;
                             break;
@@ -667,13 +676,13 @@ function {functionName}(pageNum)
                     theValue = DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, testTypeStr, "{0}");
                 }
             }
-            else if (contextInfo.ContextType == EContextType.InputContent)
-            {
-                if (contextInfo.ItemContainer.InputItem != null)
-                {
-                    theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
-                }
-            }
+            //else if (contextInfo.ContextType == EContextType.InputContent)
+            //{
+            //    if (contextInfo.ItemContainer.InputItem != null)
+            //    {
+            //        theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
+            //    }
+            //}
             else if (contextInfo.ContextType == EContextType.SqlContent)
             {
                 if (contextInfo.ItemContainer.SqlItem != null)
@@ -696,28 +705,28 @@ function {functionName}(pageNum)
                     {
                         theValue = DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, testTypeStr, "{0}");
                     }
-                    else if (contextInfo.ItemContainer.InputItem != null)
-                    {
-                        theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
-                    }
-                    else if (contextInfo.ItemContainer.ContentItem != null)
-                    {
-                        theValue = DataBinder.Eval(contextInfo.ItemContainer.ContentItem.DataItem, testTypeStr, "{0}");
-                    }
-                    else if (contextInfo.ItemContainer.ChannelItem != null)
-                    {
-                        theValue = DataBinder.Eval(contextInfo.ItemContainer.ChannelItem.DataItem, testTypeStr, "{0}");
-                    }
+                    //else if (contextInfo.ItemContainer.InputItem != null)
+                    //{
+                    //    theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
+                    //}
+                    //else if (contextInfo.ItemContainer.ContentItem != null)
+                    //{
+                    //    theValue = DataBinder.Eval(contextInfo.ItemContainer.ContentItem.DataItem, testTypeStr, "{0}");
+                    //}
+                    //else if (contextInfo.ItemContainer.ChannelItem != null)
+                    //{
+                    //    theValue = DataBinder.Eval(contextInfo.ItemContainer.ChannelItem.DataItem, testTypeStr, "{0}");
+                    //}
                     else if (contextInfo.ItemContainer.SqlItem != null)
                     {
                         theValue = DataBinder.Eval(contextInfo.ItemContainer.SqlItem.DataItem, testTypeStr, "{0}");
                     }
                 }
-                else if (contextInfo.ContentID != 0)//获取内容
+                else if (contextInfo.ContentId != 0)//获取内容
                 {
                     theValue = GetValueFromContent(pageInfo, contextInfo, testTypeStr);
                 }
-                else if (contextInfo.ChannelID != 0)//获取栏目
+                else if (contextInfo.ChannelId != 0)//获取栏目
                 {
                     theValue = GetValueFromChannel(pageInfo, contextInfo, testTypeStr);
                 }
@@ -730,7 +739,7 @@ function {functionName}(pageNum)
         {
             string theValue;
 
-            var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelID);
+            var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
 
             if (StringUtils.EqualsIgnoreCase(NodeAttribute.AddDate, testTypeStr))
             {
@@ -758,7 +767,8 @@ function {functionName}(pageNum)
             }
             else if (StringUtils.EqualsIgnoreCase(NodeAttribute.CountOfImageContents, testTypeStr))
             {
-                var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId);
+                //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId);
+                var count = Content.GetCountCheckedImage(pageInfo.PublishmentSystemId, channel.NodeId);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(NodeAttribute.LinkUrl, testTypeStr))
@@ -767,32 +777,26 @@ function {functionName}(pageNum)
             }
             else
             {
-                theValue = channel.Additional.Attributes[testTypeStr];
+                theValue = channel.Additional.GetExtendedAttribute(testTypeStr);
             }
             return theValue;
         }
 
         private static string GetValueFromContent(PageInfo pageInfo, ContextInfo contextInfo, string testTypeStr)
         {
-            string theValue = null;
+            string theValue;
 
-            if (contextInfo.ItemContainer?.ContentItem != null)
+            if (contextInfo.ContentInfo == null)
             {
-                theValue = SqlUtils.Eval(contextInfo.ItemContainer.ContentItem.DataItem, testTypeStr) as string;
+                var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
+                //theValue = BaiRongDataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, testTypeStr);
+                theValue = Content.GetValue(tableName, contextInfo.ContentId, testTypeStr);
+            }
+            else
+            {
+                theValue = contextInfo.ContentInfo.GetExtendedAttribute(testTypeStr);
             }
 
-            if (theValue == null)
-            {
-                if (contextInfo.ContentInfo == null)
-                {
-                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelID);
-                    theValue = BaiRongDataProvider.ContentDao.GetValue(tableName, contextInfo.ContentID, testTypeStr);
-                }
-                else
-                {
-                    theValue = contextInfo.ContentInfo.GetExtendedAttribute(testTypeStr);
-                }
-            }
             return theValue;
         }
 
@@ -804,8 +808,9 @@ function {functionName}(pageNum)
             {
                 if (contextInfo.ContentInfo == null)
                 {
-                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelID);
-                    addDate = BaiRongDataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentID);
+                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
+                    //addDate = BaiRongDataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentId);
+                    addDate = Content.GetAddDate(tableName, contextInfo.ContentId);
                 }
                 else
                 {
@@ -814,7 +819,7 @@ function {functionName}(pageNum)
             }
             else if (contextInfo.ContextType == EContextType.Channel)
             {
-                var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelID);
+                var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
 
                 addDate = channel.AddDate;
             }
@@ -825,13 +830,13 @@ function {functionName}(pageNum)
                     addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, "AddDate");
                 }
             }
-            else if (contextInfo.ContextType == EContextType.InputContent)
-            {
-                if (contextInfo.ItemContainer.InputItem != null)
-                {
-                    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.AddDate);
-                }
-            }
+            //else if (contextInfo.ContextType == EContextType.InputContent)
+            //{
+            //    if (contextInfo.ItemContainer.InputItem != null)
+            //    {
+            //        addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.AddDate);
+            //    }
+            //}
             else
             {
                 if (contextInfo.ItemContainer != null)
@@ -840,38 +845,39 @@ function {functionName}(pageNum)
                     {
                         addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.CommentItem.DataItem, "AddDate");
                     }
-                    else if (contextInfo.ItemContainer.InputItem != null)
-                    {
-                        addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.AddDate);
-                    }
-                    else if (contextInfo.ItemContainer.ContentItem != null)
-                    {
-                        addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.ContentItem.DataItem, ContentAttribute.AddDate);
-                    }
-                    else if (contextInfo.ItemContainer.ChannelItem != null)
-                    {
-                        addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.ChannelItem.DataItem, NodeAttribute.AddDate);
-                    }
+                    //else if (contextInfo.ItemContainer.InputItem != null)
+                    //{
+                    //    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, InputContentAttribute.AddDate);
+                    //}
+                    //else if (contextInfo.ItemContainer.ContentItem != null)
+                    //{
+                    //    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.ContentItem.DataItem, ContentAttribute.AddDate);
+                    //}
+                    //else if (contextInfo.ItemContainer.ChannelItem != null)
+                    //{
+                    //    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.ChannelItem.DataItem, NodeAttribute.AddDate);
+                    //}
                     else if (contextInfo.ItemContainer.SqlItem != null)
                     {
                         addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.SqlItem.DataItem, "AddDate");
                     }
                 }
-                else if (contextInfo.ContentID != 0)//获取内容
+                else if (contextInfo.ContentId != 0)//获取内容
                 {
                     if (contextInfo.ContentInfo == null)
                     {
-                        var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelID);
-                        addDate = BaiRongDataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentID);
+                        var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
+                        //addDate = BaiRongDataProvider.ContentDao.GetAddDate(tableName, contextInfo.ContentId);
+                        addDate = Content.GetAddDate(tableName, contextInfo.ContentId);
                     }
                     else
                     {
                         addDate = contextInfo.ContentInfo.AddDate;
                     }
                 }
-                else if (contextInfo.ChannelID != 0)//获取栏目
+                else if (contextInfo.ChannelId != 0)//获取栏目
                 {
-                    var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelID);
+                    var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
                     addDate = channel.AddDate;
                 }
             }
@@ -887,8 +893,9 @@ function {functionName}(pageNum)
             {
                 if (contextInfo.ContentInfo == null)
                 {
-                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelID);
-                    lastEditDate = BaiRongDataProvider.ContentDao.GetLastEditDate(tableName, contextInfo.ContentID);
+                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
+                    //lastEditDate = BaiRongDataProvider.ContentDao.GetLastEditDate(tableName, contextInfo.ContentId);
+                    lastEditDate = Content.GetLastEditDate(tableName, contextInfo.ContentId);
                 }
                 else
                 {
@@ -1003,3 +1010,4 @@ function {functionName}(pageNum)
         }
     }
 }
+

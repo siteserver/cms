@@ -18,38 +18,32 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Public";
             }
-            else if (type == ESecurityType.Friends)
+            if (type == ESecurityType.Friends)
             {
                 return "Friends";
             }
-            else if (type == ESecurityType.SelfOnly)
+            if (type == ESecurityType.SelfOnly)
             {
                 return "SelfOnly";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(ESecurityType type)
         {
             if (type == ESecurityType.Public)
             {
-                return "ËùÓĞÈË";
+                return "æ‰€æœ‰äºº";
             }
-            else if (type == ESecurityType.Friends)
+            if (type == ESecurityType.Friends)
             {
-                return "ÎÒµÄºÃÓÑ";
+                return "æˆ‘çš„å¥½å‹";
             }
-            else if (type == ESecurityType.SelfOnly)
+            if (type == ESecurityType.SelfOnly)
             {
-                return "Ö»ÓĞÎÒ×Ô¼º";
+                return "åªæœ‰æˆ‘è‡ªå·±";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static ESecurityType GetEnumType(string typeStr)

@@ -1,10 +1,10 @@
-﻿using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Collection;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.AuxiliaryTable
 {
@@ -17,11 +17,11 @@ namespace BaiRong.Core.AuxiliaryTable
         public static PairList GetAllTableStyleInfoPairs()
         {
             lock (LockObject)
-            {
+            { 
                 if (_async || CacheUtils.Get(CacheKey) == null)
                 {
                     var entries = BaiRongDataProvider.TableStyleDao.GetAllTableStyleInfoPairs();
-                    CacheUtils.Max(CacheKey, entries);
+                    CacheUtils.Insert(CacheKey, entries);
                     _async = false;
                     return entries;
                 }
@@ -33,9 +33,9 @@ namespace BaiRong.Core.AuxiliaryTable
         {
             relatedIdentities = GetRelatedIdentities(relatedIdentities);
 
-            var sortedlist = new Dictionary<string, TableStyleInfo>();
-            var allAttributeNames = new ArrayList();
-            var arraylist = new List<TableStyleInfo>();
+            var dict = new Dictionary<string, TableStyleInfo>();
+            var allAttributeNames = new List<string>();
+            var styleInfoList = new List<TableStyleInfo>();
 
             var entries = GetAllTableStyleInfoPairs();
             var attributeNames = TableManager.GetAttributeNameList(tableStyle, tableName);
@@ -46,8 +46,8 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 //if (ETableStyleUtils.IsContent(tableStyle)) continue;
                 var startKey = GetCacheKeyStart(relatedIdentity, tableName);
-                var keyArrayList = entries.GetKeys(startKey);
-                foreach (string key in keyArrayList)
+                var keyList = entries.GetKeys(startKey);
+                foreach (var key in keyList)
                 {
                     var styleInfo = entries.GetValue(key) as TableStyleInfo;
                     if (styleInfo == null || allAttributeNames.Contains(styleInfo.AttributeName)) continue;
@@ -55,17 +55,17 @@ namespace BaiRong.Core.AuxiliaryTable
                     allAttributeNames.Add(styleInfo.AttributeName);
                     if (styleInfo.Taxis <= 0 && attributeNames.Contains(styleInfo.AttributeName))//数据库字段
                     {
-                        sortedlist.Add(styleInfo.AttributeName, styleInfo);
+                        dict.Add(styleInfo.AttributeName, styleInfo);
                     }
                     else if (styleInfo.Taxis > 0)                       //排序字段
                     {
                         var iStr = relatedIdentity + styleInfo.Taxis.ToString().PadLeft(3, '0');
-                        sortedlist.Add("1" + iStr + "_" + styleInfo.AttributeName, styleInfo);
+                        dict.Add("1" + iStr + "_" + styleInfo.AttributeName, styleInfo);
                     }
                     else                                                //未排序字段
                     {
                         var iStr = relatedIdentity + i.ToString().PadLeft(3, '0');
-                        sortedlist.Add("0" + iStr + "_" + styleInfo.AttributeName, styleInfo);
+                        dict.Add("0" + iStr + "_" + styleInfo.AttributeName, styleInfo);
                         i = i - 1;
                     }
                 }
@@ -80,54 +80,38 @@ namespace BaiRong.Core.AuxiliaryTable
 
                     if (tableStyle == ETableStyle.BackgroundContent)
                     {
-                        styleInfo = GetBackgroundContentTableStyleInfo(tableName, attributeName);
+                        styleInfo = GetBackgroundContentTableStyleInfo(entries, tableName, attributeName);
                     }
-                    else if (tableStyle == ETableStyle.GovPublicContent)
+                    else if (tableStyle == ETableStyle.Custom)
                     {
-                        styleInfo = GetGovPublicContentTableStyleInfo(tableName, attributeName);
-                    }
-                    else if (tableStyle == ETableStyle.GovInteractContent)
-                    {
-                        styleInfo = GetGovInteractContentTableStyleInfo(tableName, attributeName);
-                    }
-                    else if (tableStyle == ETableStyle.VoteContent)
-                    {
-                        styleInfo = GetVoteContentTableStyleInfo(tableName, attributeName);
-                    }
-                    else if (tableStyle == ETableStyle.JobContent)
-                    {
-                        styleInfo = GetJobContentTableStyleInfo(tableName, attributeName);
-                    }
-                    else if (tableStyle == ETableStyle.UserDefined)
-                    {
-                        styleInfo = GetUserDefinedTableStyleInfo(tableName, attributeName);
+                        styleInfo = GetCustomTableStyleInfo(tableName, attributeName);
                     }
                     else
                     {
                         styleInfo = GetDefaultTableStyleInfo(tableName, attributeName);
                     }
 
-                    arraylist.Add(styleInfo);
+                    styleInfoList.Add(styleInfo);
                 }
-                else if (sortedlist.ContainsKey(attributeName))
+                else if (dict.ContainsKey(attributeName))
                 {
-                    styleInfo = sortedlist[attributeName];
+                    styleInfo = dict[attributeName];
                     if (styleInfo != null && styleInfo.Taxis <= 0 && attributeNames.Contains(styleInfo.AttributeName))
                     {
-                        arraylist.Add(styleInfo);
+                        styleInfoList.Add(styleInfo);
                     }
                 }
             }
 
-            foreach (var key in sortedlist.Keys)
+            foreach (var key in dict.Keys)
             {
                 if (!attributeNames.Contains(key))
                 {
-                    arraylist.Add(sortedlist[key]);
+                    styleInfoList.Add(dict[key]);
                 }
             }
 
-            return arraylist;
+            return styleInfoList;
         }
 
         public static bool IsExistsInParents(List<int> relatedIdentities, string tableName, string attributeName)
@@ -214,27 +198,11 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 if (tableStyle == ETableStyle.BackgroundContent)
                 {
-                    styleInfo = GetBackgroundContentTableStyleInfo(tableName, attributeName);
+                    styleInfo = GetBackgroundContentTableStyleInfo(entries, tableName, attributeName);
                 }
-                else if (tableStyle == ETableStyle.GovPublicContent)
+                else if (tableStyle == ETableStyle.Custom)
                 {
-                    styleInfo = GetGovPublicContentTableStyleInfo(tableName, attributeName);
-                }
-                else if (tableStyle == ETableStyle.GovInteractContent)
-                {
-                    styleInfo = GetGovInteractContentTableStyleInfo(tableName, attributeName);
-                }
-                else if (tableStyle == ETableStyle.VoteContent)
-                {
-                    styleInfo = GetVoteContentTableStyleInfo(tableName, attributeName);
-                }
-                else if (tableStyle == ETableStyle.JobContent)
-                {
-                    styleInfo = GetJobContentTableStyleInfo(tableName, attributeName);
-                }
-                else if (tableStyle == ETableStyle.UserDefined)
-                {
-                    styleInfo = GetUserDefinedTableStyleInfo(tableName, attributeName);
+                    styleInfo = GetCustomTableStyleInfo(tableName, attributeName);
                 }
                 else
                 {
@@ -294,12 +262,12 @@ namespace BaiRong.Core.AuxiliaryTable
             }
         }
 
-        public static void DeleteAndInsertStyleItems(int tableStyleId, ArrayList styleItems)
+        public static void DeleteAndInsertStyleItems(int tableStyleId, List<TableStyleItemInfo> styleItems)
         {
             if (styleItems == null || styleItems.Count <= 0) return;
 
-            BaiRongDataProvider.TableStyleDao.DeleteStyleItems(tableStyleId);
-            BaiRongDataProvider.TableStyleDao.InsertStyleItems(styleItems);
+            BaiRongDataProvider.TableStyleItemDao.DeleteStyleItems(tableStyleId);
+            BaiRongDataProvider.TableStyleItemDao.InsertStyleItems(styleItems);
         }
 
         public static void Delete(int relatedIdentity, string tableName, string attributeName)
@@ -392,9 +360,9 @@ namespace BaiRong.Core.AuxiliaryTable
                     !allRelatedIdentities.Contains(identityFromKey)) continue;
 
                 var styleInfo = (TableStyleInfo)entries.GetValue(key);
-                if (EInputTypeUtils.IsWithStyleItems(EInputTypeUtils.GetEnumType(styleInfo.InputType)))
+                if (InputTypeUtils.IsWithStyleItems(InputTypeUtils.GetEnumType(styleInfo.InputType)))
                 {
-                    styleInfo.StyleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                    styleInfo.StyleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                 }
                 var tableStyleInfoWithItemList = dict.ContainsKey(styleInfo.AttributeName) ? dict[styleInfo.AttributeName] : new List<TableStyleInfo>();
                 tableStyleInfoWithItemList.Add(styleInfo);
@@ -406,40 +374,33 @@ namespace BaiRong.Core.AuxiliaryTable
 
         public const string Current = "{Current}";
 
-        public static TableStyleInfo GetBackgroundContentTableStyleInfo(string tableName, string attributeName)
+        public static TableStyleInfo GetBackgroundContentTableStyleInfo(PairList entries, string tableName, string attributeName)
         {
             var lowerAttributeName = attributeName.ToLower();
             if (ContentAttribute.HiddenAttributes.Contains(lowerAttributeName))
             {
                 return GetContentHiddenTableStyleInfo(tableName, attributeName);
             }
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, EInputTypeUtils.GetValue(EInputType.Text), string.Empty, true, string.Empty);
+            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
 
-            if (lowerAttributeName == ContentAttribute.Title.ToLower())
-            {
-                styleInfo.DisplayName = "标题";
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-                styleInfo.Additional.IsFormatString = true;
-            }
-            else if (lowerAttributeName == BackgroundContentAttribute.SubTitle.ToLower())
+            if (lowerAttributeName == BackgroundContentAttribute.SubTitle.ToLower())
             {
                 styleInfo.DisplayName = "副标题";
             }
             else if (lowerAttributeName == BackgroundContentAttribute.ImageUrl.ToLower())
             {
                 styleInfo.DisplayName = "图片";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Image);
+                styleInfo.InputType = InputTypeUtils.GetValue(InputType.Image);
             }
             else if (lowerAttributeName == BackgroundContentAttribute.VideoUrl.ToLower())
             {
                 styleInfo.DisplayName = "视频";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Video);
+                styleInfo.InputType = InputTypeUtils.GetValue(InputType.Video);
             }
             else if (lowerAttributeName == BackgroundContentAttribute.FileUrl.ToLower())
             {
                 styleInfo.DisplayName = "附件";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.File);
+                styleInfo.InputType = InputTypeUtils.GetValue(InputType.File);
             }
             else if (lowerAttributeName == BackgroundContentAttribute.LinkUrl.ToLower())
             {
@@ -449,7 +410,7 @@ namespace BaiRong.Core.AuxiliaryTable
             else if (lowerAttributeName == BackgroundContentAttribute.Content.ToLower())
             {
                 styleInfo.DisplayName = "内容";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.TextEditor);
+                styleInfo.InputType = InputTypeUtils.GetValue(InputType.TextEditor);
             }
             else if (lowerAttributeName == BackgroundContentAttribute.Author.ToLower())
             {
@@ -462,37 +423,20 @@ namespace BaiRong.Core.AuxiliaryTable
             else if (lowerAttributeName == BackgroundContentAttribute.Summary.ToLower())
             {
                 styleInfo.DisplayName = "内容摘要";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.TextArea);
-            }
-            else if (lowerAttributeName == BackgroundContentAttribute.IsRecommend.ToLower())
-            {
-                styleInfo.DisplayName = "推荐";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-            }
-            else if (lowerAttributeName == BackgroundContentAttribute.IsHot.ToLower())
-            {
-                styleInfo.DisplayName = "热点";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-            }
-            else if (lowerAttributeName == BackgroundContentAttribute.IsColor.ToLower())
-            {
-                styleInfo.DisplayName = "醒目";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-            }
-            else if (lowerAttributeName == ContentAttribute.IsTop.ToLower())
-            {
-                styleInfo.DisplayName = "置顶";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-            }
-            else if (lowerAttributeName == ContentAttribute.AddDate.ToLower())
-            {
-                styleInfo.DisplayName = "添加日期";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.DateTime);
-                styleInfo.DefaultValue = Current;
+                styleInfo.InputType = InputTypeUtils.GetValue(InputType.TextArea);
             }
             else if (!string.IsNullOrEmpty(attributeName))
             {
-                var tableStyleInfo = BaiRongDataProvider.TableStyleDao.GetTableStyleInfo(0, tableName, attributeName);
+                TableStyleInfo tableStyleInfo = null;
+                foreach (var key in entries.Keys)
+                {
+                    if (key == GetCacheKey(0, tableName, attributeName))
+                    {
+                        tableStyleInfo = (TableStyleInfo)entries.GetValue(key);
+                        break;
+                    }
+                }
+                //var tableStyleInfo = BaiRongDataProvider.TableStyleDao.GetTableStyleInfo(0, tableName, attributeName);
                 if (tableStyleInfo != null)
                 {
                     //styleInfo.DisplayName = attributeName;
@@ -504,295 +448,20 @@ namespace BaiRong.Core.AuxiliaryTable
             return styleInfo;
         }
 
-        public static TableStyleInfo GetGovPublicContentTableStyleInfo(string tableName, string attributeName)
+        public static TableStyleInfo GetCustomTableStyleInfo(string tableName, string attributeName)
         {
             var lowerAttributeName = attributeName.ToLower();
             if (ContentAttribute.HiddenAttributes.Contains(lowerAttributeName))
             {
                 return GetContentHiddenTableStyleInfo(tableName, attributeName);
             }
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, EInputTypeUtils.GetValue(EInputType.Text), string.Empty, true, string.Empty);
-
-            if (lowerAttributeName == ContentAttribute.Title.ToLower())
-            {
-                styleInfo.DisplayName = "标题";
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-                styleInfo.Additional.IsFormatString = true;
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.Identifier.ToLower())
-            {
-                styleInfo.DisplayName = "索引号";
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.Description.ToLower())
-            {
-                styleInfo.DisplayName = "内容概述";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.TextArea);
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.PublishDate.ToLower())
-            {
-                styleInfo.DisplayName = "发文日期";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Date);
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.EffectDate.ToLower())
-            {
-                styleInfo.DisplayName = "生效日期";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Date);
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.IsAbolition.ToLower())
-            {
-                styleInfo.DisplayName = "是否废止";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.AbolitionDate.ToLower())
-            {
-                styleInfo.DisplayName = "废止日期";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Date);
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.DocumentNo.ToLower())
-            {
-                styleInfo.DisplayName = "文号";
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.Publisher.ToLower())
-            {
-                styleInfo.DisplayName = "发布机构";
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.Keywords.ToLower())
-            {
-                styleInfo.DisplayName = "关键词";
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.ImageUrl.ToLower())
-            {
-                styleInfo.DisplayName = "图片";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Image);
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.FileUrl.ToLower())
-            {
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.File);
-                styleInfo.IsSingleLine = true;
-                styleInfo.DisplayName = "附件";
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.IsRecommend.ToLower())
-            {
-                styleInfo.DisplayName = "推荐";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.IsHot.ToLower())
-            {
-                styleInfo.DisplayName = "热点";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.IsColor.ToLower())
-            {
-                styleInfo.DisplayName = "醒目";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-            }
-            else if (lowerAttributeName == ContentAttribute.IsTop.ToLower())
-            {
-                styleInfo.DisplayName = "置顶";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-            }
-            else if (lowerAttributeName == GovPublicContentAttribute.Content.ToLower())
-            {
-                styleInfo.DisplayName = "内容";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.TextEditor);
-            }
-            else if (lowerAttributeName == ContentAttribute.AddDate.ToLower())
-            {
-                styleInfo.DisplayName = "添加日期";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.DateTime);
-                styleInfo.DefaultValue = Current;
-            }
-            return styleInfo;
-        }
-
-        public static TableStyleInfo GetVoteContentTableStyleInfo(string tableName, string attributeName)
-        {
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, EInputTypeUtils.GetValue(EInputType.Text), string.Empty, true, string.Empty);
-
-            var lowerAttributeName = attributeName.ToLower();
-            if (VoteContentAttribute.HiddenAttributes.Contains(lowerAttributeName))
-            {
-                if (lowerAttributeName == VoteContentAttribute.IsImageVote.ToLower())
-                {
-                    styleInfo.DisplayName = "图片投票";
-                }
-                else if (lowerAttributeName == VoteContentAttribute.IsSummary.ToLower())
-                {
-                    styleInfo.DisplayName = "显示简介";
-                }
-                else if (lowerAttributeName == VoteContentAttribute.Participants.ToLower())
-                {
-                    styleInfo.DisplayName = "参与人数";
-                }
-                else if (lowerAttributeName == VoteContentAttribute.IsClosed.ToLower())
-                {
-                    styleInfo.DisplayName = "已结束";
-                }
-                else if (lowerAttributeName == VoteContentAttribute.IsTop.ToLower())
-                {
-                    styleInfo.DisplayName = "置顶";
-                }
-                else
-                {
-                    styleInfo = GetContentHiddenTableStyleInfo(tableName, attributeName);
-                }
-                return styleInfo;
-            }
-
-            if (lowerAttributeName == VoteContentAttribute.Title.ToLower())
-            {
-                styleInfo.DisplayName = "标题";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Text);
-                styleInfo.Additional.IsFormatString = true;
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-            }
-            else if (lowerAttributeName == VoteContentAttribute.SubTitle.ToLower())
-            {
-                styleInfo.DisplayName = "副标题";
-                styleInfo.IsVisible = false;
-            }
-            else if (lowerAttributeName == VoteContentAttribute.MaxSelectNum.ToLower())
-            {
-                styleInfo.DisplayName = "单选/多选";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.SelectOne);
-            }
-            else if (lowerAttributeName == VoteContentAttribute.ImageUrl.ToLower())
-            {
-                styleInfo.DisplayName = "图片";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Image);
-            }
-            else if (lowerAttributeName == VoteContentAttribute.Content.ToLower())
-            {
-                styleInfo.DisplayName = "内容";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.TextEditor);
-            }
-            else if (lowerAttributeName == VoteContentAttribute.Summary.ToLower())
-            {
-                styleInfo.DisplayName = "内容摘要";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.TextArea);
-                styleInfo.IsVisible = false;
-            }
-            else if (lowerAttributeName == VoteContentAttribute.AddDate.ToLower())
-            {
-                styleInfo.DisplayName = "开始日期";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.DateTime);
-                styleInfo.DefaultValue = Current;
-            }
-            else if (lowerAttributeName == VoteContentAttribute.EndDate.ToLower())
-            {
-                styleInfo.DisplayName = "截止日期";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.DateTime);
-                styleInfo.DefaultValue = Current;
-            }
-            else if (lowerAttributeName == VoteContentAttribute.IsVotedView.ToLower())
-            {
-                styleInfo.DisplayName = "投票结果";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Radio);
-            }
-            else if (lowerAttributeName == VoteContentAttribute.HiddenContent.ToLower())
-            {
-                styleInfo.DisplayName = "隐藏内容";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.TextEditor);
-            }
-            return styleInfo;
-        }
-
-        public static TableStyleInfo GetJobContentTableStyleInfo(string tableName, string attributeName)
-        {
-            var lowerAttributeName = attributeName.ToLower();
-            if (ContentAttribute.HiddenAttributes.Contains(lowerAttributeName))
-            {
-                return GetContentHiddenTableStyleInfo(tableName, attributeName);
-            }
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, EInputTypeUtils.GetValue(EInputType.Text), string.Empty, true, string.Empty);
-            var styleItems = new List<TableStyleItemInfo>();
+            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
 
             if (lowerAttributeName == ContentAttribute.Title.ToLower())
             {
                 styleInfo.DisplayName = "标题";
                 styleInfo.HelpText = "标题的名称";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Text);
-                styleInfo.Additional.IsFormatString = true;
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-            }
-            else if (lowerAttributeName == JobContentAttribute.Department.ToLower())
-            {
-                styleInfo.DisplayName = "所属部门";
-                styleInfo.HelpText = "所属部门";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Text);
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-            }
-            else if (lowerAttributeName == JobContentAttribute.Location.ToLower())
-            {
-                styleInfo.DisplayName = "工作地点";
-                styleInfo.HelpText = "工作地点";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Text);
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-            }
-            else if (lowerAttributeName == JobContentAttribute.NumberOfPeople.ToLower())
-            {
-                styleInfo.DisplayName = "招聘人数";
-                styleInfo.HelpText = "招聘人数";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Text);
-                styleInfo.DefaultValue = "不限";
-                styleInfo.Additional.Width = "60px";
-            }
-            else if (lowerAttributeName == JobContentAttribute.Responsibility.ToLower())
-            {
-                styleInfo.DisplayName = "工作职责";
-                styleInfo.HelpText = "工作职责";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.TextEditor);
-            }
-            else if (lowerAttributeName == JobContentAttribute.Requirement.ToLower())
-            {
-                styleInfo.DisplayName = "工作要求";
-                styleInfo.HelpText = "工作要求";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.TextEditor);
-            }
-            else if (lowerAttributeName == JobContentAttribute.IsUrgent.ToLower())
-            {
-                styleInfo.DisplayName = "是否急聘";
-                styleInfo.HelpText = "是否急聘";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-                var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, "急聘", true.ToString(), false);
-                styleItems.Add(itemInfo);
-                styleInfo.StyleItems = styleItems;
-            }
-            else if (lowerAttributeName == ContentAttribute.IsTop.ToLower())
-            {
-                styleInfo.DisplayName = "置顶";
-                styleInfo.HelpText = "是否为置顶内容";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
-            }
-            else if (lowerAttributeName == ContentAttribute.AddDate.ToLower())
-            {
-                styleInfo.DisplayName = "添加日期";
-                styleInfo.HelpText = "内容的添加日期";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.DateTime);
-                styleInfo.DefaultValue = Current;
-            }
-            return styleInfo;
-        }
-
-        public static TableStyleInfo GetUserDefinedTableStyleInfo(string tableName, string attributeName)
-        {
-            var lowerAttributeName = attributeName.ToLower();
-            if (ContentAttribute.HiddenAttributes.Contains(lowerAttributeName))
-            {
-                return GetContentHiddenTableStyleInfo(tableName, attributeName);
-            }
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, EInputTypeUtils.GetValue(EInputType.Text), string.Empty, true, string.Empty);
-
-            if (lowerAttributeName == ContentAttribute.Title.ToLower())
-            {
-                styleInfo.DisplayName = "标题";
-                styleInfo.HelpText = "标题的名称";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Text);
+                styleInfo.InputType = InputTypeUtils.GetValue(InputType.Text);
                 styleInfo.Additional.IsFormatString = true;
                 styleInfo.Additional.IsValidate = true;
                 styleInfo.Additional.IsRequired = true;
@@ -801,138 +470,22 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 styleInfo.DisplayName = "置顶";
                 styleInfo.HelpText = "是否为置顶内容";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.CheckBox);
+                styleInfo.InputType = InputTypeUtils.GetValue(InputType.CheckBox);
             }
             else if (lowerAttributeName == ContentAttribute.AddDate.ToLower())
             {
                 styleInfo.DisplayName = "添加日期";
                 styleInfo.HelpText = "内容的添加日期";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.DateTime);
+                styleInfo.InputType = InputTypeUtils.GetValue(InputType.DateTime);
                 styleInfo.DefaultValue = Current;
             }
 
-            return styleInfo;
-        }
-
-        public static TableStyleInfo GetGovInteractContentTableStyleInfo(string tableName, string attributeName)
-        {
-            var lowerAttributeName = attributeName.ToLower();
-            if (GovInteractContentAttribute.HiddenAttributes.Contains(lowerAttributeName))
-            {
-                return GetContentHiddenTableStyleInfo(tableName, attributeName);
-            }
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, false, EInputTypeUtils.GetValue(EInputType.Text), string.Empty, true, string.Empty);
-
-            if (lowerAttributeName == GovInteractContentAttribute.RealName.ToLower())
-            {
-                styleInfo.DisplayName = "姓名";
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.Organization.ToLower())
-            {
-                styleInfo.DisplayName = "工作单位";
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.CardType.ToLower())
-            {
-                styleInfo.DisplayName = "证件名称";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.SelectOne);
-                styleInfo.StyleItems = new List<TableStyleItemInfo>
-                {
-                    new TableStyleItemInfo(0, 0, "身份证", "身份证", false),
-                    new TableStyleItemInfo(0, 0, "学生证", "学生证", false),
-                    new TableStyleItemInfo(0, 0, "军官证", "军官证", false),
-                    new TableStyleItemInfo(0, 0, "工作证", "工作证", false)
-                };
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.CardNo.ToLower())
-            {
-                styleInfo.DisplayName = "证件号码";
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.Phone.ToLower())
-            {
-                styleInfo.DisplayName = "联系电话";
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.PostCode.ToLower())
-            {
-                styleInfo.DisplayName = "邮政编码";
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-                styleInfo.Additional.ValidateType = EInputValidateType.Integer;
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.Address.ToLower())
-            {
-                styleInfo.DisplayName = "联系地址";
-                styleInfo.IsSingleLine = true;
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.Email.ToLower())
-            {
-                styleInfo.DisplayName = "电子邮件";
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-                styleInfo.Additional.ValidateType = EInputValidateType.Email;
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.Fax.ToLower())
-            {
-                styleInfo.DisplayName = "传真";
-                styleInfo.Additional.ValidateType = EInputValidateType.Integer;
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.TypeId.ToLower())
-            {
-                styleInfo.DisplayName = "类型";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.SpecifiedValue);
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.IsPublic.ToLower())
-            {
-                styleInfo.DisplayName = "是否公开";
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.Radio);
-                styleInfo.StyleItems = new List<TableStyleItemInfo>
-                {
-                    new TableStyleItemInfo(0, 0, "公开", true.ToString(), true),
-                    new TableStyleItemInfo(0, 0, "不公开", false.ToString(), false)
-                };
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.Title.ToLower())
-            {
-                styleInfo.DisplayName = "标题";
-                styleInfo.IsSingleLine = true;
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.Content.ToLower())
-            {
-                styleInfo.DisplayName = "内容";
-                styleInfo.IsSingleLine = true;
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.TextArea);
-                styleInfo.Additional.Width = "90%";
-                styleInfo.Additional.Height = 180;
-                styleInfo.Additional.IsValidate = true;
-                styleInfo.Additional.IsRequired = true;
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.FileUrl.ToLower())
-            {
-                styleInfo.DisplayName = "附件";
-                styleInfo.IsSingleLine = true;
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.File);
-            }
-            else if (lowerAttributeName == GovInteractContentAttribute.DepartmentId.ToLower())
-            {
-                styleInfo.DisplayName = "提交对象";
-                styleInfo.IsSingleLine = true;
-                styleInfo.InputType = EInputTypeUtils.GetValue(EInputType.SpecifiedValue);
-            }
             return styleInfo;
         }
 
         private static TableStyleInfo GetContentHiddenTableStyleInfo(string tableName, string attributeName)
         {
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, EInputTypeUtils.GetValue(EInputType.Text), string.Empty, true, string.Empty);
+            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
             switch (attributeName)
             {
                 case ContentAttribute.Id:
@@ -1013,7 +566,7 @@ namespace BaiRong.Core.AuxiliaryTable
 
         public static TableStyleInfo GetDefaultTableStyleInfo(string tableName, string attributeName)
         {
-            return new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, EInputTypeUtils.GetValue(EInputType.Text), string.Empty, true, string.Empty);
+            return new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
         }
 
         public static bool IsMetadata(ETableStyle tableStyle, string attributeName)
@@ -1027,10 +580,10 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 retval = ChannelAttribute.HiddenAttributes.Contains(attributeName.ToLower());
             }
-            else if (tableStyle == ETableStyle.InputContent)
-            {
-                retval = InputContentAttribute.AllAttributes.Contains(attributeName.ToLower());
-            }
+            //else if (tableStyle == ETableStyle.InputContent)
+            //{
+            //    retval = InputContentAttribute.AllAttributes.Contains(attributeName.ToLower());
+            //}
             return retval;
         }
     }

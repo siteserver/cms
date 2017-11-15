@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
@@ -30,7 +31,7 @@ namespace SiteServer.CMS.Provider
                     var isContentCheck = false;
                     foreach (var theNodeId in owningNodeIdList)
                     {
-                        if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemId, theNodeId, AppManager.Cms.Permission.Channel.ContentCheck))
+                        if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemId, theNodeId, AppManager.Permissions.Channel.ContentCheck))
                         {
                             isContentCheck = true;
                         }
@@ -43,18 +44,8 @@ namespace SiteServer.CMS.Provider
 
                 int checkedLevel;
                 var isChecked = CheckManager.GetUserCheckLevel(administratorName, publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, out checkedLevel);
-                var checkLevelArrayList = LevelManager.LevelInt.GetCheckLevelArrayListOfNeedCheck(publishmentSystemInfo, isChecked, checkedLevel);
-                string sqlString;
-                if (isSystemAdministrator)
-                {
-                    sqlString =
-                        $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}))";
-                }
-                else
-                {
-                    sqlString =
-                        $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelArrayList)}))";
-                }
+                var checkLevelList = LevelManager.LevelInt.GetCheckLevelListOfNeedCheck(publishmentSystemInfo, isChecked, checkedLevel);
+                var sqlString = isSystemAdministrator ? $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))" : $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))";
 
                 var count = BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
                 if (count > 0)
@@ -73,7 +64,7 @@ namespace SiteServer.CMS.Provider
                 if (!string.IsNullOrEmpty(tableName))
                 {
                     string sqlWhere = $"WHERE ID = {contentId}";
-                    var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+                    var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                     using (var rdr = ExecuteReader(sqlSelect))
                     {
@@ -100,65 +91,50 @@ namespace SiteServer.CMS.Provider
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetStlWhereString(PublishmentSystemInfo publishmentSystemInfo, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        public string GetStlWhereString(int publishmentSystemId, string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, bool isCreateSearchDuplicate)
         {
             var whereBuilder = new StringBuilder();
-            whereBuilder.Append($" AND PublishmentSystemID = {publishmentSystemInfo.PublishmentSystemId} ");
+            whereBuilder.Append($" AND PublishmentSystemID = {publishmentSystemId} ");
 
             if (isImageExists)
             {
-                if (isImage)
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.ImageUrl} <> '' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.ImageUrl} = '' ");
-                }
+                whereBuilder.Append(isImage
+                    ? $" AND {BackgroundContentAttribute.ImageUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.ImageUrl} = '' ");
             }
 
             if (isVideoExists)
             {
-                if (isVideo)
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.VideoUrl} <> '' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.VideoUrl} = '' ");
-                }
+                whereBuilder.Append(isVideo
+                    ? $" AND {BackgroundContentAttribute.VideoUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.VideoUrl} = '' ");
             }
 
             if (isFileExists)
             {
-                if (isFile)
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.FileUrl} <> '' ");
-                }
-                else
-                {
-                    whereBuilder.Append($" AND {BackgroundContentAttribute.FileUrl} = '' ");
-                }
+                whereBuilder.Append(isFile
+                    ? $" AND {BackgroundContentAttribute.FileUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.FileUrl} = '' ");
             }
 
             if (isTopExists)
             {
-                whereBuilder.Append($" AND IsTop = '{isTop}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsTop} = '{isTop}' ");
             }
 
             if (isRecommendExists)
             {
-                whereBuilder.Append($" AND {BackgroundContentAttribute.IsRecommend} = '{isRecommend}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsRecommend} = '{isRecommend}' ");
             }
 
             if (isHotExists)
             {
-                whereBuilder.Append($" AND {BackgroundContentAttribute.IsHot} = '{isHot}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsHot} = '{isHot}' ");
             }
 
             if (isColorExists)
             {
-                whereBuilder.Append($" AND {BackgroundContentAttribute.IsColor} = '{isColor}' ");
+                whereBuilder.Append($" AND {ContentAttribute.IsColor} = '{isColor}' ");
             }
 
             if (!string.IsNullOrEmpty(group))
@@ -212,7 +188,7 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(tags))
             {
                 var tagCollection = TagUtils.ParseTagsString(tags);
-                var contentIdArrayList = BaiRongDataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemInfo.PublishmentSystemId);
+                var contentIdArrayList = BaiRongDataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, publishmentSystemId);
                 if (contentIdArrayList.Count > 0)
                 {
                     whereBuilder.Append(
@@ -222,13 +198,114 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(where))
             {
-                whereBuilder.Append($" AND ({@where}) ");
+                whereBuilder.Append($" AND ({where}) ");
             }
 
-            if (!publishmentSystemInfo.Additional.IsCreateSearchDuplicate)
+            if (!isCreateSearchDuplicate)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(ID)", whereBuilder + " GROUP BY Title");
+                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(ID)", whereBuilder + " GROUP BY Title");
                 whereBuilder.Append($" AND ID IN ({sqlString}) ");
+            }
+
+            return whereBuilder.ToString();
+        }
+
+        public string GetStlWhereStringBySearch(string tableName, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        {
+            var whereBuilder = new StringBuilder();
+
+            if (isImageExists)
+            {
+                whereBuilder.Append(isImage
+                    ? $" AND {BackgroundContentAttribute.ImageUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.ImageUrl} = '' ");
+            }
+
+            if (isVideoExists)
+            {
+                whereBuilder.Append(isVideo
+                    ? $" AND {BackgroundContentAttribute.VideoUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.VideoUrl} = '' ");
+            }
+
+            if (isFileExists)
+            {
+                whereBuilder.Append(isFile
+                    ? $" AND {BackgroundContentAttribute.FileUrl} <> '' "
+                    : $" AND {BackgroundContentAttribute.FileUrl} = '' ");
+            }
+
+            if (isTopExists)
+            {
+                whereBuilder.Append($" AND {ContentAttribute.IsTop} = '{isTop}' ");
+            }
+
+            if (isRecommendExists)
+            {
+                whereBuilder.Append($" AND {ContentAttribute.IsRecommend} = '{isRecommend}' ");
+            }
+
+            if (isHotExists)
+            {
+                whereBuilder.Append($" AND {ContentAttribute.IsHot} = '{isHot}' ");
+            }
+
+            if (isColorExists)
+            {
+                whereBuilder.Append($" AND {ContentAttribute.IsColor} = '{isColor}' ");
+            }
+
+            if (!string.IsNullOrEmpty(group))
+            {
+                group = group.Trim().Trim(',');
+                var groupArr = group.Split(',');
+                if (groupArr != null && groupArr.Length > 0)
+                {
+                    whereBuilder.Append(" AND (");
+                    foreach (var theGroup in groupArr)
+                    {
+                        var trimGroup = theGroup.Trim();
+                        //whereBuilder.Append(
+                        //    $" ({ContentAttribute.ContentGroupNameCollection} = '{trimGroup}' OR CHARINDEX('{trimGroup},',{ContentAttribute.ContentGroupNameCollection}) > 0 OR CHARINDEX(',{trimGroup},',{ContentAttribute.ContentGroupNameCollection}) > 0 OR CHARINDEX(',{trimGroup}',{ContentAttribute.ContentGroupNameCollection}) > 0) OR ");
+
+                        whereBuilder.Append(
+                                $" ({ContentAttribute.ContentGroupNameCollection} = '{trimGroup}' OR {SqlUtils.GetInStr(ContentAttribute.ContentGroupNameCollection, trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.ContentGroupNameCollection, "," + trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.ContentGroupNameCollection, "," + trimGroup)}) OR ");
+                    }
+                    if (groupArr.Length > 0)
+                    {
+                        whereBuilder.Length = whereBuilder.Length - 3;
+                    }
+                    whereBuilder.Append(") ");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(groupNot))
+            {
+                groupNot = groupNot.Trim().Trim(',');
+                var groupNotArr = groupNot.Split(',');
+                if (groupNotArr != null && groupNotArr.Length > 0)
+                {
+                    whereBuilder.Append(" AND (");
+                    foreach (var theGroupNot in groupNotArr)
+                    {
+                        var trimGroup = theGroupNot.Trim();
+                        //whereBuilder.Append(
+                        //    $" ({ContentAttribute.ContentGroupNameCollection} <> '{trimGroup}' AND CHARINDEX('{trimGroup},',{ContentAttribute.ContentGroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup},',{ContentAttribute.ContentGroupNameCollection}) = 0 AND CHARINDEX(',{trimGroup}',{ContentAttribute.ContentGroupNameCollection}) = 0) AND ");
+
+                        whereBuilder.Append(
+                                $" ({ContentAttribute.ContentGroupNameCollection} <> '{trimGroup}' AND {SqlUtils.GetNotInStr(ContentAttribute.ContentGroupNameCollection, trimGroup + ",")} AND {SqlUtils.GetNotInStr(ContentAttribute.ContentGroupNameCollection, "," + trimGroup + ",")} AND {SqlUtils.GetNotInStr(ContentAttribute.ContentGroupNameCollection, "," + trimGroup)}) AND ");
+                    }
+                    if (groupNotArr.Length > 0)
+                    {
+                        whereBuilder.Length = whereBuilder.Length - 4;
+                    }
+                    whereBuilder.Append(") ");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(where))
+            {
+                whereBuilder.Append($" AND ({where}) ");
             }
 
             return whereBuilder.ToString();
@@ -240,7 +317,7 @@ namespace SiteServer.CMS.Provider
             whereString.Append(
                 $"WHERE (PublishmentSystemID = {publishmentSystemId} AND IsChecked='True' AND FileUrl <> '') ");
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 	}
 }

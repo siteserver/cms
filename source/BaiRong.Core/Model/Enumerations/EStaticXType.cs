@@ -6,10 +6,10 @@ namespace BaiRong.Core.Model.Enumerations
 
     public enum EStatictisXType
     {
-        Hour,          //–° ±
-        Day,            //»’
-        Month,       //‘¬
-        Year,           //ƒÍ
+        Hour,          //Â∞èÊó∂
+        Day,            //Êó•
+        Month,       //Êúà
+        Year,           //Âπ¥
     }
 
     public class EStatictisXTypeUtils
@@ -20,46 +20,40 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Hour";
             }
-            else if (type == EStatictisXType.Day)
+            if (type == EStatictisXType.Day)
             {
                 return "Day";
             }
-            else if (type == EStatictisXType.Month)
+            if (type == EStatictisXType.Month)
             {
                 return "Month";
             }
-            else if (type == EStatictisXType.Year)
+            if (type == EStatictisXType.Year)
             {
                 return "Year";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EStatictisXType type)
         {
             if (type == EStatictisXType.Hour)
             {
-                return " ±";
+                return "Êó∂";
             }
-            else if (type == EStatictisXType.Day)
+            if (type == EStatictisXType.Day)
             {
-                return "»’";
+                return "Êó•";
             }
-            else if (type == EStatictisXType.Month)
+            if (type == EStatictisXType.Month)
             {
-                return "‘¬";
+                return "Êúà";
             }
-            else if (type == EStatictisXType.Year)
+            if (type == EStatictisXType.Year)
             {
-                return "ƒÍ";
+                return "Âπ¥";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EStatictisXType GetEnumType(string typeStr)

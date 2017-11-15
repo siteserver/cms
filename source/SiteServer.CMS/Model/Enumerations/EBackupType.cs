@@ -15,51 +15,45 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EBackupType type)
 		{
-            if (type == EBackupType.Templates)
+		    if (type == EBackupType.Templates)
 			{
                 return "Templates";
             }
-            else if (type == EBackupType.ChannelsAndContents)
-            {
-                return "ChannelsAndContents";
-            }
-            else if (type == EBackupType.Files)
-            {
-                return "Files";
-            }
-            else if (type == EBackupType.Site)
-			{
-                return "Site";
-            }
-			else
-			{
-                return "Undefined";
-			}
+		    if (type == EBackupType.ChannelsAndContents)
+		    {
+		        return "ChannelsAndContents";
+		    }
+		    if (type == EBackupType.Files)
+		    {
+		        return "Files";
+		    }
+		    if (type == EBackupType.Site)
+		    {
+		        return "Site";
+		    }
+		    return "Undefined";
 		}
 
 		public static string GetText(EBackupType type)
 		{
-            if (type == EBackupType.Templates)
+		    if (type == EBackupType.Templates)
             {
                 return "显示模板";
             }
-            else if (type == EBackupType.ChannelsAndContents)
-            {
-                return "栏目及内容";
-            }
-            else if (type == EBackupType.Files)
-            {
-                return "文件";
-            }
-            else if (type == EBackupType.Site)
-			{
-                return "整站";
-            }
-			
-			else
-			{
-                return "Undefined";
-			}
+		    if (type == EBackupType.ChannelsAndContents)
+		    {
+		        return "栏目及内容";
+		    }
+		    if (type == EBackupType.Files)
+		    {
+		        return "文件";
+		    }
+		    if (type == EBackupType.Site)
+		    {
+		        return "整站";
+		    }
+
+		    return "Undefined";
 		}
 
 		public static EBackupType GetEnumType(string typeStr)

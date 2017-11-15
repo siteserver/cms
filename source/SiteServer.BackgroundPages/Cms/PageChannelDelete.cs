@@ -6,7 +6,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using System.Collections.Generic;
-using BaiRong.Core.Text;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -47,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var nodeID in nodeIDList)
 				{
                     if (nodeID == PublishmentSystemId) continue;
-                    if (HasChannelPermissions(nodeID, AppManager.Cms.Permission.Channel.ChannelDelete))
+                    if (HasChannelPermissions(nodeID, AppManager.Permissions.Channel.ChannelDelete))
 					{
                         var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
                         var displayName = nodeInfo.NodeName;
@@ -94,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var nodeID in nodeIDList)
 					{
                         if (nodeID == PublishmentSystemId) continue;
-                        if (HasChannelPermissions(nodeID, AppManager.Cms.Permission.Channel.ChannelDelete))
+                        if (HasChannelPermissions(nodeID, AppManager.Permissions.Channel.ChannelDelete))
 						{
 							nodeIDArrayList.Add(nodeID);
 						}
@@ -171,7 +170,7 @@ namespace SiteServer.BackgroundPages.Cms
                         FailMessage(ex, "删除栏目失败！");
                     }
 
-                    LogUtils.AddErrorLog(ex);
+                    LogUtils.AddSystemErrorLog(ex);
 				}
 			}
 		}

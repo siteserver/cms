@@ -4,7 +4,7 @@ using System.Web.UI.WebControls;
 namespace SiteServer.CMS.Model.Enumerations
 {
 	/// <summary>
-	/// µ¼Èëµ¼³öÔªËØÀàĞÍ
+	/// å¯¼å…¥å¯¼å‡ºå…ƒç´ ç±»å‹
 	/// </summary>
 	public enum EImportExportType
 	{
@@ -20,50 +20,44 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EImportExportType type)
 		{
-			if (type == EImportExportType.Template)
+		    if (type == EImportExportType.Template)
 			{
 				return "Template";
 			}
-			else if (type == EImportExportType.DisplayMode)
-			{
-				return "DisplayMode";
-			}
-			else if (type == EImportExportType.MenuDisplay)
-			{
-				return "MenuDisplay";
-			}
-			else if (type == EImportExportType.Vote)
-			{
-				return "Vote";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EImportExportType.DisplayMode)
+		    {
+		        return "DisplayMode";
+		    }
+		    if (type == EImportExportType.MenuDisplay)
+		    {
+		        return "MenuDisplay";
+		    }
+		    if (type == EImportExportType.Vote)
+		    {
+		        return "Vote";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EImportExportType type)
 		{
 			if (type == EImportExportType.Template)
 			{
-				return "ÍøÕ¾Ä£°å";
+				return "ç½‘ç«™æ¨¡æ¿";
 			}
-			else if (type == EImportExportType.DisplayMode)
+		    if (type == EImportExportType.DisplayMode)
+		    {
+		        return "åˆ—è¡¨æ˜¾ç¤ºæ–¹å¼";
+		    }
+		    if (type == EImportExportType.MenuDisplay)
+		    {
+		        return "èœå•æ˜¾ç¤ºæ–¹å¼";
+		    }
+		    if (type == EImportExportType.Vote)
 			{
-				return "ÁĞ±íÏÔÊ¾·½Ê½";
+				return "æŠ•ç¥¨é¡¹æ•°æ®";
 			}
-			else if (type == EImportExportType.MenuDisplay)
-			{
-				return "²Ëµ¥ÏÔÊ¾·½Ê½";
-			}
-			if (type == EImportExportType.Vote)
-			{
-				return "Í¶Æ±ÏîÊı¾İ";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    throw new Exception();
 		}
 
 		public static EImportExportType GetEnumType(string typeStr)

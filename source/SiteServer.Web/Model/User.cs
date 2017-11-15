@@ -9,7 +9,7 @@ namespace SiteServer.API.Model
     {
         public User(UserInfo userInfo)
         {
-            AvatarUrl = PageUtility.GetUserAvatarUrl(PageUtils.GetApiUrl(), userInfo);
+            AvatarUrl = PageUtility.GetUserAvatarUrl(PageUtils.OuterApiUrl, userInfo);
 
             if (userInfo == null) return;
 

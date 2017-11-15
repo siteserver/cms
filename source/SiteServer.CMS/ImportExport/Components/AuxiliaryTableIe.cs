@@ -60,7 +60,7 @@ namespace SiteServer.CMS.ImportExport.Components
 			AtomUtility.AddDcElement(entry.AdditionalElements, "TableMetadataID", metaInfo.TableMetadataId.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, "AuxiliaryTableENName", metaInfo.AuxiliaryTableEnName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, "AttributeName", metaInfo.AttributeName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, "DataType", EDataTypeUtils.GetValue(metaInfo.DataType));
+			AtomUtility.AddDcElement(entry.AdditionalElements, "DataType", DataTypeUtils.GetValue(metaInfo.DataType));
 			AtomUtility.AddDcElement(entry.AdditionalElements, "DataLength", metaInfo.DataLength.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, "Taxis", metaInfo.Taxis.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "IsSystem", metaInfo.IsSystem.ToString());
@@ -124,7 +124,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 if (!string.IsNullOrEmpty(tableNameToInsert))//需要添加
                 {
-                    if (!BaiRongDataProvider.TableStructureDao.IsTableExists(tableNameToInsert))
+                    if (!BaiRongDataProvider.DatabaseDao.IsTableExists(tableNameToInsert))
                     {
                         tableInfo = new AuxiliaryTableInfo
                         {
@@ -153,7 +153,7 @@ namespace SiteServer.CMS.ImportExport.Components
                                 AuxiliaryTableEnName = tableNameToInsert,
                                 AttributeName =
                                     AtomUtility.GetDcElementContent(entry.AdditionalElements, "AttributeName"),
-                                DataType = EDataTypeUtils.GetEnumType(
+                                DataType = DataTypeUtils.GetEnumType(
                                     AtomUtility.GetDcElementContent(entry.AdditionalElements, "DataType")),
                                 DataLength = TranslateUtils.ToInt(
                                     AtomUtility.GetDcElementContent(entry.AdditionalElements, "DataLength")),
@@ -175,31 +175,11 @@ namespace SiteServer.CMS.ImportExport.Components
                     }
                 }
 
-                var tableNameToChange = (!string.IsNullOrEmpty(tableNameToInsert)) ? tableNameToInsert : tableName;
+                var tableNameToChange = !string.IsNullOrEmpty(tableNameToInsert) ? tableNameToInsert : tableName;
                 //更新发布系统后台内容表及栏目表
                 if (tableType == EAuxiliaryTableType.BackgroundContent)
                 {
                     publishmentSystemInfo.AuxiliaryTableForContent = tableNameToChange;
-                    DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-                }
-                else if (tableType == EAuxiliaryTableType.GovPublicContent)
-                {
-                    publishmentSystemInfo.AuxiliaryTableForGovPublic = tableNameToChange;
-                    DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-                }
-                else if (tableType == EAuxiliaryTableType.GovInteractContent)
-                {
-                    publishmentSystemInfo.AuxiliaryTableForGovInteract = tableNameToChange;
-                    DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-                }
-                else if (tableType == EAuxiliaryTableType.JobContent)
-                {
-                    publishmentSystemInfo.AuxiliaryTableForJob = tableNameToChange;
-                    DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-                }
-                else if (tableType == EAuxiliaryTableType.VoteContent)
-                {
-                    publishmentSystemInfo.AuxiliaryTableForVote = tableNameToChange;
                     DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
                 }
             }

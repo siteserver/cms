@@ -1,16 +1,50 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class ContentGroupDao : DataProviderBase
     {
+        public override string TableName => "siteserver_ContentGroup";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(ContentGroupInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(ContentGroupInfo.ContentGroupName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(ContentGroupInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(ContentGroupInfo.Taxis),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(ContentGroupInfo.Description),
+                DataType = DataType.Text
+            }
+        };
+
         private const string SqlInsertContentgroup = "INSERT INTO siteserver_ContentGroup (ContentGroupName, PublishmentSystemID, Taxis, Description) VALUES (@ContentGroupName, @PublishmentSystemID, @Taxis, @Description)";
         private const string SqlUpdateContentgroup = "UPDATE siteserver_ContentGroup SET Description = @Description WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = @PublishmentSystemID";
         private const string SqlDeleteContentgroup = "DELETE FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = @PublishmentSystemID";
@@ -27,10 +61,10 @@ namespace SiteServer.CMS.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, contentGroup.ContentGroupName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, contentGroup.PublishmentSystemId),
-                GetParameter(ParmTaxis, EDataType.Integer, contentGroup.Taxis),
-				GetParameter(ParmDescription, EDataType.NText, contentGroup.Description)
+				GetParameter(ParmGroupName, DataType.VarChar, 255, contentGroup.ContentGroupName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, contentGroup.PublishmentSystemId),
+                GetParameter(ParmTaxis, DataType.Integer, contentGroup.Taxis),
+				GetParameter(ParmDescription, DataType.Text, contentGroup.Description)
 			};
 
             ExecuteNonQuery(SqlInsertContentgroup, insertParms);
@@ -40,9 +74,9 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmDescription, EDataType.NText, contentGroup.Description),
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, contentGroup.ContentGroupName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, contentGroup.PublishmentSystemId)
+				GetParameter(ParmDescription, DataType.Text, contentGroup.Description),
+				GetParameter(ParmGroupName, DataType.VarChar, 255, contentGroup.ContentGroupName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, contentGroup.PublishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlUpdateContentgroup, updateParms);
@@ -52,8 +86,8 @@ namespace SiteServer.CMS.Provider
         {
             var contentGroupParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName),
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName),
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlDeleteContentgroup, contentGroupParms);
@@ -68,7 +102,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName)			 
 			};
 
             using (var rdr = ExecuteReader(sqlString, selectParms))
@@ -93,7 +127,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName)			 
 			};
 
             using (var rdr = ExecuteReader(sqlString, selectParms))
@@ -160,7 +194,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName)			 
 			};
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString, selectParms);
@@ -172,7 +206,7 @@ namespace SiteServer.CMS.Provider
                 $"UPDATE siteserver_ContentGroup SET Taxis = {taxis} WHERE (ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId})";
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName)			 
 			};
             ExecuteNonQuery(sqlString, updateParms);
         }
@@ -199,11 +233,13 @@ namespace SiteServer.CMS.Provider
             //Get Higher Taxis and ID
             //string sqlString =
             //    $"SELECT TOP 1 ContentGroupName, Taxis FROM siteserver_ContentGroup WHERE (Taxis > (SELECT Taxis FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId}) AND PublishmentSystemID = {publishmentSystemId}) ORDER BY Taxis";
-            string sqlString = SqlUtils.GetTopSqlString("siteserver_ContentGroup", "ContentGroupName, Taxis", $"WHERE (Taxis > (SELECT Taxis FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId}) AND PublishmentSystemID = {publishmentSystemId}) ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_ContentGroup", "ContentGroupName, Taxis",
+                $"WHERE (Taxis > (SELECT Taxis FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId}) AND PublishmentSystemID = {publishmentSystemId})",
+                "ORDER BY Taxis", 1);
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName)			 
 			};
             var higherGroupName = string.Empty;
             var higherTaxis = 0;
@@ -237,11 +273,13 @@ namespace SiteServer.CMS.Provider
             //Get Lower Taxis and ID
             //string sqlString =
             //    $"SELECT TOP 1 ContentGroupName, Taxis FROM siteserver_ContentGroup WHERE (Taxis < (SELECT Taxis FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId}) AND PublishmentSystemID = {publishmentSystemId}) ORDER BY Taxis DESC";
-            string sqlString = SqlUtils.GetTopSqlString("siteserver_ContentGroup", "ContentGroupName, Taxis", $"WHERE (Taxis < (SELECT Taxis FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId}) AND PublishmentSystemID = {publishmentSystemId}) ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_ContentGroup", "ContentGroupName, Taxis",
+                $"WHERE (Taxis < (SELECT Taxis FROM siteserver_ContentGroup WHERE ContentGroupName = @ContentGroupName AND PublishmentSystemID = {publishmentSystemId}) AND PublishmentSystemID = {publishmentSystemId})",
+                "ORDER BY Taxis DESC", 1);
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmGroupName, EDataType.NVarChar, 255, groupName)			 
+				GetParameter(ParmGroupName, DataType.VarChar, 255, groupName)			 
 			};
             var lowerGroupName = string.Empty;
             var lowerTaxis = 0;

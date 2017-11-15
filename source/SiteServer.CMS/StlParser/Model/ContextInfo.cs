@@ -1,57 +1,54 @@
+using System.Collections.Generic;
+using System.Xml;
 using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.Model
 {
     public class ContextInfo
     {
-        private EContextType contextType = EContextType.Undefined;
-        private PublishmentSystemInfo publishmentSystemInfo;
-        private int channelID;
-        private int contentID;
-        private ContentInfo contentInfo;
-
-        private bool isInnerElement;
-        private bool isCurlyBrace;
-        private int titleWordNum;
-        private int totalNum;           //用于缓存列表内容总数
-        private int pageItemIndex;
-        private DbItemContainer itemContainer;
-        private string containerClientID;
+        private ContentInfo _contentInfo;
 
         public ContextInfo(PageInfo pageInfo)
         {
-            publishmentSystemInfo = pageInfo.PublishmentSystemInfo;
-            channelID = pageInfo.PageNodeId;
-            contentID = pageInfo.PageContentId;
-        }
-
-        public ContextInfo(EContextType contextType, PublishmentSystemInfo publishmentSystemInfo, int channelID, int contentID, ContentInfo contentInfo)
-        {
-            this.contextType = contextType;
-            this.publishmentSystemInfo = publishmentSystemInfo;
-            this.channelID = channelID;
-            this.contentID = contentID;
-            this.contentInfo = contentInfo;
+            PublishmentSystemInfo = pageInfo.PublishmentSystemInfo;
+            ChannelId = pageInfo.PageNodeId;
+            ContentId = pageInfo.PageContentId;
         }
 
         //用于clone
         private ContextInfo(ContextInfo contextInfo)
         {
-            contextType = contextInfo.contextType;
-            publishmentSystemInfo = contextInfo.publishmentSystemInfo;
-            channelID = contextInfo.channelID;
-            contentID = contextInfo.contentID;
-            contentInfo = contextInfo.contentInfo;
+            ContextType = contextInfo.ContextType;
+            PublishmentSystemInfo = contextInfo.PublishmentSystemInfo;
+            ChannelId = contextInfo.ChannelId;
+            ContentId = contextInfo.ContentId;
+            _contentInfo = contextInfo._contentInfo;
 
-            isInnerElement = contextInfo.isInnerElement;
-            isCurlyBrace = contextInfo.isCurlyBrace;
-            titleWordNum = contextInfo.titleWordNum;
-            pageItemIndex = contextInfo.pageItemIndex;
-            totalNum = contextInfo.totalNum;
-            itemContainer = contextInfo.itemContainer;
-            containerClientID = contextInfo.containerClientID;
+            IsInnerElement = contextInfo.IsInnerElement;
+            IsCurlyBrace = contextInfo.IsCurlyBrace;
+            PageItemIndex = contextInfo.PageItemIndex;
+            ItemContainer = contextInfo.ItemContainer;
+            ContainerClientId = contextInfo.ContainerClientId;
+
+            StlElement = contextInfo.StlElement;
+            Attributes = contextInfo.Attributes;
+            InnerXml = contextInfo.InnerXml;
+            ChildNodes = contextInfo.ChildNodes;
+        }
+
+        public ContextInfo Clone(string stlElement, Dictionary<string, string> attributes, string innerXml, XmlNodeList childNodes)
+        {
+            var contextInfo = new ContextInfo(this)
+            {
+                StlElement = stlElement,
+                Attributes = attributes,
+                InnerXml = innerXml,
+                ChildNodes = childNodes
+            };
+            return contextInfo;
         }
 
         public ContextInfo Clone()
@@ -60,89 +57,46 @@ namespace SiteServer.CMS.StlParser.Model
             return contextInfo;
         }
 
-        public EContextType ContextType
-        {
-            get { return contextType; }
-            set { contextType = value; }
-        }
+        public EContextType ContextType { get; set; } = EContextType.Undefined;
 
-        public PublishmentSystemInfo PublishmentSystemInfo
-        {
-            get { return publishmentSystemInfo; }
-            set { publishmentSystemInfo = value; }
-        }
+        public PublishmentSystemInfo PublishmentSystemInfo { get; set; }
 
-        public int ChannelID
-        {
-            get { return channelID; }
-            set { channelID = value; }
-        }
+        public int ChannelId { get; set; }
 
-        public int ContentID
-        {
-            get { return contentID; }
-            set { contentID = value; }
-        }
+        public int ContentId { get; set; }
+
+        public string StlElement { get; set; }
+
+        public Dictionary<string, string> Attributes { get; set; }
+
+        public string InnerXml { get; set; }
+
+        public XmlNodeList ChildNodes { get; set; }
 
         public ContentInfo ContentInfo
         {
             get
             {
-                if (contentInfo == null)
-                {
-                    if (contentID > 0)
-                    {
-                        var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelID);
-                        var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-                        var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                        contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentID);
-                    }
-                }
-                return contentInfo;
+                if (_contentInfo != null) return _contentInfo;
+                if (ContentId <= 0) return _contentInfo;
+                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemInfo.PublishmentSystemId, ChannelId);
+                var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
+                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+                //_contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, ContentId);
+                _contentInfo = Content.GetContentInfo(tableStyle, tableName, ContentId);
+                return _contentInfo;
             }
-            set { contentInfo = value; }
+            set { _contentInfo = value; }
         }
 
-        public bool IsInnerElement
-        {
-            get { return isInnerElement; }
-            set { isInnerElement = value; }
-        }
+        public bool IsInnerElement { get; set; }
 
-        public bool IsCurlyBrace
-        {
-            get { return isCurlyBrace; }
-            set { isCurlyBrace = value; }
-        }
+        public bool IsCurlyBrace { get; set; }
 
-        public int TitleWordNum
-        {
-            get { return titleWordNum; }
-            set { titleWordNum = value; }
-        }
+        public int PageItemIndex { get; set; }
 
-        public int TotalNum
-        {
-            get { return totalNum; }
-            set { totalNum = value; }
-        }
+        public DbItemContainer ItemContainer { get; set; }
 
-        public int PageItemIndex
-        {
-            get { return pageItemIndex; }
-            set { pageItemIndex = value; }
-        }
-
-        public DbItemContainer ItemContainer
-        {
-            get { return itemContainer; }
-            set { itemContainer = value; }
-        }
-
-        public string ContainerClientID
-        {
-            get { return containerClientID; }
-            set { containerClientID = value; }
-        }
+        public string ContainerClientId { get; set; }
     }
 }

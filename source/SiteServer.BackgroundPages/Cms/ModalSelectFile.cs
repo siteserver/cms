@@ -426,7 +426,7 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				var fileModifyDateTime = fileInfo.LastWriteTime;
 				var linkUrl = PageUtils.Combine(directoryUrl, fileInfo.Name);
-				var attachmentUrl = linkUrl.Replace(PublishmentSystemInfo.PublishmentSystemUrl, "@");
+				var attachmentUrl = linkUrl.Replace(PublishmentSystemInfo.Additional.WebUrl, "@");
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.PublishmentSystemID, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(PublishmentSystemId, attachmentUrl,_hiddenClientId);
                 string trHtml =

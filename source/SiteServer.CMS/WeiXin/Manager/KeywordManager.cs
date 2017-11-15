@@ -11,7 +11,7 @@ namespace SiteServer.CMS.WeiXin.Manager
     {
         public static bool IsExists(int publishmentSystemID, string keyword)
         {
-            return DataProviderWX.KeywordMatchDAO.IsExists(publishmentSystemID, keyword);
+            return DataProviderWx.KeywordMatchDao.IsExists(publishmentSystemID, keyword);
         }
 
         public static bool IsKeywordInsertConflict(int publishmentSystemID, string keywords, out string conflictKeywords)
@@ -24,7 +24,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 var keyword = str.Trim();
                 if (!string.IsNullOrEmpty(keyword))
                 {
-                    if (DataProviderWX.KeywordMatchDAO.IsExists(publishmentSystemID, keyword))
+                    if (DataProviderWx.KeywordMatchDao.IsExists(publishmentSystemID, keyword))
                     {
                         isConflict = true;
                         conflictKeywords += keyword + " ";
@@ -49,7 +49,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                     var keyword = str.Trim();
                     if (!string.IsNullOrEmpty(keyword) && !keywordListNow.Contains(keyword))
                     {
-                        if (DataProviderWX.KeywordMatchDAO.IsExists(publishmentSystemID, keyword))
+                        if (DataProviderWx.KeywordMatchDao.IsExists(publishmentSystemID, keyword))
                         {
                             isConflict = true;
                             conflictKeywords += keyword + " ";
@@ -65,7 +65,7 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         public static bool IsKeywordUpdateConflict(int publishmentSystemID, int keywordID, string keywordsUpdate, out string conflictKeywords)
         {
-            var keywordsNow = DataProviderWX.KeywordDAO.GetKeywords(keywordID);
+            var keywordsNow = DataProviderWx.KeywordDao.GetKeywords(keywordID);
 
             return IsKeywordUpdateConflict(publishmentSystemID, keywordsNow, keywordsUpdate, out conflictKeywords);
         }
@@ -78,7 +78,7 @@ namespace SiteServer.CMS.WeiXin.Manager
             {
                 if (keywordType == EKeywordType.Album)
                 {
-                    var albumInfo = DataProviderWX.AlbumDAO.GetAlbumInfo(functionID);
+                    var albumInfo = DataProviderWx.AlbumDao.GetAlbumInfo(functionID);
                     if (albumInfo != null)
                     {
                         functionName = albumInfo.Title;
@@ -86,7 +86,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Appointment)
                 {
-                    var appointmentInfo = DataProviderWX.AppointmentDAO.GetAppointmentInfo(functionID);
+                    var appointmentInfo = DataProviderWx.AppointmentDao.GetAppointmentInfo(functionID);
                     if (appointmentInfo != null)
                     {
                         functionName = appointmentInfo.Title;
@@ -94,7 +94,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Conference)
                 {
-                    var conferenceInfo = DataProviderWX.ConferenceDAO.GetConferenceInfo(functionID);
+                    var conferenceInfo = DataProviderWx.ConferenceDao.GetConferenceInfo(functionID);
                     if (conferenceInfo != null)
                     {
                         functionName = conferenceInfo.Title;
@@ -102,7 +102,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Coupon)
                 {
-                    var couponActInfo = DataProviderWX.CouponActDAO.GetActInfo(functionID);
+                    var couponActInfo = DataProviderWx.CouponActDao.GetActInfo(functionID);
                     if (couponActInfo != null)
                     {
                         functionName = couponActInfo.Title;
@@ -111,7 +111,7 @@ namespace SiteServer.CMS.WeiXin.Manager
 
                 else if (keywordType == EKeywordType.Scratch || keywordType == EKeywordType.BigWheel || keywordType == EKeywordType.GoldEgg || keywordType == EKeywordType.Flap || keywordType == EKeywordType.YaoYao)
                 {
-                    var lotteryInfo = DataProviderWX.LotteryDAO.GetLotteryInfo(functionID);
+                    var lotteryInfo = DataProviderWx.LotteryDao.GetLotteryInfo(functionID);
                     if (lotteryInfo != null)
                     {
                         functionName = lotteryInfo.Title;
@@ -120,7 +120,7 @@ namespace SiteServer.CMS.WeiXin.Manager
 
                 else if (keywordType == EKeywordType.Map)
                 {
-                    var mapInfo = DataProviderWX.MapDAO.GetMapInfo(functionID);
+                    var mapInfo = DataProviderWx.MapDao.GetMapInfo(functionID);
                     if (mapInfo != null)
                     {
                         functionName = mapInfo.Title;
@@ -128,7 +128,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Message)
                 {
-                    var messageInfo = DataProviderWX.MessageDAO.GetMessageInfo(functionID);
+                    var messageInfo = DataProviderWx.MessageDao.GetMessageInfo(functionID);
                     if (messageInfo != null)
                     {
                         functionName = messageInfo.Title;
@@ -136,7 +136,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Search)
                 {
-                    var searchInfo = DataProviderWX.SearchDAO.GetSearchInfo(functionID);
+                    var searchInfo = DataProviderWx.SearchDao.GetSearchInfo(functionID);
                     if (searchInfo != null)
                     {
                         functionName = searchInfo.Title;
@@ -144,7 +144,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Store)
                 {
-                    var storeInfo = DataProviderWX.StoreDAO.GetStoreInfo(functionID);
+                    var storeInfo = DataProviderWx.StoreDao.GetStoreInfo(functionID);
                     if (storeInfo != null)
                     {
                         functionName = storeInfo.Title;
@@ -152,7 +152,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.View360)
                 {
-                    var view360Info = DataProviderWX.View360DAO.GetView360Info(functionID);
+                    var view360Info = DataProviderWx.View360Dao.GetView360Info(functionID);
                     if (view360Info != null)
                     {
                         functionName = view360Info.Title;
@@ -160,7 +160,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Vote)
                 {
-                    var voteInfo = DataProviderWX.VoteDAO.GetVoteInfo(functionID);
+                    var voteInfo = DataProviderWx.VoteDao.GetVoteInfo(functionID);
                     if (voteInfo != null)
                     {
                         functionName = voteInfo.Title;
@@ -168,7 +168,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Card)
                 {
-                    var cardInfo = DataProviderWX.CardDAO.GetCardInfo(functionID);
+                    var cardInfo = DataProviderWx.CardDao.GetCardInfo(functionID);
                     if (cardInfo != null)
                     {
                         functionName = cardInfo.Title;
@@ -191,69 +191,69 @@ namespace SiteServer.CMS.WeiXin.Manager
             {
                 if (keywordInfo.KeywordType == EKeywordType.Album)
                 {
-                    functionID = DataProviderWX.AlbumDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.AlbumDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.Appointment)
                 {
-                    functionID = DataProviderWX.AppointmentDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.AppointmentDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.Conference)
                 {
-                    functionID = DataProviderWX.ConferenceDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.ConferenceDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.Coupon)
                 {
-                    functionID = DataProviderWX.CouponActDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.CouponActDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
 
                 else if (keywordInfo.KeywordType == EKeywordType.Scratch)
                 {
-                    functionID = DataProviderWX.LotteryDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, ELotteryType.Scratch, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.LotteryDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, ELotteryType.Scratch, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.BigWheel)
                 {
-                    functionID = DataProviderWX.LotteryDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, ELotteryType.BigWheel, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.LotteryDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, ELotteryType.BigWheel, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.GoldEgg)
                 {
-                    functionID = DataProviderWX.LotteryDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, ELotteryType.GoldEgg, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.LotteryDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, ELotteryType.GoldEgg, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.Flap)
                 {
-                    functionID = DataProviderWX.LotteryDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, ELotteryType.Flap, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.LotteryDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, ELotteryType.Flap, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.YaoYao)
                 {
-                    functionID = DataProviderWX.LotteryDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, ELotteryType.YaoYao, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.LotteryDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, ELotteryType.YaoYao, keywordInfo.KeywordId);
                 }
                 
                 else if (keywordInfo.KeywordType == EKeywordType.Map)
                 {
-                    functionID = DataProviderWX.MapDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.MapDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.Message)
                 {
-                    functionID = DataProviderWX.MessageDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.MessageDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.Search)
                 {
-                    functionID = DataProviderWX.SearchDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.SearchDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.Store)
                 {
-                    functionID = DataProviderWX.StoreDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.StoreDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.View360)
                 {
-                    functionID = DataProviderWX.View360DAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.View360Dao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.Vote)
                 {
-                    functionID = DataProviderWX.VoteDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.VoteDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
                 else if (keywordInfo.KeywordType == EKeywordType.Card)
                 {
-                    functionID = DataProviderWX.CardDAO.GetFirstIDByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+                    functionID = DataProviderWx.CardDao.GetFirstIdByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
                 }
             }
             return functionID;
@@ -265,69 +265,69 @@ namespace SiteServer.CMS.WeiXin.Manager
 
             if (keywordType == EKeywordType.Album)
             {
-                sqlString = DataProviderWX.AlbumDAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.AlbumDao.GetSelectString(publishmentSystemID);
             }
             else if (keywordType == EKeywordType.Appointment)
             {
-                sqlString = DataProviderWX.AppointmentDAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.AppointmentDao.GetSelectString(publishmentSystemID);
             }
             else if (keywordType == EKeywordType.Conference)
             {
-                sqlString = DataProviderWX.ConferenceDAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.ConferenceDao.GetSelectString(publishmentSystemID);
             }
             else if (keywordType == EKeywordType.Coupon)
             {
-                sqlString = DataProviderWX.CouponActDAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.CouponActDao.GetSelectString(publishmentSystemID);
             }
 
             else if (keywordType == EKeywordType.Scratch)
             {
-                sqlString = DataProviderWX.LotteryDAO.GetSelectString(publishmentSystemID, ELotteryType.Scratch);
+                sqlString = DataProviderWx.LotteryDao.GetSelectString(publishmentSystemID, ELotteryType.Scratch);
             }
             else if (keywordType == EKeywordType.BigWheel)
             {
-                sqlString = DataProviderWX.LotteryDAO.GetSelectString(publishmentSystemID, ELotteryType.BigWheel);
+                sqlString = DataProviderWx.LotteryDao.GetSelectString(publishmentSystemID, ELotteryType.BigWheel);
             }
             else if (keywordType == EKeywordType.GoldEgg)
             {
-                sqlString = DataProviderWX.LotteryDAO.GetSelectString(publishmentSystemID, ELotteryType.GoldEgg);
+                sqlString = DataProviderWx.LotteryDao.GetSelectString(publishmentSystemID, ELotteryType.GoldEgg);
             }
             else if (keywordType == EKeywordType.Flap)
             {
-                sqlString = DataProviderWX.LotteryDAO.GetSelectString(publishmentSystemID, ELotteryType.Flap);
+                sqlString = DataProviderWx.LotteryDao.GetSelectString(publishmentSystemID, ELotteryType.Flap);
             }
             else if (keywordType == EKeywordType.YaoYao)
             {
-                sqlString = DataProviderWX.LotteryDAO.GetSelectString(publishmentSystemID, ELotteryType.YaoYao);
+                sqlString = DataProviderWx.LotteryDao.GetSelectString(publishmentSystemID, ELotteryType.YaoYao);
             }
             
             else if (keywordType == EKeywordType.Map)
             {
-                sqlString = DataProviderWX.MapDAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.MapDao.GetSelectString(publishmentSystemID);
             }
             else if (keywordType == EKeywordType.Message)
             {
-                sqlString = DataProviderWX.MessageDAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.MessageDao.GetSelectString(publishmentSystemID);
             }
             else if (keywordType == EKeywordType.Search)
             {
-                sqlString = DataProviderWX.SearchDAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.SearchDao.GetSelectString(publishmentSystemID);
             }
             else if (keywordType == EKeywordType.Store)
             {
-                sqlString = DataProviderWX.StoreDAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.StoreDao.GetSelectString(publishmentSystemID);
             }
             else if (keywordType == EKeywordType.View360)
             {
-                sqlString = DataProviderWX.View360DAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.View360Dao.GetSelectString(publishmentSystemID);
             }
             else if (keywordType == EKeywordType.Vote)
             {
-                sqlString = DataProviderWX.VoteDAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.VoteDao.GetSelectString(publishmentSystemID);
             }
             else if (keywordType == EKeywordType.Card)
             {
-                sqlString = DataProviderWX.CardDAO.GetSelectString(publishmentSystemID);
+                sqlString = DataProviderWx.CardDao.GetSelectString(publishmentSystemID);
             }
 
             return sqlString;
@@ -341,7 +341,7 @@ namespace SiteServer.CMS.WeiXin.Manager
             {
                 if (keywordType == EKeywordType.Album)
                 {
-                    var albumInfo = DataProviderWX.AlbumDAO.GetAlbumInfo(functionID);
+                    var albumInfo = DataProviderWx.AlbumDao.GetAlbumInfo(functionID);
                     if (albumInfo != null)
                     {
                         functionUrl = AlbumManager.GetAlbumUrl(publishmentSystemInfo, albumInfo, string.Empty);
@@ -353,7 +353,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Conference)
                 {
-                    var conferenceInfo = DataProviderWX.ConferenceDAO.GetConferenceInfo(functionID);
+                    var conferenceInfo = DataProviderWx.ConferenceDao.GetConferenceInfo(functionID);
                     if (conferenceInfo != null)
                     {
                         functionUrl = ConferenceManager.GetConferenceUrl(publishmentSystemInfo, conferenceInfo, string.Empty);
@@ -361,7 +361,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Scratch || keywordType == EKeywordType.BigWheel || keywordType == EKeywordType.GoldEgg || keywordType == EKeywordType.Flap || keywordType == EKeywordType.YaoYao)
                 {
-                    var lotteryInfo = DataProviderWX.LotteryDAO.GetLotteryInfo(functionID);
+                    var lotteryInfo = DataProviderWx.LotteryDao.GetLotteryInfo(functionID);
                     if (lotteryInfo != null)
                     {
                         functionUrl = LotteryManager.GetLotteryUrl(publishmentSystemInfo, lotteryInfo, string.Empty);
@@ -369,15 +369,15 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Map)
                 {
-                    var mapInfo = DataProviderWX.MapDAO.GetMapInfo(functionID);
+                    var mapInfo = DataProviderWx.MapDao.GetMapInfo(functionID);
                     if (mapInfo != null)
                     {
-                        functionUrl = MapManager.GetMapUrl(publishmentSystemInfo, mapInfo.MapWD);
+                        functionUrl = MapManager.GetMapUrl(publishmentSystemInfo, mapInfo.MapWd);
                     }
                 }
                 else if (keywordType == EKeywordType.Message)
                 {
-                    var messageInfo = DataProviderWX.MessageDAO.GetMessageInfo(functionID);
+                    var messageInfo = DataProviderWx.MessageDao.GetMessageInfo(functionID);
                     if (messageInfo != null)
                     {
                         functionUrl = MessageManager.GetMessageUrl(publishmentSystemInfo, messageInfo, string.Empty);
@@ -385,7 +385,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Search)
                 {
-                    var searchInfo = DataProviderWX.SearchDAO.GetSearchInfo(functionID);
+                    var searchInfo = DataProviderWx.SearchDao.GetSearchInfo(functionID);
                     if (searchInfo != null)
                     {
                         functionUrl = SearchManager.GetSearchUrl(publishmentSystemInfo, searchInfo);
@@ -393,7 +393,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Store)
                 {
-                    var storeInfo = DataProviderWX.StoreDAO.GetStoreInfo(functionID);
+                    var storeInfo = DataProviderWx.StoreDao.GetStoreInfo(functionID);
                     if (storeInfo != null)
                     {
                         functionUrl = StoreManager.GetStoreUrl(publishmentSystemInfo, storeInfo, string.Empty);
@@ -401,7 +401,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.View360)
                 {
-                    var view360Info = DataProviderWX.View360DAO.GetView360Info(functionID);
+                    var view360Info = DataProviderWx.View360Dao.GetView360Info(functionID);
                     if (view360Info != null)
                     {
                         functionUrl = View360Manager.GetView360Url(publishmentSystemInfo, view360Info, string.Empty);
@@ -409,7 +409,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }
                 else if (keywordType == EKeywordType.Vote)
                 {
-                    var voteInfo = DataProviderWX.VoteDAO.GetVoteInfo(functionID);
+                    var voteInfo = DataProviderWx.VoteDao.GetVoteInfo(functionID);
                     if (voteInfo != null)
                     {
                         functionUrl = VoteManager.GetVoteUrl(publishmentSystemInfo, voteInfo, string.Empty);
@@ -417,7 +417,7 @@ namespace SiteServer.CMS.WeiXin.Manager
                 }                
                 else if (keywordType == EKeywordType.Card)
                 {
-                    var cardInfo = DataProviderWX.CardDAO.GetCardInfo(functionID);
+                    var cardInfo = DataProviderWx.CardDao.GetCardInfo(functionID);
                     if (cardInfo != null)
                     {
                         functionUrl = CardManager.GetCardUrl(publishmentSystemInfo, cardInfo, string.Empty);

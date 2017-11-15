@@ -2,7 +2,6 @@
 using System.Web;
 using System.Text.RegularExpressions;
 using System;
-using System.Xml;
 using BaiRong.Core.Model.Enumerations;
 
 namespace BaiRong.Core
@@ -53,6 +52,22 @@ namespace BaiRong.Core
                 }
             }
             return retval;
+        }
+
+        public static bool IsEquals(string path1, string path2)
+        {
+            if (string.IsNullOrEmpty(path1) || string.IsNullOrEmpty(path2)) return false;
+            return string.Equals(Path.GetFullPath(path1), Path.GetFullPath(path2), StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsSystemPath(string path)
+        {
+            return DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.AspnetClient.DirectoryName), path)
+                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.Bin.DirectoryName), path)
+                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName), path)
+                   || DirectoryUtils.IsInDirectory(Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory), path)
+                   || IsEquals(Combine(WebConfigUtils.PhysicalApplicationPath, "web.config"), path)
+                   || IsEquals(Combine(WebConfigUtils.PhysicalApplicationPath, "Global.asax"), path);
         }
 
         public static string GetExtension(string path)
@@ -161,7 +176,12 @@ namespace BaiRong.Core
 
         public static string GetSiteFilesPath(params string[] paths)
         {
-            return MapPath(Combine("~/sitefiles", Combine(paths)));
+            return MapPath(Combine("~/" + DirectoryUtils.SiteFiles.DirectoryName, Combine(paths)));
+        }
+
+        public static string GetPluginsPath(params string[] paths)
+        {
+            return GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins, Combine(paths));
         }
 
         public static string RemovePathInvalidChar(string filePath)
@@ -273,20 +293,17 @@ namespace BaiRong.Core
 
         public static string GetMenusPath(params string[] paths)
         {
-            var directoryPath = WebConfigUtils.PhysicalApplicationPath;
-            return Combine(directoryPath, DirectoryUtils.SiteFiles.DirectoryName, "Configuration/Menus", Combine(paths));
+            return Combine(SiteServerAssets.GetPath("menus"), Combine(paths));
         }
 
-        public static string GetUpgradeSqlFilePath(bool isMySql, bool isTable)
+        public static string GetUpgradeSqlFilePath(EDatabaseType databaseType, bool isTable)
         {
-            var relatedPath = isMySql ? "sql/mysql/" : "sql/sqlserver/";
-            relatedPath += isTable ? "upgrade_tables.sql" : "upgrade.sql";
-            return SiteServerAssets.GetPath(relatedPath);
+            return SiteServerAssets.GetPath($"sql/{EDatabaseTypeUtils.GetValue(databaseType).ToLower()}/{(isTable ? "upgrade_tables.sql" : "upgrade.sql")}");
         }
 
-        public static string GetInstallSqlFilePath(bool isMySql)
+        public static string GetInstallSqlFilePath(EDatabaseType databaseType)
         {
-            return SiteServerAssets.GetPath(isMySql ? "sql/mysql/install.sql" : "sql/sqlserver/install.sql");
+            return SiteServerAssets.GetPath($"sql/{EDatabaseTypeUtils.GetValue(databaseType).ToLower()}/install.sql");
         }
 
         public static string GetUserFilesPath(string userName, string relatedPath)
@@ -297,7 +314,7 @@ namespace BaiRong.Core
         public static string GetUserUploadDirectoryPath(string userName)
         {
             string directoryPath;
-            var dateFormatType = EDateFormatTypeUtils.GetEnumType(ConfigManager.UserConfigInfo.UploadDateFormatString);
+            var dateFormatType = EDateFormatType.Month;
             var datetime = DateTime.Now;
             var userFilesPath = GetUserFilesPath(userName, string.Empty);
             if (dateFormatType == EDateFormatType.Year)
@@ -318,21 +335,12 @@ namespace BaiRong.Core
 
         public static string GetUserUploadFileName(string filePath)
         {
-            string retval;
-            if (ConfigManager.UserConfigInfo.IsUploadChangeFileName)
-            {
-                var dt = DateTime.Now;
-                string strDateTime = $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}";
-                retval = $"{strDateTime}{GetExtension(filePath)}";
-            }
-            else
-            {
-                retval = GetFileName(filePath);
-            }
-            return retval;
+            var dt = DateTime.Now;
+            string strDateTime = $"{dt.Day}{dt.Hour}{dt.Minute}{dt.Second}{dt.Millisecond}";
+            return $"{strDateTime}{GetExtension(filePath)}";
         }
 
-        public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, FileConfigManager.Instance.AdminDirectoryName);
+        public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory);
 
         public static string PhysicalSiteFilesPath => Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName);
     }

@@ -5,60 +5,54 @@ namespace SiteServer.CMS.Model.Enumerations
 {
 	public enum ETranslateContentType
 	{
-		Copy,				//复制
-		Cut,				//剪切
-		Reference,           //引用地址
-        ReferenceContent,   //引用内容
+		Copy,				//澶嶅埗
+		Cut,				//鍓垏
+		Reference,           //寮曠敤鍦板潃
+        ReferenceContent,   //寮曠敤鍐呭
 	}
 
 	public class ETranslateContentTypeUtils
 	{
 		public static string GetValue(ETranslateContentType type)
 		{
-            if (type == ETranslateContentType.Copy)
+		    if (type == ETranslateContentType.Copy)
 			{
                 return "Copy";
 			}
-            else if (type == ETranslateContentType.Cut)
-			{
-                return "Cut";
-			}
-            else if (type == ETranslateContentType.Reference)
-			{
-                return "Reference";
-			}
-            else if (type == ETranslateContentType.ReferenceContent)
-            {
-                return "ReferenceContent";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETranslateContentType.Cut)
+		    {
+		        return "Cut";
+		    }
+		    if (type == ETranslateContentType.Reference)
+		    {
+		        return "Reference";
+		    }
+		    if (type == ETranslateContentType.ReferenceContent)
+		    {
+		        return "ReferenceContent";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ETranslateContentType type)
 		{
-            if (type == ETranslateContentType.Copy)
+		    if (type == ETranslateContentType.Copy)
 			{
-                return "复制";
+                return "澶嶅埗";
 			}
-            else if (type == ETranslateContentType.Cut)
-			{
-                return "剪切";
-			}
-            else if (type == ETranslateContentType.Reference)
-			{
-                return "引用地址";
-			}
-            else if (type == ETranslateContentType.ReferenceContent)
-            {
-                return "引用内容";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ETranslateContentType.Cut)
+		    {
+		        return "鍓垏";
+		    }
+		    if (type == ETranslateContentType.Reference)
+		    {
+		        return "寮曠敤鍦板潃";
+		    }
+		    if (type == ETranslateContentType.ReferenceContent)
+		    {
+		        return "寮曠敤鍐呭";
+		    }
+		    throw new Exception();
 		}
 
 		public static ETranslateContentType GetEnumType(string typeStr)

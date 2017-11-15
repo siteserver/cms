@@ -26,130 +26,124 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(ECharset type)
 		{
-			if (type == ECharset.utf_8)
+		    if (type == ECharset.utf_8)
 			{
                 return "utf-8";
 			}
-            else if (type == ECharset.gb2312)
-			{
-                return "gb2312";
-			}
-            else if (type == ECharset.big5)
-			{
-                return "big5";
-			}
-            else if (type == ECharset.iso_8859_1)
-			{
-                return "iso-8859-1";
-            }
-            else if (type == ECharset.euc_kr)
-            {
-                return "euc-kr";
-            }
-            else if (type == ECharset.euc_jp)
-            {
-                return "euc-jp";
-            }
-            else if (type == ECharset.iso_8859_6)
-            {
-                return "iso-8859-6";
-            }
-            else if (type == ECharset.windows_874)
-            {
-                return "windows-874";
-            }
-            else if (type == ECharset.iso_8859_9)
-			{
-                return "iso-8859-9";
-			}
-            else if (type == ECharset.iso_8859_5)
-			{
-                return "iso-8859-5";
-			}
-            else if (type == ECharset.iso_8859_8)
-			{
-                return "iso-8859-8";
-            }
-            else if (type == ECharset.iso_8859_7)
-            {
-                return "iso-8859-7";
-            }
-            else if (type == ECharset.windows_1258)
-            {
-                return "windows-1258";
-            }
-            else if (type == ECharset.iso_8859_2)
-            {
-                return "iso-8859-2";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ECharset.gb2312)
+		    {
+		        return "gb2312";
+		    }
+		    if (type == ECharset.big5)
+		    {
+		        return "big5";
+		    }
+		    if (type == ECharset.iso_8859_1)
+		    {
+		        return "iso-8859-1";
+		    }
+		    if (type == ECharset.euc_kr)
+		    {
+		        return "euc-kr";
+		    }
+		    if (type == ECharset.euc_jp)
+		    {
+		        return "euc-jp";
+		    }
+		    if (type == ECharset.iso_8859_6)
+		    {
+		        return "iso-8859-6";
+		    }
+		    if (type == ECharset.windows_874)
+		    {
+		        return "windows-874";
+		    }
+		    if (type == ECharset.iso_8859_9)
+		    {
+		        return "iso-8859-9";
+		    }
+		    if (type == ECharset.iso_8859_5)
+		    {
+		        return "iso-8859-5";
+		    }
+		    if (type == ECharset.iso_8859_8)
+		    {
+		        return "iso-8859-8";
+		    }
+		    if (type == ECharset.iso_8859_7)
+		    {
+		        return "iso-8859-7";
+		    }
+		    if (type == ECharset.windows_1258)
+		    {
+		        return "windows-1258";
+		    }
+		    if (type == ECharset.iso_8859_2)
+		    {
+		        return "iso-8859-2";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ECharset type)
 		{
-            if (type == ECharset.utf_8)
+		    if (type == ECharset.utf_8)
             {
                 return "Unicode (UTF-8)";
             }
-            else if (type == ECharset.gb2312)
-            {
-                return "简体中文 (GB2312)";
-            }
-            else if (type == ECharset.big5)
-            {
-                return "繁体中文 (Big5)";
-            }
-            else if (type == ECharset.iso_8859_1)
-            {
-                return "西欧 (iso-8859-1)";
-            }
-            else if (type == ECharset.euc_kr)
-            {
-                return "韩文 (euc-kr)";
-            }
-            else if (type == ECharset.euc_jp)
-            {
-                return "日文 (euc-jp)";
-            }
-            else if (type == ECharset.iso_8859_6)
-            {
-                return "阿拉伯文 (iso-8859-6)";
-            }
-            else if (type == ECharset.windows_874)
-            {
-                return "泰文 (windows-874)";
-            }
-            else if (type == ECharset.iso_8859_9)
-            {
-                return "土耳其文 (iso-8859-9)";
-            }
-            else if (type == ECharset.iso_8859_5)
-            {
-                return "西里尔文 (iso-8859-5)";
-            }
-            else if (type == ECharset.iso_8859_8)
-            {
-                return "希伯来文 (iso-8859-8)";
-            }
-            else if (type == ECharset.iso_8859_7)
-            {
-                return "希腊文 (iso-8859-7)";
-            }
-            else if (type == ECharset.windows_1258)
-            {
-                return "越南文 (windows-1258)";
-            }
-            else if (type == ECharset.iso_8859_2)
-            {
-                return "中欧 (iso-8859-2)";
-            }
-            else
-            {
-                throw new Exception();
-            }
+		    if (type == ECharset.gb2312)
+		    {
+		        return "简体中文 (GB2312)";
+		    }
+		    if (type == ECharset.big5)
+		    {
+		        return "繁体中文 (Big5)";
+		    }
+		    if (type == ECharset.iso_8859_1)
+		    {
+		        return "西欧 (iso-8859-1)";
+		    }
+		    if (type == ECharset.euc_kr)
+		    {
+		        return "韩文 (euc-kr)";
+		    }
+		    if (type == ECharset.euc_jp)
+		    {
+		        return "日文 (euc-jp)";
+		    }
+		    if (type == ECharset.iso_8859_6)
+		    {
+		        return "阿拉伯文 (iso-8859-6)";
+		    }
+		    if (type == ECharset.windows_874)
+		    {
+		        return "泰文 (windows-874)";
+		    }
+		    if (type == ECharset.iso_8859_9)
+		    {
+		        return "土耳其文 (iso-8859-9)";
+		    }
+		    if (type == ECharset.iso_8859_5)
+		    {
+		        return "西里尔文 (iso-8859-5)";
+		    }
+		    if (type == ECharset.iso_8859_8)
+		    {
+		        return "希伯来文 (iso-8859-8)";
+		    }
+		    if (type == ECharset.iso_8859_7)
+		    {
+		        return "希腊文 (iso-8859-7)";
+		    }
+		    if (type == ECharset.windows_1258)
+		    {
+		        return "越南文 (windows-1258)";
+		    }
+		    if (type == ECharset.iso_8859_2)
+		    {
+		        return "中欧 (iso-8859-2)";
+		    }
+		    throw new Exception();
 		}
 
 		public static ECharset GetEnumType(string typeStr)
@@ -160,60 +154,60 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return ECharset.utf_8;
             }
-            else if (Equals(ECharset.gb2312, typeStr))
-            {
-                return ECharset.gb2312;
-            }
-            else if (Equals(ECharset.big5, typeStr))
-            {
-                return ECharset.big5;
-            }
-            else if (Equals(ECharset.iso_8859_1, typeStr))
-            {
-                return ECharset.iso_8859_1;
-            }
-            else if (Equals(ECharset.euc_kr, typeStr))
-            {
-                return ECharset.euc_kr;
-            }
-            else if (Equals(ECharset.euc_jp, typeStr))
-            {
-                return ECharset.euc_jp;
-            }
-            else if (Equals(ECharset.iso_8859_6, typeStr))
-            {
-                return ECharset.iso_8859_6;
-            }
-            else if (Equals(ECharset.windows_874, typeStr))
-            {
-                return ECharset.windows_874;
-            }
-            else if (Equals(ECharset.iso_8859_9, typeStr))
-            {
-                return ECharset.iso_8859_9;
-            }
-            else if (Equals(ECharset.iso_8859_5, typeStr))
-            {
-                return ECharset.iso_8859_5;
-            }
-            else if (Equals(ECharset.iso_8859_8, typeStr))
-            {
-                return ECharset.iso_8859_8;
-            }
-            else if (Equals(ECharset.iso_8859_7, typeStr))
-            {
-                return ECharset.iso_8859_7;
-            }
-            else if (Equals(ECharset.windows_1258, typeStr))
-            {
-                return ECharset.windows_1258;
-            }
-            else if (Equals(ECharset.iso_8859_2, typeStr))
-            {
-                return ECharset.iso_8859_2;
-            }
+		    if (Equals(ECharset.gb2312, typeStr))
+		    {
+		        return ECharset.gb2312;
+		    }
+		    if (Equals(ECharset.big5, typeStr))
+		    {
+		        return ECharset.big5;
+		    }
+		    if (Equals(ECharset.iso_8859_1, typeStr))
+		    {
+		        return ECharset.iso_8859_1;
+		    }
+		    if (Equals(ECharset.euc_kr, typeStr))
+		    {
+		        return ECharset.euc_kr;
+		    }
+		    if (Equals(ECharset.euc_jp, typeStr))
+		    {
+		        return ECharset.euc_jp;
+		    }
+		    if (Equals(ECharset.iso_8859_6, typeStr))
+		    {
+		        return ECharset.iso_8859_6;
+		    }
+		    if (Equals(ECharset.windows_874, typeStr))
+		    {
+		        return ECharset.windows_874;
+		    }
+		    if (Equals(ECharset.iso_8859_9, typeStr))
+		    {
+		        return ECharset.iso_8859_9;
+		    }
+		    if (Equals(ECharset.iso_8859_5, typeStr))
+		    {
+		        return ECharset.iso_8859_5;
+		    }
+		    if (Equals(ECharset.iso_8859_8, typeStr))
+		    {
+		        return ECharset.iso_8859_8;
+		    }
+		    if (Equals(ECharset.iso_8859_7, typeStr))
+		    {
+		        return ECharset.iso_8859_7;
+		    }
+		    if (Equals(ECharset.windows_1258, typeStr))
+		    {
+		        return ECharset.windows_1258;
+		    }
+		    if (Equals(ECharset.iso_8859_2, typeStr))
+		    {
+		        return ECharset.iso_8859_2;
+		    }
 
-			return retval;
+		    return retval;
 		}
 
 		public static bool Equals(ECharset type, string typeStr)

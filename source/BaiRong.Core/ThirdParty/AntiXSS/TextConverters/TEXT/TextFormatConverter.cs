@@ -13,7 +13,6 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
     using System.Text;
     using Globalization;
     using Data.Internal;
-    using Test;
     using Format;
 
 
@@ -23,9 +22,6 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
         protected TextParser parser;
 
         private FormatOutput output;
-#if DEBUG
-        protected TestHtmlTrace trace;
-#endif
         protected int lineLength;
         protected int newLines;
         protected int spaces;
@@ -46,12 +42,6 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
                     Stream formatConverterTraceStream) :
             base(formatConverterTraceStream)
         {
-#if DEBUG
-            if (traceStream != null)
-            {
-                trace = new TestHtmlTrace(traceStream, traceShowTokenNum, traceStopOnTokenNum);
-            }
-#endif
             this.parser = parser;
 
             this.output = output;
@@ -92,12 +82,6 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
                     Stream formatConverterTraceStream) :
             base(store, formatConverterTraceStream)
         {
-#if DEBUG
-            if (traceStream != null)
-            {
-                trace = new TestHtmlTrace(traceStream, traceShowTokenNum, traceStopOnTokenNum);
-            }
-#endif
             this.parser = parser;
 
             this.injection = injection;
@@ -160,16 +144,9 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
             {
                 ((IDisposable)parser).Dispose();
             }
-#if DEBUG
-            if (trace != null /*&& this.trace is IDisposable*/)
-            {
-                ((IDisposable)trace).Dispose();
-            }
-#endif
+
             parser = null;
-#if DEBUG
-            trace = null;
-#endif
+
             GC.SuppressFinalize(this);
         }
 
@@ -193,17 +170,6 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
 
         protected void Process(TextTokenId tokenId)
         {
-#if DEBUG
-            if (trace != null)
-            {
-                trace.TraceToken(parser.Token, 0);
-
-                if (tokenId == TextTokenId.EndOfFile)
-                {
-                    trace.Flush();
-                }
-            }
-#endif
             switch (tokenId)
             {
                 case TextTokenId.Text:

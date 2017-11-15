@@ -1,6 +1,6 @@
 ﻿using System.Web.UI.WebControls;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.AuxiliaryTable
 {
@@ -10,29 +10,29 @@ namespace BaiRong.Core.AuxiliaryTable
         {
         }
 
-        private static string GetValidateCheckMethod(string attributeName, string displayName, InputValidateInfo validateInfo)
-        {
-            if (validateInfo != null)
-            {
-                return
-                    $"checkAttributeValue('{attributeName}', '{displayName}', {validateInfo.IsRequire.ToString().ToLower()}, {validateInfo.MinNum}, {validateInfo.MaxNum}, '{validateInfo.RegExp}', '{validateInfo.ErrorMessage}');";
-            }
-            return string.Empty;
-        }
+        //private static string GetValidateCheckMethod(string attributeName, string displayName, InputValidateInfo validateInfo)
+        //{
+        //    if (validateInfo != null)
+        //    {
+        //        return
+        //            $"checkAttributeValue('{attributeName}', '{displayName}', {validateInfo.IsRequire.ToString().ToLower()}, {validateInfo.MinNum}, {validateInfo.MaxNum}, '{validateInfo.RegExp}', '{validateInfo.ErrorMessage}');";
+        //    }
+        //    return string.Empty;
+        //}
 
-        public static string GetValidateAttributes(bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, EInputValidateType validateType, string regExp, string errorMessage)
+        public static string GetValidateAttributes(bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, ValidateType validateType, string regExp, string errorMessage)
         {
             if (isValidate)
             {
                 return
                     $@"isValidate=""{true.ToString().ToLower()}"" displayName=""{displayName}"" isRequire=""{isRequire
-                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{EInputValidateTypeUtils
+                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{ValidateTypeUtils
                         .GetValue(validateType)}"" regExp=""{regExp}"" errorMessage=""{errorMessage}""";
             }
             return string.Empty;
         }
 
-        public static void GetValidateAttributesForListItem(ListControl control, bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, EInputValidateType validateType, string regExp, string errorMessage)
+        public static void GetValidateAttributesForListItem(ListControl control, bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, ValidateType validateType, string regExp, string errorMessage)
         {
             if (!isValidate) return;
 
@@ -41,7 +41,7 @@ namespace BaiRong.Core.AuxiliaryTable
             control.Attributes.Add("isRequire", isRequire.ToString().ToLower());
             control.Attributes.Add("minNum", minNum.ToString());
             control.Attributes.Add("maxNum", maxNum.ToString());
-            control.Attributes.Add("validateType", EInputValidateTypeUtils.GetValue(validateType));
+            control.Attributes.Add("validateType", ValidateTypeUtils.GetValue(validateType));
             control.Attributes.Add("regExp", regExp);
             control.Attributes.Add("errorMessage", errorMessage);
             control.Attributes.Add("isListItem", true.ToString().ToLower());
@@ -64,35 +64,35 @@ namespace BaiRong.Core.AuxiliaryTable
             return !isConfirm ? GetValidateSubmitOnClickScript(formId) : $"return checkFormValueById('{formId}') && {confirmFunction};";
         }
 
-        public static string GetAdditionalAttributes(string whereUsed, EInputType inputType)
+        public static string GetAdditionalAttributes(string whereUsed, InputType inputType)
         {
             var additionalAttributes = string.Empty;
             if (string.IsNullOrEmpty(whereUsed))
             {
-                //if (inputType == EInputType.Text || inputType == EInputType.Image || inputType == EInputType.File)
+                //if (inputType == InputType.Text || inputType == InputType.Image || inputType == InputType.File)
                 //{
                 //    additionalAttributes = @"class=""colorblur"" onfocus=""this.className='colorfocus';"" onblur=""this.className='colorblur';"" size=""60""";
                 //}
-                //else if (inputType == EInputType.TextArea)
+                //else if (inputType == InputType.TextArea)
                 //{
                 //    additionalAttributes = @"class=""colorblur"" onfocus=""this.className='colorfocus';"" onblur=""this.className='colorblur';"" cols=""60"" rows=""5""";
                 //}
-                //else if (inputType == EInputType.Date || inputType == EInputType.DateTime)
+                //else if (inputType == InputType.Date || inputType == InputType.DateTime)
                 //{
                 //    additionalAttributes = @"class=""colorblur Wdate"" size=""25""";
                 //}
             }
             else if (whereUsed == "usercenter")
             {
-                if (inputType == EInputType.Text || inputType == EInputType.Image || inputType == EInputType.Video || inputType == EInputType.File)
+                if (inputType == InputType.Text || inputType == InputType.Image || inputType == InputType.Video || inputType == InputType.File)
                 {
                     additionalAttributes = @"class=""input-txt"" style=""width:320px""";
                 }
-                else if (inputType == EInputType.TextArea)
+                else if (inputType == InputType.TextArea)
                 {
                     additionalAttributes = @"class=""input-area area-s5"" cols=""60"" rows=""5""";
                 }
-                else if (inputType == EInputType.Date || inputType == EInputType.DateTime)
+                else if (inputType == InputType.Date || inputType == InputType.DateTime)
                 {
                     additionalAttributes = @"class=""input-txt Wdate"" style=""width:120px""";
                 }
@@ -100,27 +100,27 @@ namespace BaiRong.Core.AuxiliaryTable
             return additionalAttributes;
         }
 
-        //public static string GetInnerAdditionalAttributes(EInputType inputType, EAuxiliaryTableType tableType, string attributeName)
+        //public static string GetInnerAdditionalAttributes(InputType inputType, EAuxiliaryTableType tableType, string attributeName)
         //{
         //    string additionalAttributes = string.Empty;
-        //    if (inputType == EInputType.Default)
+        //    if (inputType == InputType.Default)
         //    {
-        //        inputType = EInputTypeUtils.GetDefaultInputType(tableType, attributeName);
+        //        inputType = InputTypeUtils.GetDefaultInputType(tableType, attributeName);
         //    }
 
-        //    if (inputType == EInputType.Text)
+        //    if (inputType == InputType.Text)
         //    {
         //        additionalAttributes = @"class=""colorblur"" onfocus=""this.className='colorfocus';"" onblur=""this.className='colorblur';"" size=""60""";
         //    }
-        //    else if (inputType == EInputType.TextArea)
+        //    else if (inputType == InputType.TextArea)
         //    {
         //        additionalAttributes = @"class=""colorblur"" onfocus=""this.className='colorfocus';"" onblur=""this.className='colorblur';"" cols=""60"" rows=""5""";
         //    }
-        //    else if (inputType == EInputType.Date || inputType == EInputType.DateTime)
+        //    else if (inputType == InputType.Date || inputType == InputType.DateTime)
         //    {
         //        additionalAttributes = @"class=""colorblur"" size=""30""";
         //    }
-        //    else if (inputType == EInputType.Image || inputType == EInputType.File)
+        //    else if (inputType == InputType.Image || inputType == InputType.File)
         //    {
         //        additionalAttributes = @"size=""50""";
         //    }

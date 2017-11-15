@@ -6,6 +6,7 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -79,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ControlUtils.SelectListItems(IsRequired, _styleInfo.Additional.IsRequired.ToString());
 
-                if (EInputTypeUtils.EqualsAny(_styleInfo.InputType, EInputType.Text, EInputType.TextArea))
+                if (InputTypeUtils.EqualsAny(_styleInfo.InputType, InputType.Text, InputType.TextArea))
                 {
                     phNum.Visible = true;
                 }
@@ -91,8 +92,8 @@ namespace SiteServer.BackgroundPages.Cms
                 MinNum.Text = _styleInfo.Additional.MinNum.ToString();
                 MaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
 
-                EInputValidateTypeUtils.AddListItems(ValidateType);
-                ControlUtils.SelectListItems(ValidateType, EInputValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
+                ValidateTypeUtils.AddListItems(ValidateType);
+                ControlUtils.SelectListItems(ValidateType, ValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
 
                 RegExp.Text = _styleInfo.Additional.RegExp;
                 ErrorMessage.Text = _styleInfo.Additional.ErrorMessage;
@@ -114,8 +115,8 @@ namespace SiteServer.BackgroundPages.Cms
                 phValidate.Visible = true;
             }
 
-            var type = EInputValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
-            if (type == EInputValidateType.Custom)
+            var type = ValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
+            if (type == Plugin.Models.ValidateType.RegExp)
             {
                 phRegExp.Visible = true;
             }
@@ -143,7 +144,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.Additional.IsRequired = TranslateUtils.ToBool(IsRequired.SelectedValue);
             _styleInfo.Additional.MinNum = TranslateUtils.ToInt(MinNum.Text);
             _styleInfo.Additional.MaxNum = TranslateUtils.ToInt(MaxNum.Text);
-            _styleInfo.Additional.ValidateType = EInputValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
+            _styleInfo.Additional.ValidateType = ValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
             _styleInfo.Additional.RegExp = RegExp.Text.Trim('/');
             _styleInfo.Additional.ErrorMessage = ErrorMessage.Text;
 
@@ -151,7 +152,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (_tableStyleId == 0)//数据库中没有此项的表样式，但是有父项的表样式
                 {
-                    var relatedIdentity = (int)_relatedIdentities[0];
+                    var relatedIdentity = _relatedIdentities[0];
                     _styleInfo.RelatedIdentity = relatedIdentity;
                     _styleInfo.TableStyleId = TableStyleManager.Insert(_styleInfo, _tableStyle);
                 }

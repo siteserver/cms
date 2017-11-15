@@ -694,10 +694,10 @@ pre {
 .alert-info {
   background-color: rgba(61, 220, 247, 0.2) !important;
   border-color: rgba(61, 220, 247, 0.5) !important;
-  color: #3ddcf7;
+  color: #31708f;
 }
 .alert-info .alert-link {
-  color: #3ddcf7;
+  color: #31708f;
 }
 .alert-warning {
   background-color: rgba(255, 170, 0, 0.2) !important;

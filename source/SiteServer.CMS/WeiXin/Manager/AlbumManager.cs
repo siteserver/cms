@@ -14,7 +14,7 @@ namespace SiteServer.CMS.WeiXin.Manager
     {
         public static string GetImageUrl(PublishmentSystemInfo publishmentSystemInfo, string imageUrl)
         {
-            return PageUtils.AddProtocolToUrl(string.IsNullOrEmpty(imageUrl) ? SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/album/img/start.jpg") : PageUtility.ParseNavigationUrl(publishmentSystemInfo, imageUrl));
+            return PageUtils.AddProtocolToUrl(string.IsNullOrEmpty(imageUrl) ? SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/album/img/start.jpg") : PageUtility.ParseNavigationUrl(publishmentSystemInfo, imageUrl));
         }
 
         public static string GetContentImageUrl(PublishmentSystemInfo publishmentSystemInfo, string imageUrl)
@@ -24,15 +24,15 @@ namespace SiteServer.CMS.WeiXin.Manager
 
         private static string GetAlbumUrl(PublishmentSystemInfo publishmentSystemInfo)
         {
-            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/album/index.html"));
+            return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/album/index.html"));
         }
 
         public static string GetAlbumUrl(PublishmentSystemInfo publishmentSystemInfo, AlbumInfo albumInfo, string wxOpenId)
         {
             var attributes = new NameValueCollection
             {
-                {"publishmentSystemID", albumInfo.PublishmentSystemID.ToString()},
-                {"albumID", albumInfo.ID.ToString()},
+                {"publishmentSystemID", albumInfo.PublishmentSystemId.ToString()},
+                {"albumID", albumInfo.Id.ToString()},
                 {"wxOpenID", wxOpenId}
             };
             return PageUtils.AddQueryString(GetAlbumUrl(publishmentSystemInfo), attributes);
@@ -42,9 +42,9 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var albumInfoList = DataProviderWX.AlbumDAO.GetAlbumInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var albumInfoList = DataProviderWx.AlbumDao.GetAlbumInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
             foreach (var albumInfo in albumInfoList)
             {

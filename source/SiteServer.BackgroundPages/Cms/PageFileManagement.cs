@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (!IsPostBack)
                 {
-                    //BreadCrumb(AppManager.Cms.LeftMenu.IdFunction, "站点文件管理", AppManager.Cms.Permission.WebSite.FileManagement);
+                    //BreadCrumb("站点文件管理", AppManager.Cms.Permission.WebSite.FileManagement);
 
                     ListType.Items.Add(new ListItem("显示缩略图", "Image"));
                     ListType.Items.Add(new ListItem("显示详细信息", "List"));

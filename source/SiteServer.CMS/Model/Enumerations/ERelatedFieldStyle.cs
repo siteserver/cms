@@ -14,34 +14,28 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ERelatedFieldStyle type)
 		{
-            if (type == ERelatedFieldStyle.Horizontal)
+		    if (type == ERelatedFieldStyle.Horizontal)
 			{
                 return "Horizontal";
 			}
-            else if (type == ERelatedFieldStyle.Virtical)
-			{
-                return "Virtical";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ERelatedFieldStyle.Virtical)
+		    {
+		        return "Virtical";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ERelatedFieldStyle type)
 		{
-            if (type == ERelatedFieldStyle.Horizontal)
+		    if (type == ERelatedFieldStyle.Horizontal)
 			{
                 return "水平显示";
 			}
-            else if (type == ERelatedFieldStyle.Virtical)
-			{
-                return "垂直显示";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ERelatedFieldStyle.Virtical)
+		    {
+		        return "垂直显示";
+		    }
+		    throw new Exception();
 		}
 
 		public static ERelatedFieldStyle GetEnumType(string typeStr)

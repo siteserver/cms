@@ -1,21 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class InputContentDao : DataProviderBase
     {
-        public string TableName => "siteserver_InputContent";
+        public override string TableName => "siteserver_InputContent";
 
         public int Insert(InputContentInfo info)
         {
@@ -24,7 +26,7 @@ namespace SiteServer.CMS.Provider
             info.Taxis = GetMaxTaxis(info.InputId) + 1;
             info.BeforeExecuteNonQuery();
             IDataParameter[] parms;
-            var sqlInsert = BaiRongDataProvider.TableStructureDao.GetInsertSqlString(info.Attributes, TableName, out parms);
+            var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(info.GetExtendedAttributes(), TableName, out parms);
 
             using (var conn = GetConnection())
             {
@@ -52,7 +54,7 @@ namespace SiteServer.CMS.Provider
         {
             info.BeforeExecuteNonQuery();
             IDataParameter[] parms;
-            var sqlUpdate = BaiRongDataProvider.TableStructureDao.GetUpdateSqlString(info.Attributes, TableName, out parms);
+            var sqlUpdate = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(info.GetExtendedAttributes(), TableName, out parms);
 
             ExecuteNonQuery(sqlUpdate, parms);
         }
@@ -149,7 +151,7 @@ namespace SiteServer.CMS.Provider
         {
             InputContentInfo info = null;
             string sqlWhere = $"WHERE ID = {contentId}";
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, sqlWhere);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, sqlWhere);
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -192,7 +194,7 @@ namespace SiteServer.CMS.Provider
 
         private DataSet GetDataSetByWhereString(string whereString)
         {
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
             return ExecuteDataset(sqlSelect);
         }
 
@@ -211,7 +213,7 @@ namespace SiteServer.CMS.Provider
 
         private IEnumerable GetDataSourceByContentNumAndWhereString(int totalNum, string whereString, string orderByString)
         {
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, totalNum, SqlUtils.Asterisk, whereString, orderByString);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, totalNum, SqlUtils.Asterisk, whereString, orderByString);
             return (IEnumerable)ExecuteReader(sqlSelect);
         }
 
@@ -270,7 +272,7 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter("@UserName", EDataType.NVarChar, 255,userName)
+				GetParameter("@UserName", DataType.NVarChar, 255,userName)
 			};
             using (var rdr = ExecuteReader(sqlString, selectParms))
             {
@@ -322,10 +324,10 @@ namespace SiteServer.CMS.Provider
         {
             var orderByString = ETaxisTypeUtils.GetInputContentOrderByString(ETaxisType.OrderByTaxisDesc);
             string where = $"WHERE (InputID = {inputId} {whereString}) {orderByString}";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, "ID, Taxis", where);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, "ID, Taxis", where);
         }
 
-        public string GetSelectSqlStringWithChecked(int publishmentSystemId, int inputId, bool isReplyExists, bool isReply, int startNum, int totalNum, string whereString, string orderByString, NameValueCollection otherAttributes)
+        public string GetSelectSqlStringWithChecked(int publishmentSystemId, int inputId, bool isReplyExists, bool isReply, int startNum, int totalNum, string whereString, string orderByString, LowerNameValueCollection others)
         {
             if (!string.IsNullOrEmpty(whereString) && !StringUtils.StartsWithIgnoreCase(whereString.Trim(), "AND "))
             {
@@ -336,28 +338,28 @@ namespace SiteServer.CMS.Provider
             {
                 if (isReply)
                 {
-                    sqlWhereString += " AND datalength(Reply) > 0";
+                    sqlWhereString += " AND " + SqlUtils.GetNotNullAndEmpty("Reply");
                 }
                 else
                 {
-                    sqlWhereString += " AND datalength(Reply) = 0";
+                    sqlWhereString += " AND " + SqlUtils.GetNullOrEmpty("Reply");
                 }
             }
-            if (otherAttributes != null && otherAttributes.Count > 0)
+            if (others != null && others.Count > 0)
             {
                 var relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.InputContent, publishmentSystemId, inputId);
                 var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.InputContent, TableName, relatedIdentities);
                 foreach (var tableStyleInfo in styleInfoList)
                 {
-                    if (!string.IsNullOrEmpty(otherAttributes[tableStyleInfo.AttributeName.ToLower()]))
+                    if (!string.IsNullOrEmpty(others.Get(tableStyleInfo.AttributeName)))
                     {
                         sqlWhereString +=
-                            $" AND ({InputContentAttribute.SettingsXml} like '%{tableStyleInfo.AttributeName}={otherAttributes[tableStyleInfo.AttributeName.ToLower()]}%')";
+                            $" AND ({InputContentAttribute.SettingsXml} LIKE '%{tableStyleInfo.AttributeName}={others.Get(tableStyleInfo.AttributeName)}%')";
                     }
                 }
             }
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
         }
 
         public string GetSortFieldName()

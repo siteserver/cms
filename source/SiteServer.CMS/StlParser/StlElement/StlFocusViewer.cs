@@ -1,313 +1,260 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.HtmlControls;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Parser;
+using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "滚动焦点图", Description = "通过 stl:focusviewer 标签在模板中实现由 FLASH 显示的图片轮播效果")]
     public class StlFocusViewer
     {
         private StlFocusViewer() { }
-        public const string ElementName = "stl:focusviewer";//显示滚动焦点图
+        public const string ElementName = "stl:focusViewer";
 
-        public const string Attribute_ChannelIndex = "channelindex";			//栏目索引
-        public const string Attribute_ChannelName = "channelname";				//栏目名称
-        public const string Attribute_Scope = "scope";							//范围
-        public const string Attribute_Group = "group";		                    //指定显示的内容组
-        public const string Attribute_GroupNot = "groupnot";	                //指定不显示的内容组
-        public const string Attribute_GroupChannel = "groupchannel";		    //指定显示的栏目组
-        public const string Attribute_GroupChannelNot = "groupchannelnot";	    //指定不显示的栏目组
-        public const string Attribute_GroupContent = "groupcontent";		    //指定显示的内容组
-        public const string Attribute_GroupContentNot = "groupcontentnot";	    //指定不显示的内容组
-        public const string Attribute_Tags = "tags";	                        //指定标签
-        public const string Attribute_Order = "order";							//排序
-        public const string Attribute_StartNum = "startnum";					//从第几条信息开始显示
-        public const string Attribute_TotalNum = "totalnum";					//显示图片数目
-        public const string Attribute_TitleWordNum = "titlewordnum";			//标题文字数量
-        public const string Attribute_Where = "where";                          //获取滚动焦点图的条件判断
+        public const string AttributeChannelIndex = "channelIndex";
+        public const string AttributeChannelName = "channelName";
+        public const string AttributeScope = "scope";
+        public const string AttributeGroup = "group";
+        public const string AttributeGroupNot = "groupNot";
+        public const string AttributeGroupChannel = "groupChannel";
+        public const string AttributeGroupChannelNot = "groupChannelNot";
+        public const string AttributeGroupContent = "groupContent";
+        public const string AttributeGroupContentNot = "groupContentNot";
+        public const string AttributeTags = "tags";
+        public const string AttributeOrder = "order";
+        public const string AttributeStartNum = "startNum";
+        public const string AttributeTotalNum = "totalNum";
+        public const string AttributeTitleWordNum = "titleWordNum";
+        public const string AttributeWhere = "where";
+        public const string AttributeIsTop = "isTop";
+        public const string AttributeIsRecommend = "isRecommend";
+        public const string AttributeIsHot = "isHot";
+        public const string AttributeIsColor = "isColor";
+        public const string AttributeTheme = "theme";
+        public const string AttributeWidth = "width";
+        public const string AttributeHeight = "height";
+        public const string AttributeBgColor = "bgColor";
+        public const string AttributeIsShowText = "isShowText";
+        public const string AttributeIsTopText = "isTopText";
 
-        public const string Attribute_IsTop = "istop";                       //仅显示置顶内容
-        public const string Attribute_IsRecommend = "isrecommend";           //仅显示推荐内容
-        public const string Attribute_IsHot = "ishot";                       //仅显示热点内容
-        public const string Attribute_IsColor = "iscolor";                   //仅显示醒目内容
-
-        public const string Attribute_Theme = "theme";                      //主题样式
-        public const string Attribute_Width = "width";						//图片宽度
-        public const string Attribute_Height = "height";					//图片高度
-        public const string Attribute_BgColor = "bgcolor";					//背景色
-        public const string Attribute_IsShowText = "isshowtext";			//是否显示文字标题
-        public const string Attribute_IsTopText = "istoptext";				//是否文字显示在顶端
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
-
-        public const string Theme_Style1 = "Style1";
-        public const string Theme_Style2 = "Style2";
-        public const string Theme_Style3 = "Style3";
-        public const string Theme_Style4 = "Style4";
-
-        public static List<string> AttributeValuesTheme
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            get
-            {
-                var list = new List<string>();
+            {AttributeChannelIndex, "栏目索引"},
+            {AttributeChannelName, "栏目名称"},
+            {AttributeScope, "范围"},
+            {AttributeGroupChannel, "指定显示的栏目组"},
+            {AttributeGroupChannelNot, "指定不显示的栏目组"},
+            {AttributeGroupContent, "指定显示的内容组"},
+            {AttributeGroupContentNot, "指定不显示的内容组"},
+            {AttributeGroup, "指定显示的内容组"},
+            {AttributeGroupNot, "指定不显示的内容组"},
+            {AttributeTags, "指定标签"},
+            {AttributeOrder, "排序"},
+            {AttributeStartNum, "从第几条信息开始显示"},
+            {AttributeTotalNum, "标题文字数量"},
+            {AttributeTitleWordNum, "标题文字数量"},
+            {AttributeWhere, "获取滚动焦点图的条件判断"},
+            {AttributeIsTop, "仅显示置顶内容"},
+            {AttributeIsRecommend, "仅显示推荐内容"},
+            {AttributeIsHot, "仅显示热点内容"},
+            {AttributeIsColor, "仅显示醒目内容"},
+            {AttributeTheme, StringUtils.SortedListToAttributeValueString("主题样式", ThemeList)},
+            {AttributeWidth, "图片宽度"},
+            {AttributeHeight, "图片高度"},
+            {AttributeBgColor, "背景色"},
+            {AttributeIsShowText, "是否显示文字标题"},
+            {AttributeIsTopText, "是否文字显示在顶端"}
+        };
 
-                list.Add(Theme_Style1);
-                list.Add(Theme_Style2);
-                list.Add(Theme_Style3);
-                list.Add(Theme_Style4);
+        public const string ThemeStyle1 = "Style1";
+        public const string ThemeStyle2 = "Style2";
+        public const string ThemeStyle3 = "Style3";
+        public const string ThemeStyle4 = "Style4";
 
-                return list;
-            }
-        }
-
-        public static ListDictionary AttributeList
+        public static SortedList<string, string> ThemeList => new SortedList<string, string>
         {
-            get
-            {
-                var attributes = new ListDictionary();
-                attributes.Add(Attribute_ChannelIndex, "栏目索引");
-                attributes.Add(Attribute_ChannelName, "栏目名称");
-                attributes.Add(Attribute_Scope, "范围");
-                attributes.Add(Attribute_GroupChannel, "指定显示的栏目组");
-                attributes.Add(Attribute_GroupChannelNot, "指定不显示的栏目组");
-                attributes.Add(Attribute_GroupContent, "指定显示的内容组");
-                attributes.Add(Attribute_GroupContentNot, "指定不显示的内容组");
-                attributes.Add(Attribute_Tags, "指定标签");
-                attributes.Add(Attribute_Order, "排序");
-                attributes.Add(Attribute_StartNum, "从第几条信息开始显示");
-                attributes.Add(Attribute_TotalNum, "标题文字数量");
-                attributes.Add(Attribute_TitleWordNum, "标题文字数量");
-                attributes.Add(Attribute_Where, "获取滚动焦点图的条件判断");
-
-                attributes.Add(Attribute_IsTop, "仅显示置顶内容");
-                attributes.Add(Attribute_IsRecommend, "仅显示推荐内容");
-                attributes.Add(Attribute_IsHot, "仅显示热点内容");
-                attributes.Add(Attribute_IsColor, "仅显示醒目内容");
-
-                attributes.Add(Attribute_Theme, "主题样式");
-                attributes.Add(Attribute_Width, "图片宽度");
-                attributes.Add(Attribute_Height, "图片高度");
-                attributes.Add(Attribute_BgColor, "背景色");
-                attributes.Add(Attribute_IsShowText, "是否显示文字标题");
-                attributes.Add(Attribute_IsTopText, "是否文字显示在顶端");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-                return attributes;
-            }
-        }
-
-        public static Dictionary<string, string> BooleanAttributeList
-        {
-            get
-            {
-                var attributes = new Dictionary<string, string>();
-
-                attributes.Add(Attribute_IsTop, "仅显示置顶内容");
-                attributes.Add(Attribute_IsRecommend, "仅显示推荐内容");
-                attributes.Add(Attribute_IsHot, "仅显示热点内容");
-                attributes.Add(Attribute_IsColor, "仅显示醒目内容");
-
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-
-                return attributes;
-            }
-        }
+            {ThemeStyle1, "样式1"},
+            {ThemeStyle2, "样式2"},
+            {ThemeStyle3, "样式3"},
+            {ThemeStyle4, "样式4"},
+        };
 
         //对“flash滚动焦点图”（stl:focusViewer）元素进行解析
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var parsedContent = string.Empty;
-            try
+            // 如果是实体标签则返回空
+            if (contextInfo.IsCurlyBrace)
             {
-                var genericControl = new HtmlGenericControl("div");
-                var ie = node.Attributes.GetEnumerator();
+                return string.Empty;
+            }
 
-                var channelIndex = string.Empty;
-                var channelName = string.Empty;
-                var scopeType = EScopeType.Self;
-                var groupChannel = string.Empty;
-                var groupChannelNot = string.Empty;
-                var groupContent = string.Empty;
-                var groupContentNot = string.Empty;
-                var tags = string.Empty;
-                var orderByString = ETaxisTypeUtils.GetOrderByString(ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc, string.Empty, null);
-                var startNum = 1;
-                var totalNum = 0;
-                var isShowText = true;
-                var isTopText = string.Empty;
-                var titleWordNum = 0;
-                var where = string.Empty;
+            var channelIndex = string.Empty;
+            var channelName = string.Empty;
+            var scopeType = EScopeType.Self;
+            var groupChannel = string.Empty;
+            var groupChannelNot = string.Empty;
+            var groupContent = string.Empty;
+            var groupContentNot = string.Empty;
+            var tags = string.Empty;
+            var orderByString = ETaxisTypeUtils.GetOrderByString(ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
+            var startNum = 1;
+            var totalNum = 0;
+            var isShowText = true;
+            var isTopText = string.Empty;
+            var titleWordNum = 0;
+            var where = string.Empty;
 
-                var isTop = false;
-                var isTopExists = false;
-                var isRecommend = false;
-                var isRecommendExists = false;
-                var isHot = false;
-                var isHotExists = false;
-                var isColor = false;
-                var isColorExists = false;
+            var isTop = false;
+            var isTopExists = false;
+            var isRecommend = false;
+            var isRecommendExists = false;
+            var isHot = false;
+            var isHotExists = false;
+            var isColor = false;
+            var isColorExists = false;
 
-                var theme = string.Empty;
-                var imageWidth = 260;
-                var imageHeight = 182;
-                var textHeight = 25;
-                var bgColor = string.Empty;
-                var isDynamic = false;
+            var theme = string.Empty;
+            var imageWidth = 260;
+            var imageHeight = 182;
+            var textHeight = 25;
+            var bgColor = string.Empty;
+            var genericControl = new HtmlGenericControl("div");
 
-                while (ie.MoveNext())
+            foreach (var name in contextInfo.Attributes.Keys)
+            {
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
                 {
-                    var attr = (XmlAttribute)ie.Current;
-                    var attributeName = attr.Name.ToLower();
-                    if (attributeName.Equals(Attribute_ChannelIndex))
-                    {
-                        channelIndex = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_ChannelName))
-                    {
-                        channelName = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_Scope))
-                    {
-                        scopeType = EScopeTypeUtils.GetEnumType(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_GroupChannel))
-                    {
-                        groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_GroupChannelNot))
-                    {
-                        groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_GroupContent))
-                    {
-                        groupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_GroupContentNot))
-                    {
-                        groupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_Tags))
-                    {
-                        tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                    }
-                    else if (attributeName.Equals(Attribute_Order))
-                    {
-                        orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, attr.Value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
-                    }
-                    else if (attributeName.Equals(Attribute_StartNum))
-                    {
-                        startNum = TranslateUtils.ToInt(attr.Value, 1);
-                    }
-                    else if (attributeName.Equals(Attribute_TotalNum))
-                    {
-                        totalNum = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_TitleWordNum))
-                    {
-                        titleWordNum = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Where))
-                    {
-                        where = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsTop))
-                    {
-                        isTopExists = true;
-                        isTop = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_IsRecommend))
-                    {
-                        isRecommendExists = true;
-                        isRecommend = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_IsHot))
-                    {
-                        isHotExists = true;
-                        isHot = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_IsColor))
-                    {
-                        isColorExists = true;
-                        isColor = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Theme))
-                    {
-                        theme = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_Width))
-                    {
-                        if (StringUtils.EndsWithIgnoreCase(attr.Value, "px"))
-                        {
-                            attr.Value = attr.Value.Substring(0, attr.Value.Length - 2);
-                        }
-                        imageWidth = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Height))
-                    {
-                        if (StringUtils.EndsWithIgnoreCase(attr.Value, "px"))
-                        {
-                            attr.Value = attr.Value.Substring(0, attr.Value.Length - 2);
-                        }
-                        imageHeight = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_BgColor))
-                    {
-                        bgColor = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsShowText))
-                    {
-                        isShowText = TranslateUtils.ToBool(attr.Value, true);
-                    }
-                    else if (attributeName.Equals(Attribute_IsTopText))
-                    {
-                        isTopText = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else
-                    {
-                        genericControl.Attributes.Remove(attributeName);
-                        genericControl.Attributes.Add(attributeName, attr.Value);
-                    }
+                    channelIndex = value;
                 }
-
-                if (isDynamic)
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
                 {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
+                    channelName = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeScope))
+                {
+                    scopeType = EScopeTypeUtils.GetEnumType(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannel))
+                {
+                    groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannelNot))
+                {
+                    groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContent))
+                {
+                    groupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContentNot))
+                {
+                    groupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTags))
+                {
+                    tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
+                {
+                    orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeStartNum))
+                {
+                    startNum = TranslateUtils.ToInt(value, 1);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTotalNum))
+                {
+                    totalNum = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTitleWordNum))
+                {
+                    titleWordNum = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeWhere))
+                {
+                    where = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTop))
+                {
+                    isTopExists = true;
+                    isTop = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsRecommend))
+                {
+                    isRecommendExists = true;
+                    isRecommend = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsHot))
+                {
+                    isHotExists = true;
+                    isHot = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsColor))
+                {
+                    isColorExists = true;
+                    isColor = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTheme))
+                {
+                    theme = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeWidth))
+                {
+                    if (StringUtils.EndsWithIgnoreCase(value, "px"))
+                    {
+                        value = value.Substring(0, value.Length - 2);
+                    }
+                    imageWidth = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeHeight))
+                {
+                    if (StringUtils.EndsWithIgnoreCase(value, "px"))
+                    {
+                        value = value.Substring(0, value.Length - 2);
+                    }
+                    imageHeight = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeBgColor))
+                {
+                    bgColor = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsShowText))
+                {
+                    isShowText = TranslateUtils.ToBool(value, true);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTopText))
+                {
+                    isTopText = value;
                 }
                 else
                 {
-                    parsedContent = ParseImpl(pageInfo, contextInfo, genericControl, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
+                    genericControl.Attributes[name] = value;
                 }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
-            }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, genericControl, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlGenericControl genericControl, string channelIndex, string channelName, EScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, string where, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
         {
             var parsedContent = string.Empty;
 
-            var channelID = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelID, channelIndex, channelName);
+            var channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
 
-            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelID, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
 
             if (dataSource != null)
             {
-                if (StringUtils.EqualsIgnoreCase(theme, Theme_Style2))
+                if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle2))
                 {
                     pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcSwfObject);
 
@@ -315,10 +262,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource)
+                    foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new BackgroundContentInfo(dataItem);
-                        if (contentInfo != null && !string.IsNullOrEmpty(contentInfo.ImageUrl))
+                        if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
                         {
                             if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
                             {
@@ -328,6 +275,20 @@ namespace SiteServer.CMS.StlParser.StlElement
                             }
                         }
                     }
+
+                    //foreach (var dataItem in dataSource)
+                    //{
+                    //    var contentInfo = new BackgroundContentInfo(dataItem);
+                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                    //    {
+                    //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
+                    //        {
+                    //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl)));
+                    //        }
+                    //    }
+                    //}
 
                     if (string.IsNullOrEmpty(bgColor))
                     {
@@ -351,34 +312,34 @@ namespace SiteServer.CMS.StlParser.StlElement
                         isTopText = (TranslateUtils.ToBool(isTopText)) ? "0" : "1";
                     }
 
-                    var uniqueID = "FocusViewer_" + pageInfo.UniqueId;
+                    var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
                     var paramBuilder = new StringBuilder();
                     paramBuilder.Append(
-                        $@"so_{uniqueID}.addParam(""quality"", ""high"");").Append(StringUtils.Constants.ReturnAndNewline);
+                        $@"so_{uniqueId}.addParam(""quality"", ""high"");").Append(StringUtils.Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueID}.addParam(""wmode"", ""transparent"");").Append(StringUtils.Constants.ReturnAndNewline);
+                        $@"so_{uniqueId}.addParam(""wmode"", ""transparent"");").Append(StringUtils.Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueID}.addParam(""menu"", ""false"");").Append(StringUtils.Constants.ReturnAndNewline);
+                        $@"so_{uniqueId}.addParam(""menu"", ""false"");").Append(StringUtils.Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueID}.addParam(""FlashVars"", ""bcastr_file=""+files_uniqueID+""&bcastr_link=""+links_uniqueID+""&bcastr_title=""+texts_uniqueID+""&AutoPlayTime=5&TitleBgPosition={isTopText}&TitleBgColor={bgColor}&BtnDefaultColor={bgColor}"");").Append(StringUtils.Constants.ReturnAndNewline);
+                        $@"so_{uniqueId}.addParam(""FlashVars"", ""bcastr_file=""+files_uniqueID+""&bcastr_link=""+links_uniqueID+""&bcastr_title=""+texts_uniqueID+""&AutoPlayTime=5&TitleBgPosition={isTopText}&TitleBgColor={bgColor}&BtnDefaultColor={bgColor}"");").Append(StringUtils.Constants.ReturnAndNewline);
 
                     string scriptHtml = $@"
-<div id=""flashcontent_{uniqueID}""></div>
+<div id=""flashcontent_{uniqueId}""></div>
 <script type=""text/javascript"">
 var files_uniqueID='{TranslateUtils.ObjectCollectionToString(imageUrls, "|")}';
 var links_uniqueID='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")}';
 var texts_uniqueID='{TranslateUtils.ObjectCollectionToString(titleCollection, "|")}';
 
-var so_{uniqueID} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Bcastr)}"", ""flash_{uniqueID}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Bcastr)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
-so_{uniqueID}.write(""flashcontent_{uniqueID}"");
+so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
 ";
-                    scriptHtml = scriptHtml.Replace("uniqueID", uniqueID);
+                    scriptHtml = scriptHtml.Replace("uniqueID", uniqueId);
 
                     parsedContent = scriptHtml;
                 }
-                else if (StringUtils.EqualsIgnoreCase(theme, Theme_Style3))
+                else if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle3))
                 {
                     pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcSwfObject);
 
@@ -386,10 +347,10 @@ so_{uniqueID}.write(""flashcontent_{uniqueID}"");
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource)
+                    foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new BackgroundContentInfo(dataItem);
-                        if (contentInfo != null && !string.IsNullOrEmpty(contentInfo.ImageUrl))
+                        if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
                         {
                             if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
                             {
@@ -400,46 +361,70 @@ so_{uniqueID}.write(""flashcontent_{uniqueID}"");
                         }
                     }
 
-                    var uniqueID = "FocusViewer_" + pageInfo.UniqueId;
+                    //foreach (var dataItem in dataSource)
+                    //{
+                    //    var contentInfo = new BackgroundContentInfo(dataItem);
+                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                    //    {
+                    //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
+                    //        {
+                    //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl)));
+                    //        }
+                    //    }
+                    //}
+
+                    var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
                     var paramBuilder = new StringBuilder();
-                    paramBuilder.Append($@"so_{uniqueID}.addParam(""quality"", ""high"");").Append(StringUtils.Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueID}.addParam(""wmode"", ""transparent"");").Append(StringUtils.Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueID}.addParam(""allowFullScreen"", ""true"");").Append(StringUtils.Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueID}.addParam(""allowScriptAccess"", ""always"");").Append(StringUtils.Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueID}.addParam(""menu"", ""false"");").Append(StringUtils.Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{uniqueId}.addParam(""quality"", ""high"");").Append(StringUtils.Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{uniqueId}.addParam(""wmode"", ""transparent"");").Append(StringUtils.Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{uniqueId}.addParam(""allowFullScreen"", ""true"");").Append(StringUtils.Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{uniqueId}.addParam(""allowScriptAccess"", ""always"");").Append(StringUtils.Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{uniqueId}.addParam(""menu"", ""false"");").Append(StringUtils.Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueID}.addParam(""flashvars"", ""pw={imageWidth}&ph={imageHeight}&Times=4000&sizes=14&umcolor=16777215&btnbg=12189697&txtcolor=16777215&urls=""+urls_uniqueID+""&imgs=""+imgs_uniqueID+""&titles=""+titles_uniqueID);").Append(StringUtils.Constants.ReturnAndNewline);
+                        $@"so_{uniqueId}.addParam(""flashvars"", ""pw={imageWidth}&ph={imageHeight}&Times=4000&sizes=14&umcolor=16777215&btnbg=12189697&txtcolor=16777215&urls=""+urls_uniqueID+""&imgs=""+imgs_uniqueID+""&titles=""+titles_uniqueID);").Append(StringUtils.Constants.ReturnAndNewline);
 
                     string scriptHtml = $@"
-<div id=""flashcontent_{uniqueID}""></div>
+<div id=""flashcontent_{uniqueId}""></div>
 <script type=""text/javascript"">
 var urls_uniqueID='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")}';
 var imgs_uniqueID='{TranslateUtils.ObjectCollectionToString(imageUrls, "|")}';
 var titles_uniqueID='{TranslateUtils.ObjectCollectionToString(titleCollection, "|")}';
 
-var so_{uniqueID} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Ali)}"", ""flash_{uniqueID}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Ali)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
-so_{uniqueID}.write(""flashcontent_{uniqueID}"");
+so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
 ";
-                    scriptHtml = scriptHtml.Replace("uniqueID", uniqueID);
+                    scriptHtml = scriptHtml.Replace("uniqueID", uniqueId);
 
                     parsedContent = scriptHtml;
                 }
-                else if (StringUtils.EqualsIgnoreCase(theme, Theme_Style4))
+                else if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle4))
                 {
                     var imageUrls = new StringCollection();
                     var navigationUrls = new StringCollection();
 
-                    foreach (var dataItem in dataSource)
+                    foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new BackgroundContentInfo(dataItem);
-                        if (contentInfo != null && !string.IsNullOrEmpty(contentInfo.ImageUrl))
+                        if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
                         {
                             navigationUrls.Add(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo));
                             imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl));
                         }
                     }
+
+                    //foreach (var dataItem in dataSource)
+                    //{
+                    //    var contentInfo = new BackgroundContentInfo(dataItem);
+                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                    //    {
+                    //        navigationUrls.Add(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo));
+                    //        imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl));
+                    //    }
+                    //}
 
                     var imageBuilder = new StringBuilder();
                     var numBuilder = new StringBuilder();
@@ -538,10 +523,10 @@ so_{uniqueID}.write(""flashcontent_{uniqueID}"");
                     var navigationUrls = new StringCollection();
                     var titleCollection = new StringCollection();
 
-                    foreach (var dataItem in dataSource)
+                    foreach (var dataItem in dataSource.Tables[0].Rows)
                     {
                         var contentInfo = new BackgroundContentInfo(dataItem);
-                        if (contentInfo != null && !string.IsNullOrEmpty(contentInfo.ImageUrl))
+                        if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
                         {
                             //这里使用png图片不管用
                             //||contentInfo.ImageUrl.ToLower().EndsWith(".png")||contentInfo.ImageUrl.ToLower().EndsWith(".pneg")
@@ -553,6 +538,22 @@ so_{uniqueID}.write(""flashcontent_{uniqueID}"");
                             }
                         }
                     }
+
+                    //foreach (var dataItem in dataSource)
+                    //{
+                    //    var contentInfo = new BackgroundContentInfo(dataItem);
+                    //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
+                    //    {
+                    //        //这里使用png图片不管用
+                    //        //||contentInfo.ImageUrl.ToLower().EndsWith(".png")||contentInfo.ImageUrl.ToLower().EndsWith(".pneg")
+                    //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg"))
+                    //        {
+                    //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.ImageUrl)));
+                    //        }
+                    //    }
+                    //}
 
                     if (string.IsNullOrEmpty(bgColor))
                     {
@@ -567,8 +568,8 @@ so_{uniqueID}.write(""flashcontent_{uniqueID}"");
                     {
                         titles = TranslateUtils.ObjectCollectionToString(titleCollection, "|");
                     }
-                    var uniqueID = "FocusViewer_" + pageInfo.UniqueId;
-                    genericControl.ID = uniqueID;
+                    var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
+                    genericControl.ID = uniqueId;
                     genericControl.InnerHtml = "&nbsp;";
                     var divHtml = ControlUtils.GetControlRenderHtml(genericControl);
                     string scriptHtml = $@"
@@ -601,7 +602,7 @@ so_{uniqueID}.write(""flashcontent_{uniqueID}"");
 	//-->
 </SCRIPT>
 ";
-                    scriptHtml = scriptHtml.Replace("uniqueID", uniqueID);
+                    scriptHtml = scriptHtml.Replace("uniqueID", uniqueId);
 
                     parsedContent = divHtml + scriptHtml;
                 }

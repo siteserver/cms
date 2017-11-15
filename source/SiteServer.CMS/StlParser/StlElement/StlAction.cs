@@ -1,136 +1,138 @@
 ﻿using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.HtmlControls;
-using System.Xml;
 using BaiRong.Core;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Parser;
+using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "执行动作", Description = "通过 stl:action 标签在模板中创建链接，点击链接后将执行相应的动作")]
     public class StlAction
     {
         private StlAction() { }
-        public const string ElementName = "stl:action";     //执行动作
+        public const string ElementName = "stl:action";
 
-        public const string AttributeType = "type";                        //动作类型
-        public const string AttributeReturnUrl = "returnurl";              //动作完成后的返回地址
-        public const string AttributeIsDynamic = "isdynamic";              //是否动态显示
+        public const string AttributeType = "type";
+        public const string AttributeReturnUrl = "returnUrl";
 
-        public const string TypeLogin = "Login";			            //登录
-        public const string TypeRegister = "Register";			        //注册
-        public const string TypeLogout = "Logout";			            //退出
-        public const string TypeAddFavorite = "AddFavorite";			//将页面添加至收藏夹
-        public const string TypeSetHomePage = "SetHomePage";			//将页面设置为首页
-        public const string TypeTranslate = "Translate";			    //繁体/简体转换
-        public const string TypeClose = "Close";			            //关闭页面
-        public const string TypeComments = "Comments";			        //链接到评论页面
-
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
-            {AttributeType, "动作类型"},
-            {AttributeIsDynamic, "是否动态显示"}
+            {AttributeType, StringUtils.SortedListToAttributeValueString("动作类型", TypeList)},
+            {AttributeReturnUrl, "动作完成后的返回地址"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
+        //public const string TypeLogin = "Login";
+        //public const string TypeRegister = "Register";
+        //public const string TypeLogout = "Logout";
+        public const string TypeAddFavorite = "AddFavorite";
+        public const string TypeSetHomePage = "SetHomePage";
+        public const string TypeTranslate = "Translate";
+        public const string TypeClose = "Close";
+
+        public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
-            string parsedContent;
-            var contextInfo = contextInfoRef.Clone();
+            //{TypeLogin, "登录"},
+            //{TypeRegister, "注册"},
+            //{TypeLogout, "退出"},
+            {TypeAddFavorite, "将页面添加至收藏夹"},
+            {TypeSetHomePage, "将页面设置为首页"},
+            {TypeTranslate, "繁体/简体转换"},
+            {TypeClose, "关闭页面"}
+        };
 
-            try
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        {
+            var type = string.Empty;
+            var returnUrl = string.Empty;
+
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var attributes = new NameValueCollection();
-                var ie = node.Attributes?.GetEnumerator();
-                var type = string.Empty;
-                var returnUrl = string.Empty;
-                var isDynamic = false;
-
-                if (ie != null)
+                var value = contextInfo.Attributes[name];
+                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-
-                        if (attributeName.Equals(AttributeType))
-                        {
-                            type = attr.Value;
-                        }
-                        else if (attributeName.Equals(AttributeReturnUrl))
-                        {
-                            returnUrl = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (attributeName.Equals(AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value, false);
-                        }
-                        else
-                        {
-                            attributes.Add(attributeName, attr.Value);
-                        }
-                    }
+                    type = value;
                 }
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, node, attributes, type, returnUrl);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeReturnUrl))
+                {
+                    returnUrl = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
             }
 
-            return parsedContent;
+            //var ie = node.Attributes?.GetEnumerator();
+            //if (ie != null)
+            //{
+            //    while (ie.MoveNext())
+            //    {
+            //        var attr = (XmlAttribute)ie.Current;
+
+            //        if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeType))
+            //        {
+            //            type = attr.Value;
+            //        }
+            //        else if (StringUtils.EqualsIgnoreCase(attr.Name, AttributeReturnUrl))
+            //        {
+            //            returnUrl = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
+            //        }
+            //        else
+            //        {
+            //            attributes.Add(attr.Name, attr.Value);
+            //        }
+            //    }
+            //}
+
+            return ParseImpl(pageInfo, contextInfo, type, returnUrl);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, XmlNode node, NameValueCollection attributes, string type, string returnUrl)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string returnUrl)
         {
             var stlAnchor = new HtmlAnchor();
 
-            foreach (string attributeName in attributes.Keys)
+            foreach (var attributeName in contextInfo.Attributes.Keys)
             {
-                stlAnchor.Attributes.Add(attributeName, attributes[attributeName]);
+                stlAnchor.Attributes.Add(attributeName, contextInfo.Attributes[attributeName]);
             }
 
             var url = PageUtils.UnclickedUrl;
             var onclick = string.Empty;
 
-            var innerBuilder = new StringBuilder(node.InnerXml);
+            var innerBuilder = new StringBuilder(contextInfo.InnerXml);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
             stlAnchor.InnerHtml = innerBuilder.ToString();
 
             //计算动作开始
             if (!string.IsNullOrEmpty(type))
             {
-                if (StringUtils.EqualsIgnoreCase(type, TypeLogin))
-                {
-                    if (string.IsNullOrEmpty(returnUrl))
-                    {
-                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo);
-                    }
+                //if (StringUtils.EqualsIgnoreCase(type, TypeLogin))
+                //{
+                //    if (string.IsNullOrEmpty(returnUrl))
+                //    {
+                //        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
+                //    }
 
-                    url = HomeUtils.GetLoginUrl(pageInfo.HomeUrl, returnUrl);
-                }
-                else if (StringUtils.EqualsIgnoreCase(type, TypeRegister))
-                {
-                    if (string.IsNullOrEmpty(returnUrl))
-                    {
-                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo);
-                    }
+                //    url = HomeUtils.GetLoginUrl(pageInfo.HomeUrl, returnUrl);
+                //}
+                //else if (StringUtils.EqualsIgnoreCase(type, TypeRegister))
+                //{
+                //    if (string.IsNullOrEmpty(returnUrl))
+                //    {
+                //        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
+                //    }
 
-                    url = HomeUtils.GetRegisterUrl(pageInfo.HomeUrl, returnUrl);
-                }
-                else if (StringUtils.EqualsIgnoreCase(type, TypeLogout))
-                {
-                    if (string.IsNullOrEmpty(returnUrl))
-                    {
-                        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo);
-                    }
+                //    url = HomeUtils.GetRegisterUrl(pageInfo.HomeUrl, returnUrl);
+                //}
+                //else if (StringUtils.EqualsIgnoreCase(type, TypeLogout))
+                //{
+                //    if (string.IsNullOrEmpty(returnUrl))
+                //    {
+                //        returnUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
+                //    }
 
-                    url = HomeUtils.GetLogoutUrl(pageInfo.HomeUrl, returnUrl);
-                }
-                else if (StringUtils.EqualsIgnoreCase(type, TypeAddFavorite))
+                //    url = HomeUtils.GetLogoutUrl(pageInfo.HomeUrl, returnUrl);
+                //}
+                if (StringUtils.EqualsIgnoreCase(type, TypeAddFavorite))
                 {
                     pageInfo.SetPageScripts(TypeAddFavorite, @"
 <script type=""text/javascript""> 
@@ -148,7 +150,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, TypeSetHomePage))
                 {
-                    url = pageInfo.PublishmentSystemInfo.PublishmentSystemUrl;
+                    url = pageInfo.PublishmentSystemInfo.Additional.WebUrl;
                     pageInfo.AddPageEndScriptsIfNotExists(TypeAddFavorite, $@"
 <script type=""text/javascript""> 
     function SetHomepage(){{   
@@ -214,27 +216,6 @@ translateInitilization();
                 {
                     url = "javascript:window.close()";
                 }
-                else if (StringUtils.EqualsIgnoreCase(type, TypeComments))
-                {
-                    url = stlAnchor.Attributes["href"];
-                    if (string.IsNullOrEmpty(url))
-                    {
-                        url = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, "@/utils/comments.html");
-                    }
-                    if (contextInfo.ContextType == EContextType.Content)
-                    {
-                        var parameters = new NameValueCollection
-                        {
-                            {"channelID", contextInfo.ChannelID.ToString()},
-                            {"contentID", contextInfo.ContentID.ToString()}
-                        };
-                        url = PageUtils.AddQueryString(url, parameters);
-                    }
-                    else if (contextInfo.ContextType == EContextType.Channel)
-                    {
-                        url = PageUtils.AddQueryString(url, "channelID", contextInfo.ChannelID.ToString());
-                    }
-                }
             }
             //计算动作结束
 
@@ -245,7 +226,15 @@ translateInitilization();
                 stlAnchor.Attributes.Add("onclick", onclick);
             }
 
-            return ControlUtils.GetControlRenderHtml(stlAnchor);
+            // 如果是实体标签，则只返回url
+            if (contextInfo.IsCurlyBrace)
+            {
+                return stlAnchor.HRef;
+            }
+            else
+            {
+                return ControlUtils.GetControlRenderHtml(stlAnchor);
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageTemplateFilePathRule : BasePageCms
     {
-        public Repeater rptContents;
+        public Repeater RptContents;
 
         private int _currentNodeId;
         private NameValueCollection _additional;
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, AppManager.Cms.LeftMenu.Create.IdConfigurationCreate, "页面命名规则", AppManager.Cms.Permission.WebSite.Create);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "页面命名规则", AppManager.Permissions.WebSite.Create);
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.TemplateFilePathRule, _additional));
 
@@ -48,9 +48,9 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                rptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
-                rptContents.ItemDataBound += rptContents_ItemDataBound;
-                rptContents.DataBind();
+                RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+                RptContents.ItemDataBound += rptContents_ItemDataBound;
+                RptContents.DataBind();
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.TemplateFilePathRule, _additional, Body.AdministratorName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.TemplateFilePathRule, _additional, Body.AdminName);
         }
 	}
 }

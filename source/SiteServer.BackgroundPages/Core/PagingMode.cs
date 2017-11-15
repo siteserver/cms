@@ -1,4 +1,4 @@
-namespace SiteServer.BackgroundPages.Core
+﻿namespace SiteServer.BackgroundPages.Core
 {
     public enum PagingMode
     {

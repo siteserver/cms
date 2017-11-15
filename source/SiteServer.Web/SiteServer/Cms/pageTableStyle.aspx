@@ -10,7 +10,7 @@
 <body>
 <!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
-  <asp:Literal id="ltlBreadCrumb" runat="server" />
+  <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />
 
   <asp:dataGrid id="dgContents" showHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" runat="server">

@@ -3,6 +3,7 @@ using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
 {
@@ -82,14 +83,14 @@ namespace SiteServer.BackgroundPages
 
         public bool IsNeedUpgrade(Page page)
         {
-            CacheUtils.Clear();
+            CacheUtils.ClearAll();
 
-            if (BaiRongDataProvider.ConfigDao.GetDatabaseVersion() == AppManager.Version)
-            {
-                page.Response.Write($"<h2>当前版本为“{AppManager.Version}”,数据库版本与系统版本一致，无需升级</h2>");
-                page.Response.End();
-                return false;
-            }
+            //if (BaiRongDataProvider.ConfigDao.GetDatabaseVersion() == AppManager.Version)
+            //{
+            //    page.Response.Write($"<h2>当前版本为“{AppManager.Version}”,数据库版本与系统版本一致，无需升级</h2>");
+            //    page.Response.End();
+            //    return false;
+            //}
 
             return true;
         }
@@ -98,12 +99,14 @@ namespace SiteServer.BackgroundPages
         {
             if (ChkIAgree.Checked)
             {
-                LtlErrorMessage.Text = string.Empty;
-
-                string errorMessage;
-                AppManager.Upgrade(AppManager.Version, out errorMessage);
                 LtlStepTitle.Text = GetSetpTitleString(2);
-                LtlErrorMessage.Text = errorMessage;
+
+                //string errorMessage;
+                //AppManager.Upgrade(AppManager.Version, out errorMessage);
+                //LtlErrorMessage.Text = errorMessage;
+
+                SystemManager.Upgrade();
+                LtlErrorMessage.Text = string.Empty;
             }
             else
             {

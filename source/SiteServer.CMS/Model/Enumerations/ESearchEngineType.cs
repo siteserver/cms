@@ -7,78 +7,72 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum ESearchEngineType
 	{
-		Baidu,						//°Ù¶È
-		Google_CN,					//Google(¼òÌåÖĞÎÄ)
+		Baidu,						//ç™¾åº¦
+		Google_CN,					//Google(ç®€ä½“ä¸­æ–‡)
 		Google,						//Google
 		Yahoo,						//Yahoo
 		Live,						//Live
-		Sogou,						//ËÑ¹·
+		Sogou,						//æœç‹—
 	}
 
 	public class ESearchEngineTypeUtils
 	{
 		public static string GetValue(ESearchEngineType type)
 		{
-			if (type == ESearchEngineType.Baidu)
+		    if (type == ESearchEngineType.Baidu)
 			{
 				return "Baidu";
 			}
-			else if (type == ESearchEngineType.Google)
-			{
-				return "Google";
-			}
-			else if (type == ESearchEngineType.Google_CN)
-			{
-				return "Google_CN";
-			}
-			else if (type == ESearchEngineType.Live)
-			{
-				return "Live";
-			}
-			else if (type == ESearchEngineType.Sogou)
-			{
-				return "Sogou";
-			}
-			else if (type == ESearchEngineType.Yahoo)
-			{
-				return "Yahoo";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ESearchEngineType.Google)
+		    {
+		        return "Google";
+		    }
+		    if (type == ESearchEngineType.Google_CN)
+		    {
+		        return "Google_CN";
+		    }
+		    if (type == ESearchEngineType.Live)
+		    {
+		        return "Live";
+		    }
+		    if (type == ESearchEngineType.Sogou)
+		    {
+		        return "Sogou";
+		    }
+		    if (type == ESearchEngineType.Yahoo)
+		    {
+		        return "Yahoo";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ESearchEngineType type)
 		{
-			if (type == ESearchEngineType.Baidu)
+		    if (type == ESearchEngineType.Baidu)
 			{
-				return "°Ù¶È";
+				return "ç™¾åº¦";
 			}
-			else if (type == ESearchEngineType.Google_CN)
-			{
-				return "Google(¼òÌåÖĞÎÄ)";
-			}
-			else if (type == ESearchEngineType.Google)
-			{
-				return "Google(È«²¿ÓïÑÔ)";
-			}
-			else if (type == ESearchEngineType.Yahoo)
-			{
-				return "Yahoo";
-			}
-			else if (type == ESearchEngineType.Live)
-			{
-				return "Live ËÑË÷";
-			}
-			else if (type == ESearchEngineType.Sogou)
-			{
-				return "ËÑ¹·";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ESearchEngineType.Google_CN)
+		    {
+		        return "Google(ç®€ä½“ä¸­æ–‡)";
+		    }
+		    if (type == ESearchEngineType.Google)
+		    {
+		        return "Google(å…¨éƒ¨è¯­è¨€)";
+		    }
+		    if (type == ESearchEngineType.Yahoo)
+		    {
+		        return "Yahoo";
+		    }
+		    if (type == ESearchEngineType.Live)
+		    {
+		        return "Live æœç´¢";
+		    }
+		    if (type == ESearchEngineType.Sogou)
+		    {
+		        return "æœç‹—";
+		    }
+		    throw new Exception();
 		}
 
 		public static ESearchEngineType GetEnumType(string typeStr)

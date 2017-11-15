@@ -1,5 +1,6 @@
 ﻿using System.Web.Http;
 using BaiRong.Core;
+using BaiRong.Core.Integration;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Users;
@@ -21,11 +22,11 @@ namespace SiteServer.API.Controllers.Users
             var isRegister = false;
             var errorMessage = string.Empty;
 
-            if (ConfigManager.UserConfigInfo.RegisterVerifyType == EUserVerifyType.Mobile)
+            if (EUserVerifyTypeUtils.Equals(ConfigManager.SystemConfigInfo.UserRegistrationVerifyType, EUserVerifyType.Mobile))
             {
                 var code = StringUtils.GetRandomInt(1111, 9999);
-                DbCacheManager.RemoveAndInsert($"SiteServer.API.Controllers.Users.SendSms.{mobile}.Code", code.ToString());
-                isSms = SmsManager.SendCode(mobile, code, out errorMessage);
+                CacheDbUtils.RemoveAndInsert($"SiteServer.API.Controllers.Users.SendSms.{mobile}.Code", code.ToString());
+                isSms = SmsManager.SendCode(mobile, code, ConfigManager.SystemConfigInfo.UserRegistrationSmsTplId, out errorMessage);
             }
             
             if (!isSms)
@@ -36,7 +37,7 @@ namespace SiteServer.API.Controllers.Users
                     Mobile = mobile,
                     Password = password
                 };
-                isRegister = BaiRongDataProvider.UserDao.Insert(userInfo, PageUtils.GetIpAddress(), out errorMessage);
+                isRegister = BaiRongDataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out errorMessage);
             }
 
             return Ok(new {

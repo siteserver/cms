@@ -1,71 +1,53 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "容器", Description = "通过 stl:container 标签在模板中定义容器，切换上下文")]
     public class StlContainer
     {
         private StlContainer() { }
-        public const string ElementName = "stl:container";                  //容器
+        public const string ElementName = "stl:container";
 
-        public const string AttributeContext = "context";                  //所处上下文
+        public const string AttributeContext = "context";
 
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeContext, "所处上下文"}
         };
 
-        public static string GetContainer(string content)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            return $@"
-<stl:container>
-{content}
-</stl:container>
-";
-        }
-
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
-        {
-            var parsedContent = string.Empty;
-
-            var contextInfo = contextInfoRef.Clone();
-            try
+            // 如果是实体标签则返回空
+            if (contextInfo.IsCurlyBrace)
             {
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
-                {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributeContext))
-                        {
-                            contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
-                        }
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(node.InnerXml))
-                {
-                    var innerHtml = RegexUtils.GetInnerContent(ElementName, stlElement);
-
-                    var builder = new StringBuilder(innerHtml);
-                    StlParserManager.ParseInnerContent(builder, pageInfo, contextInfo);
-
-                    parsedContent = builder.ToString();
-                }
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                return string.Empty;
             }
 
-            return parsedContent;
+            if (string.IsNullOrEmpty(contextInfo.InnerXml))
+            {
+                return string.Empty;
+            }
+
+            foreach (var name in contextInfo.Attributes.Keys)
+            {
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
+                {
+                    contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
+                }
+            }
+
+            var innerHtml = RegexUtils.GetInnerContent(ElementName, contextInfo.StlElement);
+
+            var builder = new StringBuilder(innerHtml);
+            StlParserManager.ParseInnerContent(builder, pageInfo, contextInfo);
+
+            return builder.ToString();
         }
     }
 }

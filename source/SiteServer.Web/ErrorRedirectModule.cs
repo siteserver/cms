@@ -1,7 +1,6 @@
 using System;
 using System.Web;
 using BaiRong.Core;
-using BaiRong.Core.Text;
 
 namespace SiteServer.API
 {
@@ -23,7 +22,7 @@ namespace SiteServer.API
                 {
                     ex = ex.InnerException;
                 }
-                LogUtils.AddErrorLog(ex, "Application Error");
+                LogUtils.AddSystemErrorLog(ex, "Application Error");
                 HttpContext.Current.Server.ClearError();
 
                 PageUtils.RedirectToErrorPage(ex.Message);

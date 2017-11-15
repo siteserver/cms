@@ -39,7 +39,7 @@ namespace BaiRong.Core.Diagnostics
 				}
 				catch{}
 				macAddress = macAddress.Replace(":", "");
-				CacheUtils.Max("ComputerUtils_MacAddress", macAddress);
+				CacheUtils.Insert("ComputerUtils_MacAddress", macAddress);
 			}
 			return macAddress;
 		}
@@ -66,7 +66,7 @@ namespace BaiRong.Core.Diagnostics
 				}
 				catch{}
 				processorId = processorId.Replace(":", "");
-				CacheUtils.Max("ComputerUtils_ProcessorId", processorId);
+				CacheUtils.Insert("ComputerUtils_ProcessorId", processorId);
 			}
 			return processorId;
 		}
@@ -97,7 +97,7 @@ namespace BaiRong.Core.Diagnostics
 				}
 				catch{}
 				columnSerialNumber = columnSerialNumber.Replace(":", "");
-				CacheUtils.Max("ComputerUtils_ColumnSerialNumber", columnSerialNumber);
+				CacheUtils.Insert("ComputerUtils_ColumnSerialNumber", columnSerialNumber);
 			}
 			return columnSerialNumber;
 		}

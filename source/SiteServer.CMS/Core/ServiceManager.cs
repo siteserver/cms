@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using SiteServer.CMS.Model;
@@ -9,137 +8,110 @@ namespace SiteServer.CMS.Core
 {
     public class ServiceManager
     {
-        private const string CacheKeyStatus = "SiteServer.CMS.Core.ServiceCacheManager.Status";
+        private const string CacheKeyStatus = "SiteServer.CMS.Core.ServiceManager.Status";
         private const string CacheFileNameStatus = "ServiceStatusCache.txt";
-        private const string CacheKeyAllTaskInfoList = "SiteServer.CMS.Core.ServiceCacheManager.AllTaskInfoList";
+        private const string CacheKeyAllTaskInfoList = "SiteServer.CMS.Core.ServiceManager.AllTaskInfoList";
         private const string CacheFileNameTaskCache = "ServiceTaskCache.txt";
-        private const string CacheKeyIsPendingCreate = "SiteServer.CMS.Core.ServiceCacheManager.CacheKeyIsPendingCreateTask";
+        private const string CacheKeyIsPendingCreate = "SiteServer.CMS.Core.ServiceManager.CacheKeyIsPendingCreateTask";
         private const string CacheFileNameIsPendingCreate = "ServiceIsPendingCreateCache.txt";
 
-        private static readonly FileWatcherClass statusCacheFileWatcher;
-        private static readonly FileWatcherClass taskCacheFileWatcher;
-        private static readonly FileWatcherClass isPendingCreateCacheFileWatcher;
+        protected static readonly FileWatcherClass StatusCacheFileWatcher;
+        protected static readonly FileWatcherClass TaskCacheFileWatcher;
+        protected static readonly FileWatcherClass IsPendingCreateCacheFileWatcher;
 
         static ServiceManager()
         {
-            statusCacheFileWatcher = new FileWatcherClass(CacheManager.GetCacheFilePath(CacheFileNameStatus));
-            statusCacheFileWatcher.OnFileChange += StatusCache_OnFileChange;
+            StatusCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameStatus));
+            StatusCacheFileWatcher.OnFileChange += StatusCache_OnFileChange;
+            StatusCacheFileWatcher.OnFileDeleted += StatusCache_OnFileDeleted;
 
-            taskCacheFileWatcher = new FileWatcherClass(CacheManager.GetCacheFilePath(CacheFileNameTaskCache));
-            taskCacheFileWatcher.OnFileChange += TaskCache_OnFileChange;
+            TaskCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameTaskCache));
+            TaskCacheFileWatcher.OnFileChange += TaskCache_OnFileChange;
 
-            isPendingCreateCacheFileWatcher = new FileWatcherClass(CacheManager.GetCacheFilePath(CacheFileNameIsPendingCreate));
-            isPendingCreateCacheFileWatcher.OnFileChange += IsPendingCreateCache_OnFileChange;
+            IsPendingCreateCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameIsPendingCreate));
+            IsPendingCreateCacheFileWatcher.OnFileChange += IsPendingCreateCache_OnFileChange;
         }
 
         private static void StatusCache_OnFileChange(object sender, EventArgs e)
         {
-            CacheManager.RemoveCache(CacheKeyStatus);
+            CacheUtils.InsertMinutes(CacheKeyStatus, true.ToString(), 10);
+        }
+
+        private static void StatusCache_OnFileDeleted(object sender, EventArgs e)
+        {
+            CacheUtils.Remove(CacheKeyStatus);
         }
 
         private static void TaskCache_OnFileChange(object sender, EventArgs e)
         {
-            CacheManager.RemoveCache(CacheKeyAllTaskInfoList);
+            CacheUtils.Remove(CacheKeyAllTaskInfoList);
         }
 
         private static void IsPendingCreateCache_OnFileChange(object sender, EventArgs e)
         {
-            CacheManager.RemoveCache(CacheKeyIsPendingCreate);
+            CacheUtils.Remove(CacheKeyIsPendingCreate);
         }
 
         public static List<TaskInfo> GetAllTaskInfoList()
         {
-            if (CacheManager.GetCache(CacheKeyAllTaskInfoList) != null)
+            if (CacheUtils.IsCache(CacheKeyAllTaskInfoList))
             {
-                return CacheManager.GetCache(CacheKeyAllTaskInfoList) as List<TaskInfo>;
+                return CacheUtils.Get<List<TaskInfo>>(CacheKeyAllTaskInfoList);
             }
             var list = DataProvider.TaskDao.GetAllTaskInfoList();
-            CacheManager.SetCache(CacheKeyAllTaskInfoList, list);
+            CacheUtils.Insert(CacheKeyAllTaskInfoList, list);
             return list;
         }
 
         public static bool IsPendingCreateTask()
         {
-            if (CacheManager.GetCache(CacheKeyIsPendingCreate) != null)
+            if (CacheUtils.IsCache(CacheKeyIsPendingCreate))
             {
-                return (bool)CacheManager.GetCache(CacheKeyIsPendingCreate);
+                return (bool)CacheUtils.Get(CacheKeyIsPendingCreate);
             }
             var isPendingTask = DataProvider.CreateTaskDao.IsPendingTask();
-            CacheManager.SetCache(CacheKeyIsPendingCreate, isPendingTask);
+            CacheUtils.InsertMinutes(CacheKeyIsPendingCreate, isPendingTask, 5);
             return isPendingTask;
-        }
-
-        public static void ClearStatusCache()
-        {
-            CacheManager.RemoveCache(CacheKeyStatus);
-            CacheManager.UpdateTemporaryCacheFile(CacheFileNameStatus);
         }
 
         public static void ClearTaskCache()
         {
-            CacheManager.RemoveCache(CacheKeyAllTaskInfoList);
-            CacheManager.UpdateTemporaryCacheFile(CacheFileNameTaskCache);
+            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameTaskCache);
         }
 
         public static void ClearIsPendingCreateCache()
         {
-            CacheManager.RemoveCache(CacheKeyIsPendingCreate);
-            CacheManager.UpdateTemporaryCacheFile(CacheFileNameIsPendingCreate);
+            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameIsPendingCreate);
         }
 
-        public static bool IsServiceOnline()
+        /// <summary>
+        /// 服务组件是否启用
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsServiceOnline
         {
-            var cacheValue = CacheManager.GetCache(CacheKeyStatus) as string;
-            if (TranslateUtils.ToBool(cacheValue))
+            get
             {
-                return true;
+                var cacheValue = CacheUtils.Get<string>(CacheKeyStatus);
+                return TranslateUtils.ToBool(cacheValue);
             }
-
-            var retval = true;
-            
-            var value = DbCacheManager.GetValue(CacheKeyStatus);
-            if (string.IsNullOrEmpty(value))
-            {
-                retval = false;
-            }
-            else
-            {
-                var ts = DateTime.Now - TranslateUtils.ToDateTime(value);
-                if (ts.TotalMinutes > 30)
-                {
-                    retval = false;
-                }
-                else
-                {
-                    CacheManager.SetCache(CacheKeyStatus, true.ToString(), DateTime.Now.AddMinutes(10));
-                }
-            }
-
-            if (!retval)
-            {
-                CacheManager.SetCache(CacheKeyStatus, false.ToString(), DateTime.Now.AddMinutes(10));
-            }
-            
-            return retval;
         }
 
-        public static void SetServiceOnline(bool isOnline)
-        {
-            if (isOnline)
-            {
-                var cacheValue = CacheManager.GetCache(CacheKeyStatus) as string;
-                if (TranslateUtils.ToBool(cacheValue)) return;
+        private static DateTime _lastOnlineDateTime = DateTime.MinValue;
 
-                DbCacheManager.RemoveAndInsert(CacheKeyStatus, DateTime.Now.ToString(CultureInfo.InvariantCulture));
-                CacheManager.SetCache(CacheKeyStatus, true.ToString(), DateTime.Now.AddMinutes(10));
-            }
-            else
-            {
-                DbCacheManager.GetValueAndRemove(CacheKeyStatus);
-                ClearStatusCache();
-                ClearIsPendingCreateCache();
-                ClearTaskCache();
-            }
+        public static void SetServiceOnline(DateTime now)
+        {
+            var sp = now - _lastOnlineDateTime;
+            if (sp.Minutes <= 5) return;
+
+            _lastOnlineDateTime = now;
+            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameStatus);
+        }
+
+        public static void SetServiceOffline()
+        {
+            _lastOnlineDateTime = DateTime.MinValue;
+            CacheUtils.DeleteTemporaryCacheFile(CacheFileNameStatus);
         }
     }
 }

@@ -520,6 +520,7 @@
   display: inline-block;
   padding-left: 5px;
   position: relative;
+  margin-right: 25px;
 }
 .checkbox label::before {
   -o-transition: 0.3s ease-in-out;
@@ -1611,4 +1612,12 @@ table.dataTable td.focus {
 }
 .widget-icon .wid-icon-info {
   margin-left: 80px;
+}
+.modalPage, .modalPage body {
+  background-color:#fff !important;
+}
+
+.modalPage, .modalPage form-horizontal{
+ margin-left: 5px;
+ margin-right: 5px;
 }

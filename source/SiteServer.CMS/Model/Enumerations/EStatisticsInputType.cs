@@ -4,7 +4,7 @@ using System.Web.UI.WebControls;
 namespace SiteServer.CMS.Model.Enumerations
 {
     /// <summary>
-    /// by 20160225 sofuny ¿ÉÍ³¼Æ·ÖÎöµÄ±íµ¥ÀàĞÍ
+    /// by 20160225 sofuny å¯ç»Ÿè®¡åˆ†æçš„è¡¨å•ç±»å‹
     /// </summary>
     public enum EStatisticsInputType
     {
@@ -22,46 +22,40 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "Text";
             }
-            else if (type == EStatisticsInputType.CheckBox)
+            if (type == EStatisticsInputType.CheckBox)
             {
                 return "CheckBox";
             }
-            else if (type == EStatisticsInputType.Radio)
+            if (type == EStatisticsInputType.Radio)
             {
                 return "Radio";
             }
-            else if (type == EStatisticsInputType.SelectOne)
+            if (type == EStatisticsInputType.SelectOne)
             {
                 return "SelectOne";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EStatisticsInputType type)
         {
             if (type == EStatisticsInputType.Text)
             {
-                return "ÎÄ±¾¿ò(µ¥ĞĞ)";
+                return "æ–‡æœ¬æ¡†(å•è¡Œ)";
             }
             if (type == EStatisticsInputType.CheckBox)
             {
-                return "¸´Ñ¡ÁĞ±í(checkbox)";
+                return "å¤é€‰åˆ—è¡¨(checkbox)";
             }
-            else if (type == EStatisticsInputType.Radio)
+            if (type == EStatisticsInputType.Radio)
             {
-                return "µ¥Ñ¡ÁĞ±í(radio)";
+                return "å•é€‰åˆ—è¡¨(radio)";
             }
-            else if (type == EStatisticsInputType.SelectOne)
+            if (type == EStatisticsInputType.SelectOne)
             {
-                return "ÏÂÀ­ÁĞ±í(selectµ¥Ñ¡)";
+                return "ä¸‹æ‹‰åˆ—è¡¨(selectå•é€‰)";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EStatisticsInputType GetEnumType(string typeStr)

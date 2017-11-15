@@ -17,71 +17,65 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ECrossSiteTransType type)
 		{
-            if (type == ECrossSiteTransType.None)
+		    if (type == ECrossSiteTransType.None)
             {
                 return "None";
             }
-            else if (type == ECrossSiteTransType.SelfSite)
-            {
-                return "SelfSite";
-            }
-            else if (type == ECrossSiteTransType.SpecifiedSite)
-            {
-                return "SpecifiedSite";
-            }
-            else if (type == ECrossSiteTransType.ParentSite)
-            {
-                return "ParentSite";
-            }
-            else if (type == ECrossSiteTransType.AllParentSite)
-			{
-                return "AllParentSite";
-            }
-            else if (type == ECrossSiteTransType.AllSite)
-            {
-                return "AllSite";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ECrossSiteTransType.SelfSite)
+		    {
+		        return "SelfSite";
+		    }
+		    if (type == ECrossSiteTransType.SpecifiedSite)
+		    {
+		        return "SpecifiedSite";
+		    }
+		    if (type == ECrossSiteTransType.ParentSite)
+		    {
+		        return "ParentSite";
+		    }
+		    if (type == ECrossSiteTransType.AllParentSite)
+		    {
+		        return "AllParentSite";
+		    }
+		    if (type == ECrossSiteTransType.AllSite)
+		    {
+		        return "AllSite";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ECrossSiteTransType type)
 		{
-            if (type == ECrossSiteTransType.None)
+		    if (type == ECrossSiteTransType.None)
             {
-                return "²»×ª·¢";
+                return "ä¸è½¬å‘";
             }
-            else if (type == ECrossSiteTransType.SelfSite)
-            {
-                return "¿ÉÏò±¾Õ¾×ª·¢";
-            }
-            else if (type == ECrossSiteTransType.SpecifiedSite)
-            {
-                return "¿ÉÏòÖ¸¶¨Õ¾µã×ª·¢";
-            }
-            else if (type == ECrossSiteTransType.ParentSite)
-            {
-                return "¿ÉÏòÉÏÒ»¼¶Õ¾µã×ª·¢";
-            }
-            else if (type == ECrossSiteTransType.AllParentSite)
-			{
-                return "¿ÉÏòËùÓĞÉÏ¼¶Õ¾µã×ª·¢";
-            }
-            else if (type == ECrossSiteTransType.AllSite)
-            {
-                return "¿ÉÏòËùÓĞÕ¾µã×ª·¢";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ECrossSiteTransType.SelfSite)
+		    {
+		        return "å¯å‘æœ¬ç«™è½¬å‘";
+		    }
+		    if (type == ECrossSiteTransType.SpecifiedSite)
+		    {
+		        return "å¯å‘æŒ‡å®šç«™ç‚¹è½¬å‘";
+		    }
+		    if (type == ECrossSiteTransType.ParentSite)
+		    {
+		        return "å¯å‘ä¸Šä¸€çº§ç«™ç‚¹è½¬å‘";
+		    }
+		    if (type == ECrossSiteTransType.AllParentSite)
+		    {
+		        return "å¯å‘æ‰€æœ‰ä¸Šçº§ç«™ç‚¹è½¬å‘";
+		    }
+		    if (type == ECrossSiteTransType.AllSite)
+		    {
+		        return "å¯å‘æ‰€æœ‰ç«™ç‚¹è½¬å‘";
+		    }
+		    throw new Exception();
 		}
 
 		public static ECrossSiteTransType GetEnumType(string typeStr)
 		{
-            var retval = ECrossSiteTransType.None;
+            var retval = ECrossSiteTransType.AllSite;
 
             if (Equals(ECrossSiteTransType.None, typeStr))
             {

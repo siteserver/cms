@@ -5,9 +5,9 @@ namespace SiteServer.CMS.Model.Enumerations
 {
 	public enum EKeywordGrade
 	{
-        Normal,         //Ò»°ã
-        Sensitive,      //±È½ÏÃô¸Ğ
-        Dangerous       //Î£ÏÕ
+        Normal,         //ä¸€èˆ¬
+        Sensitive,      //æ¯”è¾ƒæ•æ„Ÿ
+        Dangerous       //å±é™©
 	}
 
     public class EKeywordGradeUtils
@@ -18,38 +18,32 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "Normal";
             }
-            else if (type == EKeywordGrade.Sensitive)
+            if (type == EKeywordGrade.Sensitive)
             {
                 return "Sensitive";
             }
-            else if (type == EKeywordGrade.Dangerous)
+            if (type == EKeywordGrade.Dangerous)
             {
                 return "Dangerous";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EKeywordGrade type)
         {
             if (type == EKeywordGrade.Normal)
             {
-                return "Ò»°ã";
+                return "ä¸€èˆ¬";
             }
-            else if (type == EKeywordGrade.Sensitive)
+            if (type == EKeywordGrade.Sensitive)
             {
-                return "±È½ÏÃô¸Ğ";
+                return "æ¯”è¾ƒæ•æ„Ÿ";
             }
-            else if (type == EKeywordGrade.Dangerous)
+            if (type == EKeywordGrade.Dangerous)
             {
-                return "Î£ÏÕ";
+                return "å±é™©";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EKeywordGrade GetEnumType(string typeStr)

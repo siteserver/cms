@@ -1,4 +1,4 @@
-/* 
+ï»¿/* 
   	* AtomWriter.cs
 	* [ part of Atom.NET library: http://atomnet.sourceforge.net ]
 	* Author: Lawrence Oluyede
@@ -9,7 +9,7 @@
 	
 	Contains portions of
 	RSS.NET (http://rss-net.sf.net/)
-	Copyright © 2002, 2003 George Tsiokos. All Rights Reserved.
+	Copyright ?2002, 2003 George Tsiokos. All Rights Reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:

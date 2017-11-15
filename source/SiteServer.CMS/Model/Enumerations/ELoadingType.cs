@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace SiteServer.CMS.Model.Enumerations
 {
@@ -10,12 +10,7 @@ namespace SiteServer.CMS.Model.Enumerations
         SiteAnalysis,
         TemplateFilePathRule,
         ConfigurationCreateDetails,
-        ConfigurationCrossSiteTrans,
-        ConfigurationSignin,
-        GovPublicChannelAdd,
-        GovPublicChannelTree,
-        GovPublicChannel,
-        GovInteractChannel,
+        ConfigurationCrossSiteTrans
     }
 
     public class ELoadingTypeUtils
@@ -26,54 +21,31 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "ContentTree";
             }
-            else if (type == ELoadingType.Channel)
+            if (type == ELoadingType.Channel)
             {
                 return "Channel";
             }
-            else if (type == ELoadingType.ChannelSelect)
+            if (type == ELoadingType.ChannelSelect)
             {
                 return "ChannelSelect";
             }
-            else if (type == ELoadingType.SiteAnalysis)
+            if (type == ELoadingType.SiteAnalysis)
             {
                 return "SiteAnalysis";
             }
-            else if (type == ELoadingType.TemplateFilePathRule)
+            if (type == ELoadingType.TemplateFilePathRule)
             {
                 return "TemplateFilePathRule";
             }
-            else if (type == ELoadingType.ConfigurationCreateDetails)
+            if (type == ELoadingType.ConfigurationCreateDetails)
             {
                 return "ConfigurationCreateDetails";
             }
-            else if (type == ELoadingType.ConfigurationCrossSiteTrans)
+            if (type == ELoadingType.ConfigurationCrossSiteTrans)
             {
                 return "ConfigurationCrossSiteTrans";
             }
-            else if (type == ELoadingType.ConfigurationSignin)
-            {
-                return "ConfigurationSignin";
-            }
-            else if (type == ELoadingType.GovPublicChannelAdd)
-            {
-                return "GovPublicChannelAdd";
-            }
-            else if (type == ELoadingType.GovPublicChannelTree)
-            {
-                return "GovPublicChannelTree";
-            }
-            else if (type == ELoadingType.GovPublicChannel)
-            {
-                return "GovPublicChannel";
-            }
-            else if (type == ELoadingType.GovInteractChannel)
-            {
-                return "GovInteractChannel";
-            }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static ELoadingType GetEnumType(string typeStr)
@@ -107,26 +79,6 @@ namespace SiteServer.CMS.Model.Enumerations
             else if (Equals(ELoadingType.ConfigurationCrossSiteTrans, typeStr))
             {
                 retval = ELoadingType.ConfigurationCrossSiteTrans;
-            }
-            else if (Equals(ELoadingType.ConfigurationSignin, typeStr))
-            {
-                retval = ELoadingType.ConfigurationSignin;
-            }
-            else if (Equals(ELoadingType.GovPublicChannelAdd, typeStr))
-            {
-                retval = ELoadingType.GovPublicChannelAdd;
-            }
-            else if (Equals(ELoadingType.GovPublicChannelTree, typeStr))
-            {
-                retval = ELoadingType.GovPublicChannelTree;
-            }
-            else if (Equals(ELoadingType.GovPublicChannel, typeStr))
-            {
-                retval = ELoadingType.GovPublicChannel;
-            }
-            else if (Equals(ELoadingType.GovInteractChannel, typeStr))
-            {
-                retval = ELoadingType.GovInteractChannel;
             }
 
             return retval;

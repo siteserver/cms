@@ -12,10 +12,12 @@ namespace SiteServer.BackgroundPages
         public void Page_Load(object sender, EventArgs e)
         {
             LtlContent.Text = string.Empty;
-            foreach (var c in PathUtils.InvalidPathChars)
-            {
-                LtlContent.Text += c + ",";
-            }
+
+            var sqlCreate = BaiRongDataProvider.DatabaseDao.GetCreateSystemTableSqlString(BaiRongDataProvider.ContentCheckDao.TableName, BaiRongDataProvider.ContentCheckDao.TableColumns);
+
+            var sqlAlert = BaiRongDataProvider.DatabaseDao.GetAlterSystemTableSqlString(BaiRongDataProvider.ContentCheckDao.TableName, BaiRongDataProvider.ContentCheckDao.TableColumns);
+
+            LtlContent.Text = sqlCreate + "<br /><hr /></br />" + string.Join("<br />", sqlAlert);
         }
     }
 }

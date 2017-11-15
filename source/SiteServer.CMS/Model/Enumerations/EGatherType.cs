@@ -14,43 +14,37 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EGatherType type)
 		{
-            if (type == EGatherType.Web)
+		    if (type == EGatherType.Web)
 			{
                 return "Web";
             }
-            else if (type == EGatherType.Database)
-            {
-                return "Database";
-            }
-            else if (type == EGatherType.File)
-			{
-                return "File";
-            }
-			else
-			{
-                return "Undefined";
-			}
+		    if (type == EGatherType.Database)
+		    {
+		        return "Database";
+		    }
+		    if (type == EGatherType.File)
+		    {
+		        return "File";
+		    }
+		    return "Undefined";
 		}
 
 		public static string GetText(EGatherType type)
 		{
-            if (type == EGatherType.Web)
+		    if (type == EGatherType.Web)
             {
                 return "Web页面";
             }
-            else if (type == EGatherType.Database)
-            {
-                return "数据库";
-            }
-            else if (type == EGatherType.File)
-			{
-                return "单文件页";
-            }
-			
-			else
-			{
-                return "Undefined";
-			}
+		    if (type == EGatherType.Database)
+		    {
+		        return "数据库";
+		    }
+		    if (type == EGatherType.File)
+		    {
+		        return "单文件页";
+		    }
+
+		    return "Undefined";
 		}
 
 		public static EGatherType GetEnumType(string typeStr)

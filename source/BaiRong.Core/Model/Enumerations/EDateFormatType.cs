@@ -5,10 +5,10 @@ namespace BaiRong.Core.Model.Enumerations
 {
     public enum EDateFormatType
     {
-        Month,				//6ÔÂ18ÈÕ
+        Month,				//6æœˆ18æ—¥
         Day,				//2006-6-18
-        Year,				//2006Äê6ÔÂ
-        Chinese,		    //2006Äê6ÔÂ18ÈÕ
+        Year,				//2006å¹´6æœˆ
+        Chinese,		    //2006å¹´6æœˆ18æ—¥
     }
 
     public class EDateFormatTypeUtils
@@ -19,46 +19,40 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "Month";
             }
-            else if (type == EDateFormatType.Day)
+            if (type == EDateFormatType.Day)
             {
                 return "Day";
             }
-            else if (type == EDateFormatType.Year)
+            if (type == EDateFormatType.Year)
             {
                 return "Year";
             }
-            else if (type == EDateFormatType.Chinese)
+            if (type == EDateFormatType.Chinese)
             {
                 return "Chinese";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EDateFormatType type)
         {
             if (type == EDateFormatType.Month)
             {
-                return "6ÔÂ18ÈÕ";
+                return "6æœˆ18æ—¥";
             }
-            else if (type == EDateFormatType.Day)
+            if (type == EDateFormatType.Day)
             {
                 return "2006-6-18";
             }
-            else if (type == EDateFormatType.Year)
+            if (type == EDateFormatType.Year)
             {
-                return "2006Äê6ÔÂ";
+                return "2006å¹´6æœˆ";
             }
-            else if (type == EDateFormatType.Chinese)
+            if (type == EDateFormatType.Chinese)
             {
-                return "2006Äê6ÔÂ18ÈÕ";
+                return "2006å¹´6æœˆ18æ—¥";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EDateFormatType GetEnumType(string typeStr)

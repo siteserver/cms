@@ -1,9 +1,10 @@
 using System;
 using BaiRong.Core.Data;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Model
 {
-    public class UserInfo
+    public class UserInfo: IUserInfo
     {
         public UserInfo()
         {
@@ -12,7 +13,6 @@ namespace BaiRong.Core.Model
             Password = string.Empty;
             PasswordFormat = string.Empty;
             PasswordSalt = string.Empty;
-            GroupId = 0;
             CreateDate = DateUtils.SqlMinValue;
             LastResetPasswordDate = DateUtils.SqlMinValue;
             LastActivityDate = DateUtils.SqlMinValue;
@@ -48,7 +48,6 @@ namespace BaiRong.Core.Model
             Password = SqlUtils.EvalString(dataItem, "Password");
             PasswordFormat = SqlUtils.EvalString(dataItem, "PasswordFormat");
             PasswordSalt = SqlUtils.EvalString(dataItem, "PasswordSalt");
-            GroupId = SqlUtils.EvalInt(dataItem, "GroupID");
             CreateDate = SqlUtils.EvalDateTime(dataItem, "CreateDate");
             LastResetPasswordDate = SqlUtils.EvalDateTime(dataItem, "LastResetPasswordDate");
             LastActivityDate = SqlUtils.EvalDateTime(dataItem, "LastActivityDate");
@@ -85,8 +84,6 @@ namespace BaiRong.Core.Model
         public string PasswordFormat { get; set; }
 
         public string PasswordSalt { get; set; }
-
-        public int GroupId { get; set; }
 
         public DateTime CreateDate { get; set; }
 
@@ -137,17 +134,5 @@ namespace BaiRong.Core.Model
         public string Interests { get; set; }
 
         public string Signature { get; set; }
-
-        public string ExtendValues { get; set; }
-
-        private UserInfoExtend _additional;
-        public UserInfoExtend Additional
-        {
-            get { return _additional ?? (_additional = new UserInfoExtend(ExtendValues)); }
-            set
-            {
-                _additional = value;
-            }
-        }
     }
 }

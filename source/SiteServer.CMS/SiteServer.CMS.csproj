@@ -20,7 +20,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <PublishUrl>http://localhost/BaiRongZhiDao/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -82,9 +82,8 @@
     <Reference Include="NetDimension.Weibo">
       <HintPath>..\ref\NetDimension.Weibo.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="QQLoginAouth2">
       <HintPath>..\ref\QQLoginAouth2.dll</HintPath>
@@ -94,29 +93,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http.Extensions">
-      <HintPath>..\ref\System.Net.Http.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Formatting">
-      <HintPath>..\ref\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Primitives">
-      <HintPath>..\ref\System.Net.Http.Primitives.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Cors">
-      <HintPath>..\ref\System.Web.Cors.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Http">
-      <HintPath>..\ref\System.Web.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http.Cors">
-      <HintPath>..\ref\System.Web.Http.Cors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http.WebHost">
-      <HintPath>..\ref\System.Web.Http.WebHost.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WordPlugin, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -155,65 +133,90 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\Administrators\ActionsLogin.cs" />
-    <Compile Include="Controllers\Administrators\SiteCheckList.cs" />
-    <Compile Include="Controllers\Comments\ActionsDelete.cs" />
-    <Compile Include="Controllers\Comments\ActionsGood.cs" />
-    <Compile Include="Controllers\Comments\ActionsAdd.cs" />
-    <Compile Include="Controllers\Comments\Get.cs" />
-    <Compile Include="Controllers\Files\ActionsUploadAvatar.cs" />
-    <Compile Include="Controllers\Files\ActionsUploadAvatarResize.cs" />
-    <Compile Include="Controllers\Files\ActionsUploadSiteFiles.cs" />
-    <Compile Include="Controllers\Files\UEditor.cs" />
-    <Compile Include="Controllers\Stl\ActionsRelatedField.cs" />
-    <Compile Include="Controllers\Stl\ActionsUpload.cs" />
-    <Compile Include="Controllers\Stl\ActionsLoadingChannels.cs" />
-    <Compile Include="Controllers\Stl\ActionsAddContentHits.cs" />
-    <Compile Include="Controllers\Stl\ActionsAddTrackerCount.cs" />
-    <Compile Include="Controllers\Stl\ActionsAdvHtml.cs" />
-    <Compile Include="Controllers\Stl\ActionsDownload.cs" />
-    <Compile Include="Controllers\Stl\ActionsGovInteractApplyAdd.cs" />
-    <Compile Include="Controllers\Stl\ActionsGovInteractQueryAdd.cs" />
-    <Compile Include="Controllers\Stl\ActionsGovPublicApplyAdd.cs" />
-    <Compile Include="Controllers\Stl\ActionsGovPublicQueryAdd.cs" />
-    <Compile Include="Controllers\Stl\ActionsInputAdd.cs" />
-    <Compile Include="Controllers\Stl\ActionsResumeAdd.cs" />
-    <Compile Include="Controllers\Stl\ActionsTrigger.cs" />
-    <Compile Include="Controllers\Stl\ActionsVoteAdd.cs" />
-    <Compile Include="Controllers\Stl\Digg.cs" />
-    <Compile Include="Controllers\Stl\ActionsIf.cs" />
-    <Compile Include="Controllers\Stl\Star.cs" />
-    <Compile Include="Controllers\Stl\ActionsDynamic.cs" />
-    <Compile Include="Controllers\Stl\ActionsVote.cs" />
-    <Compile Include="Controllers\Users\ActionsIsMobileExists.cs" />
-    <Compile Include="Controllers\Users\ActionsIsPasswordCorrect.cs" />
-    <Compile Include="Controllers\Users\ActionsLoadConfig.cs" />
-    <Compile Include="Controllers\Users\ActionsLogin.cs" />
-    <Compile Include="Controllers\Users\ActionsLogout.cs" />
-    <Compile Include="Controllers\Users\ActionsRegisterWithCode.cs" />
-    <Compile Include="Controllers\Users\ActionsResetPasswordByToken.cs" />
-    <Compile Include="Controllers\Users\ActionsResetPassword.cs" />
-    <Compile Include="Controllers\Users\ActionsSendSms.cs" />
-    <Compile Include="Controllers\Users\ActionsSendSmsOrRegister.cs" />
-    <Compile Include="Controllers\Users\Captcha.cs" />
-    <Compile Include="Controllers\Users\ActionsGetLogs.cs" />
-    <Compile Include="Controllers\Users\ActionsEdit.cs" />
-    <Compile Include="Controllers\Users\ActionsIsCodeCorrect.cs" />
-    <Compile Include="Controllers\Writing\ActionsCreateContent.cs" />
-    <Compile Include="Controllers\Writing\ActionsDeleteContent.cs" />
-    <Compile Include="Controllers\Writing\ActionsEditContent.cs" />
-    <Compile Include="Controllers\Writing\ActionsGetChannels.cs" />
-    <Compile Include="Controllers\Writing\ActionsGetSites.cs" />
-    <Compile Include="Controllers\Writing\ActionsGetTableStyles.cs" />
-    <Compile Include="Controllers\Writing\ActionsGetContents.cs" />
-    <Compile Include="Controllers\Writing\ActionsGetContent.cs" />
+    <Compile Include="Controllers\Http\PluginHttpApi.cs" />
+    <Compile Include="Controllers\Sys\Administrators\ActionsLogin.cs" />
+    <Compile Include="Controllers\Sys\Administrators\SiteCheckList.cs" />
+    <Compile Include="Controllers\Sys\Stl\Comments\ActionsDelete.cs" />
+    <Compile Include="Controllers\Sys\Stl\Comments\ActionsLogout.cs" />
+    <Compile Include="Controllers\Sys\Stl\Comments\ActionsGood.cs" />
+    <Compile Include="Controllers\Sys\Stl\Comments\ActionsAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\Comments\Get.cs" />
+    <Compile Include="Controllers\Sys\Editors\UEditor.cs" />
+    <Compile Include="Controllers\Json\PluginJsonApi.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsRelatedField.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsUpload.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsLoadingChannels.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsAddContentHits.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsAddTrackerCount.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsAdvHtml.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsDownload.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsGovInteractApplyAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsGovInteractQueryAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsGovPublicApplyAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsGovPublicQueryAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsInputAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsResumeAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsTrigger.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsVoteAdd.cs" />
+    <Compile Include="Controllers\Sys\Stl\Digg.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsIf.cs" />
+    <Compile Include="Controllers\Sys\Stl\Star.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsDynamic.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsVote.cs" />
+    <Compile Include="Core\Create\CreateTaskManagerForDb.cs" />
+    <Compile Include="Core\Create\CreateTaskManagerForMomery.cs" />
+    <Compile Include="Core\Create\ICreateTaskManager.cs" />
+    <Compile Include="Core\Permissions\AdministratorWithPermissions.cs" />
+    <Compile Include="Core\Permissions\PermissionConfig.cs" />
+    <Compile Include="Core\Permissions\PermissionConfigManager.cs" />
+    <Compile Include="Core\Permissions\PermissionManager.cs" />
+    <Compile Include="Model\PluginConfigInfo.cs" />
+    <Compile Include="Plugin\Apis\AdminApi.cs" />
+    <Compile Include="Plugin\Apis\UserApi.cs" />
+    <Compile Include="Plugin\Apis\PaymentApi.cs" />
+    <Compile Include="Plugin\Apis\SmsApi.cs" />
+    <Compile Include="Plugin\Apis\ParseApi.cs" />
+    <Compile Include="Plugin\Apis\NodeApi.cs" />
+    <Compile Include="Plugin\Apis\FilesApi.cs" />
+    <Compile Include="Plugin\Apis\ContentApi.cs" />
+    <Compile Include="Plugin\Apis\ConfigApi.cs" />
+    <Compile Include="Plugin\Apis\MenuApi.cs" />
+    <Compile Include="Plugin\Apis\DataApi.cs" />
+    <Compile Include="Plugin\PluginCache.cs" />
+    <Compile Include="Plugin\PluginUtils.cs" />
+    <Compile Include="Core\TabManager.cs" />
     <Compile Include="Core\ContentUtility.cs" />
-    <Compile Include="StlParser\StlElement\Inner\StlTemplate.cs" />
-    <Compile Include="Wcm\GovInteract\GovInteractApplyManager.cs" />
-    <Compile Include="Wcm\GovInteract\GovInteractManager.cs" />
-    <Compile Include="Wcm\GovPublic\GovPublicApplyManager.cs" />
-    <Compile Include="Wcm\GovPublic\GovPublicCategoryManager.cs" />
-    <Compile Include="Wcm\GovPublic\GovPublicManager.cs" />
+    <Compile Include="Plugin\PluginManager.cs" />
+    <Compile Include="Plugin\Apis\PublishmentSystemApi.cs" />
+    <Compile Include="Provider\PluginConfigDao.cs" />
+    <Compile Include="Provider\SeoMetasInNodesDao.cs" />
+    <Compile Include="StlParser\Cache\Advertisement.cs" />
+    <Compile Include="StlParser\Cache\SeoMeta.cs" />
+    <Compile Include="StlParser\Cache\TableStructure.cs" />
+    <Compile Include="StlParser\Cache\Tag.cs" />
+    <Compile Include="StlParser\Cache\StlTag.cs" />
+    <Compile Include="StlParser\Cache\StarSetting.cs" />
+    <Compile Include="StlParser\Cache\Star.cs" />
+    <Compile Include="StlParser\Cache\Database.cs" />
+    <Compile Include="StlParser\Cache\Photo.cs" />
+    <Compile Include="StlParser\Cache\MenuDisplay.cs" />
+    <Compile Include="StlParser\Cache\Digg.cs" />
+    <Compile Include="StlParser\Cache\Comment.cs" />
+    <Compile Include="StlParser\Cache\InnerLink.cs" />
+    <Compile Include="StlParser\Cache\PublishmentSystem.cs" />
+    <Compile Include="StlParser\Cache\Tracking.cs" />
+    <Compile Include="StlParser\Cache\AdArea.cs" />
+    <Compile Include="StlParser\Cache\User.cs" />
+    <Compile Include="StlParser\Cache\Administrator.cs" />
+    <Compile Include="StlParser\Cache\Node.cs" />
+    <Compile Include="StlParser\Cache\Content.cs" />
+    <Compile Include="StlParser\Model\ChannelItemInfo.cs" />
+    <Compile Include="StlParser\Model\ContentItemInfo.cs" />
+    <Compile Include="StlParser\Model\StlAttribute.cs" />
+    <Compile Include="StlParser\Parser.cs" />
+    <Compile Include="StlParser\StlElement\StlTemplate.cs" />
+    <Compile Include="StlParser\Cache\StlCacheUtils.cs" />
+    <Compile Include="StlParser\Utility\StlInnerUtility.cs" />
     <Compile Include="Core\Advertisement\AdvertisementManager.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -241,16 +244,13 @@
     <Compile Include="Core\UEditorUploader.cs" />
     <Compile Include="Core\ServiceManager.cs" />
     <Compile Include="Core\User\CheckManager.cs" />
-    <Compile Include="Core\Share\Analytics.cs" />
     <Compile Include="ImportExport\AtomUtility.cs" />
     <Compile Include="ImportExport\ExportObject.cs" />
     <Compile Include="ImportExport\ImportObject.cs" />
     <Compile Include="ImportExport\Components\AdvIe.cs" />
     <Compile Include="ImportExport\Components\AuxiliaryTableIe.cs" />
     <Compile Include="ImportExport\Components\ConfigurationIe.cs" />
-    <Compile Include="ImportExport\Components\ContentModelIe.cs" />
     <Compile Include="ImportExport\Components\GatherRuleIe.cs" />
-    <Compile Include="ImportExport\Components\InputIe.cs" />
     <Compile Include="ImportExport\Components\MenuDisplayIe.cs" />
     <Compile Include="ImportExport\Components\PhotoIe.cs" />
     <Compile Include="ImportExport\Components\RelatedFieldIe.cs" />
@@ -270,9 +270,6 @@
     <Compile Include="Model\PhotoInfo.cs" />
     <Compile Include="Model\RelatedFieldlInfo.cs" />
     <Compile Include="Model\RelatedFieldlItemInfo.cs" />
-    <Compile Include="Wcm\Model\GovPublicContentInfo.cs" />
-    <Compile Include="Wcm\Model\GovInteractContentInfo.cs" />
-    <Compile Include="Model\VoteContentInfo.cs" />
     <Compile Include="Model\Enumerations\EBackupType.cs" />
     <Compile Include="Model\Enumerations\ECreateType.cs" />
     <Compile Include="Model\Enumerations\EFrequencyType.cs" />
@@ -290,44 +287,14 @@
     <Compile Include="Model\Enumerations\ERelatedFieldStyle.cs" />
     <Compile Include="Model\Enumerations\ESigninPriority.cs" />
     <Compile Include="Model\Enumerations\EStatisticsInputType.cs" />
-    <Compile Include="Model\Enumerations\EGovPublicCategoryClassType.cs" />
-    <Compile Include="Model\Enumerations\EGovPublicIdentifierType.cs" />
-    <Compile Include="Model\Enumerations\EGovPublicApplyState.cs" />
-    <Compile Include="Model\Enumerations\EGovPublicApplyRemarkType.cs" />
-    <Compile Include="Model\Enumerations\EGovPublicApplyLogType.cs" />
-    <Compile Include="Model\Enumerations\EGovPublicApplyLimitType.cs" />
-    <Compile Include="Model\Enumerations\EGovInteractLimitType.cs" />
-    <Compile Include="Model\Enumerations\EGovInteractLogType.cs" />
-    <Compile Include="Model\Enumerations\EGovInteractRemarkType.cs" />
-    <Compile Include="Model\Enumerations\EGovInteractState.cs" />
     <Compile Include="Model\Enumerations\EKeywordGrade.cs" />
-    <Compile Include="Wcm\Model\GovInteractTypeInfo.cs" />
-    <Compile Include="Wcm\Model\GovInteractChannelInfo.cs" />
-    <Compile Include="Wcm\Model\GovInteractPermissionsInfo.cs" />
-    <Compile Include="Wcm\Model\GovPublicIdentifierRuleInfoExtend.cs" />
-    <Compile Include="Wcm\Model\GovPublicIdentifierSeqInfo.cs" />
     <Compile Include="Model\TaskInfo.cs" />
     <Compile Include="Model\TaskLogInfo.cs" />
     <Compile Include="Model\TemplateLogInfo.cs" />
-    <Compile Include="Wcm\Model\GovPublicCategoryInfo.cs" />
-    <Compile Include="Wcm\Model\GovPublicCategoryClassInfo.cs" />
-    <Compile Include="Wcm\Model\GovPublicIdentifierRuleInfo.cs" />
-    <Compile Include="Wcm\Model\GovPublicChannelInfo.cs" />
-    <Compile Include="Wcm\Model\GovPublicApplyInfo.cs" />
-    <Compile Include="Wcm\Model\GovPublicApplyLogInfo.cs" />
-    <Compile Include="Wcm\Model\GovPublicApplyRemarkInfo.cs" />
-    <Compile Include="Wcm\Model\GovPublicApplyReplyInfo.cs" />
     <Compile Include="Model\KeywordInfo.cs" />
-    <Compile Include="Model\TagStyleGovPublicApplyInfo.cs" />
-    <Compile Include="Model\TagStyleGovInteractApplyInfo.cs" />
     <Compile Include="Model\ITagStyleMailSMSBaseInfo.cs" />
-    <Compile Include="Wcm\Model\GovInteractLogInfo.cs" />
-    <Compile Include="Wcm\Model\GovInteractRemarkInfo.cs" />
-    <Compile Include="Wcm\Model\GovInteractReplyInfo.cs" />
-    <Compile Include="Model\VoteOperationInfo.cs" />
-    <Compile Include="Model\VoteOptionInfo.cs" />
     <Compile Include="StlControls\CommentInput.cs" />
-    <Compile Include="StlParser\Model\ContentsDisplayInfo.cs" />
+    <Compile Include="StlParser\Model\ListInfo.cs" />
     <Compile Include="StlParser\Model\ContextInfo.cs" />
     <Compile Include="StlParser\Model\DbItemContainer.cs" />
     <Compile Include="StlParser\Model\DbItemInfo.cs" />
@@ -338,15 +305,15 @@
     <Compile Include="StlParser\Model\PageInfo.cs" />
     <Compile Include="StlParser\Model\ParsedDataList.cs" />
     <Compile Include="StlParser\Model\StlAll.cs" />
-    <Compile Include="StlParser\Parser\StlElementParser.cs" />
-    <Compile Include="StlParser\Parser\StlEntityParser.cs" />
-    <Compile Include="StlParser\Parser\StlPageElementParser.cs" />
-    <Compile Include="Controllers\Stl\ActionsPageContents.cs" />
-    <Compile Include="StlParser\StlElement\Inner\StlItem.cs" />
-    <Compile Include="StlParser\StlElement\Inner\StlLoading.cs" />
-    <Compile Include="StlParser\StlElement\Inner\StlNo.cs" />
-    <Compile Include="StlParser\StlElement\Inner\StlQueryString.cs" />
-    <Compile Include="StlParser\StlElement\Inner\StlYes.cs" />
+    <Compile Include="StlParser\Parsers\StlElementParser.cs" />
+    <Compile Include="StlParser\Parsers\StlEntityParser.cs" />
+    <Compile Include="StlParser\Parsers\StlPageElementParser.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsPageContents.cs" />
+    <Compile Include="StlParser\StlElement\StlItemTemplate.cs" />
+    <Compile Include="StlParser\StlElement\StlLoading.cs" />
+    <Compile Include="StlParser\StlElement\StlNo.cs" />
+    <Compile Include="StlParser\StlElement\StlQueryString.cs" />
+    <Compile Include="StlParser\StlElement\StlYes.cs" />
     <Compile Include="StlParser\StlElement\StlA.cs" />
     <Compile Include="StlParser\StlElement\StlAction.cs" />
     <Compile Include="StlParser\StlElement\StlAd.cs" />
@@ -370,10 +337,6 @@
     <Compile Include="StlParser\StlElement\StlIf.cs" />
     <Compile Include="StlParser\StlElement\StlImage.cs" />
     <Compile Include="StlParser\StlElement\StlInclude.cs" />
-    <Compile Include="StlParser\StlElement\StlInput.cs" />
-    <Compile Include="StlParser\StlElement\StlInputContent.cs" />
-    <Compile Include="StlParser\StlElement\StlInputContents.cs" />
-    <Compile Include="StlParser\StlElement\StlLayout.cs" />
     <Compile Include="StlParser\StlElement\StlLocation.cs" />
     <Compile Include="StlParser\StlElement\StlMarquee.cs" />
     <Compile Include="StlParser\StlElement\StlMenu.cs" />
@@ -381,16 +344,14 @@
     <Compile Include="StlParser\StlElement\StlPageChannels.cs" />
     <Compile Include="StlParser\StlElement\StlPageComments.cs" />
     <Compile Include="StlParser\StlElement\StlPageContents.cs" />
-    <Compile Include="StlParser\StlElement\StlPageInputContents.cs" />
     <Compile Include="StlParser\StlElement\StlPageItem.cs" />
     <Compile Include="StlParser\StlElement\StlPageItems.cs" />
     <Compile Include="StlParser\StlElement\StlPageSqlContents.cs" />
     <Compile Include="StlParser\StlElement\StlPhoto.cs" />
     <Compile Include="StlParser\StlElement\StlPlayer.cs" />
     <Compile Include="StlParser\StlElement\StlPrinter.cs" />
-    <Compile Include="StlParser\StlElement\StlResume.cs" />
     <Compile Include="StlParser\StlElement\StlRss.cs" />
-    <Compile Include="StlParser\StlElement\StlSearchOutput.cs" />
+    <Compile Include="StlParser\StlElement\StlSearch.cs" />
     <Compile Include="StlParser\StlElement\StlSelect.cs" />
     <Compile Include="StlParser\StlElement\StlSite.cs" />
     <Compile Include="StlParser\StlElement\StlSites.cs" />
@@ -403,17 +364,12 @@
     <Compile Include="StlParser\StlElement\StlTree.cs" />
     <Compile Include="StlParser\StlElement\StlValue.cs" />
     <Compile Include="StlParser\StlElement\StlVideo.cs" />
-    <Compile Include="StlParser\StlElement\StlVote.cs" />
     <Compile Include="StlParser\StlElement\StlZoom.cs" />
-    <Compile Include="StlParser\StlElement\WCM\StlGovInteractApply.cs" />
-    <Compile Include="StlParser\StlElement\WCM\StlGovInteractQuery.cs" />
-    <Compile Include="StlParser\StlElement\WCM\StlGovPublicApply.cs" />
-    <Compile Include="StlParser\StlElement\WCM\StlGovPublicQuery.cs" />
     <Compile Include="StlParser\StlEntity\StlChannelEntities.cs" />
     <Compile Include="StlParser\StlEntity\StlCommentEntities.cs" />
     <Compile Include="StlParser\StlEntity\StlContentEntities.cs" />
     <Compile Include="StlParser\StlEntity\StlElementEntities.cs" />
-    <Compile Include="StlParser\StlEntity\StlEntities.cs" />
+    <Compile Include="StlParser\StlEntity\StlStlEntities.cs" />
     <Compile Include="StlParser\StlEntity\StlNavigationEntities.cs" />
     <Compile Include="StlParser\StlEntity\StlPhotoEntities.cs" />
     <Compile Include="StlParser\StlEntity\StlRequestEntities.cs" />
@@ -423,7 +379,7 @@
     <Compile Include="StlParser\Utility\RepeaterTemplate.cs" />
     <Compile Include="StlParser\Utility\SeparatorTemplate.cs" />
     <Compile Include="StlParser\Utility\StlAjaxLoading.cs" />
-    <Compile Include="Controllers\Stl\ActionsSearch.cs" />
+    <Compile Include="Controllers\Sys\Stl\ActionsSearch.cs" />
     <Compile Include="StlParser\Utility\StlDataUtility.cs" />
     <Compile Include="StlParser\Utility\StlHtmlUtility.cs" />
     <Compile Include="StlParser\Utility\StlParserManager.cs" />
@@ -431,35 +387,18 @@
     <Compile Include="StlParser\Utility\StlScriptUtility.cs" />
     <Compile Include="StlParser\Utility\StlTemplateManager.cs" />
     <Compile Include="StlParser\Utility\StlUtility.cs" />
-    <Compile Include="StlParser\Utility\TagStyleUtility.cs" />
     <Compile Include="StlParser\Utility\TemplateUtility.cs" />
-    <Compile Include="StlParser\Utility\URLUtility.cs" />
+    <Compile Include="StlParser\Utility\PagerUtility.cs" />
     <Compile Include="Provider\AdAreaDao.cs" />
     <Compile Include="Provider\AdMaterialDao.cs" />
     <Compile Include="Provider\AdvDao.cs" />
-    <Compile Include="Wcm\Provider\GovInteractContentDao.cs" />
-    <Compile Include="Provider\VoteContentDao.cs" />
-    <Compile Include="Wcm\Provider\GovInteractTypeDao.cs" />
-    <Compile Include="Wcm\Provider\GovInteractChannelDao.cs" />
-    <Compile Include="Wcm\Provider\GovInteractPermissionsDao.cs" />
-    <Compile Include="Wcm\Provider\GovPublicIdentifierSeqDao.cs" />
     <Compile Include="Provider\CreateTaskDao.cs" />
     <Compile Include="Provider\CreateTaskLogDao.cs" />
     <Compile Include="Provider\TaskDao.cs" />
     <Compile Include="Provider\TaskLogDao.cs" />
     <Compile Include="Provider\TemplateLogDao.cs" />
-    <Compile Include="Wcm\Provider\GovPublicApplyLogDao.cs" />
-    <Compile Include="Wcm\Provider\GovPublicApplyRemarkDao.cs" />
-    <Compile Include="Wcm\Provider\GovPublicApplyReplyDao.cs" />
-    <Compile Include="Wcm\Provider\GovInteractLogDao.cs" />
-    <Compile Include="Wcm\Provider\GovInteractRemarkDao.cs" />
-    <Compile Include="Wcm\Provider\GovInteractReplyDao.cs" />
-    <Compile Include="Provider\VoteOperationDao.cs" />
-    <Compile Include="Provider\VoteOptionDao.cs" />
     <Compile Include="Core\ArchiveManager.cs" />
-    <Compile Include="Core\ChannelUtility.cs" />
     <Compile Include="Core\Converter.cs" />
-    <Compile Include="Core\STLCacheManager.cs" />
     <Compile Include="Core\CrossSiteTransUtility.cs" />
     <Compile Include="Core\GatherUtility.cs" />
     <Compile Include="Core\User\LevelManager.cs" />
@@ -479,7 +418,6 @@
     <Compile Include="Core\StringUtility.cs" />
     <Compile Include="Core\TagStyleManager.cs" />
     <Compile Include="Core\VisualInfo.cs" />
-    <Compile Include="Core\ContentModelManager.cs" />
     <Compile Include="Core\DataProvider.cs" />
     <Compile Include="Core\InputParserUtility.cs" />
     <Compile Include="Core\DirectoryUtility.cs" />
@@ -489,7 +427,6 @@
     <Compile Include="Model\AdvertisementInfo.cs" />
     <Compile Include="Model\AdvertisementOpenWindowInfo.cs" />
     <Compile Include="Model\AdvertisementScreenDownInfo.cs" />
-    <Compile Include="Model\JobContentInfo.cs" />
     <Compile Include="Model\Enumerations\EAccessControlEntry.cs" />
     <Compile Include="Model\Enumerations\EAdvertisementType.cs" />
     <Compile Include="Model\Enumerations\EChangedType.cs" />
@@ -525,9 +462,6 @@
     <Compile Include="Model\Enumerations\ETemplateType.cs" />
     <Compile Include="Model\Enumerations\ETrackerStyle.cs" />
     <Compile Include="Model\Enumerations\ETrackerType.cs" />
-    <Compile Include="Model\InputContentInfo.cs" />
-    <Compile Include="Model\InputInfo.cs" />
-    <Compile Include="Model\InputInfoExtend.cs" />
     <Compile Include="Model\MenuDisplayInfo.cs" />
     <Compile Include="Model\SeoMetaInfo.cs" />
     <Compile Include="Model\SiteTemplateInfo.cs" />
@@ -541,41 +475,29 @@
     <Compile Include="Model\NodeInfoExtend.cs" />
     <Compile Include="Model\PublishmentSystemInfo.cs" />
     <Compile Include="Model\PublishmentSystemInfoExtend.cs" />
-    <Compile Include="Core\ChannelManager.cs" />
     <Compile Include="Core\MessageManager.cs" />
     <Compile Include="Model\SitePageInfo.cs" />
     <Compile Include="Core\SystemData\BaseTable.cs" />
-    <Compile Include="Model\ResumeContentInfo.cs" />
     <Compile Include="Provider\AdvertisementDao.cs" />
     <Compile Include="Provider\BackgroundContentDao.cs" />
     <Compile Include="Provider\ContentDao.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Provider\ContentGroupDao.cs" />
-    <Compile Include="Provider\JobContentDao.cs" />
     <Compile Include="Provider\PhotoDao.cs" />
     <Compile Include="Provider\RelatedFieldDao.cs" />
     <Compile Include="Provider\RelatedFieldItemDao.cs" />
     <Compile Include="Provider\CommentDao.cs" />
-    <Compile Include="Wcm\Provider\GovPublicContentDao.cs" />
     <Compile Include="Provider\GatherDatabaseRuleDao.cs" />
     <Compile Include="Provider\GatherFileRuleDao.cs" />
     <Compile Include="Provider\GatherRuleDao.cs" />
-    <Compile Include="Wcm\Provider\GovPublicCategoryDao.cs" />
-    <Compile Include="Wcm\Provider\GovPublicCategoryClassDao.cs" />
-    <Compile Include="Wcm\Provider\GovPublicIdentifierRuleDao.cs" />
-    <Compile Include="Wcm\Provider\GovPublicChannelDao.cs" />
-    <Compile Include="Wcm\Provider\GovPublicApplyDao.cs" />
     <Compile Include="Provider\InnerLinkDao.cs" />
-    <Compile Include="Provider\InputContentDao.cs" />
-    <Compile Include="Provider\InputDao.cs" />
     <Compile Include="Provider\KeywordDao.cs" />
     <Compile Include="Provider\LogDao.cs" />
     <Compile Include="Provider\MenuDisplayDao.cs" />
     <Compile Include="Provider\NodeDao.cs" />
     <Compile Include="Provider\NodeGroupDao.cs" />
     <Compile Include="Provider\PublishmentSystemDao.cs" />
-    <Compile Include="Provider\ResumeContentDao.cs" />
     <Compile Include="Provider\SeoMetaDao.cs" />
     <Compile Include="Provider\StarDao.cs" />
     <Compile Include="Provider\StarSettingDao.cs" />
@@ -584,16 +506,8 @@
     <Compile Include="Provider\TemplateDao.cs" />
     <Compile Include="Provider\TemplateMatchDao.cs" />
     <Compile Include="Provider\TrackingDao.cs" />
-    <Compile Include="Provider\PermissionsDao.cs" />
     <Compile Include="Provider\SystemPermissionsDao.cs" />
-    <Compile Include="StlTemplates\GovInteractApplyTemplate.cs" />
-    <Compile Include="StlTemplates\GovInteractQueryTemplate.cs" />
-    <Compile Include="StlTemplates\GovPublicApplyTemplate.cs" />
-    <Compile Include="StlTemplates\GovPublicQueryTemplate.cs" />
-    <Compile Include="StlTemplates\InputTemplate.cs" />
-    <Compile Include="StlTemplates\InputTemplateBase.cs" />
-    <Compile Include="StlTemplates\ResumeTemplate.cs" />
-    <Compile Include="StlTemplates\VoteTemplate.cs" />
+    <Compile Include="Core\SystemManager.cs" />
     <Compile Include="UEditor\Config.cs" />
     <Compile Include="UEditor\ConfigHandler.cs" />
     <Compile Include="UEditor\CrawlerHandler.cs" />
@@ -607,6 +521,10 @@
     <ProjectReference Include="..\BaiRong.Core\BaiRong.Core.csproj">
       <Project>{3d8cb06b-1791-4685-ab56-965b9f41666e}</Project>
       <Name>BaiRong.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{8451ecdd-2ea4-4966-bb0a-7bbc40138e80}</Project>
+      <Name>SiteServer.Plugin</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

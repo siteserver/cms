@@ -7,6 +7,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using BaiRong.Core.AuxiliaryTable;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "站点属性设置", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "站点属性设置", AppManager.Permissions.WebSite.Configration);
 
                 TbPublishmentSystemName.Text = PublishmentSystemInfo.PublishmentSystemName;
 
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
                     $@"<a class=""btn btn-success"" href=""{PageTableStyle.GetRedirectUrl(PublishmentSystemId,
                         ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemId)}"">设置站点属性</a>";
 
-                AcAttributes.SetParameters(PublishmentSystemInfo.Additional.Attributes, PublishmentSystemInfo, 0, _relatedIdentities, ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, true, IsPostBack);
+                AcAttributes.SetParameters(PublishmentSystemInfo.Additional.GetExtendedAttributes(), PublishmentSystemInfo, 0, _relatedIdentities, ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, true, IsPostBack);
 
                 BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm"));
             }
@@ -63,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
                 
 				try
 				{
-                    InputTypeParser.AddValuesToAttributes(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, PublishmentSystemInfo.Additional.Attributes);
+                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, PublishmentSystemInfo.Additional.GetExtendedAttributes());
 
                     DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
 

@@ -1,119 +1,97 @@
 ﻿using System;
-using System.Collections.Specialized;
-using System.Xml;
+using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlCount
+    [Stl(Usage = "显示数值", Description = "通过 stl:count 标签在模板中显示统计数字")]
+    public class StlCount
 	{
         private StlCount() { }
-		public const string ElementName = "stl:count";              //显示数值
+		public const string ElementName = "stl:count";
 
-		public const string Attribute_Type = "type";		        //需要获取值的类型
-        public const string Attribute_ChannelIndex = "channelindex";			//栏目索引
-        public const string Attribute_ChannelName = "channelname";				//栏目名称
-        public const string Attribute_UpLevel = "uplevel";						//上级栏目的级别
-        public const string Attribute_TopLevel = "toplevel";					//从首页向下的栏目级别
-        public const string Attribute_Scope = "scope";							//内容范围
-        public const string Attribute_Since = "since";				        //时间段
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+		public const string AttributeType = "type";
+        public const string AttributeChannelIndex = "channelIndex";
+        public const string AttributeChannelName = "channelName";
+        public const string AttributeUpLevel = "upLevel";
+        public const string AttributeTopLevel = "topLevel";
+        public const string AttributeScope = "scope";
+        public const string AttributeSince = "since";
 
-        public const string Type_Channels = "Channels";	            //栏目数
-        public const string Type_Contents = "Contents";	            //内容数
-        public const string Type_Comments = "Comments";	            //内容数
-        public const string Type_Downloads = "Downloads";	        //下载次数
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        {
+            {AttributeType, StringUtils.SortedListToAttributeValueString("需要获取值的类型", TypeList)},
+            {AttributeChannelIndex, "栏目索引"},
+            {AttributeChannelName, "栏目名称"},
+            {AttributeUpLevel, "上级栏目的级别"},
+            {AttributeTopLevel, "从首页向下的栏目级别"},
+            {AttributeScope, "内容范围"},
+            {AttributeSince, "时间段"}
+        };
 
-		public static ListDictionary AttributeList
+        public const string TypeChannels = "Channels";
+        public const string TypeContents = "Contents";
+        public const string TypeComments = "Comments";
+        public const string TypeDownloads = "Downloads";
+
+        public static SortedList<string, string> TypeList => new SortedList<string, string>
+        {
+            {TypeChannels, "栏目数"},
+            {TypeContents, "内容数"},
+            {TypeComments, "评论数"},
+            {TypeDownloads, "下载次数"}
+        };
+
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			get
-			{
-				var attributes = new ListDictionary();
-				attributes.Add(Attribute_Type, "需要获取值的类型");
-                attributes.Add(Attribute_ChannelIndex, "栏目索引");
-                attributes.Add(Attribute_ChannelName, "栏目名称");
-                attributes.Add(Attribute_UpLevel, "上级栏目的级别");
-                attributes.Add(Attribute_TopLevel, "从首页向下的栏目级别");
-                attributes.Add(Attribute_Scope, "内容范围");
-                attributes.Add(Attribute_Since, "时间段");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
+		    var type = string.Empty;
+            var channelIndex = string.Empty;
+            var channelName = string.Empty;
+            var upLevel = 0;
+            var topLevel = -1;
+            var scope = EScopeType.Self;
+            var since = string.Empty;
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
-		{
-			var parsedContent = string.Empty;
-			try
-			{
-				var ie = node.Attributes.GetEnumerator();
+		    foreach (var name in contextInfo.Attributes.Keys)
+		    {
+		        var value = contextInfo.Attributes[name];
 
-				var type = string.Empty;
-                var channelIndex = string.Empty;
-                var channelName = string.Empty;
-                var upLevel = 0;
-                var topLevel = -1;
-                var scope = EScopeType.Self;
-                var since = string.Empty;
-                var isDynamic = false;
-
-				while (ie.MoveNext())
-				{
-					var attr = (XmlAttribute)ie.Current;
-					var attributeName = attr.Name.ToLower();
-					if (attributeName.Equals(Attribute_Type))
-					{
-						type = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_ChannelIndex))
-                    {
-                        channelIndex = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_ChannelName))
-                    {
-                        channelName = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_UpLevel))
-                    {
-                        upLevel = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_TopLevel))
-                    {
-                        topLevel = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Scope))
-                    {
-                        scope = EScopeTypeUtils.GetEnumType(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Since))
-                    {
-                        since = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value, false);
-                    }
-				}
-
-                if (isDynamic)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
                 {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
+                    type = value;
                 }
-                else
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
                 {
-                    parsedContent = ParseImpl(pageInfo, contextInfo, type, channelIndex, channelName, upLevel, topLevel, scope, since);
+                    channelIndex = value;
                 }
-			}
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeChannelName))
+                {
+                    channelName = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeUpLevel))
+                {
+                    upLevel = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTopLevel))
+                {
+                    topLevel = TranslateUtils.ToInt(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeScope))
+                {
+                    scope = EScopeTypeUtils.GetEnumType(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeSince))
+                {
+                    since = value;
+                }
             }
 
-			return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, type, channelIndex, channelName, upLevel, topLevel, scope, since);
 		}
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string channelIndex, string channelName, int upLevel, int topLevel, EScopeType scope, string since)
@@ -126,37 +104,40 @@ namespace SiteServer.CMS.StlParser.StlElement
                 sinceDate = DateTime.Now.AddHours(-DateUtils.GetSinceHours(since));
             }
 
-            if (string.IsNullOrEmpty(type) || StringUtils.EqualsIgnoreCase(type, Type_Contents))
+            if (string.IsNullOrEmpty(type) || StringUtils.EqualsIgnoreCase(type, TypeContents))
             {
-                var channelID = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelID, upLevel, topLevel);
-                channelID = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelID, channelIndex, channelName);
+                var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
+                channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
 
-                var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelID);
+                var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
 
-                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo, scope, string.Empty, string.Empty);
-                foreach (int nodeID in nodeIdList)
+                //var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
+                var nodeIdList = Node.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, scope, string.Empty, string.Empty);
+                foreach (var nodeId in nodeIdList)
                 {
-                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeID);
-                    count += DataProvider.ContentDao.GetCountOfContentAdd(tableName, pageInfo.PublishmentSystemId, nodeID, sinceDate, DateTime.Now.AddDays(1), string.Empty);
+                    var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeId);
+                    //count += DataProvider.ContentDao.GetCountOfContentAdd(tableName, pageInfo.PublishmentSystemId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
+                    count += Content.GetCountOfContentAdd(tableName, pageInfo.PublishmentSystemId, nodeId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty);
                 }
             }
-            else if (StringUtils.EqualsIgnoreCase(type, Type_Channels))
+            else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))
             {
-                var channelID = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelID, upLevel, topLevel);
-                channelID = StlCacheManager.NodeId.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelID, channelIndex, channelName);
+                var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
+                channelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, channelId, channelIndex, channelName);
 
-                var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelID);
+                var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, channelId);
                 count = nodeInfo.ChildrenCount;
             }
-            else if (StringUtils.EqualsIgnoreCase(type, Type_Comments))
+            else if (StringUtils.EqualsIgnoreCase(type, TypeComments))
             {
-                count = DataProvider.CommentDao.GetCountChecked(pageInfo.PublishmentSystemId, contextInfo.ChannelID, contextInfo.ContentID);
+                //count = DataProvider.CommentDao.GetCountChecked(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId);
+                count = Comment.GetCountChecked(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId);
             }
-            else if (StringUtils.EqualsIgnoreCase(type, Type_Downloads))
+            else if (StringUtils.EqualsIgnoreCase(type, TypeDownloads))
             {
-                if (contextInfo.ContentID > 0)
+                if (contextInfo.ContentId > 0)
                 {
-                    count = CountManager.GetCount(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentID.ToString(), ECountType.Download);
+                    count = CountManager.GetCount(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId.ToString(), ECountType.Download);
                 }
             }
 

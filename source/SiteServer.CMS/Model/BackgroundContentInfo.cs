@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
@@ -17,11 +16,7 @@ namespace SiteServer.CMS.Model
             Summary = string.Empty;
             Author = string.Empty;
             Source = string.Empty;
-            IsRecommend = false;
-            IsHot = false;
-            IsColor = false;
-            IsTop = false;
-            Content = string.Empty;          
+            Content = string.Empty;
 		}
 
         public BackgroundContentInfo(object dataItem)
@@ -75,24 +70,6 @@ namespace SiteServer.CMS.Model
 		{
             get { return GetExtendedAttribute(BackgroundContentAttribute.Source); }
             set { SetExtendedAttribute(BackgroundContentAttribute.Source, value); }
-		}
-
-        public bool IsRecommend
-		{
-            get { return GetBool(BackgroundContentAttribute.IsRecommend, false); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.IsRecommend, value.ToString()); }
-		}
-
-        public bool IsHot
-		{
-            get { return GetBool(BackgroundContentAttribute.IsHot, false); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.IsHot, value.ToString()); }
-		}
-
-        public bool IsColor
-		{
-            get { return GetBool(BackgroundContentAttribute.IsColor, false); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.IsColor, value.ToString()); }
 		}
 
         public string Content

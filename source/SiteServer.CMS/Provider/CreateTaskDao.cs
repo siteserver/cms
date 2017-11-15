@@ -1,33 +1,74 @@
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class CreateTaskDao : DataProviderBase
     {
-        private const string ParmId = "@ID";
+        public override string TableName => "siteserver_CreateTask";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskInfo.CreateType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskInfo.ChannelId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskInfo.ContentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(CreateTaskInfo.TemplateId),
+                DataType = DataType.Integer
+            }
+        };
+
+        private const string ParmId = "@Id";
         private const string ParmCreateType = "@CreateType";
-        private const string ParmPublishmentSystemId = "@PublishmentSystemID";
-        private const string ParmChannelId = "@ChannelID";
-        private const string ParmContentId = "@ContentID";
-        private const string ParmTemplateId = "@TemplateID";
+        private const string ParmPublishmentSystemId = "@PublishmentSystemId";
+        private const string ParmChannelId = "@ChannelId";
+        private const string ParmContentId = "@ContentId";
+        private const string ParmTemplateId = "@TemplateId";
 
         public void Insert(CreateTaskInfo info)
         {
-            const string sqlString = "INSERT INTO siteserver_CreateTask (CreateType, PublishmentSystemID, ChannelID, ContentID, TemplateID) VALUES (@CreateType, @PublishmentSystemID, @ChannelID, @ContentID, @TemplateID)";
+            const string sqlString = "INSERT INTO siteserver_CreateTask (CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId) VALUES (@CreateType, @PublishmentSystemId, @ChannelId, @ContentId, @TemplateId)";
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmCreateType, EDataType.NVarChar, 50, ECreateTypeUtils.GetValue(info.CreateType)),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, info.PublishmentSystemID),
-                GetParameter(ParmChannelId, EDataType.Integer, info.ChannelID),
-                GetParameter(ParmContentId, EDataType.Integer, info.ContentID),
-                GetParameter(ParmTemplateId, EDataType.Integer, info.TemplateID),
+                GetParameter(ParmCreateType, DataType.VarChar, 50, ECreateTypeUtils.GetValue(info.CreateType)),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
+                GetParameter(ParmChannelId, DataType.Integer, info.ChannelId),
+                GetParameter(ParmContentId, DataType.Integer, info.ContentId),
+                GetParameter(ParmTemplateId, DataType.Integer, info.TemplateId)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -36,23 +77,30 @@ namespace SiteServer.CMS.Provider
 
         public void Delete(int taskId)
         {
-            const string sqlString = "DELETE FROM siteserver_CreateTask WHERE ID = @ID";
+            const string sqlString = "DELETE FROM siteserver_CreateTask WHERE Id = @Id";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmId, EDataType.Integer, taskId)
+				GetParameter(ParmId, DataType.Integer, taskId)
 			};
 
             ExecuteNonQuery(sqlString, parms);
         }
 
+        public void DeleteAll()
+        {
+            const string sqlString = "DELETE FROM siteserver_CreateTask";
+
+            ExecuteNonQuery(sqlString);
+        }
+
         public void DeleteByPublishmentSystemId(int publishmentSystemId)
         {
-            const string sqlString = "DELETE FROM siteserver_CreateTask WHERE PublishmentSystemID = @PublishmentSystemID";
+            const string sqlString = "DELETE FROM siteserver_CreateTask WHERE PublishmentSystemId = @PublishmentSystemId";
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
             };
 
             ExecuteNonQuery(sqlString, parms);
@@ -67,15 +115,15 @@ namespace SiteServer.CMS.Provider
 
             var exists = false;
 
-            const string sqlString = @"SELECT ID FROM siteserver_CreateTask WHERE CreateType = @CreateType AND PublishmentSystemID = @PublishmentSystemID AND ChannelID = @ChannelID AND ContentID = @ContentID AND TemplateID = @TemplateID";
+            const string sqlString = @"SELECT Id FROM siteserver_CreateTask WHERE CreateType = @CreateType AND PublishmentSystemId = @PublishmentSystemId AND ChannelId = @ChannelId AND ContentId = @ContentId AND TemplateId = @TemplateId";
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmCreateType, EDataType.NVarChar, 50, ECreateTypeUtils.GetValue(info.CreateType)),
-                GetParameter(ParmPublishmentSystemId, EDataType.Integer, info.PublishmentSystemID),
-                GetParameter(ParmChannelId, EDataType.Integer, info.ChannelID),
-                GetParameter(ParmContentId, EDataType.Integer, info.ContentID),
-                GetParameter(ParmTemplateId, EDataType.Integer, info.TemplateID),
+                GetParameter(ParmCreateType, DataType.VarChar, 50, ECreateTypeUtils.GetValue(info.CreateType)),
+                GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
+                GetParameter(ParmChannelId, DataType.Integer, info.ChannelId),
+                GetParameter(ParmContentId, DataType.Integer, info.ContentId),
+                GetParameter(ParmTemplateId, DataType.Integer, info.TemplateId)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -90,19 +138,21 @@ namespace SiteServer.CMS.Provider
             return exists;
         }
 
-        public List<CreateTaskInfo> GetList(int publishmentSystemId, int totalNum)
+        public List<CreateTaskInfo> GetList(int siteId, int totalNum)
         {
             var list = new List<CreateTaskInfo>();
 
-            if (publishmentSystemId > 0)
+            if (siteId > 0)
             {
                 //string sqlString =
-                //    $"SELECT TOP {totalNum} ID, CreateType, PublishmentSystemID, ChannelID, ContentID, TemplateID FROM siteserver_CreateTask WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY ID DESC";
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "ID, CreateType, PublishmentSystemID, ChannelID, ContentID, TemplateID", "WHERE PublishmentSystemID = @PublishmentSystemID ORDER BY ID DESC", totalNum);
+                //    $"SELECT TOP {totalNum} Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId FROM siteserver_CreateTask WHERE PublishmentSystemId = @PublishmentSystemId ORDER BY Id DESC";
+                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask",
+                    "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId",
+                    "WHERE PublishmentSystemId = @PublishmentSystemId", "ORDER BY Id DESC", totalNum);
 
                 var parms = new IDataParameter[]
                 {
-                    GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                    GetParameter(ParmPublishmentSystemId, DataType.Integer, siteId)
                 };
 
                 using (var rdr = ExecuteReader(sqlString, parms))
@@ -110,7 +160,18 @@ namespace SiteServer.CMS.Provider
                     while (rdr.Read())
                     {
                         var i = 0;
-                        var info = new CreateTaskInfo(GetInt(rdr, i++), ECreateTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i));
+
+                        var id = GetInt(rdr, i++);
+                        var createType = ECreateTypeUtils.GetEnumType(GetString(rdr, i++));
+                        var publishmentSystemId = GetInt(rdr, i++);
+                        var channelId = GetInt(rdr, i++);
+                        var contentId = GetInt(rdr, i++);
+                        var templateId = GetInt(rdr, i);
+                        int pageCount;
+                        var name = CreateManager.GetTaskName(createType, publishmentSystemId, channelId, contentId,
+                            templateId, out pageCount);
+
+                        var info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount);
                         list.Add(info);
                     }
                     rdr.Close();
@@ -119,15 +180,26 @@ namespace SiteServer.CMS.Provider
             else
             {
                 //string sqlString =
-                //    $"SELECT TOP {totalNum} ID, CreateType, PublishmentSystemID, ChannelID, ContentID, TemplateID FROM siteserver_CreateTask ORDER BY ID DESC";
-                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "ID, CreateType, PublishmentSystemID, ChannelID, ContentID, TemplateID", "ORDER BY ID DESC", totalNum);
+                //    $"SELECT TOP {totalNum} Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId FROM siteserver_CreateTask ORDER BY Id DESC";
+                var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", string.Empty, "ORDER BY Id DESC", totalNum);
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
                     while (rdr.Read())
                     {
                         var i = 0;
-                        var info = new CreateTaskInfo(GetInt(rdr, i++), ECreateTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i));
+
+                        var id = GetInt(rdr, i++);
+                        var createType = ECreateTypeUtils.GetEnumType(GetString(rdr, i++));
+                        var publishmentSystemId = GetInt(rdr, i++);
+                        var channelId = GetInt(rdr, i++);
+                        var contentId = GetInt(rdr, i++);
+                        var templateId = GetInt(rdr, i);
+                        int pageCount;
+                        var name = CreateManager.GetTaskName(createType, publishmentSystemId, channelId, contentId,
+                            templateId, out pageCount);
+
+                        var info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount);
                         list.Add(info);
                     }
                     rdr.Close();
@@ -141,30 +213,75 @@ namespace SiteServer.CMS.Provider
         {
             CreateTaskInfo info = null;
 
-            //var sqlString = "SELECT TOP 1 ID, CreateType, PublishmentSystemID, ChannelID, ContentID, TemplateID FROM siteserver_CreateTask ORDER BY ID";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "ID, CreateType, PublishmentSystemID, ChannelID, ContentID, TemplateID", "ORDER BY ID", 1);
+            //var sqlString = "SELECT TOP 1 Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId FROM siteserver_CreateTask ORDER BY Id";
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", string.Empty, "ORDER BY Id", 1);
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new CreateTaskInfo(GetInt(rdr, i++), ECreateTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i));
+                    var id = GetInt(rdr, i++);
+                    var createType = ECreateTypeUtils.GetEnumType(GetString(rdr, i++));
+                    var publishmentSystemId = GetInt(rdr, i++);
+                    var channelId = GetInt(rdr, i++);
+                    var contentId = GetInt(rdr, i++);
+                    var templateId = GetInt(rdr, i);
+                    int pageCount;
+                    var name = CreateManager.GetTaskName(createType, publishmentSystemId, channelId, contentId,
+                        templateId, out pageCount);
+
+                    info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount);
                 }
                 rdr.Close();
             }
+
             return info;
+        }
+
+        /// <summary>
+        /// 一次获取多个任务
+        /// </summary>
+        /// <param name="topNum"></param>
+        /// <returns></returns>
+        public List<CreateTaskInfo> GetLastPendingTasks(int topNum)
+        {
+            var list = new List<CreateTaskInfo>();
+
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id, CreateType, PublishmentSystemId, ChannelId, ContentId, TemplateId", string.Empty, "ORDER BY Id", topNum);
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    var i = 0;
+                    var id = GetInt(rdr, i++);
+                    var createType = ECreateTypeUtils.GetEnumType(GetString(rdr, i++));
+                    var publishmentSystemId = GetInt(rdr, i++);
+                    var channelId = GetInt(rdr, i++);
+                    var contentId = GetInt(rdr, i++);
+                    var templateId = GetInt(rdr, i);
+                    int pageCount;
+                    var name = CreateManager.GetTaskName(createType, publishmentSystemId, channelId, contentId,
+                        templateId, out pageCount);
+                    var info = new CreateTaskInfo(id, name, createType, publishmentSystemId, channelId, contentId, templateId, pageCount);
+
+                    list.Add(info);
+                }
+                rdr.Close();
+            }
+            return list;
         }
 
         public bool IsPendingTask()
         {
             var retval = false;
 
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "ID", "ORDER BY ID", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_CreateTask", "Id", string.Empty, "ORDER BY Id", 1);
 
             using (var rdr = ExecuteReader(sqlString))
             {
-                if (rdr.Read())
+                if (rdr.Read() && !rdr.IsDBNull(0))
                 {
                     retval = true;
                 }
@@ -173,34 +290,29 @@ namespace SiteServer.CMS.Provider
             return retval;
         }
 
-        public void GetCount(int publishmentSystemId, out int indexCount, out int channelsCount, out int contentsCount, out int filesCount)
+        public void GetCount(int publishmentSystemId, out int channelsCount, out int contentsCount, out int filesCount)
         {
-            indexCount = 0;
             channelsCount = 0;
             contentsCount = 0;
             filesCount = 0;
 
             if (publishmentSystemId > 0)
             {
-                const string sqlString = "SELECT COUNT(*) AS TOTAL, CreateType FROM siteserver_CreateTask WHERE PublishmentSystemID = @PublishmentSystemID GROUP BY CreateType";
+                const string sqlString = "SELECT COUNT(*) AS TOTAL, CreateType FROM siteserver_CreateTask WHERE PublishmentSystemId = @PublishmentSystemId GROUP BY CreateType";
 
                 var parms = new IDataParameter[]
                 {
-                    GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+                    GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
                 };
 
                 using (var rdr = ExecuteReader(sqlString, parms))
                 {
-                    while (rdr.Read())
+                    while (rdr.Read() && !rdr.IsDBNull(0))
                     {
                         var total = GetInt(rdr, 0);
                         var createType = ECreateTypeUtils.GetEnumType(GetString(rdr, 1));
 
-                        if (createType == ECreateType.Index)
-                        {
-                            indexCount += total;
-                        }
-                        else if (createType == ECreateType.Channel)
+                        if (createType == ECreateType.Channel)
                         {
                             channelsCount += total;
                         }
@@ -231,11 +343,7 @@ namespace SiteServer.CMS.Provider
                         var total = GetInt(rdr, 0);
                         var createType = ECreateTypeUtils.GetEnumType(GetString(rdr, 1));
 
-                        if (createType == ECreateType.Index)
-                        {
-                            indexCount += total;
-                        }
-                        else if (createType == ECreateType.Channel)
+                        if (createType == ECreateType.Channel)
                         {
                             channelsCount += total;
                         }

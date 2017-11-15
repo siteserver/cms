@@ -4,55 +4,49 @@ using System.Web.UI.WebControls;
 namespace SiteServer.CMS.Model.Enumerations
 {
 	/// <summary>
-	/// FloatDivInfo 滚动方式
+	/// FloatDivInfo 婊氬姩鏂瑰紡
 	/// </summary>
 	public enum ERollingType
 	{
-		Static,							//静止不动
-		FollowingScreen,				//跟随窗体滚动
-		FloatingInWindow				//在窗体中不断移动
+		Static,							//闈欐涓嶅姩
+		FollowingScreen,				//璺熼殢绐椾綋婊氬姩
+		FloatingInWindow				//鍦ㄧ獥浣撲腑涓嶆柇绉诲姩
 	}
 
 	public class ERollingTypeUtils
 	{
 		public static string GetValue(ERollingType type)
 		{
-			if (type == ERollingType.Static)
+		    if (type == ERollingType.Static)
 			{
 				return "Static";
 			}
-			else if (type == ERollingType.FollowingScreen)
-			{
-				return "FollowingScreen";
-			}
-			else if (type == ERollingType.FloatingInWindow)
-			{
-				return "FloatingInWindow";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ERollingType.FollowingScreen)
+		    {
+		        return "FollowingScreen";
+		    }
+		    if (type == ERollingType.FloatingInWindow)
+		    {
+		        return "FloatingInWindow";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ERollingType type)
 		{
-			if (type == ERollingType.Static)
+		    if (type == ERollingType.Static)
 			{
-				return "静止不动";
+				return "闈欐涓嶅姩";
 			}
-			else if (type == ERollingType.FollowingScreen)
-			{
-				return "跟随窗体滚动";
-			}
-			else if (type == ERollingType.FloatingInWindow)
-			{
-				return "在窗体中不断移动";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ERollingType.FollowingScreen)
+		    {
+		        return "璺熼殢绐椾綋婊氬姩";
+		    }
+		    if (type == ERollingType.FloatingInWindow)
+		    {
+		        return "鍦ㄧ獥浣撲腑涓嶆柇绉诲姩";
+		    }
+		    throw new Exception();
 		}
 
 		public static ERollingType GetEnumType(string typeStr)

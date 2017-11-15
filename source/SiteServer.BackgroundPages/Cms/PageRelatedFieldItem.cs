@@ -110,7 +110,7 @@ namespace SiteServer.BackgroundPages.Cms
                     level = $"{levelString}级({itemInfo.ItemName})";
                 }
 
-                BreadCrumbWithItemTitle(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationContentModel, "联动字段管理", level, AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdConfigration, "联动字段管理", level, AppManager.Permissions.WebSite.Configration);
 
                 BindGrid();
 

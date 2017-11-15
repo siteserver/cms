@@ -36,15 +36,15 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == EWinStatus.Won)
             {
-                return "“—÷–Ω±";
+                return "Â∑≤‰∏≠Â•ñ";
             }
             else if (type == EWinStatus.Applied)
             {
-                return "“—Ã·Ωª–≈œ¢";
+                return "Â∑≤Êèê‰∫§‰ø°ÊÅØ";
             }
             else if (type == EWinStatus.Cashed)
             {
-                return "“—∂“Ω±";
+                return "Â∑≤ÂÖëÂ•ñ";
             }
 			else
 			{

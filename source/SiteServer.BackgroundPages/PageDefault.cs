@@ -1,4 +1,4 @@
-using BaiRong.Core;
+﻿using BaiRong.Core;
 
 namespace SiteServer.BackgroundPages
 {
@@ -6,6 +6,6 @@ namespace SiteServer.BackgroundPages
 	{
         protected override bool IsAccessable => true;
 
-	    protected string AdminDirectoryName => FileConfigManager.Instance.AdminDirectoryName;
+	    protected string AdminDirectoryName => WebConfigUtils.AdminDirectory;
 	}
 }

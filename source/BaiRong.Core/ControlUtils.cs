@@ -4,9 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-
 using BaiRong.Core.Model;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Web.Controls;
 using System.Collections.Generic;
 
@@ -58,11 +56,11 @@ namespace BaiRong.Core
 		/// </summary>
 		/// <param name="accessor">控件</param>
 		/// <param name="attributes">属性集合</param>
-		public static void AddAttributesIfNotExists(IAttributeAccessor accessor, StringDictionary attributes)
+		public static void AddAttributesIfNotExists(IAttributeAccessor accessor, Dictionary<string, string> attributes)
 		{
 			if (accessor != null && attributes != null)
 			{
-				foreach (string key in attributes.Keys)
+				foreach (var key in attributes.Keys)
 				{
 					if (accessor.GetAttribute(key) == null)
 					{
@@ -153,18 +151,18 @@ namespace BaiRong.Core
 
         public static string GetSelectedListControlValueCollection(ListControl listControl)
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
             if (listControl != null)
             {
                 foreach (ListItem item in listControl.Items)
                 {
                     if (item.Selected)
                     {
-                        arraylist.Add(item.Value);
+                        list.Add(item.Value);
                     }
                 }
             }
-            return TranslateUtils.ObjectCollectionToString(arraylist);
+            return TranslateUtils.ObjectCollectionToString(list);
         }
 
         public static ArrayList GetSelectedListControlValueArrayList(ListControl listControl)
@@ -372,7 +370,7 @@ namespace BaiRong.Core
 
         public static string GetInputValue(Control containerControl, string inputName)
         {
-            Control control = null;
+            Control control;
             return GetInputValue(containerControl, inputName, out control);
         }
 
@@ -480,7 +478,7 @@ namespace BaiRong.Core
                     var select = (ListControl)control;
                     if (select.Items.Count == 0)
                     {
-                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                         if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
                         {
                             foreach (var styleItemInfo in tableStyleItemInfoArrayList)
@@ -497,7 +495,7 @@ namespace BaiRong.Core
                     var select = (HtmlSelect)control;
                     if (select.Items.Count == 0)
                     {
-                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                         if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
                         {
                             foreach (var styleItemInfo in tableStyleItemInfoArrayList)
@@ -544,7 +542,7 @@ namespace BaiRong.Core
                     var select = (ListControl)control;
                     if (select.Items.Count == 0)
                     {
-                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                         if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
                         {
                             foreach (var styleItemInfo in tableStyleItemInfoArrayList)
@@ -561,7 +559,7 @@ namespace BaiRong.Core
                     var select = (HtmlSelect)control;
                     if (select.Items.Count == 0)
                     {
-                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
                         if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
                         {
                             foreach (var styleItemInfo in tableStyleItemInfoArrayList)

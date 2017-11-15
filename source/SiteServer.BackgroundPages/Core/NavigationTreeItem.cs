@@ -43,24 +43,34 @@ namespace SiteServer.BackgroundPages.Core
 
         public static NavigationTreeItem CreateNavigationBarItem(bool isDisplay, bool selected, int parentsCount, bool hasChildren, bool openWindow, string text, string linkUrl, string target, bool enabled, string iconUrl)
 		{
-		    var item = new NavigationTreeItem
-		    {
-		        _isDisplay = isDisplay,
-		        _selected = selected,
-		        _parentsCount = parentsCount,
-		        _hasChildren = hasChildren,
-		        _openWindow = openWindow,
-		        _text = text,
-		        _linkUrl = linkUrl,
-		        _target = target,
-		        _enabled = enabled,
-		        _isClickChange = true,
-		        _iconFolderUrl =
-		            !string.IsNullOrEmpty(iconUrl)
-		                ? SiteServerAssets.GetIconUrl(iconUrl)
-		                : SiteServerAssets.GetIconUrl(hasChildren ? "menu/itemContainer.png" : "menu/item.png")
-		    };
-		    item._iconOpenedFolderUrl = item._iconFolderUrl;
+            var item = new NavigationTreeItem();
+		    item._isDisplay = isDisplay;
+		    item._selected = selected;
+		    item._parentsCount = parentsCount;
+		    item._hasChildren = hasChildren;
+		    item._openWindow = openWindow;
+            item._text = text;
+            item._linkUrl = linkUrl;
+            item._target = target;
+            item._enabled = enabled;
+            item._isClickChange = true;
+            if (!string.IsNullOrEmpty(iconUrl))
+            {
+                if (!iconUrl.StartsWith("../"))
+                {
+                    item._iconFolderUrl = SiteServerAssets.GetIconUrl(iconUrl);
+                }
+                else
+                {
+                    item._iconFolderUrl = iconUrl;
+                }
+            }
+            else
+            {
+                item._iconFolderUrl = SiteServerAssets.GetIconUrl(hasChildren ? "menu/itemContainer.png" : "menu/item.png");
+            }
+
+            item._iconOpenedFolderUrl = item._iconFolderUrl;
 			return item;
 		}
 
@@ -120,7 +130,7 @@ namespace SiteServer.BackgroundPages.Core
 			
 			if (!string.IsNullOrEmpty(_iconFolderUrl))
 			{
-                htmlBuilder.Append($"<img align=\"absmiddle\" src=\"{_iconFolderUrl}\"/>");
+                htmlBuilder.Append($"<img width=\"16\" height=\"16\" align=\"absmiddle\" src=\"{_iconFolderUrl}\"/>");
 			}
 
 			htmlBuilder.Append("&nbsp;");

@@ -13,17 +13,17 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalContentCheck : BasePageCms
     {
-        public Literal ltlTitles;
-        public RadioButtonList rblCheckType;
-        public DropDownList ddlTranslateNodeID;
-        public TextBox tbCheckReasons;
+        public Literal LtlTitles;
+        public DropDownList DdlCheckType;
+        public DropDownList DdlTranslateNodeId;
+        public TextBox TbCheckReasons;
 
         private Dictionary<int, List<int>> _idsDictionary = new Dictionary<int, List<int>>();
         private string _returnUrl;
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringForMultiChannels(int publishmentSystemId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, int contentId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowString("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return PageUtils.GetOpenLayerString("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -73,109 +73,91 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                var checkTaskTotal = 0;
-                var checkContentTotal = 0;
-                var unCheckTaskTotal = 0;
-                ContentInfo contentInfo;
                 var titles = new StringBuilder();
-                foreach (var nodeID in _idsDictionary.Keys)
+                foreach (var nodeId in _idsDictionary.Keys)
                 {
-                    var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeID);
-                    var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeID);
-                    var contentIdList = _idsDictionary[nodeID];
+                    var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                    var contentIdList = _idsDictionary[nodeId];
                     foreach (var contentId in contentIdList)
                     {
-                        checkContentTotal++;
-                        contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
-                        
-                        titles.Append(contentInfo.Title + "<br />");
+                        var title = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                        titles.Append(title + "<br />");
                     }
                 }
 
-                if (!string.IsNullOrEmpty(ltlTitles.Text))
+                if (!string.IsNullOrEmpty(LtlTitles.Text))
                 {
                     titles.Length -= 6;
                 }
-                ltlTitles.Text = titles.ToString();
+                LtlTitles.Text = titles.ToString();
 
                 var checkedLevel = 5;
                 var isChecked = true;
 
-                foreach (var nodeID in _idsDictionary.Keys)
+                foreach (var nodeId in _idsDictionary.Keys)
                 {
-                    int checkedLevelByNodeID;
-                    var isCheckedByNodeID = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, nodeID, out checkedLevelByNodeID);
-                    if (checkedLevel > checkedLevelByNodeID)
+                    int checkedLevelByNodeId;
+                    var isCheckedByNodeId = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, nodeId, out checkedLevelByNodeId);
+                    if (checkedLevel > checkedLevelByNodeId)
                     {
-                        checkedLevel = checkedLevelByNodeID;
+                        checkedLevel = checkedLevelByNodeId;
                     }
-                    if (!isCheckedByNodeID)
+                    if (!isCheckedByNodeId)
                     {
-                        isChecked = isCheckedByNodeID;
+                        isChecked = false;
                     }
                 }
 
-                LevelManager.LoadContentLevelToCheck(rblCheckType, PublishmentSystemInfo, isChecked, checkedLevel);
+                LevelManager.LoadContentLevelToCheck(DdlCheckType, PublishmentSystemInfo, isChecked, checkedLevel);
 
                 var listItem = new ListItem("<保持原栏目不变>", "0");
-                ddlTranslateNodeID.Items.Add(listItem);
+                DdlTranslateNodeId.Items.Add(listItem);
 
-                NodeManager.AddListItemsForAddContent(ddlTranslateNodeID.Items, PublishmentSystemInfo, true, Body.AdministratorName);
+                NodeManager.AddListItemsForAddContent(DdlTranslateNodeId.Items, PublishmentSystemInfo, true, Body.AdminName);
             }
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var taskID = 0;
-            var checkedLevel = TranslateUtils.ToIntWithNagetive(rblCheckType.SelectedValue);
-            var isChecked = false;
-            var isTask = false;
+            var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlCheckType.SelectedValue);
 
-            if (checkedLevel >= PublishmentSystemInfo.CheckContentLevel)
-            {
-                isChecked = true;
-            }
-            else
-            {
-                isChecked = false;
-            }
+            var isChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
 
             var contentInfoArrayListToCheck = new List<ContentInfo>();
             var idsDictionaryToCheck = new Dictionary<int, List<int>>();
-            foreach (var nodeID in _idsDictionary.Keys)
+            foreach (var nodeId in _idsDictionary.Keys)
             {
-                var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeID);
-                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeID);
-                var contentIDArrayList = _idsDictionary[nodeID];
-                var contentIDArrayListToCheck = new List<int>();
+                var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeId);
+                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                var contentIdList = _idsDictionary[nodeId];
+                var contentIdListToCheck = new List<int>();
 
-                var checkedLevelOfUser = 0;
-                var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, nodeID, out checkedLevelOfUser);
+                int checkedLevelOfUser;
+                var isCheckedOfUser = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, nodeId, out checkedLevelOfUser);
 
-                foreach (int contentID in contentIDArrayList)
+                foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentID);
+                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
                     if (contentInfo != null)
                     {
-
                         if (LevelManager.IsCheckable(PublishmentSystemInfo, contentInfo.NodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
                             contentInfoArrayListToCheck.Add(contentInfo);
-                            contentIDArrayListToCheck.Add(contentID);
+                            contentIdListToCheck.Add(contentId);
                         }
 
                         DataProvider.ContentDao.Update(tableName, PublishmentSystemInfo, contentInfo);
 
                         if (contentInfo.IsChecked)
                         {
-                            CreateManager.CreateContentAndTrigger(PublishmentSystemId, contentInfo.NodeId, contentID);
+                            CreateManager.CreateContentAndTrigger(PublishmentSystemId, contentInfo.NodeId, contentId);
                         }
 
                     }
                 }
-                if (contentIDArrayListToCheck.Count > 0)
+                if (contentIdListToCheck.Count > 0)
                 {
-                    idsDictionaryToCheck[nodeID] = contentIDArrayListToCheck;
+                    idsDictionaryToCheck[nodeId] = contentIdListToCheck;
                 }
             }
 
@@ -187,34 +169,34 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    var translateNodeID = TranslateUtils.ToInt(ddlTranslateNodeID.SelectedValue);
+                    var translateNodeId = TranslateUtils.ToInt(DdlTranslateNodeId.SelectedValue);
 
-                    foreach (int nodeID in idsDictionaryToCheck.Keys)
+                    foreach (var nodeId in idsDictionaryToCheck.Keys)
                     {
-                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeID);
-                        var contentIDArrayList = idsDictionaryToCheck[nodeID];
-                        BaiRongDataProvider.ContentDao.UpdateIsChecked(tableName, PublishmentSystemId, nodeID, contentIDArrayList, translateNodeID, true, Body.AdministratorName, isChecked, checkedLevel, tbCheckReasons.Text);
+                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                        var contentIdList = idsDictionaryToCheck[nodeId];
+                        BaiRongDataProvider.ContentDao.UpdateIsChecked(tableName, PublishmentSystemId, nodeId, contentIdList, translateNodeId, true, Body.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
 
-                        DataProvider.NodeDao.UpdateContentNum(PublishmentSystemInfo, nodeID, true);
+                        DataProvider.NodeDao.UpdateContentNum(PublishmentSystemInfo, nodeId, true);
                     }
 
-                    if (translateNodeID > 0)
+                    if (translateNodeId > 0)
                     {
-                        DataProvider.NodeDao.UpdateContentNum(PublishmentSystemInfo, translateNodeID, true);
+                        DataProvider.NodeDao.UpdateContentNum(PublishmentSystemInfo, translateNodeId, true);
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, PublishmentSystemId, 0, "设置内容状态为" + rblCheckType.SelectedItem.Text, tbCheckReasons.Text);
+                    Body.AddSiteLog(PublishmentSystemId, PublishmentSystemId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);
 
                     if (isChecked)
                     {
-                        foreach (int nodeID in idsDictionaryToCheck.Keys)
+                        foreach (var nodeId in idsDictionaryToCheck.Keys)
                         {
-                            var contentIDArrayList = _idsDictionary[nodeID];
-                            if (contentIDArrayList != null)
+                            var contentIdList = _idsDictionary[nodeId];
+                            if (contentIdList != null)
                             {
-                                foreach (int contentID in contentIDArrayList)
+                                foreach (var contentId in contentIdList)
                                 {
-                                    CreateManager.CreateContent(PublishmentSystemId, nodeID, contentID);
+                                    CreateManager.CreateContent(PublishmentSystemId, nodeId, contentId);
                                 }
                             }
                         }

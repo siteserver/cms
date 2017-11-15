@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (!IsPostBack)
             {
                 var pageTitle = (menuDisplayID == 0) ? "添加菜单样式" : "编辑菜单样式";
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, AppManager.Cms.LeftMenu.Template.IdTagStyle, pageTitle, AppManager.Cms.Permission.WebSite.Template);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, pageTitle, AppManager.Permissions.WebSite.Template);
 
                 ltlPageTitle.Text = pageTitle;
 

@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
@@ -11,6 +11,8 @@ using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Cache;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
@@ -32,7 +34,7 @@ namespace SiteServer.CMS.Provider
             return taxis;
         }
 
-        public int Insert(string tableName, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo)
+        public int Insert(string tableName, PublishmentSystemInfo publishmentSystemInfo, IContentInfo contentInfo)
         {
             var taxis = GetTaxisToInsert(tableName, contentInfo.NodeId, contentInfo.IsTop);
             return Insert(tableName, publishmentSystemInfo, contentInfo, true, taxis);
@@ -47,18 +49,18 @@ namespace SiteServer.CMS.Provider
             return Insert(tableName, publishmentSystemInfo, contentInfo, false, 0);
         }
 
-        public int Insert(string tableName, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, bool isUpdateContentNum, int taxis)
+        public int Insert(string tableName, PublishmentSystemInfo publishmentSystemInfo, IContentInfo contentInfo, bool isUpdateContentNum, int taxis)
         {
             var contentId = 0;
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.ContainsKey(BackgroundContentAttribute.Content))
+                if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.Attributes.ContainsKey(BackgroundContentAttribute.Content))
                 {
-                    contentInfo.SetExtendedAttribute(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
+                    contentInfo.Attributes.SetExtendedAttribute(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.Attributes.GetExtendedAttribute(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
                 }
 
-                contentInfo.BeforeExecuteNonQuery();
+                contentInfo.Attributes.BeforeExecuteNonQuery();
 
                 contentInfo.Taxis = taxis;
 
@@ -71,19 +73,28 @@ namespace SiteServer.CMS.Provider
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemManager.GetPublishmentSystemInfo(contentInfo.PublishmentSystemId), contentInfo.NodeId, true);
                     }).BeginInvoke(null, null);
                 }
+
+                ClearStlCache();
             }
 
             return contentId;
         }
 
-        public void Update(string tableName, PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo)
+        private static void ClearStlCache()
         {
-            if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.ContainsKey(BackgroundContentAttribute.Content))
+            new Action(Content.ClearCache).BeginInvoke(null, null);
+        }
+
+        public void Update(string tableName, PublishmentSystemInfo publishmentSystemInfo, IContentInfo contentInfo)
+        {
+            if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.Attributes.ContainsKey(BackgroundContentAttribute.Content))
             {
-                contentInfo.SetExtendedAttribute(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
+                contentInfo.Attributes.SetExtendedAttribute(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.Attributes.GetExtendedAttribute(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
             }
 
             BaiRongDataProvider.ContentDao.Update(tableName, contentInfo);
+
+            ClearStlCache();
         }
 
         public void UpdateAutoPageContent(string tableName, PublishmentSystemInfo publishmentSystemInfo)
@@ -91,7 +102,7 @@ namespace SiteServer.CMS.Provider
             if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor)
             {
                 string sqlString =
-                    $"SELECT ID, [{BackgroundContentAttribute.Content}] FROM [{tableName}] WHERE ([PublishmentSystemID] = {publishmentSystemInfo.PublishmentSystemId})";
+                    $"SELECT Id, {BackgroundContentAttribute.Content} FROM {tableName} WHERE (PublishmentSystemId = {publishmentSystemInfo.PublishmentSystemId})";
 
                 using (var rdr = ExecuteReader(sqlString))
                 {
@@ -103,7 +114,7 @@ namespace SiteServer.CMS.Provider
                         {
                             content = ContentUtility.GetAutoPageContent(content, publishmentSystemInfo.Additional.AutoPageWordNum);
                             string updateString =
-                                $"UPDATE [{tableName}] SET [{BackgroundContentAttribute.Content}] = '{content}' WHERE ID = {contentId}";
+                                $"UPDATE {tableName} SET {BackgroundContentAttribute.Content} = '{content}' WHERE Id = {contentId}";
                             try
                             {
                                 ExecuteNonQuery(updateString);
@@ -127,8 +138,8 @@ namespace SiteServer.CMS.Provider
             {
                 if (!string.IsNullOrEmpty(tableName))
                 {
-                    string sqlWhere = $"WHERE NodeID > 0 AND ID = {contentId}";
-                    var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+                    string sqlWhere = $"WHERE NodeId > 0 AND Id = {contentId}";
+                    var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                     using (var rdr = ExecuteReader(sqlSelect))
                     {
@@ -153,8 +164,8 @@ namespace SiteServer.CMS.Provider
             {
                 if (!string.IsNullOrEmpty(tableName))
                 {
-                    string sqlWhere = $"WHERE ID = {contentId}";
-                    var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+                    string sqlWhere = $"WHERE Id = {contentId}";
+                    var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                     using (var rdr = ExecuteReader(sqlSelect))
                     {
@@ -172,64 +183,25 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public ContentInfo GetContentInfo(ETableStyle tableStyle, string sqlString)
+        public int GetCountOfContentAdd(string tableName, int publishmentSystemId, int nodeId, EScopeType scope, DateTime begin, DateTime end, string userName)
         {
-            ContentInfo info = null;
-            if (!string.IsNullOrEmpty(sqlString))
-            {
-                using (var rdr = ExecuteReader(sqlString))
-                {
-                    if (rdr.Read())
-                    {
-                        info = ContentUtility.GetContentInfo(tableStyle);
-                        BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
-                    }
-                    rdr.Close();
-                }
-            }
-
-            info?.AfterExecuteReader();
-            return info;
-        }
-
-        public int GetCountOfContentAdd(string tableName, int publishmentSystemId, int nodeId, DateTime begin, DateTime end, string userName)
-        {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, EScopeType.All, string.Empty, string.Empty);
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scope, string.Empty, string.Empty);
             return BaiRongDataProvider.ContentDao.GetCountOfContentAdd(tableName, publishmentSystemId, nodeIdList, begin, end, userName);
         }
 
-        public int GetCountOfContentUpdate(string tableName, int publishmentSystemId, int nodeId, DateTime begin, DateTime end, string userName)
+        public int GetCountOfContentUpdate(string tableName, int publishmentSystemId, int nodeId, EScopeType scope, DateTime begin, DateTime end, string userName)
         {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, EScopeType.All, string.Empty, string.Empty);
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scope, string.Empty, string.Empty);
             return BaiRongDataProvider.ContentDao.GetCountOfContentUpdate(tableName, publishmentSystemId, nodeIdList, begin, end, userName);
-        }
-
-        public List<int> GetContentIdArrayListChecked(string tableName, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, int totalNum, string orderByString, string whereString, EScopeType scopeType)
-        {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, string.Empty, string.Empty);
-
-            var theList = new List<int>();
-            foreach (int theNodeId in nodeIdList)
-            {
-                if (isSystemAdministrator || owningNodeIdList.Contains(theNodeId))
-                {
-                    theList.Add(theNodeId);
-                }
-            }
-
-            return BaiRongDataProvider.ContentDao.GetContentIdListChecked(tableName, theList, totalNum, orderByString, whereString);
-        }
-
-        public List<int> GetContentIdListChecked(string tableName, int nodeId, int totalNum, string orderByString, string whereString, EScopeType scopeType)
-        {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, string.Empty, string.Empty);
-
-            return BaiRongDataProvider.ContentDao.GetContentIdListChecked(tableName, nodeIdList, totalNum, orderByString, whereString);
         }
 
         public List<int> GetContentIdListChecked(string tableName, int nodeId, int totalNum, string orderByFormatString, string whereString)
         {
-            return GetContentIdListChecked(tableName, nodeId, totalNum, orderByFormatString, whereString, EScopeType.Self);
+            var nodeIdList = new List<int>
+            {
+                nodeId
+            };
+            return BaiRongDataProvider.ContentDao.GetContentIdListChecked(tableName, nodeIdList, totalNum, orderByFormatString, whereString);
         }
 
         public List<int> GetContentIdListChecked(string tableName, int nodeId, string orderByFormatString, string whereString)
@@ -308,11 +280,11 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public void DeleteContents(int publishmentSystemId, string tableName, List<int> contentIdArrayList, int nodeId)
+        public void DeleteContents(int publishmentSystemId, string tableName, List<int> contentIdList, int nodeId)
         {
             if (!string.IsNullOrEmpty(tableName))
             {
-                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContents(publishmentSystemId, tableName, contentIdArrayList);
+                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContents(publishmentSystemId, tableName, contentIdList);
 
                 if (nodeId > 0 && deleteNum > 0)
                 {
@@ -321,14 +293,16 @@ namespace SiteServer.CMS.Provider
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId), nodeId, true);
                     }).BeginInvoke(null, null);
                 }
+
+                ClearStlCache();
             }
         }
 
-        private void DeleteContents(int publishmentSystemId, string tableName, List<int> contentIdArrayList)
+        private void DeleteContents(int publishmentSystemId, string tableName, List<int> contentIdList)
         {
             if (!string.IsNullOrEmpty(tableName))
             {
-                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContents(publishmentSystemId, tableName, contentIdArrayList);
+                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContents(publishmentSystemId, tableName, contentIdList);
                 if (deleteNum > 0)
                 {
                     new Action(() =>
@@ -336,6 +310,8 @@ namespace SiteServer.CMS.Provider
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId));
                     }).BeginInvoke(null, null);
                 }
+
+                ClearStlCache();
             }
         }
 
@@ -343,8 +319,8 @@ namespace SiteServer.CMS.Provider
         {
             if (!string.IsNullOrEmpty(tableName))
             {
-                var contentIdArrayList = GetContentIdListChecked(tableName, nodeId, string.Empty);
-                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContentsByNodeId(publishmentSystemId, tableName, nodeId, contentIdArrayList);
+                var contentIdList = GetContentIdListChecked(tableName, nodeId, string.Empty);
+                var deleteNum = BaiRongDataProvider.ContentDao.DeleteContentsByNodeId(publishmentSystemId, tableName, nodeId, contentIdList);
 
                 if (nodeId > 0 && deleteNum > 0)
                 {
@@ -353,6 +329,8 @@ namespace SiteServer.CMS.Provider
                         DataProvider.NodeDao.UpdateContentNum(PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId), nodeId, true);
                     }).BeginInvoke(null, null);
                 }
+
+                ClearStlCache();
             }
         }
 
@@ -364,7 +342,7 @@ namespace SiteServer.CMS.Provider
                 DataProvider.NodeDao.UpdateAdditional(nodeInfo);
 
                 string sqlString =
-                    $"DELETE FROM {tableName} WHERE PublishmentSystemID = {publishmentSystemId} AND NodeID = {nodeInfo.NodeId} AND SourceID = {SourceManager.Preview}";
+                    $"DELETE FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeInfo.NodeId} AND SourceId = {SourceManager.Preview}";
                 BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
             }
         }
@@ -381,50 +359,90 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public string GetWhereStringBySearchOutput(PublishmentSystemInfo publishmentSystemInfo, int nodeId, ETableStyle tableStyle, string word, StringCollection typeCollection, string channelId, string dateFrom, string dateTo, string date, string dateAttribute, string excludeAttributes, NameValueCollection form)
+        public string GetWhereStringByStlSearch(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int publishmentSystemId, List<string> excludeAttributes, NameValueCollection form, out bool isDefaultCondition)
         {
+            isDefaultCondition = true;
             var whereBuilder = new StringBuilder();
 
-            if (typeCollection.Count == 0)
+            PublishmentSystemInfo publishmentSystemInfo = null;
+            if (!string.IsNullOrEmpty(siteName))
             {
-                typeCollection.Add(ContentAttribute.Title);
-                if (tableStyle == ETableStyle.BackgroundContent)
-                {
-                    typeCollection.Add(BackgroundContentAttribute.Content);
-                }
-                else if (tableStyle == ETableStyle.JobContent)
-                {
-                    typeCollection.Add(JobContentAttribute.Location);
-                    typeCollection.Add(JobContentAttribute.Department);
-                    typeCollection.Add(JobContentAttribute.Requirement);
-                    typeCollection.Add(JobContentAttribute.Responsibility);
-                }
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoBySiteName(siteName);
+            }
+            else if (!string.IsNullOrEmpty(siteDir))
+            {
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoByDirectory(siteDir);
+            }
+            if (publishmentSystemInfo == null)
+            {
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             }
 
-            whereBuilder.Append($"(PublishmentSystemID = {publishmentSystemInfo.PublishmentSystemId}) ");
+            var channelId = DataProvider.NodeDao.GetNodeIdByChannelIdOrChannelIndexOrChannelName(publishmentSystemId, publishmentSystemId, channelIndex, channelName);
+            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+
+            if (isAllSites)
+            {
+                whereBuilder.Append("(PublishmentSystemId > 0) ");
+            }
+            else if (!string.IsNullOrEmpty(siteIds))
+            {
+                whereBuilder.Append($"(PublishmentSystemId IN ({TranslateUtils.ToSqlInStringWithoutQuote(TranslateUtils.StringCollectionToIntList(siteIds))})) ");
+            }
+            else
+            {
+                whereBuilder.Append($"(PublishmentSystemId = {publishmentSystemInfo.PublishmentSystemId}) ");
+            }
+
+            if (!string.IsNullOrEmpty(channelIds))
+            {
+                whereBuilder.Append(" AND ");
+                var nodeIdList = new List<int>();
+                foreach (var nodeId in TranslateUtils.StringCollectionToIntList(channelIds))
+                {
+                    nodeIdList.Add(nodeId);
+                    nodeIdList.AddRange(DataProvider.NodeDao.GetNodeIdListForDescendant(nodeId));
+                }
+                whereBuilder.Append(nodeIdList.Count == 1
+                    ? $"(NodeId = {nodeIdList[0]}) "
+                    : $"(NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
+            }
+            else if (channelId != publishmentSystemId)
+            {
+                whereBuilder.Append(" AND ");
+                var nodeIdList = DataProvider.NodeDao.GetNodeIdListForDescendant(channelId);
+                nodeIdList.Add(channelId);
+                whereBuilder.Append(nodeIdList.Count == 1
+                    ? $"(NodeId = {nodeIdList[0]}) "
+                    : $"(NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
+            }
+
+            var typeList = new List<string>();
+            if (string.IsNullOrEmpty(type))
+            {
+                typeList.Add(ContentAttribute.Title);
+            }
+            else
+            {
+                typeList = TranslateUtils.StringCollectionToStringList(type);
+            }
+
             if (!string.IsNullOrEmpty(word))
             {
                 whereBuilder.Append(" AND (");
-                foreach (var attributeName in typeCollection)
+                foreach (var attributeName in typeList)
                 {
-                    whereBuilder.Append($"[{attributeName}] like '%{PageUtils.FilterSql(word)}%' OR ");
+                    whereBuilder.Append($"[{attributeName}] LIKE '%{PageUtils.FilterSql(word)}%' OR ");
                 }
                 whereBuilder.Length = whereBuilder.Length - 3;
                 whereBuilder.Append(")");
             }
-            if (!string.IsNullOrEmpty(channelId))
+
+            if (string.IsNullOrEmpty(dateAttribute))
             {
-                var theChannelId = TranslateUtils.ToInt(channelId);
-                if (theChannelId > 0 && theChannelId != publishmentSystemInfo.PublishmentSystemId)
-                {
-                    whereBuilder.Append(" AND ");
-                    var nodeIdList = DataProvider.NodeDao.GetNodeIdListForDescendant(theChannelId);
-                    nodeIdList.Add(theChannelId);
-                    whereBuilder.Append(nodeIdList.Count == 1
-                        ? $"(NodeID = {nodeIdList[0]}) "
-                        : $"(NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)})) ");
-                }
+                dateAttribute = ContentAttribute.AddDate;
             }
+
             if (!string.IsNullOrEmpty(dateFrom))
             {
                 whereBuilder.Append(" AND ");
@@ -435,87 +453,48 @@ namespace SiteServer.CMS.Provider
                 whereBuilder.Append(" AND ");
                 whereBuilder.Append($" {dateAttribute} <= '{dateTo}' ");
             }
-            if (!string.IsNullOrEmpty(date))
+            if (!string.IsNullOrEmpty(since))
             {
-                var days = TranslateUtils.ToInt(date);
-                if (days > 0)
-                {
-                    whereBuilder.Append(" AND ");
-                    whereBuilder.Append(SqlUtils.GetDateDiffLessThanDays(dateAttribute, days.ToString()));
-                }
+                var sinceDate = DateTime.Now.AddHours(-DateUtils.GetSinceHours(since));
+                whereBuilder.Append($" AND {dateAttribute} BETWEEN '{DateUtils.GetDateAndTimeString(sinceDate)}' AND {SqlUtils.GetDefaultDateString()} ");
             }
 
-            var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, tableStyle, nodeId);
-            var tableName = RelatedIdentities.GetTableName(publishmentSystemInfo, tableStyle, nodeId);
+            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
+            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, tableStyle, nodeInfo.NodeId);
 
-            var arraylist = TranslateUtils.StringCollectionToStringList(excludeAttributes);
             foreach (string key in form.Keys)
             {
-                if (arraylist.Contains(key.ToLower())) continue;
-                if (!string.IsNullOrEmpty(form[key]))
+                if (excludeAttributes.Contains(key.ToLower())) continue;
+                if (string.IsNullOrEmpty(form[key])) continue;
+
+                var value = StringUtils.Trim(form[key]);
+                if (string.IsNullOrEmpty(value)) continue;
+
+                if (TableManager.IsAttributeNameExists(tableStyle, tableName, key))
                 {
-                    var value = StringUtils.Trim(form[key]);
-                    if (!string.IsNullOrEmpty(value))
+                    whereBuilder.Append(" AND ");
+                    whereBuilder.Append($"({key} LIKE '%{value}%')");
+                }
+                else
+                {
+                    foreach (var tableStyleInfo in styleInfoList)
                     {
-                        if (TableManager.IsAttributeNameExists(tableStyle, tableName, key))
+                        if (StringUtils.EqualsIgnoreCase(tableStyleInfo.AttributeName, key))
                         {
                             whereBuilder.Append(" AND ");
-                            whereBuilder.Append($"([{key}] LIKE '%{value}%')");
-                        }
-                        else
-                        {
-                            foreach (var tableStyleInfo in styleInfoList)
-                            {
-                                if (StringUtils.EqualsIgnoreCase(tableStyleInfo.AttributeName, key))
-                                {
-                                    whereBuilder.Append(" AND ");
-                                    whereBuilder.Append($"({ContentAttribute.SettingsXml} LIKE '%{key}={value}%')");
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (tableStyle == ETableStyle.GovPublicContent)
-                        {
-                            if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.DepartmentId))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category1Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category2Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category3Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category4Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category5Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
-                            else if (StringUtils.EqualsIgnoreCase(key, GovPublicContentAttribute.Category6Id))
-                            {
-                                whereBuilder.Append(" AND ");
-                                whereBuilder.Append($"([{key}] = {TranslateUtils.ToInt(value)})");
-                            }
+                            whereBuilder.Append($"({ContentAttribute.SettingsXml} LIKE '%{key}={value}%')");
+                            break;
                         }
                     }
                 }
             }
+
+            if (whereBuilder.ToString().Contains(" AND "))
+            {
+                isDefaultCondition = false;
+            }
+
             return whereBuilder.ToString();
         }
 
@@ -527,7 +506,7 @@ namespace SiteServer.CMS.Provider
         public string GetSelectCommend(ETableStyle tableStyle, string tableName, int publishmentSystemId, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent)
         {
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo,
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount,
                 isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, nodeInfo.ContentModelId);
 
             var list = new List<int>();
@@ -552,7 +531,7 @@ namespace SiteServer.CMS.Provider
         public string GetSelectCommend(ETableStyle tableStyle, string tableName, int publishmentSystemId, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
         {
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, nodeInfo.ContentModelId);
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, nodeInfo.ContentModelId);
 
             var list = new List<int>();
             if (isSystemAdministrator)
@@ -573,7 +552,7 @@ namespace SiteServer.CMS.Provider
             return BaiRongDataProvider.ContentDao.GetSelectCommendByCondition(tableStyle, tableName, publishmentSystemId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, isWritingOnly, userNameOnly);
         }
 
-        public string GetWritingSelectCommend(string writingUserName, string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo)
+        public string GetWritingSelectCommend(string writingUserName, ETableStyle tableStyle, string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo)
         {
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
@@ -584,11 +563,11 @@ namespace SiteServer.CMS.Provider
 
             if (nodeIdList.Count == 1)
             {
-                whereString.AppendFormat("AND PublishmentSystemID = {0} AND NodeID = {1} ", publishmentSystemId, nodeIdList[0]);
+                whereString.AppendFormat("AND PublishmentSystemId = {0} AND NodeId = {1} ", publishmentSystemId, nodeIdList[0]);
             }
             else
             {
-                whereString.AppendFormat("AND PublishmentSystemID = {0} AND NodeID IN ({1}) ", publishmentSystemId, TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList));
+                whereString.AppendFormat("AND PublishmentSystemId = {0} AND NodeId IN ({1}) ", publishmentSystemId, TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList));
             }
 
             var dateString = string.Empty;
@@ -608,62 +587,73 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                var columnNameList = BaiRongDataProvider.TableStructureDao.GetColumnNameList(tableName);
-                foreach (var columnName in columnNameList)
+                var list = TableManager.GetAllLowerAttributeNameList(tableStyle, tableName);
+                if (list.Contains(searchType.ToLower()))
                 {
-                    if (StringUtils.EqualsIgnoreCase(columnName, searchType))
-                    {
-                        whereString.AppendFormat("AND ([{0}] LIKE '%{1}%') {2} ", searchType, keyword, dateString);
-                        break;
-                    }
+                    whereString.AppendFormat("AND ([{0}] LIKE '%{1}%') {2} ", searchType, keyword, dateString);
                 }
             }
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
         public string GetSelectCommendByContentGroup(string tableName, string contentGroupName, int publishmentSystemId)
         {
             contentGroupName = PageUtils.FilterSql(contentGroupName);
             string sqlString =
-                $"SELECT * FROM {tableName} WHERE PublishmentSystemID={publishmentSystemId} AND NodeID>0 AND (ContentGroupNameCollection LIKE '{contentGroupName},%' OR ContentGroupNameCollection LIKE '%,{contentGroupName}' OR ContentGroupNameCollection  LIKE '%,{contentGroupName},%'  OR ContentGroupNameCollection='{contentGroupName}')";
+                $"SELECT * FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId > 0 AND (ContentGroupNameCollection LIKE '{contentGroupName},%' OR ContentGroupNameCollection LIKE '%,{contentGroupName}' OR ContentGroupNameCollection  LIKE '%,{contentGroupName},%'  OR ContentGroupNameCollection='{contentGroupName}')";
             return sqlString;
         }
 
-        public IEnumerable GetStlDataSourceChecked(string tableName, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup, NameValueCollection otherAttributes)
+        public DataSet GetStlDataSourceChecked(List<int> nodeIdList, ETableStyle tableStyle, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
         {
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, groupChannel, groupChannelNot);
-            return BaiRongDataProvider.ContentDao.GetStlDataSourceChecked(tableName, nodeIdList, startNum, totalNum, orderByString, whereString, isNoDup, otherAttributes);
+            return BaiRongDataProvider.ContentDao.GetStlDataSourceChecked(tableStyle, tableName, nodeIdList, startNum, totalNum, orderByString, whereString, isNoDup, others);
         }
 
-        public string GetStlSqlStringChecked(string tableName, int publishmentSystemId, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup)
+        public string GetStlSqlStringChecked(List<int> nodeIdList, string tableName, int publishmentSystemId, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup)
         {
             string sqlWhereString;
 
             if (publishmentSystemId == nodeId && scopeType == EScopeType.All && string.IsNullOrEmpty(groupChannel) && string.IsNullOrEmpty(groupChannelNot))
             {
                 sqlWhereString =
-                    $"WHERE (PublishmentSystemId = {publishmentSystemId} AND NodeID > 0 AND IsChecked = '{true}' {whereString})";
+                    $"WHERE (PublishmentSystemId = {publishmentSystemId} AND NodeId > 0 AND IsChecked = '{true}' {whereString})";
             }
             else
             {
-                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeId, scopeType, groupChannel, groupChannelNot);
                 if (nodeIdList == null || nodeIdList.Count == 0)
                 {
                     return string.Empty;
                 }
-                sqlWhereString = nodeIdList.Count == 1 ? $"WHERE (NodeID = {nodeIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})";
+                sqlWhereString = nodeIdList.Count == 1 ? $"WHERE (NodeId = {nodeIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked = '{true}' {whereString})";
             }
 
             if (isNoDup)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, "MIN(ID)", sqlWhereString + " GROUP BY Title");
-                sqlWhereString += $" AND ID IN ({sqlString})";
+                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
+                sqlWhereString += $" AND Id IN ({sqlString})";
             }
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, BaiRongDataProvider.ContentDao.StlColumns, sqlWhereString, orderByString);
+            }
+            return string.Empty;
+        }
+
+        public string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup)
+        {
+            string sqlWhereString =
+                    $"WHERE (NodeId > 0 AND IsChecked = '{true}' {whereString})";
+            if (isNoDup)
+            {
+                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, "MIN(Id)", sqlWhereString + " GROUP BY Title");
+                sqlWhereString += $" AND Id IN ({sqlString})";
+            }
+
+            if (!string.IsNullOrEmpty(tableName))
+            {
+                return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, $"{ContentAttribute.Id}, {ContentAttribute.NodeId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}", sqlWhereString, orderByString);
             }
             return string.Empty;
         }
@@ -673,7 +663,7 @@ namespace SiteServer.CMS.Provider
             var taxisDirection = isDesc ? "ASC" : "DESC";//升序,但由于页面排序是按Taxis的Desc排序的，所以这里sql里面的ASC/DESC取反
 
             string sqlString =
-                $"SELECT ID, IsTop FROM {tableName} WHERE NodeID = {nodeId} OR NodeID = -{nodeId} ORDER BY {attributeName} {taxisDirection}";
+                $"SELECT Id, IsTop FROM {tableName} WHERE NodeId = {nodeId} OR NodeId = -{nodeId} ORDER BY {attributeName} {taxisDirection}";
             var sqlList = new List<string>();
 
             using (var rdr = ExecuteReader(sqlString))
@@ -685,7 +675,7 @@ namespace SiteServer.CMS.Provider
                     var isTop = GetBool(rdr, 1);
 
                     sqlList.Add(
-                        $"UPDATE {tableName} SET Taxis = {taxis++}, IsTop = '{isTop}' WHERE ID = {id}");
+                        $"UPDATE {tableName} SET Taxis = {taxis++}, IsTop = '{isTop}' WHERE Id = {id}");
                 }
                 rdr.Close();
             }
@@ -700,7 +690,7 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(tableName))
             {
                 string sqlWhere = $"WHERE Title = {title}";
-                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
 
                 using (var rdr = ExecuteReader(sqlSelect))
                 {
@@ -720,7 +710,7 @@ namespace SiteServer.CMS.Provider
         public List<int> GetIdListBySameTitleInOneNode(string tableName, int nodeId, string title)
         {
             var list = new List<int>();
-            string sql = $"SELECT ID FROM {tableName} WHERE NodeID = {nodeId} AND Title = '{title}'";
+            string sql = $"SELECT Id FROM {tableName} WHERE NodeId = {nodeId} AND Title = '{title}'";
             using (var rdr = ExecuteReader(sql))
             {
                 while (rdr.Read())
@@ -730,6 +720,111 @@ namespace SiteServer.CMS.Provider
                 rdr.Close();
             }
             return list;
+        }
+
+        public List<IContentInfo> GetListByLimitAndOffset(string tableName, ETableStyle tableStyle, int nodeId, string whereString, string orderString, int limit, int offset)
+        {
+            var list = new List<IContentInfo>();
+            if (!string.IsNullOrEmpty(whereString))
+            {
+                whereString = whereString.Replace("WHERE ", string.Empty).Replace("where ", string.Empty);
+            }
+            if (!string.IsNullOrEmpty(orderString))
+            {
+                orderString = orderString.Replace("ORDER BY ", string.Empty).Replace("order by ", string.Empty);
+            }
+            var firstWhere = string.IsNullOrEmpty(whereString) ? string.Empty : $"WHERE {whereString}";
+            var secondWhere = string.IsNullOrEmpty(whereString) ? string.Empty : $"AND {whereString}";
+            var order = string.IsNullOrEmpty(orderString) ? "IsTop DESC, Id DESC" : orderString;
+
+            var sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order}";
+            if (limit > 0 && offset > 0)
+            {
+                switch (WebConfigUtils.DatabaseType)
+                {
+                    case EDatabaseType.MySql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
+                        break;
+                    case EDatabaseType.SqlServer:
+                        sqlString = $@"SELECT TOP {limit} * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
+                        break;
+                    case EDatabaseType.PostgreSql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit} offset {offset}";
+                        break;
+                    case EDatabaseType.Oracle:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            else if (limit > 0)
+            {
+                switch (WebConfigUtils.DatabaseType)
+                {
+                    case EDatabaseType.MySql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
+                        break;
+                    case EDatabaseType.SqlServer:
+                        sqlString = $@"SELECT TOP {limit} * FROM {tableName} {secondWhere} ORDER BY {order}";
+                        break;
+                    case EDatabaseType.PostgreSql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
+                        break;
+                    case EDatabaseType.Oracle:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} FETCH FIRST {limit} ROWS ONLY";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            else if (offset > 0)
+            {
+                switch (WebConfigUtils.DatabaseType)
+                {
+                    case EDatabaseType.MySql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
+                        break;
+                    case EDatabaseType.SqlServer:
+                        sqlString =
+                            $@"SELECT * FROM {tableName} WHERE Id NOT IN (SELECT TOP {offset} Id FROM {tableName} {firstWhere} ORDER BY {order}) {secondWhere} ORDER BY {order}";
+                        break;
+                    case EDatabaseType.PostgreSql:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} offset {offset}";
+                        break;
+                    case EDatabaseType.Oracle:
+                        sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} OFFSET {offset} ROWS";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    var info = ContentUtility.GetContentInfo(tableStyle);
+                    BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
+                    list.Add(info);
+                }
+                rdr.Close();
+            }
+
+            return list;
+        }
+
+        public int GetCount(string tableName, ETableStyle tableStyle, int nodeId, string whereString)
+        {
+            if (!string.IsNullOrEmpty(whereString))
+            {
+                whereString = whereString.Replace("WHERE ", string.Empty).Replace("where ", string.Empty);
+            }
+            whereString = string.IsNullOrEmpty(whereString) ? string.Empty : $"WHERE {whereString}";
+
+            string sqlString = $"SELECT COUNT(*) FROM {tableName} {whereString}";
+
+            return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
     }
 }

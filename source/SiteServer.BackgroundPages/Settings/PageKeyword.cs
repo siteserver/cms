@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings(AppManager.Settings.LeftMenu.Config, "敏感词管理", AppManager.Settings.Permission.SettingsConfig);
+                BreadCrumbSettings("敏感词管理", AppManager.Permissions.Settings.Utility);
 
                 spContents.DataBind();
                 btnAdd.Attributes.Add("onclick", ModalKeywordAdd.GetOpenWindowStringToAdd());

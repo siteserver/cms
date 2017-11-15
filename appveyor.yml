@@ -1,24 +1,113 @@
-configuration:
-  - Debug
-  - Release
+# configuration for "master" branch
+-
+  branches:
+    only:
+      - master
 
-environment:
-  TreatWarningsAsErrors: false
+  version: 5.0.{build}
 
-branches:
-  only:
-    - master
-    - dev
+  configuration:
+    - Release
 
-skip_tags: true
+  environment:
+    nodejs_version: "6"
+    TreatWarningsAsErrors: false
 
-notifications:
-  - provider: GitHubPullRequest
-    on_build_success: true
-    on_build_failure: true
+  install:
+    - ps: Install-Product node $env:nodejs_version
+    - npm install gulp -g
+    - npm install
 
-cache:
-  - packages -> **\packages.config
+  skip_tags: true
 
-before_build:
-  - nuget restore source
+  notifications:
+    - provider: GitHubPullRequest
+      on_build_success: true
+      on_build_failure: true
+
+  cache:
+    - packages -> **\packages.config
+
+  before_build:
+    - nuget restore source/siteserver.sln
+
+  after_build:
+    - gulp build
+    - gulp zip
+
+  artifacts:
+    - path: siteserver_install.zip
+      name: siteserver_install
+
+    - path: siteserver_upgrade.zip
+      name: siteserver_upgrade
+
+  deploy:
+    release: siteserver-v$(appveyor_build_version)
+    description: 'SiteServer CMS'
+    provider: GitHub
+    auth_token:
+      secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
+    artifact: /.*\.zip/
+    draft: false
+    prerelease: false
+    on:
+      branch: master
+      appveyor_repo_tag: false
+
+# configuration for "dev" branch
+-
+  branches:
+    only:
+      - dev
+
+  version: 5.0.{build}
+
+  configuration:
+    - Release
+
+  environment:
+    nodejs_version: "6"
+    TreatWarningsAsErrors: false
+
+  install:
+    - ps: Install-Product node $env:nodejs_version
+    - npm install gulp -g
+    - npm install
+
+  skip_tags: true
+
+  notifications:
+    - provider: GitHubPullRequest
+      on_build_success: true
+      on_build_failure: true
+
+  cache:
+    - packages -> **\packages.config
+
+  before_build:
+    - nuget restore source/siteserver.sln
+
+  after_build:
+    - gulp build
+    - gulp zip
+
+  artifacts:
+    - path: siteserver_install.zip
+      name: siteserver_install
+
+    - path: siteserver_upgrade.zip
+      name: siteserver_upgrade
+
+  deploy:
+    release: siteserver-dev-v$(appveyor_build_version)
+    description: 'SiteServer CMS'
+    provider: GitHub
+    auth_token:
+      secure: B/TFrPxGyyTS/NKTQsf/GBLPfGI+Rz/j3e7FVLaP6yjeUDljwkfvV70C+CT34/10
+    artifact: /.*\.zip/
+    draft: false
+    prerelease: false
+    on:
+      branch: dev
+      appveyor_repo_tag: false

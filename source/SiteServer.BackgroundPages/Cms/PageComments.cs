@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using SiteServer.CMS.Controllers.Sys.Stl.Comments;
 using SiteServer.CMS.StlControls;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -41,15 +42,14 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "评论管理", string.Empty);
 
-			    StlCommentInput.ApiUrl = PageUtils.GetApiUrl();
+			    StlCommentInput.ApiUrl = PageUtils.OuterApiUrl;
 			    StlCommentInput.IsAnonymous = true;
 			    StlCommentInput.PageNum = 20;
-			    StlCommentInput.ApiActionsAddUrl = CMS.Controllers.Comments.ActionsAdd.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
-			    StlCommentInput.ApiActionsDeleteUrl = CMS.Controllers.Comments.ActionsDelete.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
-			    StlCommentInput.ApiActionsGoodUrl = CMS.Controllers.Comments.ActionsGood.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
-			    StlCommentInput.ApiGetUrl = CMS.Controllers.Comments.Get.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
-			    StlCommentInput.ApiActionsLogoutUrl = CMS.Controllers.Users.ActionsLogout.GetUrl(StlCommentInput.ApiUrl);
-			    StlCommentInput.HomeUrl = PageUtils.GetHomeUrl();
+			    StlCommentInput.ApiActionsAddUrl = ActionsAdd.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
+			    StlCommentInput.ApiActionsDeleteUrl = ActionsDelete.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
+			    StlCommentInput.ApiActionsGoodUrl = ActionsGood.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
+			    StlCommentInput.ApiGetUrl = Get.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
+			    StlCommentInput.ApiActionsLogoutUrl = ActionsLogout.GetUrl(StlCommentInput.ApiUrl);
 			    StlCommentInput.IsDelete = true;
 
                 BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToComment(PublishmentSystemId, _nodeId, _contentId));

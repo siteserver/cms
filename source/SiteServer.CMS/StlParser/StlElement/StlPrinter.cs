@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.HtmlControls;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
@@ -10,107 +8,65 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlPrinter
+    [Stl(Usage = "打印", Description = "通过 stl:printer 标签在模板中实现打印功能")]
+    public class StlPrinter
 	{
         private StlPrinter() { }
-        public const string ElementName = "stl:printer";    //打印
+        public const string ElementName = "stl:printer";
 
-        public const string Attribute_TitleID = "titleid";		    //页面HTML中打印标题的ID属性
-        public const string Attribute_BodyID = "bodyid";		    //页面HTML中打印正文的ID属性
-        public const string Attribute_LogoID = "logoid";	        //页面LOGO的ID属性
-        public const string Attribute_LocationID = "locationid";	//页面当前位置的ID属性
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+        public const string AttributeTitleId = "titleId";
+        public const string AttributeBodyId = "bodyId";
+        public const string AttributeLogoId = "logoId";
+        public const string AttributeLocationId = "locationId";
 
-		public static ListDictionary AttributeList
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {AttributeTitleId, "页面HTML中打印标题的ID属性"},
+	        {AttributeBodyId, "页面HTML中打印正文的ID属性"},
+	        {AttributeLogoId, "页面LOGO的ID属性"},
+	        {AttributeLocationId, "页面当前位置的ID属性"}
+	    };
+
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			get
-			{
-				var attributes = new ListDictionary();
-                attributes.Add(Attribute_TitleID, "页面HTML中打印标题的ID属性");
-                attributes.Add(Attribute_BodyID, "页面HTML中打印正文的ID属性");
-                attributes.Add(Attribute_LogoID, "页面LOGO的ID属性");
-                attributes.Add(Attribute_LocationID, "页面当前位置的ID属性");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
+		    var titleId = string.Empty;
+            var bodyId = string.Empty;
+            var logoId = string.Empty;
+            var locationId = string.Empty;
+            var stlAnchor = new HtmlAnchor();
 
+            foreach (var name in contextInfo.Attributes.Keys)
+            {
+                var value = contextInfo.Attributes[name];
 
-        //对“打印”（stl:printer）元素进行解析
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
-		{
-			var parsedContent = string.Empty;
-			try
-			{
-                var stlAnchor = new HtmlAnchor();
-				var ie = node.Attributes.GetEnumerator();
-
-                var titleID = string.Empty;
-                var bodyID = string.Empty;
-                var logoID = string.Empty;
-                var locationID = string.Empty;
-                var isDynamic = false;
-
-				while (ie.MoveNext())
-				{
-					var attr = (XmlAttribute)ie.Current;
-					var attributeName = attr.Name.ToLower();
-					if (attributeName.Equals(Attribute_TitleID))
-					{
-                        titleID = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_BodyID))
-                    {
-                        bodyID = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_LogoID))
-                    {
-                        logoID = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_LocationID))
-                    {
-                        locationID = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else
-                    {
-                        ControlUtils.AddAttributeIfNotExists(stlAnchor, attributeName, attr.Value);
-                    }
-				}
-
-                if (isDynamic)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeTitleId))
                 {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
+                    titleId = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeBodyId))
+                {
+                    bodyId = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeLogoId))
+                {
+                    logoId = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeLocationId))
+                {
+                    locationId = value;
                 }
                 else
                 {
-                    parsedContent = ParseImpl(node, pageInfo, contextInfo, stlAnchor, titleID, bodyID, logoID, locationID);
+                    ControlUtils.AddAttributeIfNotExists(stlAnchor, name, value);
                 }
-			}
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
             }
 
-			return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, stlAnchor, titleId, bodyId, logoId, locationId);
 		}
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string titleID, string bodyID, string logoID, string locationID)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string titleId, string bodyId, string logoId, string locationId)
         {
-            var parsedContent = string.Empty;
-
-            var jsUrl = string.Empty;
-            if (pageInfo.TemplateInfo.Charset == ECharset.gb2312)
-            {
-                jsUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Print.JsGb2312);
-            }
-            else
-            {
-                jsUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Print.JsUtf8);
-            }
+            var jsUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, pageInfo.TemplateInfo.Charset == ECharset.gb2312 ? SiteFilesAssets.Print.JsGb2312 : SiteFilesAssets.Print.JsUtf8);
 
             var iconUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Print.IconUrl);
             pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAfStlPrinter, $@"
@@ -119,10 +75,10 @@ function stlLoadPrintJsCallBack()
 {{
     if(typeof forSPrint == ""object"" && forSPrint.Print)
     {{
-        forSPrint.data.titleId = ""{titleID}"";
-        forSPrint.data.artiBodyId = ""{bodyID}"";
-        forSPrint.data.pageLogoId = ""{logoID}"";
-        forSPrint.data.pageWayId = ""{locationID}"";
+        forSPrint.data.titleId = ""{titleId}"";
+        forSPrint.data.artiBodyId = ""{bodyId}"";
+        forSPrint.data.pageLogoId = ""{logoId}"";
+        forSPrint.data.pageWayId = ""{locationId}"";
         forSPrint.data.iconUrl = ""{iconUrl}"";
         forSPrint.Print();
     }}
@@ -179,19 +135,19 @@ function stlLoadPrintJs()
 </script>
 ");
 
-            if (node.InnerXml.Trim().Length == 0)
+            if (string.IsNullOrEmpty(contextInfo.InnerXml))
             {
                 stlAnchor.InnerHtml = "打印";
             }
             else
             {
-                var innerBuilder = new StringBuilder(node.InnerXml);
+                var innerBuilder = new StringBuilder(contextInfo.InnerXml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
                 stlAnchor.InnerHtml = innerBuilder.ToString();
             }
             stlAnchor.Attributes["href"] = "javascript:stlLoadPrintJs();";
 
-            parsedContent = ControlUtils.GetControlRenderHtml(stlAnchor);
+            var parsedContent = ControlUtils.GetControlRenderHtml(stlAnchor);
 
             return parsedContent;
         }

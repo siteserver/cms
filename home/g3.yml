@@ -1,9 +1,0 @@
-router:
-  history: hashHistory
-
-run:
-  port: 8801
-  noInfo: false
-
-build:
-  publicPath: ""

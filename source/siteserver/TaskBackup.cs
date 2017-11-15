@@ -14,9 +14,9 @@ namespace siteserver
         {
             var taskBackupInfo = new TaskBackupInfo(taskInfo.ServiceParameters);
 
-            if (taskInfo.PublishmentSystemID != 0)
+            if (taskInfo.PublishmentSystemId != 0)
             {
-                return BackupByPublishmentSystemID(taskInfo, taskInfo.PublishmentSystemID, taskBackupInfo.BackupType);
+                return BackupByPublishmentSystemID(taskInfo, taskInfo.PublishmentSystemId, taskBackupInfo.BackupType);
             }
             else
             {
@@ -27,7 +27,7 @@ namespace siteserver
                 }
                 else
                 {
-                    publishmentSystemIDArrayList = TranslateUtils.StringCollectionToIntList(taskBackupInfo.PublishmentSystemIDCollection);
+                    publishmentSystemIDArrayList = TranslateUtils.StringCollectionToIntList(taskBackupInfo.PublishmentSystemIdCollection);
                 }
                 foreach (int publishmentSystemID in publishmentSystemIDArrayList)
                 {

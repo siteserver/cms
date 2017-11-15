@@ -28,12 +28,11 @@ namespace SiteServer.BackgroundPages.Cms
                 var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList;
                 foreach (var publishmentSystemId in publishmentSystemIdList)
                 {
-                    var loadingUrl = PageUtils.GetLoadingUrl(PageMain.GetRedirectUrl(publishmentSystemId, string.Empty));
+                    var loadingUrl = PageUtils.GetLoadingUrl(PageMain.GetRedirectUrl(publishmentSystemId));
                     var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
                     builder.Append($@"
 <span class=""icon-span"">
     <a href=""{loadingUrl}"" target=""_top"">
-      {EPublishmentSystemTypeUtils.GetIconHtml(publishmentSystemInfo.PublishmentSystemType, "icon-5")}
       <h5>
         {publishmentSystemInfo.PublishmentSystemName}
         <br>

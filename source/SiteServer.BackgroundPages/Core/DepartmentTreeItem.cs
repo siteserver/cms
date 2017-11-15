@@ -3,9 +3,9 @@ using System.Collections.Specialized;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using SiteServer.BackgroundPages.Admin;
 using SiteServer.BackgroundPages.Ajax;
-using SiteServer.BackgroundPages.Wcm;
+using SiteServer.BackgroundPages.Cms;
+using SiteServer.BackgroundPages.Settings;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -15,7 +15,6 @@ namespace SiteServer.BackgroundPages.Core
         ContentList,
         DepartmentSelect,
         ContentTree,
-        GovPublicDepartment,
         List
     }
 
@@ -38,10 +37,6 @@ namespace SiteServer.BackgroundPages.Core
             else if (type == EDepartmentLoadingType.ContentTree)
             {
                 return "ContentTree";
-            }
-            else if (type == EDepartmentLoadingType.GovPublicDepartment)
-            {
-                return "GovPublicDepartment";
             }
             else if (type == EDepartmentLoadingType.List)
             {
@@ -72,10 +67,6 @@ namespace SiteServer.BackgroundPages.Core
             else if (Equals(EDepartmentLoadingType.ContentTree, typeStr))
             {
                 retval = EDepartmentLoadingType.ContentTree;
-            }
-            else if (Equals(EDepartmentLoadingType.GovPublicDepartment, typeStr))
-            {
-                retval = EDepartmentLoadingType.GovPublicDepartment;
             }
             else if (Equals(EDepartmentLoadingType.List, typeStr))
             {
@@ -186,7 +177,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (loadingType == EDepartmentLoadingType.ContentTree)
             {
-                var linkUrl = PageGovPublicContent.GetRedirectUrl(TranslateUtils.ToInt(additional["PublishmentSystemID"]), _departmentInfo.DepartmentId);
+                var linkUrl = PageContent.GetRedirectUrl(TranslateUtils.ToInt(additional["PublishmentSystemID"]), _departmentInfo.DepartmentId);
 
                 htmlBuilder.Append(
                     $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_departmentInfo.DepartmentName}</a>");

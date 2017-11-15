@@ -1,12 +1,38 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class DbCacheDao : DataProviderBase
     {
+        public override string TableName => "bairong_DbCache";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = "CacheKey",
+                DataType = DataType.VarChar,
+                Length = 200,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "CacheValue",
+                DataType = DataType.VarChar,
+                Length = 500
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "AddDate",
+                DataType = DataType.DateTime
+            }
+        };
+
         private const string SqlSelectValue = "SELECT CacheValue FROM bairong_DbCache WHERE CacheKey = @CacheKey";
 
         private const string SqlSelectCount = "SELECT COUNT(*) FROM bairong_DbCache";
@@ -36,16 +62,16 @@ namespace BaiRong.Core.Provider
                     {
                         var removeParams = new IDataParameter[]
                         {
-                            GetParameter(ParmCacheKey, EDataType.VarChar, 200, cacheKey)
+                            GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey)
                         };
 
                         ExecuteNonQuery(trans, SqlDelete, removeParams);
 
                         var insertParms = new IDataParameter[]
                         {
-                            GetParameter(ParmCacheKey, EDataType.VarChar, 200, cacheKey),
-                            GetParameter(ParmCacheValue, EDataType.NVarChar, 500, cacheValue),
-                            GetParameter(ParmAddDate, EDataType.DateTime, DateTime.Now)
+                            GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey),
+                            GetParameter(ParmCacheValue, DataType.VarChar, 500, cacheValue),
+                            GetParameter(ParmAddDate, DataType.DateTime, DateTime.Now)
                         };
 
                         ExecuteNonQuery(trans, SqlInsert, insertParms);
@@ -72,7 +98,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmCacheKey, EDataType.VarChar, 200, cacheKey)
+				GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectValue, parms))
@@ -92,7 +118,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmCacheKey, EDataType.VarChar, 200, cacheKey)
+				GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectValue, parms))
@@ -119,7 +145,7 @@ namespace BaiRong.Core.Provider
                     {
                         var parms = new IDataParameter[]
                         {
-                            GetParameter(ParmCacheKey, EDataType.VarChar, 200, cacheKey)
+                            GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey)
                         };
 
                         using (var rdr = ExecuteReader(trans, SqlSelectValue, parms))
@@ -133,7 +159,7 @@ namespace BaiRong.Core.Provider
 
                         var removeParams = new IDataParameter[]
                         {
-                            GetParameter(ParmCacheKey, EDataType.VarChar, 200, cacheKey)
+                            GetParameter(ParmCacheKey, DataType.VarChar, 200, cacheKey)
                         };
 
                         ExecuteNonQuery(trans, SqlDelete, removeParams);

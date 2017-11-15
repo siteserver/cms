@@ -9,45 +9,45 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalNodeGroupAdd : BasePageCms
     {
-		protected TextBox tbNodeGroupName;
-		protected TextBox tbDescription;
+		public TextBox TbNodeGroupName;
+        public Literal LtlNodeGroupName;
+        public TextBox TbDescription;
 
         public static string GetOpenWindowString(int publishmentSystemId, string groupName)
         {
-            return PageUtils.GetOpenWindowString("修改栏目组", PageUtils.GetCmsUrl(nameof(ModalNodeGroupAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("修改栏目组", PageUtils.GetCmsUrl(nameof(ModalNodeGroupAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"GroupName", groupName}
-            }), 400, 280);
+            }), 600, 300);
         }
 
         public static string GetOpenWindowString(int publishmentSystemId)
         {
-            return PageUtils.GetOpenWindowString("添加栏目组", PageUtils.GetCmsUrl(nameof(ModalNodeGroupAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("添加栏目组", PageUtils.GetCmsUrl(nameof(ModalNodeGroupAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
-            }), 400, 280);
+            }), 600, 300);
         }
 
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
+            if (IsPostBack) return;
 
-			if (!IsPostBack)
-			{
-				if (Body.IsQueryExists("GroupName"))
-				{
-                    var groupName = Body.GetQueryString("GroupName");
-                    var nodeGroupInfo = DataProvider.NodeGroupDao.GetNodeGroupInfo(PublishmentSystemId, groupName);
-					if (nodeGroupInfo != null)
-					{
-                        tbNodeGroupName.Text = nodeGroupInfo.NodeGroupName;
-                        tbNodeGroupName.Enabled = false;
-						tbDescription.Text = nodeGroupInfo.Description;
-					}
-				}
-			}
-		}
+            if (Body.IsQueryExists("GroupName"))
+            {
+                var groupName = Body.GetQueryString("GroupName");
+                var nodeGroupInfo = DataProvider.NodeGroupDao.GetNodeGroupInfo(PublishmentSystemId, groupName);
+                if (nodeGroupInfo != null)
+                {
+                    TbNodeGroupName.Text = nodeGroupInfo.NodeGroupName;
+                    TbNodeGroupName.Visible = false;
+                    LtlNodeGroupName.Text = $"<strong>{nodeGroupInfo.NodeGroupName}</strong>";
+                    TbDescription.Text = nodeGroupInfo.Description;
+                }
+            }
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
@@ -55,9 +55,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             var nodeGroupInfo = new NodeGroupInfo
             {
-                NodeGroupName = tbNodeGroupName.Text,
-                PublishmentSystemID = PublishmentSystemId,
-                Description = tbDescription.Text
+                NodeGroupName = TbNodeGroupName.Text,
+                PublishmentSystemId = PublishmentSystemId,
+                Description = TbDescription.Text
             };
 
             if (Body.IsQueryExists("GroupName"))
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
 			else
 			{
                 var nodeGroupNameList = DataProvider.NodeGroupDao.GetNodeGroupNameList(PublishmentSystemId);
-				if (nodeGroupNameList.IndexOf(tbNodeGroupName.Text) != -1)
+				if (nodeGroupNameList.IndexOf(TbNodeGroupName.Text) != -1)
 				{
                     FailMessage("栏目组添加失败，栏目组名称已存在！");
 				}

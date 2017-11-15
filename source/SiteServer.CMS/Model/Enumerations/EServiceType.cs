@@ -14,22 +14,19 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EServiceType type)
 		{
-            if (type == EServiceType.Create)
+		    if (type == EServiceType.Create)
 			{
                 return "Create";
 			}
-            else if (type == EServiceType.Gather)
-			{
-                return "Gather";
-			}
-            else if (type == EServiceType.Backup)
-			{
-                return "Backup";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EServiceType.Gather)
+		    {
+		        return "Gather";
+		    }
+		    if (type == EServiceType.Backup)
+		    {
+		        return "Backup";
+		    }
+		    throw new Exception();
 		}
 
         public static string GetClassName(EServiceType type)
@@ -39,22 +36,19 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static string GetText(EServiceType type)
 		{
-            if (type == EServiceType.Create)
+		    if (type == EServiceType.Create)
 			{
                 return "定时生成";
 			}
-            else if (type == EServiceType.Gather)
-			{
-                return "定时采集";
-			}
-            else if (type == EServiceType.Backup)
-			{
-                return "定时备份";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EServiceType.Gather)
+		    {
+		        return "定时采集";
+		    }
+		    if (type == EServiceType.Backup)
+		    {
+		        return "定时备份";
+		    }
+		    throw new Exception();
 		}
 
 		public static EServiceType GetEnumType(string typeStr)

@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Web.UI;
 using BaiRong.Core;
-using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -121,7 +120,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var isUseTables = TranslateUtils.ToBool(Request.Form["isUseTables"]);
                 var returnUrl = Request.Form["returnUrl"];
                 var isTop = TranslateUtils.ToBool(Request.Form["isTop"], false);
-                retval = CreatePublishmentSystem(publishmentSystemId, isUseSiteTemplate, isImportContents, isImportTableStyles, siteTemplateDir, isUseTables, userKeyPrefix, returnUrl, isTop, body.AdministratorName);
+                retval = CreatePublishmentSystem(publishmentSystemId, isUseSiteTemplate, isImportContents, isImportTableStyles, siteTemplateDir, isUseTables, userKeyPrefix, returnUrl, isTop, body.AdminName);
             }
             //    else if (type == "CreateAll")
             //    {
@@ -156,9 +155,9 @@ namespace SiteServer.BackgroundPages.Ajax
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
             var cacheMessageKey = userKeyPrefix + CacheMessage;
 
-            CacheUtils.Max(cacheTotalCountKey, "3");//存储需要的页面总数
-            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+            CacheUtils.Insert(cacheTotalCountKey, "3");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”、“错误信息”及“执行JS脚本”的字符串数组
             NameValueCollection retval;
@@ -166,20 +165,20 @@ namespace SiteServer.BackgroundPages.Ajax
             try
             {
 
-                CacheUtils.Max(cacheCurrentCountKey, "1");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "正在创建站点...");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
 
 
-                CacheUtils.Max(cacheCurrentCountKey, "2");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "正在导入数据...");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
                 if (isUseSiteTemplate && !string.IsNullOrEmpty(siteTemplateDir))
                 {
                     SiteTemplateManager.Instance.ImportSiteTemplateToEmptyPublishmentSystem(publishmentSystemId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
                 }
 
-                CacheUtils.Max(cacheCurrentCountKey, "3");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "创建成功！");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 if (!string.IsNullOrEmpty(returnUrl))
                 {
                     returnUrl = PageUtils.AddQueryString(StringUtils.ValueFromUrl(returnUrl), "PublishmentSystemID", publishmentSystemId.ToString());
@@ -197,13 +196,13 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
             CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
-            CacheUtils.Clear();
+            CacheUtils.ClearAll();
 
             return retval;
         }
@@ -214,25 +213,22 @@ namespace SiteServer.BackgroundPages.Ajax
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
             var cacheMessageKey = userKeyPrefix + CacheMessage;
 
-            CacheUtils.Max(cacheTotalCountKey, "3");//存储需要的页面总数
-            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+            CacheUtils.Insert(cacheTotalCountKey, "3");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”、“错误信息”及“执行JS脚本”的字符串数组
             NameValueCollection retval;
 
             try
             {
-                CacheUtils.Max(cacheCurrentCountKey, "1");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "正在创建站点...");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "正在创建站点...");//存储消息
 
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
 
-
-
-
-                CacheUtils.Max(cacheCurrentCountKey, "2");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "正在导入数据...");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "正在导入数据...");//存储消息
                 if (isUseSiteTemplate && !string.IsNullOrEmpty(siteTemplateDir))
                 {
                     SiteTemplateManager.Instance.ImportSiteTemplateToEmptyPublishmentSystem(publishmentSystemId, siteTemplateDir, isUseTables, isImportContents, isImportTableStyles, administratorName);
@@ -240,8 +236,8 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 CreateManager.CreateAll(publishmentSystemId);
 
-                CacheUtils.Max(cacheCurrentCountKey, "3");//存储当前的页面总数
-                CacheUtils.Max(cacheMessageKey, "创建成功！");//存储消息
+                CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
+                CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 if (!string.IsNullOrEmpty(returnUrl))
                 {
                     returnUrl = PageUtils.AddQueryString(StringUtils.ValueFromUrl(returnUrl), "PublishmentSystemID", publishmentSystemId.ToString());
@@ -262,13 +258,13 @@ namespace SiteServer.BackgroundPages.Ajax
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
             }
 
             CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
             CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
-            CacheUtils.Clear();
+            CacheUtils.ClearAll();
 
             return retval;
         }

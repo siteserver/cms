@@ -5,9 +5,9 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
 {
@@ -28,6 +28,8 @@ namespace SiteServer.CMS.Core
 
         public static PublishmentSystemInfo GetPublishmentSystemInfo(int publishmentSystemId)
         {
+            if (publishmentSystemId <= 0) return null;
+
             var list = GetPublishmentSystemInfoKeyValuePairList();
 
             foreach (var pair in list)
@@ -74,25 +76,6 @@ namespace SiteServer.CMS.Core
             return null;
         }
 
-        public static List<EPublishmentSystemType> GetPublishmentSystemTypeList()
-        {
-            var list = new List<EPublishmentSystemType>();
-
-            var pairList = GetPublishmentSystemInfoKeyValuePairList();
-
-            foreach (var pair in pairList)
-            {
-                var publishmentSystemInfo = pair.Value;
-                if (publishmentSystemInfo == null) continue;
-
-                if (!list.Contains(publishmentSystemInfo.PublishmentSystemType))
-                {
-                    list.Add(publishmentSystemInfo.PublishmentSystemType);
-                }
-            }
-            return list;
-        }
-
         public static List<int> GetPublishmentSystemIdList()
         {
             var pairList = GetPublishmentSystemInfoKeyValuePairList();
@@ -101,23 +84,6 @@ namespace SiteServer.CMS.Core
             {
                 list.Add(pair.Key);
             }
-            return list;
-        }
-
-        public static List<int> GetPublishmentSystemIdList(EPublishmentSystemType publishmentSystemType)
-        {
-            var list = new List<int>();
-
-            var publishmentSystemIdList = GetPublishmentSystemIdList();
-            foreach (var publishmentSystemId in publishmentSystemIdList)
-            {
-                var publishmentSystemInfo = GetPublishmentSystemInfo(publishmentSystemId);
-                if (publishmentSystemInfo.PublishmentSystemType == publishmentSystemType)
-                {
-                    list.Add(publishmentSystemInfo.PublishmentSystemId);
-                }
-            }
-
             return list;
         }
 
@@ -207,37 +173,17 @@ namespace SiteServer.CMS.Core
         {
             return new List <string>
             {
-                publishmentSystemInfo.AuxiliaryTableForContent,
-                publishmentSystemInfo.AuxiliaryTableForGovInteract,
-                publishmentSystemInfo.AuxiliaryTableForGovPublic,
-                publishmentSystemInfo.AuxiliaryTableForJob,
-                publishmentSystemInfo.AuxiliaryTableForVote
+                publishmentSystemInfo.AuxiliaryTableForContent
             };
         }
 
         public static ETableStyle GetTableStyle(PublishmentSystemInfo publishmentSystemInfo, string tableName)
         {
-            var tableStyle = ETableStyle.UserDefined;
+            var tableStyle = ETableStyle.Custom;
 
             if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForContent))
             {
                 tableStyle = ETableStyle.BackgroundContent;
-            }
-            else if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForGovInteract))
-            {
-                tableStyle = ETableStyle.GovInteractContent;
-            }
-            else if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForGovPublic))
-            {
-                tableStyle = ETableStyle.GovPublicContent;
-            }
-            else if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForJob))
-            {
-                tableStyle = ETableStyle.JobContent;
-            }
-            else if (StringUtils.EqualsIgnoreCase(tableName, publishmentSystemInfo.AuxiliaryTableForVote))
-            {
-                tableStyle = ETableStyle.VoteContent;
             }
             else if (StringUtils.EqualsIgnoreCase(tableName, DataProvider.PublishmentSystemDao.TableName))
             {
@@ -247,10 +193,10 @@ namespace SiteServer.CMS.Core
             {
                 tableStyle = ETableStyle.Channel;
             }
-            else if (StringUtils.EqualsIgnoreCase(tableName, DataProvider.InputContentDao.TableName))
-            {
-                tableStyle = ETableStyle.InputContent;
-            }
+            //else if (StringUtils.EqualsIgnoreCase(tableName, DataProvider.InputContentDao.TableName))
+            //{
+            //    tableStyle = ETableStyle.InputContent;
+            //}
             return tableStyle;
         }
 
@@ -350,28 +296,40 @@ namespace SiteServer.CMS.Core
             return parentPublishmentSystemId;
         }
 
-        public static void ClearCache(bool isAddAjaxUrl)
+        public static void ClearCache()
         {
             CacheUtils.Remove(CacheKey);
-            CacheManager.UpdateTemporaryCacheFile(CacheFileName);
+            CacheUtils.UpdateTemporaryCacheFile(CacheFileName);
         }
+
+        private static readonly object LockObject = new object();
 
         public static List<KeyValuePair<int, PublishmentSystemInfo>> GetPublishmentSystemInfoKeyValuePairList()
         {
-            if (CacheUtils.Get(CacheKey) != null) return CacheUtils.Get(CacheKey) as List<KeyValuePair<int, PublishmentSystemInfo>>;
+            var retval = CacheUtils.Get<List<KeyValuePair<int, PublishmentSystemInfo>>>(CacheKey);
+            if (retval != null) return retval;
 
-            var list = DataProvider.PublishmentSystemDao.GetPublishmentSystemInfoKeyValuePairList();
-            var sl = new List<KeyValuePair<int, PublishmentSystemInfo>>();
-            foreach (var pair in list)
+            lock (LockObject)
             {
-                var publishmentSystemInfo = pair.Value;
-                if (publishmentSystemInfo == null) continue;
+                retval = CacheUtils.Get<List<KeyValuePair<int, PublishmentSystemInfo>>>(CacheKey);
+                if (retval == null)
+                {
+                    var list = DataProvider.PublishmentSystemDao.GetPublishmentSystemInfoKeyValuePairList();
+                    retval = new List<KeyValuePair<int, PublishmentSystemInfo>>();
+                    foreach (var pair in list)
+                    {
+                        var publishmentSystemInfo = pair.Value;
+                        if (publishmentSystemInfo == null) continue;
 
-                publishmentSystemInfo.PublishmentSystemDir = GetPublishmentSystemDir(list, publishmentSystemInfo);
-                sl.Add(pair);
+                        publishmentSystemInfo.PublishmentSystemDir = GetPublishmentSystemDir(list, publishmentSystemInfo);
+                        retval.Add(pair);
+                    }
+
+                    CacheUtils.Insert(CacheKey, retval);
+                }
             }
-            CacheUtils.Max(CacheKey, sl);
-            return sl;
+
+            return retval;
         }
 
         private static string GetPublishmentSystemDir(List<KeyValuePair<int, PublishmentSystemInfo>> listFromDb, PublishmentSystemInfo publishmentSystemInfo)
@@ -396,9 +354,9 @@ namespace SiteServer.CMS.Core
 
         private const string CacheKey = "SiteServer.CMS.Core.PublishmentSystemManager";
 
-        public static List<PublishmentSystemInfo> GetWritingPublishmentSystemInfoList(string adminUserName)
+        public static List<IPublishmentSystemInfo> GetWritingPublishmentSystemInfoList(string adminUserName)
         {
-            var publishmentSystemInfoList = new List<PublishmentSystemInfo>();
+            var publishmentSystemInfoList = new List<IPublishmentSystemInfo>();
 
             if (!string.IsNullOrEmpty(adminUserName))
             {
@@ -412,17 +370,14 @@ namespace SiteServer.CMS.Core
                         if (!publishmentSystemIdList.Contains(itemForPsid))
                         {
                             var publishmentSystemInfo = GetPublishmentSystemInfo(itemForPsid);
-                            if ((Equals(EPublishmentSystemType.CMS, publishmentSystemInfo.PublishmentSystemType) || Equals(EPublishmentSystemType.WCM, publishmentSystemInfo.PublishmentSystemType)))
-                            {
-                                publishmentSystemInfoList.Add(publishmentSystemInfo);
-                                publishmentSystemIdList.Add(itemForPsid);
-                            }
+                            publishmentSystemInfoList.Add(publishmentSystemInfo);
+                            publishmentSystemIdList.Add(itemForPsid);
                         }
                     }
                 }
                 else
                 {
-                    var roles = BaiRongDataProvider.RoleDao.GetRolesForUser(adminUserName);
+                    var roles = BaiRongDataProvider.AdministratorsInRolesDao.GetRolesForUser(adminUserName);
                     var ps = new ProductAdministratorWithPermissions(adminUserName);
                     foreach (var itemForPsid in ps.WebsitePermissionDict.Keys)
                     {
@@ -443,9 +398,9 @@ namespace SiteServer.CMS.Core
             return publishmentSystemInfoList;
         }
 
-        public static List<NodeInfo> GetWritingNodeInfoList(string adminUserName, int publishmentSystemId)
+        public static List<INodeInfo> GetWritingNodeInfoList(string adminUserName, int publishmentSystemId)
         {
-            var nodeInfoList = new List<NodeInfo>();
+            var nodeInfoList = new List<INodeInfo>();
             if (!string.IsNullOrEmpty(adminUserName))
             {
                 if (AdminManager.HasChannelPermissionIsConsoleAdministrator(adminUserName) || AdminManager.HasChannelPermissionIsSystemAdministrator(adminUserName))//如果是超级管理员或站点管理员
@@ -453,7 +408,7 @@ namespace SiteServer.CMS.Core
                     var nodeList = DataProvider.NodeDao.GetNodeInfoListByPublishmentSystemId(publishmentSystemId, string.Empty);
                     foreach (var nodeInfo in nodeList)
                     {
-                        if (nodeInfo != null && EContentModelTypeUtils.Equals(nodeInfo.ContentModelId, EContentModelType.Content))
+                        if (nodeInfo != null)
                         {
                             nodeInfoList.Add(nodeInfo);
                         }
@@ -471,7 +426,7 @@ namespace SiteServer.CMS.Core
                         foreach (int ownNodeId in nodeIdList)
                         {
                             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, ownNodeId);
-                            if (nodeInfo != null && EContentModelTypeUtils.Equals(nodeInfo.ContentModelId, EContentModelType.Content))
+                            if (nodeInfo != null)
                             {
                                 nodeInfoList.Add(nodeInfo);
                             }

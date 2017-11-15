@@ -17,6 +17,8 @@ namespace BaiRong.Core.IO
         //The OnFileChange event is fired when the file changes.
         public event FileChange OnFileChange;
 
+        public event FileChange OnFileDeleted;
+
         public void FileDependency(string fullFileName)
         {
             //Validate file.
@@ -40,11 +42,17 @@ namespace BaiRong.Core.IO
                 EnableRaisingEvents = true
             };
             _mFileSystemWatcher.Changed += fileSystemWatcher_Changed;
+            _mFileSystemWatcher.Deleted += fileSystemWatcher_Deleted;
         }
 
         private void fileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
         {
             OnFileChange?.Invoke(sender, e);
+        }
+
+        private void fileSystemWatcher_Deleted(object sender, FileSystemEventArgs e)
+        {
+            OnFileDeleted?.Invoke(sender, e);
         }
     }
 }

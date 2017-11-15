@@ -1,5 +1,5 @@
 using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
@@ -11,10 +11,10 @@ namespace SiteServer.CMS.Model
             SetExtendedAttribute(nameValueCollection);
         }
 
-        public string PublishmentSystemIDCollection
+        public string PublishmentSystemIdCollection
         {
-            get { return GetExtendedAttribute("PublishmentSystemIDCollection"); }
-            set { SetExtendedAttribute("PublishmentSystemIDCollection", value); }
+            get { return GetExtendedAttribute("PublishmentSystemIdCollection"); }
+            set { SetExtendedAttribute("PublishmentSystemIdCollection", value); }
         }
 
         public string WebGatherNames

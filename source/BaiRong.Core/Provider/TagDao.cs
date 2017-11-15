@@ -4,12 +4,47 @@ using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class TagDao : DataProviderBase
 	{
+        public override string TableName => "bairong_Tags";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagInfo.TagId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagInfo.ContentIdCollection),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagInfo.Tag),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TagInfo.UseNum),
+                DataType = DataType.Integer
+            }
+        };
+
         private const string ParmTagId = "@TagID";
         private const string ParmPublishmentSystemId = "@PublishmentSystemID";
         private const string ParmContentIdCollection = "@ContentIDCollection";
@@ -18,37 +53,17 @@ namespace BaiRong.Core.Provider
         
         public int Insert(TagInfo tagInfo)
         {
-            int tagId;
-
-            var sqlString = "INSERT INTO bairong_Tags (PublishmentSystemID, ContentIDCollection, Tag, UseNum) VALUES (@PublishmentSystemID, @ContentIDCollection, @Tag, @UseNum)";
+            const string sqlString = "INSERT INTO bairong_Tags (PublishmentSystemID, ContentIDCollection, Tag, UseNum) VALUES (@PublishmentSystemID, @ContentIDCollection, @Tag, @UseNum)";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, tagInfo.PublishmentSystemId),
-				GetParameter(ParmContentIdCollection, EDataType.NVarChar, 255, tagInfo.ContentIdCollection),
-                GetParameter(ParmTag, EDataType.NVarChar, 255, tagInfo.Tag),
-                GetParameter(ParmUseNum, EDataType.Integer, tagInfo.UseNum)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, tagInfo.PublishmentSystemId),
+				GetParameter(ParmContentIdCollection, DataType.VarChar, 255, tagInfo.ContentIdCollection),
+                GetParameter(ParmTag, DataType.VarChar, 255, tagInfo.Tag),
+                GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum)
 			};
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        tagId = ExecuteNonQueryAndReturnId(trans, sqlString, parms);
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-
-            return tagId;
+            return ExecuteNonQueryAndReturningId(sqlString, nameof(TagInfo.TagId), parms);
         }
 
         public void Update(TagInfo tagInfo)
@@ -57,9 +72,9 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmContentIdCollection, EDataType.NVarChar, 255, tagInfo.ContentIdCollection),
-                GetParameter(ParmUseNum, EDataType.Integer, tagInfo.UseNum),
-                GetParameter(ParmTagId, EDataType.Integer, tagInfo.TagId)
+				GetParameter(ParmContentIdCollection, DataType.VarChar, 255, tagInfo.ContentIdCollection),
+                GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum),
+                GetParameter(ParmTagId, DataType.Integer, tagInfo.TagId)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -73,8 +88,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmTag, EDataType.NVarChar, 255, tag)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmTag, DataType.VarChar, 255, tag)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -113,7 +128,6 @@ namespace BaiRong.Core.Provider
         public List<TagInfo> GetTagInfoList(int publishmentSystemId, int contentId, bool isOrderByCount, int totalNum)
         {
             var list = new List<TagInfo>();
-            string sqlString;
 
             var whereString = GetWhereString(null, publishmentSystemId, contentId);
             var orderString = string.Empty;
@@ -122,19 +136,7 @@ namespace BaiRong.Core.Provider
                 orderString = "ORDER BY UseNum DESC";
             }
 
-            //            if (totalNum > 0)
-            //            {
-            //                sqlString = $@"
-            //SELECT TOP {totalNum} TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum FROM bairong_Tags {whereString} {orderString}
-            //            ";
-            //            }
-            //            else
-            //            {
-            //                sqlString = $@"
-            //SELECT TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum FROM bairong_Tags {whereString} {orderString}
-            //            ";
-            //            }
-            sqlString = SqlUtils.GetTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString + " " + orderString, totalNum);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_Tags", "TagID, PublishmentSystemID, ContentIDCollection, Tag, UseNum", whereString, orderString, totalNum);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -151,16 +153,9 @@ namespace BaiRong.Core.Provider
 
         public List<string> GetTagListByStartString(int publishmentSystemId, string startString, int totalNum)
         {
-            //var totalString = string.Empty;
-            //if (totalNum > 0)
-            //{
-            //    totalString = " TOP " + totalNum + " ";
-            //}
-
-            //string sqlString =
-            //    $"SELECT DISTINCT {totalString} Tag, UseNum FROM bairong_Tags WHERE PublishmentSystemID = {publishmentSystemId} AND CHARINDEX('{PageUtils.FilterSql(startString)}',Tag) > 0  ORDER BY UseNum DESC";
-
-            var sqlString = SqlUtils.GetDistinctTopSqlString("bairong_Tags", "Tag, UseNum", $"WHERE PublishmentSystemID = {publishmentSystemId} AND {SqlUtils.GetInStr("Tag", PageUtils.FilterSql(startString))} ORDER BY UseNum DESC", totalNum);
+            var sqlString = SqlUtils.GetDistinctTopSqlString("bairong_Tags", "Tag, UseNum",
+                $"WHERE PublishmentSystemID = {publishmentSystemId} AND {SqlUtils.GetInStr("Tag", PageUtils.FilterSql(startString))}",
+                "ORDER BY UseNum DESC", totalNum);
             return BaiRongDataProvider.DatabaseDao.GetStringList(sqlString);
         }
 
@@ -210,23 +205,29 @@ namespace BaiRong.Core.Provider
 
         public List<int> GetContentIdListByTag(string tag, int publishmentSystemId)
         {
-            var contentIdList = new List<int>();
-            if (!string.IsNullOrEmpty(tag))
-            {
-                var whereString = GetWhereString(tag, publishmentSystemId, 0);
-                var sqlString = "SELECT ContentIDCollection FROM bairong_Tags" + whereString;
+            var idList = new List<int>();
+            if (string.IsNullOrEmpty(tag)) return idList;
 
-                using (var rdr = ExecuteReader(sqlString))
+            var whereString = GetWhereString(tag, publishmentSystemId, 0);
+            var sqlString = "SELECT ContentIDCollection FROM bairong_Tags" + whereString;
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
                 {
-                    if (rdr.Read())
+                    var contentIdCollection = GetString(rdr, 0);
+                    var contentIdList = TranslateUtils.StringCollectionToIntList(contentIdCollection);
+                    foreach (var contentId in contentIdList)
                     {
-                        var contentIdCollection = GetString(rdr, 0);
-                        contentIdList = TranslateUtils.StringCollectionToIntList(contentIdCollection);
+                        if (contentId > 0 && !idList.Contains(contentId))
+                        {
+                            idList.Add(contentId);
+                        }
                     }
-                    rdr.Close();
                 }
+                rdr.Close();
             }
-            return contentIdList;
+            return idList;
         }
 
         public List<int> GetContentIdListByTagCollection(StringCollection tagCollection, int publishmentSystemId)
@@ -235,14 +236,14 @@ namespace BaiRong.Core.Provider
             if (tagCollection.Count > 0)
             {
                 string parameterNameList;
-                var parameterList = GetInParameterList(ParmTag, EDataType.NVarChar, 255, tagCollection, out parameterNameList);
+                var parameterList = GetInParameterList(ParmTag, DataType.VarChar, 255, tagCollection, out parameterNameList);
 
                 string sqlString =
                     $"SELECT ContentIDCollection FROM bairong_Tags WHERE Tag IN ({parameterNameList}) AND PublishmentSystemID = @PublishmentSystemID";
 
                 var paramList = new List<IDataParameter>();
                 paramList.AddRange(parameterList);
-                paramList.Add(GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId));
+                paramList.Add(GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId));
 
                 using (var rdr = ExecuteReader(sqlString, paramList.ToArray()))
                 {
@@ -252,7 +253,7 @@ namespace BaiRong.Core.Provider
                         var list = TranslateUtils.StringCollectionToIntList(contentIdCollection);
                         foreach (var contentId in list)
                         {
-                            if (!contentIdList.Contains(contentId))
+                            if (contentId > 0 && !contentIdList.Contains(contentId))
                             {
                                 contentIdList.Add(contentId);
                             }

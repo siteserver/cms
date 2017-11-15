@@ -1,9 +1,15 @@
 ﻿using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using System.Web.Routing;
+using BaiRong.Core;
+using BaiRong.Core.Model.Enumerations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.API
 {
@@ -26,6 +32,10 @@ namespace SiteServer.API
                 new { id = RouteParameter.Optional }
             );
 
+            //configuration.Routes.Add("name", new HttpRoute());
+
+            RouteTable.Routes.Ignore(""); //Allow index.html to load
+
             var jsonFormatter = configuration.Formatters.JsonFormatter;
             var settings = new JsonSerializerSettings
             {
@@ -40,6 +50,10 @@ namespace SiteServer.API
             jsonFormatter.Indent = true;
 
             configuration.EnsureInitialized();
+
+            WebConfigUtils.Load(HostingEnvironment.ApplicationPhysicalPath);
+            PluginManager.Load(new PluginEnvironment(EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType), WebConfigUtils.ConnectionString,
+                WebConfigUtils.PhysicalApplicationPath, false));
         }
     }
 }

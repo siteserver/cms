@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
@@ -22,7 +22,9 @@ namespace SiteServer.BackgroundPages.Ajax
         private const string TypeGetCountArray = "GetCountArray";
         private const string TypeSiteTemplateDownload = "SiteTemplateDownload";
         private const string TypeSiteTemplateZip = "SiteTemplateZip";
+        private const string TypeSiteTemplateUnZip = "SiteTemplateUnZip";
         private const string TypeGetLoadingChannels = "GetLoadingChannels";
+        private const string TypePluginDownload = "PluginDownload";
 
         public static string GetCountArrayUrl()
         {
@@ -40,13 +42,30 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
+        public static string GetPluginDownloadUrl()
+        {
+            return PageUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
+            {
+                {"type", TypePluginDownload }
+            });
+        }
+
         public static string GetSiteTemplateDownloadParameters(string downloadUrl, string directoryName, string userKeyPrefix)
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
-                {"downloadUrl", downloadUrl},
+                {"downloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)},
                 {"directoryName", directoryName},
                 {"userKeyPrefix", userKeyPrefix},
+            });
+        }
+
+        public static string GetPluginDownloadParameters(string downloadUrl, string userKeyPrefix)
+        {
+            return TranslateUtils.NameValueCollectionToString(new NameValueCollection
+            {
+                {"downloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)},
+                {"userKeyPrefix", userKeyPrefix}
             });
         }
 
@@ -58,11 +77,28 @@ namespace SiteServer.BackgroundPages.Ajax
             });
         }
 
+        public static string GetSiteTemplateUnZipUrl()
+        {
+            return PageUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
+            {
+                {"type", TypeSiteTemplateUnZip }
+            });
+        }
+
         public static string GetSiteTemplateZipParameters(string directoryName, string userKeyPrefix)
         {
             return TranslateUtils.NameValueCollectionToString(new NameValueCollection
             {
                 {"directoryName", directoryName},
+                {"userKeyPrefix", userKeyPrefix}
+            });
+        }
+
+        public static string GetSiteTemplateUnZipParameters(string fileName, string userKeyPrefix)
+        {
+            return TranslateUtils.NameValueCollectionToString(new NameValueCollection
+            {
+                {"fileName", fileName},
                 {"userKeyPrefix", userKeyPrefix}
             });
         }
@@ -91,6 +127,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var retval = new NameValueCollection();
             string retString = null;
             var body = new RequestBody();
+            if (!body.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
             {
@@ -110,6 +147,12 @@ namespace SiteServer.BackgroundPages.Ajax
                 var directoryName = Request["directoryName"];
                 retval = SiteTemplateZip(directoryName, userKeyPrefix);
             }
+            else if (type == TypeSiteTemplateUnZip)
+            {
+                var userKeyPrefix = Request["userKeyPrefix"];
+                var fileName = Request["fileName"];
+                retval = SiteTemplateUnZip(fileName, userKeyPrefix);
+            }
             else if (type == TypeGetLoadingChannels)
             {
                 var publishmentSystemId = TranslateUtils.ToInt(Request["publishmentSystemID"]);
@@ -117,6 +160,12 @@ namespace SiteServer.BackgroundPages.Ajax
                 var loadingType = Request["loadingType"];
                 var additional = Request["additional"];
                 retString = GetLoadingChannels(publishmentSystemId, parentId, loadingType, additional, body);
+            }
+            else if (type == TypePluginDownload)
+            {
+                var userKeyPrefix = Request["userKeyPrefix"];
+                var downloadUrl = TranslateUtils.DecryptStringBySecretKey(Request["downloadUrl"]);
+                retval = PluginDownload(downloadUrl, userKeyPrefix);
             }
             //else if (type == "GetLoadingGovPublicCategories")
             //{
@@ -174,24 +223,24 @@ namespace SiteServer.BackgroundPages.Ajax
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
             var cacheMessageKey = userKeyPrefix + CacheMessage;
 
-            CacheUtils.Max(cacheTotalCountKey, "5");//存储需要的页面总数
-            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+            CacheUtils.Insert(cacheTotalCountKey, "5");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
 
             try
             {
-                CacheUtils.Max(cacheCurrentCountKey, "1");
-                CacheUtils.Max(cacheMessageKey, "开始下载模板压缩包，可能需要10到30分钟，请耐心等待");
+                CacheUtils.Insert(cacheCurrentCountKey, "1");
+                CacheUtils.Insert(cacheMessageKey, "开始下载模板压缩包，可能需要几分钟，请耐心等待");
 
                 var filePath = PathUtility.GetSiteTemplatesPath(directoryName + ".zip");
                 FileUtils.DeleteFileIfExists(filePath);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
 
-                CacheUtils.Max(cacheCurrentCountKey, "4");
-                CacheUtils.Max(cacheMessageKey, "模板压缩包下载成功，开始解压缩");
+                CacheUtils.Insert(cacheCurrentCountKey, "4");
+                CacheUtils.Insert(cacheMessageKey, "模板压缩包下载成功，开始解压缩");
 
                 var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
                 if (!DirectoryUtils.IsDirectoryExists(directoryPath))
@@ -199,10 +248,56 @@ namespace SiteServer.BackgroundPages.Ajax
                     ZipUtils.UnpackFiles(filePath, directoryPath);
                 }
 
-                CacheUtils.Max(cacheCurrentCountKey, "5");
-                CacheUtils.Max(cacheMessageKey, string.Empty);
+                CacheUtils.Insert(cacheCurrentCountKey, "5");
+                CacheUtils.Insert(cacheMessageKey, string.Empty);
 
                 retval = AjaxManager.GetProgressTaskNameValueCollection("站点模板下载成功，请到站点模板管理中查看。", string.Empty);
+            }
+            catch (Exception ex)
+            {
+                retval = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
+                    $@"<br />下载失败！<br />{ex.Message}");
+            }
+
+            CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
+            CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
+            CacheUtils.Remove(cacheMessageKey);//取消存储消息
+
+            return retval;
+        }
+
+        public NameValueCollection PluginDownload(string downloadUrl, string userKeyPrefix)
+        {
+            var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
+            var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
+            var cacheMessageKey = userKeyPrefix + CacheMessage;
+
+            CacheUtils.Insert(cacheTotalCountKey, "5");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
+
+            //返回“运行结果”和“错误信息”的字符串数组
+            NameValueCollection retval;
+
+            try
+            {
+                CacheUtils.Insert(cacheCurrentCountKey, "1");
+                CacheUtils.Insert(cacheMessageKey, "开始下载插件压缩包，可能需要几分钟，请耐心等待");
+
+                var fileName = PageUtils.GetFileNameFromUrl(downloadUrl);
+                var filePath = PathUtils.GetPluginsPath(fileName);
+                FileUtils.DeleteFileIfExists(filePath);
+                WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
+
+                CacheUtils.Insert(cacheCurrentCountKey, "4");
+                CacheUtils.Insert(cacheMessageKey, "插件压缩包下载成功，开始安装");
+
+                ZipUtils.UnpackFiles(filePath, PathUtils.GetPluginsPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
+
+                CacheUtils.Insert(cacheCurrentCountKey, "5");
+                CacheUtils.Insert(cacheMessageKey, string.Empty);
+
+                retval = AjaxManager.GetProgressTaskNameValueCollection("插件安装成功，请刷新页面查看。", string.Empty);
             }
             catch (Exception ex)
             {
@@ -223,9 +318,9 @@ namespace SiteServer.BackgroundPages.Ajax
             var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
             var cacheMessageKey = userKeyPrefix + CacheMessage;
 
-            CacheUtils.Max(cacheTotalCountKey, "1");//存储需要的页面总数
-            CacheUtils.Max(cacheCurrentCountKey, "0");//存储当前的页面总数
-            CacheUtils.Max(cacheMessageKey, string.Empty);//存储消息
+            CacheUtils.Insert(cacheTotalCountKey, "1");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
@@ -241,7 +336,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 ZipUtils.PackFiles(filePath, directoryPath);
 
-                CacheUtils.Max(cacheCurrentCountKey, "1");//存储当前的页面总数
+                CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
 
                 retval = AjaxManager.GetProgressTaskNameValueCollection(
                     $"站点模板压缩成功，<a href='{PageUtility.GetSiteTemplatesUrl(fileName)}' target=_blank>点击下载</a>。", string.Empty);
@@ -259,9 +354,46 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
+        public NameValueCollection SiteTemplateUnZip(string fileName, string userKeyPrefix)
+        {
+            var cacheTotalCountKey = userKeyPrefix + CacheTotalCount;
+            var cacheCurrentCountKey = userKeyPrefix + CacheCurrentCount;
+            var cacheMessageKey = userKeyPrefix + CacheMessage;
+
+            CacheUtils.Insert(cacheTotalCountKey, "1");//存储需要的页面总数
+            CacheUtils.Insert(cacheCurrentCountKey, "0");//存储当前的页面总数
+            CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
+
+            //返回“运行结果”和“错误信息”的字符串数组
+            NameValueCollection retval;
+
+            try
+            {
+                var directoryPath = PathUtility.GetSiteTemplatesPath(PathUtils.GetFileNameWithoutExtension(fileName));
+                var zipFilePath = PathUtility.GetSiteTemplatesPath(fileName);
+
+                ZipUtils.UnpackFiles(zipFilePath, directoryPath);
+
+                CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
+
+                retval = AjaxManager.GetProgressTaskNameValueCollection("站点模板解压成功", string.Empty);
+            }
+            catch (Exception ex)
+            {
+                retval = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
+                    $@"<br />站点模板解压失败！<br />{ex.Message}");
+            }
+
+            CacheUtils.Remove(cacheTotalCountKey);//取消存储需要的页面总数
+            CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
+            CacheUtils.Remove(cacheMessageKey);//取消存储消息
+
+            return retval;
+        }
+
         public string GetLoadingChannels(int publishmentSystemId, int parentId, string loadingType, string additional, RequestBody body)
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
 
             var eLoadingType = ELoadingTypeUtils.GetEnumType(loadingType);
 
@@ -271,25 +403,25 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
 
-            foreach (int nodeId in nodeIdList)
+            foreach (var nodeId in nodeIdList)
             {
-                var enabled = AdminUtility.IsOwningNodeId(body.AdministratorName, nodeId);
+                var enabled = AdminUtility.IsOwningNodeId(body.AdminName, nodeId);
                 if (!enabled)
                 {
-                    if (!AdminUtility.IsHasChildOwningNodeId(body.AdministratorName, nodeId))
+                    if (!AdminUtility.IsHasChildOwningNodeId(body.AdminName, nodeId))
                     {
                         continue;
                     }
                 }
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
 
-                arraylist.Add(ChannelLoading.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, body.AdministratorName));
+                list.Add(ChannelLoading.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, body.AdminName));
             }
 
             //arraylist.Reverse();
 
             var builder = new StringBuilder();
-            foreach (string html in arraylist)
+            foreach (var html in list)
             {
                 builder.Append(html);
             }

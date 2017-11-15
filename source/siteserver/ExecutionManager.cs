@@ -1,6 +1,5 @@
 ﻿using System;
 using BaiRong.Core;
-using BaiRong.Core.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
@@ -10,18 +9,22 @@ namespace siteserver
 {
     public class ExecutionManager
     {
+        public static void ClearAllPendingCreate()
+        {
+            CreateTaskManager.Instance.ClearAllTask();
+        }
+
         public static bool ExecutePendingCreate()
         {
             try
             {
-                if (!ServiceManager.IsPendingCreateTask())
-                {
-                    return false;
-                }
+                if (!ServiceManager.IsPendingCreateTask()) return false;
+
+                var instance = CreateTaskManager.Instance;
 
                 while (true)
                 {
-                    var taskInfo = CreateTaskManager.Instance.GetLastPendingTask();
+                    var taskInfo = instance.GetAndRemoveLastPendingTask(0);
                     if (taskInfo == null)
                     {
                         ServiceManager.ClearIsPendingCreateCache();
@@ -31,24 +34,28 @@ namespace siteserver
                     try
                     {
                         var start = DateTime.Now;
-                        var fso = new FileSystemObject(taskInfo.PublishmentSystemID);
-                        fso.Execute(taskInfo);
+                        FileSystemObject.Execute(taskInfo.PublishmentSystemId, taskInfo.CreateType, taskInfo.ChannelId,
+                            taskInfo.ContentId, taskInfo.TemplateId);
                         var timeSpan = DateUtils.GetRelatedDateTimeString(start);
-                        CreateTaskManager.Instance.RemovePendingAndAddSuccessLog(taskInfo, timeSpan);
+                        instance.AddSuccessLog(taskInfo, timeSpan);
                     }
                     catch (Exception ex)
                     {
-                        CreateTaskManager.Instance.RemovePendingAndAddFailureLog(taskInfo, ex);
+                        instance.AddFailureLog(taskInfo, ex);
+                    }
+                    finally
+                    {
+                        instance.RemoveCurrent(taskInfo.PublishmentSystemId, taskInfo);
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogUtils.AddAdminLog(string.Empty, "服务组件生成失败", ex.ToString());
+                LogUtils.AddSystemErrorLog(ex, "服务组件生成失败");
             }
 
             return false;
-        }
+        } 
 
         public static bool ExecuteTask()
         {
@@ -70,7 +77,7 @@ namespace siteserver
                         if (taskExecution.Execute(taskInfo))
                         {
                             isExecute = true;
-                            var logInfo = new TaskLogInfo(0, taskInfo.TaskID, true, string.Empty, DateTime.Now);
+                            var logInfo = new TaskLogInfo(0, taskInfo.TaskId, true, string.Empty, DateTime.Now);
                             DataProvider.TaskLogDao.Insert(logInfo);
                         }
                     }
@@ -79,7 +86,7 @@ namespace siteserver
                         ExecutionUtils.LogError(taskInfo, ex);
                     }
 
-                    DataProvider.TaskDao.UpdateLastExecuteDate(taskInfo.TaskID);
+                    DataProvider.TaskDao.UpdateLastExecuteDate(taskInfo.TaskId);
                 }
             }
             catch (Exception ex)

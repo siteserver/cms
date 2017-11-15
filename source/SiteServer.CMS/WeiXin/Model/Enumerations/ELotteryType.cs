@@ -46,23 +46,23 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == ELotteryType.Scratch)
             {
-                return "¹Î¹Î¿¨";
+                return "åˆ®åˆ®å¡";
             }
             else if (type == ELotteryType.BigWheel)
             {
-                return "´ó×ªÅÌ";
+                return "å¤§è½¬ç›˜";
             }
             else if (type == ELotteryType.GoldEgg)
             {
-                return "ÔÒ½ğµ°";
+                return "ç ¸é‡‘è›‹";
             }
             else if (type == ELotteryType.Flap)
             {
-                return "´ó·­ÅÆ";
+                return "å¤§ç¿»ç‰Œ";
             }
             else if (type == ELotteryType.YaoYao)
             {
-                return "Ò¡Ò¡ÀÖ";
+                return "æ‘‡æ‘‡ä¹";
             }
 			else
 			{

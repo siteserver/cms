@@ -96,19 +96,19 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var publishmentSystemId = TranslateUtils.ToInt(Request.Form["publishmentSystemID"]);
                 var gatherRuleNameCollection = Request.Form["gatherRuleNameCollection"];
-                retval = Gather(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, body.AdministratorName);
+                retval = Gather(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, body.AdminName);
             }
             else if (type == TypeGatherDatabase)
             {
                 var publishmentSystemId = TranslateUtils.ToInt(Request.Form["publishmentSystemID"]);
                 var gatherRuleNameCollection = Request.Form["gatherRuleNameCollection"];
-                retval = GatherDatabase(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, body.AdministratorName);
+                retval = GatherDatabase(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, body.AdminName);
             }
             else if (type == TypeGatherFile)
             {
                 var publishmentSystemId = TranslateUtils.ToInt(Request.Form["publishmentSystemID"]);
                 var gatherRuleNameCollection = Request.Form["gatherRuleNameCollection"];
-                retval = GatherFile(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, body.AdministratorName);
+                retval = GatherFile(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, body.AdminName);
             }
 
             var jsonString = TranslateUtils.NameValueCollectionToJsonString(retval);

@@ -1,5 +1,6 @@
 using System;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Model
 {
@@ -9,7 +10,7 @@ namespace BaiRong.Core.Model
 		private int _tableMetadataId;
 		private string _auxiliaryTableEnName;
 		private string _attributeName;
-		private EDataType _dataType;
+		private DataType _dataType;
 		private int _dataLength;
 		private int _taxis;
         private bool _isSystem;
@@ -19,13 +20,13 @@ namespace BaiRong.Core.Model
 			_tableMetadataId = 0;
 			_auxiliaryTableEnName = string.Empty;
 			_attributeName = string.Empty;
-			_dataType = EDataType.VarChar;
+			_dataType = DataType.VarChar;
 			_dataLength = 50;
 			_taxis = 0;
 			_isSystem = false;
 		}
 
-        public TableMetadataInfo(int tableMetadataId, string auxiliaryTableEnName, string attributeName, EDataType dataType, int dataLength, int taxis, bool isSystem) 
+        public TableMetadataInfo(int tableMetadataId, string auxiliaryTableEnName, string attributeName, DataType dataType, int dataLength, int taxis, bool isSystem) 
 		{
 			_tableMetadataId = tableMetadataId;
 			_auxiliaryTableEnName = auxiliaryTableEnName;
@@ -54,7 +55,7 @@ namespace BaiRong.Core.Model
 			set{ _attributeName = value; }
 		}
 
-		public EDataType DataType
+		public DataType DataType
 		{
 			get{ return _dataType; }
 			set{ _dataType = value; }

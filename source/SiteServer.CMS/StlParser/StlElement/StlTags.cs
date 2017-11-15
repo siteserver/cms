@@ -1,121 +1,78 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlTags
+    [Stl(Usage = "标签", Description = "通过 stl:tags 标签在模板中显示内容标签")]
+    public class StlTags
 	{
         private StlTags() { }
-        public const string ElementName = "stl:tags";//标签
+        public const string ElementName = "stl:tags";
 
-        public const string Attribute_TagLevel = "taglevel";					        //标签级别
-        public const string Attribute_TotalNum = "totalnum";					        //显示标签数目
-        public const string Attribute_IsOrderByCount = "isorderbycount";				//是否按引用次数排序
-        public const string Attribute_Theme = "theme";			            //主题样式
-        public const string Attribute_Context = "context";                  //所处上下文
+        public const string AttributeTagLevel = "tagLevel";
+        public const string AttributeTotalNum = "totalNum";
+        public const string AttributeIsOrderByCount = "isOrderByCount";
+        public const string AttributeTheme = "theme";
+        public const string AttributeContext = "context";
 
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {AttributeTagLevel, "标签级别"},
+	        {AttributeTotalNum, "显示标签数目"},
+	        {AttributeIsOrderByCount, "是否按引用次数排序"},
+	        {AttributeTheme, "主题样式"},
+	        {AttributeContext, "所处上下文"}
+	    };
 
-		public static ListDictionary AttributeList
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			get
-			{
-				var attributes = new ListDictionary();
+		    var tagLevel = 1;
+            var totalNum = 0;
+            var isOrderByCount = false;
+            var theme = "default";
+            var isInnerXml = !string.IsNullOrEmpty(contextInfo.InnerXml);
 
-                attributes.Add(Attribute_TagLevel, "标签级别");
-                attributes.Add(Attribute_TotalNum, "显示标签数目");
-                attributes.Add(Attribute_IsOrderByCount, "是否按引用次数排序");
-                attributes.Add(Attribute_Theme, "主题样式");
-                attributes.Add(Attribute_Context, "所处上下文");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
+		    foreach (var name in contextInfo.Attributes.Keys)
+		    {
+		        var value = contextInfo.Attributes[name];
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
-		{
-			var parsedContent = string.Empty;
-            var contextInfo = contextInfoRef.Clone();
-			try
-			{
-                var attributes = new LowerNameValueCollection();
-				var ie = node.Attributes.GetEnumerator();
-
-                var tagLevel = 1;
-                var totalNum = 0;
-                var isOrderByCount = false;
-                var theme = "default";
-
-                var isDynamic = false;
-                var isInnerXml = !string.IsNullOrEmpty(node.InnerXml);
-
-				while (ie.MoveNext())
-				{
-					var attr = (XmlAttribute)ie.Current;
-					var attributeName = attr.Name.ToLower();
-                    
-                    if (attributeName.Equals(Attribute_TagLevel))
-                    {
-                        tagLevel = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_TotalNum))
-                    {
-                        totalNum = TranslateUtils.ToInt(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_IsOrderByCount))
-                    {
-                        isOrderByCount = TranslateUtils.ToBool(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_Theme))
-                    {
-                        theme = attr.Value;
-                    }
-                    else if (attributeName.Equals(Attribute_Context))
-                    {
-                        contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
-                    }
-                    else if (attributeName.Equals(Attribute_IsDynamic))
-                    {
-                        isDynamic = TranslateUtils.ToBool(attr.Value);
-                    }
-					else
-					{
-                        attributes[attributeName] = attr.Value;
-					}
-				}
-
-                if (isDynamic)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeTagLevel))
                 {
-                    parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
+                    tagLevel = TranslateUtils.ToInt(value);
                 }
-                else
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTotalNum))
                 {
-                    parsedContent = ParseImpl(stlElement, isInnerXml, pageInfo, contextInfo, tagLevel, totalNum, isOrderByCount, theme);
+                    totalNum = TranslateUtils.ToInt(value);
                 }
-			}
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsOrderByCount))
+                {
+                    isOrderByCount = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTheme))
+                {
+                    theme = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
+                {
+                    contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
+                }
             }
 
-			return parsedContent;
+            return ParseImpl(isInnerXml, pageInfo, contextInfo, tagLevel, totalNum, isOrderByCount, theme);
 		}
 
-        private static string ParseImpl(string stlElement, bool isInnerXml, PageInfo pageInfo, ContextInfo contextInfo, int tagLevel, int totalNum, bool isOrderByCount, string theme)
+        private static string ParseImpl(bool isInnerXml, PageInfo pageInfo, ContextInfo contextInfo, int tagLevel, int totalNum, bool isOrderByCount, string theme)
         {
             var innerHtml = string.Empty;
             if (isInnerXml)
             {
-                innerHtml = StringUtils.StripTags(stlElement, ElementName);
+                innerHtml = StringUtils.StripTags(contextInfo.StlElement, ElementName);
             }
 
             var tagsBuilder = new StringBuilder();
@@ -129,22 +86,16 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (contextInfo.ContextType == EContextType.Undefined)
             {
-                if (contextInfo.ContentID != 0)
-                {
-                    contextInfo.ContextType = EContextType.Content;
-                }
-                else
-                {
-                    contextInfo.ContextType = EContextType.Channel;
-                }
+                contextInfo.ContextType = contextInfo.ContentId != 0 ? EContextType.Content : EContextType.Channel;
             }
-            var contentID = 0;
+            var contentId = 0;
             if (contextInfo.ContextType == EContextType.Content)
             {
-                contentID = contextInfo.ContentID;
+                contentId = contextInfo.ContentId;
             }
 
-            var tagInfoList = TagUtils.GetTagInfoList(pageInfo.PublishmentSystemId, contentID, totalNum, isOrderByCount, tagLevel);
+            var tagInfoList = Tag.GetTagInfoList(pageInfo.PublishmentSystemId, contentId, isOrderByCount, totalNum);
+            tagInfoList = TagUtils.GetTagInfoList(tagInfoList, totalNum, tagLevel);
             if (contextInfo.ContextType == EContextType.Content && contextInfo.ContentInfo != null)
             {
                 var tagInfoList2 = new List<TagInfo>();
@@ -165,7 +116,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         if (!isAdd)
                         {
-                            var tagInfo = new TagInfo(0, pageInfo.PublishmentSystemId, contentID.ToString(), tagName, 1);
+                            var tagInfo = new TagInfo(0, pageInfo.PublishmentSystemId, contentId.ToString(), tagName, 1);
                             tagInfoList2.Add(tagInfo);
                         }
                     }

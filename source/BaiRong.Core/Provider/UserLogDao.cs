@@ -4,12 +4,54 @@ using System.Data;
 using System.Text;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class UserLogDao : DataProviderBase
     {
+        public override string TableName => "bairong_UserLog";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.UserName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.IpAddress),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.AddDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.Action),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserLogInfo.Summary),
+                DataType = DataType.VarChar,
+                Length = 255
+            }
+        };
+
         private const string ParmUserName = "@UserName";
         private const string ParmIpAddress = "@IPAddress";
         private const string ParmAddDate = "@AddDate";
@@ -22,29 +64,20 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                    GetParameter(ParmUserName, EDataType.VarChar, 50, userLog.UserName),
-                    GetParameter(ParmIpAddress, EDataType.VarChar, 50, userLog.IpAddress),
-                    GetParameter(ParmAddDate, EDataType.DateTime, userLog.AddDate),
-                    GetParameter(ParmAction, EDataType.NVarChar, 255, userLog.Action),
-                    GetParameter(ParmSummary, EDataType.NVarChar, 255, userLog.Summary)
+                    GetParameter(ParmUserName, DataType.VarChar, 50, userLog.UserName),
+                    GetParameter(ParmIpAddress, DataType.VarChar, 50, userLog.IpAddress),
+                    GetParameter(ParmAddDate, DataType.DateTime, userLog.AddDate),
+                    GetParameter(ParmAction, DataType.VarChar, 255, userLog.Action),
+                    GetParameter(ParmSummary, DataType.VarChar, 255, userLog.Summary)
             };
 
             ExecuteNonQuery(sqlString, parms);
         }
 
-        public void Delete(int days, int counter)
+        public void Delete(int days)
         {
-            if (days > 0)
-            {
-                ExecuteNonQuery($@"DELETE FROM bairong_UserLog WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
-            }
-            if (counter > 0)
-            {
-                ExecuteNonQuery($@"DELETE FROM bairong_UserLog WHERE ID IN(
-SELECT ID from(
-SELECT ID, ROW_NUMBER() OVER(ORDER BY AddDate DESC) as rowNum FROM bairong_UserLog) as t
-WHERE t.rowNum > {counter})");
-            }
+            if (days <= 0) return;
+            ExecuteNonQuery($@"DELETE FROM bairong_UserLog WHERE AddDate < '{DateUtils.GetDateAndTimeString(DateTime.Now.AddDays(-days))}'");
         }
 
         public void Delete(List<int> idList)
@@ -158,11 +191,12 @@ WHERE t.rowNum > {counter})");
         {
             var retval = DateTime.MinValue;
             //const string sqlString = "SELECT TOP 1 AddDate FROM bairong_UserLog WHERE UserName = @UserName ORDER BY ID DESC";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_UserLog", "AddDate", "WHERE UserName = @UserName ORDER BY ID DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_UserLog", "AddDate", "WHERE UserName = @UserName",
+                "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmUserName, EDataType.VarChar, 50, userName)
+				GetParameter(ParmUserName, DataType.VarChar, 50, userName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -180,11 +214,12 @@ WHERE t.rowNum > {counter})");
         {
             var retval = DateTime.MinValue;
             //const string sqlString = "SELECT TOP 1 AddDate FROM bairong_UserLog WHERE UserName = @UserName AND Action = '清空数据库日志' ORDER BY ID DESC";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_UserLog", "AddDate", "WHERE UserName = @UserName AND Action = '清空数据库日志' ORDER BY ID DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_UserLog", "AddDate",
+                "WHERE UserName = @UserName AND Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmUserName, EDataType.VarChar, 50, userName)
+				GetParameter(ParmUserName, DataType.VarChar, 50, userName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -198,29 +233,27 @@ WHERE t.rowNum > {counter})");
             return retval;
         }
 
-        public List<UserLogInfo> List(string userName, int totalNum, string action)
+        public List<ILogInfo> List(string userName, int totalNum, string action)
         {
-            var list = new List<UserLogInfo>();
+            var list = new List<ILogInfo>();
             var sqlString = "SELECT * FROM bairong_UserLog WHERE UserName = @UserName";
 
             if (!string.IsNullOrEmpty(action))
             {
                 sqlString += " And Action = @Action";
             }
-            else
-            {
-                action = EUserActionTypeUtils.GetValue(EUserActionType.Login);
-                sqlString += " And Action <> @Action";
-            }
             sqlString += " ORDER BY ID DESC";
 
-            var parms = new IDataParameter[]
+            var parameters = new List<IDataParameter>
             {
-                GetParameter(ParmUserName, EDataType.VarChar, 50, userName),
-                GetParameter(ParmAction, EDataType.NVarChar, 255, action)
+                GetParameter(ParmUserName, DataType.VarChar, 50, userName)
             };
+            if (!string.IsNullOrEmpty(action))
+            {
+                parameters.Add(GetParameter(ParmAction, DataType.VarChar, 255, action));
+            }
 
-            using (var rdr = ExecuteReader(sqlString, parms))
+            using (var rdr = ExecuteReader(sqlString, parameters.ToArray()))
             {
                 while (rdr.Read())
                 {

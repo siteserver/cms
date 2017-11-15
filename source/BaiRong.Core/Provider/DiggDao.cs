@@ -1,12 +1,46 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class DiggDao : DataProviderBase
 	{
+        public override string TableName => "bairong_Digg";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = "DiggId",
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "PublishmentSystemId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "RelatedIdentity",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Good",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Bad",
+                DataType = DataType.Integer
+            }
+        };
+
         private const string SqlSelectDigg = "SELECT Good, Bad FROM bairong_Digg WHERE PublishmentSystemID = @PublishmentSystemID AND RelatedIdentity = @RelatedIdentity";
 
         private const string SqlSelectDiggId = "SELECT DiggID FROM bairong_Digg WHERE PublishmentSystemID = @PublishmentSystemID AND RelatedIdentity = @RelatedIdentity";
@@ -18,21 +52,21 @@ namespace BaiRong.Core.Provider
         private const string ParmPublishmentSystemId = "@PublishmentSystemID";
 		private const string ParmRelatedIdentity = "@RelatedIdentity";
         private const string ParmGood = "@Good";
-        private const string ParmBad = "@Bad";		
+        private const string ParmBad = "@Bad";
 
 		private void Insert(int publishmentSystemId, int relatedIdentity, bool isGood)
 		{
-            var good = (isGood) ? 1 : 0;
-            var bad = (isGood) ? 0 : 1;
+            var good = isGood ? 1 : 0;
+            var bad = isGood ? 0 : 1;
 
             var sqlString = "INSERT INTO bairong_Digg (PublishmentSystemID, RelatedIdentity, Good, Bad) VALUES (@PublishmentSystemID, @RelatedIdentity, @Good, @Bad)";
 
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmRelatedIdentity, EDataType.Integer, relatedIdentity),
-				GetParameter(ParmGood, EDataType.Integer, good),
-				GetParameter(ParmBad, EDataType.Integer, bad)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity),
+				GetParameter(ParmGood, DataType.Integer, good),
+				GetParameter(ParmBad, DataType.Integer, bad)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -44,10 +78,10 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmRelatedIdentity, EDataType.Integer, relatedIdentity),
-				GetParameter(ParmGood, EDataType.Integer, goodNum),
-				GetParameter(ParmBad, EDataType.Integer, badNum)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity),
+				GetParameter(ParmGood, DataType.Integer, goodNum),
+				GetParameter(ParmBad, DataType.Integer, badNum)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -59,8 +93,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmRelatedIdentity, EDataType.Integer, relatedIdentity)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -83,8 +117,8 @@ namespace BaiRong.Core.Provider
 		{
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmRelatedIdentity, EDataType.Integer, relatedIdentity)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity)
 			};
 
             ExecuteNonQuery(SqlDeleteDigg, parms);
@@ -96,8 +130,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmRelatedIdentity, EDataType.Integer, relatedIdentity)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectDiggId, parms))
@@ -121,8 +155,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				GetParameter(ParmRelatedIdentity, EDataType.Integer, relatedIdentity)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectDigg, parms))
@@ -147,19 +181,19 @@ namespace BaiRong.Core.Provider
             {
                 var parms = new IDataParameter[]
 			    {
-                    GetParameter(ParmGood, EDataType.Integer, goodNum),
-                    GetParameter(ParmBad, EDataType.Integer, badNum),
-				    GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				    GetParameter(ParmRelatedIdentity, EDataType.Integer, relatedIdentity)
+                    GetParameter(ParmGood, DataType.Integer, goodNum),
+                    GetParameter(ParmBad, DataType.Integer, badNum),
+				    GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				    GetParameter(ParmRelatedIdentity, DataType.Integer, relatedIdentity)
 			    };
 
                 ExecuteNonQuery(SqlUpdateDigg, parms);
             }
         }
 
-        public ArrayList GetRelatedIdentityArrayListByTotal(int publishmentSystemId)
+        public List<int> GetRelatedIdentityListByTotal(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<int>();
 
             string sqlString = $@"
 SELECT RelatedIdentity, (Good + Bad) AS NUM
@@ -173,12 +207,12 @@ ORDER BY NUM DESC";
                 while (rdr.Read())
                 {
                     var relatedIdentity = GetInt(rdr, 0);
-                    arraylist.Add(relatedIdentity);
+                    list.Add(relatedIdentity);
                 }
                 rdr.Close();
             }
 
-            return arraylist;
+            return list;
         }
 	}
 }

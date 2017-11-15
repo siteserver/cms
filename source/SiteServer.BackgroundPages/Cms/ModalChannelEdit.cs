@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -49,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public ChannelAuxiliaryControl channelControl;
 
-        public Button btnSubmit;
+        public Button BtnSubmit;
 
         private int _nodeId;
         private string _returnUrl;
@@ -85,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
             channelControl = (ChannelAuxiliaryControl)FindControl("ControlForAuxiliary");
             if (!IsPostBack)
             {
-                if (!HasChannelPermissions(_nodeId, AppManager.Cms.Permission.Channel.ChannelEdit))
+                if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ChannelEdit))
                 {
                     PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
@@ -102,7 +101,7 @@ namespace SiteServer.BackgroundPages.Cms
                         FilePathRow.Visible = false;
                     }
 
-                    btnSubmit.Attributes.Add("onclick", "if (UE && UE.getEditor('Content', {{allowDivTransToP: false}})){ UE.getEditor('Content', {{allowDivTransToP: false}}).sync(); }");
+                    BtnSubmit.Attributes.Add("onclick", "if (UE && UE.getEditor('Content', {{allowDivTransToP: false}})){ UE.getEditor('Content', {{allowDivTransToP: false}}).sync(); }");
 
                     if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ChannelEditAttributes))
                     {
@@ -171,7 +170,7 @@ namespace SiteServer.BackgroundPages.Cms
                         //{
                         //    displayAttributes = TranslateUtils.StringCollectionToStringList(PublishmentSystemInfo.Additional.ChannelEditAttributes);
                         //}
-                        channelControl.SetParameters(nodeInfo.Additional.Attributes, true, IsPostBack);
+                        channelControl.SetParameters(nodeInfo.Additional.GetExtendedAttributes(), true, IsPostBack);
                     }
 
                     if (LinkTypeRow.Visible)
@@ -330,10 +329,10 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var extendedAttributes = new ExtendedAttributes();
                         var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-                        InputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.Attributes);
-                        if (extendedAttributes.Attributes.Count > 0)
+                        BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.GetExtendedAttributes());
+                        if (extendedAttributes.GetExtendedAttributes().Count > 0)
                         {
-                            nodeInfo.Additional.SetExtendedAttribute(extendedAttributes.Attributes);
+                            nodeInfo.Additional.SetExtendedAttribute(extendedAttributes.GetExtendedAttributes());
                         }
                     }
 
@@ -407,7 +406,7 @@ namespace SiteServer.BackgroundPages.Cms
                 catch (Exception ex)
                 {
                     FailMessage(ex, $"栏目修改失败：{ex.Message}");
-                    LogUtils.AddErrorLog(ex);
+                    LogUtils.AddSystemErrorLog(ex);
                 }
 
                 if (isChanged)

@@ -4,7 +4,7 @@ using System.Web.UI.WebControls;
 namespace BaiRong.Core.Model.Enumerations
 {
     /// <summary>
-    /// ÍÆËÍÀàĞÍ
+    /// æ¨é€ç±»å‹
     /// </summary>
     public enum ESubscribePushType
     {
@@ -20,30 +20,24 @@ namespace BaiRong.Core.Model.Enumerations
             {
                 return "ManualPush";
             }
-            else if (type == ESubscribePushType.TimedPush)
+            if (type == ESubscribePushType.TimedPush)
             {
                 return "TimedPush";
-            } 
-            else
-            {
-                throw new Exception();
             }
+            throw new Exception();
         }
 
         public static string GetText(ESubscribePushType type)
         {
             if (type == ESubscribePushType.ManualPush)
             {
-                return "ÊÖ¶¯ÍÆËÍ";
+                return "æ‰‹åŠ¨æ¨é€";
             }
-            else if (type == ESubscribePushType.TimedPush)
+            if (type == ESubscribePushType.TimedPush)
             {
-                return "¶¨Ê±ÍÆËÍ";
-            } 
-            else
-            {
-                throw new Exception();
+                return "å®šæ—¶æ¨é€";
             }
+            throw new Exception();
         }
 
         public static ESubscribePushType GetEnumType(string typeStr)

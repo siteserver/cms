@@ -13,14 +13,12 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.StlParser;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
     internal class SiteContentIe
     {
-        readonly PublishmentSystemInfo _publishmentSystemInfo;
-        readonly FileSystemObject _fso;
+        private readonly PublishmentSystemInfo _publishmentSystemInfo;
 
         //保存除内容表本身字段外的属性
         private const string ChannelTemplateName = "ChannelTemplateName";
@@ -33,7 +31,6 @@ namespace SiteServer.CMS.ImportExport.Components
         {
             _siteContentDirectoryPath = siteContentDirectoryPath;
             _publishmentSystemInfo = publishmentSystemInfo;
-            _fso = new FileSystemObject(_publishmentSystemInfo.PublishmentSystemId);
 
             var photoDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, DirectoryUtils.SiteTemplates.Photo);
             DirectoryUtils.CreateDirectoryIfNotExists(photoDirectoryPath);
@@ -255,7 +252,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     {
                         if (!contentInfo.ContainsKey(attributeName.ToLower()))
                         {
-                            contentInfo.Attributes[attributeName] = AtomUtility.Decrypt(attributes[attributeName]);
+                            contentInfo.SetExtendedAttribute(attributeName, AtomUtility.Decrypt(attributes[attributeName]));
                         }
                     }
 
@@ -268,7 +265,7 @@ namespace SiteServer.CMS.ImportExport.Components
                             foreach (int id in existsIDs)
                             {
                                 contentInfo.Id = id;
-                                DataProvider.ContentDao.Update(tableName, _fso.PublishmentSystemInfo, contentInfo);
+                                DataProvider.ContentDao.Update(tableName, _publishmentSystemInfo, contentInfo);
                             }
                         }
                         else
@@ -352,12 +349,12 @@ namespace SiteServer.CMS.ImportExport.Components
             var channelTemplateName = AtomUtility.GetDcElementContent(additionalElements, ChannelTemplateName);
             if (!string.IsNullOrEmpty(channelTemplateName))
             {
-                nodeInfo.ChannelTemplateId = TemplateManager.GetTemplateIDByTemplateName(_publishmentSystemInfo.PublishmentSystemId, ETemplateType.ChannelTemplate, channelTemplateName);
+                nodeInfo.ChannelTemplateId = TemplateManager.GetTemplateIdByTemplateName(_publishmentSystemInfo.PublishmentSystemId, ETemplateType.ChannelTemplate, channelTemplateName);
             }
             var contentTemplateName = AtomUtility.GetDcElementContent(additionalElements, ContentTemplateName);
             if (!string.IsNullOrEmpty(contentTemplateName))
             {
-                nodeInfo.ContentTemplateId = TemplateManager.GetTemplateIDByTemplateName(_publishmentSystemInfo.PublishmentSystemId, ETemplateType.ContentTemplate, contentTemplateName);
+                nodeInfo.ContentTemplateId = TemplateManager.GetTemplateIdByTemplateName(_publishmentSystemInfo.PublishmentSystemId, ETemplateType.ContentTemplate, contentTemplateName);
             }
 
             nodeInfo.Keywords = AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.Keywords);
@@ -529,11 +526,11 @@ namespace SiteServer.CMS.ImportExport.Components
             var starSetting = StarsManager.GetStarSettingToExport(_publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id);
             AtomUtility.AddDcElement(entry.AdditionalElements, BackgroundContentAttribute.StarSetting, starSetting);
 
-            foreach (string attributeName in contentInfo.Attributes.Keys)
+            foreach (string attributeName in contentInfo.GetExtendedAttributes().Keys)
             {
                 if (!ContentAttribute.AllAttributes.Contains(attributeName.ToLower()))
                 {
-                    AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, AtomUtility.Encrypt(contentInfo.Attributes[attributeName]));
+                    AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, AtomUtility.Encrypt(contentInfo.GetExtendedAttribute(attributeName)));
                 }
             }
 

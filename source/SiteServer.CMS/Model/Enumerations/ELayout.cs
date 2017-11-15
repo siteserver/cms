@@ -6,51 +6,45 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum ELayout
 	{
-		Table,					//±Ì∏Ò
-		Flow,					//¡˜
-		None,					//Œﬁ≤ºæ÷
+		Table,					//Ë°®Ê†º
+		Flow,					//ÊµÅ
+		None,					//Êó†Â∏ÉÂ±Ä
 	}
 
 	public class ELayoutUtils
 	{
 		public static string GetValue(ELayout type)
 		{
-            if (type == ELayout.Table)
+		    if (type == ELayout.Table)
 			{
 				return "Table";
 			}
-			else if (type == ELayout.Flow)
-			{
-				return "Flow";
-			}
-			else if (type == ELayout.None)
-			{
-				return "None";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ELayout.Flow)
+		    {
+		        return "Flow";
+		    }
+		    if (type == ELayout.None)
+		    {
+		        return "None";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(ELayout type)
 		{
-            if (type == ELayout.Table)
+		    if (type == ELayout.Table)
 			{
-				return "±Ì∏Ò";
+				return "Ë°®Ê†º";
 			}
-			else if (type == ELayout.Flow)
-			{
-				return "¡˜";
-			}
-			else if (type == ELayout.None)
-			{
-				return "Œﬁ≤ºæ÷";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ELayout.Flow)
+		    {
+		        return "ÊµÅ";
+		    }
+		    if (type == ELayout.None)
+		    {
+		        return "Êó†Â∏ÉÂ±Ä";
+		    }
+		    throw new Exception();
 		}
 
 		public static ELayout GetEnumType(string typeStr)

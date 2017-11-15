@@ -4,34 +4,30 @@ namespace SiteServer.CMS.Model
 {
     public class CreateTaskInfo
     {
-        public CreateTaskInfo(int id, ECreateType createType, int publishmentSystemID, int channelID, int contentID, int templateID)
+        public CreateTaskInfo(int id, string name, ECreateType createType, int publishmentSystemId, int channelId, int contentId, int templateId, int pageCount)
         {
-            ID = id;
+            Id = id;
+            Name = name;
             CreateType = createType;
-            PublishmentSystemID = publishmentSystemID;
-            ChannelID = channelID;
-            ContentID = contentID;
-            TemplateID = templateID;
+            PublishmentSystemId = publishmentSystemId;
+            ChannelId = channelId;
+            ContentId = contentId;
+            TemplateId = templateId;
+            PageCount = pageCount;
         }
 
-        public int ID { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
         public ECreateType CreateType { get; set; }
-        public int PublishmentSystemID { get; set; }
-        public int ChannelID { get; set; }
-        public int ContentID { get; set; }
-        public int TemplateID { get; set; }
+        public int PublishmentSystemId { get; set; }
+        public int ChannelId { get; set; }
+        public int ContentId { get; set; }
+        public int TemplateId { get; set; }
+        public int PageCount { get; set; }
 
         public bool Equals(CreateTaskInfo taskInfo)
         {
-            if (taskInfo == null)
-            {
-                return false;
-            }
-            if (CreateType != taskInfo.CreateType || PublishmentSystemID != taskInfo.PublishmentSystemID || ChannelID != taskInfo.ChannelID || ContentID != taskInfo.ContentID || TemplateID != taskInfo.TemplateID)
-            {
-                return false;
-            }
-            return true;
+            return CreateType == taskInfo?.CreateType && PublishmentSystemId == taskInfo.PublishmentSystemId && ChannelId == taskInfo.ChannelId && ContentId == taskInfo.ContentId && TemplateId == taskInfo.TemplateId;
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using BaiRong.Core;
-using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
@@ -13,8 +12,11 @@ namespace SiteServer.CMS.Model
         public const string DefaultApiUrl = "/api";
         public const string DefaultHomeUrl = "/home";
 
-        public PublishmentSystemInfoExtend(string settingsXml)
+        private readonly string _publishmentSystemDir;
+
+        public PublishmentSystemInfoExtend(string publishmentSystemDir, string settingsXml)
         {
+            _publishmentSystemDir = publishmentSystemDir;
             var nameValueCollection = TranslateUtils.ToNameValueCollection(settingsXml);
             SetExtendedAttribute(nameValueCollection);
         }
@@ -55,13 +57,13 @@ namespace SiteServer.CMS.Model
 
         public bool IsCountHits
         {
-            get { return GetBool("IsCountHits", false); }
+            get { return GetBool("IsCountHits"); }
             set { SetExtendedAttribute("IsCountHits", value.ToString()); }
         }
 
         public bool IsCountHitsByDay
         {
-            get { return GetBool("IsCountHitsByDay", false); }
+            get { return GetBool("IsCountHitsByDay"); }
             set { SetExtendedAttribute("IsCountHitsByDay", value.ToString()); }
         }
 
@@ -83,18 +85,6 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("IsTranslate", value.ToString()); }
         }
 
-        public bool IsAutoSaveContent
-        {
-            get { return GetBool("IsAutoSaveContent", true); }
-            set { SetExtendedAttribute("IsAutoSaveContent", value.ToString()); }
-        }
-
-        public int AutoSaveContentInterval
-        {
-            get { return GetInt("AutoSaveContentInterval", 180); }
-            set { SetExtendedAttribute("AutoSaveContentInterval", value.ToString()); }
-        }
-
         public bool IsSaveImageInTextEditor
         {
             get { return GetBool("IsSaveImageInTextEditor", true); }
@@ -103,7 +93,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsAutoPageInTextEditor
         {
-            get { return GetBool("IsAutoPageInTextEditor", false); }
+            get { return GetBool("IsAutoPageInTextEditor"); }
             set { SetExtendedAttribute("IsAutoPageInTextEditor", value.ToString()); }
         }
 
@@ -115,7 +105,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsContentTitleBreakLine
         {
-            get { return GetBool("IsContentTitleBreakLine", false); }
+            get { return GetBool("IsContentTitleBreakLine"); }
             set { SetExtendedAttribute("IsContentTitleBreakLine", value.ToString()); }
         }
 
@@ -124,7 +114,7 @@ namespace SiteServer.CMS.Model
         /// </summary>
         public bool IsAutoCheckKeywords
         {
-            get { return GetBool("lIsAutoCheckKeywords", false); }
+            get { return GetBool("lIsAutoCheckKeywords"); }
             set { SetExtendedAttribute("lIsAutoCheckKeywords", value.ToString()); }
         }
 
@@ -143,35 +133,23 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("PhotoSmallWidth", value.ToString()); }
         }
 
-        public int PhotoSmallHeight
-        {
-            get { return GetInt("PhotoSmallHeight", 70); }
-            set { SetExtendedAttribute("PhotoSmallHeight", value.ToString()); }
-        }
-
         public int PhotoMiddleWidth
         {
             get { return GetInt("PhotoMiddleWidth", 400); }
             set { SetExtendedAttribute("PhotoMiddleWidth", value.ToString()); }
         }
 
-        public int PhotoMiddleHeight
-        {
-            get { return GetInt("PhotoMiddleHeight", 400); }
-            set { SetExtendedAttribute("PhotoMiddleHeight", value.ToString()); }
-        }
-
         /****************图片水印设置********************/
 
         public bool IsWaterMark
         {
-            get { return GetBool("IsWaterMark", false); }
+            get { return GetBool("IsWaterMark"); }
             set { SetExtendedAttribute("IsWaterMark", value.ToString()); }
         }
 
         public bool IsImageWaterMark
         {
-            get { return GetBool("IsImageWaterMark", false); }
+            get { return GetBool("IsImageWaterMark"); }
             set { SetExtendedAttribute("IsImageWaterMark", value.ToString()); }
         }
 
@@ -225,34 +203,33 @@ namespace SiteServer.CMS.Model
 
         /****************生成页面设置********************/
 
-        public bool IsMultiDeployment
+        public bool IsSeparatedWeb
         {
-            get { return GetBool("IsMultiDeployment", false); }
-            set { SetExtendedAttribute("IsMultiDeployment", value.ToString()); }
+            get
+            {
+                return ConfigManager.SystemConfigInfo.IsUrlGlobalSetting
+                    ? ConfigManager.SystemConfigInfo.IsSeparatedWeb
+                    : GetBool("IsSeparatedWeb");
+            }
+            set { SetExtendedAttribute("IsSeparatedWeb", value.ToString()); }
         }
 
-        public string OuterUrl
+        public string WebUrl
         {
-            get { return GetString("OuterUrl", string.Empty); }
-            set { SetExtendedAttribute("OuterUrl", value); }
+            get
+            {
+                if (ConfigManager.SystemConfigInfo.IsUrlGlobalSetting)
+                {
+                    return PageUtils.Combine(ConfigManager.SystemConfigInfo.WebUrl, _publishmentSystemDir);
+                }
+                return IsSeparatedWeb ? SeparatedWebUrl : PageUtils.Combine("/", _publishmentSystemDir);
+            }
         }
 
-        public string InnerUrl
+        public string SeparatedWebUrl
         {
-            get { return GetString("InnerUrl", string.Empty); }
-            set { SetExtendedAttribute("InnerUrl", value); }
-        }
-
-        public string ApiUrl
-        {
-            get { return GetString("ApiUrl", DefaultApiUrl); }
-            set { SetExtendedAttribute("ApiUrl", value); }
-        }
-
-        public string HomeUrl
-        {
-            get { return GetString("HomeUrl", DefaultHomeUrl); }
-            set { SetExtendedAttribute("HomeUrl", value); }
+            get { return GetString("SeparatedWebUrl"); }
+            set { SetExtendedAttribute("SeparatedWebUrl", value); }
         }
 
         public string ChannelFilePathRule
@@ -281,25 +258,25 @@ namespace SiteServer.CMS.Model
 
         public bool IsCreateShowPageInfo
         {
-            get { return GetBool("IsCreateShowPageInfo", false); }
+            get { return GetBool("IsCreateShowPageInfo"); }
             set { SetExtendedAttribute("IsCreateShowPageInfo", value.ToString()); }
         }
 
         public bool IsCreateIe8Compatible
         {
-            get { return GetBool("IsCreateIe8Compatible", false); }
+            get { return GetBool("IsCreateIe8Compatible"); }
             set { SetExtendedAttribute("IsCreateIe8Compatible", value.ToString()); }
         }
 
         public bool IsCreateBrowserNoCache
         {
-            get { return GetBool("IsCreateBrowserNoCache", false); }
+            get { return GetBool("IsCreateBrowserNoCache"); }
             set { SetExtendedAttribute("IsCreateBrowserNoCache", value.ToString()); }
         }
 
         public bool IsCreateJsIgnoreError
         {
-            get { return GetBool("IsCreateJsIgnoreError", false); }
+            get { return GetBool("IsCreateJsIgnoreError"); }
             set { SetExtendedAttribute("IsCreateJsIgnoreError", value.ToString()); }
         }
 
@@ -315,15 +292,9 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("IsCreateWithJQuery", value.ToString()); }
         }
 
-        public bool IsCreateIncludeToSsi
-        {
-            get { return GetBool("IsCreateIncludeToSsi", false); }
-            set { SetExtendedAttribute("IsCreateIncludeToSsi", value.ToString()); }
-        }
-
         public bool IsCreateDoubleClick
         {
-            get { return GetBool("IsCreateDoubleClick", false); }
+            get { return GetBool("IsCreateDoubleClick"); }
             set { SetExtendedAttribute("IsCreateDoubleClick", value.ToString()); }
         }
 
@@ -335,7 +306,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsCreateStaticContentByAddDate
         {
-            get { return GetBool("IsCreateStaticContentByAddDate", false); }
+            get { return GetBool("IsCreateStaticContentByAddDate"); }
             set { SetExtendedAttribute("IsCreateStaticContentByAddDate", value.ToString()); }
         }
 
@@ -345,73 +316,35 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("CreateStaticContentAddDate", DateUtils.GetDateString(value)); }
         }
 
-        /****************站点地图设置********************/
-
-        public string SiteMapGooglePath
+        public bool IsCreateMultiThread
         {
-            get { return GetString("SiteMapGooglePath", "@/sitemap.xml"); }
-            set { SetExtendedAttribute("SiteMapGooglePath", value); }
-        }
-
-        public string SiteMapGoogleChangeFrequency
-        {
-            get { return GetString("SiteMapGoogleChangeFrequency", "daily"); }
-            set { SetExtendedAttribute("SiteMapGoogleChangeFrequency", value); }
-        }
-
-        public bool SiteMapGoogleIsShowLastModified
-        {
-            get { return GetBool("SiteMapGoogleIsShowLastModified", false); }
-            set { SetExtendedAttribute("SiteMapGoogleIsShowLastModified", value.ToString()); }
-        }
-
-        public int SiteMapGooglePageCount
-        {
-            get { return GetInt("SiteMapGooglePageCount", 10000); }
-            set { SetExtendedAttribute("SiteMapGooglePageCount", value.ToString()); }
-        }
-
-        public string SiteMapBaiduPath
-        {
-            get { return GetString("SiteMapBaiduPath", "@/baidunews.xml"); }
-            set { SetExtendedAttribute("SiteMapBaiduPath", value); }
-        }
-
-        public string SiteMapBaiduWebMaster
-        {
-            get { return GetString("SiteMapBaiduWebMaster", string.Empty); }
-            set { SetExtendedAttribute("SiteMapBaiduWebMaster", value); }
-        }
-
-        public string SiteMapBaiduUpdatePeri
-        {
-            get { return GetString("SiteMapBaiduUpdatePeri", "15"); }
-            set { SetExtendedAttribute("SiteMapBaiduUpdatePeri", value); }
+            get { return GetBool("IsCreateMultiThread"); }
+            set { SetExtendedAttribute("IsCreateMultiThread", value.ToString()); }
         }
 
         /****************流量统计设置********************/
 
         public bool IsTracker
         {
-            get { return GetBool("IsTracker", false); }
+            get { return GetBool("IsTracker"); }
             set { SetExtendedAttribute("IsTracker", value.ToString()); }
         }
 
         public int TrackerDays
         {
-            get { return GetInt("TrackerDays", 0); }
+            get { return GetInt("TrackerDays"); }
             set { SetExtendedAttribute("TrackerDays", value.ToString()); }
         }
 
         public int TrackerPageView
         {
-            get { return GetInt("TrackerPageView", 0); }
+            get { return GetInt("TrackerPageView"); }
             set { SetExtendedAttribute("TrackerPageView", value.ToString()); }
         }
 
         public int TrackerUniqueVisitor
         {
-            get { return GetInt("TrackerUniqueVisitor", 0); }
+            get { return GetInt("TrackerUniqueVisitor"); }
             set { SetExtendedAttribute("TrackerUniqueVisitor", value.ToString()); }
         }
 
@@ -419,12 +352,6 @@ namespace SiteServer.CMS.Model
         {
             get { return GetInt("TrackerCurrentMinute", 30); }
             set { SetExtendedAttribute("TrackerCurrentMinute", value.ToString()); }
-        }
-
-        public ETrackerStyle TrackerStyle
-        {
-            get { return ETrackerStyleUtils.GetEnumType(GetString("TrackerStyle", ETrackerStyleUtils.GetValue(ETrackerStyle.Style1))); }
-            set { SetExtendedAttribute("TrackerStyle", ETrackerStyleUtils.GetValue(value)); }
         }
 
         /****************显示项设置********************/
@@ -445,7 +372,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsCrossSiteTransChecked
         {
-            get { return GetBool("IsCrossSiteTransChecked", false); }
+            get { return GetBool("IsCrossSiteTransChecked"); }
             set { SetExtendedAttribute("IsCrossSiteTransChecked", value.ToString()); }
         }
 
@@ -453,13 +380,13 @@ namespace SiteServer.CMS.Model
 
         public bool IsInnerLink
         {
-            get { return GetBool("IsInnerLink", false); }
+            get { return GetBool("IsInnerLink"); }
             set { SetExtendedAttribute("IsInnerLink", value.ToString()); }
         }
 
         public bool IsInnerLinkByChannelName
         {
-            get { return GetBool("IsInnerLinkByChannelName", false); }
+            get { return GetBool("IsInnerLinkByChannelName"); }
             set { SetExtendedAttribute("IsInnerLinkByChannelName", value.ToString()); }
         }
 
@@ -607,7 +534,7 @@ namespace SiteServer.CMS.Model
 
         public bool IsCheckComments
         {
-            get { return GetBool("IsCheckComments", false); }
+            get { return GetBool("IsCheckComments"); }
             set { SetExtendedAttribute("IsCheckComments", value.ToString()); }
         }
 
@@ -718,111 +645,11 @@ namespace SiteServer.CMS.Model
 
         #endregion
 
-        #region WCM
-
-        /****************信息公开设置********************/
-
-        public int GovPublicNodeId
-        {
-            get { return GetInt("GovPublicNodeId", 0); }
-            set { SetExtendedAttribute("GovPublicNodeId", value.ToString()); }
-        }
-
-        public bool GovPublicIsPublisherRelatedDepartmentId
-        {
-            get { return GetBool("GovPublicIsPublisherRelatedDepartmentId", true); }
-            set { SetExtendedAttribute("GovPublicIsPublisherRelatedDepartmentId", value.ToString()); }
-        }
-
-        public string GovPublicDepartmentIdCollection
-        {
-            get { return GetString("GovPublicDepartmentIdCollection", string.Empty); }
-            set { SetExtendedAttribute("GovPublicDepartmentIdCollection", value); }
-        }
-
-        /****************依申请公开设置********************/
-
-        public int GovPublicApplyDateLimit              //办理时限
-        {
-            get { return GetInt("GovPublicApplyDateLimit", 15); }
-            set { SetExtendedAttribute("GovPublicApplyDateLimit", value.ToString()); }
-        }
-
-        public int GovPublicApplyAlertDate              //预警
-        {
-            get { return GetInt("GovPublicApplyAlertDate", -3); }
-            set { SetExtendedAttribute("GovPublicApplyAlertDate", value.ToString()); }
-        }
-
-        public int GovPublicApplyYellowAlertDate      //黄牌
-        {
-            get { return GetInt("GovPublicApplyYellowAlertDate", 3); }
-            set { SetExtendedAttribute("GovPublicApplyYellowAlertDate", value.ToString()); }
-        }
-
-        public int GovPublicApplyRedAlertDate       //红牌
-        {
-            get { return GetInt("GovPublicApplyRedAlertDate", 10); }
-            set { SetExtendedAttribute("GovPublicApplyRedAlertDate", value.ToString()); }
-        }
-
-        public bool GovPublicApplyIsDeleteAllowed   //是否允许删除
-        {
-            get { return GetBool("GovPublicApplyIsDeleteAllowed", true); }
-            set { SetExtendedAttribute("GovPublicApplyIsDeleteAllowed", value.ToString()); }
-        }
-
-        /****************互动交流设置********************/
-
-        public int GovInteractNodeId
-        {
-            get { return GetInt("GovInteractNodeId", 0); }
-            set { SetExtendedAttribute("GovInteractNodeId", value.ToString()); }
-        }
-
-        public int GovInteractApplyDateLimit              //办理时限
-        {
-            get { return GetInt("GovInteractApplyDateLimit", 15); }
-            set { SetExtendedAttribute("GovInteractApplyDateLimit", value.ToString()); }
-        }
-
-        public int GovInteractApplyAlertDate              //预警
-        {
-            get { return GetInt("GovInteractApplyAlertDate", -3); }
-            set { SetExtendedAttribute("GovInteractApplyAlertDate", value.ToString()); }
-        }
-
-        public int GovInteractApplyYellowAlertDate      //黄牌
-        {
-            get { return GetInt("GovInteractApplyYellowAlertDate", 3); }
-            set { SetExtendedAttribute("GovInteractApplyYellowAlertDate", value.ToString()); }
-        }
-
-        public int GovInteractApplyRedAlertDate       //红牌
-        {
-            get { return GetInt("GovInteractApplyRedAlertDate", 10); }
-            set { SetExtendedAttribute("GovInteractApplyRedAlertDate", value.ToString()); }
-        }
-
-        public bool GovInteractApplyIsDeleteAllowed   //是否允许删除
-        {
-            get { return GetBool("GovInteractApplyIsDeleteAllowed", true); }
-            set { SetExtendedAttribute("GovInteractApplyIsDeleteAllowed", value.ToString()); }
-        }
-
-        public bool GovInteractApplyIsOpenWindow   //是否新窗口打开
-        {
-            get { return GetBool("GovInteractApplyIsOpenWindow", false); }
-            set { SetExtendedAttribute("GovInteractApplyIsOpenWindow", value.ToString()); }
-        }
-
-        #endregion
-
         #region weixin
 
         public bool WxIsWebMenu
         {
-            get { return GetBool("WxIsWebMenu", false); }
+            get { return GetBool("WxIsWebMenu"); }
             set { SetExtendedAttribute("WxIsWebMenu", value.ToString()); }
         }
 
@@ -844,71 +671,71 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("WxIsWebMenuLeft", value.ToString()); }
         }
 
-        public bool CardIsClaimCardCredits
+        public bool WxCardIsClaimCardCredits
         {
-            get { return GetBool("CardIsClaimCardCredits", false); }
-            set { SetExtendedAttribute("CardIsClaimCardCredits", value.ToString()); }
+            get { return GetBool("WxCardIsClaimCardCredits"); }
+            set { SetExtendedAttribute("WxCardIsClaimCardCredits", value.ToString()); }
         }
 
-        public int CardClaimCardCredits
+        public int WxCardClaimCardCredits
         {
-            get { return GetInt("CardClaimCardCredits", 20); }
-            set { SetExtendedAttribute("CardClaimCardCredits", value.ToString()); }
+            get { return GetInt("WxCardClaimCardCredits", 20); }
+            set { SetExtendedAttribute("WxCardClaimCardCredits", value.ToString()); }
         }
 
-        public bool CardIsGiveConsumeCredits
+        public bool WxCardIsGiveConsumeCredits
         {
-            get { return GetBool("CardIsGiveConsumeCredits", false); }
-            set { SetExtendedAttribute("CardIsGiveConsumeCredits", value.ToString()); }
+            get { return GetBool("WxCardIsGiveConsumeCredits"); }
+            set { SetExtendedAttribute("WxCardIsGiveConsumeCredits", value.ToString()); }
         }
 
-        public decimal CardConsumeAmount
+        public decimal WxCardConsumeAmount
         {
-            get { return GetDecimal("CardConsumeAmount", 100); }
-            set { SetExtendedAttribute("CardConsumeAmount", value.ToString(CultureInfo.InvariantCulture)); }
+            get { return GetDecimal("WxCardConsumeAmount", 100); }
+            set { SetExtendedAttribute("WxCardConsumeAmount", value.ToString(CultureInfo.InvariantCulture)); }
         }
 
-        public int CardGiveCredits
+        public int WxCardGiveCredits
         {
-            get { return GetInt("CardGiveCredits", 50); }
-            set { SetExtendedAttribute("CardGiveCredits", value.ToString()); }
+            get { return GetInt("WxCardGiveCredits", 50); }
+            set { SetExtendedAttribute("WxCardGiveCredits", value.ToString()); }
         }
 
-        public bool CardIsBinding
+        public bool WxCardIsBinding
         {
-            get { return GetBool("CardIsBinding", true); }
-            set { SetExtendedAttribute("CardIsBinding", value.ToString()); }
+            get { return GetBool("WxCardIsBinding", true); }
+            set { SetExtendedAttribute("WxCardIsBinding", value.ToString()); }
         }
 
-        public bool CardIsExchange
+        public bool WxCardIsExchange
         {
-            get { return GetBool("CardIsExchange", true); }
-            set { SetExtendedAttribute("CardIsExchange", value.ToString()); }
+            get { return GetBool("WxCardIsExchange", true); }
+            set { SetExtendedAttribute("WxCardIsExchange", value.ToString()); }
         }
 
-        public decimal CardExchangeProportion
+        public decimal WxCardExchangeProportion
         {
-            get { return GetDecimal("CardExchangeProportion", 10); }
-            set { SetExtendedAttribute("CardExchangeProportion", value.ToString(CultureInfo.InvariantCulture)); }
+            get { return GetDecimal("WxCardExchangeProportion", 10); }
+            set { SetExtendedAttribute("WxCardExchangeProportion", value.ToString(CultureInfo.InvariantCulture)); }
         }
 
-        public bool CardIsSign
+        public bool WxCardIsSign
         {
-            get { return GetBool("CardIsSign", false); }
-            set { SetExtendedAttribute("CardIsSign", value.ToString()); }
+            get { return GetBool("WxCardIsSign"); }
+            set { SetExtendedAttribute("WxCardIsSign", value.ToString()); }
         }
 
-        public string CardSignCreditsConfigure
+        public string WxCardSignCreditsConfigure
         {
-            get { return GetString("CardSignCreditsConfigure", string.Empty); }
-            set { SetExtendedAttribute("CardSignCreditsConfigure", value); }
+            get { return GetString("WxCardSignCreditsConfigure", string.Empty); }
+            set { SetExtendedAttribute("WxCardSignCreditsConfigure", value); }
         }
 
         #endregion
 
         public override string ToString()
         {
-            return TranslateUtils.NameValueCollectionToString(Attributes);
+            return TranslateUtils.NameValueCollectionToString(GetExtendedAttributes());
         }
     }
 }

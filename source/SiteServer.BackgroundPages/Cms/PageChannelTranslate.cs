@@ -6,7 +6,6 @@ using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Security;
@@ -28,9 +27,8 @@ namespace SiteServer.BackgroundPages.Cms
         public PlaceHolder phReturn;
         public Button Submit;
 
-		private bool[] isLastNodeArray;
+		private bool[] _isLastNodeArray;
 		public string SystemKeyword;
-        private string returnUrl;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
@@ -73,9 +71,9 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
 			PageUtils.CheckRequestParameter("PublishmentSystemID");
-            returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
-            if (!HasChannelPermissions(PublishmentSystemId, AppManager.Cms.Permission.Channel.ContentDelete))
+            if (!HasChannelPermissions(PublishmentSystemId, AppManager.Permissions.Channel.ContentDelete))
 			{
 				IsDeleteAfterTranslate.Visible = false;
 			}
@@ -84,7 +82,7 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "批量转移", string.Empty);
 
-                phReturn.Visible = !string.IsNullOrEmpty(returnUrl);
+                phReturn.Visible = !string.IsNullOrEmpty(ReturnUrl);
 				ETranslateTypeUtils.AddListItems(TranslateType);
                 if (Body.IsQueryExists("ChannelIDCollection"))
                 {
@@ -98,39 +96,39 @@ namespace SiteServer.BackgroundPages.Cms
 				IsDeleteAfterTranslate.Items[0].Value = true.ToString();
 				IsDeleteAfterTranslate.Items[1].Value = false.ToString();
 
-                var publishmentSystemIDList = ProductPermissionsManager.Current.PublishmentSystemIdList;
-                foreach (var psID in publishmentSystemIDList)
+                var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList;
+                foreach (var psId in publishmentSystemIdList)
 				{
-					var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psID);
-                    var listitem = new ListItem(psInfo.PublishmentSystemName, psID.ToString());
-                    if (psID == PublishmentSystemId) listitem.Selected = true;
+					var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psId);
+                    var listitem = new ListItem(psInfo.PublishmentSystemName, psId.ToString());
+                    if (psId == PublishmentSystemId) listitem.Selected = true;
                     PublishmentSystemIDDropDownList.Items.Add(listitem);
 				}
 
-                var nodeIDStrArrayList = new List<string>();
+                var nodeIdStrArrayList = new List<string>();
                 if (Body.IsQueryExists("ChannelIDCollection"))
                 {
-                    nodeIDStrArrayList = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("ChannelIDCollection"));
+                    nodeIdStrArrayList = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("ChannelIDCollection"));
                 }
 
 				var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
                 var nodeCount = nodeIdList.Count;
-				isLastNodeArray = new bool[nodeCount];
-                foreach (int theNodeID in nodeIdList)
+				_isLastNodeArray = new bool[nodeCount];
+                foreach (var theNodeId in nodeIdList)
 				{
-                    var enabled = IsOwningNodeId(theNodeID);
+                    var enabled = IsOwningNodeId(theNodeId);
                     if (!enabled)
                     {
-                        if (!IsHasChildOwningNodeId(theNodeID)) continue;
+                        if (!IsHasChildOwningNodeId(theNodeId)) continue;
                     }
-                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeID);
+                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeId);
 
                     var value = enabled ? nodeInfo.NodeId.ToString() : string.Empty;
                     value = (nodeInfo.Additional.IsContentAddable) ? value : string.Empty;
 
                     var text = GetTitle(nodeInfo);
 					var listItem = new ListItem(text, value);
-                    if (nodeIDStrArrayList.Contains(value))
+                    if (nodeIdStrArrayList.Contains(value))
                     {
                         listItem.Selected = true;
                     }
@@ -150,15 +148,15 @@ namespace SiteServer.BackgroundPages.Cms
 			}
             if (nodeInfo.IsLastNode == false)
 			{
-                isLastNodeArray[nodeInfo.ParentsCount] = false;
+                _isLastNodeArray[nodeInfo.ParentsCount] = false;
 			}
 			else
 			{
-                isLastNodeArray[nodeInfo.ParentsCount] = true;
+                _isLastNodeArray[nodeInfo.ParentsCount] = true;
 			}
             for (var i = 0; i < nodeInfo.ParentsCount; i++)
 			{
-				if (isLastNodeArray[i])
+				if (_isLastNodeArray[i])
 				{
 					str = string.Concat(str, "　");
 				}
@@ -187,48 +185,48 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 			if (Page.IsPostBack)
 			{
-				var targetNodeID = int.Parse(NodeIDTo.SelectedValue);
+				var targetNodeId = int.Parse(NodeIDTo.SelectedValue);
 
-				var targetPublishmentSystemID = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
-				var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemID);
-				var isChecked = false;
-				var checkedLevel = 0;
-                if (targetPublishmentSystemInfo.CheckContentLevel == 0 || AdminUtility.HasChannelPermissions(Body.AdministratorName, targetPublishmentSystemID, targetNodeID, AppManager.Cms.Permission.Channel.ContentAdd, AppManager.Cms.Permission.Channel.ContentCheck))
+				var targetPublishmentSystemId = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
+				var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
+				bool isChecked;
+				int checkedLevel;
+                if (targetPublishmentSystemInfo.CheckContentLevel == 0 || AdminUtility.HasChannelPermissions(Body.AdminName, targetPublishmentSystemId, targetNodeId, AppManager.Permissions.Channel.ContentAdd, AppManager.Permissions.Channel.ContentCheck))
 				{
 					isChecked = true;
 					checkedLevel = 0;
 				}
 				else
 				{
-					var UserCheckLevel = 0;
-					var OwnHighestLevel = false;
+					var userCheckLevel = 0;
+					var ownHighestLevel = false;
 
-                    if (AdminUtility.HasChannelPermissions(Body.AdministratorName, targetPublishmentSystemID, targetNodeID, AppManager.Cms.Permission.Channel.ContentCheckLevel1))
+                    if (AdminUtility.HasChannelPermissions(Body.AdminName, targetPublishmentSystemId, targetNodeId, AppManager.Permissions.Channel.ContentCheckLevel1))
                     {
-                        UserCheckLevel = 1;
-                        if (AdminUtility.HasChannelPermissions(Body.AdministratorName, targetPublishmentSystemID, targetNodeID, AppManager.Cms.Permission.Channel.ContentCheckLevel2))
+                        userCheckLevel = 1;
+                        if (AdminUtility.HasChannelPermissions(Body.AdminName, targetPublishmentSystemId, targetNodeId, AppManager.Permissions.Channel.ContentCheckLevel2))
                         {
-                            UserCheckLevel = 2;
-                            if (AdminUtility.HasChannelPermissions(Body.AdministratorName, targetPublishmentSystemID, targetNodeID, AppManager.Cms.Permission.Channel.ContentCheckLevel3))
+                            userCheckLevel = 2;
+                            if (AdminUtility.HasChannelPermissions(Body.AdminName, targetPublishmentSystemId, targetNodeId, AppManager.Permissions.Channel.ContentCheckLevel3))
                             {
-                                UserCheckLevel = 3;
-                                if (AdminUtility.HasChannelPermissions(Body.AdministratorName, targetPublishmentSystemID, targetNodeID, AppManager.Cms.Permission.Channel.ContentCheckLevel4))
+                                userCheckLevel = 3;
+                                if (AdminUtility.HasChannelPermissions(Body.AdminName, targetPublishmentSystemId, targetNodeId, AppManager.Permissions.Channel.ContentCheckLevel4))
                                 {
-                                    UserCheckLevel = 4;
-                                    if (AdminUtility.HasChannelPermissions(Body.AdministratorName, targetPublishmentSystemID, targetNodeID, AppManager.Cms.Permission.Channel.ContentCheckLevel5))
+                                    userCheckLevel = 4;
+                                    if (AdminUtility.HasChannelPermissions(Body.AdminName, targetPublishmentSystemId, targetNodeId, AppManager.Permissions.Channel.ContentCheckLevel5))
                                     {
-                                        UserCheckLevel = 5;
+                                        userCheckLevel = 5;
                                     }
                                 }
                             }
                         }
                     }
 
-                    if (UserCheckLevel >= targetPublishmentSystemInfo.CheckContentLevel)
+                    if (userCheckLevel >= targetPublishmentSystemInfo.CheckContentLevel)
 					{
-						OwnHighestLevel = true;
+						ownHighestLevel = true;
 					}
-					if (OwnHighestLevel)
+					if (ownHighestLevel)
 					{
 						isChecked = true;
 						checkedLevel = 0;
@@ -236,7 +234,7 @@ namespace SiteServer.BackgroundPages.Cms
 					else
 					{
 						isChecked = false;
-						checkedLevel = UserCheckLevel;
+						checkedLevel = userCheckLevel;
 					}
 				}
 
@@ -244,62 +242,65 @@ namespace SiteServer.BackgroundPages.Cms
 				{
                     var translateType = ETranslateTypeUtils.GetEnumType(TranslateType.SelectedValue);
 
-                    var nodeIDStrArrayList = ControlUtils.GetSelectedListControlValueArrayList(NodeIDFrom);
+                    var nodeIdStrArrayList = ControlUtils.GetSelectedListControlValueArrayList(NodeIDFrom);
 
-                    var nodeIDArrayList = new ArrayList();//需要转移的栏目ID
-                    foreach (string nodeIDStr in nodeIDStrArrayList)
+                    var nodeIdArrayList = new ArrayList();//需要转移的栏目ID
+                    foreach (string nodeIdStr in nodeIdStrArrayList)
                     {
-                        var nodeID = int.Parse(nodeIDStr);
+                        var nodeId = int.Parse(nodeIdStr);
                         if (translateType != ETranslateType.Content)//需要转移栏目
                         {
-                            if (!ChannelUtility.IsAncestorOrSelf(PublishmentSystemId, nodeID, targetNodeID))
+                            if (!NodeManager.IsAncestorOrSelf(PublishmentSystemId, nodeId, targetNodeId))
                             {
-                                nodeIDArrayList.Add(nodeID);
+                                nodeIdArrayList.Add(nodeId);
                             }
                         }
 
                         if (translateType == ETranslateType.Content)//转移内容
                         {
-                            TranslateContent(targetPublishmentSystemInfo, nodeID, targetNodeID, isChecked, checkedLevel);
+                            TranslateContent(targetPublishmentSystemInfo, nodeId, targetNodeId, isChecked, checkedLevel);
                         }
                     }
 
                     if (translateType != ETranslateType.Content)//需要转移栏目
                     {
-                        var nodeIDArrayListToTranslate = new ArrayList(nodeIDArrayList);
-                        foreach (int nodeID in nodeIDArrayList)
+                        var nodeIdArrayListToTranslate = new ArrayList(nodeIdArrayList);
+                        foreach (int nodeId in nodeIdArrayList)
                         {
-                            var subNodeIDArrayList = DataProvider.NodeDao.GetNodeIdListForDescendant(nodeID);
-                            if (subNodeIDArrayList != null && subNodeIDArrayList.Count > 0)
+                            var subNodeIdArrayList = DataProvider.NodeDao.GetNodeIdListForDescendant(nodeId);
+                            if (subNodeIdArrayList != null && subNodeIdArrayList.Count > 0)
                             {
-                                foreach (int nodeIDToDelete in subNodeIDArrayList)
+                                foreach (int nodeIdToDelete in subNodeIdArrayList)
                                 {
-                                    if (nodeIDArrayListToTranslate.Contains(nodeIDToDelete))
+                                    if (nodeIdArrayListToTranslate.Contains(nodeIdToDelete))
                                     {
-                                        nodeIDArrayListToTranslate.Remove(nodeIDToDelete);
+                                        nodeIdArrayListToTranslate.Remove(nodeIdToDelete);
                                     }
                                 }
                             }
                         }
 
                         var nodeInfoList = new List<NodeInfo>();
-                        foreach (int nodeID in nodeIDArrayListToTranslate)
+                        foreach (int nodeId in nodeIdArrayListToTranslate)
                         {
-                            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
+                            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
                             nodeInfoList.Add(nodeInfo);
                         }
 
-                        TranslateChannelAndContent(nodeInfoList, targetPublishmentSystemID, targetNodeID, translateType, isChecked, checkedLevel, null, null);
+                        TranslateChannelAndContent(nodeInfoList, targetPublishmentSystemId, targetNodeId, translateType, isChecked, checkedLevel, null, null);
 
                         if (IsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(IsDeleteAfterTranslate.SelectedValue, EBoolean.True))
                         {
-                            foreach (int nodeID in nodeIDArrayListToTranslate)
+                            foreach (int nodeId in nodeIdArrayListToTranslate)
                             {
                                 try
                                 {
-                                    DataProvider.NodeDao.Delete(nodeID);
+                                    DataProvider.NodeDao.Delete(nodeId);
                                 }
-                                catch { }
+                                catch
+                                {
+                                    // ignored
+                                }
                             }
                         }
                     }
@@ -322,7 +323,7 @@ namespace SiteServer.BackgroundPages.Cms
 					SuccessMessage("批量转移成功！");
                     if (Body.IsQueryExists("ChannelIDCollection"))
                     {
-                        PageUtils.Redirect(returnUrl);
+                        PageUtils.Redirect(ReturnUrl);
                     }
                     else
                     {
@@ -332,13 +333,13 @@ namespace SiteServer.BackgroundPages.Cms
 				catch(Exception ex)
 				{
                     FailMessage(ex, "批量转移失败！");
-                    LogUtils.AddErrorLog(ex);
+                    LogUtils.AddSystemErrorLog(ex);
 				}
 
 			}
 		}
 
-		private void TranslateChannelAndContent(List<NodeInfo> nodeInfoList, int targetPublishmentSystemID, int parentID, ETranslateType translateType, bool isChecked, int checkedLevel, List<string> nodeIndexNameList, List<string> filePathList)
+		private void TranslateChannelAndContent(List<NodeInfo> nodeInfoList, int targetPublishmentSystemId, int parentId, ETranslateType translateType, bool isChecked, int checkedLevel, List<string> nodeIndexNameList, List<string> filePathList)
 		{
 			if (nodeInfoList == null || nodeInfoList.Count == 0)
 			{
@@ -347,26 +348,28 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (nodeIndexNameList == null)
 			{
-                nodeIndexNameList = DataProvider.NodeDao.GetNodeIndexNameList(targetPublishmentSystemID);
+                nodeIndexNameList = DataProvider.NodeDao.GetNodeIndexNameList(targetPublishmentSystemId);
 			}
 
             if (filePathList == null)
 			{
-                filePathList = DataProvider.NodeDao.GetAllFilePathByPublishmentSystemId(targetPublishmentSystemID);
+                filePathList = DataProvider.NodeDao.GetAllFilePathByPublishmentSystemId(targetPublishmentSystemId);
 			}
 
-            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemID);
+            var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
 
-			foreach (NodeInfo oldNodeInfo in nodeInfoList)
+			foreach (var oldNodeInfo in nodeInfoList)
 			{
-                var nodeInfo = new NodeInfo(oldNodeInfo);
-				nodeInfo.PublishmentSystemId = targetPublishmentSystemID;
-				nodeInfo.ParentId = parentID;
-				nodeInfo.ContentNum = 0;
-				nodeInfo.ChildrenCount = 0;
-                
-				nodeInfo.AddDate = DateTime.Now;
-                if (IsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(IsDeleteAfterTranslate.SelectedValue, EBoolean.True))
+			    var nodeInfo = new NodeInfo(oldNodeInfo)
+			    {
+			        PublishmentSystemId = targetPublishmentSystemId,
+			        ParentId = parentId,
+			        ContentNum = 0,
+			        ChildrenCount = 0,
+			        AddDate = DateTime.Now
+			    };
+
+			    if (IsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(IsDeleteAfterTranslate.SelectedValue, EBoolean.True))
                 {
                     nodeIndexNameList.Add(nodeInfo.NodeIndexName);
                 }
@@ -389,39 +392,39 @@ namespace SiteServer.BackgroundPages.Cms
                     nodeInfo.FilePath = string.Empty;
                 }
 
-                var insertedNodeID = DataProvider.NodeDao.InsertNodeInfo(nodeInfo);
+                var insertedNodeId = DataProvider.NodeDao.InsertNodeInfo(nodeInfo);
 
                 if (translateType == ETranslateType.All)
                 {
-                    TranslateContent(targetPublishmentSystemInfo, oldNodeInfo.NodeId, insertedNodeID, isChecked, checkedLevel);
+                    TranslateContent(targetPublishmentSystemInfo, oldNodeInfo.NodeId, insertedNodeId, isChecked, checkedLevel);
                 }
 
-                if (insertedNodeID != 0)
+                if (insertedNodeId != 0)
                 {
                     var orderByString = ETaxisTypeUtils.GetChannelOrderByString(ETaxisType.OrderByTaxis);
-                    var childrenNodeInfoList = DataProvider.NodeDao.GetNodeInfoList(oldNodeInfo, 0, "", EScopeType.Children, orderByString);
+                    var childrenNodeInfoList = DataProvider.NodeDao.GetNodeInfoList(oldNodeInfo.NodeId, oldNodeInfo.ChildrenCount, 0, "", EScopeType.Children, orderByString);
                     if (childrenNodeInfoList != null && childrenNodeInfoList.Count > 0)
                     {
-                        TranslateChannelAndContent(childrenNodeInfoList, targetPublishmentSystemID, insertedNodeID, translateType, isChecked, checkedLevel, nodeIndexNameList, filePathList);
+                        TranslateChannelAndContent(childrenNodeInfoList, targetPublishmentSystemId, insertedNodeId, translateType, isChecked, checkedLevel, nodeIndexNameList, filePathList);
                     }
 
                     if (isChecked)
                     {
-                        CreateManager.CreateChannel(targetPublishmentSystemInfo.PublishmentSystemId, insertedNodeID);
+                        CreateManager.CreateChannel(targetPublishmentSystemInfo.PublishmentSystemId, insertedNodeId);
                     }
                 }
 			}
 		}
 
-		private void TranslateContent(PublishmentSystemInfo targetPublishmentSystemInfo, int nodeID, int targetNodeID, bool isChecked, int checkedLevel)
+		private void TranslateContent(PublishmentSystemInfo targetPublishmentSystemInfo, int nodeId, int targetNodeId, bool isChecked, int checkedLevel)
 		{
-            var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeID);
-            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeID);
+            var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeId);
+            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
 
             var orderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisType.OrderByTaxis);
 
-            var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeID);
-            var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, nodeID, orderByString);
+            var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeId);
+            var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, nodeId, orderByString);
 
             foreach (var contentId in contentIdList)
 			{
@@ -429,14 +432,14 @@ namespace SiteServer.BackgroundPages.Cms
                 FileUtility.MoveFileByContentInfo(PublishmentSystemInfo, targetPublishmentSystemInfo, contentInfo);
                 contentInfo.PublishmentSystemId = TranslateUtils.ToInt(PublishmentSystemIDDropDownList.SelectedValue);
                 contentInfo.SourceId = contentInfo.NodeId;
-				contentInfo.NodeId = targetNodeID;
+				contentInfo.NodeId = targetNodeId;
 				contentInfo.IsChecked = isChecked;
 				contentInfo.CheckedLevel = checkedLevel;
 
-                var theContentID = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
+                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 				if (contentInfo.IsChecked)
 				{
-                    CreateManager.CreateContentAndTrigger(targetPublishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, theContentID);
+                    CreateManager.CreateContentAndTrigger(targetPublishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, theContentId);
 				}
 			}
 
@@ -444,25 +447,28 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 try
                 {
-                    DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList, nodeID);
+                    DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList, nodeId);
                 }
-                catch { }
+			    catch
+			    {
+			        // ignored
+			    }
 			}
 		}
 
 
 		public void PublishmentSystemID_OnSelectedIndexChanged(object sender, EventArgs e)
 		{
-			var psID = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
+			var psId = int.Parse(PublishmentSystemIDDropDownList.SelectedValue);
 
 			NodeIDTo.Items.Clear();
 
-			var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(psID);
+			var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(psId);
             var nodeCount = nodeIdList.Count;
-			isLastNodeArray = new bool[nodeCount];
-            foreach (int theNodeID in nodeIdList)
+			_isLastNodeArray = new bool[nodeCount];
+            foreach (var theNodeId in nodeIdList)
 			{
-                var nodeInfo = NodeManager.GetNodeInfo(psID, theNodeID);
+                var nodeInfo = NodeManager.GetNodeInfo(psId, theNodeId);
                 var value = IsOwningNodeId(nodeInfo.NodeId) ? nodeInfo.NodeId.ToString() : "";
                 value = (nodeInfo.Additional.IsContentAddable) ? value : "";
                 var listitem = new ListItem(GetTitle(nodeInfo), value);
@@ -470,6 +476,6 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 		}
 
-        public string ReturnUrl => returnUrl;
-	}
+        public string ReturnUrl { get; private set; }
+    }
 }

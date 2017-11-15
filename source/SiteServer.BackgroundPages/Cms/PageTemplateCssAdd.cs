@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
 			if (!IsPostBack)
 			{
                 var pageTitle = string.IsNullOrEmpty(fileName) ? "添加样式文件" : "编辑样式文件";
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, pageTitle, AppManager.Cms.Permission.WebSite.Template);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, pageTitle, AppManager.Permissions.WebSite.Template);
 
                 ltlPageTitle.Text = pageTitle;
 

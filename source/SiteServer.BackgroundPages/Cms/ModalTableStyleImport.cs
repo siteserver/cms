@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"RelatedIdentity", relatedIdentity.ToString()}
-                }), 560, 200);
+                }), 760, 200);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -42,9 +42,9 @@ namespace SiteServer.BackgroundPages.Cms
 			if (myFile.PostedFile != null && "" != myFile.PostedFile.FileName)
 			{
 				var filePath = myFile.PostedFile.FileName;
-                if (!EFileSystemTypeUtils.IsCompressionFile(PathUtils.GetExtension(filePath)))
+                if (!EFileSystemTypeUtils.IsZip(PathUtils.GetExtension(filePath)))
 				{
-                    FailMessage("必须上传压缩文件");
+                    FailMessage("必须上传Zip压缩文件");
 					return;
 				}
 

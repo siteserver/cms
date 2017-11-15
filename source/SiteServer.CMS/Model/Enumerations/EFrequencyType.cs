@@ -18,74 +18,68 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EFrequencyType type)
 		{
-            if (type == EFrequencyType.Month)
+		    if (type == EFrequencyType.Month)
 			{
                 return "Month";
             }
-            else if (type == EFrequencyType.Week)
-            {
-                return "Week";
-            }
-            else if (type == EFrequencyType.Day)
-			{
-                return "Day";
-			}
-            else if (type == EFrequencyType.Hour)
-			{
-                return "Hour";
-            }
-            else if (type == EFrequencyType.Period)
-            {
-                return "Period";
-            }
-            else if (type == EFrequencyType.JustInTime)
-            {
-                return "JustInTime";
-            }
-            else if (type == EFrequencyType.OnlyOnce)
-            {
-                return "OnlyOnce";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EFrequencyType.Week)
+		    {
+		        return "Week";
+		    }
+		    if (type == EFrequencyType.Day)
+		    {
+		        return "Day";
+		    }
+		    if (type == EFrequencyType.Hour)
+		    {
+		        return "Hour";
+		    }
+		    if (type == EFrequencyType.Period)
+		    {
+		        return "Period";
+		    }
+		    if (type == EFrequencyType.JustInTime)
+		    {
+		        return "JustInTime";
+		    }
+		    if (type == EFrequencyType.OnlyOnce)
+		    {
+		        return "OnlyOnce";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EFrequencyType type)
 		{
-            if (type == EFrequencyType.Month)
+		    if (type == EFrequencyType.Month)
             {
                 return "每月一次";
             }
-            else if (type == EFrequencyType.Week)
-            {
-                return "每周一次";
-            }
-            else if (type == EFrequencyType.Day)
-			{
-                return "每天一次";
-			}
-            else if (type == EFrequencyType.Hour)
-			{
-                return "每小时一次";
-            }
-            else if (type == EFrequencyType.Period)
-            {
-                return "每周期一次";
-            }
-            else if (type == EFrequencyType.JustInTime)
-            {
-                return "实时监控";
-            }
-            else if (type == EFrequencyType.OnlyOnce)
-            {
-                return "只执行一次";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EFrequencyType.Week)
+		    {
+		        return "每周一次";
+		    }
+		    if (type == EFrequencyType.Day)
+		    {
+		        return "每天一次";
+		    }
+		    if (type == EFrequencyType.Hour)
+		    {
+		        return "每小时一次";
+		    }
+		    if (type == EFrequencyType.Period)
+		    {
+		        return "每周期一次";
+		    }
+		    if (type == EFrequencyType.JustInTime)
+		    {
+		        return "实时监控";
+		    }
+		    if (type == EFrequencyType.OnlyOnce)
+		    {
+		        return "只执行一次";
+		    }
+		    throw new Exception();
 		}
 
 		public static EFrequencyType GetEnumType(string typeStr)

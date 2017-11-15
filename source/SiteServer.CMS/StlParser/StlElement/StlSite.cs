@@ -1,126 +1,95 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Parser;
+using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlSite
+    [Stl(Usage = "获取站点值", Description = "通过 stl:site 标签在模板中显示站点值")]
+    public class StlSite
 	{
         private StlSite() { }
-		public const string ElementName = "stl:site";       //显示指定站点的数据
+		public const string ElementName = "stl:site";
 
-        public const string Attribute_SiteName = "sitename";				//站点名称
-        public const string Attribute_Directory = "directory";				//站点文件夹
-        public const string Attribute_IsDynamic = "isdynamic";              //是否动态显示
+        public const string AttributeSiteName = "siteName";
+        public const string AttributeSiteDir = "siteDir";
 
-		public static ListDictionary AttributeList
-		{
-			get
-			{
-				var attributes = new ListDictionary();
-                attributes.Add(Attribute_SiteName, "站点名称");
-                attributes.Add(Attribute_Directory, "站点文件夹");
-                attributes.Add(Attribute_IsDynamic, "是否动态显示");
-				return attributes;
-			}
-		}
-
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {AttributeSiteName, "站点名称"},
+	        {AttributeSiteDir, "站点文件夹"}
+	    };
 
         //循环解析型标签
-        internal static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
+        internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
 			var parsedContent = string.Empty;
-            
-			try
-			{
-                if (!string.IsNullOrEmpty(node.InnerXml))
+
+            if (!string.IsNullOrEmpty(contextInfo.InnerXml))
+            {
+                var siteName = string.Empty;
+                var siteDir = string.Empty;
+
+                foreach (var name in contextInfo.Attributes.Keys)
                 {
-                    var contextInfo = contextInfoRef.Clone();
-                    var ie = node.Attributes.GetEnumerator();
-                    var siteName = string.Empty;
-                    var directory = string.Empty;
-                    var isDynamic = false;
+                    var value = contextInfo.Attributes[name];
 
-                    while (ie.MoveNext())
+                    if (StringUtils.EqualsIgnoreCase(name, AttributeSiteName))
                     {
-                        var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(Attribute_SiteName))
-                        {
-                            siteName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (attributeName.Equals(Attribute_Directory))
-                        {
-                            directory = StlEntityParser.ReplaceStlEntitiesForAttributeValue(attr.Value, pageInfo, contextInfo);
-                        }
-                        else if (attributeName.Equals(Attribute_IsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
+                        siteName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     }
-
-                    if (isDynamic)
+                    else if (StringUtils.EqualsIgnoreCase(name, AttributeSiteDir))
                     {
-                        parsedContent = StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo);
-                    }
-                    else
-                    {
-                        parsedContent = ParseImpl(node, pageInfo, contextInfo, siteName, directory);
+                        siteDir = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     }
                 }
-			}
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+
+                parsedContent = ParseImpl(pageInfo, contextInfo, siteName, siteDir);
             }
 
-			return parsedContent;
+            return parsedContent;
 		}
 
-        private static string ParseImpl(XmlNode node, PageInfo pageInfo, ContextInfo contextInfo, string siteName, string directory)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string siteName, string siteDir)
         {
-            var parsedContent = string.Empty;
-
             PublishmentSystemInfo publishmentSystemInfo = null;
 
             if (!string.IsNullOrEmpty(siteName))
             {
                 publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoBySiteName(siteName);
             }
-            else if (!string.IsNullOrEmpty(directory))
+            else if (!string.IsNullOrEmpty(siteDir))
             {
-                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoByDirectory(directory);
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfoByDirectory(siteDir);
             }
             else
             {
-                var siteID = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
-                if (siteID > 0)
+                //var siteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
+                var siteId = PublishmentSystem.GetPublishmentSystemIdByIsHeadquarters();
+                if (siteId > 0)
                 {
-                    publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteID);
+                    publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
                 }
             }
 
-            if (publishmentSystemInfo != null)
-            {
-                var prePublishmentSystemInfo = pageInfo.PublishmentSystemInfo;
-                var prePageNodeID = pageInfo.PageNodeId;
-                var prePageContentID = pageInfo.PageContentId;
+            if (publishmentSystemInfo == null) return string.Empty;
 
-                pageInfo.ChangeSite(publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, 0, contextInfo);
+            var prePublishmentSystemInfo = pageInfo.PublishmentSystemInfo;
+            var prePageNodeId = pageInfo.PageNodeId;
+            var prePageContentId = pageInfo.PageContentId;
 
-                var innerBuilder = new StringBuilder(node.InnerXml);
-                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                parsedContent = innerBuilder.ToString();
+            pageInfo.ChangeSite(publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, 0, contextInfo);
 
-                pageInfo.ChangeSite(prePublishmentSystemInfo, prePageNodeID, prePageContentID, contextInfo);
-            }
+            var innerBuilder = new StringBuilder(contextInfo.InnerXml);
+            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+            var parsedContent = innerBuilder.ToString();
+
+            pageInfo.ChangeSite(prePublishmentSystemInfo, prePageNodeId, prePageContentId, contextInfo);
 
             return parsedContent;
         }

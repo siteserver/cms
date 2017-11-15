@@ -2,7 +2,6 @@
 using System.Web.Http;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 using SiteServer.API.Model;
 using SiteServer.CMS.Controllers.Users;
 using SiteServer.CMS.Core;
@@ -25,7 +24,6 @@ namespace SiteServer.API.Controllers.Users
                 string errorMessage;
                 if (!BaiRongDataProvider.UserDao.ValidateAccount(account, password, out userName, out errorMessage))
                 {
-                    LogUtils.AddUserLog(userName, EUserActionType.LoginFailed,  "用户登录失败");
                     BaiRongDataProvider.UserDao.UpdateLastActivityDateAndCountOfFailedLogin(userName);
                     return BadRequest(errorMessage);
                 }

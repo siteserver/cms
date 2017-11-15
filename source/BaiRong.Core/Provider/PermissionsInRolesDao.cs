@@ -3,13 +3,31 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class PermissionsInRolesDao : DataProviderBase
 	{
-		private const string SqlSelect = "SELECT RoleName, GeneralPermissions FROM bairong_PermissionsInRoles WHERE RoleName = @RoleName";
+        public override string TableName => "bairong_PermissionsInRoles";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PermissionsInRolesInfo.RoleName),
+                DataType = DataType.VarChar,
+                Length = 255,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PermissionsInRolesInfo.GeneralPermissions),
+                DataType = DataType.Text
+            }
+        };
+
+        private const string SqlSelect = "SELECT RoleName, GeneralPermissions FROM bairong_PermissionsInRoles WHERE RoleName = @RoleName";
 
 		private const string SqlInsert = "INSERT INTO bairong_PermissionsInRoles (RoleName, GeneralPermissions) VALUES (@RoleName, @GeneralPermissions)";
 		private const string SqlDelete = "DELETE FROM bairong_PermissionsInRoles WHERE RoleName = @RoleName";
@@ -48,8 +66,8 @@ namespace BaiRong.Core.Provider
 		{
 			var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, EDataType.NVarChar, 255, info.RoleName),
-				GetParameter(ParmGeneralPermissions, EDataType.Text, info.GeneralPermissions)
+				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, info.RoleName),
+				GetParameter(ParmGeneralPermissions, DataType.Text, info.GeneralPermissions)
 			};
 							
 			ExecuteNonQuery(trans, SqlInsert, insertParms);
@@ -60,7 +78,7 @@ namespace BaiRong.Core.Provider
 		{
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, EDataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName)
 			};
 
 			ExecuteNonQuery(trans, SqlDelete, parms);
@@ -70,7 +88,7 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, EDataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName)
 			};
 
             ExecuteNonQuery(SqlDelete, parms);
@@ -110,7 +128,7 @@ namespace BaiRong.Core.Provider
 			
 			var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, EDataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName)
 			};
 			
 			using (var rdr = ExecuteReader(SqlSelect, parms)) 

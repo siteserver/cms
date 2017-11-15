@@ -1,115 +1,88 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Controllers.Stl;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
-	public class StlDigg
+    [Stl(Usage = "掘客", Description = "通过 stl:digg 标签在模板中实现赞同/不赞同、投个鲜花/扔个鸡蛋、顶一下/踩一下等功能")]
+    public class StlDigg
 	{
         private StlDigg() { }
         public const string ElementName = "stl:digg";
 
-        public const string AttributeType = "type";				        //类型
-        public const string AttributeGoodText = "goodtext";				//赞同文字
-        public const string AttributeBadText = "badtext";				    //不赞同文字
-        public const string AttributeTheme = "theme";			            //主题样式
-        public const string AttributeIsNumber = "isnumber";                //仅显示结果数字
-        public const string AttributeIsDynamic = "isdynamic";              //是否动态显示
+        public const string AttributeType = "type";
+        public const string AttributeGoodText = "goodText";
+        public const string AttributeBadText = "badText";
+        public const string AttributeTheme = "theme";
+        public const string AttributeIsNumber = "isNumber";
 
-		public static ListDictionary AttributeList
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        {
+	        {AttributeType, StringUtils.SortedListToAttributeValueString("类型", EDiggTypeUtils.TypeList)},
+	        {AttributeGoodText, "赞同文字"},
+	        {AttributeBadText, "不赞同文字"},
+	        {AttributeTheme, "主题样式"},
+	        {AttributeIsNumber, "仅显示结果数字"}
+	    };
+
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-			get
-			{
-			    var attributes = new ListDictionary
-			    {
-			        {AttributeType, "类型"},
-			        {AttributeGoodText, "赞同文字"},
-			        {AttributeBadText, "不赞同文字"},
-			        {AttributeTheme, "主题样式"},
-			        {AttributeIsNumber, "仅显示结果数字"},
-			        {AttributeIsDynamic, "是否动态显示"}
-			    };
-			    return attributes;
-			}
-		}
+		    var diggType = EDiggType.All;
+            var goodText = "顶一下";
+            var badText = "踩一下";
+            var theme = "style1";
+            var isNumber = false;
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
-		{
-			string parsedContent;
-			try
-			{
-                var diggType = EDiggType.All;
-                var goodText = "顶一下";
-                var badText = "踩一下";
-                var theme = "style1";
-                var isNumber = false;
-                var isDynamic = false;
+		    foreach (var name in contextInfo.Attributes.Keys)
+		    {
+		        var value = contextInfo.Attributes[name];
 
-                var ie = node.Attributes?.GetEnumerator();
-			    if (ie != null)
-			    {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributeType))
-                        {
-                            diggType = EDiggTypeUtils.GetEnumType(attr.Value);
-                        }
-                        else if (attributeName.Equals(AttributeGoodText))
-                        {
-                            goodText = attr.Value;
-                        }
-                        else if (attributeName.Equals(AttributeBadText))
-                        {
-                            badText = attr.Value;
-                        }
-                        else if (attributeName.Equals(AttributeTheme))
-                        {
-                            theme = attr.Value;
-                        }
-                        else if (attributeName.Equals(AttributeIsNumber))
-                        {
-                            isNumber = TranslateUtils.ToBool(attr.Value);
-                        }
-                        else if (attributeName.Equals(AttributeIsDynamic))
-                        {
-                            isDynamic = TranslateUtils.ToBool(attr.Value);
-                        }
-                    }
+                if (StringUtils.EqualsIgnoreCase(name, AttributeType))
+                {
+                    diggType = EDiggTypeUtils.GetEnumType(value);
                 }
-
-                pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
-
-                parsedContent = isDynamic ? StlDynamic.ParseDynamicElement(stlElement, pageInfo, contextInfo) : ParseImpl(pageInfo, contextInfo, diggType, goodText, badText, theme, isNumber);
-			}
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeGoodText))
+                {
+                    goodText = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeBadText))
+                {
+                    badText = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeTheme))
+                {
+                    theme = value;
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsNumber))
+                {
+                    isNumber = TranslateUtils.ToBool(value);
+                }
             }
 
-			return parsedContent;
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+
+            return ParseImpl(pageInfo, contextInfo, diggType, goodText, badText, theme, isNumber);
 		}
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, EDiggType diggType, string goodText, string badText, string theme, bool isNumber)
         {
-            if (isNumber)
+            // 如果是单独显示数值或实体标签 都只返回数值
+            if (isNumber || contextInfo.IsCurlyBrace)
             {
                 int count;
 
-                var relatedIdentity = contextInfo.ContentID;
+                var relatedIdentity = contextInfo.ContentId;
                 if (relatedIdentity == 0 || contextInfo.ContextType == EContextType.Channel)
                 {
-                    relatedIdentity = contextInfo.ChannelID;
+                    relatedIdentity = contextInfo.ChannelId;
                 }
 
-                var counts = BaiRongDataProvider.DiggDao.GetCount(pageInfo.PublishmentSystemId, relatedIdentity);
+                //var counts = BaiRongDataProvider.DiggDao.GetCount(pageInfo.PublishmentSystemId, relatedIdentity);
+                var counts = Cache.Digg.GetCount(pageInfo.PublishmentSystemId, relatedIdentity);
                 var goodNum = counts[0];
                 var badNum = counts[1];
 
@@ -141,10 +114,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                     $@"<link rel=""stylesheet"" href=""{SiteFilesAssets.Digg.GetStyleUrl(pageInfo.ApiUrl, theme)}"" type=""text/css"" />");
                 builder.Append($@"<div id=""{ajaxDivId}"">");
 
-                var relatedIdentity = contextInfo.ContentID;
+                var relatedIdentity = contextInfo.ContentId;
                 if (relatedIdentity == 0 || contextInfo.ContextType == EContextType.Channel)
                 {
-                    relatedIdentity = contextInfo.ChannelID;
+                    relatedIdentity = contextInfo.ChannelId;
                 }
 
                 var innerPageUrl = Digg.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, relatedIdentity, updaterId, diggType, goodText, badText, theme, false, false);
@@ -194,7 +167,5 @@ function stlDiggSet_{updaterId}(isGood)
                 return builder.ToString();
             }
         }
-
-
 	}
 }

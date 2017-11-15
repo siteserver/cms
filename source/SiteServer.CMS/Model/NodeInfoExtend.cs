@@ -1,6 +1,7 @@
 ﻿using BaiRong.Core;
-using BaiRong.Core.Model;
+using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
@@ -62,16 +63,16 @@ namespace SiteServer.CMS.Model
             set { SetExtendedAttribute("TransType", ECrossSiteTransTypeUtils.GetValue(value)); }
         }
 
-        public int TransPublishmentSystemID
+        public int TransPublishmentSystemId
         {
-            get { return TranslateUtils.ToInt(GetExtendedAttribute("TransPublishmentSystemID")); }
-            set { SetExtendedAttribute("TransPublishmentSystemID", value.ToString()); }
+            get { return TranslateUtils.ToInt(GetExtendedAttribute("TransPublishmentSystemId")); }
+            set { SetExtendedAttribute("TransPublishmentSystemId", value.ToString()); }
         }
 
-        public string TransNodeIDs
+        public string TransNodeIds
         {
-            get { return GetExtendedAttribute("TransNodeIDs"); }
-            set { SetExtendedAttribute("TransNodeIDs", value); }
+            get { return GetExtendedAttribute("TransNodeIds"); }
+            set { SetExtendedAttribute("TransNodeIds", value); }
         }
 
         public string TransNodeNames
@@ -82,11 +83,11 @@ namespace SiteServer.CMS.Model
 
         public bool TransIsAutomatic
         {
-            get { return GetBool("TransIsAutomatic", false); }
+            get { return GetBool("TransIsAutomatic"); }
             set { SetExtendedAttribute("TransIsAutomatic", value.ToString()); }
         }
 
-        //夸张转发操作类型：复制 引用地址 引用内容
+        //跨站转发操作类型：复制 引用地址 引用内容
         public ETranslateContentType TransDoneType
         {
             get { return ETranslateContentTypeUtils.GetEnumType(GetExtendedAttribute("TransDoneType")); }
@@ -95,51 +96,27 @@ namespace SiteServer.CMS.Model
 
         public bool IsPreviewContents
         {
-            get { return GetBool("IsPreviewContents", false); }
+            get { return GetBool("IsPreviewContents"); }
             set { SetExtendedAttribute("IsPreviewContents", value.ToString()); }
         }
 
-        /****************内容签收设置********************/
-
-        public bool IsSignin
+        public string DefaultTaxisType
         {
-            get { return GetBool("IsSignin", false); }
-            set { SetExtendedAttribute("IsSignin", value.ToString()); }
+            get { return GetString("DefaultTaxisType", ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc)); }
+            set { SetExtendedAttribute("DefaultTaxisType", value); }
         }
 
-        public bool IsSigninGroup
-        {
-            get { return GetBool("IsSigninGroup", true); }
-            set { SetExtendedAttribute("IsSigninGroup", value.ToString()); }
-        }
+        /****************others********************/
 
-        public string SigninUserGroupCollection
+        public string PluginIds
         {
-            get { return GetExtendedAttribute("SigninUserGroupCollection"); }
-            set { SetExtendedAttribute("SigninUserGroupCollection", value); }
-        }
-
-        public string SigninUserNameCollection
-        {
-            get { return GetExtendedAttribute("SigninUserNameCollection"); }
-            set { SetExtendedAttribute("SigninUserNameCollection", value); }
-        }
-
-        public int SigninPriority
-        {
-            get { return TranslateUtils.ToInt(GetExtendedAttribute("SigninPriority")); }
-            set { SetExtendedAttribute("SigninPriority", value.ToString()); }
-        }
-
-        public string SigninEndDate
-        {
-            get { return GetExtendedAttribute("SigninEndDate"); }
-            set { SetExtendedAttribute("SigninEndDate", value); }
+            get { return GetExtendedAttribute("PluginIds"); }
+            set { SetExtendedAttribute("PluginIds", value); }
         }
 
         public override string ToString()
         {
-            return TranslateUtils.NameValueCollectionToString(Attributes);
+            return TranslateUtils.NameValueCollectionToString(GetExtendedAttributes());
         }
     }
 }

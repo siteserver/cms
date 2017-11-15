@@ -1,13 +1,50 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class StlTagDao : DataProviderBase
     {
+        public override string TableName => "siteserver_StlTag";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(StlTagInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(StlTagInfo.TagName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(StlTagInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(StlTagInfo.TagDescription),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(StlTagInfo.TagContent),
+                DataType = DataType.Text
+            }
+        };
+
         private const string SqlSelectStlTag = "SELECT TagName, PublishmentSystemID, TagDescription, TagContent FROM siteserver_StlTag WHERE TagName = @TagName AND PublishmentSystemID = @PublishmentSystemID";
 
         private const string SqlSelectAllStlTag = "SELECT TagName, PublishmentSystemID, TagDescription, TagContent FROM siteserver_StlTag WHERE PublishmentSystemID = @PublishmentSystemID";
@@ -29,10 +66,10 @@ namespace SiteServer.CMS.Provider
         {
             var insertParms = new IDataParameter[]
 			{
-                GetParameter(ParmTagName, EDataType.NVarChar, 50, info.TagName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, info.PublishmentSystemID),
-				GetParameter(ParmTagDescription, EDataType.NVarChar, 255, info.TagDescription),
-				GetParameter(ParmTagContent, EDataType.NText, info.TagContent)
+                GetParameter(ParmTagName, DataType.VarChar, 50, info.TagName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId),
+				GetParameter(ParmTagDescription, DataType.VarChar, 255, info.TagDescription),
+				GetParameter(ParmTagContent, DataType.Text, info.TagContent)
 			};
 
             ExecuteNonQuery(SqlInsertStlTag, insertParms);
@@ -42,10 +79,10 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-                GetParameter(ParmTagDescription, EDataType.NVarChar, 255, info.TagDescription),
-				GetParameter(ParmTagContent, EDataType.NText, info.TagContent),
-				GetParameter(ParmTagName, EDataType.NVarChar, 50, info.TagName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, info.PublishmentSystemID)
+                GetParameter(ParmTagDescription, DataType.VarChar, 255, info.TagDescription),
+				GetParameter(ParmTagContent, DataType.Text, info.TagContent),
+				GetParameter(ParmTagName, DataType.VarChar, 50, info.TagName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, info.PublishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlUpdateStlTag, updateParms);
@@ -56,8 +93,8 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTagName, EDataType.NVarChar, 50, tagName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmTagName, DataType.VarChar, 50, tagName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             ExecuteNonQuery(SqlDeleteStlTag, parms);
@@ -69,8 +106,8 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTagName, EDataType.NVarChar, 50, tagName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmTagName, DataType.VarChar, 50, tagName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectStlTag, parms))
@@ -92,7 +129,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllStlTag, parms))
@@ -114,7 +151,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectStlTagNames, parms))
@@ -151,8 +188,8 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmTagName, EDataType.NVarChar, 50, tagName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmTagName, DataType.VarChar, 50, tagName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
 
             using (var rdr = ExecuteReader(sqlString, selectParms))
@@ -178,8 +215,8 @@ namespace SiteServer.CMS.Provider
             }
             var selectParms = new IDataParameter[]
 			{
-				GetParameter(ParmTagName, EDataType.NVarChar, 50, tagName),
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId)
+				GetParameter(ParmTagName, DataType.VarChar, 50, tagName),
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId)
 			};
             using (var rdr = ExecuteReader(sqlString, selectParms))
             {

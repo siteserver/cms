@@ -6,15 +6,16 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Permissions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Core.User;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -38,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
         private ETableStyle _tableStyle;
         private NodeInfo _nodeInfo;
         private string _tableName;
-        private bool _isGovPublic;
+        private Dictionary<string, IChannel> _pluginChannels;
         private readonly Hashtable _valueHashtable = new Hashtable();
 
         public static string GetRedirectUrl(int publishmentSystemId)
@@ -55,23 +56,16 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
             var nodeId = PublishmentSystemId;
-            _isGovPublic = Body.GetQueryBool("IsGovPublic");
-            if (_isGovPublic)
-            {
-                nodeId = PublishmentSystemInfo.Additional.GovPublicNodeId;
-                if (nodeId == 0)
-                {
-                    nodeId = PublishmentSystemId;
-                }
-            }
+
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeId);
             _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
             _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
             _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, nodeId));
+            _pluginChannels = PluginCache.GetChannelFeatures(_nodeInfo);
 
             if (!IsPostBack)
             {
@@ -82,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (var owningNodeId in ProductPermissionsManager.Current.OwningNodeIdList)
                 {
                     int checkedLevelByNodeId;
-                    var isCheckedByNodeId = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, owningNodeId, out checkedLevelByNodeId);
+                    var isCheckedByNodeId = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, owningNodeId, out checkedLevelByNodeId);
                     if (checkedLevel > checkedLevelByNodeId)
                     {
                         checkedLevel = checkedLevelByNodeId;
@@ -95,21 +89,15 @@ namespace SiteServer.BackgroundPages.Cms
 
                 LevelManager.LoadContentLevelToList(State, PublishmentSystemInfo, PublishmentSystemId, isChecked, checkedLevel);
 
-                if (_isGovPublic)
+                PhContentModel.Visible = true;
+                DdlContentModelId.Items.Add(new ListItem("<默认>", string.Empty));
+                var contentTables = PluginCache.GetEnabledPluginMetadatas<IContentTable>();
+                foreach (var contentTable in contentTables)
                 {
-                    PhContentModel.Visible = false;
+                    DdlContentModelId.Items.Add(new ListItem($"插件：{contentTable.DisplayName}", contentTable.Id));
                 }
-                else
-                {
-                    PhContentModel.Visible = true;
-                    var contentModelInfoList = ContentModelManager.GetContentModelInfoList(PublishmentSystemInfo);
-                    foreach (var modelInfo in contentModelInfoList)
-                    {
-                        DdlContentModelId.Items.Add(new ListItem(modelInfo.ModelName, modelInfo.ModelId));
-                    }
-                    ControlUtils.SelectListItems(DdlContentModelId, _nodeInfo.ContentModelId);
-                    //EContentModelTypeUtils.AddListItemsForContentCheck(this.ContentModelID);
-                }
+                ControlUtils.SelectListItems(DdlContentModelId, _nodeInfo.ContentModelId);
+                //EContentModelTypeUtils.AddListItemsForContentCheck(this.ContentModelID);
 
                 if (!string.IsNullOrEmpty(Body.GetQueryString("State")))
                 {
@@ -123,35 +111,31 @@ namespace SiteServer.BackgroundPages.Cms
                 SpContents.ControlToPaginate = RptContents;
                 SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
-                var checkLevelArrayList = new ArrayList();
+                var checkLevelList = new List<int>();
 
-                if (!string.IsNullOrEmpty(Body.GetQueryString("State")))
+                if (Body.IsQueryExists("State"))
                 {
-                    checkLevelArrayList.Add(Body.GetQueryString("State"));
+                    checkLevelList.Add(Body.GetQueryInt("State"));
                 }
                 else
                 {
-                    checkLevelArrayList = LevelManager.LevelInt.GetCheckLevelArrayList(PublishmentSystemInfo, isChecked, checkedLevel);
+                    checkLevelList = LevelManager.LevelInt.GetCheckLevelList(PublishmentSystemInfo, isChecked, checkedLevel);
                 }
                 var tableName = NodeManager.GetTableName(PublishmentSystemInfo, DdlContentModelId.SelectedValue);
-                if (_isGovPublic)
-                {
-                    tableName = PublishmentSystemInfo.AuxiliaryTableForGovPublic;
-                }
 
                 var owningNodeIdList = new List<int>();
                 if (!permissions.IsSystemAdministrator)
                 {
                     foreach (var owningNodeId in ProductPermissionsManager.Current.OwningNodeIdList)
                     {
-                        if (AdminUtility.HasChannelPermissions(Body.AdministratorName, PublishmentSystemId, owningNodeId, AppManager.Cms.Permission.Channel.ContentCheck))
+                        if (AdminUtility.HasChannelPermissions(Body.AdminName, PublishmentSystemId, owningNodeId, AppManager.Permissions.Channel.ContentCheck))
                         {
                             owningNodeIdList.Add(owningNodeId);
                         }
                     }
                 }                
 
-                SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectedCommendByCheck(tableName, PublishmentSystemId, permissions.IsSystemAdministrator, owningNodeIdList, checkLevelArrayList);
+                SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectedCommendByCheck(tableName, PublishmentSystemId, permissions.IsSystemAdministrator, owningNodeIdList, checkLevelList);
 
                 SpContents.SortField = ContentAttribute.LastEditDate;
                 SpContents.SortMode = SortMode.DESC;
@@ -162,11 +146,11 @@ namespace SiteServer.BackgroundPages.Cms
                 var showPopWinString = ModalContentCheck.GetOpenWindowStringForMultiChannels(PublishmentSystemId, PageUrl);
                 BtnCheck.Attributes.Add("onclick", showPopWinString);
 
-                LtlColumnHeadRows.Text = ContentUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                LtlCommandHeadRows.Text = ContentUtility.GetCommandHeadRowsHtml(Body.AdministratorName, _tableStyle, PublishmentSystemInfo, _nodeInfo);
+                LtlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
+                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdminName, PublishmentSystemInfo, _nodeInfo, _pluginChannels);
             }
 
-            if (!HasChannelPermissions(PublishmentSystemId, AppManager.Cms.Permission.Channel.ContentDelete))
+            if (!HasChannelPermissions(PublishmentSystemId, AppManager.Permissions.Channel.ContentDelete))
             {
                 BtnDelete.Visible = false;
             }
@@ -205,7 +189,7 @@ namespace SiteServer.BackgroundPages.Cms
                     $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{showPopWinString}"">{LevelManager.GetCheckState(
                         PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Cms.Permission.Channel.ContentEdit) || Body.AdministratorName == contentInfo.AddUserName)
+                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
                 {
                     ltlItemEditUrl.Text =
                         $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, nodeInfo, contentInfo.Id, PageUrl)}\">编辑</a>";
@@ -216,7 +200,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ltlColumnItemRows.Text = TextUtility.GetColumnItemRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _valueHashtable, _tableStyle, PublishmentSystemInfo, contentInfo);
 
-                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(_tableStyle, PublishmentSystemInfo, nodeInfo, contentInfo, PageUrl, Body.AdministratorName);
+                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName);
             }
         }
 
@@ -241,8 +225,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         {"PublishmentSystemID", PublishmentSystemId.ToString()},
                         {"State", State.SelectedValue},
-                        {"ModelID", DdlContentModelId.SelectedValue},
-                        {"IsGovPublic", _isGovPublic.ToString()}
+                        {"ModelID", DdlContentModelId.SelectedValue}
                     });
                 }
                 return _pageUrl;

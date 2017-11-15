@@ -5,9 +5,9 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 {
 	public enum ECashType
 	{
-        Consume,             //Ïû·Ñ
-        Recharge,            //³äÖµ
-        Exchange             //¶Ò»»
+        Consume,             //æ¶ˆè´¹
+        Recharge,            //å……å€¼
+        Exchange             //å…‘æ¢
     }
 
     public class ECashTypeUtils
@@ -36,15 +36,15 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == ECashType.Consume)
             {
-                return "Ïû·Ñ";
+                return "æ¶ˆè´¹";
             }
             else if (type == ECashType.Recharge)
             {
-                return "³äÖµ";
+                return "å……å€¼";
             }
             else if (type == ECashType.Exchange)
             {
-                return "¶Ò»»";
+                return "å…‘æ¢";
             }
             else
             {

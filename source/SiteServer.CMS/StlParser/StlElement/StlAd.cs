@@ -1,90 +1,87 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Specialized;
-using System.Xml;
-using SiteServer.CMS.Controllers.Stl;
-using SiteServer.CMS.Core;
+﻿using System.Collections;
+using System.Collections.Generic;
+using BaiRong.Core;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core.Advertisement;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "固定广告", Description = "通过 stl:ad 标签在模板中显示指定位置的广告")]
     public class StlAd
     {
         private StlAd() { }
-        public const string ElementName = "stl:ad";         //固定广告
+        public const string ElementName = "stl:ad";
 
-        public const string AttributeArea = "area";			//广告位名称
+        public const string AttributeArea = "area";
 
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeArea, "广告位"}
         };
 
-        public static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var parsedContent = string.Empty;
-            try
+
+            var area = string.Empty;
+            foreach (var name in contextInfo.Attributes.Keys)
             {
-                var ie = node.Attributes?.GetEnumerator();
+                var value = contextInfo.Attributes[name];
 
-                var area = string.Empty;
-                if (ie != null)
+                if (StringUtils.EqualsIgnoreCase(name, AttributeArea))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributeArea))
-                        {
-                            area = attr.Value;
-                        }
-                    }
+                    area = value;
                 }
+            }
 
-                var adAreaInfo = DataProvider.AdAreaDao.GetAdAreaInfo(area, pageInfo.PublishmentSystemId);
-                if (adAreaInfo != null)
+            //var adAreaInfo = DataProvider.AdAreaDao.GetAdAreaInfo(area, pageInfo.PublishmentSystemId);
+            var adAreaInfo = AdArea.GetAdAreaInfo(area, pageInfo.PublishmentSystemId);
+            if (adAreaInfo != null)
+            {
+                if (adAreaInfo.IsEnabled)
                 {
-                    if (adAreaInfo.IsEnabled)
-                    {
-                        pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcSwfObject);
+                    pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcSwfObject);
 
-                        var adMaterialInfoList = new ArrayList();
-                        var advInfo = AdvManager.GetAdvInfoByAdAreaName(pageInfo.TemplateInfo.TemplateType, adAreaInfo.AdAreaName, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.TemplateInfo.TemplateId);
-                        if (advInfo != null)
+                    var adMaterialInfoList = new ArrayList();
+                    var advInfo = AdvManager.GetAdvInfoByAdAreaName(pageInfo.TemplateInfo.TemplateType, adAreaInfo.AdAreaName, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.TemplateInfo.TemplateId);
+                    if (advInfo != null)
+                    {
+                        if (advInfo.RotateType == EAdvRotateType.Equality || advInfo.RotateType == EAdvRotateType.HandWeight)
                         {
-                            if (advInfo.RotateType == EAdvRotateType.Equality || advInfo.RotateType == EAdvRotateType.HandWeight)
-                            {
-                                var templateType = pageInfo.TemplateInfo.TemplateType;
-                                if (templateType == ETemplateType.IndexPageTemplate || templateType == ETemplateType.ChannelTemplate || templateType == ETemplateType.ContentTemplate)
-                                {
-                                    parsedContent =
-                                        $"<script src='{ActionsAdvHtml.GetUrl(pageInfo.PublishmentSystemInfo.Additional.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.UniqueId, area, pageInfo.PageNodeId, 0, pageInfo.TemplateInfo.TemplateType)}' language='javascript'></script>";
-                                }
-                                else if (templateType == ETemplateType.FileTemplate)
-                                {
-                                    parsedContent =
-                                        $"<script src='{ActionsAdvHtml.GetUrl(pageInfo.PublishmentSystemInfo.Additional.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.UniqueId, area, 0, pageInfo.TemplateInfo.TemplateId, pageInfo.TemplateInfo.TemplateType)}' language='javascript'></script>";
-                                }
-                            }
-                            else if (advInfo.RotateType == EAdvRotateType.SlideRotate)
+                            var templateType = pageInfo.TemplateInfo.TemplateType;
+                            if (templateType == ETemplateType.IndexPageTemplate || templateType == ETemplateType.ChannelTemplate || templateType == ETemplateType.ContentTemplate)
                             {
                                 parsedContent =
-                                    $@"{AdvManager.GetSlideAdvHtml(pageInfo.PublishmentSystemInfo, adAreaInfo, advInfo,
-                                        adMaterialInfoList)}";
+                                    $"<script src='{ActionsAdvHtml.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.UniqueId, area, pageInfo.PageNodeId, 0, pageInfo.TemplateInfo.TemplateType)}' language='javascript'></script>";
                             }
+                            else if (templateType == ETemplateType.FileTemplate)
+                            {
+                                parsedContent =
+                                    $"<script src='{ActionsAdvHtml.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.UniqueId, area, 0, pageInfo.TemplateInfo.TemplateId, pageInfo.TemplateInfo.TemplateType)}' language='javascript'></script>";
+                            }
+                        }
+                        else if (advInfo.RotateType == EAdvRotateType.SlideRotate)
+                        {
+                            parsedContent =
+                                $@"{AdvManager.GetSlideAdvHtml(pageInfo.PublishmentSystemInfo, adAreaInfo, advInfo,
+                                    adMaterialInfoList)}";
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
-            }
 
-            return parsedContent;
+            // 如果是实体标签，返回empty
+            if (contextInfo.IsCurlyBrace)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return parsedContent;
+            }
         }
     }
 }

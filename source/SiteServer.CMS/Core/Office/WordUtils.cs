@@ -2,9 +2,8 @@
 using BaiRong.Core;
 using Word.Plugin;
 using System.Collections.Specialized;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 
 namespace SiteServer.CMS.Core.Office
 {
@@ -93,7 +92,7 @@ namespace SiteServer.CMS.Core.Office
             }
             catch(Exception ex)
             {
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
                 return string.Empty;
             }
         }
@@ -132,14 +131,7 @@ namespace SiteServer.CMS.Core.Office
 
                 wordContent = StringUtils.ReplaceFirst("<p></p>", wordContent, string.Empty);
 
-                if (EContentModelTypeUtils.Equals(contentModelId, EContentModelType.Job))
-                {
-                    formCollection[JobContentAttribute.Responsibility] = wordContent;
-                }
-                else
-                {
-                    formCollection[BackgroundContentAttribute.Content] = wordContent;
-                }
+                formCollection[BackgroundContentAttribute.Content] = wordContent;
             }
             return formCollection;
         }

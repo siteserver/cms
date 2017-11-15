@@ -15,6 +15,7 @@
         $(document).ready(function () { $('#TbAccount').focus(); });
     </script>
     <link href="css/login.css" rel="stylesheet" type="text/css" />
+    <link href="images/siteserver_icon.png" rel="icon" type="image/png" >
 </head>
 <body class="yunBg">
     <form class="form-inline" runat="server" autocomplete="off">
@@ -60,17 +61,15 @@
                                 ErrorMessage=" *" ForeColor="red"
                                 Display="Dynamic" />
                         </li>
-                        <asp:PlaceHolder ID="PhValidateCode" runat="server">
-                            <li><span class="yun_s1">验证码：</span>
-                                <asp:TextBox class="yun_int1 yun_int2" ID="TbValidateCode" runat="server" />
-                                <asp:Literal ID="LtlValidateCodeImage" runat="server"></asp:Literal>
-                                <asp:RequiredFieldValidator
-                                    ControlToValidate="TbValidateCode"
-                                    ErrorMessage=" *" ForeColor="red"
-                                    Display="Dynamic"
-                                    runat="server" />
-                            </li>
-                        </asp:PlaceHolder>
+                        <li><span class="yun_s1">验证码：</span>
+                            <asp:TextBox class="yun_int1 yun_int2" ID="TbValidateCode" runat="server" />
+                            <asp:Literal ID="LtlValidateCodeImage" runat="server"></asp:Literal>
+                            <asp:RequiredFieldValidator
+                                ControlToValidate="TbValidateCode"
+                                ErrorMessage=" *" ForeColor="red"
+                                Display="Dynamic"
+                                runat="server" />
+                        </li>
                         <li><span class="yun_s1">&nbsp;</span>
                             <label class="checkbox">
                                 <asp:CheckBox ID="CbRememberMe" Checked="true" runat="server"></asp:CheckBox>
@@ -79,8 +78,9 @@
                         </li>
                         <li><span class="yun_s1">&nbsp;</span>
                             <asp:Button class="yun_submit" ID="LoginSubmit" Style="width: 101px" OnClick="Submit_OnClick" runat="server" />
-                            &nbsp;
-                            <a href="findPwd.aspx">找回密码？</a>
+                            <asp:PlaceHolder id="PhFindPassword" runat="server">
+                                &nbsp;<a href="findPwd.aspx">找回密码？</a>
+                            </asp:PlaceHolder>
                         </li>
                     </ul>
                 </div>

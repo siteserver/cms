@@ -10,7 +10,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageTask : BasePageCms
     {
-        public DataGrid dgContents;
+        public DataGrid DgContents;
         public Button AddTask;
 
         private EServiceType _serviceType;
@@ -24,7 +24,9 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public string ServiceType => EServiceTypeUtils.GetText(_serviceType);
+
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -69,11 +71,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (PublishmentSystemId > 0)
                 {
-                    BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationTask, taskName + "任务", AppManager.Cms.Permission.WebSite.Configration);
+                    BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, taskName + "任务", AppManager.Permissions.WebSite.Configration);
                 }
                 else
                 {
-                    BreadCrumbService(AppManager.Service.LeftMenu.Task, taskName + "任务", AppManager.Service.Permission.ServiceTask);
+                    BreadCrumbSettings(taskName + "任务", AppManager.Permissions.Settings.Service);
                 }
 
                 AddTask.Text = $"添加{taskName}任务";
@@ -88,15 +90,15 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (PublishmentSystemId != 0)
                 {
-                    dgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType, PublishmentSystemId);
-                    dgContents.Columns.RemoveAt(0);
+                    DgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType, PublishmentSystemId);
+                    DgContents.Columns.RemoveAt(0);
                 }
                 else
                 {
-                    dgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType);
+                    DgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType);
                 }
-                dgContents.ItemDataBound += DgContents_ItemDataBound;
-                dgContents.DataBind();
+                DgContents.ItemDataBound += DgContents_ItemDataBound;
+                DgContents.DataBind();
             }
             catch (Exception ex)
             {
@@ -120,7 +122,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (ltlSite != null)
             {
-                ltlSite.Text = GetSiteHtml(taskInfo.PublishmentSystemID);
+                ltlSite.Text = GetSiteHtml(taskInfo.PublishmentSystemId);
             }
             ltlTaskName.Text = taskInfo.TaskName;
             ltlIsEnabled.Text = StringUtils.GetTrueOrFalseImageHtml(taskInfo.IsEnabled.ToString());
@@ -131,13 +133,13 @@ namespace SiteServer.BackgroundPages.Cms
             }
             if (!taskInfo.IsSystemTask)
             {
-                ltlEditHtml.Text = GetEditHtml(taskInfo.TaskID, taskInfo.PublishmentSystemID);
-                ltlDeleteHtml.Text = GetDeleteHtml(taskInfo.TaskID, taskInfo.TaskName, taskInfo.PublishmentSystemID);
+                ltlEditHtml.Text = GetEditHtml(taskInfo.TaskId, taskInfo.PublishmentSystemId);
+                ltlDeleteHtml.Text = GetDeleteHtml(taskInfo.TaskId, taskInfo.TaskName, taskInfo.PublishmentSystemId);
             }
             var urlTask = PageUtils.GetCmsUrl(nameof(PageTask), new NameValueCollection
             {
-                {"PublishmentSystemID", taskInfo.PublishmentSystemID.ToString()},
-                {"TaskID", taskInfo.TaskID.ToString()},
+                {"PublishmentSystemID", taskInfo.PublishmentSystemId.ToString()},
+                {"TaskID", taskInfo.TaskId.ToString()},
                 {"ServiceType", EServiceTypeUtils.GetValue(taskInfo.ServiceType)},
                 {"Enabled", true.ToString()},
                 {"IsEnabled", (!taskInfo.IsEnabled).ToString()}
@@ -160,7 +162,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (publishmentSystemInfo != null)
             {
                 return
-                    $"<a href=\"{publishmentSystemInfo.PublishmentSystemUrl}\" target=\"_blank\">{publishmentSystemInfo.PublishmentSystemName}</a>";
+                    $"<a href=\"{publishmentSystemInfo.Additional.WebUrl}\" target=\"_blank\">{publishmentSystemInfo.PublishmentSystemName}</a>";
             }
             return string.Empty;
         }

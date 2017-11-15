@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "跨站转发设置", AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "跨站转发设置", AppManager.Permissions.WebSite.Configration);
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.ConfigurationCrossSiteTrans, null));
 
@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
             var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
-            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ConfigurationCrossSiteTrans, null, Body.AdministratorName);
+            ltlHtml.Text = ChannelLoading.GetChannelRowHtml(PublishmentSystemInfo, nodeInfo, enabled, ELoadingType.ConfigurationCrossSiteTrans, null, Body.AdminName);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)

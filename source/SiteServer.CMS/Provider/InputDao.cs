@@ -5,8 +5,9 @@ using System.Data;
 using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
@@ -45,16 +46,16 @@ namespace SiteServer.CMS.Provider
 
             var sqlString = "INSERT INTO siteserver_Input (InputName, PublishmentSystemID, AddDate, IsChecked, IsReply, Taxis, SettingsXML) VALUES (@InputName, @PublishmentSystemID, @AddDate, @IsChecked, @IsReply, @Taxis, @SettingsXML)";
 
-            var taxis = GetMaxTaxis(inputInfo.PublishmentSystemID) + 1;
+            var taxis = GetMaxTaxis(inputInfo.PublishmentSystemId) + 1;
             var insertParms = new IDataParameter[]
             {
-                GetParameter(ParmInputName, EDataType.NVarChar, 50, inputInfo.InputName),
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, inputInfo.PublishmentSystemID),
-                GetParameter(ParmAddDate, EDataType.DateTime, inputInfo.AddDate),
-                GetParameter(ParmIsChecked, EDataType.VarChar, 18, inputInfo.IsChecked.ToString()),
-                GetParameter(ParmIsReply, EDataType.VarChar, 18, inputInfo.IsReply.ToString()),
-                GetParameter(ParmTaxis, EDataType.Integer, taxis),
-                GetParameter(ParmSettingsXml, EDataType.NText, inputInfo.Additional.ToString())
+                GetParameter(ParmInputName, DataType.NVarChar, 50, inputInfo.InputName),
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, inputInfo.PublishmentSystemId),
+                GetParameter(ParmAddDate, DataType.DateTime, inputInfo.AddDate),
+                GetParameter(ParmIsChecked, DataType.VarChar, 18, inputInfo.IsChecked.ToString()),
+                GetParameter(ParmIsReply, DataType.VarChar, 18, inputInfo.IsReply.ToString()),
+                GetParameter(ParmTaxis, DataType.Integer, taxis),
+                GetParameter(ParmSettingsXml, DataType.NText, inputInfo.Additional.ToString())
             };
 
             using (var conn = GetConnection())
@@ -82,11 +83,11 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
             {
-                GetParameter(ParmInputName, EDataType.NVarChar, 50, inputInfo.InputName),
-                GetParameter(ParmIsChecked, EDataType.VarChar, 18, inputInfo.IsChecked.ToString()),
-                GetParameter(ParmIsReply, EDataType.VarChar, 18, inputInfo.IsReply.ToString()),
-                GetParameter(ParmSettingsXml, EDataType.NText, inputInfo.Additional.ToString()),
-                GetParameter(ParmInputId, EDataType.Integer, inputInfo.InputID)
+                GetParameter(ParmInputName, DataType.NVarChar, 50, inputInfo.InputName),
+                GetParameter(ParmIsChecked, DataType.VarChar, 18, inputInfo.IsChecked.ToString()),
+                GetParameter(ParmIsReply, DataType.VarChar, 18, inputInfo.IsReply.ToString()),
+                GetParameter(ParmSettingsXml, DataType.NText, inputInfo.Additional.ToString()),
+                GetParameter(ParmInputId, DataType.Integer, inputInfo.InputId)
             };
 
             ExecuteNonQuery(SqlUpdateInput, updateParms);
@@ -96,7 +97,7 @@ namespace SiteServer.CMS.Provider
         {
             var deleteParms = new IDataParameter[]
             {
-                GetParameter(ParmInputId, EDataType.Integer, inputId)
+                GetParameter(ParmInputId, DataType.Integer, inputId)
             };
 
             ExecuteNonQuery(SqlDeleteInput, deleteParms);
@@ -108,8 +109,8 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmInputName, EDataType.NVarChar, 50, inputName),
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmInputName, DataType.NVarChar, 50, inputName),
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
             };
 
             using (var rdr = ExecuteReader(SqlSelectInputByWhere, parms))
@@ -139,8 +140,8 @@ namespace SiteServer.CMS.Provider
             {
                 var selectParms = new IDataParameter[]
                 {
-                    GetParameter(ParmInputName, EDataType.NVarChar, 50, inputName),
-                    GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+                    GetParameter(ParmInputName, DataType.NVarChar, 50, inputName),
+                    GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
                 };
 
                 using (var rdr = ExecuteReader(SqlSelectInputIdByWhere, selectParms))
@@ -157,7 +158,7 @@ namespace SiteServer.CMS.Provider
                 var inputInfo = GetLastAddInputInfo(publishmentSystemId);
                 if (inputInfo != null)
                 {
-                    inputId = inputInfo.InputID;
+                    inputId = inputInfo.InputId;
                 }
             }
 
@@ -166,11 +167,13 @@ namespace SiteServer.CMS.Provider
 
         public InputInfo GetInputInfo(int inputId)
         {
+            if (inputId == 0) return null;
+            
             InputInfo inputInfo = null;
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmInputId, EDataType.Integer, inputId)
+                GetParameter(ParmInputId, DataType.Integer, inputId)
             };
 
             using (var rdr = ExecuteReader(SqlSelectInputByInputId, parms))
@@ -195,7 +198,7 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -217,8 +220,8 @@ namespace SiteServer.CMS.Provider
 
             var selectParms = new IDataParameter[]
             {
-                GetParameter(ParmInputName, EDataType.NVarChar, 50, inputName),
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmInputName, DataType.NVarChar, 50, inputName),
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
             };
 
             using (var rdr = ExecuteReader(SqlSelectInputByWhere, selectParms))
@@ -237,52 +240,52 @@ namespace SiteServer.CMS.Provider
         {
             var selectParms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
             };
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllInput, selectParms);
             return enumerable;
         }
 
-        public ArrayList GetInputIdArrayList(int publishmentSystemId)
+        public List<int> GetInputIdList(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<int>();
 
             var selectParms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
             };
 
             using (var rdr = ExecuteReader(SqlSelectInputId, selectParms))
             {
                 while (rdr.Read())
                 {
-                    arraylist.Add(GetInt(rdr, 0));
+                    list.Add(GetInt(rdr, 0));
                 }
                 rdr.Close();
             }
 
-            return arraylist;
+            return list;
         }
 
-        public ArrayList GetInputNameArrayList(int publishmentSystemId)
+        public List<string> GetInputNameList(int publishmentSystemId)
         {
-            var arraylist = new ArrayList();
+            var list = new List<string>();
 
             var selectParms = new IDataParameter[]
             {
-                GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId)
+                GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId)
             };
 
             using (var rdr = ExecuteReader(SqlSelectInputName, selectParms))
             {
                 while (rdr.Read())
                 {
-                    arraylist.Add(GetString(rdr, 0));
+                    list.Add(GetString(rdr, 0));
                 }
                 rdr.Close();
             }
 
-            return arraylist;
+            return list;
         }
 
         public string GetImportInputName(string inputName, int publishmentSystemId)

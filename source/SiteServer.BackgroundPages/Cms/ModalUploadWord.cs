@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
+using BaiRong.Core.Model;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (!IsPostBack)
             {
                 int checkedLevel;
-                var isChecked = CheckManager.GetUserCheckLevel(Body.AdministratorName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
                 LevelManager.LoadContentLevelToEdit(rblContentLevel, PublishmentSystemInfo, _nodeInfo.NodeId, null, isChecked, checkedLevel);
                 ControlUtils.SelectListItems(rblContentLevel, LevelManager.LevelInt.CaoGao.ToString());
             }
@@ -91,11 +91,11 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 var contentInfo = ContentUtility.GetContentInfo(tableStyle);
 
-                                BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, formCollection, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                                BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, formCollection, contentInfo.GetExtendedAttributes(), ContentAttribute.HiddenAttributes);
 
                                 contentInfo.NodeId = _nodeInfo.NodeId;
                                 contentInfo.PublishmentSystemId = PublishmentSystemId;
-                                contentInfo.AddUserName = Body.AdministratorName;
+                                contentInfo.AddUserName = Body.AdminName;
                                 contentInfo.AddDate = DateTime.Now;
                                 contentInfo.LastEditUserName = contentInfo.AddUserName;
                                 contentInfo.LastEditDate = contentInfo.AddDate;

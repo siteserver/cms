@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
@@ -11,87 +10,47 @@ namespace SiteServer.CMS.Model
         {
         }
 
-        public const string NodeId = "NodeID";
-        public const string NodeName = "NodeName";
-        public const string NodeType = "NodeType";
-        public const string PublishmentSystemId = "PublishmentSystemID";
-        public const string ContentModelId = "ContentModelID";
-        public const string ParentId = "ParentID";
-        public const string ParentsPath = "ParentsPath";
-        public const string ParentsCount = "ParentsCount";
-        public const string ChildrenCount = "ChildrenCount";
-        public const string IsLastNode = "IsLastNode";
-        public const string NodeIndexName = "NodeIndexName";
-        public const string NodeGroupNameCollection = "NodeGroupNameCollection";
-        public const string Taxis = "Taxis";
-        public const string AddDate = "AddDate";
-        public const string ImageUrl = "ImageUrl";
-        public const string Content = "Content";
-        public const string ContentNum = "ContentNum";
-        public const string FilePath = "FilePath";
-        public const string ChannelFilePathRule = "ChannelFilePathRule";
-        public const string ContentFilePathRule = "ContentFilePathRule";
-        public const string LinkUrl = "LinkUrl";
-        public const string LinkType = "LinkType";
-        public const string ChannelTemplateId = "ChannelTemplateID";
-        public const string ContentTemplateId = "ContentTemplateID";
-        public const string Keywords = "Keywords";
-        public const string Description = "Description";
-        public const string ExtendValues = "ExtendValues";
+        public const string NodeId = nameof(NodeId);
+        public const string NodeName = nameof(NodeName);
+        public const string NodeType = nameof(NodeType);
+        public const string PublishmentSystemId = nameof(PublishmentSystemId);
+        public const string ContentModelId = nameof(ContentModelId);
+        public const string ParentId = nameof(ParentId);
+        public const string ParentsPath = nameof(ParentsPath);
+        public const string ParentsCount = nameof(ParentsCount);
+        public const string ChildrenCount = nameof(ChildrenCount);
+        public const string IsLastNode = nameof(IsLastNode);
+        public const string NodeIndexName = nameof(NodeIndexName);
+        public const string NodeGroupNameCollection = nameof(NodeGroupNameCollection);
+        public const string Taxis = nameof(Taxis);
+        public const string AddDate = nameof(AddDate);
+        public const string ImageUrl = nameof(ImageUrl);
+        public const string Content = nameof(Content);
+        public const string ContentNum = nameof(ContentNum);
+        public const string FilePath = nameof(FilePath);
+        public const string ChannelFilePathRule = nameof(ChannelFilePathRule);
+        public const string ContentFilePathRule = nameof(ContentFilePathRule);
+        public const string LinkUrl = nameof(LinkUrl);
+        public const string LinkType = nameof(LinkType);
+        public const string ChannelTemplateId = nameof(ChannelTemplateId);
+        public const string ContentTemplateId = nameof(ContentTemplateId);
+        public const string Keywords = nameof(Keywords);
+        public const string Description = nameof(Description);
+        public const string ExtendValues = nameof(ExtendValues);
 
-        public static string Id = "ID";
-        public static string Title = "Title";
-        public static string ChannelName = "ChannelName";
-        public static string ChannelIndex = "ChannelIndex";
-        public static string ChannelGroupNameCollection = "ChannelGroupNameCollection";
-        public const string PageContent = "PageContent";
-        public const string CountOfChannels = "CountOfChannels";
-        public const string CountOfContents = "CountOfContents";
-        public const string CountOfImageContents = "CountOfImageContents";
-
-        private static ArrayList _lowerDefaultAttributes;
-        public static ArrayList LowerDefaultAttributes
-        {
-            get
-            {
-                if (_lowerDefaultAttributes != null) return _lowerDefaultAttributes;
-
-                _lowerDefaultAttributes = new ArrayList
-                {
-                    NodeId.ToLower(),
-                    NodeName.ToLower(),
-                    NodeType.ToLower(),
-                    PublishmentSystemId.ToLower(),
-                    ParentId.ToLower(),
-                    ParentsPath.ToLower(),
-                    ParentsCount.ToLower(),
-                    ChildrenCount.ToLower(),
-                    IsLastNode.ToLower(),
-                    NodeIndexName.ToLower(),
-                    NodeGroupNameCollection.ToLower(),
-                    Taxis.ToLower(),
-                    AddDate.ToLower(),
-                    ImageUrl.ToLower(),
-                    Content.ToLower(),
-                    ContentNum.ToLower(),
-                    FilePath.ToLower(),
-                    ChannelFilePathRule.ToLower(),
-                    ContentFilePathRule.ToLower(),
-                    LinkUrl.ToLower(),
-                    LinkType.ToLower(),
-                    ChannelTemplateId.ToLower(),
-                    ContentTemplateId.ToLower(),
-                    ExtendValues.ToLower()
-                };
-
-                return _lowerDefaultAttributes;
-            }
-        }
+        public const string Id = nameof(Id);
+        public const string Title = nameof(Title);
+        public const string ChannelName = nameof(ChannelName);
+        public const string ChannelIndex = nameof(ChannelIndex);
+        public const string ChannelGroupNameCollection = nameof(ChannelGroupNameCollection);
+        public const string PageContent = nameof(PageContent);
+        public const string CountOfChannels = nameof(CountOfChannels);
+        public const string CountOfContents = nameof(CountOfContents);
+        public const string CountOfImageContents = nameof(CountOfImageContents);
     }
 
-	public class NodeInfo
-	{
-	    private string _contentModelId;
+	public class NodeInfo : INodeInfo
+    {
 	    private string _extendValues;
 
 		public NodeInfo()
@@ -100,7 +59,7 @@ namespace SiteServer.CMS.Model
 			NodeName = string.Empty;
 			NodeType = ENodeType.BackgroundNormalNode;
 			PublishmentSystemId = 0;
-            _contentModelId = EContentModelTypeUtils.GetValue(EContentModelType.Content);
+            ContentModelId = string.Empty;
 			ParentId = 0;
 			ParentsPath = string.Empty;
 			ParentsCount = 0;
@@ -131,7 +90,7 @@ namespace SiteServer.CMS.Model
 			NodeName = nodeName;
 			NodeType = nodeType;
 			PublishmentSystemId = publishmentSystemId;
-            _contentModelId = contentModelId;
+            ContentModelId = contentModelId;
 			ParentId = parentId;
 			ParentsPath = parentsPath;
 			ParentsCount = parentsCount;
@@ -162,7 +121,7 @@ namespace SiteServer.CMS.Model
             NodeName = nodeInfo.NodeName;
             NodeType = nodeInfo.NodeType;
             PublishmentSystemId = nodeInfo.PublishmentSystemId;
-            _contentModelId = nodeInfo._contentModelId;
+            ContentModelId = nodeInfo.ContentModelId;
             ParentId = nodeInfo.ParentId;
             ParentsPath = nodeInfo.ParentsPath;
             ParentsCount = nodeInfo.ParentsCount;
@@ -195,20 +154,9 @@ namespace SiteServer.CMS.Model
 
 	    public int PublishmentSystemId { get; set; }
 
-	    public string ContentModelId
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_contentModelId))
-                {
-                    _contentModelId = EContentModelTypeUtils.GetValue(EContentModelType.Content);
-                }
-                return _contentModelId;
-            }
-            set { _contentModelId = value; }
-        }
+	    public string ContentModelId { get; set; }
 
-		public int ParentId { get; set; }
+        public int ParentId { get; set; }
 
 	    public string ParentsPath { get; set; }
 
@@ -257,5 +205,7 @@ namespace SiteServer.CMS.Model
 
         private NodeInfoExtend _additional;
         public NodeInfoExtend Additional => _additional ?? (_additional = new NodeInfoExtend(_extendValues));
-	}
+
+        public ExtendedAttributes Attributes => Additional;
+    }
 }

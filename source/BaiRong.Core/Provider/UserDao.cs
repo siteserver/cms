@@ -8,19 +8,198 @@ using BaiRong.Core.Cryptography;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class UserDao : DataProviderBase
     {
-        public string TableName => "bairong_Users";
+        public override string TableName => "bairong_Users";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.UserId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.UserName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Password),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.PasswordFormat),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.PasswordSalt),
+                DataType = DataType.VarChar,
+                Length = 128
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.CreateDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.LastResetPasswordDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.LastActivityDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.CountOfLogin),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.CountOfFailedLogin),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.CountOfWriting),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.IsChecked),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.IsLockedOut),
+                DataType = DataType.VarChar,
+                Length = 18
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.DisplayName),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Email),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Mobile),
+                DataType = DataType.VarChar,
+                Length = 20
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.AvatarUrl),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Organization),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Department),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Position),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Gender),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Birthday),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Education),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Graduation),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Address),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.WeiXin),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Qq),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.WeiBo),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Interests),
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(UserInfo.Signature),
+                DataType = DataType.VarChar,
+                Length = 255
+            }
+        };
 
         private const string ParmUserId = "@UserID";
         private const string ParmUserName = "@UserName";
         private const string ParmPassword = "@Password";
         private const string ParmPasswordFormat = "@PasswordFormat";
         private const string ParmPasswordSalt = "@PasswordSalt";
-        private const string ParmGroupId = "@GroupID";
         private const string ParmCreateDate = "@CreateDate";
         private const string ParmLastResetPasswordDate = "@LastResetPasswordDate";
         private const string ParmLastActivityDate = "@LastActivityDate";
@@ -47,48 +226,47 @@ namespace BaiRong.Core.Provider
         private const string ParmWeibo = "@WeiBo";
         private const string ParmInterests = "@Interests";
         private const string ParmSignature = "@Signature";
-        private const string ParmExtendValues = "@ExtendValues";
 
         private bool IpAddressIsRegisterAllowed(string ipAddress)
         {
-            if (ConfigManager.UserConfigInfo.RegisterMinMinutesOfIpAddress == 0 || string.IsNullOrEmpty(ipAddress))
+            if (ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes == 0 || string.IsNullOrEmpty(ipAddress))
             {
                 return true;
             }
-            var obj = CacheManager.GetCache($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}");
+            var obj = CacheUtils.Get($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}");
             return obj == null;
         }
 
         private void IpAddressCache(string ipAddress)
         {
-            if (ConfigManager.UserConfigInfo.RegisterMinMinutesOfIpAddress > 0 && !string.IsNullOrEmpty(ipAddress))
+            if (ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
             {
-                CacheManager.SetCache($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, DateTime.Now.AddMinutes(ConfigManager.UserConfigInfo.RegisterMinMinutesOfIpAddress));
+                CacheUtils.InsertMinutes($"BaiRong.Core.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes);
             }
         }
 
-        public bool Insert(UserInfo userInfo, string ipAddress, out string errorMessage)
+        public bool Insert(IUserInfo userInfo, string password, string ipAddress, out string errorMessage)
         {
             errorMessage = string.Empty;
             if (!IpAddressIsRegisterAllowed(ipAddress))
             {
-                errorMessage = $"同一IP在{ConfigManager.UserConfigInfo.RegisterMinMinutesOfIpAddress}分钟内只能注册一次";
+                errorMessage = $"同一IP在{ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes}分钟内只能注册一次";
                 return false;
             }
-            if (string.IsNullOrEmpty(userInfo.Password))
+            if (string.IsNullOrEmpty(password))
             {
                 errorMessage = "密码不能为空";
                 return false;
             }
-            if (userInfo.Password.Length < ConfigManager.UserConfigInfo.RegisterPasswordMinLength)
+            if (password.Length < ConfigManager.SystemConfigInfo.UserPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.UserConfigInfo.RegisterPasswordMinLength}";
+                errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.UserPasswordMinLength}";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(userInfo.Password, ConfigManager.UserConfigInfo.RegisterPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.UserPasswordRestriction))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(ConfigManager.UserConfigInfo.RegisterPasswordRestriction)}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}";
                 return false;
             }
             if (!IsUserNameCompliant(userInfo.UserName.Replace("@", string.Empty).Replace(".", string.Empty)))
@@ -106,7 +284,7 @@ namespace BaiRong.Core.Provider
                 errorMessage = "手机号码已被注册，请更换手机号码";
                 return false;
             }
-            if (!string.IsNullOrEmpty(userInfo.UserName) && IsUserExists(userInfo.UserName))
+            if (!string.IsNullOrEmpty(userInfo.UserName) && IsUserNameExists(userInfo.UserName))
             {
                 errorMessage = "用户名已被注册，请更换用户名";
                 return false;
@@ -114,12 +292,10 @@ namespace BaiRong.Core.Provider
 
             try
             {
-                userInfo.PasswordFormat = EPasswordFormatUtils.GetValue(EPasswordFormat.Encrypted);
                 var passwordSalt = GenerateSalt();
-                userInfo.Password = EncodePassword(userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), passwordSalt);
-                userInfo.PasswordSalt = passwordSalt;
+                password = EncodePassword(password, EPasswordFormat.Encrypted, passwordSalt);
 
-                InsertWithoutValidation(userInfo);
+                InsertWithoutValidation(userInfo, password, EPasswordFormat.Encrypted, passwordSalt);
 
                 IpAddressCache(ipAddress);
 
@@ -132,50 +308,48 @@ namespace BaiRong.Core.Provider
             }
         }
 
-        public void InsertWithoutValidation(UserInfo userInfo)
+        private void InsertWithoutValidation(IUserInfo userInfo, string password, EPasswordFormat passwordFormat, string passwordSalt)
         {
-            const string sqlString = "INSERT INTO bairong_Users (UserName, Password, PasswordFormat, PasswordSalt, GroupID, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature, ExtendValues) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @GroupID, @CreateDate, @LastResetPasswordDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CountOfWriting, @IsChecked, @IsLockedOut, @DisplayName, @Email, @Mobile, @AvatarUrl, @Organization, @Department, @Position, @Gender, @Birthday, @Education, @Graduation, @Address, @WeiXin, @QQ, @WeiBo, @Interests, @Signature, @ExtendValues)";
+            const string sqlString = "INSERT INTO bairong_Users (UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreateDate, @LastResetPasswordDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CountOfWriting, @IsChecked, @IsLockedOut, @DisplayName, @Email, @Mobile, @AvatarUrl, @Organization, @Department, @Position, @Gender, @Birthday, @Education, @Graduation, @Address, @WeiXin, @QQ, @WeiBo, @Interests, @Signature)";
 
             userInfo.CreateDate = DateTime.Now;
             userInfo.LastActivityDate = DateTime.Now;
             userInfo.LastResetPasswordDate = DateUtils.SqlMinValue;
 
-            var insertParms = new IDataParameter[]
+            var parameters = new IDataParameter[]
             {
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, userInfo.UserName),
-                GetParameter(ParmPassword, EDataType.NVarChar, 255, userInfo.Password),
-                GetParameter(ParmPasswordFormat, EDataType.VarChar, 50, userInfo.PasswordFormat),
-                GetParameter(ParmPasswordSalt, EDataType.NVarChar, 128, userInfo.PasswordSalt),
-                GetParameter(ParmGroupId, EDataType.Integer, userInfo.GroupId),
-                GetParameter(ParmCreateDate, EDataType.DateTime, userInfo.CreateDate),
-                GetParameter(ParmLastResetPasswordDate, EDataType.DateTime, userInfo.LastResetPasswordDate),
-                GetParameter(ParmLastActivityDate, EDataType.DateTime, userInfo.LastActivityDate),
-                GetParameter(ParmCountOfLogin, EDataType.Integer, userInfo.CountOfLogin),
-                GetParameter(ParmCountOfFailedLogin, EDataType.Integer, userInfo.CountOfFailedLogin),
-                GetParameter(ParmCountOfWriting, EDataType.Integer, userInfo.CountOfWriting),
-                GetParameter(ParmIsChecked, EDataType.VarChar, 18, userInfo.IsChecked.ToString()),
-                GetParameter(ParmIsLockedOut, EDataType.VarChar, 18, userInfo.IsLockedOut.ToString()),
-                GetParameter(ParmDisplayname, EDataType.NVarChar, 255, userInfo.DisplayName),
-                GetParameter(ParmEmail, EDataType.NVarChar, 255, userInfo.Email),
-                GetParameter(ParmMobile, EDataType.VarChar, 20, userInfo.Mobile),
-                GetParameter(ParmAvatarUrl, EDataType.VarChar, 200, userInfo.AvatarUrl),
-                GetParameter(ParmOrganization, EDataType.NVarChar, 255, userInfo.Organization),
-                GetParameter(ParmDepartment, EDataType.NVarChar, 255, userInfo.Department),
-                GetParameter(ParmPosition, EDataType.NVarChar, 255, userInfo.Position),
-                GetParameter(ParmGender, EDataType.NVarChar, 255, userInfo.Gender),
-                GetParameter(ParmBirthday, EDataType.VarChar, 50, userInfo.Birthday),
-                GetParameter(ParmEducation, EDataType.NVarChar, 255, userInfo.Education),
-                GetParameter(ParmGraduation, EDataType.NVarChar, 255, userInfo.Graduation),
-                GetParameter(ParmAddress, EDataType.NVarChar, 255, userInfo.Address),
-                GetParameter(ParmWeixin, EDataType.NVarChar, 255, userInfo.WeiXin),
-                GetParameter(ParmQq, EDataType.NVarChar, 255, userInfo.Qq),
-                GetParameter(ParmWeibo, EDataType.NVarChar, 255, userInfo.WeiBo),
-                GetParameter(ParmInterests, EDataType.NVarChar, 255, userInfo.Interests),
-                GetParameter(ParmSignature, EDataType.NVarChar, 255, userInfo.Signature),
-                GetParameter(ParmExtendValues, EDataType.NText, userInfo.Additional.ToString())
+                GetParameter(ParmUserName, DataType.VarChar, 255, userInfo.UserName),
+                GetParameter(ParmPassword, DataType.VarChar, 255, password),
+                GetParameter(ParmPasswordFormat, DataType.VarChar, 50, EPasswordFormatUtils.GetValue(passwordFormat)),
+                GetParameter(ParmPasswordSalt, DataType.VarChar, 128, passwordSalt),
+                GetParameter(ParmCreateDate, DataType.DateTime, userInfo.CreateDate),
+                GetParameter(ParmLastResetPasswordDate, DataType.DateTime, userInfo.LastResetPasswordDate),
+                GetParameter(ParmLastActivityDate, DataType.DateTime, userInfo.LastActivityDate),
+                GetParameter(ParmCountOfLogin, DataType.Integer, userInfo.CountOfLogin),
+                GetParameter(ParmCountOfFailedLogin, DataType.Integer, userInfo.CountOfFailedLogin),
+                GetParameter(ParmCountOfWriting, DataType.Integer, userInfo.CountOfWriting),
+                GetParameter(ParmIsChecked, DataType.VarChar, 18, userInfo.IsChecked.ToString()),
+                GetParameter(ParmIsLockedOut, DataType.VarChar, 18, userInfo.IsLockedOut.ToString()),
+                GetParameter(ParmDisplayname, DataType.VarChar, 255, userInfo.DisplayName),
+                GetParameter(ParmEmail, DataType.VarChar, 255, userInfo.Email),
+                GetParameter(ParmMobile, DataType.VarChar, 20, userInfo.Mobile),
+                GetParameter(ParmAvatarUrl, DataType.VarChar, 200, userInfo.AvatarUrl),
+                GetParameter(ParmOrganization, DataType.VarChar, 255, userInfo.Organization),
+                GetParameter(ParmDepartment, DataType.VarChar, 255, userInfo.Department),
+                GetParameter(ParmPosition, DataType.VarChar, 255, userInfo.Position),
+                GetParameter(ParmGender, DataType.VarChar, 255, userInfo.Gender),
+                GetParameter(ParmBirthday, DataType.VarChar, 50, userInfo.Birthday),
+                GetParameter(ParmEducation, DataType.VarChar, 255, userInfo.Education),
+                GetParameter(ParmGraduation, DataType.VarChar, 255, userInfo.Graduation),
+                GetParameter(ParmAddress, DataType.VarChar, 255, userInfo.Address),
+                GetParameter(ParmWeixin, DataType.VarChar, 255, userInfo.WeiXin),
+                GetParameter(ParmQq, DataType.VarChar, 255, userInfo.Qq),
+                GetParameter(ParmWeibo, DataType.VarChar, 255, userInfo.WeiBo),
+                GetParameter(ParmInterests, DataType.VarChar, 255, userInfo.Interests),
+                GetParameter(ParmSignature, DataType.VarChar, 255, userInfo.Signature)
             };
 
-            ExecuteNonQuery(sqlString, insertParms);
+            ExecuteNonQuery(sqlString, parameters);
         }
 
         public bool IsPasswordCorrect(string password, out string errorMessage)
@@ -186,58 +360,53 @@ namespace BaiRong.Core.Provider
                 errorMessage = "密码不能为空";
                 return false;
             }
-            if (password.Length < ConfigManager.UserConfigInfo.RegisterPasswordMinLength)
+            if (password.Length < ConfigManager.SystemConfigInfo.UserPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.UserConfigInfo.RegisterPasswordMinLength}";
+                errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.UserPasswordMinLength}";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.UserConfigInfo.RegisterPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.UserPasswordRestriction))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(ConfigManager.UserConfigInfo.RegisterPasswordRestriction)}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}";
                 return false;
             }
             return true;
         }
 
-        public void Update(UserInfo userInfo)
+        public void Update(IUserInfo userInfo)
         {
-            const string sqlString = "UPDATE bairong_Users SET UserName = @UserName, Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt, GroupID = @GroupID, CreateDate = @CreateDate, LastResetPasswordDate = @LastResetPasswordDate, LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, CountOfWriting = @CountOfWriting, IsChecked = @IsChecked, IsLockedOut = @IsLockedOut, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile, AvatarUrl = @AvatarUrl, Organization = @Organization, Department = @Department, Position = @Position, Gender = @Gender, Birthday = @Birthday, Education = @Education, Graduation = @Graduation, Address = @Address, WeiXin = @WeiXin, QQ = @QQ, WeiBo = @WeiBo, Interests = @Interests, Signature = @Signature, ExtendValues = @ExtendValues WHERE UserID = @UserID";
+            const string sqlString = "UPDATE bairong_Users SET UserName = @UserName, CreateDate = @CreateDate, LastResetPasswordDate = @LastResetPasswordDate, LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, CountOfWriting = @CountOfWriting, IsChecked = @IsChecked, IsLockedOut = @IsLockedOut, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile, AvatarUrl = @AvatarUrl, Organization = @Organization, Department = @Department, Position = @Position, Gender = @Gender, Birthday = @Birthday, Education = @Education, Graduation = @Graduation, Address = @Address, WeiXin = @WeiXin, QQ = @QQ, WeiBo = @WeiBo, Interests = @Interests, Signature = @Signature WHERE UserID = @UserID";
 
             var updateParms = new IDataParameter[]
             {
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, userInfo.UserName),
-                GetParameter(ParmPassword, EDataType.NVarChar, 255, userInfo.Password),
-                GetParameter(ParmPasswordFormat, EDataType.VarChar, 50, userInfo.PasswordFormat),
-                GetParameter(ParmPasswordSalt, EDataType.NVarChar, 128, userInfo.PasswordSalt),
-                GetParameter(ParmGroupId, EDataType.Integer, userInfo.GroupId),
-                GetParameter(ParmCreateDate, EDataType.DateTime, userInfo.CreateDate),
-                GetParameter(ParmLastResetPasswordDate, EDataType.DateTime, userInfo.LastResetPasswordDate),
-                GetParameter(ParmLastActivityDate, EDataType.DateTime, userInfo.LastActivityDate),
-                GetParameter(ParmCountOfLogin, EDataType.Integer, userInfo.CountOfLogin),
-                GetParameter(ParmCountOfFailedLogin, EDataType.Integer, userInfo.CountOfFailedLogin),
-                GetParameter(ParmCountOfWriting, EDataType.Integer, userInfo.CountOfWriting),
-                GetParameter(ParmIsChecked, EDataType.VarChar, 18, userInfo.IsChecked.ToString()),
-                GetParameter(ParmIsLockedOut, EDataType.VarChar, 18, userInfo.IsLockedOut.ToString()),
-                GetParameter(ParmDisplayname, EDataType.NVarChar, 255, userInfo.DisplayName),
-                GetParameter(ParmEmail, EDataType.NVarChar, 255, userInfo.Email),
-                GetParameter(ParmMobile, EDataType.VarChar, 20, userInfo.Mobile),
-                GetParameter(ParmAvatarUrl, EDataType.VarChar, 200, userInfo.AvatarUrl),
-                GetParameter(ParmOrganization, EDataType.NVarChar, 255, userInfo.Organization),
-                GetParameter(ParmDepartment, EDataType.NVarChar, 255, userInfo.Department),
-                GetParameter(ParmPosition, EDataType.NVarChar, 255, userInfo.Position),
-                GetParameter(ParmGender, EDataType.NVarChar, 255, userInfo.Gender),
-                GetParameter(ParmBirthday, EDataType.VarChar, 50, userInfo.Birthday),
-                GetParameter(ParmEducation, EDataType.NVarChar, 255, userInfo.Education),
-                GetParameter(ParmGraduation, EDataType.NVarChar, 255, userInfo.Graduation),
-                GetParameter(ParmAddress, EDataType.NVarChar, 255, userInfo.Address),
-                GetParameter(ParmWeixin, EDataType.NVarChar, 255, userInfo.WeiXin),
-                GetParameter(ParmQq, EDataType.NVarChar, 255, userInfo.Qq),
-                GetParameter(ParmWeibo, EDataType.NVarChar, 255, userInfo.WeiBo),
-                GetParameter(ParmInterests, EDataType.NVarChar, 255, userInfo.Interests),
-                GetParameter(ParmSignature, EDataType.NVarChar, 255, userInfo.Signature),
-                GetParameter(ParmExtendValues, EDataType.NText, userInfo.Additional.ToString()),
-                GetParameter(ParmUserId, EDataType.Integer, userInfo.UserId)
+                GetParameter(ParmUserName, DataType.VarChar, 255, userInfo.UserName),
+                GetParameter(ParmCreateDate, DataType.DateTime, userInfo.CreateDate),
+                GetParameter(ParmLastResetPasswordDate, DataType.DateTime, userInfo.LastResetPasswordDate),
+                GetParameter(ParmLastActivityDate, DataType.DateTime, userInfo.LastActivityDate),
+                GetParameter(ParmCountOfLogin, DataType.Integer, userInfo.CountOfLogin),
+                GetParameter(ParmCountOfFailedLogin, DataType.Integer, userInfo.CountOfFailedLogin),
+                GetParameter(ParmCountOfWriting, DataType.Integer, userInfo.CountOfWriting),
+                GetParameter(ParmIsChecked, DataType.VarChar, 18, userInfo.IsChecked.ToString()),
+                GetParameter(ParmIsLockedOut, DataType.VarChar, 18, userInfo.IsLockedOut.ToString()),
+                GetParameter(ParmDisplayname, DataType.VarChar, 255, userInfo.DisplayName),
+                GetParameter(ParmEmail, DataType.VarChar, 255, userInfo.Email),
+                GetParameter(ParmMobile, DataType.VarChar, 20, userInfo.Mobile),
+                GetParameter(ParmAvatarUrl, DataType.VarChar, 200, userInfo.AvatarUrl),
+                GetParameter(ParmOrganization, DataType.VarChar, 255, userInfo.Organization),
+                GetParameter(ParmDepartment, DataType.VarChar, 255, userInfo.Department),
+                GetParameter(ParmPosition, DataType.VarChar, 255, userInfo.Position),
+                GetParameter(ParmGender, DataType.VarChar, 255, userInfo.Gender),
+                GetParameter(ParmBirthday, DataType.VarChar, 50, userInfo.Birthday),
+                GetParameter(ParmEducation, DataType.VarChar, 255, userInfo.Education),
+                GetParameter(ParmGraduation, DataType.VarChar, 255, userInfo.Graduation),
+                GetParameter(ParmAddress, DataType.VarChar, 255, userInfo.Address),
+                GetParameter(ParmWeixin, DataType.VarChar, 255, userInfo.WeiXin),
+                GetParameter(ParmQq, DataType.VarChar, 255, userInfo.Qq),
+                GetParameter(ParmWeibo, DataType.VarChar, 255, userInfo.WeiBo),
+                GetParameter(ParmInterests, DataType.VarChar, 255, userInfo.Interests),
+                GetParameter(ParmSignature, DataType.VarChar, 255, userInfo.Signature),
+                GetParameter(ParmUserId, DataType.Integer, userInfo.UserId)
             };
 
             ExecuteNonQuery(sqlString, updateParms);
@@ -249,8 +418,8 @@ namespace BaiRong.Core.Provider
 
             var updateParms = new IDataParameter[]
             {
-                GetParameter(ParmLastActivityDate, EDataType.DateTime, DateTime.Now),
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, userName)
+                GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),
+                GetParameter(ParmUserName, DataType.VarChar, 255, userName)
             };
 
             ExecuteNonQuery(sqlString, updateParms);
@@ -326,15 +495,15 @@ namespace BaiRong.Core.Provider
         public bool ChangePassword(string userName, string password, out string errorMessage)
         {
             errorMessage = null;
-            if (password.Length < ConfigManager.UserConfigInfo.RegisterPasswordMinLength)
+            if (password.Length < ConfigManager.SystemConfigInfo.UserPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.UserConfigInfo.RegisterPasswordMinLength}";
+                errorMessage = $"密码长度必须大于等于{ConfigManager.SystemConfigInfo.UserPasswordMinLength}";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.UserConfigInfo.RegisterPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.SystemConfigInfo.UserPasswordRestriction))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(ConfigManager.UserConfigInfo.RegisterPasswordRestriction)}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}";
                 return false;
             }
 
@@ -352,16 +521,17 @@ namespace BaiRong.Core.Provider
 
             var updateParms = new IDataParameter[]
             {
-                GetParameter(ParmPassword, EDataType.NVarChar, 255, password),
-                GetParameter(ParmPasswordFormat, EDataType.VarChar, 50, EPasswordFormatUtils.GetValue(passwordFormat)),
-                GetParameter(ParmPasswordSalt, EDataType.NVarChar, 128, passwordSalt),
-                GetParameter(ParmLastResetPasswordDate, EDataType.DateTime, DateTime.Now),
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, userName)
+                GetParameter(ParmPassword, DataType.VarChar, 255, password),
+                GetParameter(ParmPasswordFormat, DataType.VarChar, 50, EPasswordFormatUtils.GetValue(passwordFormat)),
+                GetParameter(ParmPasswordSalt, DataType.VarChar, 128, passwordSalt),
+                GetParameter(ParmLastResetPasswordDate, DataType.DateTime, DateTime.Now),
+                GetParameter(ParmUserName, DataType.VarChar, 255, userName)
             };
 
             try
             {
                 ExecuteNonQuery(sqlString, updateParms);
+                LogUtils.AddUserLog(userName, EUserActionType.UpdatePassword, string.Empty);
                 isSuccess = true;
             }
             catch
@@ -377,7 +547,7 @@ namespace BaiRong.Core.Provider
 
             var deleteParms = new IDataParameter[]
             {
-                GetParameter(ParmUserId, EDataType.Integer, userId)
+                GetParameter(ParmUserId, DataType.Integer, userId)
             };
 
             ExecuteNonQuery(sqlString, deleteParms);
@@ -442,7 +612,6 @@ namespace BaiRong.Core.Provider
                 Password = GetString(rdr, i++),
                 PasswordFormat = GetString(rdr, i++),
                 PasswordSalt = GetString(rdr, i++),
-                GroupId = GetInt(rdr, i++),
                 CreateDate = GetDateTime(rdr, i++),
                 LastResetPasswordDate = GetDateTime(rdr, i++),
                 LastActivityDate = GetDateTime(rdr, i++),
@@ -467,8 +636,7 @@ namespace BaiRong.Core.Provider
                 Qq = GetString(rdr, i++),
                 WeiBo = GetString(rdr, i++),
                 Interests = GetString(rdr, i++),
-                Signature = GetString(rdr, i++),
-                ExtendValues = GetString(rdr, i)
+                Signature = GetString(rdr, i)
             };
             if (string.IsNullOrEmpty(userInfo.DisplayName))
             {
@@ -482,11 +650,11 @@ namespace BaiRong.Core.Provider
             if (string.IsNullOrEmpty(userName)) return null;
 
             UserInfo userInfo = null;
-            const string sqlString = "SELECT UserID, UserName, Password, PasswordFormat, PasswordSalt, GroupID, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature, ExtendValues FROM bairong_Users WHERE UserName = @UserName";
+            const string sqlString = "SELECT UserID, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM bairong_Users WHERE UserName = @UserName";
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, userName)
+                GetParameter(ParmUserName, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -505,11 +673,11 @@ namespace BaiRong.Core.Provider
             if (string.IsNullOrEmpty(email)) return null;
 
             UserInfo userInfo = null;
-            const string sqlString = "SELECT UserID, UserName, Password, PasswordFormat, PasswordSalt, GroupID, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature, ExtendValues FROM bairong_Users WHERE Email = @Email";
+            const string sqlString = "SELECT UserID, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM bairong_Users WHERE Email = @Email";
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmEmail, EDataType.NVarChar, 255, email)
+                GetParameter(ParmEmail, DataType.VarChar, 255, email)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -528,11 +696,11 @@ namespace BaiRong.Core.Provider
             if (string.IsNullOrEmpty(mobile)) return null;
 
             UserInfo userInfo = null;
-            const string sqlString = "SELECT UserID, UserName, Password, PasswordFormat, PasswordSalt, GroupID, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature, ExtendValues FROM bairong_Users WHERE Mobile = @Mobile";
+            const string sqlString = "SELECT UserID, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM bairong_Users WHERE Mobile = @Mobile";
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmMobile, EDataType.VarChar, 20, mobile)
+                GetParameter(ParmMobile, DataType.VarChar, 20, mobile)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -555,7 +723,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmMobile, EDataType.VarChar, 20, mobile)
+                GetParameter(ParmMobile, DataType.VarChar, 20, mobile)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -574,11 +742,11 @@ namespace BaiRong.Core.Provider
             if (userId <= 0) return null;
 
             UserInfo userInfo = null;
-            const string sqlString = "SELECT UserID, UserName, Password, PasswordFormat, PasswordSalt, GroupID, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature, ExtendValues FROM bairong_Users WHERE UserID = @UserID";
+            const string sqlString = "SELECT UserID, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CountOfWriting, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Organization, Department, Position, Gender, Birthday, Education, Graduation, Address, WeiXin, QQ, WeiBo, Interests, Signature FROM bairong_Users WHERE UserID = @UserID";
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmUserId, EDataType.Integer, userId)
+                GetParameter(ParmUserId, DataType.Integer, userId)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -592,7 +760,7 @@ namespace BaiRong.Core.Provider
             return userInfo;
         }
 
-        public bool IsUserExists(string userName)
+        public bool IsUserNameExists(string userName)
         {
             if (string.IsNullOrEmpty(userName)) return false;
 
@@ -602,7 +770,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, userName.ToLower())
+                GetParameter(ParmUserName, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -636,7 +804,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmEmail, EDataType.VarChar, 200, email.ToLower())
+                GetParameter(ParmEmail, DataType.VarChar, 200, email)
             };
 
             using (var rdr = ExecuteReader(sqlSelect, parms))
@@ -660,7 +828,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmMobile, EDataType.VarChar, 20, mobile)
+                GetParameter(ParmMobile, DataType.VarChar, 20, mobile)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -683,7 +851,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmUserId, EDataType.Integer, userId)
+                GetParameter(ParmUserId, DataType.Integer, userId)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -705,7 +873,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmUserId, EDataType.Integer, userId)
+                GetParameter(ParmUserId, DataType.Integer, userId)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -727,7 +895,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, userName)
+                GetParameter(ParmUserName, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -750,7 +918,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, userName)
+                GetParameter(ParmUserName, DataType.VarChar, 255, userName)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -780,7 +948,7 @@ namespace BaiRong.Core.Provider
 
                 var parms = new IDataParameter[]
                 {
-                    GetParameter(ParmEmail, EDataType.VarChar, 200, email)
+                    GetParameter(ParmEmail, DataType.VarChar, 200, email)
                 };
 
                 using (var rdr = ExecuteReader(sqlString, parms))
@@ -798,7 +966,7 @@ namespace BaiRong.Core.Provider
 
                 var parms = new IDataParameter[]
                 {
-                    GetParameter(ParmMobile, EDataType.VarChar, 20, mobile)
+                    GetParameter(ParmMobile, DataType.VarChar, 20, mobile)
                 };
 
                 using (var rdr = ExecuteReader(sqlString, parms))
@@ -822,7 +990,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
             {
-                GetParameter(ParmUserId, EDataType.Integer, userId)
+                GetParameter(ParmUserId, DataType.Integer, userId)
             };
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -850,7 +1018,7 @@ namespace BaiRong.Core.Provider
                 sqlString = "SELECT Mobile FROM bairong_Users WHERE Mobile = @Mobile";
                 parms = new IDataParameter[]
                 {
-                    GetParameter(ParmMobile, EDataType.VarChar, 20, account)
+                    GetParameter(ParmMobile, DataType.VarChar, 20, account)
                 };
             }
             else if (StringUtils.IsEmail(account))
@@ -858,7 +1026,7 @@ namespace BaiRong.Core.Provider
                 sqlString = "SELECT Mobile FROM bairong_Users WHERE Email = @Email";
                 parms = new IDataParameter[]
                 {
-                    GetParameter(ParmEmail, EDataType.VarChar, 200, account)
+                    GetParameter(ParmEmail, DataType.VarChar, 200, account)
                 };
             }
             else
@@ -866,7 +1034,7 @@ namespace BaiRong.Core.Provider
                 sqlString = "SELECT Mobile FROM bairong_Users WHERE UserName = @UserName";
                 parms = new IDataParameter[]
                 {
-                    GetParameter(ParmUserName, EDataType.NVarChar, 255, account)
+                    GetParameter(ParmUserName, DataType.VarChar, 255, account)
                 };
             }
 
@@ -933,44 +1101,6 @@ namespace BaiRong.Core.Provider
             return userIdList;
         }
 
-        public List<string> GetUserNameListByGroupIdCollection(string groupIdCollection)
-        {
-            if (string.IsNullOrEmpty(groupIdCollection)) return new List<string>();
-
-            var list = new List<string>();
-            string sqlSelect =
-                $"SELECT UserName FROM bairong_Users WHERE GroupID IN ({groupIdCollection}) ORDER BY UserID DESC";
-
-            using (var rdr = ExecuteReader(sqlSelect))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetString(rdr, 0));
-                }
-                rdr.Close();
-            }
-            return list;
-        }
-
-        public List<int> GetUserIdListByGroupIdCollection(string groupIdCollection)
-        {
-            if (string.IsNullOrEmpty(groupIdCollection)) return new List<int>();
-
-            var userIdList = new List<int>();
-            string sqlSelect =
-                $"SELECT UserID FROM bairong_Users WHERE GroupID IN ({groupIdCollection}) ORDER BY UserID DESC";
-
-            using (var rdr = ExecuteReader(sqlSelect))
-            {
-                while (rdr.Read())
-                {
-                    userIdList.Add(GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
-            return userIdList;
-        }
-
         public List<string> GetUserNameList(string searchWord, int dayOfCreate, int dayOfLastActivity, bool isChecked)
         {
             var list = new List<string>();
@@ -1009,10 +1139,10 @@ namespace BaiRong.Core.Provider
         public string GetSelectCommand(bool isChecked)
         {
             string whereString = $"WHERE IsChecked = '{isChecked}'";
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
-        public string GetSelectCommand(string searchWord, int dayOfCreate, int dayOfLastActivity, bool isChecked, int groupId, int loginCount, string searchType)
+        public string GetSelectCommand(string searchWord, int dayOfCreate, int dayOfLastActivity, bool isChecked, int loginCount, string searchType)
         {
             var whereBuilder = new StringBuilder();
 
@@ -1030,12 +1160,6 @@ namespace BaiRong.Core.Provider
 
                 var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
                 whereBuilder.Append($"(LastActivityDate >= '{dateTime:yyyy-MM-dd}') ");
-            }
-
-            if (groupId > 0)
-            {
-                whereBuilder.Append(" AND ");
-                whereBuilder.Append($" GroupID = {groupId}");
             }
 
             if (string.IsNullOrEmpty(searchType))
@@ -1062,7 +1186,7 @@ namespace BaiRong.Core.Provider
                 whereString = $"WHERE IsChecked = '{isChecked}' {whereBuilder}";
             }
 
-            return BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
+            return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString);
         }
 
         public string GetSortFieldName()
@@ -1082,42 +1206,16 @@ namespace BaiRong.Core.Provider
 
             if (startNum <= 1)
             {
-                var sqlString = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                var sqlString = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
                 enumerable = (IEnumerable)ExecuteReader(sqlString);
             }
             else
             {
-                var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
                 enumerable = (IEnumerable)ExecuteReader(sqlSelect);
             }
 
             return enumerable;
-        }
-
-        public void SetGroupId(string userName, int groupId)
-        {
-            const string sqlString = "UPDATE bairong_Users SET GroupID = @GroupID WHERE UserName = @UserName";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmGroupId, EDataType.Integer, groupId),
-                GetParameter(ParmUserName, EDataType.NVarChar, 255, userName)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
-        }
-
-        public void SetGroupId(List<string> userNameList, int groupId)
-        {
-            string sqlString =
-                $"UPDATE bairong_Users SET GroupID = @GroupID WHERE UserName IN ({TranslateUtils.ToSqlInStringWithQuote(userNameList)})";
-
-            var parms = new IDataParameter[]
-            {
-                GetParameter(ParmGroupId, EDataType.Integer, groupId)
-            };
-
-            ExecuteNonQuery(sqlString, parms);
         }
 
         public bool CheckPassword(string password, string dbpassword, EPasswordFormat passwordFormat, string passwordSalt)
@@ -1136,13 +1234,13 @@ namespace BaiRong.Core.Provider
             {
                 return false;
             }
-            if (IsUserExists(userInfo.UserName))
+            if (IsUserNameExists(userInfo.UserName))
             {
                 return false;
             }
             try
             {
-                InsertWithoutValidation(userInfo);
+                InsertWithoutValidation(userInfo, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt);
 
                 return true;
             }
@@ -1159,8 +1257,8 @@ namespace BaiRong.Core.Provider
                 var sqlString = $"UPDATE bairong_Users SET LastActivityDate = @LastActivityDate, {SqlUtils.GetAddOne("CountOfFailedLogin")} WHERE UserName = @UserName";
 
                 IDataParameter[] updateParms = {
-                    GetParameter(ParmLastActivityDate, EDataType.DateTime, DateTime.Now),
-                    GetParameter(ParmUserName, EDataType.NVarChar, 255, userName)
+                    GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),
+                    GetParameter(ParmUserName, DataType.VarChar, 255, userName)
                 };
 
                 ExecuteNonQuery(sqlString, updateParms);
@@ -1174,15 +1272,15 @@ namespace BaiRong.Core.Provider
                 var sqlString = $"UPDATE bairong_Users SET LastActivityDate = @LastActivityDate, {SqlUtils.GetAddOne("CountOfLogin")}, CountOfFailedLogin = 0 WHERE UserName = @UserName";
 
                 IDataParameter[] updateParms = {
-                    GetParameter(ParmLastActivityDate, EDataType.DateTime, DateTime.Now),
-                    GetParameter(ParmUserName, EDataType.NVarChar, 255, userName)
+                    GetParameter(ParmLastActivityDate, DataType.DateTime, DateTime.Now),
+                    GetParameter(ParmUserName, DataType.VarChar, 255, userName)
                 };
 
                 ExecuteNonQuery(sqlString, updateParms);
             }
         }
 
-        public bool ValidateAccount(string account, string password, out string userName, out string errorMessage)
+        public bool Validate(string account, string password, out string userName, out string errorMessage)
         {
             userName = string.Empty;
             errorMessage = string.Empty;
@@ -1220,11 +1318,11 @@ namespace BaiRong.Core.Provider
                 return false;
             }
 
-            if (ConfigManager.UserConfigInfo.IsLoginFailToLock)
+            if (ConfigManager.SystemConfigInfo.IsUserLockLogin)
             {
-                if (userInfo.CountOfFailedLogin > 0 && userInfo.CountOfFailedLogin >= ConfigManager.UserConfigInfo.LoginFailToLockCount)
+                if (userInfo.CountOfFailedLogin > 0 && userInfo.CountOfFailedLogin >= ConfigManager.SystemConfigInfo.UserLockLoginCount)
                 {
-                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.UserConfigInfo.LoginLockingType);
+                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserLockLoginType);
                     if (lockType == EUserLockType.Forever)
                     {
                         errorMessage = "此账号错误登录次数过多，已被永久锁定";
@@ -1233,7 +1331,7 @@ namespace BaiRong.Core.Provider
                     if (lockType == EUserLockType.Hours)
                     {
                         var ts = new TimeSpan(DateTime.Now.Ticks - userInfo.LastActivityDate.Ticks);
-                        var hours = Convert.ToInt32(ConfigManager.UserConfigInfo.LoginLockingHours - ts.TotalHours);
+                        var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.UserLockLoginHours - ts.TotalHours);
                         if (hours > 0)
                         {
                             errorMessage =
@@ -1246,6 +1344,7 @@ namespace BaiRong.Core.Provider
 
             if (!CheckPassword(password, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
             {
+                LogUtils.AddUserLog(userInfo.UserName, EUserActionType.LoginFailed, "用户登录失败");
                 errorMessage = "帐号或密码错误";
                 return false;
             }

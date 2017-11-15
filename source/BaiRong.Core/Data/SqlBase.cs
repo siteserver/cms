@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Data.Helper;
 using System.Data.SqlClient;
 using System.Collections.Specialized;
 using System.Collections;

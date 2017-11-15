@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using System.Web.UI;
 using BaiRong.Core;
@@ -32,13 +32,13 @@ namespace SiteServer.BackgroundPages.Controls
                     foreach (var nodeId in nodeIdList)
                     {
                         var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, nodeId);
-                        var enabled = AdminUtility.IsOwningNodeId(body.AdministratorName, nodeInfo.NodeId);
+                        var enabled = AdminUtility.IsOwningNodeId(body.AdminName, nodeInfo.NodeId);
                         if (!enabled)
                         {
-                            if (!AdminUtility.IsHasChildOwningNodeId(body.AdministratorName, nodeInfo.NodeId)) continue;
+                            if (!AdminUtility.IsHasChildOwningNodeId(body.AdminName, nodeInfo.NodeId)) continue;
                         }
 
-                        builder.Append(ChannelLoading.GetChannelRowHtml(_publishmentSystemInfo, nodeInfo, enabled, ELoadingType.ContentTree, null, body.AdministratorName));
+                        builder.Append(ChannelLoading.GetChannelRowHtml(_publishmentSystemInfo, nodeInfo, enabled, ELoadingType.ContentTree, null, body.AdminName));
                     }
                 }
                 catch (Exception ex)

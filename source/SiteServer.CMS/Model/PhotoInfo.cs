@@ -1,4 +1,4 @@
-using BaiRong.Core.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
@@ -13,9 +13,9 @@ namespace SiteServer.CMS.Model
 
         public PhotoInfo()
         {
-            ID = 0;
-            PublishmentSystemID = 0;
-            ContentID = 0;
+            Id = 0;
+            PublishmentSystemId = 0;
+            ContentId = 0;
             SmallUrl = string.Empty;
             MiddleUrl = string.Empty;
             LargeUrl = string.Empty;
@@ -23,11 +23,11 @@ namespace SiteServer.CMS.Model
             Description = string.Empty;
         }
 
-        public PhotoInfo(int id, int publishmentSystemID, int contentID, string smallUrl, string middleUrl, string largeUrl, int taxis, string description)
+        public PhotoInfo(int id, int publishmentSystemId, int contentId, string smallUrl, string middleUrl, string largeUrl, int taxis, string description)
         {
-            ID = id;
-            PublishmentSystemID = publishmentSystemID;
-            ContentID = contentID;
+            Id = id;
+            PublishmentSystemId = publishmentSystemId;
+            ContentId = contentId;
             SmallUrl = smallUrl;
             MiddleUrl = middleUrl;
             LargeUrl = largeUrl;
@@ -35,21 +35,21 @@ namespace SiteServer.CMS.Model
             Description = description;
         }
 
-        public int ID
+        public int Id
         {
-            get { return GetInt("ID", 0); }
+            get { return GetInt("ID"); }
             set { SetExtendedAttribute("ID", value.ToString()); }
         }
 
-        public int PublishmentSystemID
+        public int PublishmentSystemId
         {
-            get { return GetInt("PublishmentSystemID", 0); }
+            get { return GetInt("PublishmentSystemID"); }
             set { SetExtendedAttribute("PublishmentSystemID", value.ToString()); }
         }
 
-        public int ContentID
+        public int ContentId
         {
-            get { return GetInt("ContentID", 0); }
+            get { return GetInt("ContentID"); }
             set { SetExtendedAttribute("ContentID", value.ToString()); }
         }
 
@@ -73,7 +73,7 @@ namespace SiteServer.CMS.Model
 
         public int Taxis
         {
-            get { return GetInt("Taxis", 0); }
+            get { return GetInt("Taxis"); }
             set { SetExtendedAttribute("Taxis", value.ToString()); }
         }
 

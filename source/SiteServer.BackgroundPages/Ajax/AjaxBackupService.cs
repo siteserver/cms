@@ -2,9 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI;
 using BaiRong.Core;
-using BaiRong.Core.Text;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Controllers.Stl;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model.Enumerations;
@@ -130,14 +129,14 @@ namespace SiteServer.BackgroundPages.Ajax
                 }
 
                 string resultString =
-                    $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ActionsDownload.GetUrl(publishmentSystemInfo.Additional.ApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
+                    $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ActionsDownload.GetUrl(PageUtils.InnerApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
 
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(resultString, string.Empty, string.Empty);
             }
             catch (Exception ex)
             {
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
             }
 
             return retval;
@@ -150,9 +149,9 @@ namespace SiteServer.BackgroundPages.Ajax
 
             try
             {
-                BackupUtility.RecoverySite(publishmentSystemId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, PageUtils.UrlDecode(path), isOverride, isUseTable, body.AdministratorName);
+                BackupUtility.RecoverySite(publishmentSystemId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, PageUtils.UrlDecode(path), isOverride, isUseTable, body.AdminName);
 
-                body.AddSiteLog(publishmentSystemId, "恢复备份数据", body.AdministratorName);
+                body.AddSiteLog(publishmentSystemId, "恢复备份数据", body.AdminName);
 
                 retval = AjaxManager.GetWaitingTaskNameValueCollection("数据恢复成功!", string.Empty, string.Empty);
 
@@ -162,7 +161,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 //retval = new string[] { string.Empty, ex.Message, string.Empty };
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
-                LogUtils.AddErrorLog(ex);
+                LogUtils.AddSystemErrorLog(ex);
             }
 
             return retval;

@@ -1,12 +1,39 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class RoleDao : DataProviderBase
 	{
+        public override string TableName => "bairong_Roles";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = "RoleName",
+                DataType = DataType.VarChar,
+                Length = 255,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "CreatorUserName",
+                DataType = DataType.VarChar,
+                Length = 255
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "Description",
+                DataType = DataType.VarChar,
+                Length = 255
+            }
+        };
+
         private const string ParmRoleName = "@RoleName";
         private const string ParmCreatorUsername= "@CreatorUserName";
         private const string ParmDescription = "@Description";
@@ -17,7 +44,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT Description FROM bairong_Roles WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -37,7 +64,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT CreatorUserName FROM bairong_Roles WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName)
+				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms)) 
@@ -83,7 +110,7 @@ namespace BaiRong.Core.Provider
                 var sqlString = "SELECT RoleName FROM bairong_Roles WHERE CreatorUserName = @CreatorUserName";
                 var parms = new IDataParameter[]
 			    {
-				    GetParameter(ParmCreatorUsername, EDataType.NVarChar, 255, creatorUserName)
+				    GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName)
 			    };
 
                 using (var rdr = ExecuteReader(sqlString, parms)) 
@@ -106,95 +133,15 @@ namespace BaiRong.Core.Provider
 			return roleArray;
 		}
 
-        public string[] GetRolesForUser(string userName)
-        {
-            var tmpRoleNames = string.Empty;
-            var sqlString = "SELECT RoleName FROM bairong_AdministratorsInRoles WHERE UserName = @UserName ORDER BY RoleName";
-            var parms = new IDataParameter[]
-			{
-				GetParameter("@UserName", EDataType.NVarChar, 255, userName)
-			};
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    tmpRoleNames += GetString(rdr, 0) + ",";
-                }
-                rdr.Close();
-            }
-
-            if (tmpRoleNames.Length > 0)
-            {
-                tmpRoleNames = tmpRoleNames.Substring(0, tmpRoleNames.Length - 1);
-                return tmpRoleNames.Split(',');
-            }
-
-            return new string[0];
-        }
-
-        public string[] GetUsersInRole(string roleName)
-        {
-            var tmpUserNames = string.Empty;
-            var sqlString = "SELECT UserName FROM bairong_AdministratorsInRoles WHERE RoleName = @RoleName ORDER BY userName";
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName)
-			};
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    tmpUserNames += GetString(rdr, 0) + ",";
-                }
-                rdr.Close();
-            }
-
-            if (tmpUserNames.Length > 0)
-            {
-                tmpUserNames = tmpUserNames.Substring(0, tmpUserNames.Length - 1);
-                return tmpUserNames.Split(',');
-            }
-
-            return new string[0];
-        }
-
-        public void RemoveUserFromRoles(string userName, string[] roleNames)
-        {
-            var sqlString = "DELETE FROM bairong_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
-            foreach (var roleName in roleNames)
-            {
-                var parms = new IDataParameter[]
-			    {
-				    GetParameter("@UserName", EDataType.NVarChar, 255, userName),
-                    GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
-			    };
-                ExecuteNonQuery(sqlString, parms);
-            }
-        }
-
-        public void RemoveUserFromRole(string userName, string roleName)
-        {
-            var sqlString = "DELETE FROM bairong_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
-            var parms = new IDataParameter[]
-			{
-				GetParameter("@UserName", EDataType.NVarChar, 255, userName),
-                GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
-			};
-
-            ExecuteNonQuery(sqlString, parms);
-        }
-
         public void InsertRole(string roleName, string creatorUserName, string description)
         {
             var sqlString = "INSERT INTO bairong_Roles (RoleName, CreatorUserName, Description) VALUES (@RoleName, @CreatorUserName, @Description)";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName),
-                GetParameter(ParmCreatorUsername, EDataType.NVarChar, 255, creatorUserName),
-                GetParameter(ParmDescription, EDataType.NVarChar, 255, description)
+				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName),
+                GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName),
+                GetParameter(ParmDescription, DataType.VarChar, 255, description)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -206,8 +153,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmDescription, EDataType.NVarChar, 255, description),
-                GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName)
+                GetParameter(ParmDescription, DataType.VarChar, 255, description),
+                GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -223,7 +170,7 @@ namespace BaiRong.Core.Provider
 
                 var parms = new IDataParameter[]
 			    {
-                    GetParameter(ParmRoleName, EDataType.NVarChar, 255, roleName)
+                    GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
 			    };
 
                 ExecuteNonQuery(sqlString, parms);
@@ -242,7 +189,7 @@ namespace BaiRong.Core.Provider
             var sqlString = "SELECT RoleName FROM bairong_Roles WHERE RoleName = @RoleName";
             var parms = new IDataParameter[]
 			{
-                GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
+                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
 			};
             using (var rdr = ExecuteReader(sqlString, parms))
             {
@@ -256,84 +203,6 @@ namespace BaiRong.Core.Provider
                 rdr.Close();
             }
             return exists;
-        }
-
-        public string[] FindUsersInRole(string roleName, string userNameToMatch)
-        {
-            var tmpUserNames = string.Empty;
-            string sqlString =
-                $"SELECT UserName FROM bairong_AdministratorsInRoles WHERE RoleName = @RoleName AND UserName LIKE '%{PageUtils.FilterSql(userNameToMatch)}%'";
-
-            var parms = new IDataParameter[]
-			{
-                GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
-			};
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    tmpUserNames += GetString(rdr, 0) + ",";
-                }
-                rdr.Close();
-            }
-
-            if (tmpUserNames.Length > 0)
-            {
-                tmpUserNames = tmpUserNames.Substring(0, tmpUserNames.Length - 1);
-                return tmpUserNames.Split(',');
-            }
-
-            return new string[0];
-        }
-
-        public bool IsUserInRole(string userName, string roleName)
-        {
-            var isUserInRole = false;
-            var sqlString = "SELECT * FROM bairong_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
-            var parms = new IDataParameter[]
-			{
-                GetParameter("@UserName", EDataType.NVarChar, 255, userName),
-                GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
-			};
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    if (!rdr.IsDBNull(0))
-                    {
-                        isUserInRole = true;
-                    }
-                }
-                rdr.Close();
-            }
-            return isUserInRole;
-        }
-
-        public void AddUserToRoles(string userName, string[] roleNames)
-        {
-            foreach (var roleName in roleNames)
-            {
-                AddUserToRole(userName, roleName);
-            }
-        }
-
-        public void AddUserToRole(string userName, string roleName)
-        {
-            if (!IsRoleExists(roleName)) return;
-            if (!BaiRongDataProvider.AdministratorDao.IsUserNameExists(userName)) return;
-            if (!IsUserInRole(userName, roleName))
-            {
-                var sqlString = "INSERT INTO bairong_AdministratorsInRoles (UserName, RoleName) VALUES (@UserName, @RoleName)";
-
-                var parms = new IDataParameter[]
-			    {
-                    GetParameter("@UserName", EDataType.NVarChar, 255, userName),
-                    GetParameter("@RoleName", EDataType.NVarChar, 255, roleName)
-			    };
-
-                ExecuteNonQuery(sqlString, parms);
-            }
         }
 	}
 }

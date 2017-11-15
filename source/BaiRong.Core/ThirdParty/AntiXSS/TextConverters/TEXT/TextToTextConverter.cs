@@ -13,7 +13,6 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
     using System.Text;
     using Data.Internal;
     using Globalization;
-    using Test;
 
 
     internal class TextToTextConverter : IProducerConsumer, IDisposable
@@ -22,9 +21,6 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
         protected bool endOfFile;
 
         protected TextOutput output;
-#if DEBUG
-        protected TestHtmlTrace trace;
-#endif
         protected bool convertFragment;
 
         protected int lineLength;
@@ -50,12 +46,6 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
                     bool traceShowTokenNum, 
                     int traceStopOnTokenNum)
         {
-#if DEBUG
-            if (traceStream != null)
-            {
-                trace = new TestHtmlTrace(traceStream, traceShowTokenNum, traceStopOnTokenNum);
-            }
-#endif
             this.treatNbspAsBreakable = treatNbspAsBreakable;
 
             this.convertFragment = convertFragment;
@@ -115,17 +105,6 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
 
         protected void Process(TextTokenId tokenId)
         {
-#if DEBUG
-            if (trace != null)
-            {
-                trace.TraceToken(parser.Token, 0);
-
-                if (tokenId == TextTokenId.EndOfFile)
-                {
-                    trace.Flush();
-                }
-            }
-#endif
             if (!started)
             {
                 if (!convertFragment)
@@ -263,17 +242,8 @@ namespace Microsoft.Exchange.Data.TextConverters.Internal.Text
             {
                 ((IDisposable)output).Dispose();
             }
-#if DEBUG
-            if (trace != null /*&& this.trace is IDisposable*/)
-            {
-                ((IDisposable)trace).Dispose();
-            }
-#endif
             parser = null;
             output = null;
-#if DEBUG
-            trace = null;
-#endif
             GC.SuppressFinalize(this);
         }
     }

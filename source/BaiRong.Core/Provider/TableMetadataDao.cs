@@ -4,12 +4,61 @@ using System.Data;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
+using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
 {
     public class TableMetadataDao : DataProviderBase
     {
+        public override string TableName => "bairong_TableMetadata";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.TableMetadataId),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.AuxiliaryTableEnName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.AttributeName),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.DataType),
+                DataType = DataType.VarChar,
+                Length = 50
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.DataLength),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.Taxis),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(TableMetadataInfo.IsSystem),
+                DataType = DataType.VarChar,
+                Length = 18
+            }
+        };
+
         private const string SqlSelectTableMetadata = "SELECT TableMetadataID, AuxiliaryTableENName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE TableMetadataID = @TableMetadataID";
 
         private const string SqlSelectAllTableMetadataByEnname = "SELECT TableMetadataID, AuxiliaryTableENName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE AuxiliaryTableENName = @AuxiliaryTableENName ORDER BY IsSystem DESC, Taxis";
@@ -44,12 +93,12 @@ namespace BaiRong.Core.Provider
 
             var insertParms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, info.AuxiliaryTableEnName),
-				GetParameter(ParmAttributeName, EDataType.VarChar, 50, info.AttributeName),
-				GetParameter(ParmDataType, EDataType.VarChar, 50, EDataTypeUtils.GetValue(info.DataType)),
-				GetParameter(ParmDataLength, EDataType.Integer, info.DataLength),
-				GetParameter(ParmTaxis, EDataType.Integer, GetMaxTaxis(info.AuxiliaryTableEnName) + 1),
-				GetParameter(ParmIsSystem, EDataType.VarChar, 18, info.IsSystem.ToString())
+				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
+				GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
+				GetParameter(ParmDataType, DataType.VarChar, 50, DataTypeUtils.GetValue(info.DataType)),
+				GetParameter(ParmDataLength, DataType.Integer, info.DataLength),
+				GetParameter(ParmTaxis, DataType.Integer, GetMaxTaxis(info.AuxiliaryTableEnName) + 1),
+				GetParameter(ParmIsSystem, DataType.VarChar, 18, info.IsSystem.ToString())
 			};
 
             using (var conn = GetConnection())
@@ -70,12 +119,12 @@ namespace BaiRong.Core.Provider
 
             var insertParms = new IDataParameter[]
 		    {
-			    GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, info.AuxiliaryTableEnName),
-			    GetParameter(ParmAttributeName, EDataType.VarChar, 50, info.AttributeName),
-			    GetParameter(ParmDataType, EDataType.VarChar, 50, EDataTypeUtils.GetValue(info.DataType)),
-			    GetParameter(ParmDataLength, EDataType.Integer, info.DataLength),
-			    GetParameter(ParmTaxis, EDataType.Integer, taxis),
-			    GetParameter(ParmIsSystem, EDataType.VarChar, 18, info.IsSystem.ToString())
+			    GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
+			    GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
+			    GetParameter(ParmDataType, DataType.VarChar, 50, DataTypeUtils.GetValue(info.DataType)),
+			    GetParameter(ParmDataLength, DataType.Integer, info.DataLength),
+			    GetParameter(ParmTaxis, DataType.Integer, taxis),
+			    GetParameter(ParmIsSystem, DataType.VarChar, 18, info.IsSystem.ToString())
 		    };
 
             ExecuteNonQuery(trans, sqlString, insertParms);
@@ -91,7 +140,7 @@ namespace BaiRong.Core.Provider
 
         public void InsertSystemItems(string tableEnName, EAuxiliaryTableType tableType, IDbTransaction trans)
         {
-            var list = BaiRongDataProvider.AuxiliaryTableDataDao.GetDefaultTableMetadataInfoList(tableEnName, tableType);
+            var list = GetDefaultTableMetadataInfoList(tableEnName, tableType);
             if (list != null && list.Count > 0)
             {
                 var taxis = 1;
@@ -121,12 +170,12 @@ namespace BaiRong.Core.Provider
 
             var updateParms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, info.AuxiliaryTableEnName),
-				GetParameter(ParmAttributeName, EDataType.VarChar, 50, info.AttributeName),
-				GetParameter(ParmDataType, EDataType.VarChar, 50, EDataTypeUtils.GetValue(info.DataType)),
-				GetParameter(ParmDataLength, EDataType.Integer, info.DataLength),
-				GetParameter(ParmIsSystem, EDataType.VarChar, 18, info.IsSystem.ToString()),
-				GetParameter(ParmTableMetadataId, EDataType.Integer, info.TableMetadataId)
+				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
+				GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
+				GetParameter(ParmDataType, DataType.VarChar, 50, DataTypeUtils.GetValue(info.DataType)),
+				GetParameter(ParmDataLength, DataType.Integer, info.DataLength),
+				GetParameter(ParmIsSystem, DataType.VarChar, 18, info.IsSystem.ToString()),
+				GetParameter(ParmTableMetadataId, DataType.Integer, info.TableMetadataId)
 			};
 
             using (var conn = GetConnection())
@@ -145,7 +194,7 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMetadataId, EDataType.Integer, tableMetadataId)
+				GetParameter(ParmTableMetadataId, DataType.Integer, tableMetadataId)
 			};
 
             var metadataInfo = GetTableMetadataInfo(tableMetadataId);
@@ -161,11 +210,16 @@ namespace BaiRong.Core.Provider
             }
         }
 
+        public void Delete(string tableEnName)
+        {
+            Delete(tableEnName, null);
+        }
+
         public void Delete(string tableEnName, IDbTransaction trans)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar,50, tableEnName)
+				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar,50, tableEnName)
 			};
             if (trans == null)
             {
@@ -189,7 +243,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMetadataId, EDataType.Integer, tableMetadataId)
+				GetParameter(ParmTableMetadataId, DataType.Integer, tableMetadataId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableMetadata, parms))
@@ -197,7 +251,7 @@ namespace BaiRong.Core.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new TableMetadataInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), EDataTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i));
+                    info = new TableMetadataInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), DataTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i));
                 }
                 rdr.Close();
             }
@@ -211,8 +265,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, tableEnName),
-				GetParameter(ParmAttributeName, EDataType.VarChar, 50, attributeName)
+				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName),
+				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableMetadataByTableEnnameAndAttributeName, parms))
@@ -220,7 +274,7 @@ namespace BaiRong.Core.Provider
                 if (rdr.Read())
                 {
                     var i = 0;
-                    info = new TableMetadataInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), EDataTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i));
+                    info = new TableMetadataInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), DataTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i));
                 }
                 rdr.Close();
             }
@@ -234,8 +288,8 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, tableEnName),
-				GetParameter(ParmAttributeName, EDataType.VarChar, 50, attributeName)
+				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName),
+				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
             using (var conn = GetConnection())
@@ -258,7 +312,7 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTableMetadataByEnname, parms);
@@ -268,13 +322,13 @@ namespace BaiRong.Core.Provider
         public IEnumerable GetDataSorceMinusAttributes(string tableEnName, List<string> attributeNameList)
         {
             string parameterNameList;
-            var parameterList = GetInParameterList(ParmAttributeName, EDataType.VarChar, 50, attributeNameList, out parameterNameList);
+            var parameterList = GetInParameterList(ParmAttributeName, DataType.VarChar, 50, attributeNameList, out parameterNameList);
             string sqlString =
                 $"SELECT TableMetadataID, AuxiliaryTableENName, AttributeName, DataType, DataLength, DataScale, Taxis, IsSystem FROM bairong_TableMetadata WHERE AuxiliaryTableENName = @AuxiliaryTableENName AND AttributeName NOT IN ({parameterNameList}) ORDER BY Taxis";
 
             var paramList = new List<IDataParameter>
             {
-                GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, tableEnName)
+                GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
             };
             paramList.AddRange(parameterList);
 
@@ -288,7 +342,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllTableMetadataByEnname, parms))
@@ -296,7 +350,7 @@ namespace BaiRong.Core.Provider
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var info = new TableMetadataInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), EDataTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i));
+                    var info = new TableMetadataInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), DataTypeUtils.GetEnumType(GetString(rdr, i++)), GetInt(rdr, i++), GetInt(rdr, i++), GetBool(rdr, i));
                     list.Add(info);
                 }
                 rdr.Close();
@@ -325,7 +379,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableMetadataCountByEnname, parms))
@@ -344,7 +398,7 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             var list = new List<string>();
@@ -369,7 +423,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString, parms);
@@ -383,15 +437,18 @@ namespace BaiRong.Core.Provider
         {
             //Get Higher Taxis and ClassID
             //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName=@AuxiliaryTableENName2) ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis", "WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName=@AuxiliaryTableENName2) ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
+                "WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName=@AuxiliaryTableENName2)",
+                "ORDER BY Taxis",
+                1);
             var higherId = 0;
             var higherTaxis = 0;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMetadataId, EDataType.Integer, selectedId),
-				GetParameter("@AuxiliaryTableENName1", EDataType.VarChar, 50, tableEnName),
-				GetParameter("@AuxiliaryTableENName2", EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableMetadataId, DataType.Integer, selectedId),
+				GetParameter("@AuxiliaryTableENName1", DataType.VarChar, 50, tableEnName),
+				GetParameter("@AuxiliaryTableENName2", DataType.VarChar, 50, tableEnName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -426,16 +483,18 @@ namespace BaiRong.Core.Provider
         {
             //Get Lower Taxis and ClassID
             //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName = @AuxiliaryTableENName2) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis", "WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName = @AuxiliaryTableENName2) ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
+                "WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName = @AuxiliaryTableENName2)",
+                "ORDER BY Taxis DESC", 1);
 
             var lowerId = 0;
             var lowerTaxis = 0;
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMetadataId, EDataType.Integer, selectedId),
-				GetParameter("@AuxiliaryTableENName1", EDataType.VarChar, 50, tableEnName),
-				GetParameter("@AuxiliaryTableENName2", EDataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableMetadataId, DataType.Integer, selectedId),
+				GetParameter("@AuxiliaryTableENName1", DataType.VarChar, 50, tableEnName),
+				GetParameter("@AuxiliaryTableENName2", DataType.VarChar, 50, tableEnName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -469,7 +528,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTableMetadataId, EDataType.Integer, selectedId)
+				GetParameter(ParmTableMetadataId, DataType.Integer, selectedId)
 			};
 
             using (var rdr = ExecuteReader(cmd, parms))
@@ -488,8 +547,8 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmTaxis, EDataType.Integer, taxis),
-				GetParameter(ParmTableMetadataId, EDataType.Integer, id)
+				GetParameter(ParmTaxis, DataType.Integer, taxis),
+				GetParameter(ParmTableMetadataId, DataType.Integer, id)
 			};
 
             ExecuteNonQuery(SqlUpdateTableMetadataTaxis, parms);
@@ -498,13 +557,13 @@ namespace BaiRong.Core.Provider
 
         public void CreateAuxiliaryTable(string tableEnName)
         {
-            var createTableSqlString = BaiRongDataProvider.AuxiliaryTableDataDao.GetCreateAuxiliaryTableSqlString(tableEnName);
+            var createTableSqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(tableEnName);
 
             var updateParms = new IDataParameter[]
 			{
-				GetParameter("@IsCreatedInDB", EDataType.VarChar, 18, true.ToString()),
-				GetParameter("@IsChangedAfterCreatedInDB", EDataType.VarChar, 18, false.ToString()),
-				GetParameter("@TableENName", EDataType.VarChar, 50, tableEnName)
+				GetParameter("@IsCreatedInDB", DataType.VarChar, 18, true.ToString()),
+				GetParameter("@IsChangedAfterCreatedInDB", DataType.VarChar, 18, false.ToString()),
+				GetParameter("@TableENName", DataType.VarChar, 50, tableEnName)
 			};
 
             using (var conn = GetConnection())
@@ -536,7 +595,7 @@ namespace BaiRong.Core.Provider
 
         public void CreateAuxiliaryTableOfArchive(string tableEnName)
         {
-            var createTableSqlString = BaiRongDataProvider.AuxiliaryTableDataDao.GetCreateAuxiliaryTableSqlString(tableEnName);
+            var createTableSqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(tableEnName);
 
             var archiveTableName = TableManager.GetTableNameOfArchive(tableEnName);
 
@@ -570,15 +629,15 @@ namespace BaiRong.Core.Provider
 
         public void DeleteAuxiliaryTable(string tableEnName)
         {
-            if (BaiRongDataProvider.TableStructureDao.IsTableExists(tableEnName))
+            if (BaiRongDataProvider.DatabaseDao.IsTableExists(tableEnName))
             {
                 string dropTableSqlString = $"DROP TABLE [{tableEnName}]";
 
                 var updateParms = new IDataParameter[]
 				{
-					GetParameter("@IsCreatedInDB", EDataType.VarChar, 18, false.ToString()),
-					GetParameter("@IsChangedAfterCreatedInDB", EDataType.VarChar, 18, false.ToString()),
-					GetParameter("@TableENName", EDataType.VarChar, 50, tableEnName)
+					GetParameter("@IsCreatedInDB", DataType.VarChar, 18, false.ToString()),
+					GetParameter("@IsChangedAfterCreatedInDB", DataType.VarChar, 18, false.ToString()),
+					GetParameter("@TableENName", DataType.VarChar, 50, tableEnName)
 				};
 
                 using (var conn = GetConnection())
@@ -606,15 +665,15 @@ namespace BaiRong.Core.Provider
 
         public void ReCreateAuxiliaryTable(string tableEnName, EAuxiliaryTableType tableType)
         {
-            var defaultTableMetadataInfoList = BaiRongDataProvider.AuxiliaryTableDataDao.GetDefaultTableMetadataInfoList(tableEnName, tableType);
+            var defaultTableMetadataInfoList = GetDefaultTableMetadataInfoList(tableEnName, tableType);
 
-            if (BaiRongDataProvider.TableStructureDao.IsTableExists(tableEnName))
+            if (BaiRongDataProvider.DatabaseDao.IsTableExists(tableEnName))
             {
                 var updateParms = new IDataParameter[]
 				{
-					GetParameter("@IsCreatedInDB", EDataType.VarChar, 18, true.ToString()),
-					GetParameter("@IsChangedAfterCreatedInDB", EDataType.VarChar, 18, false.ToString()),
-					GetParameter("@TableENName", EDataType.VarChar, 50, tableEnName)
+					GetParameter("@IsCreatedInDB", DataType.VarChar, 18, true.ToString()),
+					GetParameter("@IsChangedAfterCreatedInDB", DataType.VarChar, 18, false.ToString()),
+					GetParameter("@TableENName", DataType.VarChar, 50, tableEnName)
 				};
 
                 var taxis = GetMaxTaxis(tableEnName) + 1;
@@ -635,7 +694,7 @@ namespace BaiRong.Core.Provider
                             }
 
                             string dropTableSqlString = $"DROP TABLE [{tableEnName}]";
-                            var createTableSqlString = BaiRongDataProvider.AuxiliaryTableDataDao.GetCreateAuxiliaryTableSqlString(tableEnName);
+                            var createTableSqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(tableEnName);
 
                             ExecuteNonQuery(trans, dropTableSqlString);
 
@@ -648,7 +707,7 @@ namespace BaiRong.Core.Provider
 
                             ExecuteNonQuery(trans, "UPDATE bairong_TableCollection SET IsCreatedInDB = @IsCreatedInDB, IsChangedAfterCreatedInDB = @IsChangedAfterCreatedInDB WHERE  TableENName = @TableENName", updateParms);
                             TableManager.IsChanged = true;
-                            SqlUtils.Cache_RemoveTableColumnInfoListCache();
+                            TableManager.Cache_RemoveCache();
                             trans.Commit();
                         }
                         catch
@@ -663,26 +722,11 @@ namespace BaiRong.Core.Provider
 
         protected const string ErrorCommandMessage = "此辅助表无字段，无法在数据库中生成表！";
 
-        protected List<string> GetAlterDropColumnSqls(string tableEnName, string attributeName)
-        {
-            var sqlList = new List<string>();
-            if (!WebConfigUtils.IsMySql)
-            {
-                var defaultConstraintName = BaiRongDataProvider.TableStructureDao.GetDefaultConstraintName(tableEnName, attributeName);
-                if (!string.IsNullOrEmpty(defaultConstraintName))
-                {
-                    sqlList.Add($"ALTER TABLE [{tableEnName}] DROP CONSTRAINT [{defaultConstraintName}]");
-                }
-            }
-            sqlList.Add($"ALTER TABLE [{tableEnName}] DROP COLUMN [{attributeName}]");
-            return sqlList;
-        }
-
         protected List<string> GetAlterAddColumnSqls(string tableEnName, TableMetadataInfo metadataInfo)
         {
             var sqlList = new List<string>();
             var columnSqlString = SqlUtils.GetColumnSqlString(metadataInfo.DataType, metadataInfo.AttributeName, metadataInfo.DataLength);
-            string alterSqlString = $"ALTER TABLE [{tableEnName}] ADD {columnSqlString}";
+            var alterSqlString = SqlUtils.GetAddColumnsSqlString(tableEnName, columnSqlString);
             sqlList.Add(alterSqlString);
             return sqlList;
         }
@@ -691,8 +735,7 @@ namespace BaiRong.Core.Provider
         {
             var list = GetTableMetadataInfoList(tableEnName);
             var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.ConnectionString);
-            var tableId = BaiRongDataProvider.TableStructureDao.GetTableId(WebConfigUtils.ConnectionString, databaseName, tableEnName);
-            var columnlist = BaiRongDataProvider.TableStructureDao.GetTableColumnInfoList(WebConfigUtils.ConnectionString, databaseName, tableEnName, tableId);
+            var columnlist = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(WebConfigUtils.ConnectionString, databaseName, tableEnName);
 
             var sqlList = new List<string>();
 
@@ -706,9 +749,9 @@ namespace BaiRong.Core.Provider
                     if (StringUtils.EqualsIgnoreCase(columnInfo.ColumnName, metadataInfo.AttributeName))
                     {
                         columnExists = true;
-                        if (!BaiRongDataProvider.TableStructureDao.IsColumnEquals(metadataInfo, columnInfo))
+                        if (!BaiRongDataProvider.DatabaseDao.IsColumnEquals(metadataInfo, columnInfo))
                         {
-                            var alterSqllist = GetAlterDropColumnSqls(tableEnName, columnInfo.ColumnName);
+                            var alterSqllist = SqlUtils.GetDropColumnsSqlString(tableEnName, columnInfo.ColumnName);
                             foreach (var sql in alterSqllist)
                             {
                                 sqlList.Add(sql);
@@ -749,7 +792,7 @@ namespace BaiRong.Core.Provider
                 }
                 if (isNeedDelete)
                 {
-                    var alterSqlList = GetAlterDropColumnSqls(tableEnName, columnInfo.ColumnName);
+                    var alterSqlList = SqlUtils.GetDropColumnsSqlString(tableEnName, columnInfo.ColumnName);
                     foreach (var sql in alterSqlList)
                     {
                         sqlList.Add(sql);
@@ -758,6 +801,32 @@ namespace BaiRong.Core.Provider
             }
             BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlList);
             BaiRongDataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDb(false, tableEnName);
+        }
+
+        public List<TableMetadataInfo> GetDefaultTableMetadataInfoList(string tableName, EAuxiliaryTableType tableType)
+        {
+            var list = new List<TableMetadataInfo>();
+            if (tableType != EAuxiliaryTableType.BackgroundContent) return list;
+
+            var metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.SubTitle, DataType.VarChar, 255, 0, true);
+            list.Add(metadataInfo);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.ImageUrl, DataType.VarChar, 200, 0, true);
+            list.Add(metadataInfo);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.VideoUrl, DataType.VarChar, 200, 0, true);
+            list.Add(metadataInfo);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.FileUrl, DataType.VarChar, 200, 0, true);
+            list.Add(metadataInfo);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.LinkUrl, DataType.VarChar, 200, 0, true);
+            list.Add(metadataInfo);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Content, DataType.Text, 16, 0, true);
+            list.Add(metadataInfo);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Summary, DataType.Text, 16, 0, true);
+            list.Add(metadataInfo);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Author, DataType.VarChar, 255, 0, true);
+            list.Add(metadataInfo);
+            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Source, DataType.VarChar, 255, 0, true);
+            list.Add(metadataInfo);
+            return list;
         }
     }
 }

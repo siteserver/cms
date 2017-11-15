@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Web.Http;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Text;
 using SiteServer.API.Model;
 using SiteServer.CMS.Controllers.Writing;
 using SiteServer.CMS.Core;
@@ -24,8 +24,9 @@ namespace SiteServer.API.Controllers.Writing
                 var publishmentSystemId = body.GetPostInt("publishmentSystemId");
                 var nodeId = body.GetPostInt("nodeId");
 
-                var user = new User(body.UserInfo);
-                var groupInfo = UserGroupManager.GetGroupInfo(user.GroupId);
+                var user = body.UserInfo;
+                //var groupInfo = UserGroupManager.GetGroupInfo(user.GroupId);
+                var groupInfo = UserGroupManager.GetGroupInfo(0);
                 var adminUserName = groupInfo.Additional.WritingAdminUserName;
 
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
@@ -38,7 +39,7 @@ namespace SiteServer.API.Controllers.Writing
 
                 var postCollection = body.GetPostCollection();
 
-                InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, postCollection, contentInfo.Attributes, ContentAttribute.HiddenAttributes);
+                InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, postCollection, contentInfo.GetExtendedAttributes(), ContentAttribute.HiddenAttributes);
 
                 contentInfo.IsChecked = false;
                 contentInfo.PublishmentSystemId = publishmentSystemId;

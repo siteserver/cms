@@ -1,52 +1,47 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using BaiRong.Core;
 
-namespace BaiRong.Core.Model.Enumerations
+namespace BaiRong.Model
 {
 	
 	public enum EVoteType
 	{
-		RadioVote,				//��ѡͶƱ
-		CheckBoxVote			//��ѡͶƱ
+		RadioVote,				//单选投票
+		CheckBoxVote			//复选投票
 	}
 
 	public class EVoteTypeUtils
 	{
 		public static string GetValue(EVoteType type)
 		{
-			if (type == EVoteType.RadioVote)
+		    if (type == EVoteType.RadioVote)
 			{
 				return "RadioVote";
 			}
-			else if (type == EVoteType.CheckBoxVote)
-			{
-				return "CheckBoxVote";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EVoteType.CheckBoxVote)
+		    {
+		        return "CheckBoxVote";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EVoteType type)
 		{
-			if (type == EVoteType.CheckBoxVote)
+		    if (type == EVoteType.CheckBoxVote)
 			{
-				return "��ѡ";
+				return "复选";
 			}
-			else if (type == EVoteType.RadioVote)
-			{
-				return "��ѡ";
-			}
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EVoteType.RadioVote)
+		    {
+		        return "单选";
+		    }
+		    throw new Exception();
 		}
 
 		public static EVoteType GetEnumType(string typeStr)
 		{
-			var retval = EVoteType.RadioVote;
+			EVoteType retval = EVoteType.RadioVote;
 
 			if (Equals(EVoteType.CheckBoxVote, typeStr))
 			{
@@ -77,7 +72,7 @@ namespace BaiRong.Core.Model.Enumerations
 
 		public static ListItem GetListItem(EVoteType type, bool selected)
 		{
-			var item = new ListItem(GetText(type), GetValue(type));
+			ListItem item = new ListItem(GetText(type), GetValue(type));
 			if (selected)
 			{
 				item.Selected = true;

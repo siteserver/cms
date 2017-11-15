@@ -9,12 +9,13 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
-using BaiRong.Core.Permissions;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -51,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            var permissions = PermissionsManager.GetPermissions(Body.AdministratorName);
+            var permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
             _jsMethod = Body.GetQueryString("jsMethod");
 
@@ -84,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, false, true, true, EContentModelType.Content, Body.AdministratorName);
+                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
 
                 if (_tableStyleInfoList != null)
                 {

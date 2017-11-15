@@ -1,54 +1,53 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-	public class StlChannelEntities
+    [Stl(Usage = "栏目实体", Description = "通过 {channel.} 实体在模板中显示栏目值")]
+    public class StlChannelEntities
 	{
         private StlChannelEntities()
 		{
 		}
 
-        public const string EntityName = "Channel";                  //栏目实体
+        public const string EntityName = "channel";
 
-        public static string ChannelID = "ChannelID";//栏目ID
-        public static string ChannelName = "ChannelName";//栏目名称
-        public static string ChannelIndex = "ChannelIndex";//栏目索引
-		public static string Title = "Title";//栏目名称
-        public static string Content = "Content";//栏目正文
-        public static string NavigationUrl = "NavigationUrl";//栏目链接地址
-        public static string ImageUrl = "ImageUrl";//栏目图片地址
-        public static string AddDate = "AddDate";//栏目添加日期
-        public static string DirectoryName = "DirectoryName";//生成文件夹名称
-        public static string Group = "Group";//栏目组别
-        public static string ItemIndex = "ItemIndex";//栏目排序
+        public const string ChannelId = "ChannelID";
+        public const string ChannelName = "ChannelName";
+        public const string ChannelIndex = "ChannelIndex";
+		public const string Title = "Title";
+        public const string Content = "Content";
+        public const string NavigationUrl = "NavigationUrl";
+        public const string ImageUrl = "ImageUrl";
+        public const string AddDate = "AddDate";
+        public const string DirectoryName = "DirectoryName";
+        public const string Group = "Group";
+        public const string ItemIndex = "ItemIndex";
 
-        public static ListDictionary AttributeList
-        {
-            get
-            {
-                var attributes = new ListDictionary();
-                attributes.Add(ChannelID, "栏目ID");
-                attributes.Add(Title, "栏目名称");
-                attributes.Add(ChannelName, "栏目名称");
-                attributes.Add(ChannelIndex, "栏目索引");
-                attributes.Add(Content, "栏目正文");
-                attributes.Add(NavigationUrl, "栏目链接地址");
-                attributes.Add(ImageUrl, "栏目图片地址");
-                attributes.Add(AddDate, "栏目添加日期");
-                attributes.Add(DirectoryName, "生成文件夹名称");
-                attributes.Add(Group, "栏目组别");
-                attributes.Add(ItemIndex, "栏目排序");
-                
-                return attributes;
-            }
-        }
+	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
+	    {
+	        {ChannelId, "栏目ID"},
+	        {Title, "栏目名称"},
+	        {ChannelName, "栏目名称"},
+	        {ChannelIndex, "栏目索引"},
+	        {Content, "栏目正文"},
+	        {NavigationUrl, "栏目链接地址"},
+	        {ImageUrl, "栏目图片地址"},
+	        {AddDate, "栏目添加日期"},
+	        {DirectoryName, "生成文件夹名称"},
+	        {Group, "栏目组别"},
+	        {ItemIndex, "栏目排序"}
+	    };
 
         internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -62,17 +61,18 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
                 var upLevel = 0;
                 var topLevel = -1;
-                var channelID = contextInfo.ChannelID;
+                var channelId = contextInfo.ChannelId;
                 if (!string.IsNullOrEmpty(channelIndex))
                 {
-                    channelID = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
-                    if (channelID == 0)
+                    //channelId = DataProvider.NodeDao.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                    channelId = Node.GetNodeIdByNodeIndexName(pageInfo.PublishmentSystemId, channelIndex);
+                    if (channelId == 0)
                     {
-                        channelID = contextInfo.ChannelID;
+                        channelId = contextInfo.ChannelId;
                     }
                 }
                 
-                if (attributeName.ToLower().StartsWith("up") && attributeName.IndexOf(".") != -1)
+                if (attributeName.ToLower().StartsWith("up") && attributeName.IndexOf(".", StringComparison.Ordinal) != -1)
                 {
                     if (attributeName.ToLower().StartsWith("up."))
                     {
@@ -80,13 +80,13 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     }
                     else
                     {
-                        var upLevelStr = attributeName.Substring(2, attributeName.IndexOf(".") - 2);
+                        var upLevelStr = attributeName.Substring(2, attributeName.IndexOf(".", StringComparison.Ordinal) - 2);
                         upLevel = TranslateUtils.ToInt(upLevelStr);
                     }
                     topLevel = -1;
-                    attributeName = attributeName.Substring(attributeName.IndexOf(".") + 1);
+                    attributeName = attributeName.Substring(attributeName.IndexOf(".", StringComparison.Ordinal) + 1);
                 }
-                else if (attributeName.ToLower().StartsWith("top") && attributeName.IndexOf(".") != -1)
+                else if (attributeName.ToLower().StartsWith("top") && attributeName.IndexOf(".", StringComparison.Ordinal) != -1)
                 {
                     if (attributeName.ToLower().StartsWith("top."))
                     {
@@ -94,16 +94,16 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     }
                     else
                     {
-                        var topLevelStr = attributeName.Substring(3, attributeName.IndexOf(".") - 3);
+                        var topLevelStr = attributeName.Substring(3, attributeName.IndexOf(".", StringComparison.Ordinal) - 3);
                         topLevel = TranslateUtils.ToInt(topLevelStr);
                     }
                     upLevel = 0;
-                    attributeName = attributeName.Substring(attributeName.IndexOf(".") + 1);
+                    attributeName = attributeName.Substring(attributeName.IndexOf(".", StringComparison.Ordinal) + 1);
                 }
 
-                var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, channelID, upLevel, topLevel));
+                var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, channelId, upLevel, topLevel));
 
-                if (StringUtils.EqualsIgnoreCase(ChannelID, attributeName))//栏目ID
+                if (StringUtils.EqualsIgnoreCase(ChannelId, attributeName))//栏目ID
                 {
                     parsedContent = nodeInfo.NodeId.ToString();
                 }
@@ -144,7 +144,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 {
                     parsedContent = nodeInfo.NodeGroupNameCollection;
                 }
-                else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer != null && contextInfo.ItemContainer.ChannelItem != null)
+                else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ChannelItem != null)
                 {
                     parsedContent = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ChannelItem.ItemIndex, attributeName, contextInfo).ToString();
                 }
@@ -158,13 +158,53 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else
                 {
-                    var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.NodeDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, nodeInfo.NodeId));
-                    parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.PublishmentSystemInfo, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
+                    //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.NodeDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, nodeInfo.NodeId));
+                    //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.PublishmentSystemInfo, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
+
+                    var formCollection = nodeInfo.Additional.GetExtendedAttributes();
+                    if (formCollection != null && formCollection.Count > 0)
+                    {
+                        var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.NodeDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, nodeInfo.NodeId));
+                        // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
+                        if (styleInfo.TableStyleId > 0 && styleInfo.IsVisible)
+                        {
+                            parsedContent = GetValue(attributeName, formCollection, false, styleInfo.DefaultValue); 
+                            if (!string.IsNullOrEmpty(parsedContent))
+                            {
+                                if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
+                                {
+                                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent); 
+                                }
+                                else
+                                {
+                                    parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, null, pageInfo.PublishmentSystemInfo, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
             return parsedContent;
         }
-	}
+
+        private static string GetValue(string attributeName, NameValueCollection formCollection, bool isAddAndNotPostBack, string defaultValue)
+        {
+            var value = string.Empty;
+            if (formCollection?[attributeName] != null)
+            {
+                value = formCollection[attributeName];
+            }
+            if (isAddAndNotPostBack && string.IsNullOrEmpty(value))
+            {
+                value = defaultValue;
+            } 
+
+            return value;
+        }
+    }
 }

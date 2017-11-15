@@ -2,49 +2,30 @@ namespace SiteServer.CMS.Model
 {
 	public class StlTagInfo
 	{
-        private string tagName;
-		private int publishmentSystemID;
-        private string tagDescription;
-        private string tagContent;
-
-		public StlTagInfo()
+	    public StlTagInfo()
 		{
-            tagName = string.Empty;
-			publishmentSystemID = 0;
-            tagDescription = string.Empty;
-            tagContent = string.Empty;
+            TagName = string.Empty;
+			PublishmentSystemId = 0;
+            TagDescription = string.Empty;
+            TagContent = string.Empty;
 		}
 
-        public StlTagInfo(string tagName, int publishmentSystemID, string tagDescription, string tagContent) 
+        public StlTagInfo(string tagName, int publishmentSystemId, string tagDescription, string tagContent) 
 		{
-            this.tagName = tagName;
-			this.publishmentSystemID = publishmentSystemID;
-            this.tagDescription = tagDescription;
-            this.tagContent = tagContent;
+            TagName = tagName;
+			PublishmentSystemId = publishmentSystemId;
+            TagDescription = tagDescription;
+            TagContent = tagContent;
 		}
 
-        public string TagName
-		{
-            get { return tagName; }
-            set { tagName = value; }
-		}
+        public int Id { get; set; }
 
-		public int PublishmentSystemID
-		{
-			get{ return publishmentSystemID; }
-			set{ publishmentSystemID = value; }
-		}
+        public string TagName { get; set; }
 
-        public string TagDescription
-		{
-            get { return tagDescription; }
-            set { tagDescription = value; }
-		}
+	    public int PublishmentSystemId { get; set; }
 
-        public string TagContent
-		{
-            get { return tagContent; }
-            set { tagContent = value; }
-		}
+	    public string TagDescription { get; set; }
+
+	    public string TagContent { get; set; }
 	}
 }

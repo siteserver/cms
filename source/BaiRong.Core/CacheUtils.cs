@@ -1,8 +1,9 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Caching;
+using BaiRong.Core.Model.Enumerations;
 
 namespace BaiRong.Core
 {
@@ -10,20 +11,7 @@ namespace BaiRong.Core
     {
         private CacheUtils() { }
 
-        //>> Based on Factor = 5 default value
-        public static readonly int DayFactor = 17280;
-        public static readonly int HourFactor = 720;
-        public static readonly int MinuteFactor = 12;
-        public static readonly double SecondFactor = 0.2;
-
         private static readonly Cache Cache;
-
-        private static int _factor = 5;
-
-        public static void ReSetFactor(int cacheFactor)
-        {
-            _factor = cacheFactor;
-        }
 
         /// <summary>
         /// Static initializer should ensure we only have to look up the current cache
@@ -35,23 +23,19 @@ namespace BaiRong.Core
             Cache = context != null ? context.Cache : HttpRuntime.Cache;
         }
 
-        /// <summary>
-        /// Removes all items from the Cache
-        /// </summary>
-        public static void Clear()
+        public static void ClearAll()
         {
             var cacheEnum = Cache.GetEnumerator();
-            var al = new ArrayList();
+            var keys = new List<string>();
             while (cacheEnum.MoveNext())
             {
-                al.Add(cacheEnum.Key);
+                keys.Add(cacheEnum.Key.ToString());
             }
 
-            foreach (string key in al)
+            foreach (var key in keys)
             {
                 Cache.Remove(key);
             }
-
         }
 
         public static void RemoveByStartString(string startString)
@@ -69,7 +53,9 @@ namespace BaiRong.Core
             while (cacheEnum.MoveNext())
             {
                 if (regex.IsMatch(cacheEnum.Key.ToString()))
+                {
                     Cache.Remove(cacheEnum.Key.ToString());
+                }
             }
         }
 
@@ -82,107 +68,109 @@ namespace BaiRong.Core
             Cache.Remove(key);
         }
 
-        /// <summary>
-        /// Insert the current "obj" into the cache. 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="obj"></param>
         public static void Insert(string key, object obj)
         {
-            Insert(key, obj, null, 1);
+            InnerInsert(key, obj, null, Cache.NoSlidingExpiration);
         }
 
-        public static void Insert(string key, object obj, CacheDependency dep)
+        public static void InsertMinutes(string key, object obj, int minutes)
         {
-            Insert(key, obj, dep, HourFactor * 12);
+            InnerInsert(key, obj, null, TimeSpan.FromMinutes(minutes));
         }
 
-        public static void Insert(string key, object obj, int seconds)
+        public static void InsertHours(string key, object obj, int hours)
         {
-            Insert(key, obj, null, seconds);
+            InnerInsert(key, obj, null, TimeSpan.FromHours(hours));
         }
 
-        public static void Insert(string key, object obj, int seconds, CacheItemPriority priority)
+        public static void Insert(string key, object obj, string filePath)
         {
-            Insert(key, obj, null, seconds, priority);
+            InnerInsert(key, obj, filePath, Cache.NoSlidingExpiration);
         }
 
-        public static void Insert(string key, object obj, CacheDependency dep, int seconds)
+        public static void Insert(string key, object obj, TimeSpan timeSpan, string filePath)
         {
-            Insert(key, obj, dep, seconds, CacheItemPriority.Normal);
+            InnerInsert(key, obj, filePath, timeSpan);
         }
 
-        public static void Insert(string key, object obj, CacheDependency dep, int seconds, CacheItemPriority priority)
+        private static void InnerInsert(string key, object obj, string filePath, TimeSpan timeSpan)
         {
-            if (obj != null)
+            if (!string.IsNullOrEmpty(key) && obj != null)
             {
-                Cache.Add(key, obj, dep, DateTime.Now.AddSeconds(_factor * seconds), TimeSpan.Zero, priority, null);
-            }
-
-        }
-
-        public static void MicroInsert(string key, object obj, int secondFactor)
-        {
-            if (obj != null)
-            {
-                Cache.Insert(key, obj, null, DateTime.Now.AddSeconds(_factor * secondFactor), TimeSpan.Zero);
+                Cache.Insert(key, obj, string.IsNullOrEmpty(filePath) ? null : new CacheDependency(filePath), Cache.NoAbsoluteExpiration, timeSpan, CacheItemPriority.Normal, null);
             }
         }
 
-        /// <summary>
-        /// Insert an item into the cache for the Maximum allowed time
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="obj"></param>
-        public static void Max(string key, object obj)
+        public static bool IsCache(string key)
         {
-                Max(key, obj, null);
-        }
-
-        public static void Max(string key, object obj, CacheDependency dep)
-        {
-            if (obj != null)
-            {
-                //_cache.Add(key, obj, dep, DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.AboveNormal, null);
-                Cache.Insert(key, obj, dep, DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.AboveNormal, null);
-            }
+            return Cache.Get(key) != null;
         }
 
         public static object Get(string key)
         {
-            return Cache[key];
+            return Cache.Get(key);
         }
 
-        public static string GetCacheKeyByUserName(string key, string userName)
+        public static int GetInt(string key, int notFound)
         {
-            return $"{key}_BY_USER_{userName}";
+            var retval = Get(key);
+            if (retval == null)
+            {
+                return notFound;
+            }
+            return (int) retval;
         }
 
-        /// <summary>
-        /// Return int of seconds * SecondFactor
-        /// </summary>
-        public static int SecondFactorCalculate(int seconds)
+        public static DateTime GetDateTime(string key, DateTime notFound)
         {
-            // Insert method below takes integer seconds, so we have to round any fractional values
-            return Convert.ToInt32(Math.Round(seconds * SecondFactor));
+            var retval = Get(key);
+            if (retval == null)
+            {
+                return notFound;
+            }
+            return (DateTime)retval;
         }
 
-        /// <summary>
-        /// Return Cache Count
-        /// </summary>
-        /// <returns></returns>
-        public static int GetCacheCount()
+        public static T Get<T>(string key) where T : class
         {
-            return Cache.Count;
+            return Cache.Get(key) as T;
         }
 
-        /// <summary>
-        /// Return Cache Size (M)
-        /// </summary>
-        /// <returns></returns>
-        public static long GetCacheEnabledPercent()
+        public static List<string> AllKeys
         {
-            return Cache.EffectivePercentagePhysicalMemoryLimit;
+            get
+            {
+                var keys = new List<string>();
+
+                var cacheEnum = Cache.GetEnumerator();
+                while (cacheEnum.MoveNext())
+                {
+                    keys.Add(cacheEnum.Key.ToString());
+                }
+
+                return keys;
+            }
+        }
+
+        public static int Count => Cache.Count;
+
+        public static long EffectivePercentagePhysicalMemoryLimit => Cache.EffectivePercentagePhysicalMemoryLimit;
+
+        public static void UpdateTemporaryCacheFile(string cacheFileName)
+        {
+            var cacheFilePath = GetCacheFilePath(cacheFileName);
+            FileUtils.WriteText(cacheFilePath, ECharset.utf_8, "cache chaged:" + DateUtils.GetDateAndTimeString(DateTime.Now));
+        }
+
+        public static void DeleteTemporaryCacheFile(string cacheFileName)
+        {
+            var cacheFilePath = GetCacheFilePath(cacheFileName);
+            FileUtils.DeleteFileIfExists(cacheFilePath);
+        }
+
+        public static string GetCacheFilePath(string cacheFileName)
+        {
+            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, cacheFileName);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/search/img/start.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/search/img/start.jpg"));
             }
             else
             {
@@ -28,7 +28,7 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             if (string.IsNullOrEmpty(imageUrl))
             {
-                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/search/img/head_img.jpg"));
+                return PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/search/img/head_img.jpg"));
             }
             else
             {
@@ -39,9 +39,9 @@ namespace SiteServer.CMS.WeiXin.Manager
         public static string GetSearchUrl(PublishmentSystemInfo publishmentSystemInfo, SearchInfo searchInfo)
         {
             var attributes = new NameValueCollection();
-            attributes.Add("publishmentSystemID", searchInfo.PublishmentSystemID.ToString());
-            attributes.Add("searchID", searchInfo.ID.ToString());
-            var url = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(publishmentSystemInfo.Additional.ApiUrl, "weixin/search/index.html"));
+            attributes.Add("publishmentSystemID", searchInfo.PublishmentSystemId.ToString());
+            attributes.Add("searchID", searchInfo.Id.ToString());
+            var url = PageUtils.AddProtocolToUrl(SiteFilesAssets.GetUrl(PageUtils.OuterApiUrl, "weixin/search/index.html"));
             return PageUtils.AddQueryString(url, attributes);
         }
 
@@ -64,9 +64,9 @@ namespace SiteServer.CMS.WeiXin.Manager
         {
             var articleList = new List<Article>();
 
-            DataProviderWX.CountDAO.AddCount(keywordInfo.PublishmentSystemID, ECountType.RequestNews);
+            DataProviderWx.CountDao.AddCount(keywordInfo.PublishmentSystemId, ECountType.RequestNews);
 
-            var searchInfoList = DataProviderWX.SearchDAO.GetSearchInfoListByKeywordID(keywordInfo.PublishmentSystemID, keywordInfo.KeywordID);
+            var searchInfoList = DataProviderWx.SearchDao.GetSearchInfoListByKeywordId(keywordInfo.PublishmentSystemId, keywordInfo.KeywordId);
 
             foreach (var searchInfo in searchInfoList)
             {

@@ -43,16 +43,16 @@ namespace SiteServer.BackgroundPages.Cms
             }), 520, 550);
         }
 
-        public static string GetOpenWindowStringToInputContent(int publishmentSystemId, int relatedIdentity, bool isList)
-        {
-            return PageUtils.GetOpenWindowString("选择需要显示的项", PageUtils.GetCmsUrl(nameof(ModalSelectColumns), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"IsList", isList.ToString()},
-                {"TableStyle", ETableStyleUtils.GetValue(ETableStyle.InputContent)},
-                {"RelatedIdentity", relatedIdentity.ToString()}
-            }), 520, 550);
-        }
+        //public static string GetOpenWindowStringToInputContent(int publishmentSystemId, int relatedIdentity, bool isList)
+        //{
+        //    return PageUtils.GetOpenWindowString("选择需要显示的项", PageUtils.GetCmsUrl(nameof(ModalSelectColumns), new NameValueCollection
+        //    {
+        //        {"PublishmentSystemID", publishmentSystemId.ToString()},
+        //        {"IsList", isList.ToString()},
+        //        {"TableStyle", ETableStyleUtils.GetValue(ETableStyle.InputContent)},
+        //        {"RelatedIdentity", relatedIdentity.ToString()}
+        //    }), 520, 550);
+        //}
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -236,38 +236,38 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
             }
-            else if (_tableStyle == ETableStyle.InputContent)
-            {
-                var inputInfo = DataProvider.InputDao.GetInputInfo(_relatedIdentity);
-                _relatedIdentities = RelatedIdentities.GetRelatedIdentities(_tableStyle, PublishmentSystemId, _relatedIdentity);
+            //else if (_tableStyle == ETableStyle.InputContent)
+            //{
+            //    var inputInfo = DataProvider.InputDao.GetInputInfo(_relatedIdentity);
+            //    _relatedIdentities = RelatedIdentities.GetRelatedIdentities(_tableStyle, PublishmentSystemId, _relatedIdentity);
 
-                if (!IsPostBack)
-                {
-                    var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, DataProvider.InputContentDao.TableName, _relatedIdentities);
+            //    if (!IsPostBack)
+            //    {
+            //        var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, DataProvider.InputContentDao.TableName, _relatedIdentities);
 
-                    foreach (var styleInfo in styleInfoList)
-                    {
-                        var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
+            //        foreach (var styleInfo in styleInfoList)
+            //        {
+            //            var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
 
-                        if (_isList)
-                        {
-                            if (styleInfo.IsVisibleInList)
-                            {
-                                listitem.Selected = true;
-                            }
-                        }
-                        else
-                        {
-                            if (styleInfo.IsVisible)
-                            {
-                                listitem.Selected = true;
-                            }
-                        }
+            //            if (_isList)
+            //            {
+            //                if (styleInfo.IsVisibleInList)
+            //                {
+            //                    listitem.Selected = true;
+            //                }
+            //            }
+            //            else
+            //            {
+            //                if (styleInfo.IsVisible)
+            //                {
+            //                    listitem.Selected = true;
+            //                }
+            //            }
 
-                        DisplayAttributeCheckBoxList.Items.Add(listitem);
-                    }
-                }
-            }
+            //            DisplayAttributeCheckBoxList.Items.Add(listitem);
+            //        }
+            //    }
+            //}
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -314,47 +314,47 @@ namespace SiteServer.BackgroundPages.Cms
 
                 Body.AddSiteLog(PublishmentSystemId, "设置内容显示项", $"显示项:{attributesOfDisplay}");
             }
-            else if (_tableStyle == ETableStyle.InputContent)
-            {
-                var inputInfo = DataProvider.InputDao.GetInputInfo(_relatedIdentity);
+            //else if (_tableStyle == ETableStyle.InputContent)
+            //{
+            //    var inputInfo = DataProvider.InputDao.GetInputInfo(_relatedIdentity);
 
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, DataProvider.InputContentDao.TableName, _relatedIdentities);
-                var selectedValues = ControlUtils.GetSelectedListControlValueArrayList(DisplayAttributeCheckBoxList);
+            //    var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, DataProvider.InputContentDao.TableName, _relatedIdentities);
+            //    var selectedValues = ControlUtils.GetSelectedListControlValueArrayList(DisplayAttributeCheckBoxList);
 
-                foreach (var styleInfo in styleInfoList)
-                {
-                    if (_isList)
-                    {
-                        styleInfo.IsVisibleInList = selectedValues.Contains(styleInfo.AttributeName);
-                    }
-                    else
-                    {
-                        styleInfo.IsVisible = selectedValues.Contains(styleInfo.AttributeName);
-                    }
-                    styleInfo.RelatedIdentity = _relatedIdentity;
+            //    foreach (var styleInfo in styleInfoList)
+            //    {
+            //        if (_isList)
+            //        {
+            //            styleInfo.IsVisibleInList = selectedValues.Contains(styleInfo.AttributeName);
+            //        }
+            //        else
+            //        {
+            //            styleInfo.IsVisible = selectedValues.Contains(styleInfo.AttributeName);
+            //        }
+            //        styleInfo.RelatedIdentity = _relatedIdentity;
 
-                    if (styleInfo.TableStyleId == 0)
-                    {
-                        TableStyleManager.Insert(styleInfo, _tableStyle);
-                    }
-                    else
-                    {
-                        TableStyleManager.Update(styleInfo);
-                    }
-                }
+            //        if (styleInfo.TableStyleId == 0)
+            //        {
+            //            TableStyleManager.Insert(styleInfo, _tableStyle);
+            //        }
+            //        else
+            //        {
+            //            TableStyleManager.Update(styleInfo);
+            //        }
+            //    }
 
 
-                if (_isList)
-                {
-                    Body.AddSiteLog(PublishmentSystemId, "设置提交表单显示项",
-                        $"表单名称：{inputInfo.InputName},显示项:{TranslateUtils.ObjectCollectionToString(selectedValues)}");
-                }
-                else
-                {
-                    Body.AddSiteLog(PublishmentSystemId, "设置提交表单编辑项",
-                        $"表单名称：{inputInfo.InputName},编辑项:{TranslateUtils.ObjectCollectionToString(selectedValues)}");
-                }
-            }
+            //    if (_isList)
+            //    {
+            //        Body.AddSiteLog(PublishmentSystemId, "设置提交表单显示项",
+            //            $"表单名称：{inputInfo.InputName},显示项:{TranslateUtils.ObjectCollectionToString(selectedValues)}");
+            //    }
+            //    else
+            //    {
+            //        Body.AddSiteLog(PublishmentSystemId, "设置提交表单编辑项",
+            //            $"表单名称：{inputInfo.InputName},编辑项:{TranslateUtils.ObjectCollectionToString(selectedValues)}");
+            //    }
+            //}
 
             if (!_isList)
             {

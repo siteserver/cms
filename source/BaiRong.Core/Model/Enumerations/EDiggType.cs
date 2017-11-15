@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 
 namespace BaiRong.Core.Model.Enumerations
@@ -14,42 +15,36 @@ namespace BaiRong.Core.Model.Enumerations
 	{
 		public static string GetValue(EDiggType type)
 		{
-            if (type == EDiggType.Good)
+		    if (type == EDiggType.Good)
 			{
                 return "Good";
 			}
-            else if (type == EDiggType.Bad)
-			{
-                return "Bad";
-            }
-            else if (type == EDiggType.All)
-            {
-                return "All";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == EDiggType.Bad)
+		    {
+		        return "Bad";
+		    }
+		    if (type == EDiggType.All)
+		    {
+		        return "All";
+		    }
+		    throw new Exception();
 		}
 
         public static string GetText(EDiggType type)
         {
             if (type == EDiggType.Good)
             {
-                return "Ωˆœ‘ æ‘ﬁÕ¨";
+                return "‰ªÖÊòæÁ§∫ËµûÂêå";
             }
-            else if (type == EDiggType.Bad)
+            if (type == EDiggType.Bad)
             {
-                return "Ωˆœ‘ æ≤ª‘ﬁÕ¨";
+                return "‰ªÖÊòæÁ§∫‰∏çËµûÂêå";
             }
-            else if (type == EDiggType.All)
+            if (type == EDiggType.All)
             {
-                return "œ‘ æ»´≤ø";
+                return "ÊòæÁ§∫ÂÖ®ÈÉ®";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
 		public static EDiggType GetEnumType(string typeStr)
@@ -102,5 +97,12 @@ namespace BaiRong.Core.Model.Enumerations
                 listControl.Items.Add(GetListItem(EDiggType.Bad, false));
             }
         }
-	}
+
+        public static SortedList<string, string> TypeList => new SortedList<string, string>
+        {
+            {GetValue(EDiggType.All), GetText(EDiggType.All)},
+            {GetValue(EDiggType.Good), GetText(EDiggType.Good)},
+            {GetValue(EDiggType.Bad), GetText(EDiggType.Bad)}
+        };
+    }
 }

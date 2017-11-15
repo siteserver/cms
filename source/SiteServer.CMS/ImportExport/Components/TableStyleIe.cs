@@ -40,7 +40,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		            //仅导出当前系统内的表样式
 		            if (tableStyleInfo.RelatedIdentity != 0)
 		            {
-		                if (!ChannelUtility.IsAncestorOrSelf(publishmentSystemId, publishmentSystemId, tableStyleInfo.RelatedIdentity))
+		                if (!NodeManager.IsAncestorOrSelf(publishmentSystemId, publishmentSystemId, tableStyleInfo.RelatedIdentity))
 		                {
 		                    continue;
 		                }
@@ -117,7 +117,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
                 var feed = ExportTableStyleInfo(tableStyleInfo);
-                var styleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
+                var styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
                 if (styleItems != null && styleItems.Count > 0)
                 {
                     foreach (var styleItemInfo in styleItems)
@@ -142,7 +142,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
                 var feed = ExportTableStyleInfo(tableStyleInfo);
-                var styleItems = BaiRongDataProvider.TableStyleDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
+                var styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(tableStyleInfo.TableStyleId);
                 if (styleItems != null && styleItems.Count > 0)
                 {
                     foreach (var styleItemInfo in styleItems)
@@ -171,13 +171,13 @@ namespace SiteServer.CMS.ImportExport.Components
                 var isVisible = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisible"));
                 var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisibleInList"));
                 var isSingleLine = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsSingleLine"));
-                var inputType = EInputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
+                var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
                 var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DefaultValue");
                 var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsHorizontal"));
                 //SettingsXML
                 var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, "ExtendValues");
 
-                var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, isSingleLine, EInputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
+                var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, isSingleLine, InputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
 
                 var styleItems = new List<TableStyleItemInfo>();
                 foreach (AtomEntry entry in feed.Entries)
@@ -223,7 +223,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 ETableStyle tableStyle;
 
-                if (BaiRongDataProvider.TableCollectionDao.IsTableExists(tableName))
+                if (BaiRongDataProvider.TableCollectionDao.IsTableExistsAndCreated(tableName))
                 {
                     var tableType = BaiRongDataProvider.TableCollectionDao.GetTableType(tableName);
                     tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(tableType);
@@ -248,7 +248,7 @@ namespace SiteServer.CMS.ImportExport.Components
                         var isVisible = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisible"));
                         var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisibleInList"));
                         var isSingleLine = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsSingleLine"));
-                        var inputType = EInputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
+                        var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
                         var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DefaultValue");
                         var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsHorizontal"));
                         var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, "ExtendValues");
@@ -275,7 +275,7 @@ namespace SiteServer.CMS.ImportExport.Components
                         if (relatedIdentity <= 0 ||
                             TableStyleManager.IsExists(relatedIdentity, tableName, attributeName)) continue;
 
-                        var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, isSingleLine, EInputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
+                        var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, isSingleLine, InputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
 
                         var styleItems = new List<TableStyleItemInfo>();
                         foreach (AtomEntry entry in feed.Entries)

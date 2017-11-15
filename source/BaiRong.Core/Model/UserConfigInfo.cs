@@ -1,5 +1,6 @@
 ﻿using System;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Model
 {
@@ -13,7 +14,7 @@ namespace BaiRong.Core.Model
 
         public override string ToString()
         {
-            return TranslateUtils.NameValueCollectionToString(Attributes);
+            return TranslateUtils.NameValueCollectionToString(GetExtendedAttributes());
         }
 
         /****************用户中心显示设置********************/
@@ -41,7 +42,7 @@ namespace BaiRong.Core.Model
 
         public string BeianNo
         {
-            get { return GetString("BeianNo", "京ICP备10013847号"); }
+            get { return GetString("BeianNo", string.Empty); }
             set { SetExtendedAttribute("BeianNo", value); }
         }
 
@@ -51,156 +52,174 @@ namespace BaiRong.Core.Model
             set { SetExtendedAttribute("LogoUrl", value); }
         }
 
+        public string DefaultAvatarUrl
+        {
+            get { return GetString("DefaultAvatarUrl", PageUtils.AddProtocolToUrl(PageUtils.GetUserFilesUrl(string.Empty, "default_avatar.png"))); }
+            set { SetExtendedAttribute("DefaultAvatarUrl", value); }
+        }
+
         /****************用户投稿设置********************/
 
         public bool IsWritingEnabled
         {
-            get { return GetBool("IsWritingEnabled", false); }
+            get { return GetBool("IsWritingEnabled"); }
             set { SetExtendedAttribute("IsWritingEnabled", value.ToString()); }
         }
 
         /****************用户中心注册设置********************/
 
-        public bool IsRegisterAllowed
-        {
-            get { return GetBool("IsRegisterAllowed", true); }
-            set { SetExtendedAttribute("IsRegisterAllowed", value.ToString()); }
-        }
+        //public bool IsRegisterAllowed
+        //{
+        //    get { return GetBool("IsRegisterAllowed", true); }
+        //    set { SetExtendedAttribute("IsRegisterAllowed", value.ToString()); }
+        //}
 
-        public EPasswordFormat RegisterPasswordFormat
-        {
-            get { return EPasswordFormatUtils.GetEnumType(GetString("RegisterPasswordFormat", string.Empty)); }
-            set { SetExtendedAttribute("RegisterPasswordFormat", EPasswordFormatUtils.GetValue(value)); }
-        }
+        //public EPasswordFormat RegisterPasswordFormat
+        //{
+        //    get { return EPasswordFormatUtils.GetEnumType(GetString("RegisterPasswordFormat", string.Empty)); }
+        //    set { SetExtendedAttribute("RegisterPasswordFormat", EPasswordFormatUtils.GetValue(value)); }
+        //}
 
-        public int RegisterPasswordMinLength
-        {
-            get { return GetInt("RegisterPasswordMinLength", 6); }
-            set { SetExtendedAttribute("RegisterPasswordMinLength", value.ToString()); }
-        }
+        //public int RegisterPasswordMinLength
+        //{
+        //    get { return GetInt("RegisterPasswordMinLength", 6); }
+        //    set { SetExtendedAttribute("RegisterPasswordMinLength", value.ToString()); }
+        //}
 
-        public EUserPasswordRestriction RegisterPasswordRestriction
-        {
-            get { return EUserPasswordRestrictionUtils.GetEnumType(GetString("RegisterPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit))); }
-            set { SetExtendedAttribute("RegisterPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(value)); }
-        }
+        //public EUserPasswordRestriction RegisterPasswordRestriction
+        //{
+        //    get { return EUserPasswordRestrictionUtils.GetEnumType(GetString("RegisterPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(EUserPasswordRestriction.LetterAndDigit))); }
+        //    set { SetExtendedAttribute("RegisterPasswordRestriction", EUserPasswordRestrictionUtils.GetValue(value)); }
+        //}
 
-        public EUserVerifyType RegisterVerifyType
-        {
-            get { return EUserVerifyTypeUtils.GetEnumType(GetString("RegisterVerifyType", EUserVerifyTypeUtils.GetValue(EUserVerifyType.Mobile))); }
-            set { SetExtendedAttribute("RegisterVerifyType", EUserVerifyTypeUtils.GetValue(value)); }
-        }
+        //public EUserVerifyType RegisterVerifyType
+        //{
+        //    get { return EUserVerifyTypeUtils.GetEnumType(GetString("RegisterVerifyType", EUserVerifyTypeUtils.GetValue(EUserVerifyType.Mobile))); }
+        //    set { SetExtendedAttribute("RegisterVerifyType", EUserVerifyTypeUtils.GetValue(value)); }
+        //}
 
-        public int RegisterMinMinutesOfIpAddress
-        {
-            get
-            {
-                return GetInt("RegisterMinMinutesOfIpAddress", 0);
-            }
-            set
-            {
-                SetExtendedAttribute("RegisterMinMinutesOfIpAddress", value.ToString());
-            }
-        }
+        //public string RegisterSmsTplId
+        //{
+        //    get { return GetString("RegisterSmsTplId", string.Empty); }
+        //    set { SetExtendedAttribute("RegisterSmsTplId", value); }
+        //}
+
+        //public int RegisterMinMinutesOfIpAddress
+        //{
+        //    get { return GetInt("RegisterMinMinutesOfIpAddress"); }
+        //    set { SetExtendedAttribute("RegisterMinMinutesOfIpAddress", value.ToString()); }
+        //}
 
         /****************文件上传设置********************/
 
-        public string UploadDirectoryName
-        {
-            get { return GetString("UploadDirectoryName", "upload"); }
-            set { SetExtendedAttribute("UploadDirectoryName", value); }
-        }
+        //public string UploadDirectoryName
+        //{
+        //    get { return GetString("UploadDirectoryName", "upload"); }
+        //    set { SetExtendedAttribute("UploadDirectoryName", value); }
+        //}
 
-        public string UploadDateFormatString
-        {
-            get { return GetString("UploadDateFormatString", EDateFormatTypeUtils.GetValue(EDateFormatType.Month)); }
-            set { SetExtendedAttribute("UploadDateFormatString", value); }
-        }
+        //public string UploadDateFormatString
+        //{
+        //    get { return GetString("UploadDateFormatString", EDateFormatTypeUtils.GetValue(EDateFormatType.Month)); }
+        //    set { SetExtendedAttribute("UploadDateFormatString", value); }
+        //}
 
-        public bool IsUploadChangeFileName
-        {
-            get { return GetBool("IsUploadChangeFileName", true); }
-            set { SetExtendedAttribute("IsUploadChangeFileName", value.ToString()); }
-        }
+        //public bool IsUploadChangeFileName
+        //{
+        //    get { return GetBool("IsUploadChangeFileName", true); }
+        //    set { SetExtendedAttribute("IsUploadChangeFileName", value.ToString()); }
+        //}
 
-        public int UploadMonthMaxSize
-        {
-            get { return GetInt("UploadMonthMaxSize", 122880); }  //120M
-            set { SetExtendedAttribute("UploadMonthMaxSize", value.ToString()); }
-        }
+        //public int UploadMonthMaxSize
+        //{
+        //    get { return GetInt("UploadMonthMaxSize", 122880); }  //120M
+        //    set { SetExtendedAttribute("UploadMonthMaxSize", value.ToString()); }
+        //}
 
-        public string UploadImageTypeCollection
-        {
-            get { return GetString("UploadImageTypeCollection", "gif|jpg|jpeg|bmp|png|swf|flv"); }
-            set { SetExtendedAttribute("UploadImageTypeCollection", value); }
-        }
+        //public string UploadImageTypeCollection
+        //{
+        //    get { return GetString("UploadImageTypeCollection", "gif|jpg|jpeg|bmp|png|swf|flv"); }
+        //    set { SetExtendedAttribute("UploadImageTypeCollection", value); }
+        //}
 
-        public int UploadImageTypeMaxSize
-        {
-            get { return GetInt("UploadImageTypeMaxSize", 2048); }
-            set { SetExtendedAttribute("UploadImageTypeMaxSize", value.ToString()); }
-        }
+        //public int UploadImageTypeMaxSize
+        //{
+        //    get { return GetInt("UploadImageTypeMaxSize", 2048); }
+        //    set { SetExtendedAttribute("UploadImageTypeMaxSize", value.ToString()); }
+        //}
 
-        public string UploadMediaTypeCollection
-        {
-            get { return GetString("UploadMediaTypeCollection", "rm|rmvb|mp3|flv|wav|mid|midi|ra|avi|mpg|mpeg|asf|asx|wma|mov"); }
-            set { SetExtendedAttribute("UploadMediaTypeCollection", value); }
-        }
+        //public string UploadMediaTypeCollection
+        //{
+        //    get { return GetString("UploadMediaTypeCollection", "rm|rmvb|mp3|flv|wav|mid|midi|ra|avi|mpg|mpeg|asf|asx|wma|mov"); }
+        //    set { SetExtendedAttribute("UploadMediaTypeCollection", value); }
+        //}
 
-        public int UploadMediaTypeMaxSize
-        {
-            get { return GetInt("UploadMediaTypeMaxSize", 5120); }
-            set { SetExtendedAttribute("UploadMediaTypeMaxSize", value.ToString()); }
-        }
+        //public int UploadMediaTypeMaxSize
+        //{
+        //    get { return GetInt("UploadMediaTypeMaxSize", 5120); }
+        //    set { SetExtendedAttribute("UploadMediaTypeMaxSize", value.ToString()); }
+        //}
 
-        public string UploadFileTypeCollection
-        {
-            get { return GetString("UploadFileTypeCollection", "zip|rar|7z|txt|doc|docx|ppt|pptx|xls|xlsx|pdf"); }
-            set { SetExtendedAttribute("UploadFileTypeCollection", value); }
-        }
+        //public string UploadFileTypeCollection
+        //{
+        //    get { return GetString("UploadFileTypeCollection", "zip|rar|7z|txt|doc|docx|ppt|pptx|xls|xlsx|pdf"); }
+        //    set { SetExtendedAttribute("UploadFileTypeCollection", value); }
+        //}
 
-        public int UploadFileTypeMaxSize
-        {
-            get { return GetInt("UploadFileTypeMaxSize", 5120); }
-            set { SetExtendedAttribute("UploadFileTypeMaxSize", value.ToString()); }
-        }
+        //public int UploadFileTypeMaxSize
+        //{
+        //    get { return GetInt("UploadFileTypeMaxSize", 5120); }
+        //    set { SetExtendedAttribute("UploadFileTypeMaxSize", value.ToString()); }
+        //}
 
         /****************用户登录设置********************/
 
-        public bool IsRecordIp
-        {
-            get { return GetBool("IsRecordIp", true); }
-            set { SetExtendedAttribute("IsRecordIp", value.ToString()); }
-        }
+        //public bool IsRecordIp
+        //{
+        //    get { return GetBool("IsRecordIp", true); }
+        //    set { SetExtendedAttribute("IsRecordIp", value.ToString()); }
+        //}
 
-        public bool IsRecordSource
-        {
-            get { return GetBool("IsRecordSource", true); }
-            set { SetExtendedAttribute("IsRecordSource", value.ToString()); }
-        }
+        //public bool IsRecordSource
+        //{
+        //    get { return GetBool("IsRecordSource", true); }
+        //    set { SetExtendedAttribute("IsRecordSource", value.ToString()); }
+        //}
 
-        public bool IsLoginFailToLock
-        {
-            get { return GetBool("IsLoginFailToLock", false); }
-            set { SetExtendedAttribute("IsLoginFailToLock", value.ToString()); }
-        }
+        //public bool IsLoginFailToLock
+        //{
+        //    get { return GetBool("IsLoginFailToLock"); }
+        //    set { SetExtendedAttribute("IsLoginFailToLock", value.ToString()); }
+        //}
 
-        public int LoginFailToLockCount
-        {
-            get { return GetInt("LoginFailToLockCount", 3); }
-            set { SetExtendedAttribute("LoginFailToLockCount", value.ToString()); }
-        }
+        //public int LoginFailToLockCount
+        //{
+        //    get { return GetInt("LoginFailToLockCount", 3); }
+        //    set { SetExtendedAttribute("LoginFailToLockCount", value.ToString()); }
+        //}
 
-        public string LoginLockingType
-        {
-            get { return GetString("LoginLockingType", "Hours"); }
-            set { SetExtendedAttribute("LoginLockingType", value); }
-        }
+        //public string LoginLockingType
+        //{
+        //    get { return GetString("LoginLockingType", "Hours"); }
+        //    set { SetExtendedAttribute("LoginLockingType", value); }
+        //}
 
-        public int LoginLockingHours
-        {
-            get { return GetInt("LoginLockingHours", 3); }
-            set { SetExtendedAttribute("LoginLockingHours", value.ToString()); }
-        }
+        //public int LoginLockingHours
+        //{
+        //    get { return GetInt("LoginLockingHours", 3); }
+        //    set { SetExtendedAttribute("LoginLockingHours", value.ToString()); }
+        //}
+
+        //public bool IsFindPassword
+        //{
+        //    get { return GetBool("IsFindPassword"); }
+        //    set { SetExtendedAttribute("IsFindPassword", value.ToString()); }
+        //}
+
+        //public string FindPasswordSmsTplId
+        //{
+        //    get { return GetString("FindPasswordSmsTplId", string.Empty); }
+        //    set { SetExtendedAttribute("FindPasswordSmsTplId", value); }
+        //}
     }
 }

@@ -6,7 +6,8 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.BackgroundPages.Wcm;
+using SiteServer.BackgroundPages.Plugins;
+using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -64,19 +65,15 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            if (_tableStyle == ETableStyle.InputContent)
-            {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdFunction, AppManager.Cms.LeftMenu.Function.IdInput, "提交表单管理", AppManager.Cms.Permission.WebSite.Input);
-            }
-            else if (_tableStyle == ETableStyle.Site)
+            if (_tableStyle == ETableStyle.Site)
             {
                 BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "站点属性设置",
-                    AppManager.Cms.Permission.WebSite.Configration);
+                    AppManager.Permissions.WebSite.Configration);
             }
             else
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, AppManager.Cms.LeftMenu.Configuration.IdConfigurationContentModel, "虚拟字段管理",
-                    AppManager.Cms.Permission.WebSite.Configration);
+                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "虚拟字段管理",
+                    AppManager.Permissions.WebSite.Configration);
             }
 
             //删除样式
@@ -91,18 +88,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (_tableStyle == ETableStyle.BackgroundContent)
             {
-                var urlModel = PageContentModel.GetRedirectUrl(PublishmentSystemId);
-                btnReturn.Attributes.Add("onclick", $"location.href='{urlModel}';return false;");
+                btnReturn.Attributes.Add("onclick", $"location.href='{PageTableStyleContent.GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)}';return false;");
             }
-            else if (_tableStyle == ETableStyle.InputContent)
-            {
-                btnReturn.Attributes.Add("onclick", $"location.href='{PageInput.GetRedirectUrl(PublishmentSystemId)}';return false;");
-            }
-            else if (_tableStyle == ETableStyle.GovInteractContent)
-            {
-                var urlReturn = PageGovInteractListAll.GetRedirectUrl(PublishmentSystemId, 0);
-                btnReturn.Attributes.Add("onclick", $"location.href='{urlReturn}';return false;");
-            }
+            //else if (_tableStyle == ETableStyle.InputContent)
+            //{
+            //    btnReturn.Attributes.Add("onclick", $"location.href='{PageInput.GetRedirectUrl(PublishmentSystemId)}';return false;");
+            //}
             else if (_tableStyle == ETableStyle.Site)
             {
                 btnReturn.Attributes.Add("onclick", $"location.href='{PageConfigurationSiteAttributes.GetRedirectUrl(PublishmentSystemId)}';return false;");
@@ -203,15 +194,15 @@ namespace SiteServer.BackgroundPages.Cms
                 var upLinkButton = (HyperLink)e.Item.FindControl("UpLinkButton");
                 var downLinkButton = (HyperLink)e.Item.FindControl("DownLinkButton");
 
-                var showPopWinString = Sys.ModalTableMetadataView.GetOpenWindowString(ETableStyleUtils.GetTableType(_tableStyle), _tableName, styleInfo.AttributeName);
+                var showPopWinString = ModalTableMetadataView.GetOpenWindowString(ETableStyleUtils.GetTableType(_tableStyle), _tableName, styleInfo.AttributeName);
                 ltlAttributeName.Text =
                     $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{styleInfo.AttributeName}</a>";
 
                 ltlDisplayName.Text = styleInfo.DisplayName;
-                ltlInputType.Text = EInputTypeUtils.GetText(EInputTypeUtils.GetEnumType(styleInfo.InputType));
+                ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
 
                 ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-                ltlValidate.Text = EInputValidateTypeUtils.GetValidateInfo(styleInfo);
+                ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
 
                 var redirectUrl = GetRedirectUrl(PublishmentSystemId, _tableStyle, _tableName, _relatedIdentity, _itemId);
                 showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _tableStyle, redirectUrl);

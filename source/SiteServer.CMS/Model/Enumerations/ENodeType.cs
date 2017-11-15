@@ -5,31 +5,28 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum ENodeType
 	{
-		BackgroundPublishNode,	//վ��
-        BackgroundNormalNode,	//��Ŀ
+		BackgroundPublishNode,	//应用
+        BackgroundNormalNode,	//栏目
 	}
 
 	public class ENodeTypeUtils
 	{
 		public static string GetValue(ENodeType type)
 		{
-			if (type == ENodeType.BackgroundPublishNode)
+		    if (type == ENodeType.BackgroundPublishNode)
 			{
 				return "BackgroundPublishNode";
 			}
-			else if (type == ENodeType.BackgroundNormalNode)
-			{
-				return "BackgroundNormalNode";
-            }
-			else
-			{
-				throw new Exception();
-			}
+		    if (type == ENodeType.BackgroundNormalNode)
+		    {
+		        return "BackgroundNormalNode";
+		    }
+		    throw new Exception();
 		}
 
 		public static ENodeType GetEnumType(string typeStr)
 		{
-			var retval = ENodeType.BackgroundNormalNode;
+			ENodeType retval = ENodeType.BackgroundNormalNode;
 
 			if (Equals(ENodeType.BackgroundPublishNode, typeStr))
 			{

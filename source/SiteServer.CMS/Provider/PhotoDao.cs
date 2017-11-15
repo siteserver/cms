@@ -1,16 +1,68 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class PhotoDao : DataProviderBase
     {
+        public override string TableName => "siteserver_Photo";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PhotoInfo.Id),
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PhotoInfo.PublishmentSystemId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PhotoInfo.ContentId),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PhotoInfo.SmallUrl),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PhotoInfo.MiddleUrl),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PhotoInfo.LargeUrl),
+                DataType = DataType.VarChar,
+                Length = 200
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PhotoInfo.Taxis),
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = nameof(PhotoInfo.Description),
+                DataType = DataType.VarChar,
+                Length = 255
+            }
+        };
+
         private const string SqlUpdatePhotoContent = "UPDATE siteserver_Photo SET SmallUrl = @SmallUrl, MiddleUrl = @MiddleUrl, LargeUrl = @LargeUrl, Taxis = @Taxis, Description = @Description WHERE ID = @ID";
         private const string SqlDeletePhotoContent = "DELETE FROM siteserver_Photo WHERE ID = @ID";
         private const string SqlDeletePhotoContents = "DELETE FROM siteserver_Photo WHERE PublishmentSystemID = @PublishmentSystemID AND ContentID = @ContentID";
@@ -26,20 +78,20 @@ namespace SiteServer.CMS.Provider
 
         public void Insert(PhotoInfo photoInfo)
         {
-            var maxTaxis = GetMaxTaxis(photoInfo.PublishmentSystemID, photoInfo.ContentID);
+            var maxTaxis = GetMaxTaxis(photoInfo.PublishmentSystemId, photoInfo.ContentId);
             photoInfo.Taxis = maxTaxis + 1;
 
             var sqlString = "INSERT INTO siteserver_Photo (PublishmentSystemID, ContentID, SmallUrl, MiddleUrl, LargeUrl, Taxis, Description) VALUES (@PublishmentSystemID, @ContentID, @SmallUrl, @MiddleUrl, @LargeUrl, @Taxis, @Description)";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, photoInfo.PublishmentSystemID),
-                GetParameter(ParmContentid, EDataType.Integer, photoInfo.ContentID),
-                GetParameter(ParmSmallUrl, EDataType.VarChar, 200, photoInfo.SmallUrl),
-                GetParameter(ParmMiddleUrl, EDataType.VarChar, 200, photoInfo.MiddleUrl),
-                GetParameter(ParmLargeUrl, EDataType.VarChar, 200, photoInfo.LargeUrl),
-                GetParameter(ParmTaxis, EDataType.Integer, photoInfo.Taxis),
-				GetParameter(ParmDescription, EDataType.NVarChar, 255, photoInfo.Description)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, photoInfo.PublishmentSystemId),
+                GetParameter(ParmContentid, DataType.Integer, photoInfo.ContentId),
+                GetParameter(ParmSmallUrl, DataType.VarChar, 200, photoInfo.SmallUrl),
+                GetParameter(ParmMiddleUrl, DataType.VarChar, 200, photoInfo.MiddleUrl),
+                GetParameter(ParmLargeUrl, DataType.VarChar, 200, photoInfo.LargeUrl),
+                GetParameter(ParmTaxis, DataType.Integer, photoInfo.Taxis),
+				GetParameter(ParmDescription, DataType.VarChar, 255, photoInfo.Description)
 			};
 
             ExecuteNonQuery(sqlString, parms);
@@ -49,12 +101,12 @@ namespace SiteServer.CMS.Provider
         {
             var updateParms = new IDataParameter[]
 			{
-                GetParameter(ParmSmallUrl, EDataType.VarChar, 200, photoInfo.SmallUrl),
-                GetParameter(ParmMiddleUrl, EDataType.VarChar, 200, photoInfo.MiddleUrl),
-                GetParameter(ParmLargeUrl, EDataType.VarChar, 200, photoInfo.LargeUrl),
-                GetParameter(ParmTaxis, EDataType.Integer, photoInfo.Taxis),
-				GetParameter(ParmDescription, EDataType.NVarChar, 255, photoInfo.Description),
-                GetParameter(ParmId, EDataType.Integer, photoInfo.ID),
+                GetParameter(ParmSmallUrl, DataType.VarChar, 200, photoInfo.SmallUrl),
+                GetParameter(ParmMiddleUrl, DataType.VarChar, 200, photoInfo.MiddleUrl),
+                GetParameter(ParmLargeUrl, DataType.VarChar, 200, photoInfo.LargeUrl),
+                GetParameter(ParmTaxis, DataType.Integer, photoInfo.Taxis),
+				GetParameter(ParmDescription, DataType.VarChar, 255, photoInfo.Description),
+                GetParameter(ParmId, DataType.Integer, photoInfo.Id),
 			};
 
             ExecuteNonQuery(SqlUpdatePhotoContent, updateParms);
@@ -64,7 +116,7 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
 			{
-                GetParameter(ParmId, EDataType.Integer, id)
+                GetParameter(ParmId, DataType.Integer, id)
 			};
 
             ExecuteNonQuery(SqlDeletePhotoContent, parms);
@@ -84,8 +136,8 @@ namespace SiteServer.CMS.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentsystemid, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmContentid, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentsystemid, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmContentid, DataType.Integer, contentId)
 			};
 
             ExecuteNonQuery(SqlDeletePhotoContents, parms);
@@ -117,7 +169,7 @@ namespace SiteServer.CMS.Provider
 
             //string sqlString =
             //    $"SELECT TOP 1 ID, PublishmentSystemID, ContentID, SmallUrl, MiddleUrl, LargeUrl, Taxis, Description FROM siteserver_Photo WHERE PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId} ORDER BY Taxis";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_Photo", "ID, PublishmentSystemID, ContentID, SmallUrl, MiddleUrl, LargeUrl, Taxis, Description", $"WHERE PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId} ORDER BY Taxis", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_Photo", "ID, PublishmentSystemID, ContentID, SmallUrl, MiddleUrl, LargeUrl, Taxis, Description", $"WHERE PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId}", "ORDER BY Taxis", 1);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -157,7 +209,7 @@ namespace SiteServer.CMS.Provider
             var orderByString = "ORDER BY Taxis";
             string whereString = $"WHERE (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId})";
 
-            var sqlSelect = BaiRongDataProvider.TableStructureDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, whereString, orderByString);
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, SqlUtils.Asterisk, whereString, orderByString);
 
             return (IEnumerable)ExecuteReader(sqlSelect);
         }
@@ -236,7 +288,7 @@ namespace SiteServer.CMS.Provider
             //Get Higher Taxis and ID
             //string sqlString =
             //    $"SELECT TOP 1 ID, Taxis FROM siteserver_Photo WHERE (Taxis > (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId})) ORDER BY Taxis";
-            string sqlString = SqlUtils.GetTopSqlString("siteserver_Photo", "ID, Taxis", $"WHERE (Taxis > (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId})) ORDER BY Taxis", 1);
+            string sqlString = SqlUtils.GetTopSqlString("siteserver_Photo", "ID, Taxis", $"WHERE (Taxis > (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId}))", "ORDER BY Taxis", 1);
 
             var higherId = 0;
             var higherTaxis = 0;
@@ -270,7 +322,7 @@ namespace SiteServer.CMS.Provider
             //Get Lower Taxis and ID
             //string sqlString =
             //    $"SELECT TOP 1 ID, Taxis FROM siteserver_Photo WHERE (Taxis < (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId})) ORDER BY Taxis DESC";
-            var sqlString = SqlUtils.GetTopSqlString("siteserver_Photo", "ID, Taxis", $"WHERE (Taxis < (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId})) ORDER BY Taxis DESC", 1);
+            var sqlString = SqlUtils.GetTopSqlString("siteserver_Photo", "ID, Taxis", $"WHERE (Taxis < (SELECT Taxis FROM siteserver_Photo WHERE ID = {id}) AND (PublishmentSystemID = {publishmentSystemId} AND ContentID = {contentId}))", "ORDER BY Taxis DESC", 1);
 
             var lowerId = 0;
             var lowerTaxis = 0;

@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Data;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Json;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Web.Script.Serialization;
 using BaiRong.Core.Cryptography;
 using System.Text.RegularExpressions;
@@ -643,16 +641,34 @@ namespace BaiRong.Core
 
         public static string NameValueCollectionToString(NameValueCollection attributes, char seperator)
         {
+            if (attributes == null || attributes.Count <= 0) return string.Empty;
+
             var builder = new StringBuilder();
-            if (attributes != null && attributes.Count > 0)
+            foreach (string key in attributes.Keys)
             {
-                foreach (string key in attributes.Keys)
-                {
-                    builder.Append(
-                        $@"{StringUtils.ValueToUrl(key)}={StringUtils.ValueToUrl(attributes[key])}{seperator}");
-                }
-                builder.Length--;
+                builder.Append(
+                    $@"{StringUtils.ValueToUrl(key)}={StringUtils.ValueToUrl(attributes[key])}{seperator}");
             }
+            builder.Length--;
+            return builder.ToString();
+        }
+
+        public static string NameValueCollectionToString(LowerNameValueCollection attributes)
+        {
+            return NameValueCollectionToString(attributes, '&');
+        }
+
+        public static string NameValueCollectionToString(LowerNameValueCollection attributes, char seperator)
+        {
+            if (attributes == null || attributes.Count <= 0) return string.Empty;
+
+            var builder = new StringBuilder();
+            foreach (var key in attributes.Keys)
+            {
+                builder.Append(
+                    $@"{StringUtils.ValueToUrl(key)}={StringUtils.ValueToUrl(attributes.Get(key))}{seperator}");
+            }
+            builder.Length--;
             return builder.ToString();
         }
 
@@ -666,7 +682,7 @@ namespace BaiRong.Core
             var builder = new StringBuilder();
             if (attributes != null && attributes.Count > 0)
             {
-                foreach (string key in attributes.Keys)
+                foreach (var key in attributes.Keys)
                 {
                     builder.Append(
                         $@"{StringUtils.ValueToUrl(key)}={StringUtils.ValueToUrl(attributes[key])}{seperator}");
@@ -681,9 +697,9 @@ namespace BaiRong.Core
             var builder = new StringBuilder();
             if (attributes != null && attributes.Count > 0)
             {
-                foreach (string key in attributes.Keys)
+                foreach (var key in attributes.Keys)
                 {
-                    var value = attributes[key];
+                    var value = attributes.Get(key);
                     if (!string.IsNullOrEmpty(value))
                     {
                         value = value.Replace("\"", "'");
@@ -720,6 +736,25 @@ namespace BaiRong.Core
             if (attributes != null && attributes.Count > 0)
             {
                 foreach (string key in attributes.Keys)
+                {
+                    var value = attributes[key];
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        value = value.Replace("\"", "'");
+                    }
+                    builder.Append($@"{key}=""{value}"" ");
+                }
+                builder.Length--;
+            }
+            return builder.ToString();
+        }
+
+        public static string ToAttributesString(Dictionary<string, string> attributes)
+        {
+            var builder = new StringBuilder();
+            if (attributes != null && attributes.Count > 0)
+            {
+                foreach (var key in attributes.Keys)
                 {
                     var value = attributes[key];
                     if (!string.IsNullOrEmpty(value))
@@ -1111,20 +1146,37 @@ namespace BaiRong.Core
 
         public static string JsonSerialize(object obj)
         {
-            var settings = new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()};
-            var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
-            settings.Converters.Add(timeFormat);
+            try
+            {
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                };
+                var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
+                settings.Converters.Add(timeFormat);
 
-            return JsonConvert.SerializeObject(obj, settings);
+                return JsonConvert.SerializeObject(obj, settings);
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         public static T JsonDeserialize<T>(string json)
         {
-            var settings = new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()};
-            var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
-            settings.Converters.Add(timeFormat);
+            try
+            {
+                var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+                var timeFormat = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
+                settings.Converters.Add(timeFormat);
 
-            return JsonConvert.DeserializeObject<T>(json, settings);
+                return JsonConvert.DeserializeObject<T>(json, settings);
+            }
+            catch
+            {
+                return default(T);
+            }
         }
 
         public static string EncryptStringBySecretKey(string inputString)
@@ -1134,7 +1186,7 @@ namespace BaiRong.Core
             var encryptor = new DESEncryptor
             {
                 InputString = inputString,
-                EncryptKey = FileConfigManager.Instance.SecretKey
+                EncryptKey = WebConfigUtils.SecretKey
             };
             encryptor.DesEncrypt();
 
@@ -1153,7 +1205,7 @@ namespace BaiRong.Core
             var encryptor = new DESEncryptor
             {
                 InputString = inputString,
-                DecryptKey = FileConfigManager.Instance.SecretKey
+                DecryptKey = WebConfigUtils.SecretKey
             };
             encryptor.DesDecrypt();
 

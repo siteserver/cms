@@ -1,62 +1,52 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 using BaiRong.Core;
-using SiteServer.CMS.Controllers.Stl;
+using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
+    [Stl(Usage = "动态显示", Description = "通过 stl:dynamic 标签在模板中实现动态显示功能")]
     public class StlDynamic
     {
         private StlDynamic() { }
-        public const string ElementName = "stl:dynamic";                    //显示动态内容
+        public const string ElementName = "stl:dynamic";
 
-        public const string AttributeContext = "context";                   //所处上下文
-        public const string AttributeIsPageRefresh = "ispagerefresh";       //翻页时是否刷新页面
+        public const string AttributeContext = "context";
+        public const string AttributeIsPageRefresh = "isPageRefresh";
 
-        public static ListDictionary AttributeList => new ListDictionary
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
         {
             {AttributeContext, "所处上下文"},
             {AttributeIsPageRefresh, "翻页时是否刷新页面"}
         };
 
-        internal static string Parse(string stlElement, XmlNode node, PageInfo pageInfo, ContextInfo contextInfoRef)
+        internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            string parsedContent;
-            var contextInfo = contextInfoRef.Clone();
-            try
+            // 如果是实体标签则返回空
+            if (contextInfo.IsCurlyBrace)
             {
-                var isPageRefresh = false;
+                return string.Empty;
+            }
 
-                var ie = node.Attributes?.GetEnumerator();
-                if (ie != null)
+            var isPageRefresh = false;
+
+            foreach (var name in contextInfo.Attributes.Keys)
+            {
+                var value = contextInfo.Attributes[name];
+
+                if (StringUtils.EqualsIgnoreCase(name, AttributeContext))
                 {
-                    while (ie.MoveNext())
-                    {
-                        var attr = (XmlAttribute)ie.Current;
-                        var attributeName = attr.Name.ToLower();
-                        if (attributeName.Equals(AttributeContext))
-                        {
-                            contextInfo.ContextType = EContextTypeUtils.GetEnumType(attr.Value);
-                        }
-                        else if (attributeName.Equals(AttributeIsPageRefresh))
-                        {
-                            isPageRefresh = TranslateUtils.ToBool(attr.Value);
-                        }
-                    }
+                    contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }
-
-                parsedContent = ParseImpl(pageInfo, contextInfo, node.InnerXml, isPageRefresh);
-            }
-            catch (Exception ex)
-            {
-                parsedContent = StlParserUtility.GetStlErrorMessage(ElementName, ex);
+                else if (StringUtils.EqualsIgnoreCase(name, AttributeIsPageRefresh))
+                {
+                    isPageRefresh = TranslateUtils.ToBool(value);
+                }
             }
 
-            return parsedContent;
+            return ParseImpl(pageInfo, contextInfo, contextInfo.InnerXml, isPageRefresh);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string templateContent, bool isPageRefresh)
@@ -73,9 +63,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             var apiUrl = ActionsDynamic.GetUrl(pageInfo.ApiUrl);
-            var currentPageUrl = StlUtility.GetStlCurrentUrl(pageInfo, contextInfo.ChannelID, contextInfo.ContentID, contextInfo.ContentInfo);
+            var currentPageUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
             currentPageUrl = PageUtils.AddQuestionOrAndToUrl(currentPageUrl);
-            var apiParameters = ActionsDynamic.GetParameters(pageInfo.PublishmentSystemId, contextInfo.ChannelID, contextInfo.ContentID, pageInfo.TemplateInfo.TemplateId, currentPageUrl, ajaxDivId, isPageRefresh, templateContent);
+            var apiParameters = ActionsDynamic.GetParameters(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.TemplateId, currentPageUrl, ajaxDivId, isPageRefresh, templateContent);
 
             var builder = new StringBuilder();
             builder.Append($@"<span id=""{ajaxDivId}""></span>");

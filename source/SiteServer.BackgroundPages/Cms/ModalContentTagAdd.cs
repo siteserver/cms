@@ -2,31 +2,31 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
+using BaiRong.Core.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalContentTagAdd : BasePageCms
     {
-		protected TextBox tbTags;
+		protected TextBox TbTags;
 
         private string _tagName;
 
         public static string GetOpenWindowStringToAdd(int publishmentSystemId)
         {
-            return PageUtils.GetOpenWindowString("添加标签", PageUtils.GetCmsUrl(nameof(ModalContentTagAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("添加标签", PageUtils.GetCmsUrl(nameof(ModalContentTagAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
-            }), 380, 360);
+            }), 600, 360);
         }
 
         public static string GetOpenWindowStringToEdit(int publishmentSystemId, string tagName)
         {
-            return PageUtils.GetOpenWindowString("修改标签", PageUtils.GetCmsUrl(nameof(ModalContentTagAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("修改标签", PageUtils.GetCmsUrl(nameof(ModalContentTagAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TagName", tagName}
-            }), 380, 360);
+            }), 600, 360);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -35,23 +35,17 @@ namespace SiteServer.BackgroundPages.Cms
 
             _tagName = Body.GetQueryString("TagName");
 
-			if (!IsPostBack)
-			{
-                if (!string.IsNullOrEmpty(_tagName))
-                {
-                    tbTags.Text = _tagName;
+            if (IsPostBack) return;
 
-                    var count = BaiRongDataProvider.TagDao.GetTagCount(_tagName, PublishmentSystemId);
+            if (!string.IsNullOrEmpty(_tagName))
+            {
+                TbTags.Text = _tagName;
 
-                    InfoMessage($@"标签“<strong>{_tagName}</strong>”被使用 {count} 次，编辑此标签将更新所有使用此标签的内容。");
-                }
-                else
-                {
-                    InfoMessage("在此可添加新标签");
-                }
-				
-			}
-		}
+                var count = BaiRongDataProvider.TagDao.GetTagCount(_tagName, PublishmentSystemId);
+
+                InfoMessage($@"标签“<strong>{_tagName}</strong>”被使用 {count} 次，编辑此标签将更新所有使用此标签的内容。");
+            }
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
@@ -61,13 +55,13 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				try
 				{
-                    if (!string.Equals(_tagName, tbTags.Text))
+                    if (!string.Equals(_tagName, TbTags.Text))
                     {
-                        var tagCollection = TagUtils.ParseTagsString(tbTags.Text);
-                        var contentIDArrayList = BaiRongDataProvider.TagDao.GetContentIdListByTag(_tagName, PublishmentSystemId);
-                        if (contentIDArrayList.Count > 0)
+                        var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
+                        var contentIdList = BaiRongDataProvider.TagDao.GetContentIdListByTag(_tagName, PublishmentSystemId);
+                        if (contentIdList.Count > 0)
                         {
-                            foreach (int contentID in contentIDArrayList)
+                            foreach (int contentId in contentIdList)
                             {
                                 if (!tagCollection.Contains(_tagName))//删除
                                 {
@@ -75,16 +69,16 @@ namespace SiteServer.BackgroundPages.Cms
                                     if (tagInfo != null)
                                     {
                                         var idArrayList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
-                                        idArrayList.Remove(contentID);
+                                        idArrayList.Remove(contentId);
                                         tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(idArrayList);
                                         tagInfo.UseNum = idArrayList.Count;
                                         BaiRongDataProvider.TagDao.Update(tagInfo);
                                     }
                                 }
 
-                                TagUtils.AddTags(tagCollection, PublishmentSystemId, contentID);
+                                TagUtils.AddTags(tagCollection, PublishmentSystemId, contentId);
 
-                                var contentTags = BaiRongDataProvider.ContentDao.GetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentID, ContentAttribute.Tags);
+                                var contentTags = BaiRongDataProvider.ContentDao.GetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags);
                                 var contentTagArrayList = TranslateUtils.StringCollectionToStringList(contentTags);
                                 contentTagArrayList.Remove(_tagName);
                                 foreach (var theTag in tagCollection)
@@ -94,7 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
                                         contentTagArrayList.Add(theTag);
                                     }
                                 }
-                                BaiRongDataProvider.ContentDao.SetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentID, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
+                                BaiRongDataProvider.ContentDao.SetValue(PublishmentSystemInfo.AuxiliaryTableForContent, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagArrayList));
                             }
                         }
                         else
@@ -103,7 +97,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    Body.AddSiteLog(PublishmentSystemId, "修改内容标签", $"内容标签:{tbTags.Text}");
+                    Body.AddSiteLog(PublishmentSystemId, "修改内容标签", $"内容标签:{TbTags.Text}");
 
 					isChanged = true;
 				}
@@ -116,9 +110,9 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 try
                 {
-                    var tagCollection = TagUtils.ParseTagsString(tbTags.Text);
+                    var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
                     TagUtils.AddTags(tagCollection, PublishmentSystemId, 0);
-                    Body.AddSiteLog(PublishmentSystemId, "添加内容标签", $"内容标签:{tbTags.Text}");
+                    Body.AddSiteLog(PublishmentSystemId, "添加内容标签", $"内容标签:{TbTags.Text}");
                     isChanged = true;
                 }
                 catch(Exception ex)

@@ -45,15 +45,15 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var entry = AtomUtility.GetEmptyEntry();
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, "StyleID", tagStyleInfo.StyleID.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, "StyleId", tagStyleInfo.StyleId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "StyleName", tagStyleInfo.StyleName);
             AtomUtility.AddDcElement(entry.AdditionalElements, "ElementName", tagStyleInfo.ElementName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "PublishmentSystemID", tagStyleInfo.PublishmentSystemID.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, "PublishmentSystemId", tagStyleInfo.PublishmentSystemId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "IsTemplate", tagStyleInfo.IsTemplate.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "StyleTemplate", AtomUtility.Encrypt(tagStyleInfo.StyleTemplate));
             AtomUtility.AddDcElement(entry.AdditionalElements, "ScriptTemplate", AtomUtility.Encrypt(tagStyleInfo.ScriptTemplate));
             AtomUtility.AddDcElement(entry.AdditionalElements, "ContentTemplate", AtomUtility.Encrypt(tagStyleInfo.ContentTemplate));
-            AtomUtility.AddDcElement(entry.AdditionalElements, "SettingsXML", AtomUtility.Encrypt(tagStyleInfo.SettingsXML));
+            AtomUtility.AddDcElement(entry.AdditionalElements, "SettingsXml", AtomUtility.Encrypt(tagStyleInfo.SettingsXml));
 
 			return entry;
 		}
@@ -74,7 +74,7 @@ namespace SiteServer.CMS.ImportExport.Components
 				    {
 				        StyleName = styleName,
 				        ElementName = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ElementName"),
-				        PublishmentSystemID = _publishmentSystemId,
+				        PublishmentSystemId = _publishmentSystemId,
 				        IsTemplate =
 				            TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "IsTemplate")),
 				        StyleTemplate =
@@ -86,7 +86,7 @@ namespace SiteServer.CMS.ImportExport.Components
 				        ContentTemplate =
 				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements,
 				                "ContentTemplate")),
-				        SettingsXML =
+				        SettingsXml =
 				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SettingsXML"))
 				    };
 
@@ -95,7 +95,7 @@ namespace SiteServer.CMS.ImportExport.Components
 					{
 						if (overwrite)
 						{
-                            tagStyleInfo.StyleID = srcTagStyleInfo.StyleID;
+                            tagStyleInfo.StyleId = srcTagStyleInfo.StyleId;
                             DataProvider.TagStyleDao.Update(tagStyleInfo);
 						}
 						else

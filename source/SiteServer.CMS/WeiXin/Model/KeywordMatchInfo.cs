@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using BaiRong.Core;
+using BaiRong.Core.Data;
 using SiteServer.CMS.WeiXin.Model.Enumerations;
 
 namespace SiteServer.CMS.WeiXin.Model
@@ -11,99 +12,80 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string MatchID = "MatchID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string Keyword = "Keyword";
-        public const string KeywordID = "KeywordID";
-        public const string IsDisabled = "IsDisabled";
-        public const string KeywordType = "KeywordType";
-        public const string MatchType = "MatchType";
+        public const string MatchId = nameof(KeywordMatchInfo.MatchId);
+        public const string PublishmentSystemId = nameof(KeywordMatchInfo.PublishmentSystemId);
+        public const string Keyword = nameof(KeywordMatchInfo.Keyword);
+        public const string KeywordId = nameof(KeywordMatchInfo.KeywordId);
+        public const string IsDisabled = nameof(KeywordMatchInfo.IsDisabled);
+        public const string KeywordType = nameof(KeywordMatchInfo.KeywordType);
+        public const string MatchType = nameof(KeywordMatchInfo.MatchType);
 
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(MatchID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(Keyword);
-                    allAttributes.Add(IsDisabled);
-                    allAttributes.Add(KeywordID);
-                    allAttributes.Add(MatchType);
-                    allAttributes.Add(KeywordType); ;
-                }
-
-                return allAttributes;
-            }
-        }
+            MatchId,
+            PublishmentSystemId,
+            Keyword,
+            IsDisabled,
+            KeywordId,
+            MatchType,
+            KeywordType
+        });
     }
 
     public class KeywordMatchInfo
     {
-        private int matchID;
-        private int publishmentSystemID;
-        private string keyword;
-        private int keywordID;
-        private bool isDisabled;
-        private EKeywordType keywordType;
-        private EMatchType matchType;
-
         public KeywordMatchInfo()
         {
-            matchID = 0;
-            publishmentSystemID = 0;
-            keyword = string.Empty;
-            keywordID = 0;
-            isDisabled = false;
-            keywordType = EKeywordType.Text;
-            matchType = EMatchType.Exact;
+            MatchId = 0;
+            PublishmentSystemId = 0;
+            Keyword = string.Empty;
+            KeywordId = 0;
+            IsDisabled = false;
+            KeywordType = EKeywordType.Text;
+            MatchType = EMatchType.Exact;
         }
 
-        public KeywordMatchInfo(int matchID, int publishmentSystemID, string keyword, int keywordID, bool isDisabled, EKeywordType keywordType, EMatchType matchType)
+        public KeywordMatchInfo(int matchId, int publishmentSystemId, string keyword, int keywordId, bool isDisabled, EKeywordType keywordType, EMatchType matchType)
         {
-            this.matchID = matchID;
-            this.publishmentSystemID = publishmentSystemID;
-            this.keyword = keyword;
-            this.keywordID = keywordID;
-            this.isDisabled = isDisabled;
-            this.keywordType = keywordType;
-            this.matchType = matchType;
+            MatchId = matchId;
+            PublishmentSystemId = publishmentSystemId;
+            Keyword = keyword;
+            KeywordId = keywordId;
+            IsDisabled = isDisabled;
+            KeywordType = keywordType;
+            MatchType = matchType;
         }
 
         public KeywordMatchInfo(object dataItem)
         {
-            if (dataItem != null)
+            if (dataItem == null) return;
+
+            foreach (var name in AllAttributes)
             {
-                foreach (var name in AllAttributes)
+                var value = SqlUtils.Eval(dataItem, name);
+                if (value != null)
                 {
-                    var value = TranslateUtils.Eval(dataItem, name);
-                    if (value != null)
-                    {
-                        SetValueInternal(name, value);
-                    }
+                    SetValueInternal(name, value);
                 }
             }
         }
+
         public KeywordMatchInfo(NameValueCollection form, bool isFilterSqlAndXss)
         {
-            if (form != null)
+            if (form == null) return;
+
+            foreach (var name in AllAttributes)
             {
-                foreach (var name in AllAttributes)
+                var value = form[name];
+                if (value == null) continue;
+
+                if (isFilterSqlAndXss)
                 {
-                    var value = form[name];
-                    if (value != null)
-                    {
-                        if (isFilterSqlAndXss)
-                        {
-                            value = PageUtils.FilterSqlAndXss(value);
-                        }
-                        SetValueInternal(name, value);
-                    }
+                    value = PageUtils.FilterSqlAndXss(value);
                 }
+                SetValueInternal(name, value);
             }
         }
 
@@ -120,27 +102,24 @@ namespace SiteServer.CMS.WeiXin.Model
             }
             return attributes;
         }
-        
 
         public object GetValue(string attributeName)
         {
             foreach (var name in AllAttributes)
             {
-                if (StringUtils.EqualsIgnoreCase(name, attributeName))
-                {   
-                    var nameVlaue = GetType().GetProperty(name).GetValue(this, null);
-      
-                    if (attributeName == "KeywordType")
-                    {
-                        return EKeywordTypeUtils.GetEnumType(nameVlaue.ToString());
-                    }
-                    if (attributeName == "MatchType")
-                    {
-                        return EMatchTypeUtils.GetEnumType(nameVlaue.ToString());
-                    }
-                    return nameVlaue;
+                if (!StringUtils.EqualsIgnoreCase(name, attributeName)) continue;
 
+                var nameVlaue = GetType().GetProperty(name).GetValue(this, null);
+      
+                if (attributeName == "KeywordType")
+                {
+                    return EKeywordTypeUtils.GetEnumType(nameVlaue.ToString());
                 }
+                if (attributeName == "MatchType")
+                {
+                    return EMatchTypeUtils.GetEnumType(nameVlaue.ToString());
+                }
+                return nameVlaue;
             }
             return null;
         }
@@ -149,16 +128,17 @@ namespace SiteServer.CMS.WeiXin.Model
         {
             foreach (var name in AllAttributes)
             {
-                if (StringUtils.EqualsIgnoreCase(name, attributeName))
+                if (!StringUtils.EqualsIgnoreCase(name, attributeName)) continue;
+                try
                 {
-                    try
-                    {
-                        SetValueInternal(name, value);
-                    }
-                    catch { }
-
-                    break;
+                    SetValueInternal(name, value);
                 }
+                catch
+                {
+                    // ignored
+                }
+
+                break;
             }
         }
 
@@ -189,54 +169,20 @@ namespace SiteServer.CMS.WeiXin.Model
             }
         }
 
-        protected List<string> AllAttributes
-        {
-            get
-            {
-                return KeywordMatchAttribute.AllAttributes;
-            }
-        }
+        protected List<string> AllAttributes => KeywordMatchAttribute.AllAttributes;
 
-        public int MatchID
-        {
-            get { return matchID; }
-            set { matchID = value; }
-        }
+        public int MatchId { get; set; }
 
-        public int PublishmentSystemID
-        {
-            get { return publishmentSystemID; }
-            set { publishmentSystemID = value; }
-        }
+        public int PublishmentSystemId { get; set; }
 
-        public string Keyword
-        {
-            get { return keyword; }
-            set { keyword = value; }
-        }
+        public string Keyword { get; set; }
 
-        public int KeywordID
-        {
-            get { return keywordID; }
-            set { keywordID = value; }
-        }
+        public int KeywordId { get; set; }
 
-        public bool IsDisabled
-        {
-            get { return isDisabled; }
-            set { isDisabled = value; }
-        }
+        public bool IsDisabled { get; set; }
 
-        public EKeywordType KeywordType
-        {
-            get { return keywordType; }
-            set { keywordType = value; }
-        }
+        public EKeywordType KeywordType { get; set; }
 
-        public EMatchType MatchType
-        {
-            get { return matchType; }
-            set { matchType = value; }
-        }
+        public EMatchType MatchType { get; set; }
     }
 }

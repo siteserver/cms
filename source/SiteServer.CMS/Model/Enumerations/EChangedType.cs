@@ -14,50 +14,44 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(EChangedType type)
 		{
-            if (type == EChangedType.Add)
+		    if (type == EChangedType.Add)
 			{
                 return "Add";
 			}
-            else if (type == EChangedType.Edit)
-			{
-                return "Edit";
-            }
-            else if (type == EChangedType.Delete)
-            {
-                return "Delete";
-            }
-            else if (type == EChangedType.None)
-            {
-                return "None";
-            }
-            else
-			{
-				throw new Exception();
-			}
+		    if (type == EChangedType.Edit)
+		    {
+		        return "Edit";
+		    }
+		    if (type == EChangedType.Delete)
+		    {
+		        return "Delete";
+		    }
+		    if (type == EChangedType.None)
+		    {
+		        return "None";
+		    }
+		    throw new Exception();
 		}
 
 		public static string GetText(EChangedType type)
 		{
-            if (type == EChangedType.Add)
+		    if (type == EChangedType.Add)
 			{
 				return "新增";
 			}
-            else if (type == EChangedType.Edit)
-			{
-				return "修改";
-            }
-            else if (type == EChangedType.Delete)
-            {
-                return "删除";
-            }
-            else if (type == EChangedType.None)
-            {
-                return "";
-            }
-            else
-			{
-				throw new Exception();
-			}
+		    if (type == EChangedType.Edit)
+		    {
+		        return "修改";
+		    }
+		    if (type == EChangedType.Delete)
+		    {
+		        return "删除";
+		    }
+		    if (type == EChangedType.None)
+		    {
+		        return "";
+		    }
+		    throw new Exception();
 		}
 
 		public static EChangedType GetEnumType(string typeStr)

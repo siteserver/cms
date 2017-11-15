@@ -8,10 +8,10 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageConfigurationComment : BasePageCms
     {
-        public RadioButtonList RblIsCommentable;
+        public DropDownList DdlIsCommentable;
         public PlaceHolder PhComments;
-        public RadioButtonList RblIsCheckComments;
-        public RadioButtonList RblIsAnonymousComments;
+        public DropDownList DdlIsCheckComments;
+        public DropDownList DdlIsAnonymousComments;
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -21,26 +21,26 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "评论管理设置", AppManager.Cms.Permission.WebSite.Configration);
+            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "评论管理设置", AppManager.Permissions.WebSite.Configration);
 
-            ControlUtils.SelectListItemsIgnoreCase(RblIsCommentable, PublishmentSystemInfo.Additional.IsCommentable.ToString());
-            ControlUtils.SelectListItemsIgnoreCase(RblIsCheckComments, PublishmentSystemInfo.Additional.IsCheckComments.ToString());
-            ControlUtils.SelectListItemsIgnoreCase(RblIsAnonymousComments, PublishmentSystemInfo.Additional.IsAnonymousComments.ToString());
+            ControlUtils.SelectListItemsIgnoreCase(DdlIsCommentable, PublishmentSystemInfo.Additional.IsCommentable.ToString());
+            ControlUtils.SelectListItemsIgnoreCase(DdlIsCheckComments, PublishmentSystemInfo.Additional.IsCheckComments.ToString());
+            ControlUtils.SelectListItemsIgnoreCase(DdlIsAnonymousComments, PublishmentSystemInfo.Additional.IsAnonymousComments.ToString());
             PhComments.Visible = PublishmentSystemInfo.Additional.IsCommentable;
         }
 
-        public void RblIsCommentable_OnSelectedIndexChanged(object sender, EventArgs e)
+        public void DdlIsCommentable_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            PhComments.Visible = EBooleanUtils.Equals(RblIsCommentable.SelectedValue, EBoolean.True);
+            PhComments.Visible = EBooleanUtils.Equals(DdlIsCommentable.SelectedValue, EBoolean.True);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    PublishmentSystemInfo.Additional.IsCommentable = TranslateUtils.ToBool(RblIsCommentable.SelectedValue);
-		    PublishmentSystemInfo.Additional.IsCheckComments = TranslateUtils.ToBool(RblIsCheckComments.SelectedValue);
-            PublishmentSystemInfo.Additional.IsAnonymousComments = TranslateUtils.ToBool(RblIsAnonymousComments.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCommentable = TranslateUtils.ToBool(DdlIsCommentable.SelectedValue);
+		    PublishmentSystemInfo.Additional.IsCheckComments = TranslateUtils.ToBool(DdlIsCheckComments.SelectedValue);
+            PublishmentSystemInfo.Additional.IsAnonymousComments = TranslateUtils.ToBool(DdlIsAnonymousComments.SelectedValue);
 
             try
 		    {

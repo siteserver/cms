@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Script.Serialization;
 using BaiRong.Core.Model.Enumerations;
+using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core
 {
@@ -45,7 +46,7 @@ namespace BaiRong.Core
 
         public static bool IsMobile(string val)
         {
-            return Regex.IsMatch(val, @"^1[358]\d{9}$", RegexOptions.IgnoreCase);
+            return Regex.IsMatch(val, @"^1[3456789]\d{9}$", RegexOptions.IgnoreCase);
         }
 
         public static bool IsEmail(string val)
@@ -705,34 +706,37 @@ namespace BaiRong.Core
                     var isOneBytesChar = false;
                     var lastChar = ' ';
 
-                    foreach (var singleChar in retval.ToCharArray())
+                    if (!string.IsNullOrEmpty(retval))
                     {
-                        builder.Append(singleChar);
+                        foreach (var singleChar in retval.ToCharArray())
+                        {
+                            builder.Append(singleChar);
 
-                        if (IsTwoBytesChar(singleChar))
-                        {
-                            length += 2;
-                            if (length >= totalLength)
+                            if (IsTwoBytesChar(singleChar))
                             {
-                                lastChar = singleChar;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            length += 1;
-                            if (length == totalLength)
-                            {
-                                isOneBytesChar = true;//已经截取到需要的字数，再多截取一位
-                            }
-                            else if (length > totalLength)
-                            {
-                                lastChar = singleChar;
-                                break;
+                                length += 2;
+                                if (length >= totalLength)
+                                {
+                                    lastChar = singleChar;
+                                    break;
+                                }
                             }
                             else
                             {
-                                isOneBytesChar = !isOneBytesChar;
+                                length += 1;
+                                if (length == totalLength)
+                                {
+                                    isOneBytesChar = true;//已经截取到需要的字数，再多截取一位
+                                }
+                                else if (length > totalLength)
+                                {
+                                    lastChar = singleChar;
+                                    break;
+                                }
+                                else
+                                {
+                                    isOneBytesChar = !isOneBytesChar;
+                                }
                             }
                         }
                     }
@@ -1015,16 +1019,9 @@ namespace BaiRong.Core
             return Environment.Version.Major;
         }
 
-        public static string ParseString(EInputType inputType, string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
+        public static string ParseString(InputType inputType, string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
         {
-            if (EInputTypeUtils.IsPureString(inputType))
-            {
-                return ParseString(content, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
-            }
-            else
-            {
-                return content;
-            }
+            return InputTypeUtils.IsPureString(inputType) ? ParseString(content, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString) : content;
         }
 
         public static string ParseString(string content, string replace, string to, int startIndex, int length, int wordNum, string ellipsis, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, string formatString)
@@ -1174,49 +1171,29 @@ namespace BaiRong.Core
             return isDefault ? "<img src='../pic/icon/right.gif' border='0'/>" : "<img src='../pic/icon/wrong.gif' border='0'/>";
         }
 
-        public static string GetBreadCrumbHtml(string topMenuId, string topTitle, string leftMenuId, string leftTitle, string pageUrl, string pageTitle, string itemTitle)
-        {
-            return GetBreadCrumbHtml(topMenuId, topTitle, leftMenuId, leftTitle, string.Empty, string.Empty, pageUrl, pageTitle, itemTitle);
-        }
-
-        public static string GetBreadCrumbHtml(string topMenuId, string topTitle, string leftMenuId, string leftTitle, string leftSubMenuId, string leftSubTitle, string pageUrl, string pageTitle, string itemTitle)
+        public static string GetBreadCrumbHtml(string topMenuId, string pageUrl, string pageTitle, string itemTitle)
         {
             var builder = new StringBuilder();
             builder.Append(@"<ul class=""breadcrumb"">");
+
+            var topTitle = AppManager.GetTopMenuName(topMenuId);
 
             if (!string.IsNullOrEmpty(topTitle))
             {
                 builder.Append($@"<li>{topTitle} <span class=""divider"">/</span></li>");
             }
-            else
-            {
-                builder.Append("<li>");
-            }
 
             if (!string.IsNullOrEmpty(pageTitle))
             {
-                builder.Append($@"<li>{leftTitle} <span class=""divider"">/</span></li>");
-            }
-            else
-            {
-                builder.Append($@"<li class=""active"">{leftTitle}</li>");
-            }
-
-            if (!string.IsNullOrEmpty(leftSubMenuId))
-            {
-                builder.Append($@"<li>{leftSubTitle} <span class=""divider"">/</span></li>");
-            }
-
-            if (!string.IsNullOrEmpty(itemTitle))
-            {
-
-                builder.Append($@"<li>{pageTitle} <span class=""divider"">/</span></li>");
-                builder.Append($@"<li class=""active"">{itemTitle.Replace(">", "/")}</li>");
-
-            }
-            else
-            {
-                builder.Append($@"<li class=""active"">{pageTitle}</li>");
+                if (!string.IsNullOrEmpty(itemTitle))
+                {
+                    builder.Append($@"<li>{pageTitle} <span class=""divider"">/</span></li>");
+                    builder.Append($@"<li class=""active"">{itemTitle.Replace(">", "/")}</li>");
+                }
+                else
+                {
+                    builder.Append($@"<li class=""active"">{pageTitle}</li>");
+                }
             }
 
             builder.Append("</ul>");
@@ -1254,6 +1231,23 @@ namespace BaiRong.Core
         {
             if (string.IsNullOrEmpty(input)) return string.Empty;
             return input.First().ToString().ToLower() + input.Substring(1);
+        }
+
+        public static string SortedListToAttributeValueString(string name, SortedList<string, string> attributeValues)
+        {
+            const string seperator = "<br />&nbsp;&nbsp;&nbsp;&nbsp;";
+
+            var builder = new StringBuilder();
+            if (attributeValues != null && attributeValues.Count > 0)
+            {
+                foreach (var key in attributeValues.Keys)
+                {
+                    builder.Append(
+                        $@"{key}：{attributeValues[key]}{seperator}");
+                }
+                builder.Length = builder.Length - seperator.Length;
+            }
+            return name + "，可选值包含：<br />&nbsp;&nbsp;&nbsp;&nbsp;" + builder;
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
@@ -46,7 +47,6 @@ namespace SiteServer.BackgroundPages
             try
             {
                 var visualInfo = VisualInfo.GetInstance();
-
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(visualInfo.PublishmentSystemID);
 
                 var templateInfo = TemplateManager.GetTemplateInfo(visualInfo.PublishmentSystemID, visualInfo.ChannelID, visualInfo.TemplateType);
@@ -58,8 +58,7 @@ namespace SiteServer.BackgroundPages
                 var pageInfo = new PageInfo(visualInfo.ChannelID, visualInfo.ContentID, publishmentSystemInfo, templateInfo, null);
                 var contextInfo = new ContextInfo(pageInfo);
 
-                StringBuilder contentBuilder = null;
-                contentBuilder = new StringBuilder(StlCacheManager.FileContent.GetTemplateContent(publishmentSystemInfo, templateInfo));
+                var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, templateInfo));
                 //需要完善，考虑单页模板、内容正文、翻页及外部链接
 
                 if (visualInfo.TemplateType == ETemplateType.IndexPageTemplate)             //首页
@@ -71,7 +70,7 @@ namespace SiteServer.BackgroundPages
                 {
                     var fileTemplateInfo = TemplateManager.GetTemplateInfo(visualInfo.PublishmentSystemID, visualInfo.FileTemplateID);
                     var filePageInfo = new PageInfo(visualInfo.ChannelID, visualInfo.ContentID, publishmentSystemInfo, fileTemplateInfo, null);
-                    var fileContentBuilder = new StringBuilder(StlCacheManager.FileContent.GetTemplateContent(publishmentSystemInfo, fileTemplateInfo));
+                    var fileContentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, fileTemplateInfo));
                     WriteResponse(fileContentBuilder, publishmentSystemInfo, filePageInfo, contextInfo, visualInfo);
                     return;
                 }
@@ -114,8 +113,8 @@ namespace SiteServer.BackgroundPages
                             for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                             {
                                 var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
-                                var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder);
-                                var length = (index == -1) ? contentAttributeHtml.Length : index;
+                                var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
+                                var length = index == -1 ? contentAttributeHtml.Length : index;
 
                                 if (currentPageIndex == visualInfo.PageIndex)
                                 {
@@ -144,7 +143,7 @@ namespace SiteServer.BackgroundPages
                         var stlPageContentsElementReplaceString = stlElement;
 
                         var pageContentsElementParser = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -169,7 +168,7 @@ namespace SiteServer.BackgroundPages
                         var stlPageChannelsElementReplaceString = stlElement;
 
                         var pageChannelsElementParser = new StlPageChannels(stlPageChannelsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -194,7 +193,7 @@ namespace SiteServer.BackgroundPages
                         var stlPageSqlContentsElementReplaceString = stlElement;
 
                         var pageSqlContentsElementParser = new StlPageSqlContents(stlPageSqlContentsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -228,8 +227,6 @@ namespace SiteServer.BackgroundPages
                         return;
                     }
 
-                    var filePath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, pageInfo.PageNodeId, pageInfo.PageContentId, 0);
-
                     var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
 
                     //如果标签中存在Content
@@ -254,8 +251,8 @@ namespace SiteServer.BackgroundPages
                         {
                             for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                             {
-                                var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder);
-                                var length = (index == -1) ? contentAttributeHtml.Length : index;
+                                var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
+                                var length = index == -1 ? contentAttributeHtml.Length : index;
 
                                 if (currentPageIndex == visualInfo.PageIndex)
                                 {
@@ -285,7 +282,7 @@ namespace SiteServer.BackgroundPages
                         var stlPageContentsElementReplaceString = stlElement;
 
                         var pageContentsElementParser = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -310,7 +307,7 @@ namespace SiteServer.BackgroundPages
                         var stlPageChannelsElementReplaceString = stlElement;
 
                         var pageChannelsElementParser = new StlPageChannels(stlPageChannelsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageChannelsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -335,7 +332,7 @@ namespace SiteServer.BackgroundPages
                         var stlPageSqlContentsElementReplaceString = stlElement;
 
                         var pageSqlContentsElementParser = new StlPageSqlContents(stlPageSqlContentsElement, pageInfo, contextInfo, false);
-                        var totalNum = 0;
+                        int totalNum;
                         var pageCount = pageSqlContentsElementParser.GetPageCount(out totalNum);
 
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
@@ -368,7 +365,7 @@ namespace SiteServer.BackgroundPages
 
         private void WriteResponse(StringBuilder contentBuilder, PublishmentSystemInfo publishmentSystemInfo, PageInfo pageInfo, ContextInfo contextInfo, VisualInfo visualInfo)
         {
-            StlUtility.ParseStl(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);//生成页面
+            Parser.Parse(publishmentSystemInfo, pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);//生成页面
 
             Response.ContentEncoding = Encoding.GetEncoding(publishmentSystemInfo.Additional.Charset);
 

@@ -5,9 +5,9 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EAdvRotateType
     {
-        Equality,         //¾ùÔÈ
-        HandWeight,       //ÊÖ¶¯È¨ÖØ
-        SlideRotate       //»ÃµÆÆ¬ÂÖ»»
+        Equality,         //å‡åŒ€
+        HandWeight,       //æ‰‹åŠ¨æƒé‡
+        SlideRotate       //å¹»ç¯ç‰‡è½®æ¢
     }
 
     public class EAdvRotateTypeUtils
@@ -18,38 +18,32 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "Equality";
             }
-            else if (type == EAdvRotateType.HandWeight)
+            if (type == EAdvRotateType.HandWeight)
             {
                 return "HandWeight";
             }
-            else if (type == EAdvRotateType.SlideRotate)
+            if (type == EAdvRotateType.SlideRotate)
             {
                 return "SlideRotate";
             }
-           else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EAdvRotateType type)
         {
             if (type == EAdvRotateType.Equality)
             {
-                return "¾ùÔÈ";
-            } 
-            else if (type == EAdvRotateType.HandWeight)
-            {
-                return "ÊÖ¶¯È¨ÖØ";
+                return "å‡åŒ€";
             }
-            else if (type == EAdvRotateType.SlideRotate)
+            if (type == EAdvRotateType.HandWeight)
             {
-                return "»ÃµÆÆ¬ÂÖ»»";
+                return "æ‰‹åŠ¨æƒé‡";
             }
-            else
+            if (type == EAdvRotateType.SlideRotate)
             {
-                throw new Exception();
+                return "å¹»ç¯ç‰‡è½®æ¢";
             }
+            throw new Exception();
         }
 
         public static EAdvRotateType GetEnumType(string typeStr)

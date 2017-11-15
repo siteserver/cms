@@ -5,175 +5,94 @@ namespace SiteServer.CMS.Model
 {
     public class TaskInfo
     {
-        private int taskID;
-        private string taskName;
-        private bool isSystemTask;
-        private int publishmentSystemID;
-        private EServiceType serviceType;
-        private string serviceParameters;
-        private EFrequencyType frequencyType;
-        private int periodIntervalMinute;
-        private int startDay;
-        private int startWeekday;
-        private int startHour;
-        private bool isEnabled;
-        private DateTime addDate;
-        private DateTime lastExecuteDate;
-        private string description;
-        private DateTime onlyOnceDate;
-
         public TaskInfo()
         {
-            taskID = 0;
-            taskName = string.Empty;
-            isSystemTask = false;
-            publishmentSystemID = 0;
-            serviceType = EServiceType.Backup;
-            serviceParameters = string.Empty;
-            frequencyType = EFrequencyType.Week;
-            periodIntervalMinute = 0;
-            startDay = 0;
-            startWeekday = 0;
-            startHour = 0;
-            isEnabled = false;
-            addDate = DateTime.Now;
-            lastExecuteDate = DateTime.Now;
-            description = string.Empty;
+            TaskId = 0;
+            TaskName = string.Empty;
+            IsSystemTask = false;
+            PublishmentSystemId = 0;
+            ServiceType = EServiceType.Backup;
+            ServiceParameters = string.Empty;
+            FrequencyType = EFrequencyType.Week;
+            PeriodIntervalMinute = 0;
+            StartDay = 0;
+            StartWeekday = 0;
+            StartHour = 0;
+            IsEnabled = false;
+            AddDate = DateTime.Now;
+            LastExecuteDate = DateTime.Now;
+            Description = string.Empty;
         }
 
-        public TaskInfo(int taskID, string taskName, bool isSystemTask, int publishmentSystemID, EServiceType serviceType, string serviceParameters, EFrequencyType frequencyType, int periodIntervalMinute, int startDay, int startWeekday, int startHour, bool isEnabled, DateTime addDate, DateTime lastExecuteDate, string description)
+        public TaskInfo(int taskId, string taskName, bool isSystemTask, int publishmentSystemId, EServiceType serviceType, string serviceParameters, EFrequencyType frequencyType, int periodIntervalMinute, int startDay, int startWeekday, int startHour, bool isEnabled, DateTime addDate, DateTime lastExecuteDate, string description)
         {
-            this.taskID = taskID;
-            this.taskName = taskName;
-            this.isSystemTask = isSystemTask;
-            this.publishmentSystemID = publishmentSystemID;
-            this.serviceType = serviceType;
-            this.serviceParameters = serviceParameters;
-            this.frequencyType = frequencyType;
-            this.periodIntervalMinute = periodIntervalMinute;
-            this.startDay = startDay;
-            this.startWeekday = startWeekday;
-            this.startHour = startHour;
-            this.isEnabled = isEnabled;
-            this.addDate = addDate;
-            this.lastExecuteDate = lastExecuteDate;
-            this.description = description;
+            TaskId = taskId;
+            TaskName = taskName;
+            IsSystemTask = isSystemTask;
+            PublishmentSystemId = publishmentSystemId;
+            ServiceType = serviceType;
+            ServiceParameters = serviceParameters;
+            FrequencyType = frequencyType;
+            PeriodIntervalMinute = periodIntervalMinute;
+            StartDay = startDay;
+            StartWeekday = startWeekday;
+            StartHour = startHour;
+            IsEnabled = isEnabled;
+            AddDate = addDate;
+            LastExecuteDate = lastExecuteDate;
+            Description = description;
         }
 
-        public TaskInfo(int taskID, string taskName, bool isSystemTask, int publishmentSystemID, EServiceType serviceType, string serviceParameters, EFrequencyType frequencyType, int periodIntervalMinute, int startDay, int startWeekday, int startHour, bool isEnabled, DateTime addDate, DateTime lastExecuteDate, string description,DateTime onlyOnceDate)
+        public TaskInfo(int taskId, string taskName, bool isSystemTask, int publishmentSystemId, EServiceType serviceType, string serviceParameters, EFrequencyType frequencyType, int periodIntervalMinute, int startDay, int startWeekday, int startHour, bool isEnabled, DateTime addDate, DateTime lastExecuteDate, string description,DateTime onlyOnceDate)
         {
-            this.taskID = taskID;
-            this.taskName = taskName;
-            this.isSystemTask = isSystemTask;
-            this.publishmentSystemID = publishmentSystemID;
-            this.serviceType = serviceType;
-            this.serviceParameters = serviceParameters;
-            this.frequencyType = frequencyType;
-            this.periodIntervalMinute = periodIntervalMinute;
-            this.startDay = startDay;
-            this.startWeekday = startWeekday;
-            this.startHour = startHour;
-            this.isEnabled = isEnabled;
-            this.addDate = addDate;
-            this.lastExecuteDate = lastExecuteDate;
-            this.description = description;
+            TaskId = taskId;
+            TaskName = taskName;
+            IsSystemTask = isSystemTask;
+            PublishmentSystemId = publishmentSystemId;
+            ServiceType = serviceType;
+            ServiceParameters = serviceParameters;
+            FrequencyType = frequencyType;
+            PeriodIntervalMinute = periodIntervalMinute;
+            StartDay = startDay;
+            StartWeekday = startWeekday;
+            StartHour = startHour;
+            IsEnabled = isEnabled;
+            AddDate = addDate;
+            LastExecuteDate = lastExecuteDate;
+            Description = description;
             OnlyOnceDate = onlyOnceDate;
         }
 
-        public int TaskID
-        {
-            get { return taskID; }
-            set { taskID = value; }
-        }
+        public int TaskId { get; set; }
 
-        public string TaskName
-        {
-            get { return taskName; }
-            set { taskName = value; }
-        }
+        public string TaskName { get; set; }
 
-        public bool IsSystemTask
-        {
-            get { return isSystemTask; }
-            set { isSystemTask = value; }
-        }
+        public bool IsSystemTask { get; set; }
 
-        public int PublishmentSystemID
-        {
-            get { return publishmentSystemID; }
-            set { publishmentSystemID = value; }
-        }
+        public int PublishmentSystemId { get; set; }
 
-        public EServiceType ServiceType
-        {
-            get { return serviceType; }
-            set { serviceType = value; }
-        }
+        public EServiceType ServiceType { get; set; }
 
-        public string ServiceParameters
-        {
-            get { return serviceParameters; }
-            set { serviceParameters = value; }
-        }
+        public string ServiceParameters { get; set; }
 
-        public EFrequencyType FrequencyType
-        {
-            get { return frequencyType; }
-            set { frequencyType = value; }
-        }
+        public EFrequencyType FrequencyType { get; set; }
 
-        public int PeriodIntervalMinute
-        {
-            get { return periodIntervalMinute; }
-            set { periodIntervalMinute = value; }
-        }
+        public int PeriodIntervalMinute { get; set; }
 
-        public int StartDay
-        {
-            get { return startDay; }
-            set { startDay = value; }
-        }
+        public int StartDay { get; set; }
 
-        public int StartWeekday
-        {
-            get { return startWeekday; }
-            set { startWeekday = value; }
-        }
+        public int StartWeekday { get; set; }
 
-        public int StartHour
-        {
-            get { return startHour; }
-            set { startHour = value; }
-        }
+        public int StartHour { get; set; }
 
-        public bool IsEnabled
-        {
-            get { return isEnabled; }
-            set { isEnabled = value; }
-        }
+        public bool IsEnabled { get; set; }
 
-        public DateTime AddDate
-        {
-            get { return addDate; }
-            set { addDate = value; }
-        }
+        public DateTime AddDate { get; set; }
 
-        public DateTime LastExecuteDate
-        {
-            get { return lastExecuteDate; }
-            set { lastExecuteDate = value; }
-        }
+        public DateTime LastExecuteDate { get; set; }
 
-        public string Description
-        {
-            get { return description; }
-            set { description = value; }
-        }
+        public string Description { get; set; }
 
-        public DateTime OnlyOnceDate
-        {
-            get { return onlyOnceDate; }
-            set { onlyOnceDate = value; }
-        }
+        public DateTime OnlyOnceDate { get; set; }
     }
 }

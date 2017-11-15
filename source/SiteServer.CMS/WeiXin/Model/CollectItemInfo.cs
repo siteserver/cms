@@ -11,49 +11,41 @@ namespace SiteServer.CMS.WeiXin.Model
         {
         }
 
-        public const string ID = "ID";
-        public const string CollectID = "CollectID";
-        public const string PublishmentSystemID = "PublishmentSystemID";
-        public const string Title = "Title";
-        public const string SmallUrl = "SmallUrl";
-        public const string LargeUrl = "LargeUrl";
-        public const string Description = "Description";
-        public const string Mobile = "Mobile";
-        public const string IsChecked = "IsChecked";
-        public const string VoteNum = "VoteNum";
+        public const string Id = nameof(CollectItemInfo.Id);
+        public const string CollectId = nameof(CollectItemInfo.CollectId);
+        public const string PublishmentSystemId = nameof(CollectItemInfo.PublishmentSystemId);
+        public const string Title = nameof(CollectItemInfo.Title);
+        public const string SmallUrl = nameof(CollectItemInfo.SmallUrl);
+        public const string LargeUrl = nameof(CollectItemInfo.LargeUrl);
+        public const string Description = nameof(CollectItemInfo.Description);
+        public const string Mobile = nameof(CollectItemInfo.Mobile);
+        public const string IsChecked = nameof(CollectItemInfo.IsChecked);
+        public const string VoteNum = nameof(CollectItemInfo.VoteNum);
 
-        private static List<string> allAttributes;
-        public static List<string> AllAttributes
+        private static List<string> _allAttributes;
+        public static List<string> AllAttributes => _allAttributes ?? (_allAttributes = new List<string>
         {
-            get
-            {
-                if (allAttributes == null)
-                {
-                    allAttributes = new List<string>();
-                    allAttributes.Add(ID);
-                    allAttributes.Add(CollectID);
-                    allAttributes.Add(PublishmentSystemID);
-                    allAttributes.Add(Title);
-                    allAttributes.Add(SmallUrl);
-                    allAttributes.Add(LargeUrl);
-                    allAttributes.Add(Description);
-                    allAttributes.Add(Mobile);
-                    allAttributes.Add(IsChecked);
-                    allAttributes.Add(VoteNum);
-                }
-
-                return allAttributes;
-            }
-        }
+            Id,
+            CollectId,
+            PublishmentSystemId,
+            Title,
+            SmallUrl,
+            LargeUrl,
+            Description,
+            Mobile,
+            IsChecked,
+            VoteNum
+        });
     }
+
     public class CollectItemInfo : BaseInfo
     {
         public CollectItemInfo() { }
         public CollectItemInfo(object dataItem) : base(dataItem) { }
         public CollectItemInfo(NameValueCollection form) : base(form) { }
         public CollectItemInfo(IDataReader rdr) : base(rdr) { }
-        public int CollectID { get; set; }
-        public int PublishmentSystemID { get; set; }
+        public int CollectId { get; set; }
+        public int PublishmentSystemId { get; set; }
         public string Title { get; set; }
         public string SmallUrl { get; set; }
         public string LargeUrl { get; set; }
@@ -62,12 +54,6 @@ namespace SiteServer.CMS.WeiXin.Model
         public bool IsChecked { get; set; }
         public int VoteNum { get; set; }
 
-        protected override List<string> AllAttributes
-        {
-            get
-            {
-                return CollectItemAttribute.AllAttributes;
-            }
-        }
+        protected override List<string> AllAttributes => CollectItemAttribute.AllAttributes;
     }
 }

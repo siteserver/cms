@@ -5,7 +5,8 @@ namespace SiteServer.CMS.Model
 	[Serializable]
 	public class SystemPermissionsInfo
 	{
-		private string _roleName;
+        private int _id;
+        private string _roleName;
 		private int _publishmentSystemId;
 		private string _nodeIdCollection;
 		private string _channelPermissions;
@@ -13,6 +14,7 @@ namespace SiteServer.CMS.Model
 
 		public SystemPermissionsInfo()
 		{
+		    _id = 0;
 			_roleName = string.Empty;
 			_publishmentSystemId = 0;
 			_nodeIdCollection = string.Empty;
@@ -29,7 +31,13 @@ namespace SiteServer.CMS.Model
 			_websitePermissions = websitePermissions;
 		}
 
-		public string RoleName
+        public int Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+
+        public string RoleName
 		{
 			get{ return _roleName; }
 			set{ _roleName = value; }

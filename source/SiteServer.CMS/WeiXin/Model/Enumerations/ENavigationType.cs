@@ -36,15 +36,15 @@ namespace SiteServer.CMS.WeiXin.Model.Enumerations
 		{
             if (type == ENavigationType.Url)
             {
-                return "Ö¸¶¨ÍøÖ·";
+                return "æŒ‡å®šç½‘å€";
             }
             else if (type == ENavigationType.Site)
             {
-                return "Î¢ÍøÕ¾Ò³Ãæ";
+                return "å¾®ç½‘ç«™é¡µé¢";
             }
             else if (type == ENavigationType.Function)
             {
-                return "Î¢¹¦ÄÜÒ³Ãæ";
+                return "å¾®åŠŸèƒ½é¡µé¢";
             }
 			else
 			{

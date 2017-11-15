@@ -1,11 +1,51 @@
+using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
 {
     public class StarSettingDao : DataProviderBase
 	{
+        public override string TableName => "siteserver_StarSetting";
+
+        public override List<TableColumnInfo> TableColumns => new List<TableColumnInfo>
+        {
+            new TableColumnInfo
+            {
+                ColumnName = "StarSettingId",
+                DataType = DataType.Integer,
+                IsIdentity = true,
+                IsPrimaryKey = true
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "PublishmentSystemId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "ChannelId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "ContentId",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "TotalCount",
+                DataType = DataType.Integer
+            },
+            new TableColumnInfo
+            {
+                ColumnName = "PointAverage",
+                DataType = DataType.Decimal
+            }
+        };
+
         private const string SqlSelectStarSetting = "SELECT TotalCount, PointAverage FROM siteserver_StarSetting WHERE PublishmentSystemID = @PublishmentSystemID AND ContentID = @ContentID";
 
         private const string SqlSelectStarSettingId = "SELECT StarSettingID FROM siteserver_StarSetting WHERE PublishmentSystemID = @PublishmentSystemID AND ContentID = @ContentID";
@@ -25,9 +65,9 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmChannelId, EDataType.Integer, channelId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmChannelId, DataType.Integer, channelId),
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectStarSettingId, parms))
@@ -42,9 +82,9 @@ namespace SiteServer.CMS.Provider
             {
                 parms = new IDataParameter[]
 			    {
-				    GetParameter(ParmTotalCount, EDataType.Integer, totalCount),
-				    GetParameter(ParmPointAverage, EDataType.Decimal, 18, pointAverage),
-                    GetParameter(ParmStarSettingId, EDataType.Integer, starSettingId)
+				    GetParameter(ParmTotalCount, DataType.Integer, totalCount),
+				    GetParameter(ParmPointAverage, DataType.Decimal, 18, pointAverage),
+                    GetParameter(ParmStarSettingId, DataType.Integer, starSettingId)
 			    };
 
                 ExecuteNonQuery(SqlUpdateStarSetting, parms);
@@ -55,11 +95,11 @@ namespace SiteServer.CMS.Provider
 
                 parms = new IDataParameter[]
 			    {
-				    GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-				    GetParameter(ParmChannelId, EDataType.Integer, channelId),
-                    GetParameter(ParmContentId, EDataType.Integer, contentId),
-				    GetParameter(ParmTotalCount, EDataType.Integer, totalCount),
-				    GetParameter(ParmPointAverage, EDataType.Decimal, 18, pointAverage)
+				    GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+				    GetParameter(ParmChannelId, DataType.Integer, channelId),
+                    GetParameter(ParmContentId, DataType.Integer, contentId),
+				    GetParameter(ParmTotalCount, DataType.Integer, totalCount),
+				    GetParameter(ParmPointAverage, DataType.Decimal, 18, pointAverage)
 			    };
 
                 ExecuteNonQuery(sqlInsertStarSetting, parms);
@@ -73,8 +113,8 @@ namespace SiteServer.CMS.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmPublishmentSystemId, EDataType.Integer, publishmentSystemId),
-                GetParameter(ParmContentId, EDataType.Integer, contentId)
+				GetParameter(ParmPublishmentSystemId, DataType.Integer, publishmentSystemId),
+                GetParameter(ParmContentId, DataType.Integer, contentId)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectStarSetting, parms))

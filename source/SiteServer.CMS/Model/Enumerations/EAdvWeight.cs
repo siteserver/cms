@@ -5,16 +5,16 @@ namespace SiteServer.CMS.Model.Enumerations
 {
     public enum EAdvWeight 
     {
-        Level1,       //1¼¶
-        Level2,       //2¼¶
-        Level3,       //3¼¶
-        Level4,       //4¼¶
-        Level5,       //5¼¶
-        Level6,       //6¼¶
-        Level7,       //7¼¶
-        Level8,       //8¼¶
-        Level9,       //9¼¶
-        Level10       //10¼¶
+        Level1,       //1çº§
+        Level2,       //2çº§
+        Level3,       //3çº§
+        Level4,       //4çº§
+        Level5,       //5çº§
+        Level6,       //6çº§
+        Level7,       //7çº§
+        Level8,       //8çº§
+        Level9,       //9çº§
+        Level10       //10çº§
     }
 
     public class EAdvWeightUtils
@@ -25,46 +25,43 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "1";
             }
-            else if (type == EAdvWeight .Level2)
+            if (type == EAdvWeight .Level2)
             {
                 return "2";
             }
-            else if (type == EAdvWeight .Level3)
+            if (type == EAdvWeight .Level3)
             {
                 return "3";
             }
-            else if (type == EAdvWeight .Level4)
+            if (type == EAdvWeight .Level4)
             {
                 return "4";
             }
-            else if (type == EAdvWeight .Level5)
+            if (type == EAdvWeight .Level5)
             {
                 return "5";
             }
-            else if (type == EAdvWeight .Level6)
+            if (type == EAdvWeight .Level6)
             {
                 return "6";
             }
-            else if (type == EAdvWeight .Level7)
+            if (type == EAdvWeight .Level7)
             {
                 return "7";
             }
-            else if (type == EAdvWeight .Level8)
+            if (type == EAdvWeight .Level8)
             {
                 return "8";
             }
-            else if (type == EAdvWeight .Level9)
+            if (type == EAdvWeight .Level9)
             {
                 return "9";
             }
-            else if (type == EAdvWeight .Level10)
+            if (type == EAdvWeight .Level10)
             {
                 return "10";
             }
-           else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static string GetText(EAdvWeight  type)
@@ -73,46 +70,43 @@ namespace SiteServer.CMS.Model.Enumerations
             {
                 return "1";
             }
-            else if (type == EAdvWeight .Level2)
+            if (type == EAdvWeight .Level2)
             {
                 return "2";
             }
-            else if (type == EAdvWeight .Level3)
+            if (type == EAdvWeight .Level3)
             {
                 return "3";
             }
-            else if (type == EAdvWeight .Level4)
+            if (type == EAdvWeight .Level4)
             {
                 return "4";
             }
-            else if (type == EAdvWeight .Level5)
+            if (type == EAdvWeight .Level5)
             {
                 return "5";
             }
-            else if (type == EAdvWeight .Level6)
+            if (type == EAdvWeight .Level6)
             {
                 return "6";
             }
-            else if (type == EAdvWeight .Level7)
+            if (type == EAdvWeight .Level7)
             {
                 return "7";
             }
-            else if (type == EAdvWeight .Level8)
+            if (type == EAdvWeight .Level8)
             {
                 return "8";
             }
-            else if (type == EAdvWeight .Level9)
+            if (type == EAdvWeight .Level9)
             {
                 return "9";
             }
-            else if (type == EAdvWeight .Level10)
+            if (type == EAdvWeight .Level10)
             {
                 return "10";
             }
-            else
-            {
-                throw new Exception();
-            }
+            throw new Exception();
         }
 
         public static EAdvWeight  GetEnumType(string typeStr)

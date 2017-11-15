@@ -3,10 +3,13 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web;
 using System.Web.UI;
+using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -54,11 +57,11 @@ namespace SiteServer.BackgroundPages.Controls
                 {
                     if (styleInfo.IsVisible)
                     {
-                        var attributes = InputParserUtils.GetAdditionalAttributes(string.Empty, EInputTypeUtils.GetEnumType(styleInfo.InputType));
+                        var attributes = InputParserUtils.GetAdditionalAttributes(string.Empty, InputTypeUtils.GetEnumType(styleInfo.InputType));
                         //string inputHtml = TableInputParser.Parse(styleInfo, styleInfo.AttributeName, this.formCollection, this.isEdit, isPostBack, attributes, pageScripts);
                         var inputHtml = BackgroundInputTypeParser.Parse(publishmentSystemInfo, nodeId, styleInfo, ETableStyle.Channel, styleInfo.AttributeName, _formCollection, _isEdit, _isPostBack, attributes, pageScripts, true);
 
-                        builder.AppendFormat(GetFormatString(EInputTypeUtils.GetEnumType(styleInfo.InputType)), styleInfo.DisplayName, inputHtml, styleInfo.HelpText);
+                        builder.AppendFormat(GetFormatString(InputTypeUtils.GetEnumType(styleInfo.InputType)), styleInfo.DisplayName, inputHtml, styleInfo.HelpText);
                     }
                 }
 
@@ -75,7 +78,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             get
             {
-                var formatString = _inputTypeWithFormatStringHashtable[EInputTypeUtils.GetValue(EInputType.TextEditor)] as string;
+                var formatString = _inputTypeWithFormatStringHashtable[InputTypeUtils.GetValue(InputType.TextEditor)] as string;
                 if (string.IsNullOrEmpty(formatString))
                 {
                     formatString = @"
@@ -87,7 +90,7 @@ namespace SiteServer.BackgroundPages.Controls
             }
             set
             {
-                _inputTypeWithFormatStringHashtable[EInputTypeUtils.GetValue(EInputType.TextEditor)] = value;
+                _inputTypeWithFormatStringHashtable[InputTypeUtils.GetValue(InputType.TextEditor)] = value;
             }
         }
 
@@ -95,7 +98,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             get
             {
-                var formatString = _inputTypeWithFormatStringHashtable[EInputTypeUtils.GetValue(EInputType.Image)] as string;
+                var formatString = _inputTypeWithFormatStringHashtable[InputTypeUtils.GetValue(InputType.Image)] as string;
                 if (string.IsNullOrEmpty(formatString))
                 {
                     formatString = @"
@@ -106,7 +109,7 @@ namespace SiteServer.BackgroundPages.Controls
             }
             set
             {
-                _inputTypeWithFormatStringHashtable[EInputTypeUtils.GetValue(EInputType.Image)] = value;
+                _inputTypeWithFormatStringHashtable[InputTypeUtils.GetValue(InputType.Image)] = value;
             }
         }
 
@@ -114,7 +117,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             get
             {
-                var formatString = _inputTypeWithFormatStringHashtable[EInputTypeUtils.GetValue(EInputType.Text)] as string;
+                var formatString = _inputTypeWithFormatStringHashtable[InputTypeUtils.GetValue(InputType.Text)] as string;
                 if (string.IsNullOrEmpty(formatString))
                 {
                     formatString = @"
@@ -125,7 +128,7 @@ namespace SiteServer.BackgroundPages.Controls
             }
             set
             {
-                _inputTypeWithFormatStringHashtable[EInputTypeUtils.GetValue(EInputType.Text)] = value;
+                _inputTypeWithFormatStringHashtable[InputTypeUtils.GetValue(InputType.Text)] = value;
             }
         }
 
@@ -142,14 +145,14 @@ namespace SiteServer.BackgroundPages.Controls
             }
         }
 
-        protected virtual string GetFormatString(EInputType inputType)
+        protected virtual string GetFormatString(InputType inputType)
         {
             string formatString;
-            if (inputType == EInputType.TextEditor)
+            if (inputType == InputType.TextEditor)
             {
                 formatString = FormatTextEditor;
             }
-            else if (inputType == EInputType.Image)
+            else if (inputType == InputType.Image)
             {
                 formatString = FormatImage;
             }

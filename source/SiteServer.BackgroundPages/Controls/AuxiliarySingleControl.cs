@@ -8,6 +8,8 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -65,7 +67,7 @@ namespace SiteServer.BackgroundPages.Controls
 
             if (string.IsNullOrEmpty(AdditionalAttributes))
             {
-                AdditionalAttributes = InputParserUtils.GetAdditionalAttributes(string.Empty, EInputTypeUtils.GetEnumType(styleInfo.InputType));
+                AdditionalAttributes = InputParserUtils.GetAdditionalAttributes(string.Empty, InputTypeUtils.GetEnumType(styleInfo.InputType));
             }
 
             styleInfo.Additional.IsValidate = TranslateUtils.ToBool(IsValidate);
@@ -75,14 +77,14 @@ namespace SiteServer.BackgroundPages.Controls
 
             if (string.IsNullOrEmpty(FormatString))
             {
-                if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.TextEditor))
+                if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
                 {
                     output.Write(@"
 <tr><td colspan=""4"" align=""left"">{0}</td></tr>
 <tr><td colspan=""4"" align=""left"">{1}</td></tr>
 ", helpHtml, inputHtml);
                 }
-                else if (EInputTypeUtils.Equals(styleInfo.InputType, EInputType.Image))
+                else if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Image))
                 {
                     output.Write(@"
 <tr height=""80"" valign=""middle""><td>{0}</td><td colspan=""3"">{1}</td></tr>

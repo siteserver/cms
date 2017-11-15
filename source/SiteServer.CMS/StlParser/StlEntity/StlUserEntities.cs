@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -6,18 +6,17 @@ using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
-	public class StlUserEntities
+    [Stl(Usage = "用户实体", Description = "通过 {user.} 实体在模板中显示用户值")]
+    public class StlUserEntities
 	{
         private StlUserEntities()
 		{
 		}
 
-        public const string EntityName = "User";                //用户实体
+        public const string EntityName = "user";
 
-        public static string GroupName = "GroupName";
         public static string UserId = "UserId";
         public static string UserName = "UserName";
-        public static string GroupId = "GroupId";
         public static string CreateDate = "CreateDate";
         public static string LastActivityDate = "LastActivityDate";
         public static string CountOfLogin = "CountOfLogin";
@@ -40,12 +39,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
         public static string Interests = "Interests";
         public static string Signature = "Signature";
 
-        public static ListDictionary AttributeList => new ListDictionary
-	    {
-	        {GroupName, "用户组名称"},
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        {
             {UserId, "用户ID"},
             {UserName, "用户名"},
-            {GroupId, "用户组ID"},
             {CreateDate, "注册日期"},
             {LastActivityDate, "最后活动日期"},
             {CountOfLogin, "登录次数"},
@@ -79,22 +76,13 @@ namespace SiteServer.CMS.StlParser.StlEntity
 	            var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
 	            var attributeName = entityName.Substring(6, entityName.Length - 7);
 
-                if (StringUtils.EqualsIgnoreCase(GroupName, attributeName))
-                {
-                    parsedContent = UserGroupManager.GetGroupName(pageInfo.UserInfo.GroupId);
-                }
-
-                else if (StringUtils.EqualsIgnoreCase(UserId, attributeName))
+                if (StringUtils.EqualsIgnoreCase(UserId, attributeName))
                 {
                     parsedContent = pageInfo.UserInfo.UserId.ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserName, attributeName))
                 {
                     parsedContent = pageInfo.UserInfo.UserName;
-                }
-                else if (StringUtils.EqualsIgnoreCase(GroupId, attributeName))
-                {
-                    parsedContent = pageInfo.UserInfo.GroupId.ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(CreateDate, attributeName))
                 {
@@ -179,10 +167,6 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 else if (StringUtils.EqualsIgnoreCase(Signature, attributeName))
                 {
                     parsedContent = pageInfo.UserInfo.Signature;
-                }
-                else
-                {
-                    parsedContent = pageInfo.UserInfo.Additional.GetExtendedAttribute(attributeName);
                 }
             }
 	        catch

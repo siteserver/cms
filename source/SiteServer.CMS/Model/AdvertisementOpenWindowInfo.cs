@@ -1,5 +1,5 @@
 using BaiRong.Core;
-using BaiRong.Core.Model;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
@@ -26,13 +26,13 @@ namespace SiteServer.CMS.Model
 
 		public int Height
 		{
-            get { return GetInt("Height", 0); }
+            get { return GetInt("Height"); }
             set { SetExtendedAttribute("Height", value.ToString()); }
 		}
 
 		public int Width
 		{
-            get { return GetInt("Width", 0); }
+            get { return GetInt("Width"); }
             set { SetExtendedAttribute("Width", value.ToString()); }
 		}
 	}
