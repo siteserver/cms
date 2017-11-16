@@ -236,21 +236,21 @@ namespace BaiRong.Core.AuxiliaryTable
             return tableName + "_Archive";
         }
 
-        private static string Cache_GetCacheString(string connectionString, string databaseName, string tableName)
+        private static string Cache_GetCacheString(string connectionString, string tableName)
         {
             return
-                $"BaiRong.Core.AuxiliaryTable.TableManager.{TranslateUtils.EncryptStringBySecretKey($"{connectionString}.{databaseName}.{tableName}")}";
+                $"BaiRong.Core.AuxiliaryTable.TableManager.{TranslateUtils.EncryptStringBySecretKey($"{connectionString}.{tableName}")}";
         }
 
-        public static void Cache_CacheTableColumnInfoList(string connectionString, string databaseName, string tableName, List<TableColumnInfo> tableColumnInfoList)
+        public static void Cache_CacheTableColumnInfoList(string connectionString, string tableName, List<TableColumnInfo> tableColumnInfoList)
         {
-            var cacheKey = Cache_GetCacheString(connectionString, databaseName, tableName);
+            var cacheKey = Cache_GetCacheString(connectionString, tableName);
             CacheUtils.Insert(cacheKey, tableColumnInfoList);
         }
 
-        public static List<TableColumnInfo> Cache_GetTableColumnInfoListCache(string connectionString, string databaseName, string tableName)
+        public static List<TableColumnInfo> Cache_GetTableColumnInfoListCache(string connectionString, string tableName)
         {
-            var cacheKey = Cache_GetCacheString(connectionString, databaseName, tableName);
+            var cacheKey = Cache_GetCacheString(connectionString, tableName);
             return CacheUtils.Get(cacheKey) as List<TableColumnInfo>;
         }
 

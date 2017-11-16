@@ -75,7 +75,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmSuffixes, DataType.VarChar, 255, relatedFieldInfo.Suffixes),
 			};
 
-            return ExecuteNonQueryAndReturningId(sqlString, nameof(RelatedFieldInfo.RelatedFieldId), insertParms);
+            return ExecuteNonQueryAndReturnId(TableName, nameof(RelatedFieldInfo.RelatedFieldId), sqlString, insertParms);
 		}
 
         public void Update(RelatedFieldInfo relatedFieldInfo) 

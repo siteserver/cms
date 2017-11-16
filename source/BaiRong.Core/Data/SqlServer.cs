@@ -37,7 +37,7 @@ namespace BaiRong.Core.Data
 	/// The SqlServer class is intended to encapsulate high performance, scalable best practices for 
 	/// common uses of the SqlClient ADO.NET provider.  It is created using the abstract factory in AdoHelper.
 	/// </summary>
-	public class SqlServer : AdoHelper, IDbHelper
+	public class SqlServer : DbHelper, IDbHelper
     {
 		/// <summary>
 		/// Create a SQL Helper.  Needs to be a default constructor so that the Factory can create it
@@ -188,13 +188,13 @@ namespace BaiRong.Core.Data
 		{
 			if (rowUpdatingHandler != null)
 			{
-				m_rowUpdating = rowUpdatingHandler;
+				MRowUpdating = rowUpdatingHandler;
 				((SqlDataAdapter)dataAdapter).RowUpdating += RowUpdating;
 			}
 
 			if (rowUpdatedHandler != null)
 			{
-				m_rowUpdated = rowUpdatedHandler;
+				MRowUpdated = rowUpdatedHandler;
 				((SqlDataAdapter)dataAdapter).RowUpdated += RowUpdated;
 			}
 		}

@@ -8,12 +8,15 @@ namespace BaiRong.Core
     {
         private RoleManager() { }
 
-        public static void CreatePredefinedRoles()
+        public static void CreatePredefinedRolesIfNotExists()
         {
             var allPredefinedRoles = EPredefinedRoleUtils.GetAllPredefinedRole();
-            foreach (EPredefinedRole enumRole in allPredefinedRoles)
+            foreach (var enumRole in allPredefinedRoles)
             {
-                BaiRongDataProvider.RoleDao.InsertRole(EPredefinedRoleUtils.GetValue(enumRole), string.Empty, EPredefinedRoleUtils.GetText(enumRole));
+                if (!BaiRongDataProvider.RoleDao.IsRoleExists(EPredefinedRoleUtils.GetValue(enumRole)))
+                {
+                    BaiRongDataProvider.RoleDao.InsertRole(EPredefinedRoleUtils.GetValue(enumRole), string.Empty, EPredefinedRoleUtils.GetText(enumRole));
+                }
             }
         }
 

@@ -128,7 +128,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmIsDefault, DataType.VarChar, 18, templateInfo.IsDefault.ToString())
 			};
 
-            var templateId = ExecuteNonQueryAndReturningId(sqlInsertTemplate, nameof(TemplateInfo.TemplateId), insertParms);
+            var templateId = ExecuteNonQueryAndReturnId(TableName, nameof(TemplateInfo.TemplateId), sqlInsertTemplate, insertParms);
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(templateInfo.PublishmentSystemId);
             TemplateManager.WriteContentToTemplateFile(publishmentSystemInfo, templateInfo, templateContent, administratorName);

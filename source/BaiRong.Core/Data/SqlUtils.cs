@@ -461,9 +461,9 @@ SELECT * FROM (
                     retval = $@"
 SELECT * FROM (
     SELECT * FROM (
-        SELECT * FROM ({sqlString}) AS t0 {orderString} FETCH FIRST {itemsPerPage * (currentPageIndex + 1)} ROWS ONLY
-    ) AS t1 {orderStringReverse} FETCH FIRST {recsToRetrieve} ROWS ONLY
-) AS t2 {orderString}";
+        SELECT * FROM ({sqlString}) {orderString} FETCH FIRST {itemsPerPage * (currentPageIndex + 1)} ROWS ONLY
+    ) {orderStringReverse} FETCH FIRST {recsToRetrieve} ROWS ONLY
+) {orderString}";
                     //                    retval = $@"
                     //SELECT * FROM (
                     //    SELECT * FROM (
@@ -508,13 +508,26 @@ SELECT * FROM (
         public static string GetInTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
         {
             var builder = new StringBuilder();
-            foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
+            if (WebConfigUtils.DatabaseType == EDatabaseType.SqlServer)
             {
-                builder.Append($"T.{column}, ");
+                foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
+                {
+                    builder.Append($"T.{column}, ");
+                }
+                builder.Length = builder.Length - 2;
+                return
+                    $"SELECT {builder} FROM ({GetTopSqlString(tableName, columns, whereString, orderString, topN)}) AS T";
             }
-            builder.Length = builder.Length - 2;
-            return
-                $"SELECT {builder} FROM ({GetTopSqlString(tableName, columns, whereString, orderString, topN)}) AS T";
+            else
+            {
+                foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
+                {
+                    builder.Append($"{column}, ");
+                }
+                builder.Length = builder.Length - 2;
+                return
+                    $"SELECT {builder} FROM ({GetTopSqlString(tableName, columns, whereString, orderString, topN)})";
+            }
         }
 
         public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
@@ -926,29 +939,29 @@ GO");
                     break;
                 case EDatabaseType.Oracle:
                     dataTypeStr = dataTypeStr.ToUpper().Trim();
-                    switch (dataTypeStr)
+                    if (dataTypeStr.StartsWith("TIMESTAMP("))
                     {
-                        case "TIMESTAMP(6)":
-                            dataType = DataType.DateTime;
-                            break;
-                        case "TIMESTAMP(8)":
-                            dataType = DataType.DateTime;
-                            break;
-                        case "NUMBER":
-                            dataType = DataType.Integer;
-                            break;
-                        case "NCLOB":
-                            dataType = DataType.Text;
-                            break;
-                        case "NVARCHAR2":
-                            dataType = DataType.VarChar;
-                            break;
-                        case "CLOB":
-                            dataType = DataType.Text;
-                            break;
-                        case "VARCHAR2":
-                            dataType = DataType.VarChar;
-                            break;
+                        dataType = DataType.DateTime;
+                    }
+                    else if (dataTypeStr == "NUMBER")
+                    {
+                        dataType = DataType.Integer;
+                    }
+                    else if (dataTypeStr == "NCLOB")
+                    {
+                        dataType = DataType.Text;
+                    }
+                    else if (dataTypeStr == "NVARCHAR2")
+                    {
+                        dataType = DataType.VarChar;
+                    }
+                    else if (dataTypeStr == "CLOB")
+                    {
+                        dataType = DataType.Text;
+                    }
+                    else if (dataTypeStr == "VARCHAR2")
+                    {
+                        dataType = DataType.VarChar;
                     }
                     break;
                 default:
@@ -1090,6 +1103,7 @@ GO");
                     retval = $"`{attributeName}` varchar({length})";
                     break;
             }
+
             return retval;
         }
 
@@ -1121,7 +1135,6 @@ GO");
                     break;
             }
 
-            retval += " NULL";
             return retval;
         }
 
@@ -1152,6 +1165,7 @@ GO");
                     retval = $"{attributeName} varchar({length})";
                     break;
             }
+
             return retval;
         }
 
@@ -1182,6 +1196,7 @@ GO");
                     retval = $"{attributeName} nvarchar2({length})";
                     break;
             }
+
             return retval;
         }
 
@@ -1663,14 +1678,19 @@ GO");
             return o != null && TranslateUtils.ToBool(o.ToString());
         }
 
-        public static string GetDatabaseNameFormConnectionString(string connectionString)
+        public static string GetDatabaseNameFormConnectionString(EDatabaseType databaseType, string connectionString)
         {
-            return GetValueFromConnectionString(connectionString, "database");
+            if (databaseType == EDatabaseType.Oracle)
+            {
+                var index1 = connectionString.IndexOf("SERVICE_NAME=", StringComparison.Ordinal);
+                var index2 = connectionString.IndexOf(")));", StringComparison.Ordinal);
+                return connectionString.Substring(index1 + 13, index2 - index1 - 13);
+            }
+            return GetValueFromConnectionString(databaseType, connectionString, "Database");
         }
 
-        public static string GetValueFromConnectionString(string connectionString, string attribute)
+        public static string GetValueFromConnectionString(EDatabaseType databaseType, string connectionString, string attribute)
         {
-            //server=(local);uid=sa;pwd=bairong;Trusted_Connection=no;database=V1
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(attribute))
             {

@@ -176,7 +176,7 @@ namespace BaiRong.Core.Provider
                 {
                     try
                     {
-                        tableStyleId = ExecuteNonQueryAndReturningId(trans, SqlInsertTableStyle, nameof(TableStyleInfo.TableStyleId), insertParms);
+                        tableStyleId = ExecuteNonQueryAndReturnId(TableName, nameof(TableStyleInfo.TableStyleId), trans, SqlInsertTableStyle, insertParms);
 
                         BaiRongDataProvider.TableStyleItemDao.Insert(trans, tableStyleId, styleInfo.StyleItems);
 
@@ -231,7 +231,7 @@ namespace BaiRong.Core.Provider
             }
             else
             {
-                var tableStyleId = ExecuteNonQueryAndReturningId(trans, SqlInsertTableStyle, nameof(TableStyleInfo.TableStyleId), insertParms);
+                var tableStyleId = ExecuteNonQueryAndReturnId(TableName, nameof(TableStyleInfo.TableStyleId), trans, SqlInsertTableStyle, insertParms);
 
                 BaiRongDataProvider.TableStyleItemDao.Insert(trans, tableStyleId, styleInfo.StyleItems);
             }

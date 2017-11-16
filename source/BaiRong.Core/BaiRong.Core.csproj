@@ -2996,7 +2996,7 @@
     <Compile Include="Provider\UserLogDao.cs" />
     <Compile Include="Cryptography\DESEncryptor.cs" />
     <Compile Include="Cryptography\EncryptUtils.cs" />
-    <Compile Include="Data\ADOHelper.cs" />
+    <Compile Include="Data\DbHelper.cs" />
     <Compile Include="BaiRongDataProvider.cs" />
     <Compile Include="Data\DataProviderBase.cs" />
     <Compile Include="Data\SqlHelper.cs" />
@@ -4959,17 +4959,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ThirdParty\Atom\mediatypes.txt" />
-    <Content Include="docs\MySqlCommand.xml" />
-    <Content Include="docs\MySqlCommandBuilder.xml" />
-    <Content Include="docs\MySqlConnection.xml" />
-    <Content Include="docs\MySqlConnectionStringBuilder.xml" />
-    <Content Include="docs\MySqlDataAdapter.xml" />
-    <Content Include="docs\MySqlDataReader.xml" />
-    <Content Include="docs\MySqlException.xml" />
-    <Content Include="docs\MySqlHelper.xml" />
-    <Content Include="docs\MySqlParameter.xml" />
-    <Content Include="docs\MySqlParameterCollection.xml" />
-    <Content Include="docs\MySqlTransaction.xml" />
     <Content Include="ThirdParty\Alipay\openapi\readme.txt" />
     <Content Include="ThirdParty\Alipay\openapi\version.txt" />
     <Content Include="ThirdParty\RSS.NET\RssTestAppliction\App.ico" />

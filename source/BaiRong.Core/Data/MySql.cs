@@ -7,7 +7,7 @@ using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Data
 {
-    public class MySql : AdoHelper, IDbHelper
+    public class MySql : DbHelper, IDbHelper
     {
         #region Overrides
         /// <summary>
@@ -170,14 +170,14 @@ namespace BaiRong.Core.Data
         {
             if (rowUpdatingHandler != null)
             {
-                this.m_rowUpdating = rowUpdatingHandler;
+                this.MRowUpdating = rowUpdatingHandler;
                 ((MySqlDataAdapter)dataAdapter).RowUpdating += new MySqlRowUpdatingEventHandler(RowUpdating);
             }
 
 
             if (rowUpdatedHandler != null)
             {
-                this.m_rowUpdated = rowUpdatedHandler;
+                this.MRowUpdated = rowUpdatedHandler;
                 ((MySqlDataAdapter)dataAdapter).RowUpdated += new MySqlRowUpdatedEventHandler(RowUpdated);
             }
         }

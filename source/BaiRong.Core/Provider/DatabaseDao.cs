@@ -27,7 +27,7 @@ namespace BaiRong.Core.Provider
             }
             else if (WebConfigUtils.DatabaseType == EDatabaseType.SqlServer)
             {
-                var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.ConnectionString);
+                var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
                 //检测数据库版本
                 const string sqlCheck = "SELECT SERVERPROPERTY('productversion')";
                 var versions = ExecuteScalar(sqlCheck).ToString();
@@ -633,7 +633,7 @@ SELECT * FROM (
                 }
                 else
                 {
-                    exists = (int)ExecuteScalar($"select count(*) from all_objects where object_type = 'TABLE' and object_name = '{tableName}'") == 1;
+                    exists = GetIntResult($"select count(*) from all_objects where object_type = 'TABLE' and object_name = '{tableName}'") == 1;
                 }
             }
             catch
@@ -898,6 +898,11 @@ SELECT * FROM (
                 }
                     break;
                 case EDatabaseType.Oracle:
+                {
+                    var connection = new OracleConnection(connectionStringWithoutDatabaseName);
+                    connection.Open();
+                    connection.Close();
+                }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(databaseType), databaseType, null);
@@ -1021,8 +1026,7 @@ SELECT * FROM (
 
         public List<string> GetLowercaseTableColumnNameList(string tableName)
         {
-            var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.ConnectionString);
-            var allTableColumnInfoList = GetLowercaseTableColumnInfoList(WebConfigUtils.ConnectionString, databaseName, tableName);
+            var allTableColumnInfoList = GetLowercaseTableColumnInfoList(WebConfigUtils.ConnectionString, tableName);
 
             var columnNameList = new List<string>();
 
@@ -1034,18 +1038,20 @@ SELECT * FROM (
             return columnNameList;
         }
 
-        public List<TableColumnInfo> GetLowercaseTableColumnInfoList(string connectionString, string databaseName, string tableName)
+        public List<TableColumnInfo> GetLowercaseTableColumnInfoList(string connectionString, string tableName)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
                 connectionString = ConnectionString;
             }
 
-            var cacheList = TableManager.Cache_GetTableColumnInfoListCache(connectionString, databaseName, tableName);
+            var cacheList = TableManager.Cache_GetTableColumnInfoListCache(connectionString, tableName);
             if (cacheList != null && cacheList.Count > 0)
             {
                 return cacheList;
             }
+
+            var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, connectionString);
 
             List<TableColumnInfo> list;
 
@@ -1061,58 +1067,106 @@ SELECT * FROM (
                     list = GetPostgreSqlColumns(connectionString, databaseName, tableName);
                     break;
                 case EDatabaseType.Oracle:
-                    list = GetOracleColumns(connectionString, databaseName, tableName);
+                    list = GetOracleColumns(connectionString, tableName);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            TableManager.Cache_CacheTableColumnInfoList(connectionString, databaseName, tableName, list);
+            TableManager.Cache_CacheTableColumnInfoList(connectionString, tableName, list);
 
             return list;
         }
 
-        private List<TableColumnInfo> GetOracleColumns(string connectionString, string databaseName, string tableName)
+        public string GetOracleSequence(string tableName, string idColumnName)
+        {
+            var cacheKey = $"BaiRong.Core.Provider.{nameof(DatabaseDao)}.{nameof(GetOracleSequence)}.{tableName}.{idColumnName}";
+            var sequence = CacheUtils.Get<string>(cacheKey);
+            if (string.IsNullOrEmpty(sequence))
+            {
+                using (var conn = new OracleConnection(ConnectionString))
+                {
+                    conn.Open();
+                    var cmd = new OracleCommand
+                    {
+                        CommandType = CommandType.Text,
+                        CommandText = $"SELECT DATA_DEFAULT FROM all_tab_cols WHERE table_name = '{tableName.ToUpper()}' AND column_name = '{idColumnName.ToUpper()}'",
+                        Connection = conn,
+                        InitialLONGFetchSize = -1
+                    };
+
+                    using (var rdr = cmd.ExecuteReader())
+                    {
+                        if (rdr.Read())
+                        {
+                            var dataDefault = rdr.GetValue(0).ToString();
+
+                            if (dataDefault.Contains(".nextval"))
+                            {
+                                sequence = dataDefault.Replace(".nextval", string.Empty);
+                            }
+                        }
+                        rdr.Close();
+                    }
+                }
+                
+                CacheUtils.Insert(cacheKey, sequence);
+            }
+
+            return sequence;
+        }
+
+        private List<TableColumnInfo> GetOracleColumns(string connectionString, string tableName)
         {
             var list = new List<TableColumnInfo>();
-            string sqlString =
-                $"SELECT COLUMN_NAME, UDT_NAME, CHARACTER_MAXIMUM_LENGTH, COLUMN_DEFAULT FROM information_schema.columns WHERE table_catalog = '{databaseName}' AND table_name = '{tableName.ToLower()}' ORDER BY ordinal_position";
+            var sqlString =
+                $"SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_SCALE, CHAR_LENGTH, DATA_DEFAULT FROM all_tab_cols WHERE table_name = '{tableName.ToUpper()}' ORDER BY COLUMN_ID";
             using (var rdr = ExecuteReader(connectionString, sqlString))
             {
                 while (rdr.Read())
                 {
                     var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
                     var dataType = SqlUtils.ToDataType(EDatabaseType.Oracle, rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
-                    var length = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
-                    var columnDefault = rdr.IsDBNull(3) ? string.Empty : rdr.GetString(3);
+                    var percision = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
+                    var scale = rdr.IsDBNull(3) ? 0 : rdr.GetInt32(3);
+                    var charLength = rdr.IsDBNull(4) ? 0 : rdr.GetInt32(4);
+                    var dataDefault = rdr.IsDBNull(5) ? string.Empty : rdr.GetString(5);
+                    if (dataType == DataType.Integer)
+                    {
+                        if (scale == 2)
+                        {
+                            dataType = DataType.Decimal;
+                        }
+                        else if (percision == 1)
+                        {
+                            dataType = DataType.Boolean;
+                        }
+                    }
+                    var isIdentity = dataDefault.Contains(".nextval");
 
-                    var isIdentity = columnDefault.StartsWith("nextval(");
-
-                    var info = new TableColumnInfo(columnName, dataType, length, false, isIdentity);
+                    var info = new TableColumnInfo(columnName, dataType, charLength, false, isIdentity);
                     list.Add(info);
                 }
                 rdr.Close();
             }
 
             sqlString =
-                $"select column_name, constraint_name from information_schema.key_column_usage where table_catalog = '{databaseName}' and table_name = '{tableName.ToLower()}';";
+                $@"select distinct cu.column_name from all_cons_columns cu inner join all_constraints au 
+on cu.constraint_name = au.constraint_name
+and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
+
             using (var rdr = ExecuteReader(connectionString, sqlString))
             {
                 while (rdr.Read())
                 {
                     var columnName = (rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0)).ToLower();
-                    var constraintName = rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1);
 
-                    var isPrimary = constraintName.StartsWith("pk");
-
-                    if (isPrimary)
+                    foreach (var tableColumnInfo in list)
                     {
-                        foreach (var tableColumnInfo in list)
+                        if (columnName == tableColumnInfo.ColumnName)
                         {
-                            if (columnName == tableColumnInfo.ColumnName)
-                            {
-                                tableColumnInfo.IsPrimaryKey = true;
-                            }
+                            tableColumnInfo.IsPrimaryKey = true;
+                            break;
                         }
                     }
                 }
@@ -1162,6 +1216,7 @@ SELECT * FROM (
                             if (columnName == tableColumnInfo.ColumnName)
                             {
                                 tableColumnInfo.IsPrimaryKey = true;
+                                break;
                             }
                         }
                     }
@@ -1679,6 +1734,28 @@ FROM (SELECT TOP {totalNum} *
                 retval = orderByString.Replace(" DESC", " DESC_OPPOSITE").Replace(" ASC", " DESC").Replace(" DESC_OPPOSITE", " ASC");
             }
             return retval;
+        }
+
+        public void Test()
+        {
+            OracleConnection con = new OracleConnection();
+            con.ConnectionString = "user id=c##scott;password=tiger;data source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.88.99)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=orcl)))";
+            con.Open();
+
+            OracleCommand cmd = new OracleCommand();
+            cmd.CommandType = System.Data.CommandType.Text;
+            cmd.CommandText = "select * from SYSTEM.AA_ADMINISTRATOR2";
+            cmd.Connection = con;
+
+            OracleDataAdapter da = new OracleDataAdapter();
+            da.SelectCommand = cmd;
+            DataSet ds = new DataSet();
+            da.Fill(ds);
+
+            con.Close();
+            da.Dispose();
+            cmd.Dispose();
+            con.Dispose();
         }
     }
 }

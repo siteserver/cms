@@ -104,19 +104,19 @@ namespace SiteServer.CMS.Provider
             {
                 ColumnName = nameof(AdvInfo.NodeIdCollectionToChannel),
                 DataType = DataType.VarChar,
-                Length = 4000
+                Length = 2000
             },
             new TableColumnInfo
             {
                 ColumnName = nameof(AdvInfo.NodeIdCollectionToContent),
                 DataType = DataType.VarChar,
-                Length = 4000
+                Length = 2000
             },
             new TableColumnInfo
             {
                 ColumnName = nameof(AdvInfo.FileTemplateIdCollection),
                 DataType = DataType.VarChar,
-                Length = 4000
+                Length = 2000
             }
         };
 

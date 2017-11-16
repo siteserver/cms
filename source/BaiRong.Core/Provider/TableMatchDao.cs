@@ -76,7 +76,7 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmColumnsMap, DataType.Text, TranslateUtils.NameValueCollectionToString(tableMatchInfo.ColumnsMap))
 			};
 
-            return ExecuteNonQueryAndReturningId(sqlString, nameof(TableMatchInfo.TableMatchId), insertParms);
+            return ExecuteNonQueryAndReturnId(TableName, nameof(TableMatchInfo.TableMatchId), sqlString, insertParms);
 		}
 
 		public void Update(TableMatchInfo tableMatchInfo)

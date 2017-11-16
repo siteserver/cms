@@ -304,7 +304,7 @@ namespace SiteServer.CMS.Provider
                     $"UPDATE siteserver_Node SET {SqlUtils.GetAddOne("Taxis")} WHERE (Taxis >= {nodeInfo.Taxis}) AND (PublishmentSystemID = {nodeInfo.PublishmentSystemId})";
                 ExecuteNonQuery(trans, sqlString);
             }
-            nodeInfo.NodeId = ExecuteNonQueryAndReturningId(trans, sqlInsertNode, nameof(NodeInfo.NodeId), insertParms);
+            nodeInfo.NodeId = ExecuteNonQueryAndReturnId(TableName, nameof(NodeInfo.NodeId), trans, sqlInsertNode, insertParms);
 
             if (!string.IsNullOrEmpty(nodeInfo.ParentsPath))
             {

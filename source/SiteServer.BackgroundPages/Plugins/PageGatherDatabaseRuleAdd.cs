@@ -135,10 +135,10 @@ namespace SiteServer.BackgroundPages.Plugins
                         }
                     }
 
-                    DatabaseServer.Text = SqlUtils.GetValueFromConnectionString(gatherDatabaseRuleInfo.ConnectionString, "server");
-                    UserName.Text = SqlUtils.GetValueFromConnectionString(gatherDatabaseRuleInfo.ConnectionString, "uid");
-                    Password.Text = SqlUtils.GetValueFromConnectionString(gatherDatabaseRuleInfo.ConnectionString, "pwd");
-                    DatabaseNameHidden.Value = SqlUtils.GetValueFromConnectionString(gatherDatabaseRuleInfo.ConnectionString, "database");
+                    DatabaseServer.Text = SqlUtils.GetValueFromConnectionString(WebConfigUtils.DatabaseType, gatherDatabaseRuleInfo.ConnectionString, "server");
+                    UserName.Text = SqlUtils.GetValueFromConnectionString(WebConfigUtils.DatabaseType, gatherDatabaseRuleInfo.ConnectionString, "uid");
+                    Password.Text = SqlUtils.GetValueFromConnectionString(WebConfigUtils.DatabaseType, gatherDatabaseRuleInfo.ConnectionString, "pwd");
+                    DatabaseNameHidden.Value = SqlUtils.GetValueFromConnectionString(WebConfigUtils.DatabaseType, gatherDatabaseRuleInfo.ConnectionString, "database");
 
                     RelatedTableNameHidden.Value = gatherDatabaseRuleInfo.RelatedTableName;
                     RelatedIdentityHidden.Value = gatherDatabaseRuleInfo.RelatedIdentity;
@@ -237,7 +237,7 @@ namespace SiteServer.BackgroundPages.Plugins
             }
             else
             {
-                var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(GetDatabaseConnectionString(), DatabaseName.SelectedValue, RelatedTableName.SelectedValue);
+                var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(GetDatabaseConnectionString(), RelatedTableName.SelectedValue);
                 RelatedIdentity.Items.Clear();
                 RelatedOrderBy.Items.Clear();
                 var item = new ListItem("请选择主键字段名称", string.Empty);
@@ -599,7 +599,7 @@ namespace SiteServer.BackgroundPages.Plugins
             Columns.Items.Clear();
             ColumnsToMatch.Items.Clear();
 
-            var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(GetDatabaseConnectionString(), DatabaseName.SelectedValue, RelatedTableName.SelectedValue);
+            var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(GetDatabaseConnectionString(), RelatedTableName.SelectedValue);
             var columnToMatchArrayList = new ArrayList();
             foreach (var tableColumnInfo in tableColumnInfoList)
             {

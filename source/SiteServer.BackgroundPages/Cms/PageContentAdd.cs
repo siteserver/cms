@@ -342,10 +342,6 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.NodeId = _nodeInfo.NodeId;
                     contentInfo.PublishmentSystemId = PublishmentSystemId;
                     contentInfo.AddUserName = Body.AdminName;
-                    if (contentInfo.AddDate.Year <= DateUtils.SqlMinValue.Year)
-                    {
-                        contentInfo.AddDate = DateTime.Now;
-                    }
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = DateTime.Now;
 
@@ -369,6 +365,10 @@ $('#TbTags').keyup(function (e) {
                         contentInfo.SetExtendedAttribute(attributeName, value);
                     }
                     contentInfo.AddDate = TbAddDate.DateTime;
+                    if (contentInfo.AddDate.Year <= DateUtils.SqlMinValue.Year)
+                    {
+                        contentInfo.AddDate = DateTime.Now;
+                    }
 
                     contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
                     contentInfo.IsChecked = contentInfo.CheckedLevel >= PublishmentSystemInfo.CheckContentLevel;

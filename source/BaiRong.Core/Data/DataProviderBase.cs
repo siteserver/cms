@@ -13,6 +13,10 @@ namespace BaiRong.Core.Data
     {
         protected virtual string ConnectionString => WebConfigUtils.ConnectionString;
 
+        public virtual string TableName => string.Empty;
+
+        public virtual List<TableColumnInfo> TableColumns => null;
+
         protected IDbConnection GetConnection()
         {
             return SqlUtils.GetIDbConnection(WebConfigUtils.DatabaseType, ConnectionString);
@@ -110,157 +114,151 @@ namespace BaiRong.Core.Data
 
         protected IDataReader ExecuteReader(string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteReader(ConnectionString, CommandType.Text, commandText, commandParameters) : null;
+            return WebConfigUtils.Helper.ExecuteReader(ConnectionString, commandText, commandParameters);
         }
 
 
         protected IDataReader ExecuteReader(string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteReader(ConnectionString, CommandType.Text, commandText) : null;
+            return WebConfigUtils.Helper.ExecuteReader(ConnectionString, commandText);
         }
 
 
         protected IDataReader ExecuteReader(IDbConnection conn, string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteReader(conn, CommandType.Text, commandText, commandParameters) : null;
+            return WebConfigUtils.Helper.ExecuteReader(conn, commandText, commandParameters);
         }
 
 
         protected IDataReader ExecuteReader(IDbConnection conn, string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteReader(conn, CommandType.Text, commandText) : null;
+            return WebConfigUtils.Helper.ExecuteReader(conn, commandText);
         }
 
 
         protected IDataReader ExecuteReader(IDbTransaction trans, string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteReader(trans, CommandType.Text, commandText, commandParameters) : null;
+            return WebConfigUtils.Helper.ExecuteReader(trans, commandText, commandParameters);
         }
 
 
         protected IDataReader ExecuteReader(IDbTransaction trans, string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteReader(trans, CommandType.Text, commandText) : null;
+            return WebConfigUtils.Helper.ExecuteReader(trans, commandText);
         }
 
 
         protected IDataReader ExecuteReader(string connectionString, string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteReader(connectionString, CommandType.Text, commandText) : null;
+            return WebConfigUtils.Helper.ExecuteReader(connectionString, commandText);
         }
 
         protected IDataReader ExecuteReader(string connectionString, string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteReader(connectionString, CommandType.Text, commandText, commandParameters) : null;
+            return WebConfigUtils.Helper.ExecuteReader(connectionString, commandText, commandParameters);
         }
 
 
         protected DataSet ExecuteDataset(string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteDataset(ConnectionString, CommandType.Text, commandText, commandParameters) : null;
+            return WebConfigUtils.Helper.ExecuteDataset(ConnectionString, commandText, commandParameters);
         }
 
 
         protected DataSet ExecuteDataset(string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteDataset(ConnectionString, CommandType.Text, commandText) : null;
+            return WebConfigUtils.Helper.ExecuteDataset(ConnectionString, commandText);
         }
 
         protected DataSet ExecuteDataset(string connectionString, string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteDataset(connectionString, CommandType.Text, commandText) : null;
+            return WebConfigUtils.Helper.ExecuteDataset(connectionString, commandText);
         }
-
-        protected int ExecuteNonQuery(IDbConnection conn, CommandType commandType, string commandText, params IDataParameter[] commandParameters)
-        {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteNonQuery(conn, commandType, commandText, commandParameters) : 0;
-        }
-
 
         protected int ExecuteNonQuery(IDbConnection conn, string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteNonQuery(conn, CommandType.Text, commandText, commandParameters) : 0;
+            return WebConfigUtils.Helper.ExecuteNonQuery(conn, commandText, commandParameters);
         }
 
 
         protected int ExecuteNonQuery(IDbConnection conn, string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteNonQuery(conn, CommandType.Text, commandText) : 0;
+            return WebConfigUtils.Helper.ExecuteNonQuery(conn, commandText);
         }
 
 
         protected int ExecuteNonQuery(IDbTransaction trans, string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteNonQuery(trans, CommandType.Text, commandText, commandParameters) : 0;
+            return WebConfigUtils.Helper.ExecuteNonQuery(trans, commandText, commandParameters);
         }
 
 
         protected int ExecuteNonQuery(IDbTransaction trans, string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteNonQuery(trans, CommandType.Text, commandText) : 0;
+            return WebConfigUtils.Helper.ExecuteNonQuery(trans, commandText);
         }
 
         protected int ExecuteNonQuery(string connectionString, string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteNonQuery(connectionString, CommandType.Text, commandText, commandParameters) : 0;
+            return WebConfigUtils.Helper.ExecuteNonQuery(connectionString, commandText, commandParameters);
         }
 
 
         protected int ExecuteNonQuery(string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteNonQuery(ConnectionString, CommandType.Text, commandText, commandParameters) : 0;
+            return WebConfigUtils.Helper.ExecuteNonQuery(ConnectionString, commandText, commandParameters);
         }
 
 
         protected int ExecuteNonQuery(string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteNonQuery(ConnectionString, CommandType.Text, commandText) : 0;
+            return WebConfigUtils.Helper.ExecuteNonQuery(ConnectionString, commandText);
         }
 
-        protected int ExecuteNonQueryAndReturningId(string commandText, string idColumnName, params IDataParameter[] commandParameters)
+        protected int ExecuteNonQueryAndReturnId(string tableName, string idColumnName, string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) && !string.IsNullOrEmpty(idColumnName) ? WebConfigUtils.Helper.ExecuteNonQueryAndReturningId(ConnectionString, CommandType.Text, commandText, idColumnName, commandParameters) : 0;
+            return WebConfigUtils.Helper.ExecuteNonQueryAndReturnId(tableName, idColumnName, ConnectionString, commandText, commandParameters);
         }
 
-        protected int ExecuteNonQueryAndReturningId(IDbTransaction trans, string commandText, string idColumnName, params IDataParameter[] commandParameters)
+        protected int ExecuteNonQueryAndReturnId(string tableName, string idColumnName, IDbTransaction trans, string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) && !string.IsNullOrEmpty(idColumnName) ? WebConfigUtils.Helper.ExecuteNonQueryAndReturningId(trans, CommandType.Text, commandText, idColumnName, commandParameters) : 0;
+            return WebConfigUtils.Helper.ExecuteNonQueryAndReturnId(tableName, idColumnName, trans, commandText, commandParameters);
         }
 
 
         protected object ExecuteScalar(IDbConnection conn, string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteScalar(conn, CommandType.Text, commandText, commandParameters) : null;
+            return WebConfigUtils.Helper.ExecuteScalar(conn, commandText, commandParameters);
         }
 
 
         protected object ExecuteScalar(IDbConnection conn, string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteScalar(conn, CommandType.Text, commandText) : null;
+            return WebConfigUtils.Helper.ExecuteScalar(conn, commandText);
         }
 
 
         protected object ExecuteScalar(IDbTransaction trans, string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteScalar(trans, CommandType.Text, commandText, commandParameters) : null;
+            return WebConfigUtils.Helper.ExecuteScalar(trans, commandText, commandParameters);
         }
 
 
         protected object ExecuteScalar(IDbTransaction trans, string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteScalar(trans, CommandType.Text, commandText) : null;
+            return WebConfigUtils.Helper.ExecuteScalar(trans, commandText);
         }
 
 
         protected object ExecuteScalar(string commandText, params IDataParameter[] commandParameters)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteScalar(ConnectionString, CommandType.Text, commandText, commandParameters) : null;
+            return WebConfigUtils.Helper.ExecuteScalar(ConnectionString, commandText, commandParameters);
         }
 
 
         protected object ExecuteScalar(string commandText)
         {
-            return !string.IsNullOrEmpty(commandText) ? WebConfigUtils.Helper.ExecuteScalar(ConnectionString, CommandType.Text, commandText) : null;
+            return WebConfigUtils.Helper.ExecuteScalar(ConnectionString, commandText);
         }
 
         protected string GetString(IDataReader rdr, int i)
@@ -297,9 +295,5 @@ namespace BaiRong.Core.Data
         {
             return rdr.IsDBNull(i) ? DateTime.Now : rdr.GetDateTime(i);
         }
-
-        public virtual string TableName => string.Empty;
-
-        public virtual List<TableColumnInfo> TableColumns => null;
     }
 }

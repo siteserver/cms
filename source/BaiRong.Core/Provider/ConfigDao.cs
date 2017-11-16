@@ -136,10 +136,7 @@ namespace BaiRong.Core.Provider
 
 		public ConfigInfo GetConfigInfo()
 		{
-		    var info = new ConfigInfo
-		    {
-		        IsInitialized = false
-		    };
+            ConfigInfo info = null;
 
 		    using (var rdr = ExecuteReader(SqlSelectConfig))
             {
@@ -153,26 +150,5 @@ namespace BaiRong.Core.Provider
 
 			return info;
 		}
-
-        public void InitializeConfig()
-        {
-            var configInfo = new ConfigInfo(true, AppManager.Version, DateTime.Now, string.Empty);
-            Insert(configInfo);
-        }
-
-        public void InitializeUserRole(string userName, string password)
-        {
-            RoleManager.CreatePredefinedRoles();
-
-            var administratorInfo = new AdministratorInfo
-            {
-                UserName = userName,
-                Password = password
-            };
-
-            string errorMessage;
-            AdminManager.CreateAdministrator(administratorInfo, out errorMessage);
-            BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRole(userName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
-        }
     }
 }

@@ -7,7 +7,7 @@ using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Data
 {
-    public class Oracle : AdoHelper, IDbHelper
+    public class Oracle : DbHelper, IDbHelper
     {
         #region Overrides
         /// <summary>
@@ -170,14 +170,14 @@ namespace BaiRong.Core.Data
         {
             if (rowUpdatingHandler != null)
             {
-                this.m_rowUpdating = rowUpdatingHandler;
+                this.MRowUpdating = rowUpdatingHandler;
                 ((OracleDataAdapter)dataAdapter).RowUpdating += new OracleRowUpdatingEventHandler(RowUpdating);
             }
 
 
             if (rowUpdatedHandler != null)
             {
-                this.m_rowUpdated = rowUpdatedHandler;
+                this.MRowUpdated = rowUpdatedHandler;
                 ((OracleDataAdapter)dataAdapter).RowUpdated += new OracleRowUpdatedEventHandler(RowUpdated);
             }
         }

@@ -74,7 +74,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmTaxis, DataType.Integer, info.Taxis)
 			};
 
-            return ExecuteNonQueryAndReturningId(sqlString, nameof(RelatedFieldItemInfo.Id), parms);
+            return ExecuteNonQueryAndReturnId(TableName, nameof(RelatedFieldItemInfo.Id), sqlString, parms);
 
             //RelatedFieldManager.ClearCache();
         }

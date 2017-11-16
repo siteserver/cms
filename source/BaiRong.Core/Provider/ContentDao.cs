@@ -152,7 +152,7 @@ INSERT INTO {tableName} (
             //IDataParameter[] parms;
             //var sqlInsert = BaiRongDataProvider.DatabaseDao.GetInsertSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
 
-            return ExecuteNonQueryAndReturningId(sqlString, nameof(ContentInfo.Id), parameters.ToArray());
+            return ExecuteNonQueryAndReturnId(tableName, nameof(ContentInfo.Id), sqlString, parameters.ToArray());
 
             //using (var conn = GetConnection())
             //{

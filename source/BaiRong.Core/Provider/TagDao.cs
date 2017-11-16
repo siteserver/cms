@@ -63,7 +63,7 @@ namespace BaiRong.Core.Provider
                 GetParameter(ParmUseNum, DataType.Integer, tagInfo.UseNum)
 			};
 
-            return ExecuteNonQueryAndReturningId(sqlString, nameof(TagInfo.TagId), parms);
+            return ExecuteNonQueryAndReturnId(TableName, nameof(TagInfo.TagId), sqlString, parms);
         }
 
         public void Update(TagInfo tagInfo)

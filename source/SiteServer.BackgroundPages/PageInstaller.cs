@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages
                 PhSqlPort.Visible = false;
 
                 EBooleanUtils.AddListItems(DdlIsProtectData, "加密", "不加密");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsProtectData, true.ToString());
+                ControlUtils.SelectListItemsIgnoreCase(DdlIsProtectData, false.ToString());
             }
 		}
 

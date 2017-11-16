@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using BaiRong.Core;
 using BaiRong.Core.Data;
+using BaiRong.Core.Model;
+using BaiRong.Core.Model.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
@@ -9,31 +11,15 @@ namespace SiteServer.CMS.Core
     {
         public static void Install(string adminName, string adminPassword)
         {
-            var providers = new List<DataProviderBase>();
-            providers.AddRange(BaiRongDataProvider.AllProviders);
-            providers.AddRange(DataProvider.AllProviders);
-
-            foreach (var provider in providers)
-            {
-                if (string.IsNullOrEmpty(provider.TableName) || provider.TableColumns == null || provider.TableColumns.Count <= 0) continue;
-
-                if (!BaiRongDataProvider.DatabaseDao.IsTableExists(provider.TableName))
-                {
-                    BaiRongDataProvider.DatabaseDao.CreateSystemTable(provider.TableName, provider.TableColumns);
-                }
-                else
-                {
-                    BaiRongDataProvider.DatabaseDao.AlterSystemTable(provider.TableName, provider.TableColumns);
-                }
-            }
-
-            BaiRongDataProvider.ConfigDao.InitializeConfig();
-            BaiRongDataProvider.ConfigDao.InitializeUserRole(adminName, adminPassword);
-
-            BaiRongDataProvider.TableCollectionDao.CreateAllAuxiliaryTableIfNotExists();
+            InstallOrUpgrade(adminName, adminPassword);
         }
 
         public static void Upgrade()
+        {
+            InstallOrUpgrade(string.Empty, string.Empty);
+        }
+
+        private static void InstallOrUpgrade(string adminName, string adminPassword)
         {
             var providers = new List<DataProviderBase>();
             providers.AddRange(BaiRongDataProvider.AllProviders);
@@ -54,10 +40,33 @@ namespace SiteServer.CMS.Core
             }
 
             var configInfo = BaiRongDataProvider.ConfigDao.GetConfigInfo();
-            configInfo.DatabaseVersion = AppManager.Version;
-            configInfo.IsInitialized = true;
-            configInfo.UpdateDate = DateTime.Now;
-            BaiRongDataProvider.ConfigDao.Update(configInfo);
+            if (configInfo == null)
+            {
+                configInfo = new ConfigInfo(true, AppManager.Version, DateTime.Now, string.Empty);
+                BaiRongDataProvider.ConfigDao.Insert(configInfo);
+            }
+            else
+            {
+                configInfo.DatabaseVersion = AppManager.Version;
+                configInfo.IsInitialized = true;
+                configInfo.UpdateDate = DateTime.Now;
+                BaiRongDataProvider.ConfigDao.Update(configInfo);
+            }
+
+            if (!string.IsNullOrEmpty(adminName) && !string.IsNullOrEmpty(adminPassword))
+            {
+                RoleManager.CreatePredefinedRolesIfNotExists();
+
+                var administratorInfo = new AdministratorInfo
+                {
+                    UserName = adminName,
+                    Password = adminPassword
+                };
+
+                string errorMessage;
+                AdminManager.CreateAdministrator(administratorInfo, out errorMessage);
+                BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
+            }
 
             BaiRongDataProvider.TableCollectionDao.CreateAllAuxiliaryTableIfNotExists();
         }

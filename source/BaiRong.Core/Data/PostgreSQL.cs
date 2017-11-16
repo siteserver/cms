@@ -7,7 +7,7 @@ using Npgsql;
 
 namespace BaiRong.Core.Data
 {
-    public class PostgreSql : AdoHelper, IDbHelper
+    public class PostgreSql : DbHelper, IDbHelper
     {
         #region Overrides
         /// <summary>
@@ -170,14 +170,14 @@ namespace BaiRong.Core.Data
         {
             if (rowUpdatingHandler != null)
             {
-                this.m_rowUpdating = rowUpdatingHandler;
+                this.MRowUpdating = rowUpdatingHandler;
                 ((NpgsqlDataAdapter)dataAdapter).RowUpdating += new NpgsqlRowUpdatingEventHandler(RowUpdating);
             }
 
 
             if (rowUpdatedHandler != null)
             {
-                this.m_rowUpdated = rowUpdatedHandler;
+                this.MRowUpdated = rowUpdatedHandler;
                 ((NpgsqlDataAdapter)dataAdapter).RowUpdated += new NpgsqlRowUpdatedEventHandler(RowUpdated);
             }
         }
