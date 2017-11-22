@@ -364,7 +364,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 function siteserverLoadMenus() {{";
                 var functionFoot = @"
 //FOOT
-}}
+}
 </script>
 <script language=""JavaScript1.2"">siteserverLoadMenus();writeMenus();</script>";
                 //取得已经保存的js
