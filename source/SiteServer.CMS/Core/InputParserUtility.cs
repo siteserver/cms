@@ -105,7 +105,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, TableStyleInfo styleInfo, string formatString, int no, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
         {
-            var value = contentInfo.GetExtendedAttribute(styleInfo.AttributeName);
+            var value = contentInfo.GetString(styleInfo.AttributeName);
             var parsedContent = string.Empty;
 
             var inputType = InputTypeUtils.GetEnumType(styleInfo.InputType);
@@ -163,7 +163,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var extendAttributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValues = contentInfo.GetExtendedAttribute(extendAttributeName);
+                    var extendValues = contentInfo.GetString(extendAttributeName);
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
@@ -188,7 +188,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var extendAttributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValues = contentInfo.GetExtendedAttribute(extendAttributeName);
+                    var extendValues = contentInfo.GetString(extendAttributeName);
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
@@ -213,7 +213,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var extendAttributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValues = contentInfo.GetExtendedAttribute(extendAttributeName);
+                    var extendValues = contentInfo.GetString(extendAttributeName);
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;

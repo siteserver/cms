@@ -1,14 +1,13 @@
-using BaiRong.Core;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
     public class AdvertisementOpenWindowInfo : ExtendedAttributes
 	{
-        public AdvertisementOpenWindowInfo(string settings)
+        public AdvertisementOpenWindowInfo(string settings) : base(settings)
         {
-            var nameValueCollection = TranslateUtils.ToNameValueCollection(settings);
-            SetExtendedAttribute(nameValueCollection);
+
         }
 
         public AdvertisementOpenWindowInfo(string fileUrl, int height, int width)
@@ -20,20 +19,20 @@ namespace SiteServer.CMS.Model
 
         public string FileUrl
 		{
-            get { return GetExtendedAttribute("FileUrl"); }
-            set { SetExtendedAttribute("FileUrl", value); }
+            get { return GetString("FileUrl"); }
+            set { Set("FileUrl", value); }
 		}
 
 		public int Height
 		{
             get { return GetInt("Height"); }
-            set { SetExtendedAttribute("Height", value.ToString()); }
+            set { Set("Height", value.ToString()); }
 		}
 
 		public int Width
 		{
             get { return GetInt("Width"); }
-            set { SetExtendedAttribute("Width", value.ToString()); }
+            set { Set("Width", value.ToString()); }
 		}
 	}
 }

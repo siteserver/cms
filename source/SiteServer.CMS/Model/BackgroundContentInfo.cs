@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 
@@ -26,61 +25,56 @@ namespace SiteServer.CMS.Model
 
         public string SubTitle
 		{
-            get { return GetExtendedAttribute(BackgroundContentAttribute.SubTitle); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.SubTitle, value); }
+            get { return GetString(BackgroundContentAttribute.SubTitle); }
+            set { Set(BackgroundContentAttribute.SubTitle, value); }
 		}
 
         public string ImageUrl
 		{
-            get { return GetExtendedAttribute(BackgroundContentAttribute.ImageUrl); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.ImageUrl, value); }
+            get { return GetString(BackgroundContentAttribute.ImageUrl); }
+            set { Set(BackgroundContentAttribute.ImageUrl, value); }
 		}
 
         public string VideoUrl
         {
-            get { return GetExtendedAttribute(BackgroundContentAttribute.VideoUrl); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.VideoUrl, value); }
+            get { return GetString(BackgroundContentAttribute.VideoUrl); }
+            set { Set(BackgroundContentAttribute.VideoUrl, value); }
         }
 
         public string FileUrl
         {
-            get { return GetExtendedAttribute(BackgroundContentAttribute.FileUrl); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.FileUrl, value); }
+            get { return GetString(BackgroundContentAttribute.FileUrl); }
+            set { Set(BackgroundContentAttribute.FileUrl, value); }
         }
 
         public string LinkUrl
 		{
-            get { return GetExtendedAttribute(BackgroundContentAttribute.LinkUrl); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.LinkUrl, value); }
+            get { return GetString(BackgroundContentAttribute.LinkUrl); }
+            set { Set(BackgroundContentAttribute.LinkUrl, value); }
 		}
 
         public string Summary
         {
-            get { return GetExtendedAttribute(BackgroundContentAttribute.Summary); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.Summary, value); }
+            get { return GetString(BackgroundContentAttribute.Summary); }
+            set { Set(BackgroundContentAttribute.Summary, value); }
         }
 
         public string Author
 		{
-            get { return GetExtendedAttribute(BackgroundContentAttribute.Author); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.Author, value); }
+            get { return GetString(BackgroundContentAttribute.Author); }
+            set { Set(BackgroundContentAttribute.Author, value); }
 		}
 
         public string Source
 		{
-            get { return GetExtendedAttribute(BackgroundContentAttribute.Source); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.Source, value); }
+            get { return GetString(BackgroundContentAttribute.Source); }
+            set { Set(BackgroundContentAttribute.Source, value); }
 		}
 
         public string Content
 		{
-            get { return GetExtendedAttribute(BackgroundContentAttribute.Content); }
-            set { SetExtendedAttribute(BackgroundContentAttribute.Content, value); }
+            get { return GetString(BackgroundContentAttribute.Content); }
+            set { Set(BackgroundContentAttribute.Content, value); }
 		}
-
-        public override List<string> GetDefaultAttributesNames()
-        {
-            return BackgroundContentAttribute.AllAttributes;
-        }
 	}
 }

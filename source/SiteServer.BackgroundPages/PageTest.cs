@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -13,11 +14,7 @@ namespace SiteServer.BackgroundPages
         {
             LtlContent.Text = string.Empty;
 
-            var sqlCreate = BaiRongDataProvider.DatabaseDao.GetCreateSystemTableSqlString(BaiRongDataProvider.ContentCheckDao.TableName, BaiRongDataProvider.ContentCheckDao.TableColumns);
-
-            var sqlAlert = BaiRongDataProvider.DatabaseDao.GetAlterSystemTableSqlString(BaiRongDataProvider.ContentCheckDao.TableName, BaiRongDataProvider.ContentCheckDao.TableColumns);
-
-            LtlContent.Text = sqlCreate + "<br /><hr /></br />" + string.Join("<br />", sqlAlert);
+            BaiRongDataProvider.DatabaseDao.Test();
         }
     }
 }

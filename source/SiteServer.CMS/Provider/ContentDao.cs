@@ -55,12 +55,10 @@ namespace SiteServer.CMS.Provider
 
             if (!string.IsNullOrEmpty(tableName))
             {
-                if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.Attributes.ContainsKey(BackgroundContentAttribute.Content))
+                if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.ContainsKey(BackgroundContentAttribute.Content))
                 {
-                    contentInfo.Attributes.SetExtendedAttribute(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.Attributes.GetExtendedAttribute(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
+                    contentInfo.Set(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.GetString(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
                 }
-
-                contentInfo.Attributes.BeforeExecuteNonQuery();
 
                 contentInfo.Taxis = taxis;
 
@@ -87,9 +85,9 @@ namespace SiteServer.CMS.Provider
 
         public void Update(string tableName, PublishmentSystemInfo publishmentSystemInfo, IContentInfo contentInfo)
         {
-            if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.Attributes.ContainsKey(BackgroundContentAttribute.Content))
+            if (publishmentSystemInfo.Additional.IsAutoPageInTextEditor && contentInfo.ContainsKey(BackgroundContentAttribute.Content))
             {
-                contentInfo.Attributes.SetExtendedAttribute(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.Attributes.GetExtendedAttribute(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
+                contentInfo.Set(BackgroundContentAttribute.Content, ContentUtility.GetAutoPageContent(contentInfo.GetString(BackgroundContentAttribute.Content), publishmentSystemInfo.Additional.AutoPageWordNum));
             }
 
             BaiRongDataProvider.ContentDao.Update(tableName, contentInfo);
@@ -146,14 +144,13 @@ namespace SiteServer.CMS.Provider
                         if (rdr.Read())
                         {
                             info = ContentUtility.GetContentInfo(tableStyle);
-                            BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
+                            info.Load(rdr);
                         }
                         rdr.Close();
                     }
                 }
             }
 
-            info?.AfterExecuteReader();
             return info;
         }
 
@@ -172,14 +169,13 @@ namespace SiteServer.CMS.Provider
                         if (rdr.Read())
                         {
                             info = ContentUtility.GetContentInfo(tableStyle);
-                            BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
+                            info.Load(rdr);
                         }
                         rdr.Close();
                     }
                 }
             }
 
-            info?.AfterExecuteReader();
             return info;
         }
 
@@ -697,13 +693,12 @@ namespace SiteServer.CMS.Provider
                     if (rdr.Read())
                     {
                         info = ContentUtility.GetContentInfo(tableStyle);
-                        BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
+                        info.Load(rdr);
                     }
                     rdr.Close();
                 }
             }
 
-            info?.AfterExecuteReader();
             return info;
         }
 
@@ -766,7 +761,7 @@ namespace SiteServer.CMS.Provider
                         sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
                         break;
                     case EDatabaseType.SqlServer:
-                        sqlString = $@"SELECT TOP {limit} * FROM {tableName} {secondWhere} ORDER BY {order}";
+                        sqlString = $@"SELECT TOP {limit} * FROM {tableName} {firstWhere} ORDER BY {order}";
                         break;
                     case EDatabaseType.PostgreSql:
                         sqlString = $"SELECT * FROM {tableName} {firstWhere} ORDER BY {order} limit {limit}";
@@ -802,10 +797,10 @@ namespace SiteServer.CMS.Provider
 
             using (var rdr = ExecuteReader(sqlString))
             {
-                if (rdr.Read())
+                while (rdr.Read())
                 {
                     var info = ContentUtility.GetContentInfo(tableStyle);
-                    BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
+                    info.Load(rdr);
                     list.Add(info);
                 }
                 rdr.Close();

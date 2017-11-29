@@ -1,4 +1,4 @@
-using BaiRong.Core;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin.Models;
 
@@ -6,10 +6,9 @@ namespace SiteServer.CMS.Model
 {
     public class AdvertisementFloatImageInfo : ExtendedAttributes
 	{
-        public AdvertisementFloatImageInfo(string settings)
+        public AdvertisementFloatImageInfo(string settings) : base(settings)
         {
-            var nameValueCollection = TranslateUtils.ToNameValueCollection(settings);
-            SetExtendedAttribute(nameValueCollection);
+
         }
 
         public AdvertisementFloatImageInfo(bool isCloseable, EPositionType positionType, int positionX, int positionY, ERollingType rollingType, string navigationUrl, string imageUrl, int height, int width)
@@ -28,55 +27,55 @@ namespace SiteServer.CMS.Model
 		public bool IsCloseable
 		{
             get { return GetBool("IsCloseable"); }
-            set { SetExtendedAttribute("IsCloseable", value.ToString()); }
+            set { Set("IsCloseable", value.ToString()); }
 		}
 
         public EPositionType PositionType
 		{
-            get { return EPositionTypeUtils.GetEnumType(GetExtendedAttribute("PositionType")); }
-            set { SetExtendedAttribute("PositionType", EPositionTypeUtils.GetValue(value)); }
+            get { return EPositionTypeUtils.GetEnumType(GetString("PositionType")); }
+            set { Set("PositionType", EPositionTypeUtils.GetValue(value)); }
 		}
 
         public int PositionX
 		{
             get { return GetInt("PositionX"); }
-            set { SetExtendedAttribute("PositionX", value.ToString()); }
+            set { Set("PositionX", value.ToString()); }
 		}
 
         public int PositionY
 		{
             get { return GetInt("PositionY"); }
-            set { SetExtendedAttribute("PositionY", value.ToString()); }
+            set { Set("PositionY", value.ToString()); }
 		}
 
 		public ERollingType RollingType
 		{
-            get { return ERollingTypeUtils.GetEnumType(GetExtendedAttribute("RollingType")); }
-            set { SetExtendedAttribute("RollingType", ERollingTypeUtils.GetValue(value)); }
+            get { return ERollingTypeUtils.GetEnumType(GetString("RollingType")); }
+            set { Set("RollingType", ERollingTypeUtils.GetValue(value)); }
 		}
 
         public string NavigationUrl
         {
-            get { return GetExtendedAttribute("NavigationUrl"); }
-            set { SetExtendedAttribute("NavigationUrl", value); }
+            get { return GetString("NavigationUrl"); }
+            set { Set("NavigationUrl", value); }
         }
 
         public string ImageUrl
 		{
-            get { return GetExtendedAttribute("ImageUrl"); }
-            set { SetExtendedAttribute("ImageUrl", value); }
+            get { return GetString("ImageUrl"); }
+            set { Set("ImageUrl", value); }
 		}
 
 		public int Height
 		{
             get { return GetInt("Height"); }
-            set { SetExtendedAttribute("Height", value.ToString()); }
+            set { Set("Height", value.ToString()); }
 		}
 
 		public int Width
 		{
             get { return GetInt("Width"); }
-            set { SetExtendedAttribute("Width", value.ToString()); }
+            set { Set("Width", value.ToString()); }
 		}
 	}
 }

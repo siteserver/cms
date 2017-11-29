@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Settings
                 $"<tr><td>数据库类型：</td><td>{EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType)}</td></tr>");
 
             builder.Append(
-                $"<tr><td>数据库名称：</td><td>{SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.ConnectionString)}</td></tr>");
+                $"<tr><td>数据库名称：</td><td>{SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)}</td></tr>");
 
 			return builder.ToString();
 		}

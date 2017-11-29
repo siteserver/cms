@@ -334,9 +334,9 @@ namespace SiteServer.CMS.Core
             if (contentInfoCurrent == null) return PageUtils.UnclickedUrl;
             var sourceId = contentInfoCurrent.SourceId;
             var referenceId = contentInfoCurrent.ReferenceId;
-            var linkUrl = contentInfoCurrent.Attributes.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl);
+            var linkUrl = contentInfoCurrent.GetString(BackgroundContentAttribute.LinkUrl);
             var nodeId = contentInfoCurrent.NodeId;
-            if (referenceId > 0 && contentInfoCurrent.Attributes.GetExtendedAttribute(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+            if (referenceId > 0 && contentInfoCurrent.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
                 if (sourceId > 0 && (NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, sourceId) || NodeManager.IsExists(sourceId)))
                 {
@@ -388,7 +388,7 @@ namespace SiteServer.CMS.Core
             var tableNameCurrent = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
             var contentInfoCurrent = Content.GetContentInfo(tableStyleCurrent, tableNameCurrent, contentId);
 
-            if (referenceId > 0 && contentInfoCurrent.GetExtendedAttribute(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+            if (referenceId > 0 && contentInfoCurrent.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
                 if (sourceId > 0 && (NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, sourceId) || NodeManager.IsExists(sourceId)))
                 {
@@ -406,10 +406,10 @@ namespace SiteServer.CMS.Core
                     }
                     if (contentInfo.PublishmentSystemId == targetPublishmentSystemInfo.PublishmentSystemId)
                     {
-                        return GetContentUrlById(targetPublishmentSystemInfo, contentInfo.NodeId, contentInfo.Id, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl), isFromBackground);
+                        return GetContentUrlById(targetPublishmentSystemInfo, contentInfo.NodeId, contentInfo.Id, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.GetString(BackgroundContentAttribute.LinkUrl), isFromBackground);
                     }
                     var publishmentSystemInfoTmp = PublishmentSystemManager.GetPublishmentSystemInfo(contentInfo.PublishmentSystemId);
-                    return GetContentUrlById(publishmentSystemInfoTmp, contentInfo.NodeId, contentInfo.Id, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl), isFromBackground);
+                    return GetContentUrlById(publishmentSystemInfoTmp, contentInfo.NodeId, contentInfo.Id, contentInfo.SourceId, contentInfo.ReferenceId, contentInfo.GetString(BackgroundContentAttribute.LinkUrl), isFromBackground);
                 }
                 else
                 {

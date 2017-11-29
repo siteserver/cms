@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            DdlPluginId.Items.Add(new ListItem("系统", string.Empty));
+            DdlPluginId.Items.Add(new ListItem("全部错误", string.Empty));
             foreach (var pair in PluginCache.AllPluginPairs)
             {
                 DdlPluginId.Items.Add(new ListItem(pair.Metadata.DisplayName, pair.Metadata.Id));

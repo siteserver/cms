@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageChannel" enableViewState="false" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
@@ -12,7 +12,7 @@
       <!--#include file="../inc/openWindow.html"-->
 
       <form class="container" runat="server">
-        <bairong:alerts text="" runat="server" />
+        <ctrl:alerts runat="server" />
 
         <div class="raw">
           <div class="card-box">

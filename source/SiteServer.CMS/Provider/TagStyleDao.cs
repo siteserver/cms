@@ -120,7 +120,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmSettingsXml, DataType.Text, tagStyleInfo.SettingsXml)
 			};
 
-            return ExecuteNonQueryAndReturningId(sqlString, nameof(TagStyleInfo.StyleId), parms);
+            return ExecuteNonQueryAndReturnId(TableName, nameof(TagStyleInfo.StyleId), sqlString, parms);
 		}
 
         public void Update(TagStyleInfo tagStyleInfo) 

@@ -1,4 +1,5 @@
 ﻿using System;
+using BaiRong.Core.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin.Models;
 
@@ -206,6 +207,6 @@ namespace SiteServer.CMS.Model
         private NodeInfoExtend _additional;
         public NodeInfoExtend Additional => _additional ?? (_additional = new NodeInfoExtend(_extendValues));
 
-        public ExtendedAttributes Attributes => Additional;
+        public IAttributes Attributes => Additional;
     }
 }

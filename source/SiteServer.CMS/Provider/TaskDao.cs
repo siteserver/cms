@@ -158,7 +158,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmOnlyOnceDate,DataType.DateTime,info.OnlyOnceDate)
 			};
 
-            var id = ExecuteNonQueryAndReturningId(sqlString, nameof(TaskInfo.TaskId), parms);
+            var id = ExecuteNonQueryAndReturnId(TableName, nameof(TaskInfo.TaskId), sqlString, parms);
             ServiceManager.ClearTaskCache();
             return id;
         }

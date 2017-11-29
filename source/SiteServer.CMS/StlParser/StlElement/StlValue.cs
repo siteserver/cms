@@ -176,7 +176,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else
             {
-                if (pageInfo.PublishmentSystemInfo.Additional.GetExtendedAttribute(type) == null)
+                if (pageInfo.PublishmentSystemInfo.Additional.GetString(type) == null)
                 {
                     //var stlTagInfo = DataProvider.StlTagDao.GetStlTagInfo(pageInfo.PublishmentSystemId, type) ??
                     //                 DataProvider.StlTagDao.GetStlTagInfo(0, type);
@@ -191,7 +191,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    parsedContent = pageInfo.PublishmentSystemInfo.Additional.GetExtendedAttribute(type);
+                    parsedContent = pageInfo.PublishmentSystemInfo.Additional.GetString(type);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
                         var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, type, RelatedIdentities.GetRelatedIdentities(ETableStyle.Site, pageInfo.PublishmentSystemId, pageInfo.PublishmentSystemId));

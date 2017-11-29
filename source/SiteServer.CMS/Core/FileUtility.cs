@@ -72,39 +72,39 @@ namespace SiteServer.CMS.Core
                     var fileUrls = new List<string>();
                     contentInfo = (BackgroundContentInfo)contentInfo;
 
-                    fileUrls.Add(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.ImageUrl));
-                    fileUrls.Add(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.VideoUrl));
-                    fileUrls.Add(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.FileUrl));
+                    fileUrls.Add(contentInfo.GetString(BackgroundContentAttribute.ImageUrl));
+                    fileUrls.Add(contentInfo.GetString(BackgroundContentAttribute.VideoUrl));
+                    fileUrls.Add(contentInfo.GetString(BackgroundContentAttribute.FileUrl));
 
-                    foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl))))
+                    foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl))))
                     {
                         if (!fileUrls.Contains(url))
                         {
                             fileUrls.Add(url);
                         }
                     }
-                    foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.VideoUrl))))
+                    foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.VideoUrl))))
                     {
                         if (!fileUrls.Contains(url))
                         {
                             fileUrls.Add(url);
                         }
                     }
-                    foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl))))
+                    foreach (var url in TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl))))
                     {
                         if (!fileUrls.Contains(url))
                         {
                             fileUrls.Add(url);
                         }
                     }
-                    foreach (var url in RegexUtils.GetOriginalImageSrcs(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.Content)))
+                    foreach (var url in RegexUtils.GetOriginalImageSrcs(contentInfo.GetString(BackgroundContentAttribute.Content)))
                     {
                         if (!fileUrls.Contains(url))
                         {
                             fileUrls.Add(url);
                         }
                     }
-                    foreach (var url in RegexUtils.GetOriginalLinkHrefs(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.Content)))
+                    foreach (var url in RegexUtils.GetOriginalLinkHrefs(contentInfo.GetString(BackgroundContentAttribute.Content)))
                     {
                         if (!fileUrls.Contains(url) && PageUtils.IsVirtualUrl(url))
                         {

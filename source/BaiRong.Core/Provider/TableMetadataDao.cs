@@ -734,8 +734,7 @@ namespace BaiRong.Core.Provider
         public void SyncTable(string tableEnName)
         {
             var list = GetTableMetadataInfoList(tableEnName);
-            var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.ConnectionString);
-            var columnlist = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(WebConfigUtils.ConnectionString, databaseName, tableEnName);
+            var columnlist = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(WebConfigUtils.ConnectionString, tableEnName);
 
             var sqlList = new List<string>();
 

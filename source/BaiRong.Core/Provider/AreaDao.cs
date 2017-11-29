@@ -118,7 +118,7 @@ namespace BaiRong.Core.Provider
             string sqlString = $"UPDATE bairong_Area SET {SqlUtils.GetAddOne("Taxis")} WHERE (Taxis >= {areaInfo.Taxis})";
             ExecuteNonQuery(trans, sqlString);
 
-            areaInfo.AreaId = ExecuteNonQueryAndReturningId(trans, sqlInsert, nameof(AreaInfo.AreaId), insertParms);
+            areaInfo.AreaId = ExecuteNonQueryAndReturnId(TableName, nameof(AreaInfo.AreaId), trans, sqlInsert, insertParms);
 
             if (!string.IsNullOrEmpty(areaInfo.ParentsPath))
             {

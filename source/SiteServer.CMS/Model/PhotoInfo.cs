@@ -1,3 +1,4 @@
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
@@ -38,49 +39,49 @@ namespace SiteServer.CMS.Model
         public int Id
         {
             get { return GetInt("ID"); }
-            set { SetExtendedAttribute("ID", value.ToString()); }
+            set { Set("ID", value.ToString()); }
         }
 
         public int PublishmentSystemId
         {
             get { return GetInt("PublishmentSystemID"); }
-            set { SetExtendedAttribute("PublishmentSystemID", value.ToString()); }
+            set { Set("PublishmentSystemID", value.ToString()); }
         }
 
         public int ContentId
         {
             get { return GetInt("ContentID"); }
-            set { SetExtendedAttribute("ContentID", value.ToString()); }
+            set { Set("ContentID", value.ToString()); }
         }
 
         public string SmallUrl
         {
-            get { return GetExtendedAttribute("SmallUrl"); }
-            set { SetExtendedAttribute("SmallUrl", value); }
+            get { return GetString("SmallUrl"); }
+            set { Set("SmallUrl", value); }
         }
 
         public string MiddleUrl
         {
-            get { return GetExtendedAttribute("MiddleUrl"); }
-            set { SetExtendedAttribute("MiddleUrl", value); }
+            get { return GetString("MiddleUrl"); }
+            set { Set("MiddleUrl", value); }
         }
 
         public string LargeUrl
         {
-            get { return GetExtendedAttribute("LargeUrl"); }
-            set { SetExtendedAttribute("LargeUrl", value); }
+            get { return GetString("LargeUrl"); }
+            set { Set("LargeUrl", value); }
         }
 
         public int Taxis
         {
             get { return GetInt("Taxis"); }
-            set { SetExtendedAttribute("Taxis", value.ToString()); }
+            set { Set("Taxis", value.ToString()); }
         }
 
         public string Description
         {
-            get { return GetExtendedAttribute("Description"); }
-            set { SetExtendedAttribute("Description", value); }
+            get { return GetString("Description"); }
+            set { Set("Description", value); }
         }
 
     }

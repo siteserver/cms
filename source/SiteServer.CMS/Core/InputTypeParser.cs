@@ -486,7 +486,7 @@ $(document).ready(function(){{
                     theValue = PageUtils.FilterSqlAndXss(theValue);
                 }
 
-                ExtendedAttributes.SetExtendedAttribute(attributes, styleInfo.AttributeName, theValue);
+                TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
             }
 
             //ArrayList metadataInfoArrayList = TableManager.GetTableMetadataInfoArrayList(tableName);
@@ -515,7 +515,7 @@ $(document).ready(function(){{
                     theValue = PageUtils.FilterSqlAndXss(theValue);
                 }
 
-                ExtendedAttributes.SetExtendedAttribute(attributes, styleInfo.AttributeName, theValue);
+                TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
 
                 if (styleInfo.Additional.IsFormatString)
                 {
@@ -525,13 +525,13 @@ $(document).ready(function(){{
                     var formatColor = formCollection[styleInfo.AttributeName + "_formatColor"];
                     var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
 
-                    ExtendedAttributes.SetExtendedAttribute(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
+                    TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
                 }
 
                 if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.Video, InputType.File))
                 {
                     var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    ExtendedAttributes.SetExtendedAttribute(attributes, attributeName, formCollection[attributeName]);
+                    TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, attributeName, formCollection[attributeName]);
                 }
             }
         }
@@ -553,7 +553,7 @@ $(document).ready(function(){{
                     theValue = PageUtils.FilterSqlAndXss(theValue);
                 }
 
-                ExtendedAttributes.SetExtendedAttribute(attributes, styleInfo.AttributeName, theValue);
+                TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
 
                 if (styleInfo.Additional.IsFormatString)
                 {
@@ -563,13 +563,13 @@ $(document).ready(function(){{
                     var formatColor = formCollection[styleInfo.AttributeName + "_formatColor"];
                     var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
 
-                    ExtendedAttributes.SetExtendedAttribute(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
+                    TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
                 }
 
                 if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.Video, InputType.File))
                 {
                     var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    ExtendedAttributes.SetExtendedAttribute(attributes, attributeName, formCollection[attributeName]);
+                    TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, attributeName, formCollection[attributeName]);
                 }
             }
         }
@@ -587,7 +587,7 @@ $(document).ready(function(){{
                     theValue = PageUtils.FilterSqlAndXss(theValue);
                 }
 
-                ExtendedAttributes.SetExtendedAttribute(attributes, styleInfo.AttributeName, theValue);
+                TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
             }
         }
 
@@ -601,7 +601,7 @@ $(document).ready(function(){{
 
             var theValue = GetValueByForm(styleInfo, publishmentSystemInfo, formCollection);
 
-            ExtendedAttributes.SetExtendedAttribute(attributes, metadataInfo.AttributeName, theValue);
+            TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, metadataInfo.AttributeName, theValue);
         }
 
         private static string GetValueByControl(TableStyleInfo styleInfo, PublishmentSystemInfo publishmentSystemInfo, Control containerControl)

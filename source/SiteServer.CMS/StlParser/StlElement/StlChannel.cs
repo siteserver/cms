@@ -322,7 +322,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var attributeName = type;
 
-                    var formCollection = channel.Additional.GetExtendedAttributes();
+                    var formCollection = channel.Additional.ToNameValueCollection();
                     if (formCollection != null && formCollection.Count > 0)
                     {
                         var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.NodeDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, channel.NodeId));

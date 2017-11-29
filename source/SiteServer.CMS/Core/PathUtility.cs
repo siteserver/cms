@@ -682,7 +682,7 @@ namespace SiteServer.CMS.Core
                             attributeName = attributeName.Substring(5);
                         }
 
-                        value = nodeInfo.Additional.GetExtendedAttribute(attributeName);
+                        value = nodeInfo.Additional.GetString(attributeName);
 
                         if (isLower)
                         {
@@ -892,7 +892,7 @@ namespace SiteServer.CMS.Core
                             attributeName = attributeName.Substring(5);
                         }
 
-                        value = contentInfo.Attributes.GetExtendedAttribute(attributeName);
+                        value = contentInfo.GetString(attributeName);
                         if (isLower)
                         {
                             value = value.ToLower();

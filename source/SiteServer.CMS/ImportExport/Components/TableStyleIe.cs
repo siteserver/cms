@@ -223,7 +223,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 ETableStyle tableStyle;
 
-                if (BaiRongDataProvider.TableCollectionDao.IsTableExistsAndCreated(tableName))
+                if (BaiRongDataProvider.TableCollectionDao.IsExistsAndCreated(tableName))
                 {
                     var tableType = BaiRongDataProvider.TableCollectionDao.GetTableType(tableName);
                     tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(tableType);

@@ -136,6 +136,7 @@
     <Compile Include="Controllers\Http\PluginHttpApi.cs" />
     <Compile Include="Controllers\Sys\Administrators\ActionsLogin.cs" />
     <Compile Include="Controllers\Sys\Administrators\SiteCheckList.cs" />
+    <Compile Include="Controllers\Sys\Integration\Pay.cs" />
     <Compile Include="Controllers\Sys\Stl\Comments\ActionsDelete.cs" />
     <Compile Include="Controllers\Sys\Stl\Comments\ActionsLogout.cs" />
     <Compile Include="Controllers\Sys\Stl\Comments\ActionsGood.cs" />

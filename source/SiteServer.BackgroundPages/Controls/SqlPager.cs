@@ -19,56 +19,62 @@ namespace SiteServer.BackgroundPages.Controls
         private PagedDataSource _dataSource;
         private string CacheKeyName => Page.Request.FilePath + "_" + UniqueID + "_Data";
         public const string ParmPage = "page";
+        private bool _isSetTotalCount;
 
-//        private string GetQueryPageCommandText(int recsToRetrieve)
-//        {
-//            if (!string.IsNullOrEmpty(OrderByString))
-//            {
-//                var orderByString2 = OrderByString.Replace(" DESC", " DESC2");
-//                orderByString2 = orderByString2.Replace(" ASC", " DESC");
-//                orderByString2 = orderByString2.Replace(" DESC2", " ASC");
+        private string GetQueryCountCommandText()
+        {
+            return $"SELECT COUNT(*) FROM ({SelectCommand}) AS t0";
+        }
 
-//                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
-//                {
-//                    return $@"
-//SELECT * FROM (
-//    SELECT * FROM (
-//        SELECT * FROM ({SelectCommand}) AS t0 {OrderByString} LIMIT {ItemsPerPage * (CurrentPageIndex + 1)}
-//    ) AS t1 {orderByString2} LIMIT {recsToRetrieve}
-//) AS t2 {OrderByString}";
-//                }
-//                else
-//                {
-//                    return $@"
-//SELECT * FROM 
-//(SELECT TOP {recsToRetrieve} * FROM 
-//(SELECT TOP {ItemsPerPage * (CurrentPageIndex + 1)} * FROM ({SelectCommand}) AS t0 {OrderByString}) AS t1 
-//{orderByString2}) AS t2 
-//{OrderByString}";
-//                }
-//            }
-//            else
-//            {
-//                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
-//                {
-//                    return $@"
-//SELECT * FROM (
-//    SELECT * FROM (
-//        SELECT * FROM ({SelectCommand}) AS t0 ORDER BY {SortField} {SortMode} LIMIT {ItemsPerPage * (CurrentPageIndex + 1)}
-//    ) AS t1 ORDER BY {SortField} {AlterSortMode(SortMode)} LIMIT {recsToRetrieve}
-//) AS t2 ORDER BY {SortField} {SortMode}";
-//                }
-//                else
-//                {
-//                    return $@"
-//SELECT * FROM 
-//(SELECT TOP {recsToRetrieve} * FROM 
-//(SELECT TOP {ItemsPerPage * (CurrentPageIndex + 1)} * FROM ({SelectCommand}) AS t0 ORDER BY {SortField} {SortMode}) AS t1 
-//ORDER BY {SortField} {AlterSortMode(SortMode)}) AS t2 
-//ORDER BY {SortField} {SortMode}";
-//                }
-//            }
-//        }
+        //        private string GetQueryPageCommandText(int recsToRetrieve)
+        //        {
+        //            if (!string.IsNullOrEmpty(OrderByString))
+        //            {
+        //                var orderByString2 = OrderByString.Replace(" DESC", " DESC2");
+        //                orderByString2 = orderByString2.Replace(" ASC", " DESC");
+        //                orderByString2 = orderByString2.Replace(" DESC2", " ASC");
+
+        //                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+        //                {
+        //                    return $@"
+        //SELECT * FROM (
+        //    SELECT * FROM (
+        //        SELECT * FROM ({SelectCommand}) AS t0 {OrderByString} LIMIT {ItemsPerPage * (CurrentPageIndex + 1)}
+        //    ) AS t1 {orderByString2} LIMIT {recsToRetrieve}
+        //) AS t2 {OrderByString}";
+        //                }
+        //                else
+        //                {
+        //                    return $@"
+        //SELECT * FROM 
+        //(SELECT TOP {recsToRetrieve} * FROM 
+        //(SELECT TOP {ItemsPerPage * (CurrentPageIndex + 1)} * FROM ({SelectCommand}) AS t0 {OrderByString}) AS t1 
+        //{orderByString2}) AS t2 
+        //{OrderByString}";
+        //                }
+        //            }
+        //            else
+        //            {
+        //                if (WebConfigUtils.DatabaseType == EDatabaseType.MySql)
+        //                {
+        //                    return $@"
+        //SELECT * FROM (
+        //    SELECT * FROM (
+        //        SELECT * FROM ({SelectCommand}) AS t0 ORDER BY {SortField} {SortMode} LIMIT {ItemsPerPage * (CurrentPageIndex + 1)}
+        //    ) AS t1 ORDER BY {SortField} {AlterSortMode(SortMode)} LIMIT {recsToRetrieve}
+        //) AS t2 ORDER BY {SortField} {SortMode}";
+        //                }
+        //                else
+        //                {
+        //                    return $@"
+        //SELECT * FROM 
+        //(SELECT TOP {recsToRetrieve} * FROM 
+        //(SELECT TOP {ItemsPerPage * (CurrentPageIndex + 1)} * FROM ({SelectCommand}) AS t0 ORDER BY {SortField} {SortMode}) AS t1 
+        //ORDER BY {SortField} {AlterSortMode(SortMode)}) AS t2 
+        //ORDER BY {SortField} {SortMode}";
+        //                }
+        //            }
+        //        }
 
         public SqlPager()
         {
@@ -267,7 +273,11 @@ namespace SiteServer.BackgroundPages.Controls
         public int TotalCount
         {
             get { return Convert.ToInt32(ViewState["TotalCount"]); }
-            set { ViewState["TotalCount"] = value; }
+            set
+            {
+                ViewState["TotalCount"] = value;
+                _isSetTotalCount = true;
+            }
         }
 
         /// <summary>
@@ -750,14 +760,34 @@ namespace SiteServer.BackgroundPages.Controls
                 SelectCommand += " ORDER BY " + SortField;
         }
 
+        private int GetQueryVirtualCount()
+        {
+            var cmdText = GetQueryCountCommandText();
+
+            var recCount = BaiRongDataProvider.DatabaseDao.GetIntResult(WebConfigUtils.ConnectionString, cmdText);
+            //            SqlConnection conn = new SqlConnection(ConnectionString);
+            //            SqlCommand cmd = new SqlCommand(cmdText, conn);
+            //IDbConnection conn = SqlUtils.GetIDbConnection(BaiRongDataProvider.ADOType, ConnectionString);
+            //IDbCommand cmd = SqlUtils.GetIDbCommand(BaiRongDataProvider.ADOType);
+            //cmd.Connection = conn;
+            //cmd.CommandText = cmdText;
+
+            //cmd.Connection.Open();
+            //int recCount = (int)cmd.ExecuteScalar();
+            //cmd.Connection.Close();
+
+            return recCount;
+        }
+
         /// <summary>
         /// Calculates record and page count for the specified query
         /// </summary>
         private VirtualRecordCount CalculateVirtualRecordCount()
         {
+            var totalCount = _isSetTotalCount ? TotalCount : GetQueryVirtualCount();
             var count = new VirtualRecordCount
             {
-                RecordCount = TotalCount,
+                RecordCount = totalCount,
                 RecordsInLastPage = ItemsPerPage
             };
 

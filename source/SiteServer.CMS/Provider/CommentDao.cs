@@ -94,7 +94,7 @@ namespace SiteServer.CMS.Provider
 				GetParameter(ParmContent, DataType.VarChar, 500, commentInfo.Content)
 			};
 
-            var commentId = ExecuteNonQueryAndReturningId(sqlString, nameof(CommentInfo.Id), parms);
+            var commentId = ExecuteNonQueryAndReturnId(TableName, nameof(CommentInfo.Id), sqlString, parms);
 
             if (commentInfo.IsChecked)
             {

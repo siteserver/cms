@@ -127,184 +127,177 @@ namespace BaiRong.Core.Model
             AddDate = DateTime.Now;
 		}
 
-        public ContentInfo(object dataItem)
-            : base(dataItem)
-		{
-		}
+        public ContentInfo(object dataItem) : base(dataItem)
+        {
 
-		public int Id
+        }
+
+        public int Id
 		{
             get { return GetInt(ContentAttribute.Id); }
-            set { SetExtendedAttribute(ContentAttribute.Id, value.ToString()); }
+            set { Set(ContentAttribute.Id, value.ToString()); }
 		}
 
         public int NodeId
         {
             get { return GetInt(ContentAttribute.NodeId); }
-            set { SetExtendedAttribute(ContentAttribute.NodeId, value.ToString()); }
+            set { Set(ContentAttribute.NodeId, value.ToString()); }
         }
 
         public int PublishmentSystemId
 		{
             get { return GetInt(ContentAttribute.PublishmentSystemId); }
-            set { SetExtendedAttribute(ContentAttribute.PublishmentSystemId, value.ToString()); }
+            set { Set(ContentAttribute.PublishmentSystemId, value.ToString()); }
 		}
 
         public string AddUserName
 		{
-            get { return GetExtendedAttribute(ContentAttribute.AddUserName); }
-            set { SetExtendedAttribute(ContentAttribute.AddUserName, value); }
+            get { return GetString(ContentAttribute.AddUserName); }
+            set { Set(ContentAttribute.AddUserName, value); }
 		}
 
         public string LastEditUserName
 		{
-            get { return GetExtendedAttribute(ContentAttribute.LastEditUserName); }
-            set { SetExtendedAttribute(ContentAttribute.LastEditUserName, value); }
+            get { return GetString(ContentAttribute.LastEditUserName); }
+            set { Set(ContentAttribute.LastEditUserName, value); }
 		}
 
         public string WritingUserName
         {
-            get { return GetExtendedAttribute(ContentAttribute.WritingUserName); }
-            set { SetExtendedAttribute(ContentAttribute.WritingUserName, value); }
+            get { return GetString(ContentAttribute.WritingUserName); }
+            set { Set(ContentAttribute.WritingUserName, value); }
         }
 
         public DateTime LastEditDate
 		{
             get { return GetDateTime(ContentAttribute.LastEditDate, DateTime.Now); }
-            set { SetExtendedAttribute(ContentAttribute.LastEditDate, DateUtils.GetDateAndTimeString(value)); }
+            set { Set(ContentAttribute.LastEditDate, DateUtils.GetDateAndTimeString(value)); }
 		}
 
         public int Taxis
         {
             get { return GetInt(ContentAttribute.Taxis); }
-            set { SetExtendedAttribute(ContentAttribute.Taxis, value.ToString()); }
+            set { Set(ContentAttribute.Taxis, value.ToString()); }
         }
 
         public string ContentGroupNameCollection
 		{
-            get { return GetExtendedAttribute(ContentAttribute.ContentGroupNameCollection); }
-            set { SetExtendedAttribute(ContentAttribute.ContentGroupNameCollection, value); }
+            get { return GetString(ContentAttribute.ContentGroupNameCollection); }
+            set { Set(ContentAttribute.ContentGroupNameCollection, value); }
 		}
 
         public string Tags
         {
-            get { return GetExtendedAttribute(ContentAttribute.Tags); }
-            set { SetExtendedAttribute(ContentAttribute.Tags, value); }
+            get { return GetString(ContentAttribute.Tags); }
+            set { Set(ContentAttribute.Tags, value); }
         }
 
         public int SourceId
         {
             get { return GetInt(ContentAttribute.SourceId); }
-            set { SetExtendedAttribute(ContentAttribute.SourceId, value.ToString()); }
+            set { Set(ContentAttribute.SourceId, value.ToString()); }
         }
 
         public int ReferenceId
         {
             get { return GetInt(ContentAttribute.ReferenceId); }
-            set { SetExtendedAttribute(ContentAttribute.ReferenceId, value.ToString()); }
+            set { Set(ContentAttribute.ReferenceId, value.ToString()); }
         }
 
         public bool IsChecked
 		{
             get { return GetBool(ContentAttribute.IsChecked); }
-            set { SetExtendedAttribute(ContentAttribute.IsChecked, value.ToString()); }
+            set { Set(ContentAttribute.IsChecked, value.ToString()); }
 		}
 
         public int CheckedLevel
 		{
             get { return GetInt(ContentAttribute.CheckedLevel); }
-            set { SetExtendedAttribute(ContentAttribute.CheckedLevel, value.ToString()); }
+            set { Set(ContentAttribute.CheckedLevel, value.ToString()); }
 		}
 
         public int Comments
         {
             get { return GetInt(ContentAttribute.Comments); }
-            set { SetExtendedAttribute(ContentAttribute.Comments, value.ToString()); }
+            set { Set(ContentAttribute.Comments, value.ToString()); }
         }
 
         public int Photos
         {
             get { return GetInt(ContentAttribute.Photos); }
-            set { SetExtendedAttribute(ContentAttribute.Photos, value.ToString()); }
+            set { Set(ContentAttribute.Photos, value.ToString()); }
         }
 
         public int Hits
         {
             get { return GetInt(ContentAttribute.Hits); }
-            set { SetExtendedAttribute(ContentAttribute.Hits, value.ToString()); }
+            set { Set(ContentAttribute.Hits, value.ToString()); }
         }
 
         public int HitsByDay
         {
             get { return GetInt(ContentAttribute.HitsByDay); }
-            set { SetExtendedAttribute(ContentAttribute.HitsByDay, value.ToString()); }
+            set { Set(ContentAttribute.HitsByDay, value.ToString()); }
         }
 
         public int HitsByWeek
         {
             get { return GetInt(ContentAttribute.HitsByWeek); }
-            set { SetExtendedAttribute(ContentAttribute.HitsByWeek, value.ToString()); }
+            set { Set(ContentAttribute.HitsByWeek, value.ToString()); }
         }
 
         public int HitsByMonth
         {
             get { return GetInt(ContentAttribute.HitsByMonth); }
-            set { SetExtendedAttribute(ContentAttribute.HitsByMonth, value.ToString()); }
+            set { Set(ContentAttribute.HitsByMonth, value.ToString()); }
         }
 
         public DateTime LastHitsDate
         {
             get { return GetDateTime(ContentAttribute.LastHitsDate, DateTime.Now); }
-            set { SetExtendedAttribute(ContentAttribute.LastHitsDate, DateUtils.GetDateAndTimeString(value)); }
+            set { Set(ContentAttribute.LastHitsDate, DateUtils.GetDateAndTimeString(value)); }
         }
 
         public string Title
 		{
-            get { return GetExtendedAttribute(ContentAttribute.Title); }
-            set { SetExtendedAttribute(ContentAttribute.Title, value); }
+            get { return GetString(ContentAttribute.Title); }
+            set { Set(ContentAttribute.Title, value); }
 		}
       
         public bool IsTop
         {
             get { return GetBool(ContentAttribute.IsTop); }
-            set { SetExtendedAttribute(ContentAttribute.IsTop, value.ToString()); }
+            set { Set(ContentAttribute.IsTop, value.ToString()); }
         }
 
         public bool IsRecommend
         {
             get { return GetBool(ContentAttribute.IsRecommend); }
-            set { SetExtendedAttribute(ContentAttribute.IsRecommend, value.ToString()); }
+            set { Set(ContentAttribute.IsRecommend, value.ToString()); }
         }
 
         public bool IsHot
         {
             get { return GetBool(ContentAttribute.IsHot); }
-            set { SetExtendedAttribute(ContentAttribute.IsHot, value.ToString()); }
+            set { Set(ContentAttribute.IsHot, value.ToString()); }
         }
 
         public bool IsColor
         {
             get { return GetBool(ContentAttribute.IsColor); }
-            set { SetExtendedAttribute(ContentAttribute.IsColor, value.ToString()); }
+            set { Set(ContentAttribute.IsColor, value.ToString()); }
         }
 
         public DateTime AddDate
         {
             get { return GetDateTime(ContentAttribute.AddDate, DateTime.Now); }
-            set { SetExtendedAttribute(ContentAttribute.AddDate, DateUtils.GetDateAndTimeString(value)); }
+            set { Set(ContentAttribute.AddDate, DateUtils.GetDateAndTimeString(value)); }
         }
 
         public string SettingsXml
         {
-            get { return GetExtendedAttribute(ContentAttribute.SettingsXml); }
-            set { SetExtendedAttribute(ContentAttribute.SettingsXml, value); }
+            get { return GetString(ContentAttribute.SettingsXml); }
+            set { Set(ContentAttribute.SettingsXml, value); }
         }
-
-        public override List<string> GetDefaultAttributesNames()
-        {
-            return ContentAttribute.AllAttributes;
-        }
-
-	    public ExtendedAttributes Attributes => this;
 	}
 }

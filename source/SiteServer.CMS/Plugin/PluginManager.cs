@@ -126,7 +126,7 @@ namespace SiteServer.CMS.Plugin
             {
                 var tableName = contentTable.ContentTableName;
 
-                if (!BaiRongDataProvider.DatabaseDao.IsTableExists(tableName))
+                if (!BaiRongDataProvider.TableCollectionDao.IsExists(tableName))
                 {
                     BaiRongDataProvider.TableCollectionDao.Delete(tableName);
                     BaiRongDataProvider.TableMetadataDao.Delete(tableName);
@@ -139,7 +139,8 @@ namespace SiteServer.CMS.Plugin
                     var tableMetadataInfoList = new List<TableMetadataInfo>();
                     foreach (var tableColumn in contentTable.ContentTableColumns)
                     {
-                        if (string.IsNullOrEmpty(tableColumn.AttributeName) || ContentAttribute.AllAttributes.Contains(tableColumn.AttributeName.ToLower())) continue;
+                        if (string.IsNullOrEmpty(tableColumn.AttributeName) ||
+                            ContentAttribute.AllAttributes.Contains(tableColumn.AttributeName.ToLower())) continue;
 
                         tableMetadataInfoList.Add(new TableMetadataInfo(0, tableName, tableColumn.AttributeName,
                             DataTypeUtils.GetEnumType(tableColumn.DataType), tableColumn.DataLength, 0, true));
@@ -150,7 +151,10 @@ namespace SiteServer.CMS.Plugin
                     {
                         BaiRongDataProvider.TableMetadataDao.Insert(tableMetadataInfo);
                     }
+                }
 
+                if (!BaiRongDataProvider.DatabaseDao.IsTableExists(tableName))
+                {
                     BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableName);
                 }
                 else

@@ -119,13 +119,13 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "Site"))//
                 {
-                    parsedContent = pageInfo.PublishmentSystemInfo.Additional.GetExtendedAttribute(attributeName.Substring(4));
+                    parsedContent = pageInfo.PublishmentSystemInfo.Additional.GetString(attributeName.Substring(4));
                 }
                 else
                 {
                     if (pageInfo.PublishmentSystemInfo.Additional.ContainsKey(attributeName))
                     {
-                        parsedContent = pageInfo.PublishmentSystemInfo.Additional.GetExtendedAttribute(attributeName);
+                        parsedContent = pageInfo.PublishmentSystemInfo.Additional.GetString(attributeName);
                          
                         if (!string.IsNullOrEmpty(parsedContent))
                         {

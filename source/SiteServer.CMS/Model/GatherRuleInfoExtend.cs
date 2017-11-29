@@ -1,103 +1,97 @@
-using BaiRong.Core;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
     public class GatherRuleInfoExtend : ExtendedAttributes
     {
-        public GatherRuleInfoExtend(string extendValues)
+        public GatherRuleInfoExtend(string settings) : base(settings)
         {
-            var nameValueCollection = TranslateUtils.ToNameValueCollection(extendValues);
-            SetExtendedAttribute(nameValueCollection);
+
         }
 
         public int GatherNum
         {
             get { return GetInt("GatherNum"); }
-            set { SetExtendedAttribute("GatherNum", value.ToString()); }
+            set { Set("GatherNum", value.ToString()); }
         }
 
         public bool IsSaveImage
         {
             get { return GetBool("IsSaveImage", true); }
-            set { SetExtendedAttribute("IsSaveImage", value.ToString()); }
+            set { Set("IsSaveImage", value.ToString()); }
         }
 
         public bool IsSetFirstImageAsImageUrl
         {
             get { return GetBool("IsSetFirstImageAsImageUrl", true); }
-            set { SetExtendedAttribute("IsSetFirstImageAsImageUrl", value.ToString()); }
+            set { Set("IsSetFirstImageAsImageUrl", value.ToString()); }
         }
 
         public bool IsEmptyContentAllowed
         {
             get { return GetBool("IsEmptyContentAllowed"); }
-            set { SetExtendedAttribute("IsEmptyContentAllowed", value.ToString()); }
+            set { Set("IsEmptyContentAllowed", value.ToString()); }
         }
 
         public bool IsSameTitleAllowed
         {
             get { return GetBool("IsSameTitleAllowed"); }
-            set { SetExtendedAttribute("IsSameTitleAllowed", value.ToString()); }
+            set { Set("IsSameTitleAllowed", value.ToString()); }
         }
 
         public bool IsChecked
         {
             get { return GetBool("IsChecked", true); }
-            set { SetExtendedAttribute("IsChecked", value.ToString()); }
+            set { Set("IsChecked", value.ToString()); }
         }
 
         public bool IsAutoCreate
         {
             get { return GetBool("IsAutoCreate"); }
-            set { SetExtendedAttribute("IsAutoCreate", value.ToString()); }
+            set { Set("IsAutoCreate", value.ToString()); }
         }
 
         public bool IsOrderByDesc
         {
             get { return GetBool("IsOrderByDesc", true); }
-            set { SetExtendedAttribute("IsOrderByDesc", value.ToString()); }
+            set { Set("IsOrderByDesc", value.ToString()); }
         }
 
         public string ContentContentStart2
         {
             get { return GetString("ContentContentStart2", string.Empty); }
-            set { SetExtendedAttribute("ContentContentStart2", value); }
+            set { Set("ContentContentStart2", value); }
         }
 
         public string ContentContentEnd2
         {
             get { return GetString("ContentContentEnd2", string.Empty); }
-            set { SetExtendedAttribute("ContentContentEnd2", value); }
+            set { Set("ContentContentEnd2", value); }
         }
 
         public string ContentContentStart3
         {
             get { return GetString("ContentContentStart3", string.Empty); }
-            set { SetExtendedAttribute("ContentContentStart3", value); }
+            set { Set("ContentContentStart3", value); }
         }
 
         public string ContentContentEnd3
         {
             get { return GetString("ContentContentEnd3", string.Empty); }
-            set { SetExtendedAttribute("ContentContentEnd3", value); }
+            set { Set("ContentContentEnd3", value); }
         }
 
         public string ContentReplaceFrom
         {
             get { return GetString("ContentReplaceFrom", string.Empty); }
-            set { SetExtendedAttribute("ContentReplaceFrom", value); }
+            set { Set("ContentReplaceFrom", value); }
         }
 
         public string ContentReplaceTo
         {
             get { return GetString("ContentReplaceTo", string.Empty); }
-            set { SetExtendedAttribute("ContentReplaceTo", value); }
-        }
-
-        public override string ToString()
-        {
-            return TranslateUtils.NameValueCollectionToString(GetExtendedAttributes());
+            set { Set("ContentReplaceTo", value); }
         }
     }
 }

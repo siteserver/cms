@@ -1,38 +1,37 @@
-using BaiRong.Core;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
 	public class TaskGatherInfo : ExtendedAttributes
 	{
-        public TaskGatherInfo(string serviceParameters)
+        public TaskGatherInfo(string settings) : base(settings)
         {
-            var nameValueCollection = TranslateUtils.ToNameValueCollection(serviceParameters);
-            SetExtendedAttribute(nameValueCollection);
+
         }
 
         public string PublishmentSystemIdCollection
         {
-            get { return GetExtendedAttribute("PublishmentSystemIdCollection"); }
-            set { SetExtendedAttribute("PublishmentSystemIdCollection", value); }
+            get { return GetString("PublishmentSystemIdCollection"); }
+            set { Set("PublishmentSystemIdCollection", value); }
         }
 
         public string WebGatherNames
 		{
-            get { return GetExtendedAttribute("WebGatherNames"); }
-            set { SetExtendedAttribute("WebGatherNames", value); }
+            get { return GetString("WebGatherNames"); }
+            set { Set("WebGatherNames", value); }
 		}
 
         public string DatabaseGatherNames
         {
-            get { return GetExtendedAttribute("DatabaseGatherNames"); }
-            set { SetExtendedAttribute("DatabaseGatherNames", value); }
+            get { return GetString("DatabaseGatherNames"); }
+            set { Set("DatabaseGatherNames", value); }
         }
 
         public string FileGatherNames
         {
-            get { return GetExtendedAttribute("FileGatherNames"); }
-            set { SetExtendedAttribute("FileGatherNames", value); }
+            get { return GetString("FileGatherNames"); }
+            set { Set("FileGatherNames", value); }
         }
 	}
 }

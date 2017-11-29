@@ -91,7 +91,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             string successTemplateString;
             string failureTemplateString;
-            StlInnerUtility.GetYesNo(pageInfo, contextInfo.InnerXml, out successTemplateString, out failureTemplateString);
+            StlInnerUtility.GetYesNo(contextInfo.InnerXml, out successTemplateString, out failureTemplateString);
 
             if (string.IsNullOrEmpty(successTemplateString))
             {

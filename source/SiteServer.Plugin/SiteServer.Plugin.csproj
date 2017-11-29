@@ -61,9 +61,9 @@
     <Compile Include="Apis\IContentApi.cs" />
     <Compile Include="Apis\IPublishmentSystemApi.cs" />
     <Compile Include="Features\IChannel.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Models\DataType.cs" />
-    <Compile Include="Models\Copyable.cs" />
-    <Compile Include="Models\ExtendedAttributes.cs" />
+    <Compile Include="Models\IAttributes.cs" />
     <Compile Include="Models\ISystemConfigInfo.cs" />
     <Compile Include="Models\IAdministratorInfo.cs" />
     <Compile Include="Models\ILogInfo.cs" />
@@ -72,8 +72,6 @@
     <Compile Include="Models\INodeInfo.cs" />
     <Compile Include="Models\IPublishmentSystemInfo.cs" />
     <Compile Include="Models\PluginRenderContext.cs" />
-    <Compile Include="Models\Serializer.cs" />
-    <Compile Include="Models\SerializerData.cs" />
     <Compile Include="Features\IRender.cs" />
     <Compile Include="Features\IParse.cs" />
     <Compile Include="Features\ITable.cs" />

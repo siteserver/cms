@@ -155,97 +155,91 @@ namespace BaiRong.Core.Model
 
     public class TableStyleInfoExtend : ExtendedAttributes
     {
-        public TableStyleInfoExtend(string extendValues)
+        public TableStyleInfoExtend(string settings) : base(settings)
         {
-            var nameValueCollection = TranslateUtils.ToNameValueCollection(extendValues);
-            SetExtendedAttribute(nameValueCollection);
+
         }
 
         public int Height
         {
             get { return GetInt("Height"); }
-            set { SetExtendedAttribute("Height", value.ToString()); }
+            set { Set("Height", value.ToString()); }
         }
 
         public string Width
         {
             get
             {
-                var width = GetExtendedAttribute("Width");
+                var width = GetString("Width");
                 return width == "0" ? string.Empty : width;
             }
-            set { SetExtendedAttribute("Width", value); }
+            set { Set("Width", value); }
         }
 
         public int Columns
         {
             get { return GetInt("Columns"); }
-            set { SetExtendedAttribute("Columns", value.ToString()); }
+            set { Set("Columns", value.ToString()); }
         }
 
         public bool IsFormatString
         {
             get { return GetBool("IsFormatString"); }
-            set { SetExtendedAttribute("IsFormatString", value.ToString()); }
+            set { Set("IsFormatString", value.ToString()); }
         }
 
         public int RelatedFieldId
         {
             get { return GetInt("RelatedFieldID"); }
-            set { SetExtendedAttribute("RelatedFieldID", value.ToString()); }
+            set { Set("RelatedFieldID", value.ToString()); }
         }
 
         public string RelatedFieldStyle
         {
-            get { return GetExtendedAttribute("RelatedFieldStyle"); }
-            set { SetExtendedAttribute("RelatedFieldStyle", value); }
+            get { return GetString("RelatedFieldStyle"); }
+            set { Set("RelatedFieldStyle", value); }
         }
 
         public bool IsValidate
         {
             get { return GetBool("IsValidate"); }
-            set { SetExtendedAttribute("IsValidate", value.ToString()); }
+            set { Set("IsValidate", value.ToString()); }
         }
 
         public bool IsRequired
         {
             get { return GetBool("IsRequired"); }
-            set { SetExtendedAttribute("IsRequired", value.ToString()); }
+            set { Set("IsRequired", value.ToString()); }
         }
 
         public int MinNum
         {
             get { return GetInt("MinNum"); }
-            set { SetExtendedAttribute("MinNum", value.ToString()); }
+            set { Set("MinNum", value.ToString()); }
         }
 
         public int MaxNum
         {
             get { return GetInt("MaxNum"); }
-            set { SetExtendedAttribute("MaxNum", value.ToString()); }
+            set { Set("MaxNum", value.ToString()); }
         }
 
         public ValidateType ValidateType
         {
-            get { return ValidateTypeUtils.GetEnumType(GetExtendedAttribute("ValidateType")); }
-            set { SetExtendedAttribute("ValidateType", ValidateTypeUtils.GetValue(value)); }
+            get { return ValidateTypeUtils.GetEnumType(GetString("ValidateType")); }
+            set { Set("ValidateType", ValidateTypeUtils.GetValue(value)); }
         }
 
         public string RegExp
         {
-            get { return GetExtendedAttribute("RegExp"); }
-            set { SetExtendedAttribute("RegExp", value); }
+            get { return GetString("RegExp"); }
+            set { Set("RegExp", value); }
         }
 
         public string ErrorMessage
         {
-            get { return GetExtendedAttribute("ErrorMessage"); }
-            set { SetExtendedAttribute("ErrorMessage", value); }
-        }
-
-        public override string ToString()
-        {
-            return TranslateUtils.NameValueCollectionToString(GetExtendedAttributes());
+            get { return GetString("ErrorMessage"); }
+            set { Set("ErrorMessage", value); }
         }
     }
 }

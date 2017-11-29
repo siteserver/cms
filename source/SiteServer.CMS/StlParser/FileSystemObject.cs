@@ -290,11 +290,11 @@ namespace SiteServer.CMS.StlParser
                 return;
             }
             //引用链接，不需要生成内容页；引用内容，需要生成内容页；
-            if (contentInfo.ReferenceId > 0 && ETranslateContentTypeUtils.GetEnumType(contentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType)) != ETranslateContentType.ReferenceContent)
+            if (contentInfo.ReferenceId > 0 && ETranslateContentTypeUtils.GetEnumType(contentInfo.GetString(ContentAttribute.TranslateContentType)) != ETranslateContentType.ReferenceContent)
             {
                 return;
             }
-            if (tableStyle == ETableStyle.BackgroundContent && !string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl)))
+            if (tableStyle == ETableStyle.BackgroundContent && !string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.LinkUrl)))
             {
                 return;
             }

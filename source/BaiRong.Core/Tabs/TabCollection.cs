@@ -1,6 +1,7 @@
 using System;
 using System.Web;
 using System.Xml.Serialization;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Tabs

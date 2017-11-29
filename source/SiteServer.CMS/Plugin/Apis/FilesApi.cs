@@ -53,7 +53,9 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetPluginPath(string relatedPath)
         {
-            return PathUtils.Combine(_metadata.DirectoryPath, relatedPath);
+            var path = PathUtils.Combine(_metadata.DirectoryPath, relatedPath);
+            DirectoryUtils.CreateDirectoryIfNotExists(path);
+            return path;
         }
 
         public string GetPluginUrl(string relatedUrl)

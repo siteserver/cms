@@ -7,9 +7,8 @@ using Npgsql;
 
 namespace BaiRong.Core.Data
 {
-    public class PostgreSql : AdoHelper, IDbHelper
+    public class PostgreSql : DbHelper, IDbHelper
     {
-        #region Overrides
         /// <summary>
         /// Returns an array of SqlParameters of the specified size
         /// </summary>
@@ -29,6 +28,11 @@ namespace BaiRong.Core.Data
         public override IDbConnection GetConnection(string connectionString)
         {
             return new NpgsqlConnection(connectionString);
+        }
+
+        public IDbCommand GetCommand()
+        {
+            return new NpgsqlCommand();
         }
 
 
@@ -170,14 +174,14 @@ namespace BaiRong.Core.Data
         {
             if (rowUpdatingHandler != null)
             {
-                this.m_rowUpdating = rowUpdatingHandler;
+                this.MRowUpdating = rowUpdatingHandler;
                 ((NpgsqlDataAdapter)dataAdapter).RowUpdating += new NpgsqlRowUpdatingEventHandler(RowUpdating);
             }
 
 
             if (rowUpdatedHandler != null)
             {
-                this.m_rowUpdated = rowUpdatedHandler;
+                this.MRowUpdated = rowUpdatedHandler;
                 ((NpgsqlDataAdapter)dataAdapter).RowUpdated += new NpgsqlRowUpdatedEventHandler(RowUpdated);
             }
         }
@@ -216,6 +220,5 @@ namespace BaiRong.Core.Data
             // do nothing special for BLOBs...as far as we know now.
             return p;
         }
-        #endregion
     }
 }

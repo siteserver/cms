@@ -146,7 +146,7 @@ namespace BaiRong.Core.Provider
                 $"UPDATE bairong_Department SET {SqlUtils.GetAddOne("Taxis")} WHERE (Taxis >= {departmentInfo.Taxis})";
             ExecuteNonQuery(trans, sqlString);
 
-            departmentInfo.DepartmentId = ExecuteNonQueryAndReturningId(trans, sqlInsert, nameof(DepartmentInfo.DepartmentId), insertParms);
+            departmentInfo.DepartmentId = ExecuteNonQueryAndReturnId(TableName, nameof(DepartmentInfo.DepartmentId), trans, sqlInsert, insertParms);
 
             if (!string.IsNullOrEmpty(departmentInfo.ParentsPath))
             {

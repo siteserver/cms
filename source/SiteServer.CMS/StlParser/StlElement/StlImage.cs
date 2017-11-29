@@ -193,12 +193,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (no <= 1)
                         {
-                            picUrl = contentInfo.GetExtendedAttribute(type);
+                            picUrl = contentInfo.GetString(type);
                         }
                         else
                         {
                             var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                            var extendValues = contentInfo.GetExtendedAttribute(extendAttributeName);
+                            var extendValues = contentInfo.GetString(extendAttributeName);
                             if (!string.IsNullOrEmpty(extendValues))
                             {
                                 var index = 2;

@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Text;
 using System.Web;
 using BaiRong.Core.ThirdParty.Jdpay;
+using SiteServer.CMS.Controllers.Sys.Integration;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -35,7 +36,7 @@ namespace SiteServer.CMS.Plugin.Apis
             }
         }
 
-        public string ChargeByAlipayPc(string productName, decimal amount, string orderNo, string returnUrl, string notifyUrl)
+        public string ChargeByAlipayPc(string productName, decimal amount, string orderNo, string returnUrl)
         {
             var config = GetConfig();
             if (!config.IsAlipayPc) return null;
@@ -113,7 +114,7 @@ namespace SiteServer.CMS.Plugin.Apis
             // 设置同步回调地址
             request.SetReturnUrl(returnUrl);
             // 设置异步通知接收地址
-            request.SetNotifyUrl(notifyUrl);
+            request.SetNotifyUrl(string.Empty);
             // 将业务model载入到request
             request.SetBizModel(model);
 
@@ -130,7 +131,7 @@ namespace SiteServer.CMS.Plugin.Apis
             }
         }
 
-        public string ChargeByAlipayMobi(string productName, decimal amount, string orderNo, string returnUrl, string notifyUrl)
+        public string ChargeByAlipayMobi(string productName, decimal amount, string orderNo, string returnUrl)
         {
             var config = GetConfig();
             if (!config.IsAlipayMobi) return null;
@@ -198,7 +199,7 @@ namespace SiteServer.CMS.Plugin.Apis
             // 设置同步回调地址
             request.SetReturnUrl(returnUrl);
             // 设置异步通知接收地址
-            request.SetNotifyUrl(notifyUrl);
+            request.SetNotifyUrl(string.Empty);
             // 将业务model载入到request
             request.SetBizModel(model);
 
@@ -409,10 +410,12 @@ namespace SiteServer.CMS.Plugin.Apis
             }
         }
 
-        public string ChargeByJdpay(string productName, decimal amount, string orderNo, string returnUrl, string notifyUrl)
+        public string ChargeByJdpay(string productName, decimal amount, string orderNo, string returnUrl)
         {
             var config = GetConfig();
             if (!config.IsJdpay) return null;
+
+            var callbackUrl = PageUtils.AddProtocolToUrl(Pay.GetUrl(PageUtils.OuterApiUrl, returnUrl));
 
             var orderInfoDic = new SortedDictionary<string, string>
             {
@@ -426,8 +429,8 @@ namespace SiteServer.CMS.Plugin.Apis
                 {"amount", Convert.ToInt32(amount * 100).ToString()},
                 {"currency", "CNY"},
                 {"note", "备注"},
-                {"callbackUrl", returnUrl},
-                {"notifyUrl", notifyUrl},
+                {"callbackUrl", callbackUrl},
+                {"notifyUrl", string.Empty},
                 {"ip", PageUtils.GetIpAddress()},
                 {"specCardNo", string.Empty},
                 {"specId", string.Empty},
@@ -503,11 +506,6 @@ namespace SiteServer.CMS.Plugin.Apis
             {
                 orderInfoDic["specName"] = Des3.Des3EncryptECB(key, orderInfoDic["specName"]);
             }
-
-            
-            //商户订单号，商户网站订单系统中唯一订单号，必填
-            //其他业务参数根据在线开发文档，添加参数.文档地址:https://doc.open.alipay.com/doc2/detail.htm?spm=a219a.7629140.0.0.O9yorI&treeId=62&articleId=103740&docType=1
-            //如sParaTemp.Add("参数名","参数值");
 
             StringBuilder sbHtml = new StringBuilder();
 

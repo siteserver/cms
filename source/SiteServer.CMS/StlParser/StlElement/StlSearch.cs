@@ -145,7 +145,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             string loading;
             string yes;
             string no;
-            StlInnerUtility.GetLoadingYesNo(pageInfo, contextInfo.InnerXml, out loading, out yes, out no);
+            StlInnerUtility.GetLoadingYesNo(contextInfo.InnerXml, out loading, out yes, out no);
 
             if (string.IsNullOrEmpty(loading))
             {

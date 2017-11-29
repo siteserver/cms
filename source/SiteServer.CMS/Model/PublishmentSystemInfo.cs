@@ -1,5 +1,6 @@
 using System;
 using System.Xml.Serialization;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
@@ -133,6 +134,6 @@ namespace SiteServer.CMS.Model
 
         public PublishmentSystemInfoExtend Additional => _additional ?? (_additional = new PublishmentSystemInfoExtend(PublishmentSystemDir, _settingsXml));
 
-	    public ExtendedAttributes Attributes => Additional;
+	    public IAttributes Attributes => Additional;
 	}
 }

@@ -510,7 +510,7 @@ namespace SiteServer.CMS.Core
                             }
                             else
                             {
-                                contentInfo.SetExtendedAttribute(attributeName, value);
+                                contentInfo.Set(attributeName, value);
                             }
                         }
                         else
@@ -540,7 +540,7 @@ namespace SiteServer.CMS.Core
                                 }
                             }
 
-                            contentInfo.SetExtendedAttribute(attributeName, value);
+                            contentInfo.Set(attributeName, value);
                         }
                     }
                 }

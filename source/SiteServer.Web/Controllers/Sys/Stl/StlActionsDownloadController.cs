@@ -81,9 +81,9 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
                     var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
 
-                    if (!string.IsNullOrEmpty(contentInfo?.GetExtendedAttribute(BackgroundContentAttribute.FileUrl)))
+                    if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
                     {
-                        //string fileUrl = contentInfo.GetExtendedAttribute(BackgroundContentAttribute.FileUrl);
+                        //string fileUrl = contentInfo.GetString(BackgroundContentAttribute.FileUrl);
                         if (publishmentSystemInfo.Additional.IsCountDownload)
                         {
                             CountManager.AddCount(tableName, contentId.ToString(), ECountType.Download);

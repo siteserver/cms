@@ -155,7 +155,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        picUrl = contextInfo.ContentInfo.GetExtendedAttribute(type);
+                        picUrl = contextInfo.ContentInfo.GetString(type);
                     }
                 }
                 else//获取栏目Flash

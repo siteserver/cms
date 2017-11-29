@@ -28,7 +28,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.OleDb;
 using System.Xml;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Data
@@ -37,15 +36,8 @@ namespace BaiRong.Core.Data
 	/// The SqlServer class is intended to encapsulate high performance, scalable best practices for 
 	/// common uses of the SqlClient ADO.NET provider.  It is created using the abstract factory in AdoHelper.
 	/// </summary>
-	public class SqlServer : AdoHelper, IDbHelper
+	public class SqlServer : DbHelper, IDbHelper
     {
-		/// <summary>
-		/// Create a SQL Helper.  Needs to be a default constructor so that the Factory can create it
-		/// </summary>
-		public SqlServer()
-		{
-		}
-
 		#region Overrides
 		/// <summary>
 		/// Returns an array of SqlParameters of the specified size
@@ -67,11 +59,16 @@ namespace BaiRong.Core.Data
 			return new SqlConnection( connectionString );
 		}
 
-		/// <summary>
-		/// Returns a SqlDataAdapter object
-		/// </summary>
-		/// <returns>The SqlDataAdapter</returns>
-		public override IDbDataAdapter GetDataAdapter()
+        public IDbCommand GetCommand()
+        {
+            return new SqlCommand();
+        }
+
+        /// <summary>
+        /// Returns a SqlDataAdapter object
+        /// </summary>
+        /// <returns>The SqlDataAdapter</returns>
+        public override IDbDataAdapter GetDataAdapter()
 		{
 			return new SqlDataAdapter();
 		}
@@ -188,13 +185,13 @@ namespace BaiRong.Core.Data
 		{
 			if (rowUpdatingHandler != null)
 			{
-				m_rowUpdating = rowUpdatingHandler;
+				MRowUpdating = rowUpdatingHandler;
 				((SqlDataAdapter)dataAdapter).RowUpdating += RowUpdating;
 			}
 
 			if (rowUpdatedHandler != null)
 			{
-				m_rowUpdated = rowUpdatedHandler;
+				MRowUpdated = rowUpdatedHandler;
 				((SqlDataAdapter)dataAdapter).RowUpdated += RowUpdated;
 			}
 		}

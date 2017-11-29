@@ -7,7 +7,7 @@ using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Data
 {
-    public class MySql : AdoHelper, IDbHelper
+    public class MySql : DbHelper, IDbHelper
     {
         #region Overrides
         /// <summary>
@@ -29,6 +29,11 @@ namespace BaiRong.Core.Data
         public override IDbConnection GetConnection(string connectionString)
         {
             return new MySqlConnection(connectionString);
+        }
+
+        public IDbCommand GetCommand()
+        {
+            return new MySqlCommand();
         }
 
 
@@ -170,15 +175,15 @@ namespace BaiRong.Core.Data
         {
             if (rowUpdatingHandler != null)
             {
-                this.m_rowUpdating = rowUpdatingHandler;
-                ((MySqlDataAdapter)dataAdapter).RowUpdating += new MySqlRowUpdatingEventHandler(RowUpdating);
+                MRowUpdating = rowUpdatingHandler;
+                ((MySqlDataAdapter)dataAdapter).RowUpdating += RowUpdating;
             }
 
 
             if (rowUpdatedHandler != null)
             {
-                this.m_rowUpdated = rowUpdatedHandler;
-                ((MySqlDataAdapter)dataAdapter).RowUpdated += new MySqlRowUpdatedEventHandler(RowUpdated);
+                MRowUpdated = rowUpdatedHandler;
+                ((MySqlDataAdapter)dataAdapter).RowUpdated += RowUpdated;
             }
         }
 
@@ -216,6 +221,7 @@ namespace BaiRong.Core.Data
             // do nothing special for BLOBs...as far as we know now.
             return p;
         }
+
         #endregion
     }
 }
