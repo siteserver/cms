@@ -124,7 +124,7 @@ function submitPreview(){{
 
                 ltlContentLevel.Text = LevelManager.GetCheckState(PublishmentSystemInfo, _contentInfo.IsChecked, _contentInfo.CheckedLevel);
 
-                if (_contentInfo.ReferenceId > 0 && _contentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+                if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
                 {
                     var referencePublishmentSystemID = DataProvider.NodeDao.GetPublishmentSystemId(_contentInfo.SourceId);
                     var referencePublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(referencePublishmentSystemID);
@@ -157,7 +157,7 @@ function submitPreview(){{
 
                 var helpHtml = $"{styleInfo.DisplayName}：";
 
-                var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetExtendedAttribute(styleInfo.AttributeName), PublishmentSystemInfo, _tableStyle, styleInfo);
+                var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetString(styleInfo.AttributeName), PublishmentSystemInfo, _tableStyle, styleInfo);
 
                 var ltlHtml = e.Item.FindControl("ltlHtml") as Literal;
 

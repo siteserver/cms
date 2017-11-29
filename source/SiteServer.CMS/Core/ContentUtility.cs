@@ -420,7 +420,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.PublishmentSystemId = targetPublishmentSystemId;
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
-                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
+                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 
@@ -453,7 +453,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.PublishmentSystemId = targetPublishmentSystemId;
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
-                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
+                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
 
                 var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
@@ -504,7 +504,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
+                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
                 DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
             }
@@ -518,7 +518,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = contentInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
+                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 
                 var pluginChannels = PluginCache.GetChannelFeatures(nodeInfo);
@@ -588,12 +588,12 @@ namespace SiteServer.CMS.Core
                 if (!styleInfo.IsVisible) continue;
                 if (!dict.ContainsKey(styleInfo.AttributeName))
                 {
-                    dict[styleInfo.AttributeName] = contentInfo.GetExtendedAttribute(styleInfo.AttributeName);
+                    dict[styleInfo.AttributeName] = contentInfo.GetString(styleInfo.AttributeName);
                 }
                 if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Image))
                 {
                     var extendName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValue = contentInfo.GetExtendedAttribute(extendName);
+                    var extendValue = contentInfo.GetString(extendName);
                     if (!string.IsNullOrEmpty(extendValue))
                     {
                         dict[extendName] = extendValue;

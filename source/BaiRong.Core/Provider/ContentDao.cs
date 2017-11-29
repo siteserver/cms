@@ -36,23 +36,23 @@ namespace BaiRong.Core.Provider
                 values.Append($",@{metadataInfo.AttributeName}").AppendLine();
                 if (metadataInfo.DataType == DataType.Integer)
                 {
-                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetInt(metadataInfo.AttributeName)));
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.GetInt(metadataInfo.AttributeName)));
                 }
                 else if (metadataInfo.DataType == DataType.Decimal)
                 {
-                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetDecimal(metadataInfo.AttributeName)));
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.GetDecimal(metadataInfo.AttributeName)));
                 }
                 else if (metadataInfo.DataType == DataType.Boolean)
                 {
-                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetBool(metadataInfo.AttributeName)));
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.GetBool(metadataInfo.AttributeName)));
                 }
                 else if (metadataInfo.DataType == DataType.DateTime)
                 {
-                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetDateTime(metadataInfo.AttributeName, DateTime.Now)));
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.GetDateTime(metadataInfo.AttributeName, DateTime.Now)));
                 }
                 else
                 {
-                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetExtendedAttribute(metadataInfo.AttributeName)));
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.GetString(metadataInfo.AttributeName)));
                 }
             }
 
@@ -139,7 +139,7 @@ INSERT INTO {tableName} (
                 GetParameter($"@{nameof(ContentInfo.HitsByWeek)}", DataType.Integer, contentInfo.HitsByWeek),
                 GetParameter($"@{nameof(ContentInfo.HitsByMonth)}", DataType.Integer, contentInfo.HitsByMonth),
                 GetParameter($"@{nameof(ContentInfo.LastHitsDate)}", DataType.DateTime, contentInfo.LastHitsDate),
-                GetParameter($"@{nameof(ContentInfo.SettingsXml)}", DataType.Text, contentInfo.Attributes.ToString(lowerCaseExcludeAttributesNames)),
+                GetParameter($"@{nameof(ContentInfo.SettingsXml)}", DataType.Text, contentInfo.ToString(lowerCaseExcludeAttributesNames)),
                 GetParameter($"@{nameof(ContentInfo.Title)}", DataType.VarChar, 255, contentInfo.Title),
                 GetParameter($"@{nameof(ContentInfo.IsTop)}", DataType.VarChar, 18, contentInfo.IsTop.ToString()),
                 GetParameter($"@{nameof(ContentInfo.IsRecommend)}", DataType.VarChar, 18, contentInfo.IsRecommend.ToString()),
@@ -210,23 +210,23 @@ INSERT INTO {tableName} (
                 sets.Append($",{metadataInfo.AttributeName} = @{metadataInfo.AttributeName}").AppendLine();
                 if (metadataInfo.DataType == DataType.Integer)
                 {
-                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetInt(metadataInfo.AttributeName)));
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.GetInt(metadataInfo.AttributeName)));
                 }
                 else if (metadataInfo.DataType == DataType.Decimal)
                 {
-                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetDecimal(metadataInfo.AttributeName)));
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.GetDecimal(metadataInfo.AttributeName)));
                 }
                 else if (metadataInfo.DataType == DataType.Boolean)
                 {
-                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetBool(metadataInfo.AttributeName)));
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.GetBool(metadataInfo.AttributeName)));
                 }
                 else if (metadataInfo.DataType == DataType.DateTime)
                 {
-                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetDateTime(metadataInfo.AttributeName, DateTime.Now)));
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.GetDateTime(metadataInfo.AttributeName, DateTime.Now)));
                 }
                 else
                 {
-                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.Attributes.GetExtendedAttribute(metadataInfo.AttributeName)));
+                    paras.Add(GetParameter($"@{metadataInfo.AttributeName}", metadataInfo.DataType, contentInfo.GetString(metadataInfo.AttributeName)));
                 }
             }
 
@@ -284,7 +284,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
                 GetParameter($"@{nameof(ContentInfo.HitsByWeek)}", DataType.Integer, contentInfo.HitsByWeek),
                 GetParameter($"@{nameof(ContentInfo.HitsByMonth)}", DataType.Integer, contentInfo.HitsByMonth),
                 GetParameter($"@{nameof(ContentInfo.LastHitsDate)}", DataType.DateTime, contentInfo.LastHitsDate),
-                GetParameter($"@{nameof(ContentInfo.SettingsXml)}", DataType.Text, contentInfo.Attributes.ToString(lowerCaseExcludeAttributesNames)),
+                GetParameter($"@{nameof(ContentInfo.SettingsXml)}", DataType.Text, contentInfo.ToString(lowerCaseExcludeAttributesNames)),
                 GetParameter($"@{nameof(ContentInfo.Title)}", DataType.VarChar, 255, contentInfo.Title),
                 GetParameter($"@{nameof(ContentInfo.IsTop)}", DataType.VarChar, 18, contentInfo.IsTop.ToString()),
                 GetParameter($"@{nameof(ContentInfo.IsRecommend)}", DataType.VarChar, 18, contentInfo.IsRecommend.ToString()),

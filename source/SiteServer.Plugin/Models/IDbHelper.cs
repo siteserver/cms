@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Xml;
 
 namespace SiteServer.Plugin.Models
@@ -14,6 +13,8 @@ namespace SiteServer.Plugin.Models
         /// <returns>An IDbConnection object</returns>
         /// <exception cref="System.ArgumentNullException">Thrown if connectionString is null</exception>
         IDbConnection GetConnection(string connectionString);
+
+        IDbCommand GetCommand();
 
         /// <summary>
         /// Returns an IDbDataAdapter object
@@ -472,6 +473,14 @@ namespace SiteServer.Plugin.Models
 
         #endregion ExecuteScalar	
 
+        #region ExecuteInt
+
+        int ExecuteInt(string connectionString, string commandText);
+
+        int ExecuteInt(string connectionString, string commandText, IDataParameter[] commandParameters);
+
+        #endregion ExecuteInt
+
         #region FillDataset
         /// <summary>
         /// Execute an IDbCommand (that returns a resultset) against the database specified in 
@@ -727,5 +736,13 @@ namespace SiteServer.Plugin.Models
         void CacheParameterSet(IDbConnection connection, string commandText, params IDataParameter[] commandParameters);
 
         #endregion Parameter Discovery Functions
+
+        #region Utility Functions
+
+        string GetTopSqlString(string tableName, string columns, string whereString, string orderString, int topN);
+
+        string GetTopSqlString(string sqlString, string orderString, int topN);
+
+        #endregion Utility Functions
     }
 }

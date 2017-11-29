@@ -99,7 +99,7 @@ namespace SiteServer.CMS.Core.Office
                                 if (!string.IsNullOrEmpty(attributeName))
                                 {
                                     var value = row[i].ToString();
-                                    contentInfo.SetExtendedAttribute(attributeName, value);
+                                    contentInfo.Set(attributeName, value);
                                 }
                             }
 

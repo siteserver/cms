@@ -269,7 +269,7 @@ namespace SiteServer.CMS.Core
             //复制
             if (Equals(nodeInfo.Additional.TransDoneType, ETranslateContentType.Copy))
             {
-                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
+                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
             }
             //引用地址
             else if (Equals(nodeInfo.Additional.TransDoneType, ETranslateContentType.Reference))
@@ -278,7 +278,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = nodeInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
+                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
             }
             //引用内容
             else if (Equals(nodeInfo.Additional.TransDoneType, ETranslateContentType.ReferenceContent))
@@ -287,7 +287,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.SourceId = nodeInfo.NodeId;
                 contentInfo.NodeId = targetNodeId;
                 contentInfo.ReferenceId = contentId;
-                contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
+                contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
             }
 
             if (!string.IsNullOrEmpty(targetTableName))
@@ -296,16 +296,16 @@ namespace SiteServer.CMS.Core
 
                 #region 复制资源
                 //资源：图片，文件，视频
-                if (!string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.ImageUrl)))
+                if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.ImageUrl)))
                 {
                     //修改图片
-                    var sourceImageUrl = PathUtility.MapPath(publishmentSystemInfo, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.ImageUrl));
+                    var sourceImageUrl = PathUtility.MapPath(publishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl));
                     CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl, publishmentSystemInfo);
 
                 }
-                else if (!string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl))))
+                else if (!string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl))))
                 {
-                    var sourceImageUrls = TranslateUtils.StringCollectionToStringList(contentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
+                    var sourceImageUrls = TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
 
                     foreach (string imageUrl in sourceImageUrls)
                     {
@@ -313,16 +313,16 @@ namespace SiteServer.CMS.Core
                         CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl, publishmentSystemInfo);
                     }
                 }
-                if (!string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.FileUrl)))
+                if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.FileUrl)))
                 {
                     //修改附件
-                    var sourceFileUrl = PathUtility.MapPath(publishmentSystemInfo, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.FileUrl));
+                    var sourceFileUrl = PathUtility.MapPath(publishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.FileUrl));
                     CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl, publishmentSystemInfo);
 
                 }
-                else if (!string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl))))
+                else if (!string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl))))
                 {
-                    var sourceFileUrls = TranslateUtils.StringCollectionToStringList(contentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
+                    var sourceFileUrls = TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
 
                     foreach (string fileUrl in sourceFileUrls)
                     {

@@ -71,14 +71,13 @@ namespace SiteServer.CMS.Provider
                         if (rdr.Read())
                         {
                             info = new BackgroundContentInfo();
-                            BaiRongDataProvider.DatabaseDao.ReadResultsToExtendedAttributes(rdr, info);
+                            info.Load(rdr);
                         }
                         rdr.Close();
                     }
                 }
             }
 
-		    info?.AfterExecuteReader();
 		    return info;
 		}
 

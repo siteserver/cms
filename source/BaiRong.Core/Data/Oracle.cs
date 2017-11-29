@@ -31,6 +31,11 @@ namespace BaiRong.Core.Data
             return new OracleConnection(connectionString);
         }
 
+        public IDbCommand GetCommand()
+        {
+            return new OracleCommand();
+        }
+
 
         /// <summary>
         /// Returns a SqlDataAdapter object

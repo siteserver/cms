@@ -143,8 +143,11 @@
     <Compile Include="AuxiliaryTable\TableStyleManager.cs" />
     <Compile Include="Collection\Pair.cs" />
     <Compile Include="Model\CountInfo.cs" />
+    <Compile Include="Model\ExtendedAttributes.cs" />
     <Compile Include="Model\IntegrationPayConfig.cs" />
     <Compile Include="Model\Enumerations\EDatabaseType.cs" />
+    <Compile Include="Model\Serializer.cs" />
+    <Compile Include="Model\SerializerData.cs" />
     <Compile Include="Provider\AdministratorsInRolesDao.cs" />
     <Compile Include="Provider\RecordDao.cs" />
     <Compile Include="Provider\TableStyleItemDao.cs" />
@@ -2970,7 +2973,6 @@
     <Compile Include="Model\Enumerations\EUploadType.cs" />
     <Compile Include="Model\Enumerations\EUserLockType.cs" />
     <Compile Include="Model\Enumerations\ESmsProviderType.cs" />
-    <Compile Include="Model\CaseExtendedAttributes.cs" />
     <Compile Include="Model\UserLogInfo.cs" />
     <Compile Include="Data\SqlServer.cs" />
     <Compile Include="Provider\AdministratorDao.cs" />

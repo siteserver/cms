@@ -221,9 +221,9 @@ namespace SiteServer.BackgroundPages
                 {
                     if (contextInfo.ContentInfo == null) return;
 
-                    if (!string.IsNullOrEmpty(contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl)))
+                    if (!string.IsNullOrEmpty(contextInfo.ContentInfo.GetString(BackgroundContentAttribute.LinkUrl)))
                     {
-                        Response.Redirect(contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl));
+                        Response.Redirect(contextInfo.ContentInfo.GetString(BackgroundContentAttribute.LinkUrl));
                         return;
                     }
 

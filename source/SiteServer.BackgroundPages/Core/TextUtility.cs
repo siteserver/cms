@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckUserName))
             {
-                var checkUserName = contentInfo.GetExtendedAttribute(ContentAttribute.CheckUserName);
+                var checkUserName = contentInfo.GetString(ContentAttribute.CheckUserName);
                 if (!string.IsNullOrEmpty(checkUserName))
                 {
                     var key = ContentAttribute.CheckUserName + ":" + checkUserName;
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckCheckDate))
             {
-                var checkDate = contentInfo.GetExtendedAttribute(ContentAttribute.CheckCheckDate);
+                var checkDate = contentInfo.GetString(ContentAttribute.CheckCheckDate);
                 if (!string.IsNullOrEmpty(checkDate))
                 {
                     value = DateUtils.GetDateAndTimeString(TranslateUtils.ToDateTime(checkDate));
@@ -110,7 +110,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckReasons))
             {
-                value = contentInfo.GetExtendedAttribute(ContentAttribute.CheckReasons);
+                value = contentInfo.GetString(ContentAttribute.CheckReasons);
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.AddDate))
             {
@@ -154,7 +154,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsTop) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsRecommend))
             {
-                value = StringUtils.GetTrueImageHtml(contentInfo.GetExtendedAttribute(styleInfo.AttributeName));
+                value = StringUtils.GetTrueImageHtml(contentInfo.GetString(styleInfo.AttributeName));
             }
             else
             {
@@ -185,7 +185,7 @@ namespace SiteServer.BackgroundPages.Core
 
                 if (!isSettting)
                 {
-                    value = InputParserUtility.GetContentByTableStyle(contentInfo.GetExtendedAttribute(styleInfo.AttributeName), publishmentSystemInfo, tableStyle, styleInfo);
+                    value = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), publishmentSystemInfo, tableStyle, styleInfo);
                 }
             }
             return value;
@@ -263,8 +263,7 @@ namespace SiteServer.BackgroundPages.Core
                     foreach (var link in pluginChannel.ContentLinks)
                     {
                         var href = PluginUtils.GetMenuContentHref(pluginId, link.Href,
-                            publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id,
-                            StringUtils.ValueToUrl(pageUrl));
+                            publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
                         builder.Append(
                             $@"<td class=""center"" width=""80""><a href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a></td>");
                     }
@@ -351,8 +350,7 @@ namespace SiteServer.BackgroundPages.Core
                     foreach (var link in pluginChannel.ContentLinks)
                     {
                         var href = PluginUtils.GetMenuContentHref(pluginId, link.Href,
-                            publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id,
-                            StringUtils.ValueToUrl(pageUrl));
+                            publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id, pageUrl);
                         builder.Append(
                             $@"<a style=""margin:0 5px"" href=""{href}"" {(string.IsNullOrEmpty(link.Target) ? string.Empty : "target='" + link.Target + "'")}>{link.Text}</a>");
                     }

@@ -134,7 +134,7 @@ namespace SiteServer.CMS.Core
                     if (columnsMap[attributeName] != null)
                     {
                         var columnsToMatch = columnsMap[attributeName];
-                        contentInfo.SetExtendedAttribute(columnsToMatch, collection[attributeName]);
+                        contentInfo.Set(columnsToMatch, collection[attributeName]);
                     }
                 }
             }

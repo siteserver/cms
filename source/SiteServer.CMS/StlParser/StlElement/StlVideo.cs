@@ -195,14 +195,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else
                         {
-                            videoUrl = contextInfo.ContentInfo.GetExtendedAttribute(type);
+                            videoUrl = contextInfo.ContentInfo.GetString(type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
-                                videoUrl = contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.VideoUrl);
+                                videoUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
                             }
                             if (string.IsNullOrEmpty(videoUrl))
                             {
-                                videoUrl = contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.FileUrl);
+                                videoUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
                             }
                         }
                     }
@@ -217,8 +217,8 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contentId != 0)
                 {
-                    //imageUrl = contextInfo.ContentInfo == null ? BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.ImageUrl) : contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.ImageUrl);
-                    imageUrl = contextInfo.ContentInfo == null ? Content.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.ImageUrl) : contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.ImageUrl);
+                    //imageUrl = contextInfo.ContentInfo == null ? BaiRongDataProvider.ContentDao.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.ImageUrl) : contextInfo.ContentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+                    imageUrl = contextInfo.ContentInfo == null ? Content.GetValue(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.ImageUrl) : contextInfo.ContentInfo.GetString(BackgroundContentAttribute.ImageUrl);
                 }
             }
 

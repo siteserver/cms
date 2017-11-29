@@ -78,7 +78,7 @@ namespace SiteServer.CMS.Core.Office
                     {
                         if (displayAttributes.Contains(tableStyleInfo.AttributeName))
                         {
-                            var value = contentInfo.GetExtendedAttribute(tableStyleInfo.AttributeName);
+                            var value = contentInfo.GetString(tableStyleInfo.AttributeName);
                             insertBuilder.Append($"'{SqlUtils.ToSqlString(StringUtils.StripTags(value))}', ");
                         }
                     }

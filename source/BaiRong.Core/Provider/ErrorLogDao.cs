@@ -114,24 +114,42 @@ namespace BaiRong.Core.Provider
 
         public string GetSelectCommend(string pluginId, string keyword, string dateFrom, string dateTo)
         {
-            var whereString = new StringBuilder($"PluginId = '{PageUtils.FilterSql(pluginId)}'");
+            var whereString = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(pluginId))
+            {
+                whereString.Append($"PluginId = '{PageUtils.FilterSql(pluginId)}'");
+            }
 
             if (!string.IsNullOrEmpty(keyword))
             {
+                if (whereString.Length > 0)
+                {
+                    whereString.Append(" AND ");
+                }
                 var filterKeyword = PageUtils.FilterSql(keyword);
-                whereString.Append(
-                    $" AND (Message LIKE '%{filterKeyword}%' OR Stacktrace LIKE '%{filterKeyword}%' OR Summary LIKE '%{filterKeyword}%')");
+                whereString.Append($"(Message LIKE '%{filterKeyword}%' OR Stacktrace LIKE '%{filterKeyword}%' OR Summary LIKE '%{filterKeyword}%')");
             }
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                whereString.Append($" AND AddDate >= '{dateFrom}'");
+                if (whereString.Length > 0)
+                {
+                    whereString.Append(" AND ");
+                }
+                whereString.Append($"AddDate >= '{dateFrom}'");
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                whereString.Append($" AND AddDate <= '{dateTo}'");
+                if (whereString.Length > 0)
+                {
+                    whereString.Append(" AND ");
+                }
+                whereString.Append($"AddDate <= '{dateTo}'");
             }
 
-            return $"SELECT Id, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName} WHERE {whereString}";
+            return whereString.Length > 0
+                ? $"SELECT Id, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName} WHERE {whereString}"
+                : $"SELECT Id, PluginId, Message, Stacktrace, Summary, AddDate FROM {TableName}";
         }
     }
 }

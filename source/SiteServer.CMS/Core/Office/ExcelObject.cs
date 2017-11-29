@@ -52,7 +52,7 @@ namespace SiteServer.CMS.Core.Office
 
         //            foreach (var tableStyleInfo in tableStyleInfoList)
         //            {
-        //                var value = contentInfo.GetExtendedAttribute(tableStyleInfo.AttributeName);
+        //                var value = contentInfo.GetString(tableStyleInfo.AttributeName);
 
         //                if (!string.IsNullOrEmpty(value))
         //                {
@@ -120,7 +120,7 @@ namespace SiteServer.CMS.Core.Office
                     {
                         if (displayAttributes.Contains(tableStyleInfo.AttributeName))
                         {
-                            var value = contentInfo.GetExtendedAttribute(tableStyleInfo.AttributeName);
+                            var value = contentInfo.GetString(tableStyleInfo.AttributeName);
                             row.Add(StringUtils.StripTags(value));
                         }
                     }
@@ -591,7 +591,7 @@ namespace SiteServer.CMS.Core.Office
                         if (!string.IsNullOrEmpty(attributeName))
                         {
                             var value = row[i];
-                            contentInfo.SetExtendedAttribute(attributeName, value);
+                            contentInfo.Set(attributeName, value);
                         }
                     }
 

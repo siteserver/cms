@@ -27,11 +27,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Body.IsQueryExists("alipayPc"))
             {
-                LtlScript.Text = PaymentApi.Instance.ChargeByAlipayPc("测试", 0.01M, StringUtils.GetShortGuid(), "https://www.alipay.com", string.Empty);
+                LtlScript.Text = PaymentApi.Instance.ChargeByAlipayPc("测试", 0.01M, StringUtils.GetShortGuid(), "https://www.alipay.com");
             }
             else if (Body.IsQueryExists("alipayMobi"))
             {
-                LtlScript.Text = PaymentApi.Instance.ChargeByAlipayMobi("测试", 0.01M, StringUtils.GetShortGuid(), "https://www.alipay.com", string.Empty);
+                LtlScript.Text = PaymentApi.Instance.ChargeByAlipayMobi("测试", 0.01M, StringUtils.GetShortGuid(), "https://www.alipay.com");
             }
             else if (Body.IsQueryExists("weixin"))
             {
@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else if (Body.IsQueryExists("jdpay"))
             {
-                LtlScript.Text = PaymentApi.Instance.ChargeByJdpay("测试", 0.01M, StringUtils.GetShortGuid(), "https://www.jdpay.com", string.Empty);
+                LtlScript.Text = PaymentApi.Instance.ChargeByJdpay("测试", 0.01M, StringUtils.GetShortGuid(), "https://www.jdpay.com");
             }
 
             BreadCrumbSettings("支付设置", AppManager.Permissions.Settings.Integration);

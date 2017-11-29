@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -132,7 +133,7 @@ namespace SiteServer.BackgroundPages.Cms
                         PhPlugins.Visible = false;
                     }
 
-                    CacAttributes.SetParameters(nodeInfo.Additional.GetExtendedAttributes(), true, IsPostBack);
+                    CacAttributes.SetParameters(nodeInfo.Additional.ToNameValueCollection(), true, IsPostBack);
 
                     TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", PublishmentSystemInfo.Additional.WebUrl));
 
@@ -289,11 +290,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                     var extendedAttributes = new ExtendedAttributes();
                     var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.GetExtendedAttributes());
-                    var attributes = extendedAttributes.GetExtendedAttributes();
+                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.ToNameValueCollection());
+                    var attributes = extendedAttributes.ToNameValueCollection();
                     foreach (string key in attributes)
                     {
-                        nodeInfo.Additional.SetExtendedAttribute(key, attributes[key]);
+                        nodeInfo.Additional.Set(key, attributes[key]);
                     }
 
                     nodeInfo.NodeName = TbNodeName.Text;

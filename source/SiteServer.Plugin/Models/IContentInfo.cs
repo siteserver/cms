@@ -2,7 +2,7 @@
 
 namespace SiteServer.Plugin.Models
 {
-    public interface IContentInfo
+    public interface IContentInfo : IAttributes
     {
         int Id { get; set; }
 
@@ -57,7 +57,5 @@ namespace SiteServer.Plugin.Models
         bool IsColor { get; set; }
 
         DateTime AddDate { get; set; }
-
-        ExtendedAttributes Attributes { get; }
     }
 }

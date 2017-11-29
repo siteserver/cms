@@ -97,13 +97,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var eachList = new List<string>();
 
-                    if (!string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(type)))
+                    if (!string.IsNullOrEmpty(contentInfo.GetString(type)))
                     {
-                        eachList.Add(contentInfo.GetExtendedAttribute(type));
+                        eachList.Add(contentInfo.GetString(type));
                     }
 
                     var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                    var extendValues = contentInfo.GetExtendedAttribute(extendAttributeName);
+                    var extendValues = contentInfo.GetString(extendAttributeName);
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))

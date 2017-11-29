@@ -108,16 +108,16 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var contentInfo = contextInfo.ContentInfo;
 
-                        if (!string.IsNullOrEmpty(contentInfo?.GetExtendedAttribute(type)))
+                        if (!string.IsNullOrEmpty(contentInfo?.GetString(type)))
                         {
                             if (no <= 1)
                             {
-                                fileUrl = contentInfo.GetExtendedAttribute(StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl) ? BackgroundContentAttribute.FileUrl : type);
+                                fileUrl = contentInfo.GetString(StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl) ? BackgroundContentAttribute.FileUrl : type);
                             }
                             else
                             {
                                 var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                                var extendValues = contentInfo.GetExtendedAttribute(extendAttributeName);
+                                var extendValues = contentInfo.GetString(extendAttributeName);
                                 if (!string.IsNullOrEmpty(extendValues))
                                 {
                                     var index = 2;

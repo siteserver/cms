@@ -428,19 +428,7 @@ namespace BaiRong.Core.Provider
             return dataset;
         }
 
-        public void ReadResultsToExtendedAttributes(IDataReader rdr, ExtendedAttributes attributes)
-        {
-            for (var i = 0; i < rdr.FieldCount; i++)
-            {
-                var columnName = rdr.GetName(i);
-                var value = Convert.ToString(rdr.GetValue(i));
-                if (!string.IsNullOrEmpty(value))
-                {
-                    value = PageUtils.UnFilterSql(value);
-                }
-                attributes.SetExtendedAttribute(columnName, value);
-            }
-        }
+        
 
         public void ReadResultsToNameValueCollection(IDataReader rdr, NameValueCollection attributes)
         {

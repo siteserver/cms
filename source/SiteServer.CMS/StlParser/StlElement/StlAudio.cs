@@ -96,14 +96,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        playUrl = contextInfo.ContentInfo.GetExtendedAttribute(type);
+                        playUrl = contextInfo.ContentInfo.GetString(type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.VideoUrl);
+                            playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
                         }
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.FileUrl);
+                            playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
                         }
                     }
                 }

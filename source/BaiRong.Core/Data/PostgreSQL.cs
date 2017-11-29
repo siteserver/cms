@@ -9,7 +9,6 @@ namespace BaiRong.Core.Data
 {
     public class PostgreSql : DbHelper, IDbHelper
     {
-        #region Overrides
         /// <summary>
         /// Returns an array of SqlParameters of the specified size
         /// </summary>
@@ -29,6 +28,11 @@ namespace BaiRong.Core.Data
         public override IDbConnection GetConnection(string connectionString)
         {
             return new NpgsqlConnection(connectionString);
+        }
+
+        public IDbCommand GetCommand()
+        {
+            return new NpgsqlCommand();
         }
 
 
@@ -216,6 +220,5 @@ namespace BaiRong.Core.Data
             // do nothing special for BLOBs...as far as we know now.
             return p;
         }
-        #endregion
     }
 }

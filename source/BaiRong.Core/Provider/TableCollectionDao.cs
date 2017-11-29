@@ -473,7 +473,7 @@ namespace BaiRong.Core.Provider
             return isExists;
         }
 
-        public bool IsTableExistsAndCreated(string tableName)
+        public bool IsExistsAndCreated(string tableName)
         {
             var isExists = false;
 
@@ -491,7 +491,7 @@ namespace BaiRong.Core.Provider
             return isExists;
         }
 
-        public bool IsTableExists(string tableName)
+        public bool IsExists(string tableName)
         {
             var isExists = false;
 
@@ -534,7 +534,7 @@ namespace BaiRong.Core.Provider
             if (!IsTableExistsAndCreated(EAuxiliaryTableType.BackgroundContent))
             {
                 var tableName = EAuxiliaryTableTypeUtils.GetDefaultTableName(EAuxiliaryTableType.BackgroundContent);
-                if (!IsTableExists(tableName))
+                if (!IsExists(tableName))
                 {
                     var tableInfo = new AuxiliaryTableInfo(tableName, "后台内容表", 0, EAuxiliaryTableType.BackgroundContent, false, false, true, string.Empty);
                     Insert(tableInfo);

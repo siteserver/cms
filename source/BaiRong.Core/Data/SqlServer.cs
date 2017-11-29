@@ -28,7 +28,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.OleDb;
 using System.Xml;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Data
@@ -39,13 +38,6 @@ namespace BaiRong.Core.Data
 	/// </summary>
 	public class SqlServer : DbHelper, IDbHelper
     {
-		/// <summary>
-		/// Create a SQL Helper.  Needs to be a default constructor so that the Factory can create it
-		/// </summary>
-		public SqlServer()
-		{
-		}
-
 		#region Overrides
 		/// <summary>
 		/// Returns an array of SqlParameters of the specified size
@@ -67,11 +59,16 @@ namespace BaiRong.Core.Data
 			return new SqlConnection( connectionString );
 		}
 
-		/// <summary>
-		/// Returns a SqlDataAdapter object
-		/// </summary>
-		/// <returns>The SqlDataAdapter</returns>
-		public override IDbDataAdapter GetDataAdapter()
+        public IDbCommand GetCommand()
+        {
+            return new SqlCommand();
+        }
+
+        /// <summary>
+        /// Returns a SqlDataAdapter object
+        /// </summary>
+        /// <returns>The SqlDataAdapter</returns>
+        public override IDbDataAdapter GetDataAdapter()
 		{
 			return new SqlDataAdapter();
 		}

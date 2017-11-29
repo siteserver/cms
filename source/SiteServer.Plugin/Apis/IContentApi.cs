@@ -17,9 +17,6 @@ namespace SiteServer.Plugin.Apis
 
         string GetContentValue(int publishmentSystemId, int channelId, int contentId, string attributeName);
 
-        void SetValuesToContentInfo(int publishmentSystemId, int channelId, NameValueCollection form,
-            IContentInfo contentInfo);
-
         List<PluginTableColumn> GetTableColumns(int publishmentSystemId, int channelId);
 
         int Insert(int publishmentSystemId, int channelId, IContentInfo contentInfo);

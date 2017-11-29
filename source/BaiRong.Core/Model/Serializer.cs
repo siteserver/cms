@@ -10,7 +10,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace SiteServer.Plugin.Models
+namespace BaiRong.Core.Model
 {
 	public class Serializer
 	{

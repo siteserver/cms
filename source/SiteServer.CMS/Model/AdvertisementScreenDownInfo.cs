@@ -1,14 +1,13 @@
-using BaiRong.Core;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
     public class AdvertisementScreenDownInfo : ExtendedAttributes
 	{
-        public AdvertisementScreenDownInfo(string settings)
+        public AdvertisementScreenDownInfo(string settings) : base(settings)
         {
-            var nameValueCollection = TranslateUtils.ToNameValueCollection(settings);
-            SetExtendedAttribute(nameValueCollection);
+
         }
 
         public AdvertisementScreenDownInfo(string navigationUrl, string imageUrl, int delay, int height, int width)
@@ -22,32 +21,32 @@ namespace SiteServer.CMS.Model
 
         public string NavigationUrl
         {
-            get { return GetExtendedAttribute("NavigationUrl"); }
-            set { SetExtendedAttribute("NavigationUrl", value); }
+            get { return GetString("NavigationUrl"); }
+            set { Set("NavigationUrl", value); }
         }
 
         public string ImageUrl
 		{
-            get { return GetExtendedAttribute("ImageUrl"); }
-            set { SetExtendedAttribute("ImageUrl", value); }
+            get { return GetString("ImageUrl"); }
+            set { Set("ImageUrl", value); }
 		}
 
         public int Delay
         {
             get { return GetInt("Delay"); }
-            set { SetExtendedAttribute("Delay", value.ToString()); }
+            set { Set("Delay", value.ToString()); }
         }
 
 		public int Height
 		{
             get { return GetInt("Height"); }
-            set { SetExtendedAttribute("Height", value.ToString()); }
+            set { Set("Height", value.ToString()); }
 		}
 
 		public int Width
 		{
             get { return GetInt("Width"); }
-            set { SetExtendedAttribute("Width", value.ToString()); }
+            set { Set("Width", value.ToString()); }
 		}
 	}
 }

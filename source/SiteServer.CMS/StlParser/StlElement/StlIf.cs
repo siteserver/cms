@@ -130,7 +130,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             string successTemplateString;
             string failureTemplateString;
 
-            StlInnerUtility.GetYesNo(pageInfo, contextInfo.InnerXml, out successTemplateString, out failureTemplateString);
+            StlInnerUtility.GetYesNo(contextInfo.InnerXml, out successTemplateString, out failureTemplateString);
 
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) ||
                 StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) ||
@@ -777,7 +777,7 @@ function {functionName}(pageNum)
             }
             else
             {
-                theValue = channel.Additional.GetExtendedAttribute(testTypeStr);
+                theValue = channel.Additional.GetString(testTypeStr);
             }
             return theValue;
         }
@@ -794,7 +794,7 @@ function {functionName}(pageNum)
             }
             else
             {
-                theValue = contextInfo.ContentInfo.GetExtendedAttribute(testTypeStr);
+                theValue = contextInfo.ContentInfo.GetString(testTypeStr);
             }
 
             return theValue;

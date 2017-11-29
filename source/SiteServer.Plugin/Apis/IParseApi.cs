@@ -4,6 +4,12 @@ namespace SiteServer.Plugin.Apis
 {
     public interface IParseApi
     {
+        void GetYesNo(string innerXml, out string yes, out string no);
+
+        void GetTemplateYesNo(string innerXml, out string template, out string yes, out string no);
+
+        void GetLoadingYesNo(string innerXml, out string loading, out string yes, out string no);
+
         void GetTemplateLoadingYesNo(string innerXml, out string template, out string loading, out string yes,
             out string no);
 

@@ -852,8 +852,17 @@ namespace BaiRong.Core
             return xmlString.ToString();
         }
 
+        public static void SetOrRemoveAttributeLowerCase(NameValueCollection attributes, string key, string value)
+        {
+            if (attributes == null || string.IsNullOrEmpty(key)) return;
+
+            SetOrRemoveAttribute(attributes, key.ToLower(), value);
+        }
+
         public static void SetOrRemoveAttribute(NameValueCollection attributes, string key, string value)
         {
+            if (attributes == null || string.IsNullOrEmpty(key)) return;
+
             if (!string.IsNullOrEmpty(value))
             {
                 attributes[key] = value;

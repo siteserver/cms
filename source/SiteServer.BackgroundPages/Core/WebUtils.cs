@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Core
         public static string GetContentTitle(PublishmentSystemInfo publishmentSystemInfo, ContentInfo contentInfo, string pageUrl)
         {
             string url;
-            var title = ContentUtility.FormatTitle(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.TitleFormatString), contentInfo.Title);
+            var title = ContentUtility.FormatTitle(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString), contentInfo.Title);
 
             var displayString = contentInfo.IsTop ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
 
@@ -53,33 +53,33 @@ namespace SiteServer.BackgroundPages.Core
             }
             if (contentInfo.ReferenceId > 0)
             {
-                if (contentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType) == ETranslateContentType.ReferenceContent.ToString())
+                if (contentInfo.GetString(ContentAttribute.TranslateContentType) == ETranslateContentType.ReferenceContent.ToString())
                 {
                     image += "&nbsp;<img src='../pic/icon/reference.png' title='引用内容' align='absmiddle' border=0 />(引用内容)";
                 }
-                else if (contentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+                else if (contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
                 {
                     image += "&nbsp;<img src='../pic/icon/reference.png' title='引用地址' align='absmiddle' border=0 />(引用地址)";
                 }
             }
-            if (!string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.LinkUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.LinkUrl)))
             {
                 image += "&nbsp;<img src='../pic/icon/link.png' title='外部链接' align='absmiddle' border=0 />";
             }
-            if (!string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.ImageUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.ImageUrl)))
             {
-                var imageUrl = PageUtility.ParseNavigationUrl(publishmentSystemInfo, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.ImageUrl));
+                var imageUrl = PageUtility.ParseNavigationUrl(publishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl));
                 var openWindowString = ModalMessage.GetOpenWindowString("预览图片", $"<img src='{imageUrl}' />", 500, 500);
                 image +=
                     $@"&nbsp;<a href=""javascript:;"" onclick=""{openWindowString}""><img src='../assets/icons/img.gif' title='预览图片' align='absmiddle' border=0 /></a>";
             }
-            if (!string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.VideoUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.VideoUrl)))
             {
-                var openWindowString = ModalMessage.GetOpenWindowStringToPreviewVideoByUrl(publishmentSystemInfo.PublishmentSystemId, contentInfo.GetExtendedAttribute(BackgroundContentAttribute.VideoUrl));
+                var openWindowString = ModalMessage.GetOpenWindowStringToPreviewVideoByUrl(publishmentSystemInfo.PublishmentSystemId, contentInfo.GetString(BackgroundContentAttribute.VideoUrl));
                 image +=
                     $@"&nbsp;<a href=""javascript:;"" onclick=""{openWindowString}""><img src='../pic/icon/video.png' title='预览视频' align='absmiddle' border=0 /></a>";
             }
-            if (!string.IsNullOrEmpty(contentInfo.GetExtendedAttribute(BackgroundContentAttribute.FileUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.FileUrl)))
             {
                 image += "&nbsp;<img src='../pic/icon/attachment.gif' title='附件' align='absmiddle' border=0 />";
                 if (publishmentSystemInfo.Additional.IsCountDownload)

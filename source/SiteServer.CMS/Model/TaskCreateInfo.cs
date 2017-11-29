@@ -1,32 +1,31 @@
-using BaiRong.Core;
+using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Model
 {
 	public class TaskCreateInfo : ExtendedAttributes
 	{
-        public TaskCreateInfo(string serviceParameters)
+        public TaskCreateInfo(string settings) : base(settings)
         {
-            var nameValueCollection = TranslateUtils.ToNameValueCollection(serviceParameters);
-            SetExtendedAttribute(nameValueCollection);
+
         }
 
         public bool IsCreateAll
         {
             get { return GetBool("IsCreateAll"); }
-            set { SetExtendedAttribute("IsCreateAll", value.ToString()); }
+            set { Set("IsCreateAll", value.ToString()); }
         }
 
         public string ChannelIdCollection
 		{
-            get { return GetExtendedAttribute("ChannelIdCollection"); }
-            set { SetExtendedAttribute("ChannelIdCollection", value); }
+            get { return GetString("ChannelIdCollection"); }
+            set { Set("ChannelIdCollection", value); }
 		}
 
         public string CreateTypes
         {
-            get { return GetExtendedAttribute("CreateTypes"); }
-            set { SetExtendedAttribute("CreateTypes", value); }
+            get { return GetString("CreateTypes"); }
+            set { Set("CreateTypes", value); }
         }
 	}
 }

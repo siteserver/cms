@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Core
                     }
                     if (mailSmsInfo.SmsReceiver == ETriState.All || mailSmsInfo.SmsReceiver == ETriState.False)
                     {
-                        var smsTo = contentInfo.GetExtendedAttribute(mailSmsInfo.SmsFiledName);
+                        var smsTo = contentInfo.GetString(mailSmsInfo.SmsFiledName);
                         if (!string.IsNullOrEmpty(smsTo))
                         {
                             var mobiles = smsTo.Split(';', ',');
@@ -86,18 +86,18 @@ namespace SiteServer.CMS.Core
                     }
 
                     var content = builder.ToString();
-                    content = StringUtils.ReplaceIgnoreCase(content, "[AddDate]", DateUtils.GetDateAndTimeString(TranslateUtils.ToDateTime(contentInfo.GetExtendedAttribute(ContentAttribute.AddDate))));
+                    content = StringUtils.ReplaceIgnoreCase(content, "[AddDate]", DateUtils.GetDateAndTimeString(TranslateUtils.ToDateTime(contentInfo.GetString(ContentAttribute.AddDate))));
 
                     foreach (var styleInfo in styleInfoList)
                     {
-                        var theValue = InputParserUtility.GetContentByTableStyle(contentInfo.GetExtendedAttribute(styleInfo.AttributeName), publishmentSystemInfo, tableStyle, styleInfo);
+                        var theValue = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), publishmentSystemInfo, tableStyle, styleInfo);
                         content = StringUtils.ReplaceIgnoreCase(content, $"[{styleInfo.AttributeName}]", theValue);
                     }
 
                     var attributeNameList = TableManager.GetAttributeNameList(tableStyle, tableName);
                     foreach (var attributeName in attributeNameList)
                     {
-                        var theValue = contentInfo.GetExtendedAttribute(attributeName);
+                        var theValue = contentInfo.GetString(attributeName);
                         content = StringUtils.ReplaceIgnoreCase(content, $"[{attributeName}]", theValue);
                     }
 

@@ -252,7 +252,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     {
                         if (!contentInfo.ContainsKey(attributeName.ToLower()))
                         {
-                            contentInfo.SetExtendedAttribute(attributeName, AtomUtility.Decrypt(attributes[attributeName]));
+                            contentInfo.Set(attributeName, AtomUtility.Decrypt(attributes[attributeName]));
                         }
                     }
 
@@ -526,11 +526,11 @@ namespace SiteServer.CMS.ImportExport.Components
             var starSetting = StarsManager.GetStarSettingToExport(_publishmentSystemInfo.PublishmentSystemId, contentInfo.NodeId, contentInfo.Id);
             AtomUtility.AddDcElement(entry.AdditionalElements, BackgroundContentAttribute.StarSetting, starSetting);
 
-            foreach (string attributeName in contentInfo.GetExtendedAttributes().Keys)
+            foreach (string attributeName in contentInfo.ToNameValueCollection().Keys)
             {
                 if (!ContentAttribute.AllAttributes.Contains(attributeName.ToLower()))
                 {
-                    AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, AtomUtility.Encrypt(contentInfo.GetExtendedAttribute(attributeName)));
+                    AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, AtomUtility.Encrypt(contentInfo.GetString(attributeName)));
                 }
             }
 

@@ -287,7 +287,7 @@ $('#TbTags').keyup(function (e) {
                 }
                 else
                 {
-                    AcAttributes.SetParameters(contentInfo?.GetExtendedAttributes(), PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities, _tableStyle, _tableName, true, IsPostBack);
+                    AcAttributes.SetParameters(contentInfo?.ToNameValueCollection(), PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities, _tableStyle, _tableName, true, IsPostBack);
                     TbTags.Text = contentInfo?.Tags;
                 }
 
@@ -346,7 +346,7 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.LastEditDate = DateTime.Now;
 
                     //自动保存的时候，不保存编辑器的图片
-                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.GetExtendedAttributes(), ContentAttribute.HiddenAttributes, true);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes, true);
 
                     contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
@@ -357,12 +357,12 @@ $('#TbTags').keyup(function (e) {
                     var formatU = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatU"]);
                     var formatColor = Request.Form[ContentAttribute.Title + "_formatColor"];
                     var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
-                    contentInfo.SetExtendedAttribute(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title), theFormatString);
+                    contentInfo.Set(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title), theFormatString);
                     foreach (ListItem listItem in CblContentAttributes.Items)
                     {
                         var value = listItem.Selected.ToString();
                         var attributeName = listItem.Value;
-                        contentInfo.SetExtendedAttribute(attributeName, value);
+                        contentInfo.Set(attributeName, value);
                     }
                     contentInfo.AddDate = TbAddDate.DateTime;
                     if (contentInfo.AddDate.Year <= DateUtils.SqlMinValue.Year)
@@ -429,7 +429,7 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.LastEditDate = DateTime.Now;
 
                     //自动保存的时候，不保存编辑器的图片
-                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.GetExtendedAttributes(), ContentAttribute.HiddenAttributes, true);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes, true);
 
                     contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
@@ -440,12 +440,12 @@ $('#TbTags').keyup(function (e) {
                     var formatU = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatU"]);
                     var formatColor = Request.Form[ContentAttribute.Title + "_formatColor"];
                     var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
-                    contentInfo.SetExtendedAttribute(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title), theFormatString);
+                    contentInfo.Set(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title), theFormatString);
                     foreach (ListItem listItem in CblContentAttributes.Items)
                     {
                         var value = listItem.Selected.ToString();
                         var attributeName = listItem.Value;
-                        contentInfo.SetExtendedAttribute(attributeName, value);
+                        contentInfo.Set(attributeName, value);
                     }
                     contentInfo.AddDate = TbAddDate.DateTime;
 
@@ -479,7 +479,7 @@ $('#TbTags').keyup(function (e) {
                         foreach (var targetContentId in targetContentIdList)
                         {
                             var targetContentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyleUtils.GetEnumType(table.AuxiliaryTableType.ToString()), table.TableEnName, targetContentId);
-                            if (targetContentInfo == null || targetContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString()) continue;
+                            if (targetContentInfo == null || targetContentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString()) continue;
 
                             contentInfo.Id = targetContentId;
                             contentInfo.PublishmentSystemId = targetContentInfo.PublishmentSystemId;
@@ -487,7 +487,7 @@ $('#TbTags').keyup(function (e) {
                             contentInfo.SourceId = targetContentInfo.SourceId;
                             contentInfo.ReferenceId = targetContentInfo.ReferenceId;
                             contentInfo.Taxis = targetContentInfo.Taxis;
-                            contentInfo.SetExtendedAttribute(ContentAttribute.TranslateContentType, targetContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType));
+                            contentInfo.Set(ContentAttribute.TranslateContentType, targetContentInfo.GetString(ContentAttribute.TranslateContentType));
                             BaiRongDataProvider.ContentDao.Update(table.TableEnName, contentInfo);
 
                             //资源：图片，文件，视频
@@ -502,9 +502,9 @@ $('#TbTags').keyup(function (e) {
                                     var sourceImageUrl = PathUtility.MapPath(PublishmentSystemInfo, bgContentInfo.ImageUrl);
                                     CopyReferenceFiles(targetPublishmentSystemInfo, sourceImageUrl);
                                 }
-                                else if (bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)) != bgTargetContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)))
+                                else if (bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)) != bgTargetContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)))
                                 {
-                                    var sourceImageUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
+                                    var sourceImageUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
 
                                     foreach (string imageUrl in sourceImageUrls)
                                     {
@@ -519,9 +519,9 @@ $('#TbTags').keyup(function (e) {
                                     CopyReferenceFiles(targetPublishmentSystemInfo, sourceFileUrl);
 
                                 }
-                                else if (bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)) != bgTargetContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)))
+                                else if (bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)) != bgTargetContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)))
                                 {
-                                    var sourceFileUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetExtendedAttribute(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
+                                    var sourceFileUrls = TranslateUtils.StringCollectionToStringList(bgContentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
 
                                     foreach (var fileUrl in sourceFileUrls)
                                     {
@@ -572,9 +572,9 @@ $('#TbTags').keyup(function (e) {
             }
             else if (contentInfo != null)
             {
-                if (contentInfo.GetExtendedAttribute(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)) != null)
+                if (contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)) != null)
                 {
-                    isFormatted = ContentUtility.SetTitleFormatControls(contentInfo.GetExtendedAttribute(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), out formatStrong, out formatEm, out formatU, out formatColor);
+                    isFormatted = ContentUtility.SetTitleFormatControls(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), out formatStrong, out formatEm, out formatU, out formatColor);
                 }
             }
 

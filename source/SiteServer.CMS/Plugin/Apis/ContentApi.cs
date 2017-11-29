@@ -160,22 +160,22 @@ namespace SiteServer.CMS.Plugin.Apis
             return ContentUtility.GetContentInfo(tableStyle);
         }
 
-        public void SetValuesToContentInfo(int publishmentSystemId, int channelId, NameValueCollection form, IContentInfo contentInfo)
-        {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-            var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemId, channelId);
+        //public void SetValuesToContentInfo(int publishmentSystemId, int channelId, NameValueCollection form, IContentInfo contentInfo)
+        //{
+        //    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+        //    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+        //    var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+        //    var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
+        //    var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemId, channelId);
 
-            var extendImageUrl = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl);
-            if (form.AllKeys.Contains(StringUtils.LowerFirst(extendImageUrl)))
-            {
-                form[extendImageUrl] = form[StringUtils.LowerFirst(extendImageUrl)];
-            }
+        //    var extendImageUrl = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl);
+        //    if (form.AllKeys.Contains(StringUtils.LowerFirst(extendImageUrl)))
+        //    {
+        //        form[extendImageUrl] = form[StringUtils.LowerFirst(extendImageUrl)];
+        //    }
 
-            InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, form, contentInfo.Attributes.GetExtendedAttributes(), ContentAttribute.HiddenAttributes);
-        }
+        //    InputTypeParser.AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes);
+        //}
 
         public int Insert(int publishmentSystemId, int channelId, IContentInfo contentInfo)
         {

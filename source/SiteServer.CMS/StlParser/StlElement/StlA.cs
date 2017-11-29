@@ -164,7 +164,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (string.IsNullOrEmpty(contextInfo.InnerXml))
                     {
                         var title = contextInfo.ContentInfo?.Title;
-                        title = ContentUtility.FormatTitle(contextInfo.ContentInfo?.GetExtendedAttribute("BackgroundContentAttribute.TitleFormatString"), title);
+                        title = ContentUtility.FormatTitle(contextInfo.ContentInfo?.GetString("BackgroundContentAttribute.TitleFormatString"), title);
 
                         if (pageInfo.PublishmentSystemInfo.Additional.IsContentTitleBreakLine)
                         {

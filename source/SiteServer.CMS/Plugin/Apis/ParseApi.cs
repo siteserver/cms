@@ -15,6 +15,21 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public static ParseApi Instance { get; } = new ParseApi();
 
+        public void GetYesNo(string innerXml, out string yes, out string no)
+        {
+            StlInnerUtility.GetYesNo(innerXml, out yes, out no);
+        }
+
+        public void GetTemplateYesNo(string innerXml, out string template, out string yes, out string no)
+        {
+            StlInnerUtility.GetTemplateYesNo(innerXml, out template, out yes, out no);
+        }
+
+        public void GetLoadingYesNo(string innerXml, out string loading, out string yes, out string no)
+        {
+            StlInnerUtility.GetLoadingYesNo(innerXml, out loading, out yes, out no);
+        }
+
         public void GetTemplateLoadingYesNo(string innerXml, out string template, out string loading, out string yes, out string no)
         {
             StlInnerUtility.GetTemplateLoadingYesNo(innerXml, out template, out loading, out yes, out no);

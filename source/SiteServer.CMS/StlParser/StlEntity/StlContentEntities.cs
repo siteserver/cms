@@ -65,7 +65,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
             {
                 try
                 {
-                    if (contextInfo.ContentInfo != null && contextInfo.ContentInfo.ReferenceId > 0 && contextInfo.ContentInfo.SourceId > 0 && contextInfo.ContentInfo.GetExtendedAttribute(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+                    if (contextInfo.ContentInfo != null && contextInfo.ContentInfo.ReferenceId > 0 && contextInfo.ContentInfo.SourceId > 0 && contextInfo.ContentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
                     {
                         var targetNodeId = contextInfo.ContentInfo.SourceId;
                         //var targetPublishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(targetNodeId);
@@ -144,7 +144,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         if (contextInfo.ContentInfo != null)
                         {
-                            parsedContent = contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.ImageUrl);
+                            parsedContent = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.ImageUrl);
                         }
                         else
                         {
@@ -162,7 +162,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         if (contextInfo.ContentInfo != null)
                         {
-                            parsedContent = contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.VideoUrl);
+                            parsedContent = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
                         }
                         else
                         {
@@ -180,7 +180,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         if (contextInfo.ContentInfo != null)
                         {
-                            parsedContent = contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.FileUrl);
+                            parsedContent = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
                         }
                         else
                         {
@@ -198,7 +198,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         if (contextInfo.ContentInfo != null)
                         {
-                            parsedContent = contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.FileUrl);
+                            parsedContent = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
                         }
                         else
                         {
@@ -242,7 +242,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         if (contextInfo.ContentInfo != null)
                         {
-                            parsedContent = contextInfo.ContentInfo.GetExtendedAttribute(BackgroundContentAttribute.Content);
+                            parsedContent = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.Content);
                         }
                         else
                         {
@@ -310,7 +310,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                             contentNodeId = contextInfo.ContentInfo.NodeId;
                             if (contextInfo.ContentInfo.ContainsKey(attributeName))
                             {
-                                parsedContent = contextInfo.ContentInfo.GetExtendedAttribute(attributeName);
+                                parsedContent = contextInfo.ContentInfo.GetString(attributeName);
                             }
                         }
                         else

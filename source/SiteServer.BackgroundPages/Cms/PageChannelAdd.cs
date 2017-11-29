@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
+using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -261,12 +262,13 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var extendedAttributes = new ExtendedAttributes();
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-                BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.GetExtendedAttributes());
-                var attributes = extendedAttributes.GetExtendedAttributes();
-                foreach (string key in attributes)
-                {
-                    nodeInfo.Additional.SetExtendedAttribute(key, attributes[key]);
-                }
+                BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.ToNameValueCollection());
+                var attributes = extendedAttributes.ToNameValueCollection();
+                nodeInfo.Additional.Load(attributes);
+                //foreach (string key in attributes)
+                //{
+                //    nodeInfo.Additional.SetExtendedAttribute(key, attributes[key]);
+                //}
 
                 nodeInfo.NodeName = TbNodeName.Text;
                 nodeInfo.NodeIndexName = TbNodeIndexName.Text;
