@@ -6,120 +6,107 @@ namespace SiteServer.CMS.Core
 {
 	public class VisualInfo
 	{
-		private int publishmentSystemID;
-        private int channelID;
-        private int contentID;
-        private int fileTemplateID;
-        private int pageIndex;
-        private ETemplateType templateType;
-        private bool isPreview;
-        private string includeUrl;
-        private string filePath;
-
-		private VisualInfo()
+	    private VisualInfo()
 		{
-            publishmentSystemID = channelID = contentID = fileTemplateID = pageIndex = 0;
-            templateType = ETemplateType.IndexPageTemplate;
-            isPreview = false;
-            includeUrl = string.Empty;
-            filePath = string.Empty;
+            PublishmentSystemId = ChannelId = ContentId = FileTemplateId = PageIndex = 0;
+            TemplateType = ETemplateType.IndexPageTemplate;
+            IsPreview = false;
+            IncludeUrl = string.Empty;
+            FilePath = string.Empty;
 		}
 
-        public static VisualInfo GetInstance()
+        //public static VisualInfo GetInstance()
+        //{
+        //    var publishmentSystemId = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["s"]); ;
+        //    var channelId = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["n"]); ;
+        //    var contentId = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["c"]);
+        //    var fileTemplateId = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["f"]);
+        //    var pageIndex = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["p"]);
+        //    var previewId = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["previewId"]);//编辑界面预览
+
+        //    return GetInstance(publishmentSystemId, channelId, contentId, fileTemplateId, pageIndex, previewId);
+        //}
+
+        public static VisualInfo GetInstance(int publishmentSystemId, int channelId, int contentId, int fileTemplateId, int pageIndex, int previewId)
         {
-            var visualInfo = new VisualInfo();
+            var visualInfo = new VisualInfo
+            {
+                PublishmentSystemId = publishmentSystemId,
+                ChannelId = channelId,
+                ContentId = contentId,
+                FileTemplateId = fileTemplateId,
+                PageIndex = pageIndex
+            };
 
-            if (!string.IsNullOrEmpty(HttpContext.Current.Request.QueryString["s"]))
+            if (visualInfo.PublishmentSystemId == 0)
             {
-                visualInfo.publishmentSystemID = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["s"]);
-            }
-            if (visualInfo.publishmentSystemID == 0)
-            {
-                visualInfo.publishmentSystemID = PathUtility.GetCurrentPublishmentSystemId();
-            }
-            if (!string.IsNullOrEmpty(HttpContext.Current.Request.QueryString["n"]))
-            {
-                visualInfo.channelID = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["n"]);
-            }
-            if (!string.IsNullOrEmpty(HttpContext.Current.Request.QueryString["c"]))
-            {
-                visualInfo.contentID = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["c"]);
-            }
-            if (!string.IsNullOrEmpty(HttpContext.Current.Request.QueryString["f"]))
-            {
-                visualInfo.fileTemplateID = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["f"]);
-            }
-            if (!string.IsNullOrEmpty(HttpContext.Current.Request.QueryString["p"]))
-            {
-                visualInfo.pageIndex = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["p"]);
-            }
-            if (!string.IsNullOrEmpty(HttpContext.Current.Request.QueryString["isPreview"]))
-            {
-                visualInfo.isPreview = TranslateUtils.ToBool(HttpContext.Current.Request.QueryString["isPreview"]);
-                if (!string.IsNullOrEmpty(HttpContext.Current.Request.QueryString["previewID"]))
-                {
-                    visualInfo.contentID = TranslateUtils.ToInt(HttpContext.Current.Request.QueryString["previewID"]);//编辑界面预览
-                }
+                visualInfo.PublishmentSystemId = PathUtility.GetCurrentPublishmentSystemId();
             }
 
-            if (visualInfo.channelID > 0)
+            if (previewId > 0)
             {
-                visualInfo.templateType = ETemplateType.ChannelTemplate;
-            }
-            if (visualInfo.contentID > 0 || visualInfo.isPreview)
-            {
-                visualInfo.templateType = ETemplateType.ContentTemplate;
-            }
-            if (visualInfo.fileTemplateID > 0)
-            {
-                visualInfo.templateType = ETemplateType.FileTemplate;
+                visualInfo.IsPreview = true;
+                visualInfo.ContentId = previewId;
             }
 
-            if (visualInfo.channelID == 0)
+            if (visualInfo.ChannelId > 0)
             {
-                visualInfo.channelID = visualInfo.publishmentSystemID;
+                visualInfo.TemplateType = ETemplateType.ChannelTemplate;
+            }
+            if (visualInfo.ContentId > 0 || visualInfo.IsPreview)
+            {
+                visualInfo.TemplateType = ETemplateType.ContentTemplate;
+            }
+            if (visualInfo.FileTemplateId > 0)
+            {
+                visualInfo.TemplateType = ETemplateType.FileTemplate;
             }
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(visualInfo.publishmentSystemID);
-            if (visualInfo.templateType == ETemplateType.IndexPageTemplate)
+            if (visualInfo.ChannelId == 0)
             {
-                var templateInfo = TemplateManager.GetTemplateInfo(visualInfo.publishmentSystemID, 0, ETemplateType.IndexPageTemplate);
+                visualInfo.ChannelId = visualInfo.PublishmentSystemId;
+            }
+
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(visualInfo.PublishmentSystemId);
+            if (visualInfo.TemplateType == ETemplateType.IndexPageTemplate)
+            {
+                var templateInfo = TemplateManager.GetIndexPageTemplateInfo(visualInfo.PublishmentSystemId);
                 var isHeadquarters = publishmentSystemInfo.IsHeadquarters;
-                visualInfo.filePath = PathUtility.GetIndexPageFilePath(publishmentSystemInfo, templateInfo.CreatedFileFullName, isHeadquarters, visualInfo.pageIndex);
+                visualInfo.FilePath = PathUtility.GetIndexPageFilePath(publishmentSystemInfo, templateInfo.CreatedFileFullName, isHeadquarters, visualInfo.PageIndex);
             }
-            else if (visualInfo.templateType == ETemplateType.ChannelTemplate)
+            else if (visualInfo.TemplateType == ETemplateType.ChannelTemplate)
             {
-                visualInfo.filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, visualInfo.channelID, visualInfo.pageIndex);
+                visualInfo.FilePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, visualInfo.ChannelId, visualInfo.PageIndex);
             }
-            else if (visualInfo.templateType == ETemplateType.ContentTemplate)
+            else if (visualInfo.TemplateType == ETemplateType.ContentTemplate)
             {
-                visualInfo.filePath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, visualInfo.channelID, visualInfo.contentID, visualInfo.pageIndex);
+                visualInfo.FilePath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, visualInfo.ChannelId, visualInfo.ContentId, visualInfo.PageIndex);
             }
-            else if (visualInfo.templateType == ETemplateType.FileTemplate)
+            else if (visualInfo.TemplateType == ETemplateType.FileTemplate)
             {
-                var templateInfo = TemplateManager.GetTemplateInfo(visualInfo.publishmentSystemID, visualInfo.fileTemplateID);
-                visualInfo.filePath = PathUtility.MapPath(publishmentSystemInfo, templateInfo.CreatedFileFullName);
+                var templateInfo = TemplateManager.GetFileTemplateInfo(visualInfo.PublishmentSystemId, visualInfo.FileTemplateId);
+                visualInfo.FilePath = PathUtility.MapPath(publishmentSystemInfo, templateInfo.CreatedFileFullName);
             }
 
             return visualInfo;
         }
 
-		public int PublishmentSystemID => publishmentSystemID;
+        public int PublishmentSystemId { get; private set; }
 
-	    public int ChannelID => channelID;
+	    public int ChannelId { get; private set; }
 
-	    public int ContentID => contentID;
+	    public int ContentId { get; private set; }
 
-	    public int FileTemplateID => fileTemplateID;
+	    public int FileTemplateId { get; private set; }
 
-	    public ETemplateType TemplateType => templateType;
+	    public ETemplateType TemplateType { get; private set; }
 
-	    public bool IsPreview => isPreview;
+	    public bool IsPreview { get; private set; }
 
-	    public string IncludeUrl => includeUrl;
+	    public string IncludeUrl { get; }
 
-	    public string FilePath => filePath;
+	    public string FilePath { get; private set; }
 
-	    public int PageIndex => pageIndex;
+	    public int PageIndex { get; private set; }
 	}
 }

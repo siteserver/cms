@@ -10,6 +10,7 @@ using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.User;
@@ -98,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ltlNodeName.Text += $@"
 <script>
 function submitPreview(){{
-    window.open(""{PageUtility.GetPreviewContentUrl(PublishmentSystemId, _nodeId, _contentId)}"");
+    window.open(""{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeId, _contentId)}"");
 }}
 </script>
 ";

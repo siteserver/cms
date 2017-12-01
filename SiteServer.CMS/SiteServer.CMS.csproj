@@ -133,6 +133,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\Preview\PreviewApi.cs" />
     <Compile Include="Controllers\Http\PluginHttpApi.cs" />
     <Compile Include="Controllers\Sys\Administrators\ActionsLogin.cs" />
     <Compile Include="Controllers\Sys\Administrators\SiteCheckList.cs" />

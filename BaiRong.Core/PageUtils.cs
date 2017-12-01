@@ -17,29 +17,9 @@ namespace BaiRong.Core
 
         public static string ParseNavigationUrl(string url)
         {
-            //			string retval = string.Empty;
-            //			if (string.IsNullOrEmpty(url))
-            //			{
-            //				return retval;
-            //			}
-            //			if (url.StartsWith("~"))
-            //			{
-            //				retval = Combine(ApplicationPath ,url.Substring(1));
-            //			}
-            //			else
-            //			{
-            //				retval = url;
-            //			}
-            //			return retval;
-            //            //return AddProtocolToUrl(retval);
-            return ParseNavigationUrl(url, ApplicationPath);
-        }
-
-        public static string ParseNavigationUrl(string url, string domainUrl)
-        {
             if (string.IsNullOrEmpty(url)) return string.Empty;
 
-            return url.StartsWith("~") ? Combine(domainUrl, url.Substring(1)) : url;
+            return url.StartsWith("~") ? Combine(ApplicationPath, url.Substring(1)) : url;
         }
 
         public static string AddProtocolToUrl(string url)
@@ -263,7 +243,7 @@ namespace BaiRong.Core
             return string.IsNullOrEmpty(scheme) ? "http" : scheme.Trim().ToLower();
         }
 
-        public static string ApplicationPath => HttpContext.Current != null ? HttpContext.Current.Request.ApplicationPath : "/";
+        public static string ApplicationPath => HttpContext.Current != null && !string.IsNullOrEmpty(HttpContext.Current.Request.ApplicationPath) ? HttpContext.Current.Request.ApplicationPath : "/";
 
         // 系统根目录访问地址
         public static string GetRootUrl(string relatedUrl)
@@ -804,6 +784,16 @@ namespace BaiRong.Core
         public static string GetSiteFilesUrl(string relatedUrl)
         {
             return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
+        }
+
+        public static string GetSiteTemplatesUrl(string relatedUrl)
+        {
+            return Combine(ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
+        }
+
+        public static string GetSiteTemplateMetadataUrl(string siteTemplateUrl, string relatedUrl)
+        {
+            return Combine(siteTemplateUrl, DirectoryUtils.SiteTemplates.SiteTemplateMetadata, relatedUrl);
         }
 
         public static string GetPluginDirectoryUrl(string pluginId, string url)

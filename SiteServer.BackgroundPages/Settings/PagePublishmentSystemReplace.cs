@@ -71,8 +71,8 @@ namespace SiteServer.BackgroundPages.Settings
 			var siteTemplateInfo = sortedlist[siteTemplateDir] as SiteTemplateInfo;
 			if (siteTemplateInfo != null && !string.IsNullOrEmpty(siteTemplateInfo.PicFileName))
 			{
-                var siteTemplateUrl = PageUtility.GetSiteTemplatesUrl(siteTemplateDir);
-			    var picFileName = PageUtility.GetSiteTemplateMetadataUrl(siteTemplateUrl, siteTemplateInfo.PicFileName);
+                var siteTemplateUrl = PageUtils.GetSiteTemplatesUrl(siteTemplateDir);
+			    var picFileName = PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl, siteTemplateInfo.PicFileName);
                 retval =
                     $"<a href=\"{picFileName}\" target=_blank><img height=120 width=100 border=0 src=\"{picFileName}\" /></a>";
 			}

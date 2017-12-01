@@ -533,6 +533,16 @@ namespace BaiRong.Core
             return retval;
         }
 
+        public static string ReplaceStartsWithIgnoreCase(string input, string replace, string to)
+        {
+            var retval = input;
+            if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(replace) && input.ToLower().StartsWith(replace.ToLower()))
+            {
+                retval = to + input.Substring(replace.Length);
+            }
+            return retval;
+        }
+
         public static string ReplaceEndsWith(string input, string replace, string to)
         {
             var retval = input;

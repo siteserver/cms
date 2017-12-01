@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (templateType == ETemplateType.IndexPageTemplate || templateType == ETemplateType.FileTemplate)
                 {
-                    var url = PageUtility.ParseNavigationUrl(PublishmentSystemInfo, createdFileFullName, true);
+                    var url = PageUtility.ParseNavigationUrl(PublishmentSystemInfo, createdFileFullName);
                     ltlFileName.Text = $"<a href='{url}' target='_blank'>{createdFileFullName}</a>";
                 }
 

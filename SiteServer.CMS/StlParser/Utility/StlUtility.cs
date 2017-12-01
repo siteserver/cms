@@ -28,7 +28,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 if (contentInfo == null)
                 {
                     var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId);
-                    currentUrl = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, false);
+                    currentUrl = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId);
                 }
                 else
                 {

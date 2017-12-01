@@ -9,6 +9,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
+using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
@@ -300,9 +301,9 @@ namespace SiteServer.BackgroundPages
             var builder = new StringBuilder();
 
             builder.Append(
-                    $@"<li><a href=""{PageUtility.GetPublishmentSystemUrl(_publishmentSystemInfo, string.Empty, false)}"" target=""_blank"">访问站点</a></li>");
+                    $@"<li><a href=""{PageUtility.GetPublishmentSystemUrl(_publishmentSystemInfo)}"" target=""_blank"">访问站点</a></li>");
             builder.Append(
-                    $@"<li><a href=""{PageUtility.GetPreviewPublishmentSystemUrl(_publishmentSystemInfo.PublishmentSystemId)}"" target=""_blank"">预览站点</a></li>");
+                    $@"<li><a href=""{PreviewApi.GetPublishmentSystemUrl(_publishmentSystemInfo.PublishmentSystemId)}"" target=""_blank"">预览站点</a></li>");
 
             return $@"<li class=""has-submenu"">
               <a href=""javascript:;""><i class=""ion-link""></i>站点链接</a>

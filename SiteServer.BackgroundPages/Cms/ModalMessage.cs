@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
 <span id=""previewImage""></span>
 <script>
 var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
-var publishmentSystemUrl = '{PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo, string.Empty, true)}';
+var publishmentSystemUrl = '{PageUtils.ParseNavigationUrl($"~/{publishmentSystemInfo.PublishmentSystemDir}")}';
 var imageUrl = window.parent.document.getElementById('{textBoxClientId}').value;
 if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png$/i) != -1){{
 	if (imageUrl.charAt(0) == '~'){{
@@ -116,7 +116,7 @@ if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png$/i) != -1){{
 <span id=""previewVideo""></span>
 <script>
 var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
-var publishmentSystemUrl = '{PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo, string.Empty, true)}';
+var publishmentSystemUrl = '{PageUtils.ParseNavigationUrl($"~/{publishmentSystemInfo.PublishmentSystemDir}")}';
 var videoUrl = window.parent.document.getElementById('{textBoxClientId}').value;
 if (videoUrl.charAt(0) == '~'){{
 	videoUrl = videoUrl.replace('~', rootUrl);

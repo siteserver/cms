@@ -76,7 +76,7 @@ namespace SiteServer.CMS.Plugin.Apis
         public string GetPublishmentSystemUrl(int publishmentSystemId)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo, string.Empty, false);
+            return PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo);
         }
 
         public string GetPublishmentSystemUrlByFilePath(string filePath)
@@ -94,13 +94,13 @@ namespace SiteServer.CMS.Plugin.Apis
         public string GetChannelUrl(int publishmentSystemId, int channelId)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId), false);
+            return PageUtility.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId));
         }
 
         public string GetContentUrl(int publishmentSystemId, int channelId, int contentId)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetContentUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId), contentId, false);
+            return PageUtility.GetContentUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId), contentId);
         }
     }
 }

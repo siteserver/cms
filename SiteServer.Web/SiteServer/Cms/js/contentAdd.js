@@ -19,16 +19,16 @@ function translateNodeRemove(value){
 $(document).keypress(function(e){
   if(e.ctrlKey && e.which == 13 || e.which == 10) {
     e.preventDefault();
-    $("#Submit").click();
+    $("#BtnSubmit").click();
   } else if (e.shiftKey && e.which==13 || e.which == 10) {
     e.preventDefault();
-    $("#Submit").click();
+    $("#BtnSubmit").click();
   }
 });
 
 var isPreviewSaving = false;
 function previewSave() {
-    if (!$('#Title').val()) return;
+    if (!$('#TbTitle').val()) return;
     if (isPreviewSaving) return;
 
     isPreviewSaving = true;
@@ -36,13 +36,13 @@ function previewSave() {
         beforeSubmit: function () {
             return true;
         },
-        url: location.href + '&isAjaxSubmit=True&isPreview=True',
+        url: location.href + '&isPreview=True',
         type: 'POST',
         success: function (data) {
             isPreviewSaving = false;
             var obj = eval("(" + data + ")");
-            if (obj.success == 'true') {
-              window.open(previewUrl + '&isPreview=true&previewID=' + obj.savedContentID);
+            if (obj.previewId) {
+              window.open(previewUrl + '&isPreview=true&previewId=' + obj.previewId);
             }
         }
     };

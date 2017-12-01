@@ -339,7 +339,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
 
                 retval = AjaxManager.GetProgressTaskNameValueCollection(
-                    $"站点模板压缩成功，<a href='{PageUtility.GetSiteTemplatesUrl(fileName)}' target=_blank>点击下载</a>。", string.Empty);
+                    $"站点模板压缩成功，<a href='{PageUtils.GetSiteTemplatesUrl(fileName)}' target=_blank>点击下载</a>。", string.Empty);
             }
             catch (Exception ex)
             {

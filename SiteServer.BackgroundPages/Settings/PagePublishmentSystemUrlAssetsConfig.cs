@@ -7,23 +7,18 @@ using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PagePublishmentSystemUrlConfig : BasePageCms
+	public class PagePublishmentSystemUrlAssetsConfig : BasePageCms
     {
         public Literal LtlPublishmentSystemName;
-
-        public DropDownList DdlIsSeparatedWeb;
-        public PlaceHolder PhSeparatedWeb;
-        public TextBox TbSeparatedWebUrl;
 
         public DropDownList DdlIsSeparatedAssets;
         public PlaceHolder PhSeparatedAssets;
         public TextBox TbSeparatedAssetsUrl;
-
         public TextBox TbAssetsDir;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
-            return PageUtils.GetSettingsUrl(nameof(PagePublishmentSystemUrlConfig), new NameValueCollection
+            return PageUtils.GetSettingsUrl(nameof(PagePublishmentSystemUrlAssetsConfig), new NameValueCollection
             {
                 {
                     "PublishmentSystemID", publishmentSystemId.ToString()
@@ -40,22 +35,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             LtlPublishmentSystemName.Text = PublishmentSystemManager.GetPublishmentSystemName(PublishmentSystemInfo);
 
-            EBooleanUtils.AddListItems(DdlIsSeparatedWeb, "Web独立部署", "Web与CMS部署在一起");
-            ControlUtils.SelectListItems(DdlIsSeparatedWeb, PublishmentSystemInfo.Additional.IsSeparatedWeb.ToString());
-            PhSeparatedWeb.Visible = PublishmentSystemInfo.Additional.IsSeparatedWeb;
-            TbSeparatedWebUrl.Text = PublishmentSystemInfo.Additional.SeparatedWebUrl;
-
             EBooleanUtils.AddListItems(DdlIsSeparatedAssets, "资源文件独立部署", "资源文件与Web部署在一起");
             ControlUtils.SelectListItems(DdlIsSeparatedAssets, PublishmentSystemInfo.Additional.IsSeparatedAssets.ToString());
             PhSeparatedAssets.Visible = PublishmentSystemInfo.Additional.IsSeparatedAssets;
             TbSeparatedAssetsUrl.Text = PublishmentSystemInfo.Additional.SeparatedAssetsUrl;
-
             TbAssetsDir.Text = PublishmentSystemInfo.Additional.AssetsDir;
-        }
-
-        public void DdlIsSeparatedWeb_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            PhSeparatedWeb.Visible = TranslateUtils.ToBool(DdlIsSeparatedWeb.SelectedValue);
         }
 
         public void DdlIsSeparatedAssets_SelectedIndexChanged(object sender, EventArgs e)
@@ -67,11 +51,8 @@ namespace SiteServer.BackgroundPages.Settings
         {
             try
             {
-                PublishmentSystemInfo.Additional.IsSeparatedWeb = TranslateUtils.ToBool(DdlIsSeparatedWeb.SelectedValue);
-                PublishmentSystemInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
                 PublishmentSystemInfo.Additional.IsSeparatedAssets = TranslateUtils.ToBool(DdlIsSeparatedAssets.SelectedValue);
                 PublishmentSystemInfo.Additional.SeparatedAssetsUrl = TbSeparatedAssetsUrl.Text;
-
                 PublishmentSystemInfo.Additional.AssetsDir = TbAssetsDir.Text;
 
                 DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);

@@ -5,7 +5,7 @@ using BaiRong.Core.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PagePublishmentSystemApi : BasePage
+	public class PagePublishmentSystemUrlApi : BasePage
     {
         public DropDownList DdlIsSeparatedApi;
         public PlaceHolder PhSeparatedApi;

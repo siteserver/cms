@@ -214,10 +214,16 @@
     <Compile Include="Settings\PagePermissionAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemApi.cs">
+    <Compile Include="Settings\PagePublishmentSystemUrlApi.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemUrlConfig.cs">
+    <Compile Include="Settings\PagePublishmentSystemUrlWeb.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Settings\PagePublishmentSystemUrlAssetsConfig.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Settings\PagePublishmentSystemUrlWebConfig.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageRecord.cs">
@@ -294,9 +300,6 @@
     <Compile Include="Core\NodeTreeItem.cs" />
     <Compile Include="Core\TextUtility.cs" />
     <Compile Include="Core\WebUtils.cs" />
-    <Compile Include="PagePreview.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="PageRedirect.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -1005,7 +1008,7 @@
     <Compile Include="Settings\PagePublishmentSystemReplace.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PagePublishmentSystemUrl.cs">
+    <Compile Include="Settings\PagePublishmentSystemUrlAssets.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSiteTemplate.cs">

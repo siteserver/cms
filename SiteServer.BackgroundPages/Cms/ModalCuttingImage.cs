@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ltlScript.Text = $@"
 var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
-var publishmentSystemUrl = '{PageUtility.GetPublishmentSystemUrl(PublishmentSystemInfo, string.Empty, true)}';
+var publishmentSystemUrl = '{PageUtils.ParseNavigationUrl($"~/{PublishmentSystemInfo.PublishmentSystemDir}")}';
 var virtualUrl = {virtualUrl};
 var imageUrl = virtualUrl;
 if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png$/i) != -1){{

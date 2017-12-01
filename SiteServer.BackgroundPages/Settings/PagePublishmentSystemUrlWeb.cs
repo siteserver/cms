@@ -2,11 +2,10 @@
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PagePublishmentSystemUrl : BasePageCms
+	public class PagePublishmentSystemUrlWeb : BasePageCms
     {
 		public DataGrid DgContents;
 
@@ -32,18 +31,14 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlName = (Literal)e.Item.FindControl("ltlName");
             var ltlDir = (Literal)e.Item.FindControl("ltlDir");
             var ltlWebUrl = (Literal)e.Item.FindControl("ltlWebUrl");
-            var ltlAssetsDir = (Literal)e.Item.FindControl("ltlAssetsDir");
-            var ltlAssetsUrl = (Literal)e.Item.FindControl("ltlAssetsUrl");
             var ltlEditUrl = (Literal)e.Item.FindControl("ltlEditUrl");
 
             ltlName.Text = PublishmentSystemManager.GetPublishmentSystemName(publishmentSystemInfo);
             ltlDir.Text = publishmentSystemInfo.PublishmentSystemDir;
 
             ltlWebUrl.Text = $@"<a href=""{publishmentSystemInfo.Additional.WebUrl}"" target=""_blank"">{publishmentSystemInfo.Additional.WebUrl}</a>";
-            ltlAssetsDir.Text = publishmentSystemInfo.Additional.AssetsDir;
-            ltlAssetsUrl.Text = $@"<a href=""{publishmentSystemInfo.Additional.AssetsUrl}"" target=""_blank"">{publishmentSystemInfo.Additional.AssetsUrl}</a>";
 
-            ltlEditUrl.Text = $@"<a href=""{PagePublishmentSystemUrlConfig.GetRedirectUrl(publishmentSystemId)}"">修改</a>";
+            ltlEditUrl.Text = $@"<a href=""{PagePublishmentSystemUrlWebConfig.GetRedirectUrl(publishmentSystemId)}"">修改</a>";
         }
 	}
 }

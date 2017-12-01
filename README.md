@@ -11,11 +11,11 @@ SiteServer CMS 是.NET平台CMS系统的创始者，能够以最低的成本、�
 
 ```
 │  siteserver.sln                 Visual Studio 项目文件
-│  README.md
 │
 ├─BaiRong.Core                    基础类库
 ├─SiteServer.BackgroundPages      ASP.NET 页面源文件
 ├─SiteServer.CMS                  CMS 源文件
+├─SiteServer.Plugin               插件源文件
 ├─SiteServer.Web                  API 源文件及aspx页面
 ├─siteserver                      SiteServer 控制台程序
 └─ref                             引用第三方DLL

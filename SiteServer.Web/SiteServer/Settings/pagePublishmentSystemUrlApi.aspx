@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PagePublishmentSystemApi" %>
+﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PagePublishmentSystemUrlApi" %>
   <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
@@ -16,19 +16,24 @@
 
         <div class="raw">
           <div class="card-box">
-            <h4 class="m-t-0 header-title"><b>API访问地址</b></h4>
+            <h4 class="m-t-0 header-title">
+              <b>API访问地址</b>
+            </h4>
             <p class="text-muted font-13 m-b-25">
               在此设置API的部署方式
             </p>
 
             <ul class="nav nav-pills m-b-30">
-              <li class="">
-                  <a href="pagePublishmentSystemUrl.aspx">站点访问地址</a>
+              <li>
+                <a href="pagePublishmentSystemUrlWeb.aspx">Web访问地址</a>
+              </li>
+              <li>
+                <a href="pagePublishmentSystemUrlAssets.aspx">资源文件访问地址</a>
               </li>
               <li class="active">
-                  <a href="javascript:;">API访问地址</a>
+                <a href="javascript:;">API访问地址</a>
               </li>
-          </ul>
+            </ul>
 
             <div class="form-horizontal">
 

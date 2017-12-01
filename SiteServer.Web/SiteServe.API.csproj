@@ -159,6 +159,7 @@
     <Compile Include="Controllers\Json\PluginJsonController.cs" />
     <Compile Include="Controllers\Sys\Integration\IntegrationPayController.cs" />
     <Compile Include="Controllers\Sys\Stl\Comments\CommentsActionsLogoutController.cs" />
+    <Compile Include="Controllers\Preview\PreviewController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\Http\PluginHttpController.cs" />
     <Compile Include="Controllers\Sys\Stl\StlActionsRelatedFieldController.cs" />

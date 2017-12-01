@@ -128,9 +128,9 @@ namespace SiteServer.BackgroundPages.Settings
             ltlDescription.Text = siteTemplateInfo.Description;
             if (!string.IsNullOrEmpty(siteTemplateInfo.PicFileName))
             {
-                var siteTemplateUrl = PageUtility.GetSiteTemplatesUrl(dirInfo.Name);
+                var siteTemplateUrl = PageUtils.GetSiteTemplatesUrl(dirInfo.Name);
                 ltlDownloadUrl.Text +=
-                    $"<a href=\"{PageUtility.GetSiteTemplateMetadataUrl(siteTemplateUrl, siteTemplateInfo.PicFileName)}\" target=_blank>样图</a>&nbsp;&nbsp;";
+                    $"<a href=\"{PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl, siteTemplateInfo.PicFileName)}\" target=_blank>样图</a>&nbsp;&nbsp;";
             }
             ltlCreationDate.Text = DateUtils.GetDateString(dirInfo.CreationTime);
             if (!string.IsNullOrEmpty(siteTemplateInfo.WebSiteUrl))
@@ -148,7 +148,7 @@ namespace SiteServer.BackgroundPages.Settings
                         dirInfo.Name)}"">重新压缩</a>&nbsp;&nbsp;";
 
                 ltlDownloadUrl.Text +=
-                    $@"<a href=""{PageUtility.GetSiteTemplatesUrl(fileName)}"" target=""_blank"">下载压缩包</a>";
+                    $@"<a href=""{PageUtils.GetSiteTemplatesUrl(fileName)}"" target=""_blank"">下载压缩包</a>";
             }
             else
             {
@@ -189,7 +189,7 @@ namespace SiteServer.BackgroundPages.Settings
                         fileInfo.Name)}"">解压</a>&nbsp;&nbsp;";
 
             ltlDownloadUrl.Text +=
-                $@"<a href=""{PageUtility.GetSiteTemplatesUrl(fileInfo.Name)}"" target=""_blank"">下载压缩包</a>";
+                $@"<a href=""{PageUtils.GetSiteTemplatesUrl(fileInfo.Name)}"" target=""_blank"">下载压缩包</a>";
 
             var urlDelete = PageUtils.GetSettingsUrl(nameof(PageSiteTemplate), new NameValueCollection
                 {

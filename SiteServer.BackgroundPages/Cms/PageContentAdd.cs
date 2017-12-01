@@ -12,6 +12,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
@@ -137,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
                 LtlPageTitle.Text = pageTitle;
                 LtlPageTitle.Text += $@"
 <script language=""javascript"" type=""text/javascript"">
-var previewUrl = '{PageUtility.GetPreviewContentUrl(PublishmentSystemId, _nodeInfo.NodeId, contentId)}';
+var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeId, contentId)}';
 </script>
 ";
 
@@ -320,6 +321,18 @@ $('#TbTags').keyup(function (e) {
             {
                 AcAttributes.SetParameters(Request.Form, PublishmentSystemInfo, _nodeInfo.NodeId, _relatedIdentities,
                     _tableStyle, _tableName, contentId != 0, IsPostBack);
+
+                var isPreview = Body.GetQueryBool("isPreview");
+                if (isPreview)
+                {
+                    string errorMessage;
+                    var previewId = SaveContentInfo(true, out errorMessage);
+                    Response.Clear();
+                    Response.Write($"{{previewId:{previewId} }}");
+                    Response.Flush();
+                    Response.End();
+                    return;
+                }
             }
             DataBind();
         }
@@ -329,6 +342,7 @@ $('#TbTags').keyup(function (e) {
             int savedContentId;
             errorMessage = string.Empty;
             var contentId = 0;
+            string redirectUrl;
             if (!isPreview)
             {
                 contentId = Body.GetQueryInt("id");
@@ -415,8 +429,8 @@ $('#TbTags').keyup(function (e) {
 
                 ContentUtility.Translate(PublishmentSystemInfo, _nodeInfo.NodeId, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), Body.AdminName);
 
-                PageUtils.Redirect(PageContentAddAfter.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
-                        ReturnUrl));
+                redirectUrl = PageContentAddAfter.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId, contentInfo.Id,
+                    ReturnUrl);
             }
             else
             {
@@ -548,8 +562,13 @@ $('#TbTags').keyup(function (e) {
                 Body.AddSiteLog(PublishmentSystemId, _nodeInfo.NodeId, contentId, "修改内容",
                     $"栏目:{NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId)},内容标题:{contentInfo.Title}");
 
-                PageUtils.Redirect(ReturnUrl);
+                redirectUrl = ReturnUrl;
                 savedContentId = contentId;
+            }
+
+            if (!isPreview)
+            {
+                PageUtils.Redirect(redirectUrl);
             }
 
             return savedContentId;

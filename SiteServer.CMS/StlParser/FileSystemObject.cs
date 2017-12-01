@@ -125,7 +125,9 @@ namespace SiteServer.CMS.StlParser
                 return;
             }
 
-            var templateInfo = nodeId == publishmentSystemId ? TemplateManager.GetTemplateInfo(publishmentSystemId, 0, ETemplateType.IndexPageTemplate) : TemplateManager.GetTemplateInfo(publishmentSystemId, nodeId, ETemplateType.ChannelTemplate);
+            var templateInfo = nodeId == publishmentSystemId
+                ? TemplateManager.GetIndexPageTemplateInfo(publishmentSystemId)
+                : TemplateManager.GetChannelTemplateInfo(publishmentSystemId, nodeId);
             var filePath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, nodeId, 0);
             var pageInfo = new PageInfo(nodeId, 0, publishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo);
@@ -307,7 +309,7 @@ namespace SiteServer.CMS.StlParser
                 return;
             }
 
-            var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemInfo.PublishmentSystemId, nodeId, ETemplateType.ContentTemplate);
+            var templateInfo = TemplateManager.GetContentTemplateInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
             var pageInfo = new PageInfo(nodeId, contentId, publishmentSystemInfo, templateInfo, null);
             var contextInfo = new ContextInfo(pageInfo)
             {

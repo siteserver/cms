@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using BaiRong.Core;
+using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
@@ -53,44 +54,49 @@ namespace SiteServer.BackgroundPages
             var channelId = TranslateUtils.ToInt(Request.QueryString["channelId"]);
             var contentId = TranslateUtils.ToInt(Request.QueryString["contentId"]);
             var templateId = TranslateUtils.ToInt(Request.QueryString["templateId"]);
-
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var url = string.Empty;
-            if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
+
+            if (publishmentSystemInfo.Additional.IsSeparatedWeb)
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                url = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, true);
+                if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
+                {
+                    url = PreviewApi.GetContentUrl(publishmentSystemId, channelId, contentId);
+                }
+                else if (publishmentSystemId > 0 && channelId > 0)
+                {
+                    url = PreviewApi.GetChannelUrl(publishmentSystemId, channelId);
+                }
+                else if (publishmentSystemId > 0 && templateId > 0)
+                {
+                    url = PreviewApi.GetFileUrl(publishmentSystemId, templateId);
+                }
+                else if (publishmentSystemId > 0)
+                {
+                    url = PreviewApi.GetPublishmentSystemUrl(publishmentSystemId);
+                }
             }
-            else if (publishmentSystemId > 0 && channelId > 0)
+            else
             {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true);
-            }
-            else if (publishmentSystemId > 0 && templateId > 0)
-            {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                url = PageUtility.GetFileUrl(publishmentSystemInfo, templateId, true);
-            }
-            else if (publishmentSystemId > 0)
-            {
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, publishmentSystemId);
-                url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true);
-            }
-            else if (channelId > 0 && contentId > 0)
-            {
-                publishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(channelId);
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                url = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, true);
-            }
-            else if (channelId > 0)
-            {
-                publishmentSystemId = DataProvider.NodeDao.GetPublishmentSystemId(channelId);
-                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, true);
+                if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
+                {
+                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+                    url = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId);
+                }
+                else if (publishmentSystemId > 0 && channelId > 0)
+                {
+                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+                    url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
+                }
+                else if (publishmentSystemId > 0 && templateId > 0)
+                {
+                    url = PageUtility.GetFileUrl(publishmentSystemInfo, templateId);
+                }
+                else if (publishmentSystemId > 0)
+                {
+                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, publishmentSystemId);
+                    url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
+                }
             }
 
             if (string.IsNullOrEmpty(url) || StringUtils.EqualsIgnoreCase(url, PageUtils.UnclickedUrl))
@@ -111,7 +117,10 @@ namespace SiteServer.BackgroundPages
             }
             if (publishmentSystemId != 0)
             {
-                var url = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId).Additional.WebUrl;
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                var url = publishmentSystemInfo.Additional.IsSeparatedWeb
+                    ? PreviewApi.GetPublishmentSystemUrl(publishmentSystemId)
+                    : publishmentSystemInfo.Additional.WebUrl;
                 PageUtils.Redirect(url);
             }
             else

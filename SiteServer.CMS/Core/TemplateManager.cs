@@ -222,35 +222,32 @@ namespace SiteServer.CMS.Core
             return filePath;
         }
 
-        public static TemplateInfo GetTemplateInfo(int publishmentSystemId, int nodeId, ETemplateType templateType)
+	    public static TemplateInfo GetIndexPageTemplateInfo(int publishmentSystemId)
+	    {
+	        var templateId = GetDefaultTemplateId(publishmentSystemId, ETemplateType.IndexPageTemplate);
+            TemplateInfo templateInfo = null;
+            if (templateId != 0)
+            {
+                templateInfo = GetTemplateInfo(publishmentSystemId, templateId);
+            }
+
+            return templateInfo ?? GetDefaultTemplateInfo(publishmentSystemId, ETemplateType.IndexPageTemplate);
+        }
+
+        public static TemplateInfo GetChannelTemplateInfo(int publishmentSystemId, int channelId)
         {
             var templateId = 0;
-            if (templateType == ETemplateType.IndexPageTemplate)
+            var nodeType = NodeManager.GetNodeType(publishmentSystemId, channelId);
+            if (nodeType == ENodeType.BackgroundPublishNode)
             {
                 templateId = GetDefaultTemplateId(publishmentSystemId, ETemplateType.IndexPageTemplate);
             }
-            else if (templateType == ETemplateType.ChannelTemplate)
+            else
             {
-                var nodeType = NodeManager.GetNodeType(publishmentSystemId, nodeId);
-                if (nodeType == ENodeType.BackgroundPublishNode)
-                {
-                    templateId = GetDefaultTemplateId(publishmentSystemId, ETemplateType.IndexPageTemplate);
-                }
-                else
-                {
-                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
-                    if (nodeInfo != null)
-                    {
-                        templateId = nodeInfo.ChannelTemplateId;
-                    }
-                }
-            }
-            else if (templateType == ETemplateType.ContentTemplate)
-            {
-                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
+                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
                 if (nodeInfo != null)
                 {
-                    templateId = nodeInfo.ContentTemplateId;
+                    templateId = nodeInfo.ChannelTemplateId;
                 }
             }
 
@@ -260,7 +257,38 @@ namespace SiteServer.CMS.Core
                 templateInfo = GetTemplateInfo(publishmentSystemId, templateId);
             }
 
-            return templateInfo ?? GetDefaultTemplateInfo(publishmentSystemId, templateType);
+            return templateInfo ?? GetDefaultTemplateInfo(publishmentSystemId, ETemplateType.ChannelTemplate);
+        }
+
+        public static TemplateInfo GetContentTemplateInfo(int publishmentSystemId, int channelId)
+        {
+            var templateId = 0;
+            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+            if (nodeInfo != null)
+            {
+                templateId = nodeInfo.ContentTemplateId;
+            }
+
+            TemplateInfo templateInfo = null;
+            if (templateId != 0)
+            {
+                templateInfo = GetTemplateInfo(publishmentSystemId, templateId);
+            }
+
+            return templateInfo ?? GetDefaultTemplateInfo(publishmentSystemId, ETemplateType.ContentTemplate);
+        }
+
+        public static TemplateInfo GetFileTemplateInfo(int publishmentSystemId, int fileTemplateId)
+        {
+            var templateId = fileTemplateId;
+
+            TemplateInfo templateInfo = null;
+            if (templateId != 0)
+            {
+                templateInfo = GetTemplateInfo(publishmentSystemId, templateId);
+            }
+
+            return templateInfo ?? GetDefaultTemplateInfo(publishmentSystemId, ETemplateType.FileTemplate);
         }
 
         public static void WriteContentToTemplateFile(PublishmentSystemInfo publishmentSystemInfo, TemplateInfo templateInfo, string content, string administratorName)

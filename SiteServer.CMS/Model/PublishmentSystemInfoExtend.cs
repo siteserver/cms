@@ -205,7 +205,7 @@ namespace SiteServer.CMS.Model
             set { Set("SeparatedWebUrl", value); }
         }
 
-        public string WebUrl => IsSeparatedWeb ? SeparatedWebUrl : PageUtils.ParseNavigationUrl("~/", _publishmentSystemDir);
+        public string WebUrl => IsSeparatedWeb ? SeparatedWebUrl : PageUtils.ParseNavigationUrl($"~/{_publishmentSystemDir}");
 
         public bool IsSeparatedAssets
         {

@@ -159,7 +159,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     else
                     {
                         var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
-                        url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, nodeInfo, contextInfo.ContentId, false);
+                        url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, nodeInfo, contextInfo.ContentId);
                     }
                     if (string.IsNullOrEmpty(contextInfo.InnerXml))
                     {

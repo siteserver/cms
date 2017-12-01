@@ -286,9 +286,9 @@ namespace SiteServer.BackgroundPages.Settings
 
                     if (!string.IsNullOrEmpty(siteTemplateInfo.PicFileName))
                     {
-                        var siteTemplateUrl = PageUtility.GetSiteTemplatesUrl(dirInfo.Name);
+                        var siteTemplateUrl = PageUtils.GetSiteTemplatesUrl(dirInfo.Name);
                         ltlImageUrl.Text =
-                            $@"<img class=""cover"" src=""{PageUtility.GetSiteTemplateMetadataUrl(siteTemplateUrl,
+                            $@"<img class=""cover"" src=""{PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl,
                                 siteTemplateInfo.PicFileName)}"" width=""180""><p></p>";
                     }
 

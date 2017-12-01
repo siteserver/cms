@@ -17,6 +17,44 @@ namespace SiteServer.CMS.Core
 {
     public class GatherUtility
     {
+        //level=0代表站点根目录，1代表下一级目标。。。返回代码类似../images/pic.jpg
+        public static string GetPublishmentSystemUrlOfRelatedByPhysicalPath(PublishmentSystemInfo publishmentSystemInfo, string physicalPath, int level)
+        {
+            if (publishmentSystemInfo == null)
+            {
+                var publishmentSystemId = PathUtility.GetCurrentPublishmentSystemId();
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            }
+            if (string.IsNullOrEmpty(physicalPath)) return string.Empty;
+
+            var publishmentSystemPath = PathUtility.GetPublishmentSystemPath(publishmentSystemInfo);
+            var requestPath = physicalPath.ToLower().Replace(publishmentSystemPath.ToLower(), string.Empty);
+            requestPath = requestPath.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
+            requestPath = requestPath.Trim(PageUtils.SeparatorChar);
+            if (level <= 0) return requestPath;
+
+            for (var i = 0; i < level; i++)
+            {
+                requestPath = "../" + requestPath;
+            }
+            return requestPath;
+        }
+
+        public static string GetPublishmentSystemVirtualUrlByPhysicalPath(PublishmentSystemInfo publishmentSystemInfo, string physicalPath)
+        {
+            if (publishmentSystemInfo == null)
+            {
+                var publishmentSystemId = PathUtility.GetCurrentPublishmentSystemId();
+                publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            }
+            if (string.IsNullOrEmpty(physicalPath)) return string.Empty;
+
+            var publishmentSystemPath = PathUtility.GetPublishmentSystemPath(publishmentSystemInfo);
+            var requestPath = physicalPath.ToLower().Replace(publishmentSystemPath.ToLower(), string.Empty);
+            requestPath = requestPath.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
+            return PageUtils.Combine("@", requestPath);
+        }
+
         public static string GetRegexString(string normalString)
         {
             var retval = normalString;
@@ -454,7 +492,7 @@ namespace SiteServer.CMS.Core
                                     try
                                     {
                                         WebClientUtils.SaveRemoteFileToLocal(attachmentUrl, filePath);
-                                        contentInfo.ImageUrl = PageUtility.GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
+                                        contentInfo.ImageUrl = GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
                                     }
                                     catch
                                     {
@@ -475,7 +513,7 @@ namespace SiteServer.CMS.Core
                                     try
                                     {
                                         WebClientUtils.SaveRemoteFileToLocal(attachmentUrl, filePath);
-                                        contentInfo.VideoUrl = PageUtility.GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
+                                        contentInfo.VideoUrl = GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
                                     }
                                     catch
                                     {
@@ -496,7 +534,7 @@ namespace SiteServer.CMS.Core
                                     try
                                     {
                                         WebClientUtils.SaveRemoteFileToLocal(attachmentUrl, filePath);
-                                        contentInfo.FileUrl = PageUtility.GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
+                                        contentInfo.FileUrl = GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
                                     }
                                     catch
                                     {
@@ -531,7 +569,7 @@ namespace SiteServer.CMS.Core
                                     try
                                     {
                                         WebClientUtils.SaveRemoteFileToLocal(attachmentUrl, filePath);
-                                        value = PageUtility.GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
+                                        value = GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
                                     }
                                     catch
                                     {
@@ -566,7 +604,7 @@ namespace SiteServer.CMS.Core
                                 try
                                 {
                                     WebClientUtils.SaveRemoteFileToLocal(imageSrc, filePath);
-                                    var fileUrl = PageUtility.GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
+                                    var fileUrl = GetPublishmentSystemVirtualUrlByPhysicalPath(publishmentSystemInfo, filePath);
                                     content = content.Replace(originalImageSrc, fileUrl);
                                     if (firstImageUrl == string.Empty)
                                     {
@@ -1052,7 +1090,7 @@ namespace SiteServer.CMS.Core
                                 var filePath = PathUtils.Combine(scriptDirectoryPath, fileName);
 
                                 WebClientUtils.SaveRemoteFileToLocal(scriptSrc, filePath);
-                                var fileUrl = PageUtility.GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePath, level);
+                                var fileUrl = GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePath, level);
                                 fileContent = fileContent.Replace(originalScriptSrc, fileUrl);
                                 currentCount++;
                                 if (isCache)
@@ -1078,7 +1116,7 @@ namespace SiteServer.CMS.Core
                                 var filePath = PathUtils.Combine(imageDirectoryPath, fileName);
 
                                 WebClientUtils.SaveRemoteFileToLocal(imageSrc, filePath);
-                                var fileUrl = PageUtility.GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePath, level);
+                                var fileUrl = GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePath, level);
                                 fileContent = fileContent.Replace(originalImageSrc, fileUrl);
                                 currentCount++;
                                 if (isCache)
@@ -1104,7 +1142,7 @@ namespace SiteServer.CMS.Core
                                 var filePath = PathUtils.Combine(imageDirectoryPath, fileName);
 
                                 WebClientUtils.SaveRemoteFileToLocal(flashSrc, filePath);
-                                var fileUrl = PageUtility.GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePath, level);
+                                var fileUrl = GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePath, level);
                                 fileContent = fileContent.Replace(originalFlashSrc, fileUrl);
                                 currentCount++;
                                 if (isCache)
@@ -1130,7 +1168,7 @@ namespace SiteServer.CMS.Core
                                 var filePathJ = PathUtils.Combine(imageDirectoryPath, fileNameJ);
 
                                 WebClientUtils.SaveRemoteFileToLocal(styleImageUrl, filePathJ);
-                                var fileUrlJ = PageUtility.GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePathJ, level);
+                                var fileUrlJ = GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePathJ, level);
                                 fileContent = fileContent.Replace(originalStyleImageUrl, fileUrlJ);
                                 currentCount++;
                                 if (isCache)
@@ -1156,7 +1194,7 @@ namespace SiteServer.CMS.Core
                                 var filePathJ = PathUtils.Combine(imageDirectoryPath, fileNameJ);
 
                                 WebClientUtils.SaveRemoteFileToLocal(backgroundImageSrc, filePathJ);
-                                var fileUrlJ = PageUtility.GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePathJ, level);
+                                var fileUrlJ = GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePathJ, level);
                                 fileContent = fileContent.Replace(originalBackgroundImageSrc, fileUrlJ);
                                 currentCount++;
                                 if (isCache)
@@ -1290,7 +1328,7 @@ namespace SiteServer.CMS.Core
                     try
                     {
                         WebClientUtils.SaveRemoteFileToLocal(styleImageUrl, filePathJ);
-                        var fileUrlJ = PageUtility.GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePathJ, level);
+                        var fileUrlJ = GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePathJ, level);
                         styleContent = styleContent.Replace(originalStyleImageUrl, fileUrlJ);
                     }
                     catch
@@ -1301,7 +1339,7 @@ namespace SiteServer.CMS.Core
 
                 FileUtils.WriteText(filePath, charset, styleContent);
 
-                fileUrl = PageUtility.GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePath, topLevel);
+                fileUrl = GetPublishmentSystemUrlOfRelatedByPhysicalPath(publishmentSystemInfo, filePath, topLevel);
             }
             catch
             {
