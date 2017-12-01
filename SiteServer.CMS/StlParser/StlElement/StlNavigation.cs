@@ -106,7 +106,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (siblingNodeId != 0)
                     {
                         var siblingNodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, siblingNodeId);
-                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, siblingNodeInfo);
+                        var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, siblingNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
@@ -144,7 +144,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
                             var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId);
-                            var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo);
+                            var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo, pageInfo.IsLocal);
                             if (url.Equals(PageUtils.UnclickedUrl))
                             {
                                 stlAnchor.Target = string.Empty;
@@ -155,7 +155,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 var keyCode = isNextContent ? 39 : 37;
                                 var scriptContent = new StringBuilder();
-                                pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+                                pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
                                 scriptContent.Append($@"<script language=""javascript"" type=""text/javascript""> 
       $(document).keydown(function(event){{
         if(event.keyCode=={keyCode}){{location = '{url}';}}

@@ -232,10 +232,10 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (!string.IsNullOrEmpty(videoUrl))
             {
-                videoUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, videoUrl);
-                imageUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, imageUrl);
+                videoUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, videoUrl, pageInfo.IsLocal);
+                imageUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, imageUrl, pageInfo.IsLocal);
 
-                pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcVideoJs);
+                pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcVideoJs);
 
                 parsedContent =
                     $@"<video class=""video-js vjs-default-skin"" src=""{videoUrl}"" width=""{width}"" height=""{height}"" {(isAutoPlay

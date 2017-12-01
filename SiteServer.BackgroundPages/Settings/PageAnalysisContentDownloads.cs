@@ -93,7 +93,7 @@ xArrayDownload.push('{xValue}');
             ltlChannel.Text = nodeNameNavigation;
 
             ltlFileUrl.Text =
-                $@"<a href=""{PageUtility.ParseNavigationUrl(PublishmentSystemInfo, contentInfo.FileUrl)}"" target=""_blank"">{contentInfo
+                $@"<a href=""{PageUtility.ParseNavigationUrl(PublishmentSystemInfo, contentInfo.FileUrl, true)}"" target=""_blank"">{contentInfo
                     .FileUrl}</a>";
 
             //x轴信息

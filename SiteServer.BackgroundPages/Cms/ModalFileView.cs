@@ -171,7 +171,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ltlLastAccessTime.Text = fileInfo.LastAccessTime.ToString("yyyy-MM-dd hh:mm:ss");
 
                 ltlOpen.Text =
-                    $@"<a href=""{PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, _filePath)}"" target=""_blank"">浏 览</a>&nbsp;&nbsp;";
+                    $@"<a href=""{PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, _filePath, true)}"" target=""_blank"">浏 览</a>&nbsp;&nbsp;";
 			    if (EFileSystemTypeUtils.IsTextEditable(fileType))
 			    {
                     ltlEdit.Text = $@"<a href=""{ModalFileEdit.GetRedirectUrl(PublishmentSystemId, _relatedPath, _fileName, false)}"">修 改</a>&nbsp;&nbsp;";

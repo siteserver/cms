@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else
                     {
-                        var imageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath);
+                        var imageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
                         var textBoxUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, imageUrl);
 
                         ltlScript.Text += $@"

@@ -99,7 +99,7 @@ namespace SiteServer.CMS.UEditor
                         //添加水印
                         FileUtility.AddWaterMark(publishmentSystemInfo, localFilePath);
                     }
-                    Result.Url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath);
+                    Result.Url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath, true);
                     Result.State = UploadState.Success;
                 }
             }

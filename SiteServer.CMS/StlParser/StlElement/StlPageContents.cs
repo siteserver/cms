@@ -278,7 +278,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 </div>";
             }
 
-            _pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+            _pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(_pageInfo.UniqueId);
             var apiUrl = ActionsPageContents.GetUrl(_pageInfo.ApiUrl);

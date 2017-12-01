@@ -178,7 +178,7 @@ namespace SiteServer.BackgroundPages.Cms
 			var builder = new StringBuilder();
             builder.Append(@"<table class=""table table-noborder table-hover"">");
 			
-			var directoryUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, _directoryPath);
+			var directoryUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, _directoryPath, true);
             var backgroundImageUrl = SiteServerAssets.GetIconUrl("filesystem/management/background.gif");
 			var directoryImageUrl = SiteServerAssets.GetFileSystemIconUrl(EFileSystemType.Directory, true);
 

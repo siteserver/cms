@@ -177,7 +177,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, TypeTranslate))
                 {
-                    pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAhTranslate);
+                    pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAhTranslate);
 
                     var msgToTraditionalChinese = "繁體";
                     var msgToSimplifiedChinese = "简体";

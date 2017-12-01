@@ -56,7 +56,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 zoomId = "content";
             }
 
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAeStlZoom, @"
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAeStlZoom, @"
 <script language=""JavaScript"" type=""text/javascript"">
 function stlDoZoom(zoomId, size){
     var artibody = document.getElementById(zoomId);

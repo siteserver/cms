@@ -268,7 +268,7 @@ selObj.selectedIndex=0;
                         if (nodeInfo != null)
                         {
                             var title = StringUtils.MaxLengthText(nodeInfo.NodeName, titleWordNum);
-                            var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo);
+                            var url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo, pageInfo.IsLocal);
                             if (!string.IsNullOrEmpty(queryString))
                             {
                                 url = PageUtils.AddQueryString(url, queryString);
@@ -291,7 +291,7 @@ selObj.selectedIndex=0;
                         if (contentInfo != null)
                         {
                             var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
-                            var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo);
+                            var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo, pageInfo.IsLocal);
                             if (!string.IsNullOrEmpty(queryString))
                             {
                                 url = PageUtils.AddQueryString(url, queryString);

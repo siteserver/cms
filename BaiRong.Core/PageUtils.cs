@@ -19,7 +19,9 @@ namespace BaiRong.Core
         {
             if (string.IsNullOrEmpty(url)) return string.Empty;
 
-            return url.StartsWith("~") ? Combine(ApplicationPath, url.Substring(1)) : url;
+            url = url.StartsWith("~") ? Combine(ApplicationPath, url.Substring(1)) : url;
+            url = url.Replace(PathUtils.SeparatorChar, SeparatorChar);
+            return url;
         }
 
         public static string AddProtocolToUrl(string url)
@@ -307,7 +309,7 @@ namespace BaiRong.Core
                 return url2;
             }
 
-            return (url1.TrimEnd(SeparatorChar) + SeparatorChar + url2.TrimStart(SeparatorChar));
+            return url1.TrimEnd(SeparatorChar) + SeparatorChar + url2.TrimStart(SeparatorChar);
         }
 
         public static string AddQueryString(string url, string queryStringKey, string queryStringValue)

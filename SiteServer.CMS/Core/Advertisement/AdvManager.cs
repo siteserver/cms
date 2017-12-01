@@ -137,8 +137,7 @@ namespace SiteServer.CMS.Core.Advertisement
                 attribute += $@" title=""{adMaterialInfo.ImageAlt}""";
             }
             imgeHtml = $@"
-<a href=""{PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, adMaterialInfo.ImageLink))}"" target=""_blank""><img src=""{PageUtility
-                .ParseNavigationUrl(publishmentSystemInfo, adMaterialInfo.ImageUrl)}"" {attribute} border=""0"" /></a>
+<a href=""{PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, adMaterialInfo.ImageLink, false))}"" target=""_blank""><img src=""{PageUtility.ParseNavigationUrl(publishmentSystemInfo, adMaterialInfo.ImageUrl, false)}"" {attribute} border=""0"" /></a>
 
 ";
             return imgeHtml;

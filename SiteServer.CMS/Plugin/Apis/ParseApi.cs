@@ -34,7 +34,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 TemplateId = context.TemplateId,
                 TemplateType = ETemplateTypeUtils.GetEnumType(context.TemplateType)
             };
-            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, publishmentSystemInfo, templateInfo, null);
+            var pageInfo = new PageInfo(context.ChannelId, context.ContentId, publishmentSystemInfo, templateInfo);
             var contextInfo = new ContextInfo(pageInfo);
             return StlEntityParser.ReplaceStlEntitiesForAttributeValue(attributeValue, pageInfo, contextInfo);
         }
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(context.PublishmentSystemId);
             return StlUtility.GetStlCurrentUrl(publishmentSystemInfo, context.ChannelId, context.ContentId,
-                context.ContentInfo, ETemplateTypeUtils.GetEnumType(context.TemplateType), context.TemplateId);
+                context.ContentInfo, ETemplateTypeUtils.GetEnumType(context.TemplateType), context.TemplateId, false);
         }
     }
 }

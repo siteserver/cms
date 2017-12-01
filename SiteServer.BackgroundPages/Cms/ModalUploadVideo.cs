@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     hifUpload.PostedFile.SaveAs(localFilePath);
 
-                    var videoUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath);
+                    var videoUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
                     var textBoxUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, videoUrl);
 
                     if (string.IsNullOrEmpty(_textBoxClientId))

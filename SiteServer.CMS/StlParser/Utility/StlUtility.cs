@@ -16,7 +16,7 @@ namespace SiteServer.CMS.StlParser.Utility
 {
     public class StlUtility
     {
-        public static string GetStlCurrentUrl(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, IContentInfo contentInfo, ETemplateType templateType, int templateId)
+        public static string GetStlCurrentUrl(PublishmentSystemInfo publishmentSystemInfo, int channelId, int contentId, IContentInfo contentInfo, ETemplateType templateType, int templateId, bool isLocal)
         {
             var currentUrl = string.Empty;
             if (templateType == ETemplateType.IndexPageTemplate)
@@ -28,20 +28,20 @@ namespace SiteServer.CMS.StlParser.Utility
                 if (contentInfo == null)
                 {
                     var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId);
-                    currentUrl = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId);
+                    currentUrl = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, isLocal);
                 }
                 else
                 {
-                    currentUrl = PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo);
+                    currentUrl = PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo, isLocal);
                 }
             }
             else if (templateType == ETemplateType.ChannelTemplate)
             {
-                currentUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId));
+                currentUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId), isLocal);
             }
             else if (templateType == ETemplateType.FileTemplate)
             {
-                currentUrl = PageUtility.GetFileUrl(publishmentSystemInfo, templateId);
+                currentUrl = PageUtility.GetFileUrl(publishmentSystemInfo, templateId, isLocal);
             }
             //currentUrl是当前页面的地址，前后台分离的时候，不允许带上protocol
             //return PageUtils.AddProtocolToUrl(currentUrl);
@@ -189,14 +189,14 @@ namespace SiteServer.CMS.StlParser.Utility
                     var scripts = string.Empty;
                     if (adInfo.AdvertisementType == EAdvertisementType.FloatImage)
                     {
-                        pageInfo.AddPageScriptsIfNotExists(PageInfo.JsStaticAdFloating);
+                        pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsStaticAdFloating);
 
                         var floatScript = new FloatingScript(pageInfo.PublishmentSystemInfo, pageInfo.UniqueId, adInfo);
                         scripts = floatScript.GetScript();
                     }
                     else if (adInfo.AdvertisementType == EAdvertisementType.ScreenDown)
                     {
-                        pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+                        pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
 
                         var screenDownScript = new ScreenDownScript(pageInfo.PublishmentSystemInfo, pageInfo.UniqueId, adInfo);
                         scripts = screenDownScript.GetScript();
@@ -217,8 +217,11 @@ namespace SiteServer.CMS.StlParser.Utility
             var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemId, templateId);
             //TemplateManager.GetTemplateInfo(publishmentSystemID, channelID, templateType);
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, templateInfo, userInfo);
-            pageInfo.SetUniqueId(1000);
+            var pageInfo = new PageInfo(channelId, contentId, publishmentSystemInfo, templateInfo)
+            {
+                UniqueId = 1000,
+                UserInfo = userInfo
+            };
             var contextInfo = new ContextInfo(pageInfo);
 
             templateContent = StlRequestEntities.ParseRequestEntities(queryString, templateContent);

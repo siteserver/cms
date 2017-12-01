@@ -189,7 +189,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 channel.Description = nodeInfo.Content;
                 channel.Description = string.IsNullOrEmpty(channel.Description) ? nodeInfo.NodeName : StringUtils.MaxLengthText(channel.Description, 200);
             }
-            channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo)));
+            channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, nodeInfo, pageInfo.IsLocal)));
 
             var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.PublishmentSystemInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
 

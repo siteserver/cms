@@ -167,7 +167,7 @@ namespace SiteServer.BackgroundPages.Cms
 			var builder = new StringBuilder();
             builder.Append("<table class=\"table table-noborder table-hover\">");
 
-            var directoryUrl = PageUtility.GetPublishmentSystemUrl(PublishmentSystemInfo, _relatedPath);
+            var directoryUrl = PageUtility.GetPublishmentSystemUrl(PublishmentSystemInfo, _relatedPath, true);
 
             var backgroundImageUrl = SiteServerAssets.GetIconUrl("filesystem/management/background.gif");
 			var directoryImageUrl = SiteServerAssets.GetFileSystemIconUrl(EFileSystemType.Directory, true);
@@ -299,7 +299,7 @@ namespace SiteServer.BackgroundPages.Cms
 			var builder = new StringBuilder();
 
             builder.Append("<table class=\"table table-noborder table-hover\"><tr class=\"info thead\"><td>名称</td><td width=\"80\">大小</td><td width=\"120\">类型</td><td width=\"120\">修改日期</td><td width=\"40\"><input type=\"checkbox\" onclick=\"_checkFormAll(this.checked)\" /></td></tr>");
-            var directoryUrl = PageUtility.GetPublishmentSystemUrl(PublishmentSystemInfo, _relatedPath);
+            var directoryUrl = PageUtility.GetPublishmentSystemUrl(PublishmentSystemInfo, _relatedPath, true);
 
 			var fileSystemInfoExtendCollection = FileManager.GetFileSystemInfoExtendCollection(_directoryPath, isReload);
 

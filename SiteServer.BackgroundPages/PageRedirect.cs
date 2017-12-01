@@ -56,48 +56,51 @@ namespace SiteServer.BackgroundPages
             var templateId = TranslateUtils.ToInt(Request.QueryString["templateId"]);
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var url = string.Empty;
+            var isLocal = publishmentSystemInfo.Additional.IsSeparatedWeb;
 
-            if (publishmentSystemInfo.Additional.IsSeparatedWeb)
+            if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
             {
-                if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
-                {
-                    url = PreviewApi.GetContentUrl(publishmentSystemId, channelId, contentId);
-                }
-                else if (publishmentSystemId > 0 && channelId > 0)
-                {
-                    url = PreviewApi.GetChannelUrl(publishmentSystemId, channelId);
-                }
-                else if (publishmentSystemId > 0 && templateId > 0)
-                {
-                    url = PreviewApi.GetFileUrl(publishmentSystemId, templateId);
-                }
-                else if (publishmentSystemId > 0)
-                {
-                    url = PreviewApi.GetPublishmentSystemUrl(publishmentSystemId);
-                }
+                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+                url = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId, isLocal);
             }
-            else
+            else if (publishmentSystemId > 0 && channelId > 0)
             {
-                if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
-                {
-                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                    url = PageUtility.GetContentUrl(publishmentSystemInfo, nodeInfo, contentId);
-                }
-                else if (publishmentSystemId > 0 && channelId > 0)
-                {
-                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                    url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
-                }
-                else if (publishmentSystemId > 0 && templateId > 0)
-                {
-                    url = PageUtility.GetFileUrl(publishmentSystemInfo, templateId);
-                }
-                else if (publishmentSystemId > 0)
-                {
-                    var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, publishmentSystemId);
-                    url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
-                }
+                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
+                url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, isLocal);
             }
+            else if (publishmentSystemId > 0 && templateId > 0)
+            {
+                url = PageUtility.GetFileUrl(publishmentSystemInfo, templateId, isLocal);
+            }
+            else if (publishmentSystemId > 0)
+            {
+                var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, publishmentSystemId);
+                url = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, isLocal);
+            }
+
+            //if (publishmentSystemInfo.Additional.IsSeparatedWeb)
+            //{
+            //    if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
+            //    {
+            //        url = PreviewApi.GetContentUrl(publishmentSystemId, channelId, contentId);
+            //    }
+            //    else if (publishmentSystemId > 0 && channelId > 0)
+            //    {
+            //        url = PreviewApi.GetChannelUrl(publishmentSystemId, channelId);
+            //    }
+            //    else if (publishmentSystemId > 0 && templateId > 0)
+            //    {
+            //        url = PreviewApi.GetFileUrl(publishmentSystemId, templateId);
+            //    }
+            //    else if (publishmentSystemId > 0)
+            //    {
+            //        url = PreviewApi.GetPublishmentSystemUrl(publishmentSystemId);
+            //    }
+            //}
+            //else
+            //{
+                
+            //}
 
             if (string.IsNullOrEmpty(url) || StringUtils.EqualsIgnoreCase(url, PageUtils.UnclickedUrl))
             {

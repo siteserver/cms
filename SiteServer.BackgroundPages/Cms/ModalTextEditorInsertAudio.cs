@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
                             var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
                             postedFile.SaveAs(localFilePath);
-                            playUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath);
+                            playUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
                             playUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, playUrl);
                             success = true;
                         }

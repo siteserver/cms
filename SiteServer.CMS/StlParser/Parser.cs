@@ -3,7 +3,6 @@ using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
@@ -37,7 +36,7 @@ namespace SiteServer.CMS.StlParser
 
                 if (isDynamic)
                 {
-                    var pageUrl = PageUtils.AddProtocolToUrl(PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath));
+                    var pageUrl = PageUtils.AddProtocolToUrl(PageUtils.ParseNavigationUrl($"~/{PathUtils.GetPathDifference(WebConfigUtils.PhysicalApplicationPath, filePath)}"));
                     string templateString = $@"
 <base href=""{pageUrl}"" />";
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
@@ -65,15 +64,15 @@ namespace SiteServer.CMS.StlParser
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                if (pageInfo.PageContentId > 0 && pageInfo.PublishmentSystemInfo.Additional.IsCountHits && !pageInfo.IsPageScriptsExists(PageInfo.JsAdStlCountHits))
+                if (pageInfo.PageContentId > 0 && pageInfo.PublishmentSystemInfo.Additional.IsCountHits && !pageInfo.IsPageScriptsExists(PageInfo.Const.JsAdStlCountHits))
                 {
-                    pageInfo.AddPageEndScriptsIfNotExists(PageInfo.JsAdStlCountHits, $@"
+                    pageInfo.AddPageEndScriptsIfNotExists(PageInfo.Const.JsAdStlCountHits, $@"
 <script src=""{ActionsAddContentHits.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId)}"" type=""text/javascript""></script>");
                 }
 
-                if (pageInfo.PublishmentSystemInfo.Additional.IsTracker && !pageInfo.IsPageScriptsExists(PageInfo.JsAdAddTracker))
+                if (pageInfo.PublishmentSystemInfo.Additional.IsTracker && !pageInfo.IsPageScriptsExists(PageInfo.Const.JsAdAddTracker))
                 {
-                    pageInfo.AddPageEndScriptsIfNotExists(PageInfo.JsAdAddTracker, $@"
+                    pageInfo.AddPageEndScriptsIfNotExists(PageInfo.Const.JsAdAddTracker, $@"
 <script src=""{SiteFilesAssets.Tracker.GetScriptUrl(pageInfo.ApiUrl)}"" type=""text/javascript""></script>
 <script type=""text/javascript"">AddTrackerCount('{ActionsAddTrackerCount.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId)}', {pageInfo.PublishmentSystemId});</script>");
                 }

@@ -1,12 +1,28 @@
-﻿using System.Web;
-using BaiRong.Core;
-using SiteServer.CMS.Model.Enumerations;
+﻿using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
 	public class VisualInfo
 	{
-	    private VisualInfo()
+        public int PublishmentSystemId { get; private set; }
+
+        public int ChannelId { get; private set; }
+
+        public int ContentId { get; private set; }
+
+        public int FileTemplateId { get; private set; }
+
+        public ETemplateType TemplateType { get; private set; }
+
+        public bool IsPreview { get; private set; }
+
+        public string IncludeUrl { get; }
+
+        public string FilePath { get; private set; }
+
+        public int PageIndex { get; private set; }
+
+        private VisualInfo()
 		{
             PublishmentSystemId = ChannelId = ContentId = FileTemplateId = PageIndex = 0;
             TemplateType = ETemplateType.IndexPageTemplate;
@@ -90,23 +106,5 @@ namespace SiteServer.CMS.Core
 
             return visualInfo;
         }
-
-        public int PublishmentSystemId { get; private set; }
-
-	    public int ChannelId { get; private set; }
-
-	    public int ContentId { get; private set; }
-
-	    public int FileTemplateId { get; private set; }
-
-	    public ETemplateType TemplateType { get; private set; }
-
-	    public bool IsPreview { get; private set; }
-
-	    public string IncludeUrl { get; }
-
-	    public string FilePath { get; private set; }
-
-	    public int PageIndex { get; private set; }
 	}
 }

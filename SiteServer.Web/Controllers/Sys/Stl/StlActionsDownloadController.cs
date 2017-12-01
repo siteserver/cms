@@ -46,7 +46,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                         else
                         {
                             isSuccess = true;
-                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(publishmentSystemInfo, fileUrl));
+                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(publishmentSystemInfo, fileUrl, false));
                         }
                     }
                 }
@@ -109,7 +109,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                             else
                             {
                                 isSuccess = true;
-                                PageUtils.Redirect(PageUtility.ParseNavigationUrl(publishmentSystemInfo, fileUrl));
+                                PageUtils.Redirect(PageUtility.ParseNavigationUrl(publishmentSystemInfo, fileUrl, false));
                             }
                         }
                     }

@@ -242,7 +242,7 @@ namespace SiteServer.CMS.Core
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
             {
-                imageUrl = PageUtility.ParseNavigationUrl(publishmentSystemInfo, imageUrl);
+                imageUrl = PageUtility.ParseNavigationUrl(publishmentSystemInfo, imageUrl, false);
                 if (isStlEntity)
                 {
                     retval = imageUrl;
@@ -303,7 +303,7 @@ namespace SiteServer.CMS.Core
             var retval = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
             {
-                videoUrl = PageUtility.ParseNavigationUrl(publishmentSystemInfo, videoUrl);
+                videoUrl = PageUtility.ParseNavigationUrl(publishmentSystemInfo, videoUrl, false);
                 if (isStlEntity)
                 {
                     retval = videoUrl;

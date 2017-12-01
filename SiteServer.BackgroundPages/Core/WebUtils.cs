@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.ImageUrl)))
             {
-                var imageUrl = PageUtility.ParseNavigationUrl(publishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl));
+                var imageUrl = PageUtility.ParseNavigationUrl(publishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), true);
                 var openWindowString = ModalMessage.GetOpenWindowString("预览图片", $"<img src='{imageUrl}' />", 500, 500);
                 image +=
                     $@"&nbsp;<a href=""javascript:;"" onclick=""{openWindowString}""><img src='../assets/icons/img.gif' title='预览图片' align='absmiddle' border=0 /></a>";

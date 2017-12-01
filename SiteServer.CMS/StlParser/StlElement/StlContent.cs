@@ -406,7 +406,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         //第一条
                         sbParsedContent.Append(contextInfo.IsCurlyBrace
                             ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo,
-                                contentInfo.GetString(BackgroundContentAttribute.ImageUrl))
+                                contentInfo.GetString(BackgroundContentAttribute.ImageUrl), pageInfo.IsLocal)
                             : InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo,
                                 contentInfo.GetString(BackgroundContentAttribute.ImageUrl),
                                 contextInfo.Attributes, false));
@@ -419,7 +419,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 var newExtendValue = extendValue;
                                 sbParsedContent.Append(contextInfo.IsCurlyBrace
-                                    ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, newExtendValue)
+                                    ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, newExtendValue, pageInfo.IsLocal)
                                     : InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo,
                                         newExtendValue, contextInfo.Attributes, false));
                             }
@@ -432,7 +432,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no, 0);
                         if (num <= 1)
                         {
-                            parsedContent = contextInfo.IsCurlyBrace ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl)) : InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), contextInfo.Attributes, false);
+                            parsedContent = contextInfo.IsCurlyBrace ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), contextInfo.Attributes, false);
                         }
                         else
                         {
@@ -446,7 +446,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     var newExtendValue = extendValue;
                                     if (index == num)
                                     {
-                                        parsedContent = contextInfo.IsCurlyBrace ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, newExtendValue) : InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo, newExtendValue, contextInfo.Attributes, false);
+                                        parsedContent = contextInfo.IsCurlyBrace ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, newExtendValue, pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.PublishmentSystemInfo, newExtendValue, contextInfo.Attributes, false);
                                         break;
                                     }
                                     index++;
@@ -577,7 +577,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                             if (!string.IsNullOrEmpty(parsedContent))
                             {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent);
+                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent, pageInfo.IsLocal);
                             }
                         }
                         else
@@ -611,7 +611,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (BackgroundContentAttribute.NavigationUrl.ToLower().Equals(type))
                 {
-                    parsedContent = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo);
+                    parsedContent = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contentInfo, pageInfo.IsLocal);
                 }
                 else if (ContentAttribute.Tags.ToLower().Equals(type))
                 {

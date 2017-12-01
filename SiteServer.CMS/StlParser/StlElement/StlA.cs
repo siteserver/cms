@@ -138,7 +138,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var onclick = string.Empty;
             if (!string.IsNullOrEmpty(href))
             {
-                url = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, href);
+                url = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, href, pageInfo.IsLocal);
 
                 var innerBuilder = new StringBuilder(contextInfo.InnerXml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
@@ -154,12 +154,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contextInfo.ContentInfo != null)
                     {
-                        url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ContentInfo);
+                        url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ContentInfo, pageInfo.IsLocal);
                     }
                     else
                     {
                         var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
-                        url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, nodeInfo, contextInfo.ContentId);
+                        url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, nodeInfo, contextInfo.ContentId, pageInfo.IsLocal);
                     }
                     if (string.IsNullOrEmpty(contextInfo.InnerXml))
                     {
@@ -186,7 +186,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     contextInfo.ChannelId = StlDataUtility.GetNodeIdByChannelIdOrChannelIndexOrChannelName(pageInfo.PublishmentSystemId, contextInfo.ChannelId, channelIndex, channelName);
                     var channel = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId);
 
-                    url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, channel);
+                    url = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, channel, pageInfo.IsLocal);
                     if (contextInfo.InnerXml.Trim().Length == 0)
                     {
                         stlAnchor.InnerHtml = channel.NodeName;

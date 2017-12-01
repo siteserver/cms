@@ -56,7 +56,10 @@ namespace SiteServer.API.Controllers.Preview
                     break;
             }
 
-            var pageInfo = new PageInfo(visualInfo.ChannelId, visualInfo.ContentId, publishmentSystemInfo, templateInfo, null);
+            var pageInfo = new PageInfo(visualInfo.ChannelId, visualInfo.ContentId, publishmentSystemInfo, templateInfo)
+            {
+                IsLocal = true
+            };
             var contextInfo = new ContextInfo(pageInfo);
 
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, templateInfo));
@@ -64,10 +67,8 @@ namespace SiteServer.API.Controllers.Preview
 
             if (visualInfo.TemplateType == ETemplateType.FileTemplate)           //单页
             {
-                var fileTemplateInfo = TemplateManager.GetFileTemplateInfo(visualInfo.PublishmentSystemId, visualInfo.FileTemplateId);
-                var filePageInfo = new PageInfo(visualInfo.ChannelId, visualInfo.ContentId, publishmentSystemInfo, fileTemplateInfo, null);
-                var fileContentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, fileTemplateInfo));
-                return ParseAndReturnResponse(fileContentBuilder, publishmentSystemInfo, filePageInfo, contextInfo, visualInfo);
+                var fileContentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(publishmentSystemInfo, templateInfo));
+                return ParseAndReturnResponse(fileContentBuilder, publishmentSystemInfo, pageInfo, contextInfo, visualInfo);
             }
             if (visualInfo.TemplateType == ETemplateType.IndexPageTemplate || visualInfo.TemplateType == ETemplateType.ChannelTemplate)        //栏目页面
             {
@@ -107,7 +108,11 @@ namespace SiteServer.API.Controllers.Preview
                     {
                         for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                         {
-                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId,
+                                pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo)
+                            {
+                                IsLocal = true
+                            };
                             var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
                             var length = index == -1 ? contentAttributeHtml.Length : index;
 
@@ -144,7 +149,11 @@ namespace SiteServer.API.Controllers.Preview
                     {
                         if (currentPageIndex == visualInfo.PageIndex)
                         {
-                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId,
+                                pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo)
+                            {
+                                IsLocal = true
+                            };
                             var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, false);
                             var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageContentsElementReplaceString, pageHtml));
 
@@ -168,7 +177,10 @@ namespace SiteServer.API.Controllers.Preview
                     {
                         if (currentPageIndex == visualInfo.PageIndex)
                         {
-                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo)
+                            {
+                                IsLocal = true
+                            };
                             var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
                             var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageChannelsElementReplaceString, pageHtml));
 
@@ -192,7 +204,10 @@ namespace SiteServer.API.Controllers.Preview
                     {
                         if (currentPageIndex == visualInfo.PageIndex)
                         {
-                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo)
+                            {
+                                IsLocal = true
+                            };
                             var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
                             var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageSqlContentsElementReplaceString, pageHtml));
 
@@ -243,7 +258,10 @@ namespace SiteServer.API.Controllers.Preview
 
                             if (currentPageIndex == visualInfo.PageIndex)
                             {
-                                var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                                var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo)
+                                {
+                                    IsLocal = true
+                                };
                                 var pagedContentAttributeHtml = contentAttributeHtml.Substring(0, length);
                                 var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlContentElement, pagedContentAttributeHtml));
                                 StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList, visualInfo.ChannelId, visualInfo.ContentId, currentPageIndex, pageCount);
@@ -275,7 +293,10 @@ namespace SiteServer.API.Controllers.Preview
                     {
                         if (currentPageIndex == visualInfo.PageIndex)
                         {
-                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo)
+                            {
+                                IsLocal = true
+                            };
                             var pageHtml = pageContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, false);
                             var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageContentsElementReplaceString, pageHtml));
 
@@ -299,7 +320,10 @@ namespace SiteServer.API.Controllers.Preview
                     {
                         if (currentPageIndex == visualInfo.PageIndex)
                         {
-                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo)
+                            {
+                                IsLocal = true
+                            };
                             var pageHtml = pageChannelsElementParser.Parse(currentPageIndex, pageCount);
                             var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageChannelsElementReplaceString, pageHtml));
 
@@ -323,7 +347,10 @@ namespace SiteServer.API.Controllers.Preview
                     {
                         if (currentPageIndex == visualInfo.PageIndex)
                         {
-                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo, null);
+                            var thePageInfo = new PageInfo(pageInfo.PageNodeId, pageInfo.PageContentId, pageInfo.PublishmentSystemInfo, pageInfo.TemplateInfo)
+                            {
+                                IsLocal = true
+                            };
                             var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
                             var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlPageSqlContentsElementReplaceString, pageHtml));
 

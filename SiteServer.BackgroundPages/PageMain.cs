@@ -301,7 +301,7 @@ namespace SiteServer.BackgroundPages
             var builder = new StringBuilder();
 
             builder.Append(
-                    $@"<li><a href=""{PageUtility.GetPublishmentSystemUrl(_publishmentSystemInfo)}"" target=""_blank"">访问站点</a></li>");
+                    $@"<li><a href=""{PageUtility.GetPublishmentSystemUrl(_publishmentSystemInfo, false)}"" target=""_blank"">访问站点</a></li>");
             builder.Append(
                     $@"<li><a href=""{PreviewApi.GetPublishmentSystemUrl(_publishmentSystemInfo.PublishmentSystemId)}"" target=""_blank"">预览站点</a></li>");
 

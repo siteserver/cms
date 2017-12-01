@@ -118,7 +118,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return isLoading ? ParseImplAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString) : ParseImplNotAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString);
+            return isLoading ? ParseImplAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString, pageInfo.IsLocal) : ParseImplNotAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString);
 		}
 
         private static string ParseImplNotAjax(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, int upLevel, int topLevel, string groupChannel, string groupChannelNot, string title, bool isShowContentNum, bool isShowTreeLine, string currentFormatString)
@@ -169,7 +169,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 var hasChildren = (nodeInfo.ChildrenCount != 0);
 
-                var linkUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo);
+                var linkUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo, pageInfo.IsLocal);
                 var level = theNodeInfo.ParentsCount - channel.ParentsCount;
                 var item = new StlTreeItemNotAjax(isDisplay, selected, pageInfo, nodeInfo, hasChildren, linkUrl, target, isShowTreeLine, isShowContentNum, isLastNodeArray, currentFormatString, channelId, level);
 
@@ -178,7 +178,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             htmlBuilder.Append("</table>");
 
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAgStlTreeNotAjax, StlTreeItemNotAjax.GetNodeTreeScript(pageInfo));
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAgStlTreeNotAjax, StlTreeItemNotAjax.GetNodeTreeScript(pageInfo));
 
             return htmlBuilder.ToString();
         }
@@ -565,9 +565,9 @@ var stltree_isNodeTree = {isNodeTree};
 
         }
 
-        private static string ParseImplAjax(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, int upLevel, int topLevel, string groupChannel, string groupChannelNot, string title, bool isShowContentNum, bool isShowTreeLine, string currentFormatString)
+        private static string ParseImplAjax(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, int upLevel, int topLevel, string groupChannel, string groupChannelNot, string title, bool isShowContentNum, bool isShowTreeLine, string currentFormatString, bool isLocal)
         {
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
 
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 
@@ -593,21 +593,21 @@ var stltree_isNodeTree = {isNodeTree};
                     nodeInfo.NodeName = title;
                 }
 
-                var rowHtml = GetChannelRowHtml(pageInfo.PublishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageNodeId);
+                var rowHtml = GetChannelRowHtml(pageInfo.PublishmentSystemInfo, nodeInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageNodeId, isLocal);
 
                 htmlBuilder.Append(rowHtml);
             }
 
             htmlBuilder.Append("</table>");
 
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAgStlTreeAjax, StlTreeItemAjax.GetScript(pageInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageNodeId));
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAgStlTreeAjax, StlTreeItemAjax.GetScript(pageInfo, target, isShowTreeLine, isShowContentNum, currentFormatString, channelId, channel.ParentsCount, pageInfo.PageNodeId));
 
             return htmlBuilder.ToString();
         }
 
-        public static string GetChannelRowHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeId, int topParantsCount, int currentNodeId)
+        public static string GetChannelRowHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topNodeId, int topParantsCount, int currentNodeId, bool isLocal)
         {
-            var nodeTreeItem = new StlTreeItemAjax(publishmentSystemInfo, nodeInfo, target, isShowContentNum, currentFormatString, topNodeId, topParantsCount, currentNodeId);
+            var nodeTreeItem = new StlTreeItemAjax(publishmentSystemInfo, nodeInfo, target, isShowContentNum, currentFormatString, topNodeId, topParantsCount, currentNodeId, isLocal);
             var title = nodeTreeItem.GetItemHtml();
 
             string rowHtml = $@"
@@ -638,11 +638,11 @@ var stltree_isNodeTree = {isNodeTree};
             private readonly int _level;
             private readonly int _currentNodeId;
 
-            public StlTreeItemAjax(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topNodeId, int topParentsCount, int currentNodeId)
+            public StlTreeItemAjax(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topNodeId, int topParentsCount, int currentNodeId, bool isLocal)
             {
                 _nodeInfo = nodeInfo;
                 _hasChildren = nodeInfo.ChildrenCount != 0;
-                _linkUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo);
+                _linkUrl = PageUtility.GetChannelUrl(publishmentSystemInfo, nodeInfo, isLocal);
                 _target = target;
                 _isShowContentNum = isShowContentNum;
                 _currentFormatString = currentFormatString;

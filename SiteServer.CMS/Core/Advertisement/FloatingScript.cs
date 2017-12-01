@@ -37,7 +37,7 @@ namespace SiteServer.CMS.Core.Advertisement
             {
                 var height = (adFloatImageInfo.Height > 0) ? adFloatImageInfo.Height.ToString() : "100";
                 var width = (adFloatImageInfo.Width > 0) ? adFloatImageInfo.Width.ToString() : "100";
-                var value = PageUtility.ParseNavigationUrl(publishmentSystemInfo, adFloatImageInfo.ImageUrl);
+                var value = PageUtility.ParseNavigationUrl(publishmentSystemInfo, adFloatImageInfo.ImageUrl, false);
                 builder.Append(
                     $@"<object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,19,0' width='{width}' height='{height}'><param name='movie' value='{value}' /><param name='wmode' value='window' /><param name='scale' value='exactfit' /><param name='quality' value='high' /><embed src='{value}' quality='high' pluginspage='http://www.macromedia.com/go/getflashplayer' type='application/x-shockwave-flash' width='{width}' height='{height}'></embed></object>{floatDivIsCloseableHtml}</div>");
             }
@@ -49,14 +49,14 @@ namespace SiteServer.CMS.Core.Advertisement
                 if (string.IsNullOrEmpty(adFloatImageInfo.NavigationUrl))
                 {
                     builder.Append(
-                        $@"<img src=""{PageUtility.ParseNavigationUrl(publishmentSystemInfo, adFloatImageInfo.ImageUrl)}"" {floatDivSize} border=""0""></a>{floatDivIsCloseableHtml}");
+                        $@"<img src=""{PageUtility.ParseNavigationUrl(publishmentSystemInfo, adFloatImageInfo.ImageUrl, false)}"" {floatDivSize} border=""0""></a>{floatDivIsCloseableHtml}");
                 }
                 else
                 {
                     builder.Append(
                         $@"<a href=""{PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo,
-                            adFloatImageInfo.NavigationUrl))}"" target = ""_blank""><img src=""{PageUtility
-                            .ParseNavigationUrl(publishmentSystemInfo, adFloatImageInfo.ImageUrl)}"" {floatDivSize} border=""0""></a>{floatDivIsCloseableHtml}");
+                            adFloatImageInfo.NavigationUrl, false))}"" target = ""_blank""><img src=""{PageUtility
+                            .ParseNavigationUrl(publishmentSystemInfo, adFloatImageInfo.ImageUrl, false)}"" {floatDivSize} border=""0""></a>{floatDivIsCloseableHtml}");
                 }
             }
             builder.Append("</div>");

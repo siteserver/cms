@@ -53,15 +53,15 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, SmallUrl))
                 {
-                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl);
+                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, MiddleUrl))
                 {
-                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.MiddleUrl);
+                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.MiddleUrl, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, LargeUrl))
                 {
-                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.LargeUrl);
+                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.LargeUrl, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(type, Description))
                 {

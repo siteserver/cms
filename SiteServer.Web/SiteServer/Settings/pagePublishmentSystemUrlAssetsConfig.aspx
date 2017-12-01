@@ -79,7 +79,7 @@
               <div class="form-group m-b-0">
                 <div class="col-sm-offset-3 col-sm-9">
                   <asp:Button class="btn btn-primary" ID="Submit" Text="确 定" OnClick="Submit_OnClick" runat="server" />
-                  <input type="button" value="返 回" class="btn btn-default m-l-10" onclick="location.href = 'pagePublishmentSystemAssetsUrl.aspx'">
+                  <input type="button" value="返 回" class="btn btn-default m-l-10" onclick="location.href = 'pagePublishmentSystemUrlAssets.aspx'">
                 </div>
               </div>
 

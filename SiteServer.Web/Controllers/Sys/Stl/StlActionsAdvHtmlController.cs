@@ -56,7 +56,7 @@ document.write('{StringUtils.ToJsString(adMaterialInfo.Code)}');
                                 style += $"font-size:{adMaterialInfo.TextFontSize}px;";
                             }
                             HttpContext.Current.Response.Write($@"<!--
-document.write('<a href=""{PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, adMaterialInfo.TextLink))}"" target=""_blank"" style=""{style}"">{StringUtils.ToJsString(adMaterialInfo.TextWord)}</a>\r\n');
+document.write('<a href=""{PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, adMaterialInfo.TextLink, false))}"" target=""_blank"" style=""{style}"">{StringUtils.ToJsString(adMaterialInfo.TextWord)}</a>\r\n');
 -->
 ");
                         }
@@ -76,14 +76,14 @@ document.write('<a href=""{PageUtils.AddProtocolToUrl(PageUtility.ParseNavigatio
                                 attribute += $@" title=""{adMaterialInfo.ImageAlt}""";
                             }
                             HttpContext.Current.Response.Write($@"<!--
-document.write('<a href=""{PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, adMaterialInfo.ImageLink))}"" target=""_blank""><img src=""{PageUtility.ParseNavigationUrl(publishmentSystemInfo, adMaterialInfo.ImageUrl)}"" {attribute} border=""0"" /></a>\r\n');
+document.write('<a href=""{PageUtils.AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo, adMaterialInfo.ImageLink, false))}"" target=""_blank""><img src=""{PageUtility.ParseNavigationUrl(publishmentSystemInfo, adMaterialInfo.ImageUrl, false)}"" {attribute} border=""0"" /></a>\r\n');
 -->
 ");
                         }
                         else if (adMaterialInfo.AdMaterialType == EAdvType.Flash)
                         {
                             var imageUrl = PageUtility.ParseNavigationUrl(publishmentSystemInfo,
-                                adMaterialInfo.ImageUrl);
+                                adMaterialInfo.ImageUrl, false);
                             HttpContext.Current.Response.Write($@"<!--
 document.write('<div id=""flashcontent_{uniqueId}""></div>');
 var so_{uniqueId} = new SWFObject(""{imageUrl}"", ""flash_{uniqueId}"", ""{adMaterialInfo.ImageWidth}"", ""{adMaterialInfo.ImageHeight}"", ""7"", """");

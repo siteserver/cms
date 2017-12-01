@@ -51,9 +51,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, int pageNum, bool isAnonymous)
         {
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Vue);
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.JsCookie);
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.StlClient);
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Vue);
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsCookie);
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.StlClient);
 
             var commentInput = new CommentInput
             {

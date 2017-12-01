@@ -225,7 +225,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                                 foreach (NodeInfo level2NodeInfo in level2NodeInfoArrayList)
                                 {
-                                    var level2NodeUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, level2NodeInfo);
+                                    var level2NodeUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, level2NodeInfo, pageInfo.IsLocal);
                                     if (PageUtils.UnclickedUrl.Equals(level2NodeUrl))
                                     {
                                         level2ChildMenuBuilder.Append(
@@ -289,7 +289,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         menuName = "\"" + theNodeInfo.NodeName.Trim() + "\"";
                     }
 
-                    var nodeUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo);
+                    var nodeUrl = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, theNodeInfo, pageInfo.IsLocal);
                     if (PageUtils.UnclickedUrl.Equals(nodeUrl))
                     {
                         menuBuilder.Append($@"  mm_menu_{menuId}.addMenuItem({menuName}, ""location='{nodeUrl}'"");");
@@ -314,7 +314,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var childMenuIcon = string.Empty;
                 if (!string.IsNullOrEmpty(menuDisplayInfo.ChildMenuIcon))
                 {
-                    childMenuIcon = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, menuDisplayInfo.ChildMenuIcon);
+                    childMenuIcon = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, menuDisplayInfo.ChildMenuIcon, pageInfo.IsLocal);
                 }
                 createMenuString += $@"
   if (window.mm_menu_{menuId}) return;
@@ -352,9 +352,9 @@ function siteserverLoadMenus() {{";
 <script>siteserverLoadMenus();writeMenus();</script>";
                 //取得已经保存的js
                 var existScript = string.Empty;
-                if (pageInfo.IsPageScriptsExists(PageInfo.JsAcMenuScripts, true))
+                if (pageInfo.IsPageScriptsExists(PageInfo.Const.JsAcMenuScripts, true))
                 { 
-                    existScript = pageInfo.GetPageScripts(PageInfo.JsAcMenuScripts, true);
+                    existScript = pageInfo.GetPageScripts(PageInfo.Const.JsAcMenuScripts, true);
                 }
                 if (string.IsNullOrEmpty(existScript) || existScript.IndexOf("//HEAD", StringComparison.Ordinal) < 0)
                 { 
@@ -369,11 +369,11 @@ function siteserverLoadMenus() {{";
                 if (!string.IsNullOrEmpty(existScript) && existScript.IndexOf("//NEXT", StringComparison.Ordinal) >= 0)
                 {
                     existScript = existScript.Replace("//NEXT", scriptBuilder.ToString());
-                    pageInfo.SetPageScripts(PageInfo.JsAcMenuScripts, existScript, true);
+                    pageInfo.SetPageScripts(PageInfo.Const.JsAcMenuScripts, existScript, true);
                 }
                 else
                 {
-                    pageInfo.SetPageScripts(PageInfo.JsAcMenuScripts, scriptBuilder.ToString(), true);
+                    pageInfo.SetPageScripts(PageInfo.Const.JsAcMenuScripts, scriptBuilder.ToString(), true);
                 }
             }
 

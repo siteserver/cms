@@ -111,7 +111,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, playUrl);
+            playUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, playUrl, pageInfo.IsLocal);
 
             // 如果是实体标签，则只返回数字
             if (contextInfo.IsCurlyBrace)
@@ -119,9 +119,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return playUrl;
             }
             else
-            { 
-                pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
-                pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcMediaElement);
+            {
+                pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
+                pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcMediaElement);
 
                 return $@"
 <audio src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>

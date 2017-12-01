@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var extension = PathUtils.GetExtension(TbImageUrl.Text);
                     if (EFileSystemTypeUtils.IsImage(extension))
                     {
-                        return PageUtility.ParseNavigationUrl(PublishmentSystemInfo, TbImageUrl.Text);
+                        return PageUtility.ParseNavigationUrl(PublishmentSystemInfo, TbImageUrl.Text, true);
                     }
                     else if (EFileSystemTypeUtils.IsFlash(extension))
                     {

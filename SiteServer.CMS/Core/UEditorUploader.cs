@@ -51,7 +51,7 @@ namespace SiteServer.CMS.Core
                 if (state == "SUCCESS")
                 {
                     uploadFile.SaveAs(localFilePath);
-                    URL = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath);
+                    URL = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath, true);
                     //URL = pathbase + filename;
                     if (uploadType == EUploadType.Image)
                         //添加水印
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.Core
                 var bytes = Convert.FromBase64String(base64Data);
                 fs.Write(bytes, 0, bytes.Length);
 
-                URL = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath);
+                URL = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath, true);
             }
             catch
             {

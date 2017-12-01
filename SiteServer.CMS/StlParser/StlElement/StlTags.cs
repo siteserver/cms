@@ -139,7 +139,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 else
                 {
                     var url = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo,
-                        $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.Tag)}");
+                        $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.Tag)}", pageInfo.IsLocal);
                     tagsBuilder.Append($@"
 <li class=""tag_popularity_{tagInfo.Level}""><a target=""_blank"" href=""{url}"">{tagInfo.Tag}</a></li>
 ");

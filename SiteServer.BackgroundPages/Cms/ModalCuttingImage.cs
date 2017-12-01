@@ -129,7 +129,7 @@ if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png$/i) != -1){{
                             }
                         }
 
-                        var destUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, destImagePath));
+                        var destUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, destImagePath, true));
 
                         if (!string.IsNullOrEmpty(_textBoxClientId))
                         {

@@ -175,10 +175,10 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    var imageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath);
+                    var imageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
                     if (cbIsTitleImage.Checked)
                     {
-                        imageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localTitleFilePath);
+                        imageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localTitleFilePath, true);
                     }
 
                     var textBoxUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, imageUrl);
@@ -193,11 +193,11 @@ if (parent.document.getElementById('{_textBoxClientId}'))
                     //处理下半部分
                     if (cbIsShowImageInTextEditor.Checked && isImage)
                     {
-                        imageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath);
+                        imageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
                         var smallImageUrl = imageUrl;
                         if (cbIsSmallImage.Checked)
                         {
-                            smallImageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localSmallFilePath);
+                            smallImageUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localSmallFilePath, true);
                         }
 
                         if (cbIsSmallImage.Checked)

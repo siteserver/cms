@@ -136,11 +136,11 @@ namespace SiteServer.BackgroundPages.Ajax
                     var widthMiddle = PublishmentSystemInfo.Additional.PhotoMiddleWidth;
                     ImageUtils.MakeThumbnail(filePath, filePathMiddle, widthMiddle, 0, true);
 
-                    url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePathSamll);
+                    url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePathSamll, true);
 
                     smallUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, url);
-                    middleUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePathMiddle));
-                    largeUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePath));
+                    middleUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePathMiddle, true));
+                    largeUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePath, true));
                     return true;
                 }
                 message = "您必须上传图片文件！";
@@ -188,11 +188,11 @@ namespace SiteServer.BackgroundPages.Ajax
                     var widthMiddle = PublishmentSystemInfo.Additional.PhotoMiddleWidth;
                     ImageUtils.MakeThumbnail(filePath, filePathMiddle, widthMiddle, 0, true);
 
-                    url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePathSmall);
+                    url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePathSmall, true);
 
                     smallUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, url);
-                    middleUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePathMiddle));
-                    largeUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePath));
+                    middleUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePathMiddle, true));
+                    largeUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, filePath, true));
                     return true;
                 }
                 message = "您必须上传图片文件！";
@@ -258,7 +258,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 postedFile.SaveAs(localFilePath);
 
-                url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath);
+                url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
                 value = PageUtility.GetVirtualUrl(PublishmentSystemInfo, url);
                 return true;
             }

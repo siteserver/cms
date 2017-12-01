@@ -6,7 +6,7 @@ namespace SiteServer.CMS.StlParser.Utility
 {
     public class PagerUtility
     {
-        public static string GetUrlInChannelPage(string type, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, int index, int currentPageIndex, int pageCount)
+        public static string GetUrlInChannelPage(string type, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, int index, int currentPageIndex, int pageCount, bool isLocal)
         {
             var pageIndex = 0;
             if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
@@ -31,10 +31,10 @@ namespace SiteServer.CMS.StlParser.Utility
             }
 
             var physicalPath = PathUtility.GetChannelPageFilePath(publishmentSystemInfo, nodeInfo.NodeId, pageIndex);
-            return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, physicalPath);
+            return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, physicalPath, isLocal);
         }
 
-        public static string GetUrlInContentPage(string type, PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, int index, int currentPageIndex, int pageCount)
+        public static string GetUrlInContentPage(string type, PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, int index, int currentPageIndex, int pageCount, bool isLocal)
         {
             var pageIndex = 0;
             if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
@@ -59,7 +59,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
 
             var physicalPath = PathUtility.GetContentPageFilePath(publishmentSystemInfo, nodeId, contentId, pageIndex);
-            return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, physicalPath);
+            return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, physicalPath, isLocal);
         }
 
         public static string GetClickStringInSearchPage(string type, string ajaxDivId, int index, int currentPageIndex, int pageCount)
@@ -94,7 +94,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return clickString;
         }
 
-        public static string GetJsMethodInDynamicPage(string type, PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, string pageUrl, int index, int currentPageIndex, int pageCount, bool isPageRefresh, string ajaxDivId)
+        public static string GetJsMethodInDynamicPage(string type, PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, string pageUrl, int index, int currentPageIndex, int pageCount, bool isPageRefresh, string ajaxDivId, bool isLocal)
         {
             var jsMethod = string.Empty;
             var pageIndex = 0;
@@ -179,7 +179,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
                     var redirectUrl = contentId > 0 ? PathUtility.GetContentPageFilePath(publishmentSystemInfo, nodeInfo.NodeId, contentId, pageIndex) : PathUtility.GetChannelPageFilePath(publishmentSystemInfo, nodeInfo.NodeId, pageIndex);
-                    redirectUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, redirectUrl);
+                    redirectUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, redirectUrl, isLocal);
                     jsMethod = $"window.location.href='{redirectUrl}';";
                 }
             }

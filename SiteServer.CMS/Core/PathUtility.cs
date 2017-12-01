@@ -459,7 +459,7 @@ namespace SiteServer.CMS.Core
                             FileUtility.AddWaterMark(publishmentSystemInfo, filePath);
                         }
                     }
-                    var fileUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath);
+                    var fileUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath, true);
                     content = content.Replace(originalImageSrc, fileUrl);
                 }
                 catch

@@ -249,7 +249,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    stlImage.Src = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, picUrl);
+                    stlImage.Src = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, picUrl, pageInfo.IsLocal);
                     parsedContent = ControlUtils.GetControlRenderHtml(stlImage);
                 }
             }

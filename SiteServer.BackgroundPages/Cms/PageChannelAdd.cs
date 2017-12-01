@@ -171,7 +171,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var extension = PathUtils.GetExtension(TbNavigationPicPath.Text);
                 if (EFileSystemTypeUtils.IsImage(extension))
                 {
-                    return PageUtility.ParseNavigationUrl(PublishmentSystemInfo, TbNavigationPicPath.Text);
+                    return PageUtility.ParseNavigationUrl(PublishmentSystemInfo, TbNavigationPicPath.Text, true);
                 }
                 if (EFileSystemTypeUtils.IsFlash(extension))
                 {

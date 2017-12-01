@@ -193,9 +193,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcSwfObject);
+                    pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcSwfObject);
 
-                    picUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, picUrl);
+                    picUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, picUrl, pageInfo.IsLocal);
 
                     if (!contextInfo.Attributes.ContainsKey("quality"))
                     {

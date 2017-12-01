@@ -2,7 +2,8 @@
 using System.Text;
 using BaiRong.Core; 
 using BaiRong.Core.AuxiliaryTable;
-using BaiRong.Core.Model.Enumerations; 
+using BaiRong.Core.Model.Enumerations;
+using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
@@ -77,7 +78,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteUrl, attributeName))//域名地址
                 {
-                    parsedContent = pageInfo.PublishmentSystemInfo.Additional.WebUrl.TrimEnd('/');
+                    parsedContent = PageUtility.GetPublishmentSystemUrl(pageInfo.PublishmentSystemInfo, pageInfo.IsLocal).TrimEnd('/');
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteDir, attributeName))//文件夹
                 {
@@ -85,11 +86,11 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(CurrentUrl, attributeName))//当前页地址
                 {
-                    parsedContent = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
+                    parsedContent = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(ChannelUrl, attributeName))//栏目页地址
                 {
-                    parsedContent = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId));
+                    parsedContent = PageUtility.GetChannelUrl(pageInfo.PublishmentSystemInfo, NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contextInfo.ChannelId), pageInfo.IsLocal);
                 }
                 //else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
                 //{
@@ -136,7 +137,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                             {
                                 if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
                                 {
-                                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent);
+                                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent, pageInfo.IsLocal);
                                 }
                                 else
                                 {

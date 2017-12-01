@@ -43,7 +43,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (adAreaInfo.IsEnabled)
                 {
-                    pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcSwfObject);
+                    pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcSwfObject);
 
                     var adMaterialInfoList = new ArrayList();
                     var advInfo = AdvManager.GetAdvInfoByAdAreaName(pageInfo.TemplateInfo.TemplateType, adAreaInfo.AdAreaName, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.TemplateInfo.TemplateId);

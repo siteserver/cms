@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (string.IsNullOrEmpty(nodeInfo.FilePath))
                 {
-                    tbFilePath.Text = PageUtility.GetInputChannelUrl(PublishmentSystemInfo, nodeInfo);
+                    tbFilePath.Text = PageUtility.GetInputChannelUrl(PublishmentSystemInfo, nodeInfo, false);
                 }
                 else
                 {
@@ -147,7 +147,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                if (tbFilePath.Text != PageUtility.GetInputChannelUrl(PublishmentSystemInfo, nodeInfo))
+                if (tbFilePath.Text != PageUtility.GetInputChannelUrl(PublishmentSystemInfo, nodeInfo, false))
                 {
                     nodeInfo.FilePath = tbFilePath.Text;
                 }

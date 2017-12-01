@@ -526,7 +526,7 @@ namespace SiteServer.CMS.StlParser.Utility
             node = node.FirstChild;
 
             var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemInfo.PublishmentSystemId, templateId);
-            var pageInfo = new PageInfo(publishmentSystemInfo.PublishmentSystemId, 0, publishmentSystemInfo, templateInfo, null);
+            var pageInfo = new PageInfo(publishmentSystemInfo.PublishmentSystemId, 0, publishmentSystemInfo, templateInfo);
             var contextInfo = new ContextInfo(pageInfo);
 
             if (node?.Name == null) return null;

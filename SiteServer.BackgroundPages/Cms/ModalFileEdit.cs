@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         ltlOpen.Text =
                             $@"<a href=""{PageUtility.ParseNavigationUrl(PublishmentSystemInfo,
-                                PageUtils.Combine(_relatedPath, _theFileName))}"" target=""_blank"">浏 览</a>&nbsp;&nbsp;";
+                                PageUtils.Combine(_relatedPath, _theFileName), true)}"" target=""_blank"">浏 览</a>&nbsp;&nbsp;";
                     }
                     else
                     {

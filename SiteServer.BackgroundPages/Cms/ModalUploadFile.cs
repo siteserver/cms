@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 					FileUtility.AddWaterMark(PublishmentSystemInfo, localFilePath);
 
-                    var fileUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath);
+                    var fileUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
                     var textBoxUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, fileUrl);
 
                     if (string.IsNullOrEmpty(_textBoxClientId))

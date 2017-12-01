@@ -73,7 +73,7 @@ namespace SiteServer.CMS.Core.Office
                             var imageFilePath = PathUtils.GetTemporaryFilesPath(imageFileName);
                             var fileExtension = PathUtils.GetExtension(imageFilePath);
                             var uploadDirectoryPath = PathUtility.GetUploadDirectoryPath(publishmentSystemInfo, fileExtension);
-                            var uploadDirectoryUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, uploadDirectoryPath);
+                            var uploadDirectoryUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, uploadDirectoryPath, true);
                             if (!FileUtils.IsFileExists(imageFilePath)) continue;
 
                             var uploadFileName = PathUtility.GetUploadFileName(publishmentSystemInfo, imageFilePath, now);

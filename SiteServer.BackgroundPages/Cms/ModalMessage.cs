@@ -140,7 +140,7 @@ if (videoUrl){{
 
                     ltlHtml.Text = $@"
 <embed src=""../assets/player.swf"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart=true&file={PageUtility
-                        .ParseNavigationUrl(publishmentSystemInfo, videoUrl)}"" width=""{450}"" height=""{350}""/>
+                        .ParseNavigationUrl(publishmentSystemInfo, videoUrl, true)}"" width=""{450}"" height=""{350}""/>
 ";
                 }
                 else

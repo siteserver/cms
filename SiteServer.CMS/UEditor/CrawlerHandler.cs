@@ -126,7 +126,7 @@ namespace SiteServer.CMS.UEditor
                     File.WriteAllBytes(savePath, bytes);
                     State = "SUCCESS";
 
-                    ServerUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PubSystemInfo, savePath);
+                    ServerUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PubSystemInfo, savePath, true);
 
                 }
                 catch (Exception e)

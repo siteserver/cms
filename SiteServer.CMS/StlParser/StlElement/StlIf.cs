@@ -372,7 +372,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string TestTypeDynamic(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testValue, string testOperate, string successTemplateString, string failureTemplateString)
         {
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.StlClient);
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.StlClient);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 
@@ -383,7 +383,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
-            var pageUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId);
+            var pageUrl = StlUtility.GetStlCurrentUrl(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.TemplateId, pageInfo.IsLocal);
 
             var ifApiUrl = ActionsIf.GetUrl(pageInfo.ApiUrl);
             var ifApiParms = ActionsIf.GetParameters(pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.TemplateId, ajaxDivId, pageUrl, testType, testValue, testOperate, successTemplateString, failureTemplateString);

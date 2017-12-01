@@ -237,8 +237,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 else
                 {
                     var uniqueId = pageInfo.UniqueId;
-                    playUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, playUrl);
-                    imageUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, imageUrl);
+                    playUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, playUrl, pageInfo.IsLocal);
+                    imageUrl = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, imageUrl, pageInfo.IsLocal);
 
                     var fileType = EFileSystemTypeUtils.GetEnumType(extension);
                     if (fileType == EFileSystemType.Avi)
@@ -442,7 +442,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         if (StringUtils.EqualsIgnoreCase(playBy, PlayByFlowPlayer))
                         {
                             var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-                            pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcFlowPlayer);
+                            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcFlowPlayer);
 
                             var swfUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FlowPlayer.Swf);
                             parsedContent = $@"
@@ -458,7 +458,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else if (StringUtils.EqualsIgnoreCase(playBy, PlayByJwPlayer))
                         {
-                            pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcJwPlayer6);
+                            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcJwPlayer6);
                             var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
                             parsedContent = $@"
 <div id='{ajaxElementId}'></div>

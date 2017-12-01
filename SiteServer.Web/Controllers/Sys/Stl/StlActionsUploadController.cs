@@ -70,7 +70,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                 postedFile.SaveAs(localFilePath);
 
-                url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath);
+                url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath, false);
                 value = PageUtility.GetVirtualUrl(publishmentSystemInfo, url);
                 return true;
             }
@@ -98,7 +98,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                 postedFile.SaveAs(localFilePath);
 
-                url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath);
+                url = PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, localFilePath, false);
                 value = PageUtility.GetVirtualUrl(publishmentSystemInfo, url);
                 return true;
             }

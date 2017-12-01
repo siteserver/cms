@@ -76,14 +76,14 @@ namespace SiteServer.CMS.Plugin.Apis
         public string GetPublishmentSystemUrl(int publishmentSystemId)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo);
+            return PageUtility.GetPublishmentSystemUrl(publishmentSystemInfo, false);
         }
 
         public string GetPublishmentSystemUrlByFilePath(string filePath)
         {
             var publishmentSystemId = PublishmentSystemApi.Instance.GetPublishmentSystemIdByFilePath(filePath);
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath);
+            return PageUtility.GetPublishmentSystemUrlByPhysicalPath(publishmentSystemInfo, filePath, false);
         }
 
         public string GetRootUrl(string relatedUrl)
@@ -94,13 +94,13 @@ namespace SiteServer.CMS.Plugin.Apis
         public string GetChannelUrl(int publishmentSystemId, int channelId)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId));
+            return PageUtility.GetChannelUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId), false);
         }
 
         public string GetContentUrl(int publishmentSystemId, int channelId, int contentId)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            return PageUtility.GetContentUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId), contentId);
+            return PageUtility.GetContentUrl(publishmentSystemInfo, NodeManager.GetNodeInfo(publishmentSystemId, channelId), contentId, false);
         }
     }
 }

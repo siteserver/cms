@@ -96,7 +96,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 var extension = PathUtils.GetExtension(imageUrl);
                 if (EFileSystemTypeUtils.IsImage(extension))
                 {
-                    return PageUtility.ParseNavigationUrl(PublishmentSystemInfo, imageUrl);
+                    return PageUtility.ParseNavigationUrl(PublishmentSystemInfo, imageUrl, true);
                 }
                 else if (EFileSystemTypeUtils.IsFlash(extension))
                 {

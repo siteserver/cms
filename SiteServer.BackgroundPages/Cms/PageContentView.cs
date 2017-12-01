@@ -135,7 +135,7 @@ function submitPreview(){{
 
                     if (referenceContentInfo != null)
                     {
-                        var pageUrl = PageUtility.GetContentUrl(referencePublishmentSystemInfo, referenceContentInfo);
+                        var pageUrl = PageUtility.GetContentUrl(referencePublishmentSystemInfo, referenceContentInfo, true);
                         var referenceNodeInfo = NodeManager.GetNodeInfo(referenceContentInfo.PublishmentSystemId, referenceContentInfo.NodeId);
                         var addEditUrl =
                             WebUtils.GetContentAddEditUrl(referencePublishmentSystemInfo.PublishmentSystemId,

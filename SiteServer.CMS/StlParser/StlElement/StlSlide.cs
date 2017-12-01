@@ -18,8 +18,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.JsAcSwfObject);
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.JsAcSwfObject);
 
             //var contentInfo = contextInfo.ContentInfo ??
             //                  DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId);
@@ -51,8 +51,8 @@ var slide_data = {
                 builder.Append($@"
             {{""title"":""{StringUtils.ToJsString(contentInfo.Title)}"",""intro"":""{StringUtils.ToJsString(
                     photoInfo.Description)}"",""previewUrl"":""{StringUtils.ToJsString(
-                    PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl))}"",""imageUrl"":""{StringUtils
-                    .ToJsString(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.LargeUrl))}"",""id"":""{photoInfo
+                    PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl, pageInfo.IsLocal))}"",""imageUrl"":""{StringUtils
+                    .ToJsString(PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.LargeUrl, pageInfo.IsLocal))}"",""id"":""{photoInfo
                     .Id}""}},");
             }
 
@@ -76,10 +76,10 @@ var slide_data = {
                 //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
                 var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId);
                 var title = siblingContentInfo.Title;
-                var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo);
+                var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo, pageInfo.IsLocal);
                 //var photoInfo = DataProvider.PhotoDao.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
                 var photoInfo = Photo.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
-                var previewUrl = photoInfo != null ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl) : SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FileS);
+                var previewUrl = photoInfo != null ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl, pageInfo.IsLocal) : SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FileS);
                 builder.Append($@"
     ""next_album"":{{""title"":""{StringUtils.ToJsString(title)}"",""url"":""{StringUtils.ToJsString(url)}"",""previewUrl"":""{StringUtils.ToJsString(previewUrl)}""}},
 ");
@@ -102,11 +102,11 @@ var slide_data = {
                 //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
                 var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId);
                 var title = siblingContentInfo.Title;
-                var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo);
+                var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo, pageInfo.IsLocal);
 
                 //var photoInfo = DataProvider.PhotoDao.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
                 var photoInfo = Photo.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
-                var previewUrl = photoInfo != null ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl) : SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FileS);
+                var previewUrl = photoInfo != null ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, photoInfo.SmallUrl, pageInfo.IsLocal) : SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FileS);
                 builder.Append($@"
     ""prev_album"":{{""title"":""{StringUtils.ToJsString(title)}"",""url"":""{StringUtils.ToJsString(url)}"",""previewUrl"":""{StringUtils
                     .ToJsString(previewUrl)}""}}

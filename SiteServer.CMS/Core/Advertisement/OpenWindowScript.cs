@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Core.Advertisement
 <script language=""javascript"" type=""text/javascript"">
 function ad_open_win_{uniqueID}() {{
 	var popUpWin{uniqueID} = open(""{PageUtils.AddProtocolToUrl(
-                PageUtility.ParseNavigationUrl(publishmentSystemInfo, adOpenWindowInfo.FileUrl))}"", (window.name!=""popUpWin{uniqueID}"")?""popUpWin{uniqueID}"":"""", ""toolbar=no,location=no,directories=no,resizable=no,copyhistory=yes{sizeString}"");
+                PageUtility.ParseNavigationUrl(publishmentSystemInfo, adOpenWindowInfo.FileUrl, false))}"", (window.name!=""popUpWin{uniqueID}"")?""popUpWin{uniqueID}"":"""", ""toolbar=no,location=no,directories=no,resizable=no,copyhistory=yes{sizeString}"");
 }}
 try{{
 	setTimeout(""ad_open_win_{uniqueID}();"",50);

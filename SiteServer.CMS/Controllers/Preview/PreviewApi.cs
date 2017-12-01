@@ -59,7 +59,7 @@ namespace SiteServer.CMS.Controllers.Preview
         {
             var apiUrl = PageUtils.Combine(PageUtils.InnerApiUrl, Route);
             apiUrl = apiUrl.Replace("{publishmentSystemId}", publishmentSystemId.ToString());
-            if (channelId > 0 && contentId > 0)
+            if (channelId > 0)
             {
                 apiUrl = PageUtils.Combine(apiUrl, channelId.ToString());
                 if (contentId > 0)

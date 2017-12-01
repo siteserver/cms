@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 foreach (var photoInfo in photoInfoList)
                 {
                     scriptBuilder.Append($@"
-add_form({photoInfo.Id}, '{StringUtils.ToJsString(PageUtility.ParseNavigationUrl(PublishmentSystemInfo, photoInfo.SmallUrl))}', '{StringUtils.ToJsString(photoInfo.SmallUrl)}', '{StringUtils.ToJsString(photoInfo.MiddleUrl)}', '{StringUtils.ToJsString(photoInfo.LargeUrl)}', '{StringUtils.ToJsString(photoInfo.Description)}');
+add_form({photoInfo.Id}, '{StringUtils.ToJsString(PageUtility.ParseNavigationUrl(PublishmentSystemInfo, photoInfo.SmallUrl, true))}', '{StringUtils.ToJsString(photoInfo.SmallUrl)}', '{StringUtils.ToJsString(photoInfo.MiddleUrl)}', '{StringUtils.ToJsString(photoInfo.LargeUrl)}', '{StringUtils.ToJsString(photoInfo.Description)}');
 ");
                 }
 

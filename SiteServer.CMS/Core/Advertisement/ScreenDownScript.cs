@@ -36,8 +36,8 @@ function ad_hidediv(){{
 jQuery(document).ready(function(){{
     jQuery('body').prepend('<div id=""ad_hiddenLayer_{uniqueID}"" style=""display: none;""><center><a href=""{PageUtils
                 .AddProtocolToUrl(PageUtility.ParseNavigationUrl(publishmentSystemInfo,
-                    adScreenDownInfo.NavigationUrl))}"" target=""_blank""><img src=""{PageUtility
-                .ParseNavigationUrl(publishmentSystemInfo, adScreenDownInfo.ImageUrl)}"" {sizeString} border=""0"" /></a></center></div>');
+                    adScreenDownInfo.NavigationUrl, false))}"" target=""_blank""><img src=""{PageUtility
+                .ParseNavigationUrl(publishmentSystemInfo, adScreenDownInfo.ImageUrl, false)}"" {sizeString} border=""0"" /></a></center></div>');
     setTimeout(""ad_changediv()"",2000);
 }});
 </script>

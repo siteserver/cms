@@ -78,7 +78,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, int totalStar, int initStar, string successMessage, string failureMessage, string theme, bool isTextOnly)
         {
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
 
             var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
             var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);

@@ -63,7 +63,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            pageInfo.AddPageScriptsIfNotExists(PageInfo.Components.Jquery);
+            pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
 
             return ParseImpl(pageInfo, contextInfo, diggType, goodText, badText, theme, isNumber);
 		}
