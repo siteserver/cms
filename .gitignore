@@ -5,10 +5,9 @@
 *.log
 *.nupkg
 node_modules/
-/build/
-/.vs/
-/.vscode/
-/source/packages/
-/source/**/bin/
-/source/**/obj/
-
+build/
+.vs/
+.vscode/
+packages/
+**/bin/
+**/obj/

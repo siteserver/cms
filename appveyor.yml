@@ -29,7 +29,7 @@
     - packages -> **\packages.config
 
   before_build:
-    - nuget restore source/siteserver.sln
+    - nuget restore siteserver.sln
 
   after_build:
     - gulp build
@@ -86,7 +86,7 @@
     - packages -> **\packages.config
 
   before_build:
-    - nuget restore source/siteserver.sln
+    - nuget restore siteserver.sln
 
   after_build:
     - gulp build

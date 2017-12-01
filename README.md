@@ -7,6 +7,20 @@ SiteServer CMS 是.NET平台CMS系统的创始者，能够以最低的成本、�
 
 <a href="http://developer.siteserver.cn/" target="_blank">开发者中心</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://stl.siteserver.cn/"  target="_blank">STL 语言</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://docs.siteserver.cn/"  target="_blank">文 档</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://blog.siteserver.cn/"  target="_blank">博 客</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://bbs.siteserver.cn/"  target="_blank">论 坛</a>
 
+## SiteServer CMS 源码结构
+
+```
+│  siteserver.sln                 Visual Studio 项目文件
+│  README.md
+│
+├─BaiRong.Core                    基础类库
+├─SiteServer.BackgroundPages      ASP.NET 页面源文件
+├─SiteServer.CMS                  CMS 源文件
+├─SiteServer.Web                  API 源文件及aspx页面
+├─siteserver                      SiteServer 控制台程序
+└─ref                             引用第三方DLL
+```
+
 ## Feedback
 
 提交反馈意见请使用Github [Issues](https://github.com/siteserver/cms/issues) 功能。
