@@ -117,7 +117,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(Content, attributeName))//栏目正文
                 {
-                    parsedContent = StringUtility.TextEditorContentDecode(nodeInfo.Content, pageInfo.PublishmentSystemInfo);
+                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, nodeInfo.Content, pageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(NavigationUrl, attributeName))//栏目链接地址
                 {

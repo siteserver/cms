@@ -12,7 +12,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -329,7 +328,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var extendedAttributes = new ExtendedAttributes();
                         var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-                        BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.ToNameValueCollection());
+                        BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.ToNameValueCollection(), null);
                         if (extendedAttributes.ToNameValueCollection().Count > 0)
                         {
                             nodeInfo.Additional.Load(extendedAttributes.ToNameValueCollection());
@@ -367,7 +366,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     if (ContentRow.Visible)
                     {
-                        nodeInfo.Content = StringUtility.TextEditorContentEncode(Request.Form[NodeAttribute.Content], PublishmentSystemInfo, PublishmentSystemInfo.Additional.IsSaveImageInTextEditor);
+                        nodeInfo.Content = ContentUtility.TextEditorContentEncode(PublishmentSystemInfo, Request.Form[NodeAttribute.Content]);
                     }
                     if (Keywords.Visible)
                     {
@@ -377,8 +376,6 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         nodeInfo.Description = Description.Text;
                     }
-
-
 
                     if (LinkUrlRow.Visible)
                     {

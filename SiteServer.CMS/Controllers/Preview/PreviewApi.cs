@@ -21,39 +21,13 @@ namespace SiteServer.CMS.Controllers.Preview
 
         public static string GetContentUrl(int publishmentSystemId, int channelId, int contentId)
         {
-            return GetUrl(publishmentSystemId, channelId, channelId, 0);
+            return GetUrl(publishmentSystemId, channelId, contentId, 0);
         }
 
         public static string GetFileUrl(int publishmentSystemId, int fileTemplateId)
         {
             return GetUrl(publishmentSystemId, 0, 0, fileTemplateId);
         }
-
-        //public static string GetPreviewUrl(int publishmentSystemId, int channelId, int contentId, int fileTemplateId, int pageIndex)
-        //{
-        //    var queryString = new NameValueCollection
-        //    {
-        //        {"s", publishmentSystemId.ToString()}
-        //    };
-        //    if (channelId > 0)
-        //    {
-        //        queryString.Add("n", channelId.ToString());
-        //    }
-        //    if (contentId > 0)
-        //    {
-        //        queryString.Add("c", contentId.ToString());
-        //    }
-        //    if (fileTemplateId > 0)
-        //    {
-        //        queryString.Add("f", fileTemplateId.ToString());
-        //    }
-        //    if (pageIndex > 0)
-        //    {
-        //        queryString.Add("p", pageIndex.ToString());
-        //    }
-
-        //    return PageUtils.GetSiteServerUrl("PagePreview", queryString);
-        //}
 
         private static string GetUrl(int publishmentSystemId, int channelId, int contentId, int fileTemplateId)
         {

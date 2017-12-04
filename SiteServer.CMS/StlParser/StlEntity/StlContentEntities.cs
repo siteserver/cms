@@ -250,7 +250,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                             //parsedContent = BaiRongDataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.Content);
                             parsedContent = Cache.Content.GetValue(tableName, contextInfo.ContentId, BackgroundContentAttribute.Content);
                         }
-                        parsedContent = StringUtility.TextEditorContentDecode(parsedContent, pageInfo.PublishmentSystemInfo);
+                        parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, parsedContent, pageInfo.IsLocal);
                     }
                     else if (StringUtils.EqualsIgnoreCase(Group, attributeName))//内容组别
                     {

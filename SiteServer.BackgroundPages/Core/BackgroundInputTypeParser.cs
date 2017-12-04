@@ -297,8 +297,7 @@ $('#Title').keyup(function (e) {
         {
             var value = GetValue(attributeName, formCollection, isAddAndNotPostBack, defaultValue);
 
-            /****获取编辑器中内容，解析@符号，添加了远程路径处理 20151103****/
-            value = StringUtility.TextEditorContentDecode(value, publishmentSystemInfo, true);
+            value = ContentUtility.TextEditorContentDecode(publishmentSystemInfo, value, true);
             value = ETextEditorTypeUtils.TranslateToHtml(value);
             value = StringUtils.HtmlEncode(value);
 
@@ -995,81 +994,47 @@ $(document).ready(function(){{
             }
         }
 
-        public static void AddValuesToAttributes(ETableStyle tableStyle, string tableName, PublishmentSystemInfo publishmentSystemInfo, List<int> relatedIdentities, Control containerControl, NameValueCollection attributes)
-        {
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
-            foreach (var styleInfo in styleInfoList)
-            {
-                if (styleInfo.IsVisible == false) continue;
-                var theValue = GetValueByControl(styleInfo, publishmentSystemInfo, containerControl);
+        //public static void AddValuesToAttributes(ETableStyle tableStyle, string tableName, PublishmentSystemInfo publishmentSystemInfo, List<int> relatedIdentities, Control containerControl, NameValueCollection attributes)
+        //{
+        //    var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
+        //    foreach (var styleInfo in styleInfoList)
+        //    {
+        //        if (styleInfo.IsVisible == false) continue;
+        //        var theValue = GetValueByControl(styleInfo, publishmentSystemInfo, containerControl);
 
-                if (!InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.TextEditor, InputType.Image, InputType.File, InputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
-                {
-                    theValue = PageUtils.FilterSqlAndXss(theValue);
-                }
+        //        if (!InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.TextEditor, InputType.Image, InputType.File, InputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
+        //        {
+        //            theValue = PageUtils.FilterSqlAndXss(theValue);
+        //        }
 
-                TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
-            }
+        //        TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
+        //    }
 
-            //ArrayList metadataInfoArrayList = TableManager.GetTableMetadataInfoArrayList(tableName);
-            //foreach (TableMetadataInfo metadataInfo in metadataInfoArrayList)
-            //{
-            //    if (!isSystemContained && metadataInfo.IsSystem == EBoolean.True) continue;
+        //    //ArrayList metadataInfoArrayList = TableManager.GetTableMetadataInfoArrayList(tableName);
+        //    //foreach (TableMetadataInfo metadataInfo in metadataInfoArrayList)
+        //    //{
+        //    //    if (!isSystemContained && metadataInfo.IsSystem == EBoolean.True) continue;
 
-            //    TableStyleInfo styleInfo = TableStyleManager.GetTableStyleInfo(tableType, metadataInfo, relatedIdentities);
-            //    if (styleInfo.IsVisible == EBoolean.False) continue;
+        //    //    TableStyleInfo styleInfo = TableStyleManager.GetTableStyleInfo(tableType, metadataInfo, relatedIdentities);
+        //    //    if (styleInfo.IsVisible == EBoolean.False) continue;
 
-            //    string theValue = InputTypeParser.GetValueByControl(metadataInfo, styleInfo, publishmentSystemInfo, containerControl);
-            //    ExtendedAttributes.SetExtendedAttribute(attributes, metadataInfo.AttributeName, theValue);
-            //}
-        }
-
-        public static void AddValuesToAttributes(ETableStyle tableStyle, string tableName, PublishmentSystemInfo publishmentSystemInfo, List<int> relatedIdentities, NameValueCollection formCollection, NameValueCollection attributes, List<string> dontAddAttributes, bool isSaveImage)
-        {
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
-            foreach (var styleInfo in styleInfoList)
-            {
-                if (styleInfo.IsVisible == false || dontAddAttributes.Contains(styleInfo.AttributeName.ToLower())) continue;
-                var theValue = GetValueByForm(styleInfo, publishmentSystemInfo, formCollection, isSaveImage);
-
-                if (!InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.TextEditor, InputType.Image, InputType.File, InputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
-                {
-                    theValue = PageUtils.FilterSqlAndXss(theValue);
-                }
-
-                TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
-
-                if (styleInfo.Additional.IsFormatString)
-                {
-                    var formatString = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatStrong"]);
-                    var formatEm = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatEM"]);
-                    var formatU = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatU"]);
-                    var formatColor = formCollection[styleInfo.AttributeName + "_formatColor"];
-                    var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
-
-                    TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
-                }
-
-                if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.Video, InputType.File))
-                {
-                    var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, attributeName, formCollection[attributeName]);
-                }
-            }
-        }
-
-        public static void AddValuesToAttributes(ETableStyle tableStyle, string tableName, PublishmentSystemInfo publishmentSystemInfo, List<int> relatedIdentities, NameValueCollection formCollection, NameValueCollection attributes)
-        {
-            AddValuesToAttributes(tableStyle, tableName, publishmentSystemInfo, relatedIdentities, formCollection, attributes, true);
-        }
+        //    //    string theValue = InputTypeParser.GetValueByControl(metadataInfo, styleInfo, publishmentSystemInfo, containerControl);
+        //    //    ExtendedAttributes.SetExtendedAttribute(attributes, metadataInfo.AttributeName, theValue);
+        //    //}
+        //}
 
         public static void AddValuesToAttributes(ETableStyle tableStyle, string tableName, PublishmentSystemInfo publishmentSystemInfo, List<int> relatedIdentities, NameValueCollection formCollection, NameValueCollection attributes, List<string> dontAddAttributes)
         {
+            if (dontAddAttributes == null)
+            {
+                dontAddAttributes = new List<string>();
+            }
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
             foreach (var styleInfo in styleInfoList)
             {
                 if (styleInfo.IsVisible == false || dontAddAttributes.Contains(styleInfo.AttributeName.ToLower())) continue;
                 var theValue = GetValueByForm(styleInfo, publishmentSystemInfo, formCollection);
+
                 if (!InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.TextEditor, InputType.Image, InputType.File, InputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
                 {
                     theValue = PageUtils.FilterSqlAndXss(theValue);
@@ -1096,22 +1061,38 @@ $(document).ready(function(){{
             }
         }
 
-        public static void AddValuesToAttributes(ETableStyle tableStyle, string tableName, PublishmentSystemInfo publishmentSystemInfo, List<int> relatedIdentities, NameValueCollection formCollection, NameValueCollection attributes, bool isBackground)
-        {
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
-            foreach (var styleInfo in styleInfoList)
-            {
-                if (styleInfo.IsVisible == false) continue;
-                var theValue = GetValueByForm(styleInfo, publishmentSystemInfo, formCollection);
+        //public static void AddValuesToAttributes(ETableStyle tableStyle, string tableName, PublishmentSystemInfo publishmentSystemInfo, List<int> relatedIdentities, NameValueCollection formCollection, NameValueCollection attributes, List<string> dontAddAttributes)
+        //{
+        //    var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
+        //    foreach (var styleInfo in styleInfoList)
+        //    {
+        //        if (styleInfo.IsVisible == false || dontAddAttributes.Contains(styleInfo.AttributeName.ToLower())) continue;
+        //        var theValue = GetValueByForm(styleInfo, publishmentSystemInfo, formCollection);
+        //        if (!InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.TextEditor, InputType.Image, InputType.File, InputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
+        //        {
+        //            theValue = PageUtils.FilterSqlAndXss(theValue);
+        //        }
 
-                if (!InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.TextEditor, InputType.Image, InputType.File, InputType.Video) && styleInfo.AttributeName != BackgroundContentAttribute.LinkUrl)
-                {
-                    theValue = PageUtils.FilterSqlAndXss(theValue);
-                }
+        //        TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
 
-                TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
-            }
-        }
+        //        if (styleInfo.Additional.IsFormatString)
+        //        {
+        //            var formatString = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatStrong"]);
+        //            var formatEm = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatEM"]);
+        //            var formatU = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatU"]);
+        //            var formatColor = formCollection[styleInfo.AttributeName + "_formatColor"];
+        //            var theFormatString = ContentUtility.GetTitleFormatString(formatString, formatEm, formatU, formatColor);
+
+        //            TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, ContentAttribute.GetFormatStringAttributeName(styleInfo.AttributeName), theFormatString);
+        //        }
+
+        //        if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.Video, InputType.File))
+        //        {
+        //            var attributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
+        //            TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, attributeName, formCollection[attributeName]);
+        //        }
+        //    }
+        //}
 
         public static void AddSingleValueToAttributes(ETableStyle tableStyle, string tableName, PublishmentSystemInfo publishmentSystemInfo, List<int> relatedIdentities, NameValueCollection formCollection, string attributeName, NameValueCollection attributes, bool isSystemContained)
         {
@@ -1134,7 +1115,7 @@ $(document).ready(function(){{
 
             if (inputType == InputType.TextEditor)
             {
-                theValue = StringUtility.TextEditorContentEncode(theValue, publishmentSystemInfo);
+                theValue = ContentUtility.TextEditorContentEncode(publishmentSystemInfo, theValue);
             }
 
             return theValue;
@@ -1162,22 +1143,7 @@ $(document).ready(function(){{
 
             if (inputType == InputType.TextEditor)
             {
-                theValue = StringUtility.TextEditorContentEncode(theValue, publishmentSystemInfo);
-                theValue = ETextEditorTypeUtils.TranslateToStlElement(theValue);
-            }
-
-            return theValue;
-        }
-
-        private static string GetValueByForm(TableStyleInfo styleInfo, PublishmentSystemInfo publishmentSystemInfo, NameValueCollection formCollection, bool isSaveImage)
-        {
-            var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
-
-            var inputType = InputTypeUtils.GetEnumType(styleInfo.InputType);
-
-            if (inputType == InputType.TextEditor)
-            {
-                theValue = StringUtility.TextEditorContentEncode(theValue, publishmentSystemInfo, isSaveImage && publishmentSystemInfo.Additional.IsSaveImageInTextEditor);
+                theValue = ContentUtility.TextEditorContentEncode(publishmentSystemInfo, theValue);
                 theValue = ETextEditorTypeUtils.TranslateToStlElement(theValue);
             }
 

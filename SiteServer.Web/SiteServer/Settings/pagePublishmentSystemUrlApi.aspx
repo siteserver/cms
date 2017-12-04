@@ -20,7 +20,7 @@
               <b>API访问地址</b>
             </h4>
             <p class="text-muted font-13 m-b-25">
-              在此设置API的部署方式
+              在此设置API的访问地址
             </p>
 
             <ul class="nav nav-pills m-b-30">

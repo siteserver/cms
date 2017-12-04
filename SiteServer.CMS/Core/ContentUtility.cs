@@ -24,6 +24,56 @@ namespace SiteServer.CMS.Core
 
         public static string PagePlaceHolder = "[SITESERVER_PAGE]";//内容翻页展位符
 
+        public static string TextEditorContentEncode(PublishmentSystemInfo publishmentSystemInfo, string content)
+        {
+            if (publishmentSystemInfo == null) return content;
+
+            var url = publishmentSystemInfo.Additional.WebUrl;
+            if (publishmentSystemInfo.Additional.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
+            {
+                content = PathUtility.SaveImage(publishmentSystemInfo, content);
+            }
+
+            var builder = new StringBuilder(content);
+
+            if (url == "/")
+            {
+                url = string.Empty;
+            }
+
+            StringUtils.ReplaceHrefOrSrc(builder, url, "@");
+
+            builder.Replace("@'@", "'@");
+            builder.Replace("@\"@", "\"@");
+
+            return builder.ToString();
+        }
+
+        public static string TextEditorContentDecode(PublishmentSystemInfo publishmentSystemInfo, string content, bool isLocal)
+        {
+            if (publishmentSystemInfo == null) return content;
+            
+            var builder = new StringBuilder(content);
+
+            var virtualAssetsUrl = $"@/{publishmentSystemInfo.Additional.AssetsDir}";
+            string assetsUrl;
+            if (isLocal)
+            {
+                assetsUrl = PageUtility.GetLocalPublishmentSystemUrl(publishmentSystemInfo,
+                    publishmentSystemInfo.Additional.AssetsDir);
+            }
+            else
+            {
+                assetsUrl = publishmentSystemInfo.Additional.AssetsUrl;
+            }
+            StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
+            StringUtils.ReplaceHrefOrSrc(builder, "@", publishmentSystemInfo.Additional.WebUrl);
+
+            builder.Replace("&#xa0;", "&nbsp;");
+
+            return builder.ToString();
+        }
+
         public static string GetTitleFormatString(bool isStrong, bool isEm, bool isU, string color)
         {
             return $"{isStrong}_{isEm}_{isU}_{color}";

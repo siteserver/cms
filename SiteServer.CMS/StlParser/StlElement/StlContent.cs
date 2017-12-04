@@ -257,7 +257,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (BackgroundContentAttribute.Content.ToLower().Equals(type))
                 {
-                    parsedContent = StringUtility.TextEditorContentDecode(contentInfo.GetString(BackgroundContentAttribute.Content), pageInfo.PublishmentSystemInfo);
+                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.Content), pageInfo.IsLocal);
 
                     if (pageInfo.PublishmentSystemInfo.Additional.IsInnerLink)
                     {
@@ -331,8 +331,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     //if (contextInfo.IsInnerElement)
                     // {
-                    parsedContent = StringUtility.TextEditorContentDecode(contentInfo.GetString(BackgroundContentAttribute.Content), pageInfo.PublishmentSystemInfo);
-
+                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, contentInfo.GetString(BackgroundContentAttribute.Content), pageInfo.IsLocal);
 
                     if (pageInfo.PublishmentSystemInfo.Additional.IsInnerLink)
                     {

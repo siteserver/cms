@@ -20,7 +20,7 @@
               <b>资源文件访问地址设置</b>
             </h4>
             <p class="text-muted font-13 m-b-25">
-              在此设置资源文件的部署方式
+              在此设置资源文件的访问地址
             </p>
 
             <div class="form-horizontal">

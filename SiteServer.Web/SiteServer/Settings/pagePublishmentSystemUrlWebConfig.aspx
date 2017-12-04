@@ -18,7 +18,7 @@
           <div class="card-box">
             <h4 class="m-t-0 header-title"><b>Web 访问地址设置</b></h4>
             <p class="text-muted font-13 m-b-25">
-              在此设置Web的部署方式
+              在此设置站点的访问地址
             </p>
 
             <div class="form-horizontal">

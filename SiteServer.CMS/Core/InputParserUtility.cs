@@ -84,8 +84,7 @@ namespace SiteServer.CMS.Core
             //}
             else if (inputType == InputType.TextEditor)
             {
-                /****获取编辑器中内容，解析@符号，添加了远程路径处理 20151103****/
-                parsedContent = StringUtility.TextEditorContentDecode(parsedContent, publishmentSystemInfo, true);
+                parsedContent = ContentUtility.TextEditorContentDecode(publishmentSystemInfo, parsedContent, true);
             }
             else if (inputType == InputType.Image)
             {
@@ -151,8 +150,7 @@ namespace SiteServer.CMS.Core
             }
             else if (inputType == InputType.TextEditor)
             {
-                /****获取编辑器中内容，解析@符号，添加了远程路径处理 20151103****/
-                parsedContent = StringUtility.TextEditorContentDecode(value, publishmentSystemInfo, true);
+                parsedContent = ContentUtility.TextEditorContentDecode(publishmentSystemInfo, value, true);
             }
             else if (inputType == InputType.Image)
             {

@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var filePath = WordUtils.GetWordFilePath(fileName);
                     var wordContent = WordUtils.Parse(PublishmentSystemId, filePath, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked);
-                    wordContent = StringUtility.TextEditorContentDecode(wordContent, PublishmentSystemInfo, true);
+                    wordContent = ContentUtility.TextEditorContentDecode(PublishmentSystemInfo, wordContent, true);
                     builder.Append(wordContent);
                     FileUtils.DeleteFileIfExists(filePath);
                 }

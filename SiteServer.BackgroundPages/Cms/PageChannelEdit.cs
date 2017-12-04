@@ -13,7 +13,6 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin.Features;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -290,7 +289,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     var extendedAttributes = new ExtendedAttributes();
                     var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.ToNameValueCollection());
+                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.ToNameValueCollection(), null);
                     var attributes = extendedAttributes.ToNameValueCollection();
                     foreach (string key in attributes)
                     {
@@ -313,7 +312,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     nodeInfo.NodeGroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
                     nodeInfo.ImageUrl = TbImageUrl.Text;
-                    nodeInfo.Content = StringUtility.TextEditorContentEncode(Request.Form[NodeAttribute.Content], PublishmentSystemInfo, PublishmentSystemInfo.Additional.IsSaveImageInTextEditor);
+                    nodeInfo.Content = ContentUtility.TextEditorContentEncode(PublishmentSystemInfo, Request.Form[NodeAttribute.Content]);
 
                     nodeInfo.Keywords = TbKeywords.Text;
                     nodeInfo.Description = TbDescription.Text;

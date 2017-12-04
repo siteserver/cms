@@ -237,7 +237,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (type.ToLower().Equals(NodeAttribute.Content.ToLower()))
                 {
-                    parsedContent = StringUtility.TextEditorContentDecode(channel.Content, pageInfo.PublishmentSystemInfo);
+                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, channel.Content, pageInfo.IsLocal);
 
                     if (isClearTags)
                     {
@@ -258,7 +258,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contextInfo.IsInnerElement || pageInfo.TemplateInfo.TemplateType != ETemplateType.ChannelTemplate)
                     {
-                        parsedContent = StringUtility.TextEditorContentDecode(channel.Content, pageInfo.PublishmentSystemInfo);
+                        parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.PublishmentSystemInfo, channel.Content, pageInfo.IsLocal);
 
                         if (isClearTags)
                         {

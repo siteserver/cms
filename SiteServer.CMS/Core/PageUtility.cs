@@ -18,52 +18,6 @@ namespace SiteServer.CMS.Core
         {
         }
 
-        public static string GetPreviewPublishmentSystemUrlxxx(int publishmentSystemId)
-        {
-            return GetPreviewUrlxxx(publishmentSystemId, 0, 0, 0, 0);
-        }
-
-        public static string GetPreviewChannelUrlxxx(int publishmentSystemId, int channelId)
-        {
-            return GetPreviewUrlxxx(publishmentSystemId, channelId, 0, 0, 0);
-        }
-
-        public static string GetPreviewContentUrlxxx(int publishmentSystemId, int channelId, int contentId)
-        {
-            return GetPreviewUrlxxx(publishmentSystemId, channelId, channelId, 0, 0);
-        }
-
-        public static string GetPreviewFileUrlxxx(int publishmentSystemId, int fileTemplateId)
-        {
-            return GetPreviewUrlxxx(publishmentSystemId, 0, 0, fileTemplateId, 0);
-        }
-
-        public static string GetPreviewUrlxxx(int publishmentSystemId, int channelId, int contentId, int fileTemplateId, int pageIndex)
-        {
-            var queryString = new NameValueCollection
-            {
-                {"s", publishmentSystemId.ToString()}
-            };
-            if (channelId > 0)
-            {
-                queryString.Add("n", channelId.ToString());
-            }
-            if (contentId > 0)
-            {
-                queryString.Add("c", contentId.ToString());
-            }
-            if (fileTemplateId > 0)
-            {
-                queryString.Add("f", fileTemplateId.ToString());
-            }
-            if (pageIndex > 0)
-            {
-                queryString.Add("p", pageIndex.ToString());
-            }
-
-            return PageUtils.GetSiteServerUrl("PagePreview", queryString);
-        }
-
         public static string GetPublishmentSystemUrl(PublishmentSystemInfo publishmentSystemInfo, bool isLocal)
         {
             return GetPublishmentSystemUrl(publishmentSystemInfo, string.Empty, isLocal);

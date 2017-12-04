@@ -417,7 +417,6 @@
     <Compile Include="Core\SeoManager.cs" />
     <Compile Include="Core\SourceManager.cs" />
     <Compile Include="Core\StarsManager.cs" />
-    <Compile Include="Core\StringUtility.cs" />
     <Compile Include="Core\TagStyleManager.cs" />
     <Compile Include="Core\VisualInfo.cs" />
     <Compile Include="Core\DataProvider.cs" />

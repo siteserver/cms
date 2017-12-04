@@ -360,7 +360,7 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.LastEditDate = DateTime.Now;
 
                     //自动保存的时候，不保存编辑器的图片
-                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes, true);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes);
 
                     contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
@@ -443,7 +443,7 @@ $('#TbTags').keyup(function (e) {
                     contentInfo.LastEditDate = DateTime.Now;
 
                     //自动保存的时候，不保存编辑器的图片
-                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes, true);
+                    BackgroundInputTypeParser.AddValuesToAttributes(_tableStyle, _tableName, PublishmentSystemInfo, _relatedIdentities, Request.Form, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes);
 
                     contentInfo.ContentGroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroupNameCollection.Items);
                     var tagCollection = TagUtils.ParseTagsString(TbTags.Text);

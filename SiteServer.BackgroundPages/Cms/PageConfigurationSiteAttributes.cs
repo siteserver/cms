@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
                 
 				try
 				{
-                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, PublishmentSystemInfo.Additional.ToNameValueCollection());
+                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, PublishmentSystemInfo.Additional.ToNameValueCollection(), null);
 
                     DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
 

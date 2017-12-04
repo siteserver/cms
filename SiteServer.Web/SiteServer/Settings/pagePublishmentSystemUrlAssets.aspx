@@ -20,7 +20,7 @@
               <b>访问地址管理</b>
             </h4>
             <p class="text-muted font-13 m-b-25">
-              在此设置站点的访问地址
+              在此设置站点资源文件的访问地址
             </p>
 
             <ul class="nav nav-pills m-b-30">

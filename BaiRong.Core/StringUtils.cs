@@ -469,6 +469,18 @@ namespace BaiRong.Core
             return retval;
         }
 
+        public static void ReplaceHrefOrSrc(StringBuilder builder, string replace, string to)
+        {
+            builder.Replace("href=\"" + replace, "href=\"" + to);
+            builder.Replace("href='" + replace, "href='" + to);
+            builder.Replace("href=" + replace, "href=" + to);
+            builder.Replace("href=&quot;" + replace, "href=&quot;" + to);
+            builder.Replace("src=\"" + replace, "src=\"" + to);
+            builder.Replace("src='" + replace, "src='" + to);
+            builder.Replace("src=" + replace, "src=" + to);
+            builder.Replace("src=&quot;" + replace, "src=&quot;" + to);
+        }
+
         public static string ReplaceFirst(string replace, string input, string to)
         {
             var pos = input.IndexOf(replace, StringComparison.Ordinal);

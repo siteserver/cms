@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages
             var templateId = TranslateUtils.ToInt(Request.QueryString["templateId"]);
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var url = string.Empty;
-            var isLocal = publishmentSystemInfo.Additional.IsSeparatedWeb;
+            var isLocal = publishmentSystemInfo.Additional.IsSeparatedWeb || publishmentSystemInfo.Additional.IsSeparatedAssets;
 
             if (publishmentSystemId > 0 && channelId > 0 && contentId > 0)
             {
