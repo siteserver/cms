@@ -180,7 +180,7 @@ namespace SiteServer.CMS.Provider
                     whereString.Append(" AND ");
                 }
                 isWhere = true;
-                whereString.AppendFormat("(AddDate >= '{0}')", dateFrom);
+                whereString.Append($"(AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))})");
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
@@ -188,7 +188,7 @@ namespace SiteServer.CMS.Provider
                 {
                     whereString.Append(" AND ");
                 }
-                whereString.AppendFormat("(AddDate <= '{0}')", dateTo);
+                whereString.Append($"(AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))})");
             }
 
             return "SELECT ID, PublishmentSystemID, ChannelID, ContentID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_Log " + whereString;

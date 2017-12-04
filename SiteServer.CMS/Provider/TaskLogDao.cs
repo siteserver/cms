@@ -122,12 +122,12 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(dateFrom))
             {
                 whereString.Append(" AND ");
-                whereString.AppendFormat("(AddDate >= '{0}')", dateFrom);
+                whereString.Append($"(AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))})");
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
                 whereString.Append(" AND ");
-                whereString.AppendFormat("(AddDate <= '{0}')", dateTo);
+                whereString.Append($"(AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))})");
             }
 
             return "SELECT ID, TaskID, IsSuccess, ErrorMessage, AddDate FROM siteserver_TaskLog " + whereString;

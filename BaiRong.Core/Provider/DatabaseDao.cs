@@ -455,7 +455,9 @@ namespace BaiRong.Core.Provider
             //if (!string.IsNullOrEmpty(sortField) && addCustomSortInfo)
             //    SelectCommand += " ORDER BY " + SortField;
 
-            string cmdText = $"SELECT COUNT(*) FROM ({sqlString}) AS t0";
+            var cmdText = WebConfigUtils.DatabaseType == EDatabaseType.Oracle
+                ? $"SELECT COUNT(*) FROM ({sqlString})"
+                : $"SELECT COUNT(*) FROM ({sqlString}) AS T0";
             return GetIntResult(cmdText);
         }
 
@@ -538,9 +540,9 @@ SELECT * FROM (
                     retval = $@"
 SELECT * FROM (
     SELECT * FROM (
-        SELECT * FROM ({sqlString}) WHERE ROWNUM <= {itemsPerPage * (currentPageIndex + 1)} AS t0 {orderString}
-    ) WHERE ROWNUM <= {recsToRetrieve} AS t1 {orderStringReverse}
-) AS t2 {orderString}";
+        SELECT * FROM ({sqlString}) WHERE ROWNUM <= {itemsPerPage * (currentPageIndex + 1)} {orderString}
+    ) WHERE ROWNUM <= {recsToRetrieve} {orderStringReverse}
+) {orderString}";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -1724,27 +1726,27 @@ FROM (SELECT TOP {totalNum} *
             return retval;
         }
 
-        public void Test()
-        {
-            OracleConnection con = new OracleConnection();
-            con.ConnectionString = "user id=c##scott;password=tiger;data source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.88.99)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=orcl)))";
-            con.Open();
+        //public void Test()
+        //{
+        //    OracleConnection con = new OracleConnection();
+        //    con.ConnectionString = "user id=c##scott;password=tiger;data source=(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.88.99)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=orcl)))";
+        //    con.Open();
 
-            OracleCommand cmd = new OracleCommand();
-            cmd.CommandType = System.Data.CommandType.Text;
-            cmd.CommandText = "select * from SYSTEM.AA_ADMINISTRATOR2";
-            cmd.Connection = con;
+        //    OracleCommand cmd = new OracleCommand();
+        //    cmd.CommandType = CommandType.Text;
+        //    cmd.CommandText = "select * from SYSTEM.AA_ADMINISTRATOR2";
+        //    cmd.Connection = con;
 
-            OracleDataAdapter da = new OracleDataAdapter();
-            da.SelectCommand = cmd;
-            DataSet ds = new DataSet();
-            da.Fill(ds);
+        //    OracleDataAdapter da = new OracleDataAdapter();
+        //    da.SelectCommand = cmd;
+        //    DataSet ds = new DataSet();
+        //    da.Fill(ds);
 
-            con.Close();
-            da.Dispose();
-            cmd.Dispose();
-            con.Dispose();
-        }
+        //    con.Close();
+        //    da.Dispose();
+        //    cmd.Dispose();
+        //    con.Dispose();
+        //}
     }
 }
 

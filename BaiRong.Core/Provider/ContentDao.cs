@@ -640,14 +640,14 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             if (string.IsNullOrEmpty(userName))
             {
                 sqlString = nodeIdList.Count == 1
-                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')"
-                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}')";
+                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (AddDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))})"
+                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))})";
             }
             else
             {
                 sqlString = nodeIdList.Count == 1
-                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')"
-                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (AddUserName = '{userName}')";
+                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (AddDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (AddUserName = '{userName}')"
+                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AddDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (AddUserName = '{userName}')";
             }
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
@@ -659,14 +659,14 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             if (string.IsNullOrEmpty(userName))
             {
                 sqlString = nodeIdList.Count == 1
-                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)"
-                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate)";
+                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (LastEditDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (LastEditDate <> AddDate)"
+                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (LastEditDate <> AddDate)";
             }
             else
             {
                 sqlString = nodeIdList.Count == 1
-                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')"
-                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}') AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
+                    ? $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND (LastEditDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')"
+                    : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (LastEditDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
             }
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
@@ -689,12 +689,11 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             var dateString = string.Empty;
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                dateString = $" AND AddDate >= '{dateFrom}' ";
+                dateString = $" AND AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ";
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                dateTo = DateUtils.GetDateString(TranslateUtils.ToDateTime(dateTo).AddDays(1));
-                dateString += $" AND AddDate <= '{dateTo}' ";
+                dateString += $" AND AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))} ";
             }
             var whereString = new StringBuilder("WHERE ");
 
@@ -944,12 +943,11 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
                 var dateString = string.Empty;
                 if (!string.IsNullOrEmpty(dateFrom))
                 {
-                    dateString = $" AND AddDate >= '{dateFrom}' ";
+                    dateString = $" AND AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ";
                 }
                 if (!string.IsNullOrEmpty(dateTo))
                 {
-                    dateTo = DateUtils.GetDateString(TranslateUtils.ToDateTime(dateTo).AddDays(1));
-                    dateString += $" AND AddDate <= '{dateTo}' ";
+                    dateString += $" AND AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))} ";
                 }
                 sqlString += dateString;
             }
@@ -1040,7 +1038,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
             {
                 string sqlString =
-                    $"UPDATE {tableName} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetDefaultDateString()} WHERE PublishmentSystemId = {publishmentSystemId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                    $"UPDATE {tableName} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE PublishmentSystemId = {publishmentSystemId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
                 return ExecuteNonQuery(sqlString);
             }
             return 0;
@@ -1051,7 +1049,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             if (!string.IsNullOrEmpty(tableName))
             {
                 string sqlString =
-                    $"UPDATE {tableName} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetDefaultDateString()} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {publishmentSystemId}";
+                    $"UPDATE {tableName} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {publishmentSystemId}";
                 return ExecuteNonQuery(sqlString);
             }
             return 0;
@@ -1111,7 +1109,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             if (!string.IsNullOrEmpty(tableName))
             {
                 string sqlString =
-                    $"UPDATE {tableName} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetDefaultDateString()} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId < 0";
+                    $"UPDATE {tableName} SET NodeId = -NodeId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId < 0";
                 return ExecuteNonQuery(sqlString);
             }
             return 0;
@@ -1271,13 +1269,13 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
 SELECT AddUserName as userName, Count(AddUserName) as addCount, 0 as updateCount FROM {tableName} 
 INNER JOIN bairong_Administrator ON AddUserName = bairong_Administrator.UserName 
 WHERE {tableName}.PublishmentSystemId = {publishmentSystemId} AND (({tableName}.NodeId > 0)) 
-AND LastEditDate BETWEEN '{DateUtils.GetDateString(begin)}' AND '{DateUtils.GetDateString(end.AddDays(1))}'
+AND LastEditDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}
 GROUP BY AddUserName
 Union
 SELECT LastEditUserName as userName,0 as addCount, Count(LastEditUserName) as updateCount FROM {tableName} 
 INNER JOIN bairong_Administrator ON LastEditUserName = bairong_Administrator.UserName 
 WHERE {tableName}.PublishmentSystemId = {publishmentSystemId} AND (({tableName}.NodeId > 0)) 
-AND LastEditDate BETWEEN '{DateUtils.GetDateString(begin)}' AND '{DateUtils.GetDateString(end.AddDays(1))}'
+AND LastEditDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}
 AND LastEditDate != AddDate
 GROUP BY LastEditUserName
 ) as tmp
@@ -1292,7 +1290,7 @@ group by tmp.userName";
             var arraylist = new List<int>();
 
             string sqlString =
-                $"SELECT DISTINCT NodeId FROM {tableName} WHERE (PublishmentSystemId = {publishmentSystemId}) AND (IsChecked = '{true}') AND (LastEditDate BETWEEN '{DateUtils.GetDateAndTimeString(DateTime.Now.AddHours(-hour))}' AND '{DateUtils.GetDateAndTimeString(DateTime.Now)}')";
+                $"SELECT DISTINCT NodeId FROM {tableName} WHERE (PublishmentSystemId = {publishmentSystemId}) AND (IsChecked = '{true}') AND (LastEditDate BETWEEN {SqlUtils.GetComparableDateTime(DateTime.Now.AddHours(-hour))} AND {SqlUtils.GetComparableNow()})";
 
             using (var rdr = ExecuteReader(sqlString))
             {

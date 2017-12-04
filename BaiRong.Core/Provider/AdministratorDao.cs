@@ -523,7 +523,7 @@ namespace BaiRong.Core.Provider
             if (dayOfLastActivity > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
-                whereBuilder.Append($"(LastActivityDate >= '{dateTime:yyyy-MM-dd}') ");
+                whereBuilder.Append($"(LastActivityDate >= {SqlUtils.GetComparableDate(dateTime)}) ");
             }
             if (!string.IsNullOrEmpty(searchWord))
             {
@@ -866,12 +866,12 @@ namespace BaiRong.Core.Provider
             if (dayOfCreation > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-dayOfCreation);
-                whereString += $" AND (CreationDate >= '{dateTime:yyyy-MM-dd}') ";
+                whereString += $" AND (CreationDate >= {SqlUtils.GetComparableDate(dateTime)}) ";
             }
             if (dayOfLastActivity > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
-                whereString += $" AND (LastActivityDate >= '{dateTime:yyyy-MM-dd}') ";
+                whereString += $" AND (LastActivityDate >= {SqlUtils.GetComparableDate(dateTime)}) ";
             }
             if (!string.IsNullOrEmpty(searchWord))
             {

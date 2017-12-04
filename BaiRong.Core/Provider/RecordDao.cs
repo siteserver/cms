@@ -115,7 +115,7 @@ namespace BaiRong.Core.Provider
                     whereString.Append(" AND ");
                 }
                 isWhere = true;
-                whereString.Append($"(AddDate >= '{dateFrom}')");
+                whereString.Append($"(AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))})");
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
@@ -123,7 +123,7 @@ namespace BaiRong.Core.Provider
                 {
                     whereString.Append(" AND ");
                 }
-                whereString.Append($"(AddDate <= '{dateTo}')");
+                whereString.Append($"(AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))})");
             }
 
             return $"SELECT Id, Text, Summary, Source, AddDate FROM {TableName} {whereString}";

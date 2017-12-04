@@ -252,7 +252,7 @@ namespace SiteServer.CMS.Provider
             var list = new List<int>();
 
             string sqlString =
-                $"SELECT p.PublishmentSystemID FROM siteserver_PublishmentSystem p INNER JOIN siteserver_Node n ON (p.PublishmentSystemID = n.NodeID AND (n.AddDate BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')) ORDER BY p.IsHeadquarters DESC, p.ParentPublishmentSystemID, p.Taxis DESC, n.NodeID";
+                $"SELECT p.PublishmentSystemID FROM siteserver_PublishmentSystem p INNER JOIN siteserver_Node n ON (p.PublishmentSystemID = n.NodeID AND (n.AddDate BETWEEN {SqlUtils.GetComparableDate(sinceDate)} AND {SqlUtils.GetComparableNow()})) ORDER BY p.IsHeadquarters DESC, p.ParentPublishmentSystemID, p.Taxis DESC, n.NodeID";
 
             using (var rdr = ExecuteReader(sqlString))
             {

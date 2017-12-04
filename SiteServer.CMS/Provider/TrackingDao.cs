@@ -132,7 +132,7 @@ namespace SiteServer.CMS.Provider
             string sqlSelectTrackerAnalysis = $@"
 SELECT TrackingID, PublishmentSystemID, TrackerType, LastAccessDateTime, PageUrl, PageNodeID, PageContentID, Referrer, IPAddress, OperatingSystem, Browser, AccessDateTime
 FROM siteserver_Tracking
-WHERE (PublishmentSystemID = @PublishmentSystemID) AND (AccessDateTime BETWEEN '{DateUtils.GetDateAndTimeString(DateTime.Now.AddMinutes(-trackingCurrentMinute))}' AND {SqlUtils.GetDefaultDateString()}) ORDER BY AccessDateTime DESC";
+WHERE (PublishmentSystemID = @PublishmentSystemID) AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDateTime(DateTime.Now.AddMinutes(-trackingCurrentMinute))} AND {SqlUtils.GetComparableNow()}) ORDER BY AccessDateTime DESC";
 
             var parms = new IDataParameter[]
 			{
@@ -175,7 +175,7 @@ WHERE (TrackerType = @TrackerType) AND
         {
             var totalAccessNum = 0;
 
-            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId})" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId})" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(sinceDate)} AND {SqlUtils.GetComparableNow()})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -193,7 +193,7 @@ WHERE (TrackerType = @TrackerType) AND
         {
             var totalUniqueAccessNum = 0;
 
-            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageNodeID = {nodeId}) AND (PageContentID = {contentId})" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageNodeID = {nodeId}) AND (PageContentID = {contentId}) AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageNodeID = {nodeId}) AND (PageContentID = {contentId})" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageNodeID = {nodeId}) AND (PageContentID = {contentId}) AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(sinceDate)} AND {SqlUtils.GetComparableNow()})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -211,7 +211,7 @@ WHERE (TrackerType = @TrackerType) AND
         {
             var totalUniqueAccessNum = 0;
 
-            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageUrl = '{pageUrl}')" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageUrl = '{pageUrl}') AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageUrl = '{pageUrl}')" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (PageUrl = '{pageUrl}') AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(sinceDate)} AND {SqlUtils.GetComparableNow()})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -229,7 +229,7 @@ WHERE (TrackerType = @TrackerType) AND
         {
             var totalUniqueAccessNum = 0;
 
-            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}')" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}')" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Site)}') AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(sinceDate)} AND {SqlUtils.GetComparableNow()})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -247,7 +247,7 @@ WHERE (TrackerType = @TrackerType) AND
         {
             var totalAccessNum = 0;
 
-            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (PageUrl = '{pageUrl}')" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (PageUrl = '{pageUrl}') AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (PageUrl = '{pageUrl}')" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE (PublishmentSystemID = {publishmentSystemId}) AND (PageUrl = '{pageUrl}') AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(sinceDate)} AND {SqlUtils.GetComparableNow()})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -265,7 +265,7 @@ WHERE (TrackerType = @TrackerType) AND
         {
             var totalAccessNum = 0;
 
-            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Page)}'" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Page)}' AND (AccessDateTime BETWEEN '{sinceDate.ToShortDateString()}' AND '{DateTime.Now.ToShortDateString()}')";
+            var sqlString = sinceDate == DateUtils.SqlMinValue ? $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Page)}'" : $"SELECT COUNT(*) AS Num FROM siteserver_Tracking WHERE PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND TrackerType = '{ETrackerTypeUtils.GetValue(ETrackerType.Page)}' AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(sinceDate)} AND {SqlUtils.GetComparableNow()})";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -410,16 +410,14 @@ SELECT MAX(Expr1) AS Expr1 FROM (
             {
                 sqlString = $@"
 SELECT IPAddress FROM siteserver_Tracking
-WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND (AccessDateTime BETWEEN '{begin
-                    .ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}'))
+WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}))
 ";
             }
             else
             {
                 sqlString = $@"
 SELECT IPAddress FROM siteserver_Tracking
-WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND (AccessDateTime BETWEEN '{begin
-                    .ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}'))
+WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}))
 ";
             }
 
@@ -444,8 +442,7 @@ WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND
             {
                 sqlString = $@"
 SELECT TrackingID, PublishmentSystemID, TrackerType, LastAccessDateTime, PageUrl, PageNodeID, PageContentID, Referrer, IPAddress, OperatingSystem, Browser, AccessDateTime FROM siteserver_Tracking
-WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND (AccessDateTime BETWEEN '{begin
-                    .ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}'))
+WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND PageContentID = {contentId} AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}))
 ";
             }
             else
@@ -454,9 +451,7 @@ WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID = {nodeId} AND
                 nodeIdList.Add(nodeId);
                 sqlString = $@"
 SELECT TrackingID, PublishmentSystemID, TrackerType, LastAccessDateTime, PageUrl, PageNodeID, PageContentID, Referrer, IPAddress, OperatingSystem, Browser, AccessDateTime FROM siteserver_Tracking
-WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID IN ({TranslateUtils
-                    .ToSqlInStringWithoutQuote(nodeIdList)}) AND (AccessDateTime BETWEEN '{begin
-                    .ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}'))
+WHERE (PublishmentSystemID = {publishmentSystemId} AND PageNodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}))
 ";
             }
 
@@ -806,7 +801,7 @@ GROUP BY PageUrl
         {
             var hashtable = new Hashtable();
 
-            var defaultDateString = SqlUtils.GetDefaultDateString();
+            var defaultDateString = SqlUtils.GetComparableNow();
             string sqlSelectPageUrlTodayAccessNum = $@"
 SELECT PageUrl, COUNT(*) AS TodayAccessNum
 FROM siteserver_Tracking
@@ -840,7 +835,7 @@ GROUP BY PageUrl
         {
             var hashtable = new Hashtable();
 
-            var defaultDateString = SqlUtils.GetDefaultDateString();
+            var defaultDateString = SqlUtils.GetComparableNow();
             string sqlSelectPageUrlTodayUniqueAccessNum = $@"
 SELECT PageUrl, COUNT(*) AS TodayUniqueAccessNum
 FROM siteserver_Tracking
@@ -947,7 +942,7 @@ GROUP BY Referrer
         {
             var hashtable = new Hashtable();
 
-            var defaultDateString = SqlUtils.GetDefaultDateString();
+            var defaultDateString = SqlUtils.GetComparableNow();
             string sqlSelectReferrerTodayAccessNum = $@"
 SELECT Referrer, COUNT(*) AS TodayAccessNum
 FROM siteserver_Tracking
@@ -986,7 +981,7 @@ GROUP BY Referrer
         {
             var hashtable = new Hashtable();
 
-            var defaultDateString = SqlUtils.GetDefaultDateString();
+            var defaultDateString = SqlUtils.GetComparableNow();
             string sqlSelectReferrerTodayUniqueAccessNum = $@"
 SELECT Referrer, COUNT(*) AS TodayUniqueAccessNum
 FROM siteserver_Tracking
@@ -1089,7 +1084,7 @@ GROUP BY OperatingSystem
         {
             var hashtable = new Hashtable();
 
-            var defaultDateString = SqlUtils.GetDefaultDateString();
+            var defaultDateString = SqlUtils.GetComparableNow();
             string sqlSelectOsTodayAccessNum = $@"
 SELECT OperatingSystem, COUNT(*) AS TodayAccessNum
 FROM siteserver_Tracking
@@ -1123,7 +1118,7 @@ GROUP BY OperatingSystem
         {
             var hashtable = new Hashtable();
 
-            var defaultDateString = SqlUtils.GetDefaultDateString();
+            var defaultDateString = SqlUtils.GetComparableNow();
             string sqlSelectOsTodayUniqueAccessNum = $@"
 SELECT OperatingSystem, COUNT(*) AS TodayUniqueAccessNum
 FROM siteserver_Tracking
@@ -1220,7 +1215,7 @@ GROUP BY Browser
         {
             var hashtable = new Hashtable();
 
-            var defaultDateString = SqlUtils.GetDefaultDateString();
+            var defaultDateString = SqlUtils.GetComparableNow();
             string sqlSelectBrowserTodayAccessNum = $@"
 SELECT Browser, COUNT(*) AS TodayAccessNum
 FROM siteserver_Tracking
@@ -1254,7 +1249,7 @@ GROUP BY Browser
         {
             var hashtable = new Hashtable();
 
-            var defaultDateString = SqlUtils.GetDefaultDateString();
+            var defaultDateString = SqlUtils.GetComparableNow();
             string sqlSelectBrowserTodayUniqueAccessNum = $@"
 SELECT Browser, COUNT(*) AS TodayUniqueAccessNum
 FROM siteserver_Tracking
@@ -1294,7 +1289,7 @@ GROUP BY Browser
             string sqlSelectBrowserAccessNum = $@"
 SELECT PageNodeID, COUNT(*) AS AccessNum
 FROM siteserver_Tracking
-WHERE (PublishmentSystemID = @PublishmentSystemID AND PageNodeID <> 0 AND PageContentID = 0 AND (AccessDateTime BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}'))
+WHERE (PublishmentSystemID = @PublishmentSystemID AND PageNodeID <> 0 AND PageContentID = 0 AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}))
 GROUP BY PageNodeID
 ";
 
@@ -1327,7 +1322,7 @@ GROUP BY PageNodeID
             string sqlSelectBrowserAccessNum = $@"
 SELECT PageNodeID, COUNT(*) AS AccessNum
 FROM siteserver_Tracking
-WHERE (PublishmentSystemID = @PublishmentSystemID AND PageNodeID <> 0 AND PageContentID <> 0 AND (AccessDateTime BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}'))
+WHERE (PublishmentSystemID = @PublishmentSystemID AND PageNodeID <> 0 AND PageContentID <> 0 AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}))
 GROUP BY PageNodeID
 ";
 
@@ -1359,7 +1354,7 @@ GROUP BY PageNodeID
             string sqlSelectBrowserAccessNum = $@"
 SELECT PageContentID, COUNT(*) AS AccessNum
 FROM siteserver_Tracking
-WHERE (PublishmentSystemID = @PublishmentSystemID AND PageNodeID = @PageNodeID AND PageContentID <> 0 AND (AccessDateTime BETWEEN '{begin.ToShortDateString()}' AND '{end.AddDays(1).ToShortDateString()}'))
+WHERE (PublishmentSystemID = @PublishmentSystemID AND PageNodeID = @PageNodeID AND PageContentID <> 0 AND (AccessDateTime BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}))
 GROUP BY PageContentID
 ";
 
@@ -1421,7 +1416,7 @@ GROUP BY PageContentID ORDER BY AccessNum DESC
         {
             var hashtable = new Hashtable();
 
-            var defaultDateString = SqlUtils.GetDefaultDateString();
+            var defaultDateString = SqlUtils.GetComparableNow();
             string sqlSelectPageUrlTodayAccessNum = $@"
 SELECT PageContentID, COUNT(*) AS TodayAccessNum
 FROM siteserver_Tracking
@@ -1502,11 +1497,11 @@ GROUP BY PageNodeID ORDER BY AccessNum DESC
                 $@" SELECT COUNT(*) FROM siteserver_Tracking WHERE PublishmentSystemId = {publishmentSystemId} ";
             if (dateFrom > DateUtils.SqlMinValue)
             {
-                sqlString += $@" AND AccessDateTime >= '{dateFrom}' ";
+                sqlString += $@" AND AccessDateTime >= {SqlUtils.GetComparableDate(dateFrom)} ";
             }
             if (dateTo > DateUtils.SqlMinValue)
             {
-                sqlString += $@" AND AccessDateTime <= '{dateTo}' ";
+                sqlString += $@" AND AccessDateTime <= {SqlUtils.GetComparableDate(dateTo)} ";
             }
             return TranslateUtils.ToInt(ExecuteScalar(sqlString).ToString());
         }

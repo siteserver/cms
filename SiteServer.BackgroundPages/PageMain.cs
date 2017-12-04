@@ -134,9 +134,10 @@ namespace SiteServer.BackgroundPages
 
                 LtlExtras.Text = $@"
 <li>
-    <form role=""search"" class=""navbar-left app-search pull-left hidden-xs"" action=""{PageContentSearch.GetRedirectUrl(_publishmentSystemInfo.PublishmentSystemId)}"" target=""right"" method=""get"">
-        <input name=""Keyword"" type=""text"" placeholder=""内容搜索..."" class=""form-control"">
-        <a href=""javascript:;"" onclick=""""><i class=""ion-search""></i></a>
+    <form id=""search"" role=""search"" class=""navbar-left app-search pull-left hidden-xs"" action=""{PageContentSearch.GetRedirectUrl(_publishmentSystemInfo.PublishmentSystemId)}"" target=""right"" method=""get"">
+        <input name=""publishmentSystemId"" type=""hidden"" value=""{_publishmentSystemInfo.PublishmentSystemId}"">
+        <input name=""keyword"" type=""text"" placeholder=""内容搜索..."" class=""form-control"">
+        <a href=""javascript:;"" onclick=""$('#search').submit();""><i class=""ion-search""></i></a>
     </form>
 </li>
 <li class=""dropdown hidden-xs"">

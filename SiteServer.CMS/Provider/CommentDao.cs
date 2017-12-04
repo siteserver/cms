@@ -255,7 +255,7 @@ namespace SiteServer.CMS.Provider
         public int GetCountChecked(int publishmentSystemId, DateTime begin, DateTime end)
         {
             string sqlString =
-                $"SELECT COUNT(*) FROM siteserver_Comment WHERE PublishmentSystemID = {publishmentSystemId} AND (AddDate BETWEEN '{begin.ToShortDateString()}' AND '{end.ToShortDateString()}') AND IsChecked = '{true}'";
+                $"SELECT COUNT(*) FROM siteserver_Comment WHERE PublishmentSystemID = {publishmentSystemId} AND (AddDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end)}) AND IsChecked = '{true}'";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 

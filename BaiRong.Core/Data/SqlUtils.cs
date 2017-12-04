@@ -821,30 +821,6 @@ GO");
             return sqlBuilder.ToString();
         }
 
-        public static string GetDefaultDateString()
-        {
-            string retval;
-            switch (WebConfigUtils.DatabaseType)
-            {
-                case EDatabaseType.MySql:
-                    retval = "now()";
-                    break;
-                case EDatabaseType.SqlServer:
-                    retval = "getdate()";
-                    break;
-                case EDatabaseType.PostgreSql:
-                    retval = "current_timestamp";
-                    break;
-                case EDatabaseType.Oracle:
-                    retval = "sysdate";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return retval;
-        }
-
         public static DataType ToDataType(EDatabaseType databaseType, string dataTypeStr)
         {
             if (string.IsNullOrEmpty(dataTypeStr)) return DataType.VarChar;
@@ -1436,6 +1412,78 @@ GO");
                     break;
                 case EDatabaseType.Oracle:
                     retval = $"TO_CHAR({fieldName}, 'DDD')";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return retval;
+        }
+
+        public static string GetComparableNow()
+        {
+            string retval;
+            switch (WebConfigUtils.DatabaseType)
+            {
+                case EDatabaseType.MySql:
+                    retval = "now()";
+                    break;
+                case EDatabaseType.SqlServer:
+                    retval = "getdate()";
+                    break;
+                case EDatabaseType.PostgreSql:
+                    retval = "current_timestamp";
+                    break;
+                case EDatabaseType.Oracle:
+                    retval = "sysdate";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return retval;
+        }
+
+        public static string GetComparableDate(DateTime dateTime)
+        {
+            string retval;
+            switch (WebConfigUtils.DatabaseType)
+            {
+                case EDatabaseType.MySql:
+                    retval = $"'{dateTime:yyyy-MM-dd}'";
+                    break;
+                case EDatabaseType.SqlServer:
+                    retval = $"'{dateTime:yyyy-MM-dd}'";
+                    break;
+                case EDatabaseType.PostgreSql:
+                    retval = $"'{dateTime:yyyy-MM-dd}'";
+                    break;
+                case EDatabaseType.Oracle:
+                    retval = $"to_date('{dateTime:yyyy-MM-dd}', 'yyyy-mm-dd')";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return retval;
+        }
+
+        public static string GetComparableDateTime(DateTime dateTime)
+        {
+            string retval;
+            switch (WebConfigUtils.DatabaseType)
+            {
+                case EDatabaseType.MySql:
+                    retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+                    break;
+                case EDatabaseType.SqlServer:
+                    retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+                    break;
+                case EDatabaseType.PostgreSql:
+                    retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+                    break;
+                case EDatabaseType.Oracle:
+                    retval = $"to_date('{dateTime:yyyy-MM-dd HH:mm:ss}', 'yyyy-mm-dd hh24:mi:ss')";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

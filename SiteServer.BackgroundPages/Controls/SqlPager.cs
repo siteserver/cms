@@ -21,11 +21,6 @@ namespace SiteServer.BackgroundPages.Controls
         public const string ParmPage = "page";
         private bool _isSetTotalCount;
 
-        private string GetQueryCountCommandText()
-        {
-            return $"SELECT COUNT(*) FROM ({SelectCommand}) AS t0";
-        }
-
         //        private string GetQueryPageCommandText(int recsToRetrieve)
         //        {
         //            if (!string.IsNullOrEmpty(OrderByString))
@@ -762,9 +757,7 @@ namespace SiteServer.BackgroundPages.Controls
 
         private int GetQueryVirtualCount()
         {
-            var cmdText = GetQueryCountCommandText();
-
-            var recCount = BaiRongDataProvider.DatabaseDao.GetIntResult(WebConfigUtils.ConnectionString, cmdText);
+            var recCount = BaiRongDataProvider.DatabaseDao.GetPageTotalCount(SelectCommand);
             //            SqlConnection conn = new SqlConnection(ConnectionString);
             //            SqlCommand cmd = new SqlCommand(cmdText, conn);
             //IDbConnection conn = SqlUtils.GetIDbConnection(BaiRongDataProvider.ADOType, ConnectionString);

@@ -1110,12 +1110,12 @@ namespace BaiRong.Core.Provider
             if (dayOfCreate > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-dayOfCreate);
-                whereString += $" AND (CreateDate >= '{dateTime:yyyy-MM-dd}') ";
+                whereString += $" AND (CreateDate >= {SqlUtils.GetComparableDate(dateTime)}) ";
             }
             if (dayOfLastActivity > 0)
             {
                 var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
-                whereString += $" AND (LastActivityDate >= '{dateTime:yyyy-MM-dd}') ";
+                whereString += $" AND (LastActivityDate >= {SqlUtils.GetComparableDate(dateTime)}) ";
             }
             if (!string.IsNullOrEmpty(searchWord))
             {
@@ -1151,7 +1151,7 @@ namespace BaiRong.Core.Provider
                 whereBuilder.Append(" AND ");
 
                 var dateTime = DateTime.Now.AddDays(-dayOfCreate);
-                whereBuilder.Append($"(CreateDate >= '{dateTime:yyyy-MM-dd}')");
+                whereBuilder.Append($"(CreateDate >= {SqlUtils.GetComparableDate(dateTime)})");
             }
 
             if (dayOfLastActivity > 0)
@@ -1159,7 +1159,7 @@ namespace BaiRong.Core.Provider
                 whereBuilder.Append(" AND ");
 
                 var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
-                whereBuilder.Append($"(LastActivityDate >= '{dateTime:yyyy-MM-dd}') ");
+                whereBuilder.Append($"(LastActivityDate >= {SqlUtils.GetComparableDate(dateTime)}) ");
             }
 
             if (string.IsNullOrEmpty(searchType))
@@ -1363,8 +1363,8 @@ namespace BaiRong.Core.Provider
             }
 
             var builder = new StringBuilder();
-            builder.Append($" AND CreateDate >= '{dateFrom}'");
-            builder.Append($" AND CreateDate < '{dateTo}'");
+            builder.Append($" AND CreateDate >= {SqlUtils.GetComparableDate(dateFrom)}");
+            builder.Append($" AND CreateDate < {SqlUtils.GetComparableDate(dateTo)}");
 
             string sqlString = $@"
 SELECT COUNT(*) AS AddNum, AddYear, AddMonth, AddDay FROM (

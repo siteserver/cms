@@ -155,7 +155,7 @@ namespace BaiRong.Core.Provider
                     whereString.Append(" AND ");
                 }
                 isWhere = true;
-                whereString.AppendFormat("(AddDate >= '{0}')", PageUtils.FilterSql(dateFrom));
+                whereString.Append($"(AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))})");
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
@@ -163,7 +163,7 @@ namespace BaiRong.Core.Provider
                 {
                     whereString.Append(" AND ");
                 }
-                whereString.AppendFormat("(AddDate <= '{0}')", PageUtils.FilterSql(dateTo));
+                whereString.Append($"(AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))})");
             }
 
             return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM bairong_Log " + whereString;
@@ -209,11 +209,11 @@ namespace BaiRong.Core.Provider
             var builder = new StringBuilder();
             if (dateFrom > DateUtils.SqlMinValue)
             {
-                builder.Append($" AND AddDate >= '{dateFrom}'");
+                builder.Append($" AND AddDate >= {SqlUtils.GetComparableDate(dateFrom)}");
             }
             if (dateTo != DateUtils.SqlMinValue)
             {
-                builder.Append($" AND AddDate < '{dateTo}'");
+                builder.Append($" AND AddDate < {SqlUtils.GetComparableDate(dateTo)}");
             }
 
             string sqlSelectTrackingDay = $@"
@@ -286,11 +286,11 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             var builder = new StringBuilder();
             if (dateFrom > DateUtils.SqlMinValue)
             {
-                builder.Append($" AND AddDate >= '{dateFrom}'");
+                builder.Append($" AND AddDate >= {SqlUtils.GetComparableDate(dateFrom)}");
             }
             if (dateTo != DateUtils.SqlMinValue)
             {
-                builder.Append($" AND AddDate < '{dateTo}'");
+                builder.Append($" AND AddDate < {SqlUtils.GetComparableDate(dateTo)}");
             }
 
             string sqlSelectTrackingDay = $@"

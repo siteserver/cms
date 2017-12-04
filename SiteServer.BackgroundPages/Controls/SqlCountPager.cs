@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
@@ -20,12 +20,6 @@ namespace SiteServer.BackgroundPages.Controls
         private Control _controlToPaginate;
         private string CacheKeyName => Page.Request.FilePath + "_" + UniqueID + "_Data";
         public const string ParmPage = "page";
-        public ArrayList RemoveQueryString = new ArrayList();
-
-        private string GetQueryCountCommandText()
-        {
-            return $"SELECT COUNT(*) FROM ({SelectCommand}) AS t0";
-        }
 
 //        private string GetQueryPageCommandText(int recsToRetrieve)
 //        {
@@ -408,13 +402,6 @@ namespace SiteServer.BackgroundPages.Controls
             else
             {
                 queryString.Remove(ParmPage);
-            }
-            if (RemoveQueryString.Count > 0)
-            {
-                foreach (string name in RemoveQueryString)
-                {
-                    queryString.Remove(name);
-                }
             }
             return PageUtils.AddQueryString(PageUtils.GetUrlWithoutQueryString(Page.Request.RawUrl), queryString);
         }
@@ -820,9 +807,7 @@ namespace SiteServer.BackgroundPages.Controls
         /// </summary>
         private int GetQueryVirtualCount()
         {
-            var cmdText = GetQueryCountCommandText();
-
-            var recCount = BaiRongDataProvider.DatabaseDao.GetIntResult(WebConfigUtils.ConnectionString, cmdText);
+            var recCount = BaiRongDataProvider.DatabaseDao.GetPageTotalCount(SelectCommand);
             //            SqlConnection conn = new SqlConnection(ConnectionString);
             //            SqlCommand cmd = new SqlCommand(cmdText, conn);
             //IDbConnection conn = SqlUtils.GetIDbConnection(BaiRongDataProvider.ADOType, ConnectionString);

@@ -442,17 +442,17 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(dateFrom))
             {
                 whereBuilder.Append(" AND ");
-                whereBuilder.Append($" {dateAttribute} >= '{dateFrom}' ");
+                whereBuilder.Append($" {dateAttribute} >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ");
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
                 whereBuilder.Append(" AND ");
-                whereBuilder.Append($" {dateAttribute} <= '{dateTo}' ");
+                whereBuilder.Append($" {dateAttribute} <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo))} ");
             }
             if (!string.IsNullOrEmpty(since))
             {
                 var sinceDate = DateTime.Now.AddHours(-DateUtils.GetSinceHours(since));
-                whereBuilder.Append($" AND {dateAttribute} BETWEEN '{DateUtils.GetDateAndTimeString(sinceDate)}' AND {SqlUtils.GetDefaultDateString()} ");
+                whereBuilder.Append($" AND {dateAttribute} BETWEEN {SqlUtils.GetComparableDateTime(sinceDate)} AND {SqlUtils.GetComparableNow()} ");
             }
 
             var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
@@ -569,12 +569,11 @@ namespace SiteServer.CMS.Provider
             var dateString = string.Empty;
             if (!string.IsNullOrEmpty(dateFrom))
             {
-                dateString = $" AND AddDate >= '{dateFrom}' ";
+                dateString = $" AND AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ";
             }
             if (!string.IsNullOrEmpty(dateTo))
             {
-                dateTo = DateUtils.GetDateString(TranslateUtils.ToDateTime(dateTo).AddDays(1));
-                dateString += $" AND AddDate <= '{dateTo}' ";
+                dateString += $" AND AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))} ";
             }
 
             if (string.IsNullOrEmpty(keyword))

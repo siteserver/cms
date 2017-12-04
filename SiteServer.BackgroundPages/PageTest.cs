@@ -14,7 +14,7 @@ namespace SiteServer.BackgroundPages
         {
             LtlContent.Text = string.Empty;
 
-            BaiRongDataProvider.DatabaseDao.Test();
+            //BaiRongDataProvider.DatabaseDao.Test();
         }
     }
 }
