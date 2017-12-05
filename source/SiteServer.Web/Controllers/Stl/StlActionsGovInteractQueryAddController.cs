@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
-using System.Web.Http;
+using System.Web.Http; 
+using BaiRong.Core;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Controllers.Stl;
 using SiteServer.CMS.Core;
@@ -18,7 +19,7 @@ namespace SiteServer.API.Controllers.Stl
 
             try
             {
-                var queryCode = HttpContext.Current.Request.Form[GovInteractContentAttribute.QueryCode];
+                var queryCode = PageUtils.FilterSqlAndXss(HttpContext.Current.Request.Form[GovInteractContentAttribute.QueryCode]);
                 var contentInfo = DataProvider.GovInteractContentDao.GetContentInfo(publishmentSystemInfo, nodeId, queryCode);
                 if (contentInfo != null)
                 {
@@ -31,7 +32,8 @@ namespace SiteServer.API.Controllers.Stl
             }
             catch (Exception ex)
             {
-                HttpContext.Current.Response.Write(GovInteractQueryTemplate.GetCallbackScript(publishmentSystemInfo, false, null, ex.Message));
+                //HttpContext.Current.Response.Write(GovInteractQueryTemplate.GetCallbackScript(publishmentSystemInfo, false, null, ex.Message));
+                HttpContext.Current.Response.Write(GovInteractQueryTemplate.GetCallbackScript(publishmentSystemInfo, false, null, "程序错误"));
             }
 
             HttpContext.Current.Response.End();
