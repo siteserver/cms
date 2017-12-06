@@ -92,7 +92,8 @@ namespace SiteServer.API.Controllers.Stl
                     {
                         if (string.IsNullOrEmpty(inputInfo.Additional.MessageFailure))
                         {
-                            message = "表单提交失败，" + ex.Message;
+                            //message = "表单提交失败，" + ex.Message;
+                            message = "表单提交失败，程序出错。";
                         }
                         else
                         {

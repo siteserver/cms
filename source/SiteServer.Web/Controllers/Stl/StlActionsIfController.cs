@@ -62,7 +62,8 @@ namespace SiteServer.API.Controllers.Stl
             }
             catch(Exception ex)
             {
-                return InternalServerError(ex);
+                //return InternalServerError(ex);
+                return InternalServerError(new Exception("程序错误"));
             }
         }
     }

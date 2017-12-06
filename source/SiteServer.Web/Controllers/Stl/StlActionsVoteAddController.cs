@@ -44,7 +44,8 @@ namespace SiteServer.API.Controllers.Stl
             }
             catch (Exception ex)
             {
-                HttpContext.Current.Response.Write(VoteTemplate.GetCallbackScript(publishmentSystemInfo, nodeId, contentId, false, ex.Message));
+                //HttpContext.Current.Response.Write(VoteTemplate.GetCallbackScript(publishmentSystemInfo, nodeId, contentId, false, ex.Message));
+                HttpContext.Current.Response.Write(VoteTemplate.GetCallbackScript(publishmentSystemInfo, nodeId, contentId, false, "程序出错。"));
             }
 
             HttpContext.Current.Response.End();

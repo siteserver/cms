@@ -41,7 +41,8 @@ namespace SiteServer.API.Controllers.Administrators
             }
             catch (Exception ex)
             {
-                return InternalServerError(ex);
+                //return InternalServerError(ex);
+                return InternalServerError(new Exception("程序错误"));
             }
         }
     }

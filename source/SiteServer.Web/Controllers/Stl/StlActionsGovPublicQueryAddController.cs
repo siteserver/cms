@@ -34,7 +34,8 @@ namespace SiteServer.API.Controllers.Stl
             }
             catch (Exception ex)
             {
-                HttpContext.Current.Response.Write(GovPublicQueryTemplate.GetCallbackScript(publishmentSystemInfo, false, null, ex.Message));
+                //HttpContext.Current.Response.Write(GovPublicQueryTemplate.GetCallbackScript(publishmentSystemInfo, false, null, ex.Message));
+                HttpContext.Current.Response.Write(GovPublicQueryTemplate.GetCallbackScript(publishmentSystemInfo, false, null, "程序错误"));
             }
 
             HttpContext.Current.Response.End();

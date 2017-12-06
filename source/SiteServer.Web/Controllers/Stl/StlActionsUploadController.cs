@@ -76,7 +76,8 @@ namespace SiteServer.API.Controllers.Stl
             }
             catch (Exception ex)
             {
-                message = ex.Message;
+                message = "程序错误";
+                //message = ex.Message;
             }
             return false;
         }
@@ -104,7 +105,8 @@ namespace SiteServer.API.Controllers.Stl
             }
             catch (Exception ex)
             {
-                message = ex.Message;
+                //message = ex.Message;
+                message = "程序出错。";
             }
             return false;
         }

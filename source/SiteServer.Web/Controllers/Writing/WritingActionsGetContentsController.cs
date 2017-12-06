@@ -81,7 +81,8 @@ namespace SiteServer.API.Controllers.Writing
             }
             catch (Exception ex)
             {
-                return InternalServerError(ex);
+                //return InternalServerError(ex);
+                return InternalServerError(new Exception("程序错误"));
             }
         }
     }

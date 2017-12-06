@@ -26,7 +26,8 @@ namespace SiteServer.API.Controllers.Users
             }
             catch (Exception ex)
             {
-                return InternalServerError(ex);
+                //return InternalServerError(ex);
+                return InternalServerError(new Exception("程序错误"));
             }
         }
     }

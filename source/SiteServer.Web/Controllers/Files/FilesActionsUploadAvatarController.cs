@@ -45,8 +45,9 @@ namespace SiteServer.API.Controllers.Files
                         }
                     }
                     catch (Exception ex)
-                    {
-                        errorMessage = ex.Message;
+                    { 
+                        errorMessage = "程序错误";
+                        //errorMessage = ex.Message;
                     }
                 }
             }

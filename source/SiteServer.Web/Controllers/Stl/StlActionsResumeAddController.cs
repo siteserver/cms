@@ -41,7 +41,8 @@ namespace SiteServer.API.Controllers.Stl
 
                 if (string.IsNullOrEmpty(HttpContext.Current.Request.Form["failureTemplateString"]))
                 {
-                    message = "简历添加失败，" + ex.Message;
+                    //message = "简历添加失败，" + ex.Message;
+                    message = "简历添加失败，程序出错。";
                 }
                 else
                 {

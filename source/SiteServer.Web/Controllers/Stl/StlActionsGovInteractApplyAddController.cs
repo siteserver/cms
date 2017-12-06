@@ -62,7 +62,8 @@ namespace SiteServer.API.Controllers.Stl
             }
             catch (Exception ex)
             {
-                HttpContext.Current.Response.Write(GovInteractApplyTemplate.GetCallbackScript(publishmentSystemInfo, nodeId, false, string.Empty, ex.Message));
+                //HttpContext.Current.Response.Write(GovInteractApplyTemplate.GetCallbackScript(publishmentSystemInfo, nodeId, false, string.Empty, ex.Message));
+                HttpContext.Current.Response.Write(GovInteractApplyTemplate.GetCallbackScript(publishmentSystemInfo, nodeId, false, string.Empty, "程序错误"));
             }
 
             HttpContext.Current.Response.End();
