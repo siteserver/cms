@@ -378,7 +378,12 @@ Disallow: /SiteFiles/");
                 errorMessage = "两次输入的管理员密码不一致！";
                 return false;
             }
-
+            if (!EUserPasswordRestrictionUtils.IsValid(TbAdminPassword.Text, ConfigManager.SystemConfigInfo.AdminPasswordRestriction))
+            {
+                errorMessage =
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.AdminPasswordRestriction))}";
+                return false;
+            }
             return true;
         }
 
