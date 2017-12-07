@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
@@ -17,35 +16,35 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalChannelEdit : BasePageCms
     {
-        public Control NodeNameRow;
-        public Control NodeIndexNameRow;
-        public Control LinkUrlRow;
-        public Control NodeGroupNameCollectionRow;
-        public Control LinkTypeRow;
-        public Control ChannelTemplateIDRow;
-        public Control ContentTemplateIDRow;
-        public Control ImageUrlRow;
-        public Control FilePathRow;
-        public Control ContentRow;
-        public Control KeywordsRow;
-        public Control DescriptionRow;
+        public PlaceHolder PhNodeName;
+        public PlaceHolder PhNodeIndexName;
+        public PlaceHolder PhFilePath;
+        public PlaceHolder PhImageUrl;
+        public PlaceHolder PhContent;
+        public PlaceHolder PhKeywords;
+        public PlaceHolder PhDescription;
+        public PlaceHolder PhLinkUrl;
+        public PlaceHolder PhLinkType;
+        public PlaceHolder PhChannelTemplateId;
+        public PlaceHolder PhContentTemplateId;
+        public PlaceHolder PhNodeGroupNameCollection;
 
-        public TextBox NodeName;
-        public TextBox NodeIndexName;
-        public TextBox LinkUrl;
-        public CheckBoxList NodeGroupNameCollection;
-        public DropDownList LinkType;
-        public DropDownList ChannelTemplateID;
-        public DropDownList ContentTemplateID;
-        public TextBox tbImageUrl;
-        public Literal ltlImageUrlButtonGroup;
-        public TextBox FilePath;
-        public TextBox Keywords;
-        public TextBox Description;
+        public TextBox TbNodeName;
+        public TextBox TbNodeIndexName;
+        public TextBox TbLinkUrl;
+        public CheckBoxList CblNodeGroupNameCollection;
+        public DropDownList DdlLinkType;
+        public DropDownList DdlChannelTemplateId;
+        public DropDownList DdlContentTemplateId;
+        public TextBox TbImageUrl;
+        public Literal LtlImageUrlButtonGroup;
+        public TextBox TbFilePath;
+        public TextBox TbKeywords;
+        public TextBox TbDescription;
 
-        public TextEditorControl Content;
+        public TextEditorControl TbContent;
 
-        public ChannelAuxiliaryControl channelControl;
+        public ChannelAuxiliaryControl AcAttributes;
 
         public Button BtnSubmit;
 
@@ -80,7 +79,6 @@ namespace SiteServer.BackgroundPages.Cms
             _nodeId = Body.GetQueryInt("NodeID");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
 
-            channelControl = (ChannelAuxiliaryControl)FindControl("ControlForAuxiliary");
             if (!IsPostBack)
             {
                 if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ChannelEdit))
@@ -94,10 +92,10 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (nodeInfo.NodeType == ENodeType.BackgroundPublishNode)
                     {
-                        LinkUrlRow.Visible = false;
-                        LinkTypeRow.Visible = false;
-                        ChannelTemplateIDRow.Visible = false;
-                        FilePathRow.Visible = false;
+                        PhLinkUrl.Visible = false;
+                        PhLinkType.Visible = false;
+                        PhChannelTemplateId.Visible = false;
+                        PhFilePath.Visible = false;
                     }
 
                     BtnSubmit.Attributes.Add("onclick", "if (UE && UE.getEditor('Content', {{allowDivTransToP: false}})){ UE.getEditor('Content', {{allowDivTransToP: false}}).sync(); }");
@@ -107,161 +105,156 @@ namespace SiteServer.BackgroundPages.Cms
                         var channelEditAttributes = TranslateUtils.StringCollectionToStringList(PublishmentSystemInfo.Additional.ChannelEditAttributes);
                         if (channelEditAttributes.Count > 0)
                         {
-                            NodeNameRow.Visible = NodeIndexNameRow.Visible = LinkUrlRow.Visible = NodeGroupNameCollectionRow.Visible = LinkTypeRow.Visible = ChannelTemplateIDRow.Visible = ContentTemplateIDRow.Visible = ImageUrlRow.Visible = FilePathRow.Visible = ContentRow.Visible = KeywordsRow.Visible = DescriptionRow.Visible = false;
+                            PhNodeName.Visible = PhNodeIndexName.Visible = PhLinkUrl.Visible = PhNodeGroupNameCollection.Visible = PhLinkType.Visible = PhChannelTemplateId.Visible = PhContentTemplateId.Visible = PhImageUrl.Visible = PhFilePath.Visible = PhContent.Visible = PhKeywords.Visible = PhDescription.Visible = false;
                             foreach (string attribute in channelEditAttributes)
                             {
                                 if (attribute == NodeAttribute.ChannelName)
                                 {
-                                    NodeNameRow.Visible = true;
+                                    PhNodeName.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.ChannelIndex)
                                 {
-                                    NodeIndexNameRow.Visible = true;
+                                    PhNodeIndexName.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.LinkUrl)
                                 {
-                                    LinkUrlRow.Visible = true;
+                                    PhLinkUrl.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.ChannelGroupNameCollection)
                                 {
-                                    NodeGroupNameCollectionRow.Visible = true;
+                                    PhNodeGroupNameCollection.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.LinkType)
                                 {
-                                    LinkTypeRow.Visible = true;
+                                    PhLinkType.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.ChannelTemplateId)
                                 {
-                                    ChannelTemplateIDRow.Visible = true;
+                                    PhChannelTemplateId.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.ContentTemplateId)
                                 {
-                                    ContentTemplateIDRow.Visible = true;
+                                    PhContentTemplateId.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.ImageUrl)
                                 {
-                                    ImageUrlRow.Visible = true;
+                                    PhImageUrl.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.FilePath)
                                 {
-                                    FilePathRow.Visible = true;
+                                    PhFilePath.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.Content)
                                 {
-                                    ContentRow.Visible = true;
+                                    PhContent.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.Keywords)
                                 {
-                                    KeywordsRow.Visible = true;
+                                    PhKeywords.Visible = true;
                                 }
                                 else if (attribute == NodeAttribute.Description)
                                 {
-                                    DescriptionRow.Visible = true;
+                                    PhDescription.Visible = true;
                                 }
                             }
                         }
                     }
 
-                    if (channelControl.Visible)
+                    if (AcAttributes.Visible)
                     {
                         //List<string> displayAttributes = null;
                         //if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ChannelEditAttributes))
                         //{
                         //    displayAttributes = TranslateUtils.StringCollectionToStringList(PublishmentSystemInfo.Additional.ChannelEditAttributes);
                         //}
-                        channelControl.SetParameters(nodeInfo.Additional.ToNameValueCollection(), true, IsPostBack);
+                        AcAttributes.SetParameters(nodeInfo.Additional.ToNameValueCollection(), true, IsPostBack);
                     }
 
-                    if (LinkTypeRow.Visible)
+                    if (PhLinkType.Visible)
                     {
-                        ELinkTypeUtils.AddListItems(LinkType);
+                        ELinkTypeUtils.AddListItems(DdlLinkType);
                     }
 
-                    if (NodeGroupNameCollectionRow.Visible)
+                    if (PhNodeGroupNameCollection.Visible)
                     {
-                        NodeGroupNameCollection.DataSource = DataProvider.NodeGroupDao.GetDataSource(PublishmentSystemId);
+                        CblNodeGroupNameCollection.DataSource = DataProvider.NodeGroupDao.GetDataSource(PublishmentSystemId);
                     }
-                    if (ChannelTemplateIDRow.Visible)
+                    if (PhChannelTemplateId.Visible)
                     {
-                        ChannelTemplateID.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ChannelTemplate);
+                        DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ChannelTemplate);
                     }
-                    if (ContentTemplateIDRow.Visible)
+                    if (PhContentTemplateId.Visible)
                     {
-                        ContentTemplateID.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ContentTemplate);
+                        DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ContentTemplate);
                     }
 
                     DataBind();
 
-                    if (ChannelTemplateIDRow.Visible)
+                    if (PhChannelTemplateId.Visible)
                     {
-                        ChannelTemplateID.Items.Insert(0, new ListItem("<未设置>", "0"));
-                        ControlUtils.SelectListItems(ChannelTemplateID, nodeInfo.ChannelTemplateId.ToString());
+                        DdlChannelTemplateId.Items.Insert(0, new ListItem("<未设置>", "0"));
+                        ControlUtils.SelectListItems(DdlChannelTemplateId, nodeInfo.ChannelTemplateId.ToString());
                     }
 
-                    if (ContentTemplateIDRow.Visible)
+                    if (PhContentTemplateId.Visible)
                     {
-                        ContentTemplateID.Items.Insert(0, new ListItem("<未设置>", "0"));
-                        ControlUtils.SelectListItems(ContentTemplateID, nodeInfo.ContentTemplateId.ToString());
+                        DdlContentTemplateId.Items.Insert(0, new ListItem("<未设置>", "0"));
+                        ControlUtils.SelectListItems(DdlContentTemplateId, nodeInfo.ContentTemplateId.ToString());
                     }
 
-                    if (NodeNameRow.Visible)
+                    if (PhNodeName.Visible)
                     {
-                        NodeName.Text = nodeInfo.NodeName;
+                        TbNodeName.Text = nodeInfo.NodeName;
                     }
-                    if (NodeIndexNameRow.Visible)
+                    if (PhNodeIndexName.Visible)
                     {
-                        NodeIndexName.Text = nodeInfo.NodeIndexName;
+                        TbNodeIndexName.Text = nodeInfo.NodeIndexName;
                     }
-                    if (LinkUrlRow.Visible)
+                    if (PhLinkUrl.Visible)
                     {
-                        LinkUrl.Text = nodeInfo.LinkUrl;
+                        TbLinkUrl.Text = nodeInfo.LinkUrl;
                     }
 
-                    if (NodeGroupNameCollectionRow.Visible)
+                    if (PhNodeGroupNameCollection.Visible)
                     {
-                        foreach (ListItem item in NodeGroupNameCollection.Items)
+                        foreach (ListItem item in CblNodeGroupNameCollection.Items)
                         {
-                            if (CompareUtils.Contains(nodeInfo.NodeGroupNameCollection, item.Value))
-                            {
-                                item.Selected = true;
-                            }
-                            else
-                            {
-                                item.Selected = false;
-                            }
+                            item.Selected = CompareUtils.Contains(nodeInfo.NodeGroupNameCollection, item.Value);
                         }
                     }
-                    if (FilePathRow.Visible)
+                    if (PhFilePath.Visible)
                     {
-                        FilePath.Text = nodeInfo.FilePath;
+                        TbFilePath.Text = nodeInfo.FilePath;
                     }
 
-                    if (LinkTypeRow.Visible)
+                    if (PhLinkType.Visible)
                     {
-                        ControlUtils.SelectListItems(LinkType, ELinkTypeUtils.GetValue(nodeInfo.LinkType));
+                        ControlUtils.SelectListItems(DdlLinkType, ELinkTypeUtils.GetValue(nodeInfo.LinkType));
                     }
 
-                    if (ImageUrlRow.Visible)
+                    if (PhImageUrl.Visible)
                     {
-                        tbImageUrl.Text = nodeInfo.ImageUrl;
-                        ltlImageUrlButtonGroup.Text = ControlUtility.GetImageUrlButtonGroupHtml(PublishmentSystemInfo, tbImageUrl.ClientID);
+                        TbImageUrl.Text = nodeInfo.ImageUrl;
+                        LtlImageUrlButtonGroup.Text = WebUtils.GetImageUrlButtonGroupHtml(PublishmentSystemInfo, TbImageUrl.ClientID);
                     }
-                    if (ContentRow.Visible)
+                    if (PhContent.Visible)
                     {
-                        var formCollection = new NameValueCollection();
-                        formCollection[NodeAttribute.Content] = nodeInfo.Content;
-                        Content.SetParameters(PublishmentSystemInfo, NodeAttribute.Content, formCollection, true, IsPostBack);
+                        var formCollection = new NameValueCollection
+                        {
+                            [NodeAttribute.Content] = nodeInfo.Content
+                        };
+                        TbContent.SetParameters(PublishmentSystemInfo, NodeAttribute.Content, formCollection, true, IsPostBack);
 
                         //this.Content.PublishmentSystemID = base.PublishmentSystemID;
                         //this.Content.Text = StringUtility.TextEditorContentDecode(nodeInfo.Content, ConfigUtils.Instance.ApplicationPath, base.PublishmentSystemInfo.PublishmentSystemUrl);
                     }
-                    if (Keywords.Visible)
+                    if (TbKeywords.Visible)
                     {
-                        Keywords.Text = nodeInfo.Keywords;
+                        TbKeywords.Text = nodeInfo.Keywords;
                     }
-                    if (Description.Visible)
+                    if (TbDescription.Visible)
                     {
-                        Description.Text = nodeInfo.Description;
+                        TbDescription.Text = nodeInfo.Description;
                     }
 
 
@@ -269,9 +262,9 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                if (channelControl.Visible)
+                if (AcAttributes.Visible)
                 {
-                    channelControl.SetParameters(Request.Form, true, IsPostBack);
+                    AcAttributes.SetParameters(Request.Form, true, IsPostBack);
                 }
             }
         }
@@ -286,12 +279,12 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
 
-                    if (NodeIndexNameRow.Visible)
+                    if (PhNodeIndexName.Visible)
                     {
-                        if (!nodeInfo.NodeIndexName.Equals(NodeIndexName.Text) && NodeIndexName.Text.Length != 0)
+                        if (!nodeInfo.NodeIndexName.Equals(TbNodeIndexName.Text) && TbNodeIndexName.Text.Length != 0)
                         {
                             var nodeIndexNameList = DataProvider.NodeDao.GetNodeIndexNameList(PublishmentSystemId);
-                            if (nodeIndexNameList.IndexOf(NodeIndexName.Text) != -1)
+                            if (nodeIndexNameList.IndexOf(TbNodeIndexName.Text) != -1)
                             {
                                 FailMessage("栏目修改失败，栏目索引已存在！");
                                 return;
@@ -299,24 +292,24 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    if (FilePathRow.Visible)
+                    if (PhFilePath.Visible)
                     {
-                        FilePath.Text = FilePath.Text.Trim();
-                        if (!nodeInfo.FilePath.Equals(FilePath.Text) && FilePath.Text.Length != 0)
+                        TbFilePath.Text = TbFilePath.Text.Trim();
+                        if (!nodeInfo.FilePath.Equals(TbFilePath.Text) && TbFilePath.Text.Length != 0)
                         {
-                            if (!DirectoryUtils.IsDirectoryNameCompliant(FilePath.Text))
+                            if (!DirectoryUtils.IsDirectoryNameCompliant(TbFilePath.Text))
                             {
                                 FailMessage("栏目页面路径不符合系统要求！");
                                 return;
                             }
 
-                            if (PathUtils.IsDirectoryPath(FilePath.Text))
+                            if (PathUtils.IsDirectoryPath(TbFilePath.Text))
                             {
-                                FilePath.Text = PageUtils.Combine(FilePath.Text, "index.html");
+                                TbFilePath.Text = PageUtils.Combine(TbFilePath.Text, "index.html");
                             }
 
                             var filePathArrayList = DataProvider.NodeDao.GetAllFilePathByPublishmentSystemId(PublishmentSystemId);
-                            if (filePathArrayList.IndexOf(FilePath.Text) != -1)
+                            if (filePathArrayList.IndexOf(TbFilePath.Text) != -1)
                             {
                                 FailMessage("栏目修改失败，栏目页面路径已存在！");
                                 return;
@@ -324,7 +317,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    if (channelControl.Visible)
+                    if (AcAttributes.Visible)
                     {
                         var extendedAttributes = new ExtendedAttributes();
                         var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
@@ -335,23 +328,23 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    if (NodeNameRow.Visible)
+                    if (PhNodeName.Visible)
                     {
-                        nodeInfo.NodeName = NodeName.Text;
+                        nodeInfo.NodeName = TbNodeName.Text;
                     }
-                    if (NodeIndexNameRow.Visible)
+                    if (PhNodeIndexName.Visible)
                     {
-                        nodeInfo.NodeIndexName = NodeIndexName.Text;
+                        nodeInfo.NodeIndexName = TbNodeIndexName.Text;
                     }
-                    if (FilePathRow.Visible)
+                    if (PhFilePath.Visible)
                     {
-                        nodeInfo.FilePath = FilePath.Text;
+                        nodeInfo.FilePath = TbFilePath.Text;
                     }
 
-                    if (NodeGroupNameCollectionRow.Visible)
+                    if (PhNodeGroupNameCollection.Visible)
                     {
                         var list = new ArrayList();
-                        foreach (ListItem item in NodeGroupNameCollection.Items)
+                        foreach (ListItem item in CblNodeGroupNameCollection.Items)
                         {
                             if (item.Selected)
                             {
@@ -360,38 +353,38 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                         nodeInfo.NodeGroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
                     }
-                    if (ImageUrlRow.Visible)
+                    if (PhImageUrl.Visible)
                     {
-                        nodeInfo.ImageUrl = tbImageUrl.Text;
+                        nodeInfo.ImageUrl = TbImageUrl.Text;
                     }
-                    if (ContentRow.Visible)
+                    if (PhContent.Visible)
                     {
                         nodeInfo.Content = ContentUtility.TextEditorContentEncode(PublishmentSystemInfo, Request.Form[NodeAttribute.Content]);
                     }
-                    if (Keywords.Visible)
+                    if (TbKeywords.Visible)
                     {
-                        nodeInfo.Keywords = Keywords.Text;
+                        nodeInfo.Keywords = TbKeywords.Text;
                     }
-                    if (Description.Visible)
+                    if (TbDescription.Visible)
                     {
-                        nodeInfo.Description = Description.Text;
+                        nodeInfo.Description = TbDescription.Text;
                     }
 
-                    if (LinkUrlRow.Visible)
+                    if (PhLinkUrl.Visible)
                     {
-                        nodeInfo.LinkUrl = LinkUrl.Text;
+                        nodeInfo.LinkUrl = TbLinkUrl.Text;
                     }
-                    if (LinkTypeRow.Visible)
+                    if (PhLinkType.Visible)
                     {
-                        nodeInfo.LinkType = ELinkTypeUtils.GetEnumType(LinkType.SelectedValue);
+                        nodeInfo.LinkType = ELinkTypeUtils.GetEnumType(DdlLinkType.SelectedValue);
                     }
-                    if (ChannelTemplateIDRow.Visible)
+                    if (PhChannelTemplateId.Visible)
                     {
-                        nodeInfo.ChannelTemplateId = (ChannelTemplateID.Items.Count > 0) ? int.Parse(ChannelTemplateID.SelectedValue) : 0;
+                        nodeInfo.ChannelTemplateId = DdlChannelTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue) : 0;
                     }
-                    if (ContentTemplateIDRow.Visible)
+                    if (PhContentTemplateId.Visible)
                     {
-                        nodeInfo.ContentTemplateId = (ContentTemplateID.Items.Count > 0) ? int.Parse(ContentTemplateID.SelectedValue) : 0;
+                        nodeInfo.ContentTemplateId = DdlContentTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue) : 0;
                     }
 
                     DataProvider.NodeDao.UpdateNodeInfo(nodeInfo);

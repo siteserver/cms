@@ -1,98 +1,76 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalFileView" Trace="false" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html class="modalPage">
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-<bairong:alerts runat="server"></bairong:alerts>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-    <table class="table table-striped">
-        <tr>
-            <td width="33%">
-                <bairong:Help HelpText="文件名称" Text="文件名称：" runat="server">
-                </bairong:Help>
-            </td>
-            <td>
-                <asp:Literal ID="ltlFileName" runat="server"></asp:Literal>
-            </td>
-        </tr>
-        <tr>
-            <td width="33%">
-                <bairong:Help HelpText="文件类型" Text="文件类型：" runat="server">
-                </bairong:Help>
-            </td>
-            <td>
-                <asp:Literal ID="ltlFileType" runat="server"></asp:Literal>
-            </td>
-        </tr>
-        <tr>
-            <td width="33%">
-                <bairong:Help HelpText="文件位置" Text="位置：" runat="server">
-                </bairong:Help>
-            </td>
-            <td>
-                <asp:Literal ID="ltlFilePath" runat="server"></asp:Literal>
-            </td>
-        </tr>
-        <tr>
-            <td width="33%">
-                <bairong:Help HelpText="文件大小" Text="大小：" runat="server">
-                </bairong:Help>
-            </td>
-            <td>
-                <asp:Literal ID="ltlFileSize" runat="server"></asp:Literal>
-            </td>
-        </tr>
-        <tr>
-            <td width="33%">
-                <bairong:Help HelpText="文件创建时间" Text="创建时间：" runat="server">
-                </bairong:Help>
-            </td>
-            <td>
-                <asp:Literal ID="ltlCreationTime" runat="server"></asp:Literal>
-            </td>
-        </tr>
-        <tr>
-            <td width="33%">
-                <bairong:Help HelpText="文件最后修改时间" Text="最后修改时间：" runat="server">
-                </bairong:Help>
-            </td>
-            <td>
-                <asp:Literal ID="ltlLastWriteTime" runat="server"></asp:Literal>
-            </td>
-        </tr>
-        <tr>
-            <td width="33%">
-                <bairong:Help HelpText="文件最后访问时间" Text="最后访问时间：" runat="server">
-                </bairong:Help>
-            </td>
-            <td>
-                <asp:Literal ID="ltlLastAccessTime" runat="server"></asp:Literal>
-            </td>
-        </tr>
-    </table>
+    <body>
+      <!--#include file="../inc/openWindow.html"-->
 
-    <hr />
+      <form runat="server">
+        <ctrl:alerts runat="server" />
 
-    <table width="100%">
-        <tr>
-            <td class="center">
-                <ul class="breadcrumb">
-                    <asp:Literal ID="ltlOpen" runat="server"></asp:Literal>
-                    <asp:Literal ID="ltlEdit" runat="server"></asp:Literal>
-                    <asp:Literal ID="ltlChangeName" runat="server"></asp:Literal>
-                </ul>
-            </td>
-        </tr>
-    </table>
+        <div class="form-horizontal">
 
-</form>
-</body>
-</html>
+          <div class="form-group">
+            <label class="col-xs-2 control-label text-right">文件名称</label>
+            <div class="col-xs-4">
+              <asp:Literal ID="LtlFileName" runat="server"></asp:Literal>
+            </div>
+            <label class="col-xs-2 control-label text-right">文件类型</label>
+            <div class="col-xs-4">
+              <asp:Literal ID="LtlFileType" runat="server"></asp:Literal>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-2 control-label text-right">位置</label>
+            <div class="col-xs-10">
+              <asp:Literal ID="LtlFilePath" runat="server"></asp:Literal>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-2 control-label text-right">大小</label>
+            <div class="col-xs-4">
+              <asp:Literal ID="LtlFileSize" runat="server"></asp:Literal>
+            </div>
+            <label class="col-xs-2 control-label text-right">创建时间</label>
+            <div class="col-xs-4">
+              <asp:Literal ID="LtlCreationTime" runat="server"></asp:Literal>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-2 control-label text-right">最后修改时间</label>
+            <div class="col-xs-4">
+              <asp:Literal ID="LtlLastWriteTime" runat="server"></asp:Literal>
+            </div>
+            <label class="col-xs-2 control-label text-right">最后访问时间</label>
+            <div class="col-xs-4">
+              <asp:Literal ID="LtlLastAccessTime" runat="server"></asp:Literal>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="form-group m-b-0">
+            <div class="col-xs-11 text-right">
+              <asp:Literal ID="LtlOpen" runat="server"></asp:Literal>
+              <asp:Literal ID="LtlEdit" runat="server"></asp:Literal>
+              <asp:Literal ID="LtlChangeName" runat="server"></asp:Literal>
+              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">关 闭</button>
+            </div>
+            <div class="col-xs-1"></div>
+          </div>
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

@@ -5,7 +5,6 @@ using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -110,7 +109,6 @@ namespace SiteServer.CMS.ImportExport
                 var tagStyleFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTagStyle);
                 var adFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileAd);
                 var seoFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileSeo);
-                var stlTagPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileStlTag);
                 var gatherRuleFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileGatherRule);
                 //var inputDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Input);
                 var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
@@ -131,8 +129,6 @@ namespace SiteServer.CMS.ImportExport
                 importObject.ImportAd(adFilePath, true);
 
                 importObject.ImportSeo(seoFilePath, true);
-
-                importObject.ImportStlTag(stlTagPath, true);
 
                 importObject.ImportGatherRule(gatherRuleFilePath, true);
 
@@ -191,9 +187,6 @@ namespace SiteServer.CMS.ImportExport
             //导出SEO
             var seoFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileSeo);
             exportObject.ExportSeo(seoFilePath);
-            //导出自定义模板语言
-            var stlTagFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileStlTag);
-            exportObject.ExportStlTag(stlTagFilePath);
             //导出关联字段
             var relatedFieldDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.RelatedField);
             exportObject.ExportRelatedField(relatedFieldDirectoryPath);

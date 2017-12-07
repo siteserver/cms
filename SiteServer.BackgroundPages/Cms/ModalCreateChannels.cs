@@ -9,17 +9,17 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalCreateChannels : BasePageCms
     {
-		protected RadioButtonList IsIncludeChildren;
-        protected RadioButtonList IsCreateContents;
+		protected DropDownList DdlIsIncludeChildren;
+        protected DropDownList DdlIsCreateContents;
 
         private string _channelIdCollection;
 
         public static string GetOpenWindowString(int publishmentSystemId)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("生成栏目页", PageUtils.GetCmsUrl(nameof(ModalCreateChannels), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("生成栏目页", PageUtils.GetCmsUrl(nameof(ModalCreateChannels), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
-            }), "ChannelIDCollection", "请选择需要生成页面的栏目!", 450, 300);
+            }), "ChannelIDCollection", "请选择需要生成页面的栏目!", 550, 300);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -33,8 +33,8 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var isIncludeChildren = TranslateUtils.ToBool(IsIncludeChildren.SelectedValue);
-            var isCreateContents = TranslateUtils.ToBool(IsCreateContents.SelectedValue);
+            var isIncludeChildren = TranslateUtils.ToBool(DdlIsIncludeChildren.SelectedValue);
+            var isCreateContents = TranslateUtils.ToBool(DdlIsCreateContents.SelectedValue);
 
             foreach (var channelId in TranslateUtils.StringCollectionToIntList(_channelIdCollection))
             {

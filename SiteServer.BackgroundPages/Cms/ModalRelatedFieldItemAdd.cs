@@ -9,7 +9,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalRelatedFieldItemAdd : BasePageCms
     {
-        protected TextBox ItemNames;
+        public TextBox TbItemNames;
 
         private int _relatedFieldId;
         private int _parentId;
@@ -17,13 +17,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int relatedFieldId, int parentId, int level)
         {
-            return PageUtils.GetOpenWindowString("添加字段项", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldItemAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("添加字段项", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldItemAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedFieldID", relatedFieldId.ToString()},
                 {"ParentID", parentId.ToString()},
                 {"Level", level.ToString()}
-            }), 300, 450);
+            }), 450, 450);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -37,27 +37,26 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var isChanged = false;
+            bool isChanged;
 
             try
             {
-                var itemNameArray = ItemNames.Text.Split('\n');
+                var itemNameArray = TbItemNames.Text.Split('\n');
                 foreach (var item in itemNameArray)
                 {
-                    if (!string.IsNullOrEmpty(item))
+                    if (string.IsNullOrEmpty(item)) continue;
+
+                    var itemName = item.Trim();
+                    var itemValue = itemName;
+
+                    if (itemName.IndexOf('|') != -1)
                     {
-                        var itemName = item.Trim();
-                        var itemValue = itemName;
-
-                        if (itemName.IndexOf('|') != -1)
-                        {
-                            itemValue = itemName.Substring(itemName.IndexOf('|') + 1);
-                            itemName = itemName.Substring(0, itemName.IndexOf('|'));
-                        }
-
-                        var itemInfo = new RelatedFieldItemInfo(0, _relatedFieldId, itemName, itemValue, _parentId, 0);
-                        DataProvider.RelatedFieldItemDao.Insert(itemInfo);
+                        itemValue = itemName.Substring(itemName.IndexOf('|') + 1);
+                        itemName = itemName.Substring(0, itemName.IndexOf('|'));
                     }
+
+                    var itemInfo = new RelatedFieldItemInfo(0, _relatedFieldId, itemName, itemValue, _parentId, 0);
+                    DataProvider.RelatedFieldItemDao.Insert(itemInfo);
                 }
 
                 isChanged = true;

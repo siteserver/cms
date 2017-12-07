@@ -1,39 +1,47 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalSelectFile" Trace="false" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html class="modalPage">
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-<bairong:alerts runat="server"></bairong:alerts>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <table class="table table-condensed noborder">
-    <tr>
-      <td>
-        <asp:ImageButton runat="server" ImageUrl="../assets/icons/filesystem/management/back.gif" CommandName="NavigationBar" CommandArgument="Back" OnCommand="LinkButton_Command"></asp:ImageButton>
-        <asp:ImageButton runat="server" ImageUrl="../assets/icons/filesystem/management/up.gif" CommandName="NavigationBar" CommandArgument="Up" OnCommand="LinkButton_Command"></asp:ImageButton>
-        <asp:ImageButton runat="server" ImageUrl="../assets/icons/filesystem/management/reload.gif" CommandName="NavigationBar" CommandArgument="Reload" OnCommand="LinkButton_Command"></asp:ImageButton>
-        <asp:HyperLink ID="hlUploadLink" runat="server">
-          <asp:ImageButton  runat="server" ImageUrl="../assets/icons/add.gif" ImageAlign="AbsBottom"></asp:ImageButton>
-          上传附件</asp:HyperLink>
-          <asp:DropDownList ID="ddlListType" class="input-medium" runat="server" OnSelectedIndexChanged="ddlListType_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
-      </td>
-    </tr>
-    <tr>
-      <td>当前目录：<asp:Literal id="ltlCurrentDirectory" runat="server" /></td>
-    </tr>
-  </table>
-  
-  <hr />
+    <body>
+      <!--#include file="../inc/openWindow.html"-->
 
-  <asp:Literal id="ltlFileSystems" runat="server" enableViewState="false" />
+      <form runat="server">
+        <ctrl:alerts runat="server" />
 
-</form>
-</body>
-</html>
+        <div class="row">
+          <div class="col-xs-6">
+            <div class="btn-group">
+              <asp:Button class="btn" ID="BtnUpload" runat="server" text="上传"></asp:Button>
+              <asp:Button class="btn" text="后退" runat="server" CommandName="NavigationBar" CommandArgument="Back" OnCommand="LinkButton_Command"></asp:Button>
+              <asp:Button class="btn" text="向上" runat="server" CommandName="NavigationBar" CommandArgument="Up" OnCommand="LinkButton_Command"></asp:Button>
+              <asp:Button class="btn" text="刷新" runat="server" CommandName="NavigationBar" CommandArgument="Reload" OnCommand="LinkButton_Command"></asp:Button>
+            </div>
+          </div>
+          <div class="col-xs-6">
+            <asp:DropDownList ID="DdlListType" class="form-control" runat="server" OnSelectedIndexChanged="ddlListType_SelectedIndexChanged"
+              AutoPostBack="true"></asp:DropDownList>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+          <div class="col-xs-12">
+            <asp:Literal id="LtlCurrentDirectory" runat="server" />
+          </div>
+        </div>
+
+        <hr />
+
+        <asp:Literal id="LtlFileSystems" runat="server" enableViewState="false" />
+
+      </form>
+    </body>
+
+    </html>

@@ -8,7 +8,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport.Components;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -184,16 +183,6 @@ namespace SiteServer.CMS.ImportExport
         {
             var seoIe = new SeoIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
             seoIe.ExportSeo();
-        }
-
-        /// <summary>
-        /// 导出自定义模板语言
-        /// </summary>
-        /// <param name="filePath"></param>
-        public void ExportStlTag(string filePath)
-        {
-            var stlTagIe = new StlTagIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
-            stlTagIe.ExportStlTag();
         }
 
         /// <summary>

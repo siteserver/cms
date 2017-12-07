@@ -7,7 +7,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -15,21 +14,20 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalContentMultipleSelect : BasePageCms
     {
-        public DropDownList NodeIDDropDownList;
-        public CheckBox IsDuplicate;
-        public DropDownList SearchType;
-        public TextBox Keyword;
-        public DateTimeTextBox DateFrom;
-        public DateTimeTextBox DateTo;
+        public DropDownList DdlNodeId;
+        public CheckBox CbIsDuplicate;
+        public DropDownList DdlSearchType;
+        public TextBox TbKeyword;
+        public DateTimeTextBox TbDateFrom;
+        public DateTimeTextBox TbDateTo;
 
-        public Repeater rptContents;
-        public SqlPager spContents;
+        public Repeater RptContents;
+        public SqlPager SpContents;
 
         private NodeInfo _nodeInfo;
         private ETableStyle _tableStyle;
@@ -41,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string jsMethod)
         {
-            return PageUtils.GetOpenWindowString("选择内容", PageUtils.GetCmsUrl(nameof(ModalContentMultipleSelect), new NameValueCollection
+            return PageUtils.GetOpenLayerString("选择内容", PageUtils.GetCmsUrl(nameof(ModalContentMultipleSelect), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"jsMethod", jsMethod}
@@ -68,60 +66,61 @@ namespace SiteServer.BackgroundPages.Cms
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeInfo.NodeId);
             _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
 
-            spContents.ControlToPaginate = rptContents;
-            if (string.IsNullOrEmpty(Body.GetQueryString("NodeID")))
-            {
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableStyle, _tableName, PublishmentSystemId, _nodeInfo.NodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, SearchType.SelectedValue, Keyword.Text, DateFrom.Text, DateTo.Text, true, ETriState.True, !IsDuplicate.Checked, false);
-            }
-            else
-            {
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableStyle, _tableName, PublishmentSystemId, _nodeInfo.NodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.True, !Body.GetQueryBool("IsDuplicate"), true);
-            }
-            spContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
-            spContents.SortField = ContentAttribute.Id;
-            spContents.SortMode = SortMode.DESC;
-            spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisType.OrderByIdDesc);
-            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            SpContents.ControlToPaginate = RptContents;
+            SpContents.SelectCommand = string.IsNullOrEmpty(Body.GetQueryString("NodeID"))
+                ? DataProvider.ContentDao.GetSelectCommend(_tableStyle, _tableName, PublishmentSystemId,
+                    _nodeInfo.NodeId, permissions.IsSystemAdministrator,
+                    ProductPermissionsManager.Current.OwningNodeIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
+                    TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, !CbIsDuplicate.Checked, false)
+                : DataProvider.ContentDao.GetSelectCommend(_tableStyle, _tableName, PublishmentSystemId,
+                    _nodeInfo.NodeId, permissions.IsSystemAdministrator,
+                    ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"),
+                    Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true,
+                    ETriState.True, !Body.GetQueryBool("IsDuplicate"), true);
+            SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
+            SpContents.SortField = ContentAttribute.Id;
+            SpContents.SortMode = SortMode.DESC;
+            SpContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisType.OrderByIdDesc);
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-            if (!IsPostBack)
-            {
-                NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
+            if (IsPostBack) return;
 
-                if (_tableStyleInfoList != null)
+            NodeManager.AddListItems(DdlNodeId.Items, PublishmentSystemInfo, false, true, Body.AdminName);
+
+            if (_tableStyleInfoList != null)
+            {
+                foreach (var styleInfo in _tableStyleInfoList)
                 {
-                    foreach (var styleInfo in _tableStyleInfoList)
+                    if (styleInfo.IsVisible)
                     {
-                        if (styleInfo.IsVisible)
-                        {
-                            var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                            SearchType.Items.Add(listitem);
-                        }
+                        var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
+                        DdlSearchType.Items.Add(listitem);
                     }
                 }
-
-                //添加隐藏属性
-                SearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
-                SearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
-                SearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
-
-                if (Body.IsQueryExists("NodeID"))
-                {
-                    if (PublishmentSystemId != _nodeInfo.NodeId)
-                    {
-                        ControlUtils.SelectListItems(NodeIDDropDownList, _nodeInfo.NodeId.ToString());
-                    }
-                    IsDuplicate.Checked = Body.GetQueryBool("IsDuplicate");
-                    ControlUtils.SelectListItems(SearchType, Body.GetQueryString("SearchType"));
-                    Keyword.Text = Body.GetQueryString("Keyword");
-                    DateFrom.Text = Body.GetQueryString("DateFrom");
-                    DateTo.Text = Body.GetQueryString("DateTo");
-                }
-
-                spContents.DataBind();
             }
+
+            //添加隐藏属性
+            DdlSearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
+            DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
+            DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
+
+            if (Body.IsQueryExists("NodeID"))
+            {
+                if (PublishmentSystemId != _nodeInfo.NodeId)
+                {
+                    ControlUtils.SelectListItems(DdlNodeId, _nodeInfo.NodeId.ToString());
+                }
+                CbIsDuplicate.Checked = Body.GetQueryBool("IsDuplicate");
+                ControlUtils.SelectListItems(DdlSearchType, Body.GetQueryString("SearchType"));
+                TbKeyword.Text = Body.GetQueryString("Keyword");
+                TbDateFrom.Text = Body.GetQueryString("DateFrom");
+                TbDateTo.Text = Body.GetQueryString("DateTo");
+            }
+
+            SpContents.DataBind();
         }
-        
-        void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
             {
@@ -188,12 +187,12 @@ namespace SiteServer.BackgroundPages.Cms
                     _pageUrl = PageUtils.GetCmsUrl(nameof(ModalContentMultipleSelect), new NameValueCollection
                     {
                         {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"NodeID", NodeIDDropDownList.SelectedValue},
-                        {"IsDuplicate", IsDuplicate.Checked.ToString()},
-                        {"SearchType", SearchType.SelectedValue},
-                        {"Keyword", Keyword.Text},
-                        {"DateFrom", DateFrom.Text},
-                        {"DateTo", DateTo.Text}
+                        {"NodeID", DdlNodeId.SelectedValue},
+                        {"IsDuplicate", CbIsDuplicate.Checked.ToString()},
+                        {"SearchType", DdlSearchType.SelectedValue},
+                        {"Keyword", TbKeyword.Text},
+                        {"DateFrom", TbDateFrom.Text},
+                        {"DateTo", TbDateTo.Text}
                     });
                 }
                 return _pageUrl;

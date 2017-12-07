@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("转发所选内容", PageUtils.GetCmsUrl(nameof(ModalContentCrossSiteTrans), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("跨站转发", PageUtils.GetCmsUrl(nameof(ModalContentCrossSiteTrans), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "跨站转发内容", string.Empty);
+                Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "跨站转发", string.Empty);
 
                 SuccessMessage("内容转发成功，请选择后续操作。");
             }

@@ -71,12 +71,6 @@ namespace BaiRong.Core.Provider
             },
             new TableColumnInfo
             {
-                ColumnName = nameof(TableStyleInfo.IsSingleLine),
-                DataType = DataType.VarChar,
-                Length = 18
-            },
-            new TableColumnInfo
-            {
                 ColumnName = nameof(TableStyleInfo.InputType),
                 DataType = DataType.VarChar,
                 Length = 50
@@ -100,23 +94,23 @@ namespace BaiRong.Core.Provider
             }
         };
 
-        private const string SqlSelectTableStyle = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
+        private const string SqlSelectTableStyle = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
 
         private const string SqlSelectTableStyleId = "SELECT TableStyleID FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
 
-        private const string SqlSelectTableStyleByTableStyleId = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE TableStyleID = @TableStyleID";
+        private const string SqlSelectTableStyleByTableStyleId = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE TableStyleID = @TableStyleID";
 
-        private const string SqlSelectTableStyles = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE TableName = @TableName AND AttributeName = @AttributeName ORDER BY RelatedIdentity";
+        private const string SqlSelectTableStyles = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE TableName = @TableName AND AttributeName = @AttributeName ORDER BY RelatedIdentity";
 
-        private const string SqlSelectAllTableStyle = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE TableName <> '' AND AttributeName <> '' ORDER BY Taxis DESC, TableStyleID DESC";
+        private const string SqlSelectAllTableStyle = "SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE TableName <> '' AND AttributeName <> '' ORDER BY Taxis DESC, TableStyleID DESC";
 
-        private const string SqlUpdateTableStyle = "UPDATE bairong_TableStyle SET AttributeName = @AttributeName, Taxis = @Taxis, DisplayName = @DisplayName, HelpText = @HelpText, IsVisible = @IsVisible, IsVisibleInList = @IsVisibleInList, IsSingleLine = @IsSingleLine, InputType = @InputType, DefaultValue = @DefaultValue, IsHorizontal = @IsHorizontal, ExtendValues = @ExtendValues WHERE TableStyleID = @TableStyleID";
+        private const string SqlUpdateTableStyle = "UPDATE bairong_TableStyle SET AttributeName = @AttributeName, Taxis = @Taxis, DisplayName = @DisplayName, HelpText = @HelpText, IsVisible = @IsVisible, IsVisibleInList = @IsVisibleInList, InputType = @InputType, DefaultValue = @DefaultValue, IsHorizontal = @IsHorizontal, ExtendValues = @ExtendValues WHERE TableStyleID = @TableStyleID";
 
         private const string SqlDeleteTableStyle = "DELETE FROM bairong_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
 
         private const string SqlUpdateTableStyleTaxis = "UPDATE bairong_TableStyle SET Taxis = @Taxis WHERE TableStyleID = @TableStyleID";
 
-        private const string SqlInsertTableStyle = "INSERT INTO bairong_TableStyle (RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues) VALUES (@RelatedIdentity, @TableName, @AttributeName, @Taxis, @DisplayName, @HelpText, @IsVisible, @IsVisibleInList, @IsSingleLine, @InputType, @DefaultValue, @IsHorizontal, @ExtendValues)";
+        private const string SqlInsertTableStyle = "INSERT INTO bairong_TableStyle (RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues) VALUES (@RelatedIdentity, @TableName, @AttributeName, @Taxis, @DisplayName, @HelpText, @IsVisible, @IsVisibleInList, @InputType, @DefaultValue, @IsHorizontal, @ExtendValues)";
 
         private const string ParmTableStyleId = "@TableStyleID";
         private const string ParmRelatedIdentity = "@RelatedIdentity";
@@ -127,7 +121,6 @@ namespace BaiRong.Core.Provider
         private const string ParmHelpText = "@HelpText";
         private const string ParmIsVisible = "@IsVisible";
         private const string ParmIsVisibleInList = "@IsVisibleInList";
-        private const string ParmIsSingleLine = "@IsSingleLine";
         private const string ParmInputType = "@InputType";
         private const string ParmDefaultValue = "@DefaultValue";
         private const string ParmIsHorizontal = "@IsHorizontal";
@@ -162,7 +155,6 @@ namespace BaiRong.Core.Provider
                 GetParameter(ParmHelpText, DataType.VarChar, 255, styleInfo.HelpText),
                 GetParameter(ParmIsVisible, DataType.VarChar, 18, styleInfo.IsVisible.ToString()),
                 GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, styleInfo.IsVisibleInList.ToString()),
-                GetParameter(ParmIsSingleLine, DataType.VarChar, 18, styleInfo.IsSingleLine.ToString()),
 				GetParameter(ParmInputType, DataType.VarChar, 50, styleInfo.InputType),
                 GetParameter(ParmDefaultValue, DataType.VarChar, 255, styleInfo.DefaultValue),
                 GetParameter(ParmIsHorizontal, DataType.VarChar, 18, styleInfo.IsHorizontal.ToString()),
@@ -218,7 +210,6 @@ namespace BaiRong.Core.Provider
                 GetParameter(ParmHelpText, DataType.VarChar, 255, styleInfo.HelpText),
                 GetParameter(ParmIsVisible, DataType.VarChar, 18, styleInfo.IsVisible.ToString()),
                 GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, styleInfo.IsVisibleInList.ToString()),
-                GetParameter(ParmIsSingleLine, DataType.VarChar, 18, styleInfo.IsSingleLine.ToString()),
 			    GetParameter(ParmInputType, DataType.VarChar, 50, styleInfo.InputType),
                 GetParameter(ParmDefaultValue, DataType.VarChar, 255, styleInfo.DefaultValue),
                 GetParameter(ParmIsHorizontal, DataType.VarChar, 18, styleInfo.IsHorizontal.ToString()),
@@ -247,7 +238,6 @@ namespace BaiRong.Core.Provider
                 GetParameter(ParmHelpText, DataType.VarChar, 255, info.HelpText),
                 GetParameter(ParmIsVisible, DataType.VarChar, 18, info.IsVisible.ToString()),
 	            GetParameter(ParmIsVisibleInList, DataType.VarChar, 18, info.IsVisibleInList.ToString()),
-                GetParameter(ParmIsSingleLine, DataType.VarChar, 18, info.IsSingleLine.ToString()),
 				GetParameter(ParmInputType, DataType.VarChar, 50, info.InputType),
                 GetParameter(ParmDefaultValue, DataType.VarChar, 255, info.DefaultValue),
                 GetParameter(ParmIsHorizontal, DataType.VarChar, 18, info.IsHorizontal.ToString()),
@@ -303,7 +293,7 @@ namespace BaiRong.Core.Provider
             var arraylist = new ArrayList();
 
             string sqlString =
-                $"SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, IsSingleLine, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{PageUtils.FilterSql(tableName)}' ORDER BY TableStyleID DESC";
+                $"SELECT TableStyleID, RelatedIdentity, TableName, AttributeName, Taxis, DisplayName, HelpText, IsVisible, IsVisibleInList, InputType, DefaultValue, IsHorizontal, ExtendValues FROM bairong_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{PageUtils.FilterSql(tableName)}' ORDER BY TableStyleID DESC";
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -397,13 +387,12 @@ namespace BaiRong.Core.Provider
             var helpText = GetString(rdr, i++);
             var isVisible = GetBool(rdr, i++);
             var isVisibleInList = GetBool(rdr, i++);
-            var isSingleLine = GetBool(rdr, i++);
             var inputType = GetString(rdr, i++);
             var defaultValue = GetString(rdr, i++);
             var isHorizontal = GetBool(rdr, i++);
             var extendValues = GetString(rdr, i);
 
-            var styleInfo = new TableStyleInfo(tableStyleId, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, isSingleLine, inputType, defaultValue, isHorizontal, extendValues);
+            var styleInfo = new TableStyleInfo(tableStyleId, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, inputType, defaultValue, isHorizontal, extendValues);
 
             return styleInfo;
         }

@@ -44,98 +44,56 @@ namespace SiteServer.BackgroundPages.Controls
                 _formCollection = HttpContext.Current.Request.Form.Count > 0 ? HttpContext.Current.Request.Form : new NameValueCollection();
             }
 
-            var builder = new StringBuilder();
             var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
             var pageScripts = new NameValueCollection();
 
-            if (styleInfoList != null)
+            if (styleInfoList == null) return;
+
+            var builder = new StringBuilder();
+            foreach (var styleInfo in styleInfoList)
             {
-                var isPreviousSingleLine = true;
-                var isPreviousLeftColumn = false;
-                foreach (var styleInfo in styleInfoList)
+                if (!styleInfo.IsVisible) continue;
+
+                string extra;
+                var value = BackgroundInputTypeParser.Parse(_publishmentSystemInfo, _nodeId, styleInfo, _tableStyle, styleInfo.AttributeName, _formCollection, _isEdit, _isPostBack, null, pageScripts, out extra);
+
+                if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
                 {
-                    if (styleInfo.IsVisible)
-                    {
-                        var text = $"{styleInfo.DisplayName}：";
-                        var value = BackgroundInputTypeParser.Parse(_publishmentSystemInfo, _nodeId, styleInfo, _tableStyle, styleInfo.AttributeName, _formCollection, _isEdit, _isPostBack, null, pageScripts, true);
-
-                        if (builder.Length > 0)
-                        {
-                            if (isPreviousSingleLine)
-                            {
-                                builder.Append("</tr>");
-                            }
-                            else
-                            {
-                                if (!isPreviousLeftColumn)
-                                {
-                                    builder.Append("</tr>");
-                                }
-                                else if (styleInfo.IsSingleLine)
-                                {
-                                    builder.Append(@"<td></td><td></td></tr>");
-                                }
-                            }
-                        }
-
-                        //this line
-
-                        if (styleInfo.IsSingleLine || isPreviousSingleLine || !isPreviousLeftColumn)
-                        {
-                            builder.Append("<tr>");
-                        }
-
-                        if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
-                        {
-                            var commands = WebUtils.GetTextEditorCommands(_publishmentSystemInfo, styleInfo.AttributeName);
-                            builder.Append(
-                                $@"<td>{text}</td><td colspan=""3"">{commands}</td></tr><tr><td colspan=""4"">{value}</td>");
-                        }
-                        else
-                        {
-                            if (styleInfo.AttributeName == "Title" || styleInfo.AttributeName == "SubTitle")
-                            {
-                                builder.Append(
-                                    $@"<td>{text}</td><td {(styleInfo.IsSingleLine ? @"colspan=""3""" : string.Empty)}>{value}</td>");
-                            }
-                            else
-                            {
-                                builder.Append(
-                                    $@"<td>{text}</td><td {(styleInfo.IsSingleLine ? @"colspan=""3""" : string.Empty)}>{value}</td>");
-                            }
-                        }
-
-                        if (styleInfo.IsSingleLine)
-                        {
-                            isPreviousSingleLine = true;
-                            isPreviousLeftColumn = false;
-                        }
-                        else
-                        {
-                            isPreviousSingleLine = false;
-                            isPreviousLeftColumn = !isPreviousLeftColumn;
-                        }
-                    }
+                    var commands = WebUtils.GetTextEditorCommands(_publishmentSystemInfo, styleInfo.AttributeName);
+                    builder.Append($@"
+<div class=""form-group"">
+    <label class=""col-sm-1 control-label"">{styleInfo.DisplayName}</label>
+    <div class=""col-sm-10"">
+        {commands}
+        <div class=""m-t-10"">
+            {value}
+        </div>
+    </div>
+    <div class=""col-sm-1"">
+        {extra}
+    </div>
+</div>");
                 }
-
-                if (builder.Length > 0)
+                else
                 {
-                    if (isPreviousSingleLine || !isPreviousLeftColumn)
-                    {
-                        builder.Append("</tr>");
-                    }
-                    else
-                    {
-                        builder.Append(@"<td></td><td></td></tr>");
-                    }
+                    builder.Append($@"
+<div class=""form-group"">
+    <label class=""col-sm-1 control-label"">{styleInfo.DisplayName}</label>
+    <div class=""col-sm-6"">
+        {value}
+    </div>
+    <div class=""col-sm-5"">
+        {extra}
+    </div>
+</div>");
                 }
+            }
 
-                output.Write(builder.ToString());
+            output.Write(builder.ToString());
 
-                foreach (string key in pageScripts.Keys)
-                {
-                    output.Write(pageScripts[key]);
-                }
+            foreach (string key in pageScripts.Keys)
+            {
+                output.Write(pageScripts[key]);
             }
         }
     }

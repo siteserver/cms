@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
@@ -29,18 +28,16 @@ namespace SiteServer.BackgroundPages.Cms
 
         public TextBox TbTitle;
         public Literal LtlTitleHtml;
-
         public AuxiliaryControl AcAttributes;
-
         public CheckBoxList CblContentAttributes;
         public PlaceHolder PhContentGroup;
         public CheckBoxList CblContentGroupNameCollection;
-        public RadioButtonList RblContentLevel;
+        public DropDownList DdlContentLevel;
         public PlaceHolder PhTags;
         public TextBox TbTags;
         public Literal LtlTags;
         public PlaceHolder PhTranslate;
-        public HtmlControl DivTranslateAdd;
+        public Button BtnTranslate;
         public DropDownList DdlTranslateType;
         public PlaceHolder PhStatus;
         public DateTimeTextBox TbAddDate;
@@ -146,7 +143,7 @@ var previewUrl = '{PreviewApi.GetContentUrl(PublishmentSystemId, _nodeInfo.NodeI
                 if (AdminUtility.HasChannelPermissions(Body.AdminName, PublishmentSystemId, _nodeInfo.NodeId, AppManager.Permissions.Channel.ContentTranslate))
                 {
                     PhTranslate.Visible = PublishmentSystemInfo.Additional.IsTranslate;
-                    DivTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
+                    BtnTranslate.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
 
                     ETranslateContentTypeUtils.AddListItems(DdlTranslateType, true);
                     ControlUtils.SelectListItems(DdlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
@@ -306,7 +303,7 @@ $('#TbTags').keyup(function (e) {
                         }
                     }
 
-                    LevelManager.LoadContentLevelToEdit(RblContentLevel, PublishmentSystemInfo, nodeId, contentInfo, isChecked, checkedLevel);
+                    LevelManager.LoadContentLevelToEdit(DdlContentLevel, PublishmentSystemInfo, nodeId, contentInfo, isChecked, checkedLevel);
                 }
                 else
                 {
@@ -384,7 +381,7 @@ $('#TbTags').keyup(function (e) {
                         contentInfo.AddDate = DateTime.Now;
                     }
 
-                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
+                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
                     contentInfo.IsChecked = contentInfo.CheckedLevel >= PublishmentSystemInfo.CheckContentLevel;
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
@@ -463,7 +460,7 @@ $('#TbTags').keyup(function (e) {
                     }
                     contentInfo.AddDate = TbAddDate.DateTime;
 
-                    var checkedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
+                    var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
                     if (checkedLevel != LevelManager.LevelInt.NotChange)
                     {
                         contentInfo.IsChecked = checkedLevel >= PublishmentSystemInfo.CheckContentLevel;
@@ -577,7 +574,6 @@ $('#TbTags').keyup(function (e) {
         private string GetTitleHtml(ContentInfo contentInfo)
         {
             var builder = new StringBuilder();
-            var isFormatted = false;
             var formatStrong = false;
             var formatEm = false;
             var formatU = false;
@@ -586,79 +582,78 @@ $('#TbTags').keyup(function (e) {
             {
                 if (Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] != null)
                 {
-                    isFormatted = ContentUtility.SetTitleFormatControls(Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)], out formatStrong, out formatEm, out formatU, out formatColor);
+                    ContentUtility.SetTitleFormatControls(Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)], out formatStrong, out formatEm, out formatU, out formatColor);
                 }
             }
-            else if (contentInfo != null)
+            else
             {
-                if (contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)) != null)
+                if (contentInfo?.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)) != null)
                 {
-                    isFormatted = ContentUtility.SetTitleFormatControls(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), out formatStrong, out formatEm, out formatU, out formatColor);
+                    ContentUtility.SetTitleFormatControls(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), out formatStrong, out formatEm, out formatU, out formatColor);
                 }
             }
 
-            builder.Append(string.Format(@"<a class=""btn"" href=""javascript:;"" onclick=""$('#div_{0}').toggle();return false;""><i class=""icon-text-height""></i></a>
+            builder.Append(
+                $@"<a class=""btn"" href=""javascript:;"" onclick=""$('#div_{ContentAttribute.Title}').toggle();return false;""><i class=""icon-text-height""></i></a>
 <script type=""text/javascript"">
-function {0}_strong(e){{
+function {ContentAttribute.Title}_strong(e){{
 var e = $(e);
-if ($('#{0}_formatStrong').val() == 'true'){{
-$('#{0}_formatStrong').val('false');
+if ($('#{ContentAttribute.Title}_formatStrong').val() == 'true'){{
+$('#{ContentAttribute.Title}_formatStrong').val('false');
 e.removeClass('btn-success');
 }}else{{
-$('#{0}_formatStrong').val('true');
+$('#{ContentAttribute.Title}_formatStrong').val('true');
 e.addClass('btn-success');
 }}
 }}
-function {0}_em(e){{
+function {ContentAttribute.Title}_em(e){{
 var e = $(e);
-if ($('#{0}_formatEM').val() == 'true'){{
-$('#{0}_formatEM').val('false');
+if ($('#{ContentAttribute.Title}_formatEM').val() == 'true'){{
+$('#{ContentAttribute.Title}_formatEM').val('false');
 e.removeClass('btn-success');
 }}else{{
-$('#{0}_formatEM').val('true');
+$('#{ContentAttribute.Title}_formatEM').val('true');
 e.addClass('btn-success');
 }}
 }}
-function {0}_u(e){{
+function {ContentAttribute.Title}_u(e){{
 var e = $(e);
-if ($('#{0}_formatU').val() == 'true'){{
-$('#{0}_formatU').val('false');
+if ($('#{ContentAttribute.Title}_formatU').val() == 'true'){{
+$('#{ContentAttribute.Title}_formatU').val('false');
 e.removeClass('btn-success');
 }}else{{
-$('#{0}_formatU').val('true');
+$('#{ContentAttribute.Title}_formatU').val('true');
 e.addClass('btn-success');
 }}
 }}
-function {0}_color(){{
-if ($('#{0}_formatColor').val()){{
-$('#{0}_colorBtn').css('color', $('#{0}_formatColor').val());
-$('#{0}_colorBtn').addClass('btn-success');
+function {ContentAttribute.Title}_color(){{
+if ($('#{ContentAttribute.Title}_formatColor').val()){{
+$('#{ContentAttribute.Title}_colorBtn').css('color', $('#{ContentAttribute.Title}_formatColor').val());
+$('#{ContentAttribute.Title}_colorBtn').addClass('btn-success');
 }}else{{
-$('#{0}_colorBtn').css('color', '');
-$('#{0}_colorBtn').removeClass('btn-success');
+$('#{ContentAttribute.Title}_colorBtn').css('color', '');
+$('#{ContentAttribute.Title}_colorBtn').removeClass('btn-success');
 }}
-$('#{0}_colorContainer').hide();
+$('#{ContentAttribute.Title}_colorContainer').hide();
 }}
 </script>
-", ContentAttribute.Title));
+");
 
-            builder.Append(string.Format(@"
-<div id=""div_{0}"" style=""display:{1};margin-top:5px;"">
+            builder.Append($@"
 <div class=""btn-group"" style=""float:left;"">
-    <button class=""btn{5}"" style=""font-weight:bold;font-size:12px;"" onclick=""{0}_strong(this);return false;"">粗体</button>
-    <button class=""btn{6}"" style=""font-style:italic;font-size:12px;"" onclick=""{0}_em(this);return false;"">斜体</button>
-    <button class=""btn{7}"" style=""text-decoration:underline;font-size:12px;"" onclick=""{0}_u(this);return false;"">下划线</button>
-    <button class=""btn{8}"" style=""font-size:12px;"" id=""{0}_colorBtn"" onclick=""$('#{0}_colorContainer').toggle();return false;"">颜色</button>
+    <button class=""btn{(formatStrong ? @" btn-success" : string.Empty)}"" style=""font-weight:bold"" onclick=""{ContentAttribute.Title}_strong(this);return false;"">粗体</button>
+    <button class=""btn{(formatEm ? " btn-success" : string.Empty)}"" style=""font-style:italic"" onclick=""{ContentAttribute.Title}_em(this);return false;"">斜体</button>
+    <button class=""btn{(formatU ? " btn-success" : string.Empty)}"" style=""text-decoration:underline"" onclick=""{ContentAttribute.Title}_u(this);return false;"">下划线</button>
+    <button class=""btn{(!string.IsNullOrEmpty(formatColor) ? " btn-success" : string.Empty)}"" id=""{ContentAttribute.Title}_colorBtn"" onclick=""$('#{ContentAttribute.Title}_colorContainer').toggle();return false;"">颜色</button>
 </div>
-<div id=""{0}_colorContainer"" class=""input-append"" style=""float:left;display:none"">
-    <input id=""{0}_formatColor"" name=""{0}_formatColor"" class=""input-mini color {{required:false}}"" type=""text"" value=""{9}"" placeholder=""颜色值"">
+<div id=""{ContentAttribute.Title}_colorContainer"" class=""input-append"" style=""float:left;display:none"">
+    <input id=""{ContentAttribute.Title}_formatColor"" name=""{ContentAttribute.Title}_formatColor"" class=""input-mini color {{required:false}}"" type=""text"" value=""{formatColor}"" placeholder=""颜色值"">
     <button class=""btn"" type=""button"" onclick=""Title_color();return false;"">确定</button>
 </div>
-<input id=""{0}_formatStrong"" name=""{0}_formatStrong"" type=""hidden"" value=""{2}"" />
-<input id=""{0}_formatEM"" name=""{0}_formatEM"" type=""hidden"" value=""{3}"" />
-<input id=""{0}_formatU"" name=""{0}_formatU"" type=""hidden"" value=""{4}"" />
-</div>
-", ContentAttribute.Title, isFormatted ? string.Empty : "none", formatStrong.ToString().ToLower(), formatEm.ToString().ToLower(), formatU.ToString().ToLower(), formatStrong ? @" btn-success" : string.Empty, formatEm ? " btn-success" : string.Empty, formatU ? " btn-success" : string.Empty, !string.IsNullOrEmpty(formatColor) ? " btn-success" : string.Empty, formatColor));
+<input id=""{ContentAttribute.Title}_formatStrong"" name=""{ContentAttribute.Title}_formatStrong"" type=""hidden"" value=""{formatStrong.ToString().ToLower()}"" />
+<input id=""{ContentAttribute.Title}_formatEM"" name=""{ContentAttribute.Title}_formatEM"" type=""hidden"" value=""{formatEm.ToString().ToLower()}"" />
+<input id=""{ContentAttribute.Title}_formatU"" name=""{ContentAttribute.Title}_formatU"" type=""hidden"" value=""{formatU.ToString().ToLower()}"" />
+");
 
             builder.Append(@"
 <script type=""text/javascript"">

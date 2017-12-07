@@ -13,12 +13,12 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalContentAttributes : BasePageCms
     {
-        protected CheckBox IsRecommend;
-        protected CheckBox IsHot;
-        protected CheckBox IsColor;
-        protected CheckBox IsTop;
+        protected CheckBox CbIsRecommend;
+        protected CheckBox CbIsHot;
+        protected CheckBox CbIsColor;
+        protected CheckBox CbIsTop;
         protected HtmlInputHidden HihType;
-        protected TextBox Hits;
+        protected TextBox TbHits;
 
         private int _nodeId;
         private ETableStyle _tableStyle;
@@ -63,26 +63,26 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (HihType.Value == "1")
                 {
-                    if (IsRecommend.Checked || IsHot.Checked || IsColor.Checked || IsTop.Checked)
+                    if (CbIsRecommend.Checked || CbIsHot.Checked || CbIsColor.Checked || CbIsTop.Checked)
                     {
                         foreach (var contentId in _idArrayList)
                         {
                             var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentId) as BackgroundContentInfo;
                             if (contentInfo != null)
                             {
-                                if (IsRecommend.Checked)
+                                if (CbIsRecommend.Checked)
                                 {
                                     contentInfo.IsRecommend = true;
                                 }
-                                if (IsHot.Checked)
+                                if (CbIsHot.Checked)
                                 {
                                     contentInfo.IsHot = true;
                                 }
-                                if (IsColor.Checked)
+                                if (CbIsColor.Checked)
                                 {
                                     contentInfo.IsColor = true;
                                 }
-                                if (IsTop.Checked)
+                                if (CbIsTop.Checked)
                                 {
                                     contentInfo.IsTop = true;
                                 }
@@ -97,26 +97,26 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else if (HihType.Value == "2")
                 {
-                    if (IsRecommend.Checked || IsHot.Checked || IsColor.Checked || IsTop.Checked)
+                    if (CbIsRecommend.Checked || CbIsHot.Checked || CbIsColor.Checked || CbIsTop.Checked)
                     {
                         foreach (var contentId in _idArrayList)
                         {
                             var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentId) as BackgroundContentInfo;
                             if (contentInfo != null)
                             {
-                                if (IsRecommend.Checked)
+                                if (CbIsRecommend.Checked)
                                 {
                                     contentInfo.IsRecommend = false;
                                 }
-                                if (IsHot.Checked)
+                                if (CbIsHot.Checked)
                                 {
                                     contentInfo.IsHot = false;
                                 }
-                                if (IsColor.Checked)
+                                if (CbIsColor.Checked)
                                 {
                                     contentInfo.IsColor = false;
                                 }
-                                if (IsTop.Checked)
+                                if (CbIsTop.Checked)
                                 {
                                     contentInfo.IsTop = false;
                                 }
@@ -131,7 +131,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else if (HihType.Value == "3")
                 {
-                    var hits = TranslateUtils.ToInt(Hits.Text);
+                    var hits = TranslateUtils.ToInt(TbHits.Text);
 
                     foreach (var contentId in _idArrayList)
                     {

@@ -92,9 +92,6 @@ namespace SiteServer.CMS.Core
         private static StarSettingDao _starSettingDao;
         public static StarSettingDao StarSettingDao => _starSettingDao ?? (_starSettingDao = new StarSettingDao());
 
-        private static StlTagDao _stlTagDao;
-        public static StlTagDao StlTagDao => _stlTagDao ?? (_stlTagDao = new StlTagDao());
-
         private static SystemPermissionsDao _systemPermissionsDao;
         public static SystemPermissionsDao SystemPermissionsDao => _systemPermissionsDao ?? (_systemPermissionsDao = new SystemPermissionsDao());
 
@@ -149,7 +146,6 @@ namespace SiteServer.CMS.Core
             SeoMetasInNodesDao,
             StarDao,
             StarSettingDao,
-            StlTagDao,
             SystemPermissionsDao,
             TagStyleDao,
             TaskDao,

@@ -11,8 +11,8 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalImport : BasePageCms
     {
-		public HtmlInputFile myFile;
-		public RadioButtonList IsOverride;
+		public HtmlInputFile HifMyFile;
+		public DropDownList DdlIsOverride;
 
         private string _type;
 
@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
             var title = string.Empty;
             if (StringUtils.EqualsIgnoreCase(type, TypeGatherrule))
             {
-                title = "导入采集规则";
+                title = "导入采集规则"; 
             }
             //else if (StringUtils.EqualsIgnoreCase(type, TypeInput))
             //{
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 title = "导入模板标签样式";
             }
-            return PageUtils.GetOpenWindowString(title, PageUtils.GetCmsUrl(nameof(ModalImport), new NameValueCollection
+            return PageUtils.GetOpenLayerString(title, PageUtils.GetCmsUrl(nameof(ModalImport), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"Type", type}
@@ -66,9 +66,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (StringUtils.EqualsIgnoreCase(_type, TypeGatherrule))
             {
-                if (myFile.PostedFile != null && "" != myFile.PostedFile.FileName)
+                if (HifMyFile.PostedFile != null && "" != HifMyFile.PostedFile.FileName)
                 {
-                    var filePath = myFile.PostedFile.FileName;
+                    var filePath = HifMyFile.PostedFile.FileName;
                     if (EFileSystemTypeUtils.GetEnumType(Path.GetExtension(filePath)) != EFileSystemType.Xml)
                     {
                         FailMessage("必须上传XML文件");
@@ -79,10 +79,10 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var localFilePath = PathUtils.GetTemporaryFilesPath(Path.GetFileName(filePath));
 
-                        myFile.PostedFile.SaveAs(localFilePath);
+                        HifMyFile.PostedFile.SaveAs(localFilePath);
 
                         var importObject = new ImportObject(PublishmentSystemId);
-                        importObject.ImportGatherRule(localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue));
+                        importObject.ImportGatherRule(localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
                         Body.AddSiteLog(PublishmentSystemId, "导入采集规则");
 
@@ -126,9 +126,9 @@ namespace SiteServer.BackgroundPages.Cms
             //}
             else if (StringUtils.EqualsIgnoreCase(_type, TypeRelatedField))
             {
-                if (myFile.PostedFile != null && "" != myFile.PostedFile.FileName)
+                if (HifMyFile.PostedFile != null && "" != HifMyFile.PostedFile.FileName)
                 {
-                    var filePath = myFile.PostedFile.FileName;
+                    var filePath = HifMyFile.PostedFile.FileName;
                     if (EFileSystemTypeUtils.GetEnumType(Path.GetExtension(filePath)) != EFileSystemType.Zip)
                     {
                         FailMessage("必须上传ZIP文件");
@@ -139,10 +139,10 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var localFilePath = PathUtils.GetTemporaryFilesPath(Path.GetFileName(filePath));
 
-                        myFile.PostedFile.SaveAs(localFilePath);
+                        HifMyFile.PostedFile.SaveAs(localFilePath);
 
                         var importObject = new ImportObject(PublishmentSystemId);
-                        importObject.ImportRelatedFieldByZipFile(localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue));
+                        importObject.ImportRelatedFieldByZipFile(localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
                         Body.AddSiteLog(PublishmentSystemId, "导入联动字段");
 
@@ -156,9 +156,9 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (StringUtils.EqualsIgnoreCase(_type, TypeTagstyle))
             {
-                if (myFile.PostedFile != null && "" != myFile.PostedFile.FileName)
+                if (HifMyFile.PostedFile != null && "" != HifMyFile.PostedFile.FileName)
                 {
-                    var filePath = myFile.PostedFile.FileName;
+                    var filePath = HifMyFile.PostedFile.FileName;
                     if (EFileSystemTypeUtils.GetEnumType(Path.GetExtension(filePath)) != EFileSystemType.Xml)
                     {
                         FailMessage("必须上传XML文件");
@@ -169,10 +169,10 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var localFilePath = PathUtils.GetTemporaryFilesPath(Path.GetFileName(filePath));
 
-                        myFile.PostedFile.SaveAs(localFilePath);
+                        HifMyFile.PostedFile.SaveAs(localFilePath);
 
                         var importObject = new ImportObject(PublishmentSystemId);
-                        importObject.ImportTagStyle(localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue));
+                        importObject.ImportTagStyle(localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
                         Body.AddSiteLog(PublishmentSystemId, "导入模板标签样式");
 

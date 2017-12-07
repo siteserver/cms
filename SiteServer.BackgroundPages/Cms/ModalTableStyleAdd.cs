@@ -11,7 +11,6 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -21,11 +20,10 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbAttributeName;
         public TextBox TbDisplayName;
         public TextBox TbHelpText;
-        public RadioButtonList RblIsVisible;
-        public RadioButtonList RblIsSingleLine;
+        public DropDownList DdlIsVisible;
         public PlaceHolder PhIsFormatString;
         public DropDownList DdlInputType;
-        public RadioButtonList RblIsFormatString;
+        public DropDownList DdlIsFormatString;
         public TextBox TbDefaultValue;
         public Control SpanDateTip;
         public DropDownList DdlIsHorizontal;
@@ -41,12 +39,12 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbItemValues;
         public Repeater RptItems;
 
-        public Control TrRepeat;
-        public Control TrRelatedField;
-        public Control TrHeightAndWidth;
-        public Control TrItemsType;
-        public Control TrItemsRapid;
-        public Control TrItems;
+        public PlaceHolder PhRepeat;
+        public PlaceHolder PhRelatedField;
+        public PlaceHolder PhHeightAndWidth;
+        public PlaceHolder PhItemsType;
+        public PlaceHolder PhItemsRapid;
+        public PlaceHolder PhItems;
 
         private int _tableStyleId;
         private List<int> _relatedIdentities;
@@ -58,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int tableStyleId, List<int> relatedIdentities, string tableName, string attributeName, ETableStyle tableStyle, string redirectUrl)
         {
-            return PageUtils.GetOpenWindowString("修改显示样式", PageUtils.GetCmsUrl(nameof(ModalTableStyleAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("修改显示样式", PageUtils.GetCmsUrl(nameof(ModalTableStyleAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TableStyleID", tableStyleId.ToString()},
@@ -89,14 +87,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                RblIsVisible.Items[0].Value = true.ToString();
-                RblIsVisible.Items[1].Value = false.ToString();
+                DdlIsVisible.Items[0].Value = true.ToString();
+                DdlIsVisible.Items[1].Value = false.ToString();
 
-                RblIsSingleLine.Items[0].Value = true.ToString();
-                RblIsSingleLine.Items[1].Value = false.ToString();
-
-                RblIsFormatString.Items[0].Value = true.ToString();
-                RblIsFormatString.Items[1].Value = false.ToString();
+                DdlIsFormatString.Items[0].Value = true.ToString();
+                DdlIsFormatString.Items[1].Value = false.ToString();
 
                 DdlIsHorizontal.Items[0].Value = true.ToString();
                 DdlIsHorizontal.Items[1].Value = false.ToString();
@@ -125,9 +120,8 @@ namespace SiteServer.BackgroundPages.Cms
                 TbDisplayName.Text = _styleInfo.DisplayName;
                 TbHelpText.Text = _styleInfo.HelpText;
                 ControlUtils.SelectListItems(DdlInputType, _styleInfo.InputType);
-                ControlUtils.SelectListItems(RblIsVisible, _styleInfo.IsVisible.ToString());
-                ControlUtils.SelectListItems(RblIsSingleLine, _styleInfo.IsSingleLine.ToString());
-                ControlUtils.SelectListItems(RblIsFormatString, _styleInfo.Additional.IsFormatString.ToString());
+                ControlUtils.SelectListItems(DdlIsVisible, _styleInfo.IsVisible.ToString());
+                ControlUtils.SelectListItems(DdlIsFormatString, _styleInfo.Additional.IsFormatString.ToString());
                 TbDefaultValue.Text = _styleInfo.DefaultValue;
                 DdlIsHorizontal.SelectedValue = _styleInfo.IsHorizontal.ToString();
                 TbColumns.Text = _styleInfo.Additional.Columns.ToString();
@@ -166,7 +160,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void ReFresh(object sender, EventArgs e)
         {
-            TrRelatedField.Visible = TrHeightAndWidth.Visible = SpanDateTip.Visible = TrItemsType.Visible = TrItemsRapid.Visible = TrItems.Visible = TrRepeat.Visible = PhItemCount.Visible = PhIsFormatString.Visible = false;
+            PhRelatedField.Visible = PhHeightAndWidth.Visible = SpanDateTip.Visible = PhItemsType.Visible = PhItemsRapid.Visible = PhItems.Visible = PhRepeat.Visible = PhItemCount.Visible = PhIsFormatString.Visible = false;
 
             if (!string.IsNullOrEmpty(_attributeName))
             {
@@ -176,37 +170,37 @@ namespace SiteServer.BackgroundPages.Cms
             var inputType = InputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
-                TrItemsType.Visible = true;
+                PhItemsType.Visible = true;
                 var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
                 if (isRapid)
                 {
-                    TrItemsRapid.Visible = true;
+                    PhItemsRapid.Visible = true;
                     PhItemCount.Visible = false;
-                    TrItems.Visible = false;
+                    PhItems.Visible = false;
                 }
                 else
                 {
-                    TrItemsRapid.Visible = false;
+                    PhItemsRapid.Visible = false;
                     PhItemCount.Visible = true;
-                    TrItems.Visible = true;
+                    PhItems.Visible = true;
                 }
                 if (inputType == InputType.CheckBox || inputType == InputType.Radio)
                 {
-                    TrRepeat.Visible = true;
+                    PhRepeat.Visible = true;
                 }
             }
             else if (inputType == InputType.TextEditor)
             {
-                TrHeightAndWidth.Visible = true;
+                PhHeightAndWidth.Visible = true;
             }
             else if (inputType == InputType.TextArea)
             {
-                TrHeightAndWidth.Visible = true;
+                PhHeightAndWidth.Visible = true;
             }
             else if (inputType == InputType.Text)
             {
                 PhIsFormatString.Visible = true;
-                TrHeightAndWidth.Visible = true;
+                PhHeightAndWidth.Visible = true;
             }
             else if (inputType == InputType.Date || inputType == InputType.DateTime)
             {
@@ -214,7 +208,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (inputType == InputType.RelatedField)
             {
-                TrRelatedField.Visible = true;
+                PhRelatedField.Visible = true;
             }
         }
 
@@ -286,8 +280,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.AttributeName =TbAttributeName.Text;
             _styleInfo.DisplayName = PageUtils.FilterXss(TbDisplayName.Text);
             _styleInfo.HelpText = TbHelpText.Text;
-            _styleInfo.IsVisible = TranslateUtils.ToBool(RblIsVisible.SelectedValue);
-            _styleInfo.IsSingleLine = TranslateUtils.ToBool(RblIsSingleLine.SelectedValue);
+            _styleInfo.IsVisible = TranslateUtils.ToBool(DdlIsVisible.SelectedValue);
             _styleInfo.InputType = InputTypeUtils.GetValue(inputType);
             _styleInfo.DefaultValue = TbDefaultValue.Text;
             _styleInfo.IsHorizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
@@ -295,7 +288,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
             _styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
             _styleInfo.Additional.Width = TbWidth.Text;
-            _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(RblIsFormatString.SelectedValue);
+            _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(DdlIsFormatString.SelectedValue);
             _styleInfo.Additional.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
             _styleInfo.Additional.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
 
@@ -385,8 +378,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.AttributeName = TbAttributeName.Text;
             _styleInfo.DisplayName =PageUtils.FilterXss(TbDisplayName.Text);
             _styleInfo.HelpText = TbHelpText.Text;
-            _styleInfo.IsVisible = TranslateUtils.ToBool(RblIsVisible.SelectedValue);
-            _styleInfo.IsSingleLine = TranslateUtils.ToBool(RblIsSingleLine.SelectedValue);
+            _styleInfo.IsVisible = TranslateUtils.ToBool(DdlIsVisible.SelectedValue);
             _styleInfo.InputType = InputTypeUtils.GetValue(inputType);
             _styleInfo.DefaultValue = TbDefaultValue.Text;
             _styleInfo.IsHorizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
@@ -394,7 +386,7 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
             _styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
             _styleInfo.Additional.Width = TbWidth.Text;
-            _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(RblIsFormatString.SelectedValue);
+            _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(DdlIsFormatString.SelectedValue);
             _styleInfo.Additional.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
             _styleInfo.Additional.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
 

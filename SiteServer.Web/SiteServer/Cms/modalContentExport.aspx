@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Trace="false" Inherits="SiteServer.BackgroundPages.Cms.ModalContentExport" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html class="modalPage">
 
@@ -40,7 +40,7 @@
       <!--#include file="../inc/openWindow.html"-->
 
       <form runat="server">
-        <bairong:alerts text="导出压缩包能够将内容以及内容相关的图片、附件等文件一道导出，导出Access或Excel则仅能导出数据。" runat="server" />
+        <ctrl:alerts text="导出压缩包能够将内容以及内容相关的图片、附件等文件一道导出，导出Access或Excel则仅能导出数据。" runat="server" />
 
         <div class="form-horizontal">
 
@@ -74,13 +74,13 @@
                   开始
                 </div>
                 <div class="col-xs-4">
-                  <bairong:DateTimeTextBox id="TbStartDate" class="form-control" runat="server" />
+                  <ctrl:DateTimeTextBox id="TbStartDate" class="form-control" runat="server" />
                 </div>
                 <div class="col-xs-2 control-label text-right">
                   结束
                 </div>
                 <div class="col-xs-4">
-                  <bairong:DateTimeTextBox id="TbEndDate" class="form-control" runat="server" />
+                  <ctrl:DateTimeTextBox id="TbEndDate" class="form-control" runat="server" />
                 </div>
               </div>
             </div>

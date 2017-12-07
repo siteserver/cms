@@ -5,28 +5,13 @@ namespace SiteServer.BackgroundPages.Controls
 {
 	public class Alerts : Control
 	{
-        private bool isShowImmidiatary = false;
-        public bool IsShowImmidiatary
-        {
-            get { return isShowImmidiatary; }
-            set { isShowImmidiatary = value; }
-        }
+	    public bool IsShowImmidiatary { get; set; }
 
-        private MessageUtils.Message.EMessageType messageType = MessageUtils.Message.EMessageType.None;
-        public MessageUtils.Message.EMessageType MessageType
-        {
-            get { return messageType; }
-            set { messageType = value; }
-        }
+	    public MessageUtils.Message.EMessageType MessageType { get; set; } = MessageUtils.Message.EMessageType.None;
 
-        private string content = string.Empty;
-        public string Content
-        {
-            get { return content; }
-            set { content = value; }
-        }
+	    public string Content { get; set; } = string.Empty;
 
-        public string Text
+	    public string Text
         {
             get
             {
@@ -45,15 +30,11 @@ namespace SiteServer.BackgroundPages.Controls
 
 		protected override void Render(HtmlTextWriter writer)
 		{
-            if (isShowImmidiatary)
-            {
-                writer.Write(MessageUtils.GetAlertHtml(messageType, content, this));
-            }
-            else
-            {
-                writer.Write(MessageUtils.GetAlertHtml(this, Text));
-            }
-            writer.Write(@"<div id=""alert"" class=""alert"" style=""display:none""><button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button><strong>提示!</strong>&nbsp;&nbsp; <span id=""alertMessage""></span></div>");
+		    writer.Write(IsShowImmidiatary
+		        ? MessageUtils.GetAlertHtml(MessageType, Content, this)
+		        : MessageUtils.GetAlertHtml(this, Text));
+
+		    writer.Write(@"<div id=""alert"" class=""alert"" style=""display:none""><button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button><strong>提示!</strong>&nbsp;&nbsp; <span id=""alertMessage""></span></div>");
 		}
 	}
 }

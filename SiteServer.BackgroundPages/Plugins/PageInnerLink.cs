@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Plugins

@@ -12,23 +12,23 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalContentImport : BasePageCms
     {
-        public RadioButtonList ImportType;
-		public HtmlInputFile myFile;
-        public RadioButtonList IsOverride;
-        public TextBox ImportStart;
-        public TextBox ImportCount;
-        public RadioButtonList ContentLevel;
+        public DropDownList DdlImportType;
+		public HtmlInputFile HifFile;
+        public DropDownList DdlIsOverride;
+        public TextBox TbImportStart;
+        public TextBox TbImportCount;
+        public DropDownList DdlContentLevel;
 
         private int _nodeId;
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenWindowString("导入内容",
+            return PageUtils.GetOpenLayerString("导入内容",
                 PageUtils.GetCmsUrl(nameof(ModalContentImport), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"NodeID", nodeId.ToString()}
-                }), 650, 500);
+                }), 0, 520);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -36,20 +36,19 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             _nodeId = Body.GetQueryInt("NodeID", PublishmentSystemId);
-			if (!IsPostBack)
-			{
-                int checkedLevel;
-                var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
-                LevelManager.LoadContentLevelToEdit(ContentLevel, PublishmentSystemInfo, _nodeId, null, isChecked, checkedLevel);
-			}
-		}
+            if (IsPostBack) return;
+
+            int checkedLevel;
+            var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
+            LevelManager.LoadContentLevelToEdit(DdlContentLevel, PublishmentSystemInfo, _nodeId, null, isChecked, checkedLevel);
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-			if (myFile.PostedFile != null && "" != myFile.PostedFile.FileName)
+			if (HifFile.PostedFile != null && "" != HifFile.PostedFile.FileName)
 			{
                 var isChecked = false;
-                var checkedLevel = TranslateUtils.ToIntWithNagetive(ContentLevel.SelectedValue);
+                var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
                 if (checkedLevel >= PublishmentSystemInfo.CheckContentLevel)
                 {
                     isChecked = true;
@@ -57,9 +56,9 @@ namespace SiteServer.BackgroundPages.Cms
 
 				try
 				{
-                    if (StringUtils.EqualsIgnoreCase(ImportType.SelectedValue, ModalExportMessage.ExportTypeContentZip))
+                    if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentZip))
                     {
-                        var filePath = myFile.PostedFile.FileName;
+                        var filePath = HifFile.PostedFile.FileName;
                         if (!EFileSystemTypeUtils.Equals(EFileSystemType.Zip, PathUtils.GetExtension(filePath)))
                         {
                             FailMessage("必须上传后缀为“.zip”的压缩文件");
@@ -68,15 +67,15 @@ namespace SiteServer.BackgroundPages.Cms
 
                         var localFilePath = PathUtils.GetTemporaryFilesPath(PathUtils.GetFileName(filePath));
 
-                        myFile.PostedFile.SaveAs(localFilePath);
+                        HifFile.PostedFile.SaveAs(localFilePath);
 
                         var importObject = new ImportObject(PublishmentSystemId);
                         var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
-                        importObject.ImportContentsByZipFile(nodeInfo, localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue), TranslateUtils.ToInt(ImportStart.Text), TranslateUtils.ToInt(ImportCount.Text), isChecked, checkedLevel);
+                        importObject.ImportContentsByZipFile(nodeInfo, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(ImportType.SelectedValue, ModalExportMessage.ExportTypeContentAccess))
+                    else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentAccess))
                     {
-                        var filePath = myFile.PostedFile.FileName;
+                        var filePath = HifFile.PostedFile.FileName;
                         if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".mdb"))
                         {
                             FailMessage("必须上传后缀为“.mdb”的Access文件");
@@ -85,14 +84,14 @@ namespace SiteServer.BackgroundPages.Cms
 
                         var localFilePath = PathUtils.GetTemporaryFilesPath(PathUtils.GetFileName(filePath));
 
-                        myFile.PostedFile.SaveAs(localFilePath);
+                        HifFile.PostedFile.SaveAs(localFilePath);
 
                         var importObject = new ImportObject(PublishmentSystemId);
-                        importObject.ImportContentsByAccessFile(_nodeId, localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue), TranslateUtils.ToInt(ImportStart.Text), TranslateUtils.ToInt(ImportCount.Text), isChecked, checkedLevel);
+                        importObject.ImportContentsByAccessFile(_nodeId, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(ImportType.SelectedValue, ModalExportMessage.ExportTypeContentExcel))
+                    else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentExcel))
                     {
-                        var filePath = myFile.PostedFile.FileName;
+                        var filePath = HifFile.PostedFile.FileName;
                         if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".csv"))
                         {
                             FailMessage("必须上传后缀为“.csv”的Excel文件");
@@ -101,14 +100,14 @@ namespace SiteServer.BackgroundPages.Cms
 
                         var localFilePath = PathUtils.GetTemporaryFilesPath(PathUtils.GetFileName(filePath));
 
-                        myFile.PostedFile.SaveAs(localFilePath);
+                        HifFile.PostedFile.SaveAs(localFilePath);
 
                         var importObject = new ImportObject(PublishmentSystemId);
-                        importObject.ImportContentsByCsvFile(_nodeId, localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue), TranslateUtils.ToInt(ImportStart.Text), TranslateUtils.ToInt(ImportCount.Text), isChecked, checkedLevel);
+                        importObject.ImportContentsByCsvFile(_nodeId, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
                     }
-                    else if (StringUtils.EqualsIgnoreCase(ImportType.SelectedValue, ModalExportMessage.ExportTypeContentTxtZip))
+                    else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentTxtZip))
                     {
-                        var filePath = myFile.PostedFile.FileName;
+                        var filePath = HifFile.PostedFile.FileName;
                         if (!EFileSystemTypeUtils.Equals(EFileSystemType.Zip, PathUtils.GetExtension(filePath)))
                         {
                             FailMessage("必须上传后缀为“.zip”的压缩文件");
@@ -117,10 +116,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                         var localFilePath = PathUtils.GetTemporaryFilesPath(PathUtils.GetFileName(filePath));
 
-                        myFile.PostedFile.SaveAs(localFilePath);
+                        HifFile.PostedFile.SaveAs(localFilePath);
 
                         var importObject = new ImportObject(PublishmentSystemId);
-                        importObject.ImportContentsByTxtZipFile(_nodeId, localFilePath, TranslateUtils.ToBool(IsOverride.SelectedValue), TranslateUtils.ToInt(ImportStart.Text), TranslateUtils.ToInt(ImportCount.Text), isChecked, checkedLevel);
+                        importObject.ImportContentsByTxtZipFile(_nodeId, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
                     }
 
                     Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "导入内容", string.Empty);

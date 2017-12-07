@@ -8,32 +8,30 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalTableStylesAdd : BasePageCms
     {
-        public TextBox AttributeNames;
-        public RadioButtonList IsVisible;
-        public RadioButtonList IsSingleLine;
+        public TextBox TbAttributeNames;
+        public DropDownList DdlIsVisible;
         public DropDownList DdlInputType;
-        public TextBox DefaultValue;
-        public Control DateTip;
-        public DropDownList IsHorizontal;
-        public TextBox Columns;
-        public TextBox Height;
-        public TextBox Width;
+        public TextBox TbDefaultValue;
+        public Control SpDateTip;
+        public DropDownList DdlIsHorizontal;
+        public TextBox TbColumns;
+        public TextBox TbHeight;
+        public TextBox TbWidth;
 
-        public TextBox ItemCount;
-        public Repeater MyRepeater;
+        public TextBox TbItemCount;
+        public Repeater RptContents;
 
-        public Control RowDefaultValue;
-        public Control RowRepeat;
-        public Control RowHeightAndWidth;
-        public Control RowItemCount;
-        public Control RowSetItems;
+        public PlaceHolder PhDefaultValue;
+        public PlaceHolder PhRepeat;
+        public PlaceHolder PhHeightAndWidth;
+        public PlaceHolder PhItemCount;
+        public PlaceHolder PhSetItems;
 
         private List<int> _relatedIdentities;
         private string _tableName;
@@ -42,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, List<int> relatedIdentities, string tableName, ETableStyle tableStyle, string redirectUrl)
         {
-            return PageUtils.GetOpenWindowString("批量添加显示样式", PageUtils.GetCmsUrl(nameof(ModalTableStylesAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("批量添加显示样式", PageUtils.GetCmsUrl(nameof(ModalTableStylesAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
@@ -67,32 +65,26 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                IsVisible.Items[0].Value = true.ToString();
-                IsVisible.Items[1].Value = false.ToString();
+                DdlIsVisible.Items[0].Value = true.ToString();
+                DdlIsVisible.Items[1].Value = false.ToString();
 
-                IsSingleLine.Items[0].Value = true.ToString();
-                IsSingleLine.Items[1].Value = false.ToString();
-
-                IsHorizontal.Items[0].Value = true.ToString();
-                IsHorizontal.Items[1].Value = false.ToString();
+                DdlIsHorizontal.Items[0].Value = true.ToString();
+                DdlIsHorizontal.Items[1].Value = false.ToString();
 
                 InputTypeUtils.AddListItems(DdlInputType);
 
                 var styleInfo = TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, string.Empty, _relatedIdentities);
 
                 ControlUtils.SelectListItems(DdlInputType, InputTypeUtils.GetValue(InputTypeUtils.GetEnumType(styleInfo.InputType)));
-                ControlUtils.SelectListItems(IsVisible, styleInfo.IsVisible.ToString());
-                ControlUtils.SelectListItems(IsSingleLine, styleInfo.IsSingleLine.ToString());
-                DefaultValue.Text = styleInfo.DefaultValue;
-                IsHorizontal.SelectedValue = styleInfo.IsHorizontal.ToString();
-                Columns.Text = styleInfo.Additional.Columns.ToString();
+                ControlUtils.SelectListItems(DdlIsVisible, styleInfo.IsVisible.ToString());
+                TbDefaultValue.Text = styleInfo.DefaultValue;
+                DdlIsHorizontal.SelectedValue = styleInfo.IsHorizontal.ToString();
+                TbColumns.Text = styleInfo.Additional.Columns.ToString();
 
-                Height.Text = styleInfo.Additional.Height.ToString();
-                Width.Text = styleInfo.Additional.Width;
+                TbHeight.Text = styleInfo.Additional.Height.ToString();
+                TbWidth.Text = styleInfo.Additional.Width;
 
-                ItemCount.Text = "0";
-
-                
+                TbItemCount.Text = "0";
             }
 
             ReFresh(null, EventArgs.Empty);
@@ -100,37 +92,37 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void ReFresh(object sender, EventArgs e)
         {
-            RowDefaultValue.Visible = RowHeightAndWidth.Visible = DateTip.Visible = RowItemCount.Visible = RowSetItems.Visible = RowRepeat.Visible = false;
-            Height.Enabled = true;
+            PhDefaultValue.Visible = PhHeightAndWidth.Visible = SpDateTip.Visible = PhItemCount.Visible = PhSetItems.Visible = PhRepeat.Visible = false;
+            TbHeight.Enabled = true;
 
-            DefaultValue.TextMode = TextBoxMode.MultiLine;
+            TbDefaultValue.TextMode = TextBoxMode.MultiLine;
             var inputType = InputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
-                RowItemCount.Visible = RowSetItems.Visible = true;
+                PhItemCount.Visible = PhSetItems.Visible = true;
                 if (inputType == InputType.CheckBox || inputType == InputType.Radio)
                 {
-                    RowRepeat.Visible = true;
+                    PhRepeat.Visible = true;
                 }
             }
             else if (inputType == InputType.TextEditor)
             {
-                RowDefaultValue.Visible = RowHeightAndWidth.Visible = true;
+                PhDefaultValue.Visible = PhHeightAndWidth.Visible = true;
             }
             else if (inputType == InputType.TextArea)
             {
-                RowDefaultValue.Visible = RowHeightAndWidth.Visible = true;
+                PhDefaultValue.Visible = PhHeightAndWidth.Visible = true;
             }
             else if (inputType == InputType.Text)
             {
-                RowDefaultValue.Visible = RowHeightAndWidth.Visible = true;
-                Height.Enabled = false;
-                DefaultValue.TextMode = TextBoxMode.SingleLine;
+                PhDefaultValue.Visible = PhHeightAndWidth.Visible = true;
+                TbHeight.Enabled = false;
+                TbDefaultValue.TextMode = TextBoxMode.SingleLine;
             }
             else if (inputType == InputType.Date || inputType == InputType.DateTime)
             {
-                DateTip.Visible = RowDefaultValue.Visible = true;
-                DefaultValue.TextMode = TextBoxMode.SingleLine;
+                SpDateTip.Visible = PhDefaultValue.Visible = true;
+                TbDefaultValue.TextMode = TextBoxMode.SingleLine;
             }
         }
 
@@ -138,11 +130,11 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (Page.IsPostBack)
             {
-                var count = TranslateUtils.ToInt(ItemCount.Text);
+                var count = TranslateUtils.ToInt(TbItemCount.Text);
                 if (count != 0)
                 {
-                    MyRepeater.DataSource = TableStyleManager.GetStyleItemDataSet(count, null);
-                    MyRepeater.DataBind();
+                    RptContents.DataSource = TableStyleManager.GetStyleItemDataSet(count, null);
+                    RptContents.DataBind();
                 }
                 else
                 {
@@ -158,7 +150,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
-                var itemCount = TranslateUtils.ToInt(ItemCount.Text);
+                var itemCount = TranslateUtils.ToInt(TbItemCount.Text);
                 if (itemCount == 0)
                 {
                     FailMessage("操作失败，选项数目不能为0！");
@@ -178,7 +170,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var isChanged = false;
 
-            var attributeNameArray = AttributeNames.Text.Split('\n');
+            var attributeNameArray = TbAttributeNames.Text.Split('\n');
 
             var relatedIdentity = _relatedIdentities[0];
             var styleInfoArrayList = new ArrayList();
@@ -226,17 +218,17 @@ namespace SiteServer.BackgroundPages.Cms
                         return false;
                     }
 
-                    var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, TranslateUtils.ToBool(IsVisible.SelectedValue), false, TranslateUtils.ToBool(IsSingleLine.SelectedValue), InputTypeUtils.GetValue(inputType), DefaultValue.Text, TranslateUtils.ToBool(IsHorizontal.SelectedValue), string.Empty);
-                    styleInfo.Additional.Columns = TranslateUtils.ToInt(Columns.Text);
-                    styleInfo.Additional.Height = TranslateUtils.ToInt(Height.Text);
-                    styleInfo.Additional.Width = Width.Text;
+                    var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, TranslateUtils.ToBool(DdlIsVisible.SelectedValue), false, InputTypeUtils.GetValue(inputType), TbDefaultValue.Text, TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue), string.Empty);
+                    styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
+                    styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
+                    styleInfo.Additional.Width = TbWidth.Text;
 
                     if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
                     {
                         styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
                         var isHasSelected = false;
-                        foreach (RepeaterItem item in MyRepeater.Items)
+                        foreach (RepeaterItem item in RptContents.Items)
                         {
                             var itemTitle = (TextBox)item.FindControl("ItemTitle");
                             var itemValue = (TextBox)item.FindControl("ItemValue");

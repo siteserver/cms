@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalContentCheck" Trace="false" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html class="modalPage">
 
@@ -12,7 +12,7 @@
       <!--#include file="../inc/openWindow.html"-->
 
       <form runat="server">
-        <bairong:alerts runat="server" />
+        <ctrl:alerts runat="server" />
 
         <div class="form-horizontal">
 
@@ -21,9 +21,7 @@
             <div class="col-xs-8">
               <asp:Literal ID="LtlTitles" runat="server"></asp:Literal>
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
 
           <div class="form-group">
@@ -31,9 +29,7 @@
             <div class="col-xs-8">
               <asp:DropDownList ID="DdlCheckType" class="form-control" runat="server"></asp:DropDownList>
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
 
           <div class="form-group">
@@ -41,21 +37,16 @@
             <div class="col-xs-8">
               <asp:DropDownList ID="DdlTranslateNodeId" class="form-control" runat="server"></asp:DropDownList>
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
 
           <div class="form-group">
             <label class="col-xs-3 control-label text-right">审核原因</label>
             <div class="col-xs-8">
-              <asp:TextBox ID="TbCheckReasons" class="form-control" TextMode="MultiLine" Width="98%" Rows="3" runat="server" />
+              <asp:TextBox ID="TbCheckReasons" class="form-control" TextMode="MultiLine" Rows="3" runat="server" />
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
-
 
           <hr />
 
@@ -66,7 +57,6 @@
             </div>
             <div class="col-xs-1"></div>
           </div>
-
 
         </div>
 

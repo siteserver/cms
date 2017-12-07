@@ -381,7 +381,7 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 return GetContentHiddenTableStyleInfo(tableName, attributeName);
             }
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
+            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
 
             if (lowerAttributeName == BackgroundContentAttribute.SubTitle.ToLower())
             {
@@ -455,7 +455,7 @@ namespace BaiRong.Core.AuxiliaryTable
             {
                 return GetContentHiddenTableStyleInfo(tableName, attributeName);
             }
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
+            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
 
             if (lowerAttributeName == ContentAttribute.Title.ToLower())
             {
@@ -485,7 +485,7 @@ namespace BaiRong.Core.AuxiliaryTable
 
         private static TableStyleInfo GetContentHiddenTableStyleInfo(string tableName, string attributeName)
         {
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
+            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
             switch (attributeName)
             {
                 case ContentAttribute.Id:
@@ -566,7 +566,7 @@ namespace BaiRong.Core.AuxiliaryTable
 
         public static TableStyleInfo GetDefaultTableStyleInfo(string tableName, string attributeName)
         {
-            return new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
+            return new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, true, string.Empty);
         }
 
         public static bool IsMetadata(ETableStyle tableStyle, string attributeName)

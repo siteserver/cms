@@ -8,7 +8,6 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Controls
@@ -36,14 +35,7 @@ namespace SiteServer.BackgroundPages.Controls
 
             if (_formCollection == null)
             {
-                if (HttpContext.Current.Request.Form.Count > 0)
-                {
-                    _formCollection = HttpContext.Current.Request.Form;
-                }
-                else
-                {
-                    _formCollection = new NameValueCollection();
-                }
+                _formCollection = HttpContext.Current.Request.Form.Count > 0 ? HttpContext.Current.Request.Form : new NameValueCollection();
             }
 
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemId, nodeId);
@@ -59,9 +51,10 @@ namespace SiteServer.BackgroundPages.Controls
                     {
                         var attributes = InputParserUtils.GetAdditionalAttributes(string.Empty, InputTypeUtils.GetEnumType(styleInfo.InputType));
                         //string inputHtml = TableInputParser.Parse(styleInfo, styleInfo.AttributeName, this.formCollection, this.isEdit, isPostBack, attributes, pageScripts);
-                        var inputHtml = BackgroundInputTypeParser.Parse(publishmentSystemInfo, nodeId, styleInfo, ETableStyle.Channel, styleInfo.AttributeName, _formCollection, _isEdit, _isPostBack, attributes, pageScripts, true);
+                        string extraHtml;
+                        var inputHtml = BackgroundInputTypeParser.Parse(publishmentSystemInfo, nodeId, styleInfo, ETableStyle.Channel, styleInfo.AttributeName, _formCollection, _isEdit, _isPostBack, attributes, pageScripts, out extraHtml);
 
-                        builder.AppendFormat(GetFormatString(InputTypeUtils.GetEnumType(styleInfo.InputType)), styleInfo.DisplayName, inputHtml, styleInfo.HelpText);
+                        builder.AppendFormat(GetFormatString(InputTypeUtils.GetEnumType(styleInfo.InputType)), styleInfo.DisplayName, inputHtml, extraHtml);
                     }
                 }
 

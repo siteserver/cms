@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Trace="false" Inherits="SiteServer.BackgroundPages.Cms.ModalChannelImport" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html class="modalPage">
 
@@ -12,7 +12,7 @@
       <!--#include file="../inc/openWindow.html"-->
 
       <form runat="server">
-        <bairong:alerts runat="server" />
+        <ctrl:alerts runat="server" />
 
         <div class="form-horizontal">
 
@@ -23,18 +23,14 @@
               <asp:RequiredFieldValidator ControlToValidate="HifFile" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
               />
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
           <div class="form-group">
             <label class="col-xs-4 control-label text-right">父栏目</label>
             <div class="col-xs-7">
               <asp:DropDownList class="form-control" ID="DdlParentNodeId" runat="server"></asp:DropDownList>
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
           <div class="form-group">
             <label class="col-xs-4 control-label text-right">是否覆盖同名栏目</label>
@@ -44,9 +40,7 @@
                 <asp:ListItem Text="不覆盖" Value="False"></asp:ListItem>
               </asp:DropDownList>
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
 
           <hr />

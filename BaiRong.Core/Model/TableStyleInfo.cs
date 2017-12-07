@@ -16,7 +16,6 @@ namespace BaiRong.Core.Model
         private string _helpText;
         private bool _isVisible;
         private bool _isVisibleInList;
-        private bool _isSingleLine;
 		private string _inputType;
         private string _defaultValue;
         private bool _isHorizontal;
@@ -33,14 +32,13 @@ namespace BaiRong.Core.Model
             _helpText = string.Empty;
             _isVisible = true;
             _isVisibleInList = false;
-            _isSingleLine = true;
             _inputType = InputTypeUtils.GetValue(SiteServer.Plugin.Models.InputType.Text);
             _defaultValue = string.Empty;
             _isHorizontal = true;
             _extendValues = string.Empty;
 		}
 
-        public TableStyleInfo(int tableStyleId, int relatedIdentity, string tableName, string attributeName, int taxis, string displayName, string helpText, bool isVisible, bool isVisibleInList, bool isSingleLine, string inputType, string defaultValue, bool isHorizontal, string extendValues) 
+        public TableStyleInfo(int tableStyleId, int relatedIdentity, string tableName, string attributeName, int taxis, string displayName, string helpText, bool isVisible, bool isVisibleInList, string inputType, string defaultValue, bool isHorizontal, string extendValues) 
 		{
             _tableStyleId = tableStyleId;
             _relatedIdentity = relatedIdentity;
@@ -51,7 +49,6 @@ namespace BaiRong.Core.Model
             _helpText = helpText;
             _isVisible = isVisible;
             _isVisibleInList = isVisibleInList;
-            _isSingleLine = isSingleLine;
 			_inputType = inputType;
             _defaultValue = defaultValue;
             _isHorizontal = isHorizontal;
@@ -110,12 +107,6 @@ namespace BaiRong.Core.Model
         {
             get { return _isVisibleInList; }
             set { _isVisibleInList = value; }
-        }
-
-        public bool IsSingleLine
-        {
-            get { return _isSingleLine; }
-            set { _isSingleLine = value; }
         }
 
         public string InputType

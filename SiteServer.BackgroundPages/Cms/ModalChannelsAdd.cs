@@ -12,7 +12,7 @@ using SiteServer.Plugin.Features;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-    public class ModalChannelAdd : BasePageCms
+    public class ModalChannelsAdd : BasePageCms
     {
         public HyperLink HlSelectChannel;
         public Literal LtlSelectChannelScript;
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
             return PageUtils.GetOpenLayerString("添加栏目",
-                PageUtils.GetCmsUrl(nameof(ModalChannelAdd), new NameValueCollection
+                PageUtils.GetCmsUrl(nameof(ModalChannelsAdd), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"NodeID", nodeId.ToString()},
@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(nameof(ModalChannelAdd), new NameValueCollection
+            return PageUtils.GetCmsUrl(nameof(ModalChannelsAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},

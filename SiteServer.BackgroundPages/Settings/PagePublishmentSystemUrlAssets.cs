@@ -9,7 +9,12 @@ namespace SiteServer.BackgroundPages.Settings
     {
 		public DataGrid DgContents;
 
-		public void Page_Load(object sender, EventArgs e)
+        public static string GetRedirectUrl()
+        {
+            return PageUtils.GetSettingsUrl(nameof(PagePublishmentSystemUrlAssets), null);
+        }
+
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
             if (IsPostBack) return;

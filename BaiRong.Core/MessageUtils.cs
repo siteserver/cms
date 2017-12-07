@@ -32,15 +32,15 @@ namespace BaiRong.Core
             {
                 if (messageType == Message.EMessageType.Success)
                 {
-                    messageHtml = $@"<DIV class=""msg_succeed"">{message}</DIV>";
+                    messageHtml = $@"<div class=""msg_succeed"">{message}</div>";
                 }
                 else if (messageType == Message.EMessageType.Error)
                 {
-                    messageHtml = $@"<DIV class=""msg_failed"">{message}</DIV>";
+                    messageHtml = $@"<div class=""msg_failed"">{message}</div>";
                 }
                 else if (messageType == Message.EMessageType.Info)
                 {
-                    messageHtml = $@"<DIV class=""msg_info"">{message}</DIV>";
+                    messageHtml = $@"<div class=""msg_info"">{message}</div>";
                 }
             }
             return messageHtml;
@@ -100,7 +100,7 @@ namespace BaiRong.Core
                 if (!string.IsNullOrEmpty(message))
                 {
                     messageHtml = $@"
-<div class=""alert alert-info"">
+<div class=""alert alert-warning"">
     <button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button>
   <strong>提示!</strong>&nbsp;&nbsp; {message}</div>";
                 }
@@ -141,10 +141,10 @@ namespace BaiRong.Core
         #region Message
         public class Message
         {
-            private const string cookieName = "BaiRong_Message";
+            private const string CookieName = "BaiRong_Message";
             public static string GetCookieName(EMessageType messageType)
             {
-                return $"{cookieName}_{EMessageTypeUtils.GetValue(messageType)}";
+                return $"{CookieName}_{EMessageTypeUtils.GetValue(messageType)}";
             }
 
             public enum EMessageType
@@ -163,42 +163,19 @@ namespace BaiRong.Core
                     {
                         return "Success";
                     }
-                    else if (type == EMessageType.Error)
+                    if (type == EMessageType.Error)
                     {
                         return "Error";
                     }
-                    else if (type == EMessageType.Info)
+                    if (type == EMessageType.Info)
                     {
                         return "Info";
                     }
-                    else if (type == EMessageType.None)
+                    if (type == EMessageType.None)
                     {
                         return "None";
                     }
-                    else
-                    {
-                        throw new Exception();
-                    }
-                }
-
-                public static EMessageType GetEnumType(string typeStr)
-                {
-                    var retval = EMessageType.None;
-
-                    if (Equals(EMessageType.Success, typeStr))
-                    {
-                        retval = EMessageType.Success;
-                    }
-                    else if (Equals(EMessageType.Error, typeStr))
-                    {
-                        retval = EMessageType.Error;
-                    }
-                    else if (Equals(EMessageType.Info, typeStr))
-                    {
-                        retval = EMessageType.Info;
-                    }
-
-                    return retval;
+                    throw new Exception();
                 }
             }
         }

@@ -69,34 +69,26 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            if (!IsPostBack)
+            if (IsPostBack) return;
+
+            BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "栏目管理", string.Empty);
+
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.Channel, null));
+
+            if (Body.IsQueryExists("CurrentNodeID"))
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "栏目管理", string.Empty);
-
-                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.Channel, null));
-
-                if (Body.IsQueryExists("CurrentNodeID"))
+                _currentNodeId = Body.GetQueryInt("CurrentNodeID");
+                var onLoadScript = ChannelLoading.GetScriptOnLoad(PublishmentSystemId, _currentNodeId);
+                if (!string.IsNullOrEmpty(onLoadScript))
                 {
-                    _currentNodeId = Body.GetQueryInt("CurrentNodeID");
-                    var onLoadScript = ChannelLoading.GetScriptOnLoad(PublishmentSystemId, _currentNodeId);
-                    if (!string.IsNullOrEmpty(onLoadScript))
-                    {
-                        ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
-                    }
+                    ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
                 }
-
-                ButtonPreLoad();
-
-                BindGrid();
             }
-        }
 
-        private void ButtonPreLoad()
-        {
             PhAddChannel.Visible = HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.ChannelAdd);
             if (PhAddChannel.Visible)
             {
-                BtnAddChannel1.Attributes.Add("onclick", ModalChannelAdd.GetOpenWindowString(PublishmentSystemId, PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)));
+                BtnAddChannel1.Attributes.Add("onclick", ModalChannelsAdd.GetOpenWindowString(PublishmentSystemId, PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)));
                 BtnAddChannel2.Attributes.Add("onclick",
                     $"location.href='{PageChannelAdd.GetRedirectUrl(PublishmentSystemId, PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, 0))}';return false;");
             }
@@ -126,8 +118,8 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
             }
 
-            PhCreate.Visible = AdminUtility.HasWebsitePermissions(Body.AdminName, PublishmentSystemId, AppManager.Permissions.WebSite.Create) 
- || HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.CreatePage);
+            PhCreate.Visible = AdminUtility.HasWebsitePermissions(Body.AdminName, PublishmentSystemId, AppManager.Permissions.WebSite.Create)
+                               || HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.CreatePage);
             if (PhCreate.Visible)
             {
                 BtnCreate.Attributes.Add("onclick", ModalCreateChannels.GetOpenWindowString(PublishmentSystemId));
@@ -139,10 +131,7 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnImport.Attributes.Add("onclick", ModalChannelImport.GetOpenWindowString(PublishmentSystemId, PublishmentSystemId));
             }
             BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToChannel(PublishmentSystemId, "ChannelIDCollection", "请选择需要导出的栏目！"));
-        }
 
-        public void BindGrid()
-        {
             try
             {
                 RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);

@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalCheckState" Trace="false" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html class="modalPage">
 
@@ -12,7 +12,7 @@
       <!--#include file="../inc/openWindow.html"-->
 
       <form runat="server">
-        <bairong:alerts runat="server" />
+        <ctrl:alerts runat="server" />
 
         <div class="form-horizontal">
 
@@ -21,9 +21,7 @@
             <div class="col-xs-8">
               <asp:Literal ID="LtlTitle" runat="server"></asp:Literal>
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
 
           <div class="form-group">
@@ -31,9 +29,7 @@
             <div class="col-xs-8">
               <asp:Literal ID="LtlState" runat="server"></asp:Literal>
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
 
           <asp:PlaceHolder ID="PhCheckReasons" runat="server" Visible="false">
@@ -61,7 +57,6 @@
             </table>
           </asp:PlaceHolder>
 
-
           <hr />
 
           <div class="form-group m-b-0">
@@ -71,7 +66,6 @@
             </div>
             <div class="col-xs-1"></div>
           </div>
-
 
         </div>
 

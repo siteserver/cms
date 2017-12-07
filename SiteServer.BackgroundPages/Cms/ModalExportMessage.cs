@@ -14,8 +14,6 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalExportMessage : BasePageCms
     {
-        private string _exportType;
-
         public const int Width = 580;
         public const int Height = 250;
         public const string ExportTypeContentZip = "ContentZip";
@@ -35,6 +33,8 @@ namespace SiteServer.BackgroundPages.Cms
         public const string ExportTypeTrackerMonth = "TrackerMonth";
         public const string ExportTypeTrackerYear = "TrackerYear";
         public const string ExportTypeTrackerContent = "TrackerContent";
+
+        private string _exportType;
 
         public static string GetRedirectUrlStringToExportContent(int publishmentSystemId, int nodeId,
             string exportType, string contentIdCollection, string displayAttributes, bool isPeriods,
@@ -56,92 +56,99 @@ namespace SiteServer.BackgroundPages.Cms
 
         //public static string GetOpenWindowStringToInputContent(int publishmentSystemId, int inputId)
         //{
-        //    return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+        //    return PageUtils.GetOpenLayerString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
         //            {
         //                {"PublishmentSystemID", publishmentSystemId.ToString()},
         //                {"InputID", inputId.ToString()},
         //                {"ExportType", ExportTypeInputContent}
-        //            }), Width, Height, true);
+        //            }), Width, Height);
         //}
 
         public static string GetOpenWindowStringToComment(int publishmentSystemId, int nodeId, int contentId)
         {
-            return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", publishmentSystemId.ToString()},
-                        {"NodeID", nodeId.ToString()},
-                        {"ContentID", contentId.ToString()},
-                        {"ExportType", ExportTypeComment}
-                    }), Width, Height, true);
+            return PageUtils.GetOpenLayerString("导出数据",
+                PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+                {
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"NodeID", nodeId.ToString()},
+                    {"ContentID", contentId.ToString()},
+                    {"ExportType", ExportTypeComment}
+                }), Width, Height);
         }
 
         public static string GetOpenWindowStringToGatherRule(int publishmentSystemId, string checkBoxId, string alertString)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", publishmentSystemId.ToString()},
-                        {"ExportType", ExportTypeGatherRule}
-                    }), checkBoxId, alertString, Width, Height, true);
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("导出数据",
+                PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+                {
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"ExportType", ExportTypeGatherRule}
+                }), checkBoxId, alertString, Width, Height);
         }
 
         //public static string GetOpenWindowStringToInput(int publishmentSystemId, int inputId)
         //{
-        //    return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+        //    return PageUtils.GetOpenLayerString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
         //            {
         //                {"PublishmentSystemID", publishmentSystemId.ToString()},
         //                {"InputID", inputId.ToString()},
         //                {"ExportType", ExportTypeInput}
-        //            }), Width, Height, true);
+        //            }), Width, Height);
         //}
 
         public static string GetOpenWindowStringToTagStyle(int publishmentSystemId, int styleId)
         {
-            return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", publishmentSystemId.ToString()},
-                        {"StyleID", styleId.ToString()},
-                        {"ExportType", ExportTypeTagStyle}
-                    }), Width, Height, true);
+            return PageUtils.GetOpenLayerString("导出数据",
+                PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+                {
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"StyleID", styleId.ToString()},
+                    {"ExportType", ExportTypeTagStyle}
+                }), Width, Height);
         }
 
         public static string GetOpenWindowStringToChannel(int publishmentSystemId, string checkBoxId, string alertString)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", publishmentSystemId.ToString()},
-                        {"ExportType", ExportTypeChannel}
-                    }), checkBoxId, alertString, Width, Height, true);
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("导出数据",
+                PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+                {
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"ExportType", ExportTypeChannel}
+                }), checkBoxId, alertString, Width, Height);
         }
 
         public static string GetOpenWindowStringToSingleTableStyle(ETableStyle tableStyle, string tableName, int publishmentSystemId, int relatedIdentity)
         {
-            return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
-                    {
-                        {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
-                        {"TableName", tableName},
-                        {"ExportType", ExportTypeSingleTableStyle},
-                        {"PublishmentSystemID", publishmentSystemId.ToString()},
-                        {"RelatedIdentity", relatedIdentity.ToString()}
-                    }), Width, Height, true);
+            return PageUtils.GetOpenLayerString("导出数据",
+                PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+                {
+                    {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
+                    {"TableName", tableName},
+                    {"ExportType", ExportTypeSingleTableStyle},
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"RelatedIdentity", relatedIdentity.ToString()}
+                }), Width, Height);
         }
 
         public static string GetOpenWindowStringToRelatedField(int publishmentSystemId, int relatedFieldId)
         {
-            return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", publishmentSystemId.ToString()},
-                        {"RelatedFieldID", relatedFieldId.ToString()},
-                        {"ExportType", ExportTypeRelatedField}
-                    }), Width, Height, true);
+            return PageUtils.GetOpenLayerString("导出数据",
+                PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+                {
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"RelatedFieldID", relatedFieldId.ToString()},
+                    {"ExportType", ExportTypeRelatedField}
+                }), Width, Height);
         }
 
         public static string GetOpenWindowStringToExport(int publishmentSystemId, string exportType)
         {
-            return PageUtils.GetOpenWindowString("导出数据", PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
-                    {
-                        {"PublishmentSystemID", publishmentSystemId.ToString()},
-                        {"ExportType", exportType}
-                    }), Width, Height, true);
+            return PageUtils.GetOpenLayerString("导出数据",
+                PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
+                {
+                    {"PublishmentSystemID", publishmentSystemId.ToString()},
+                    {"ExportType", exportType}
+                }), Width, Height);
         }
 
         public static string GetRedirectUrlStringToExportTracker(string startDateString, string endDateString, int publishmentSystemId, int nodeId, int contentId, int totalNum, bool isDelete)

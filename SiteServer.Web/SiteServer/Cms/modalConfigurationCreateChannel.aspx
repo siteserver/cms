@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalConfigurationCreateChannel" Trace="false"%>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html class="modalPage">
 
@@ -12,7 +12,7 @@
       <!--#include file="../inc/openWindow.html"-->
 
       <form runat="server">
-        <bairong:alerts runat="server" />
+        <ctrl:alerts runat="server" />
 
         <div class="form-horizontal">
 
@@ -21,19 +21,15 @@
             <div class="col-xs-8">
               <asp:DropDownList ID="DdlIsCreateChannelIfContentChanged" class="form-control" runat="server"></asp:DropDownList>
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
 
           <div class="form-group">
             <label class="col-xs-3 control-label text-right">选择内容变动时需要生成的栏目</label>
             <div class="col-xs-8">
-              <asp:ListBox ID="LbNodeId" class="form-control" SelectionMode="Multiple" Rows="12" runat="server"></asp:ListBox>
+              <asp:ListBox ID="LbNodeId" class="form-control" SelectionMode="Multiple" Rows="13" runat="server"></asp:ListBox>
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
 
           <hr />

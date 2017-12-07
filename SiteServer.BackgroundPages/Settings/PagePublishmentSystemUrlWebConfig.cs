@@ -53,7 +53,10 @@ namespace SiteServer.BackgroundPages.Settings
                 PublishmentSystemInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
 
                 DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
-                Body.AddSiteLog(PublishmentSystemId, "修改网站访问设置");
+                Body.AddSiteLog(PublishmentSystemId, "修改Web访问地址");
+
+                SuccessMessage("Web访问地址修改成功！");
+                AddWaitAndRedirectScript(PagePublishmentSystemUrlWeb.GetRedirectUrl());
             }
             catch (Exception ex)
             {

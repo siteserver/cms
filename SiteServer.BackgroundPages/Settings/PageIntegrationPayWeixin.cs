@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
@@ -32,9 +32,9 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings("Ö§¸¶ÉèÖÃ", AppManager.Permissions.Settings.Integration);
+            BreadCrumbSettings("æ”¯ä»˜è®¾ç½®", AppManager.Permissions.Settings.Integration);
 
-            EBooleanUtils.AddListItems(DdlIsEnabled, "¿ªÍ¨", "²»¿ªÍ¨");
+            EBooleanUtils.AddListItems(DdlIsEnabled, "å¼€é€š", "ä¸å¼€é€š");
             ControlUtils.SelectListItems(DdlIsEnabled, _config.IsWeixin.ToString());
 
             PhSettings.Visible = _config.IsWeixin;

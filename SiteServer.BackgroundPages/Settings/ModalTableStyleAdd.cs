@@ -8,7 +8,6 @@ using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -19,7 +18,6 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox tbDisplayName;
         public TextBox tbHelpText;
         public RadioButtonList rblIsVisible;
-        public RadioButtonList rblIsSingleLine;
         public PlaceHolder phIsFormatString;
         public DropDownList ddlInputType;
         public RadioButtonList rblIsFormatString;
@@ -79,9 +77,6 @@ namespace SiteServer.BackgroundPages.Settings
                 rblIsVisible.Items[0].Value = true.ToString();
                 rblIsVisible.Items[1].Value = false.ToString();
 
-                rblIsSingleLine.Items[0].Value = true.ToString();
-                rblIsSingleLine.Items[1].Value = false.ToString();
-
                 rblIsFormatString.Items[0].Value = true.ToString();
                 rblIsFormatString.Items[1].Value = false.ToString();
 
@@ -104,7 +99,6 @@ namespace SiteServer.BackgroundPages.Settings
                 tbHelpText.Text = _styleInfo.HelpText;
                 ControlUtils.SelectListItems(ddlInputType, _styleInfo.InputType);
                 ControlUtils.SelectListItems(rblIsVisible, _styleInfo.IsVisible.ToString());
-                ControlUtils.SelectListItems(rblIsSingleLine, _styleInfo.IsSingleLine.ToString());
                 ControlUtils.SelectListItems(rblIsFormatString, _styleInfo.Additional.IsFormatString.ToString());
                 tbDefaultValue.Text = _styleInfo.DefaultValue;
                 ddlIsHorizontal.SelectedValue = _styleInfo.IsHorizontal.ToString();
@@ -258,7 +252,6 @@ namespace SiteServer.BackgroundPages.Settings
             _styleInfo.DisplayName = PageUtils.FilterXss(tbDisplayName.Text);
             _styleInfo.HelpText = tbHelpText.Text;
             _styleInfo.IsVisible = TranslateUtils.ToBool(rblIsVisible.SelectedValue);
-            _styleInfo.IsSingleLine = TranslateUtils.ToBool(rblIsSingleLine.SelectedValue);
             _styleInfo.InputType = InputTypeUtils.GetValue(inputType);
             _styleInfo.DefaultValue = tbDefaultValue.Text;
             _styleInfo.IsHorizontal = TranslateUtils.ToBool(ddlIsHorizontal.SelectedValue);
@@ -341,7 +334,6 @@ namespace SiteServer.BackgroundPages.Settings
             _styleInfo.DisplayName =PageUtils.FilterXss(tbDisplayName.Text);
             _styleInfo.HelpText = tbHelpText.Text;
             _styleInfo.IsVisible = TranslateUtils.ToBool(rblIsVisible.SelectedValue);
-            _styleInfo.IsSingleLine = TranslateUtils.ToBool(rblIsSingleLine.SelectedValue);
             _styleInfo.InputType = InputTypeUtils.GetValue(inputType);
             _styleInfo.DefaultValue = tbDefaultValue.Text;
             _styleInfo.IsHorizontal = TranslateUtils.ToBool(ddlIsHorizontal.SelectedValue);

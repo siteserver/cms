@@ -8,8 +8,8 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalRelatedFieldItemEdit : BasePageCms
     {
-        protected TextBox ItemName;
-        protected TextBox ItemValue;
+        public TextBox TbItemName;
+        public TextBox TbItemValue;
 
         private int _relatedFieldId;
         private int _parentId;
@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int relatedFieldId, int parentId, int level, int id)
         {
-            return PageUtils.GetOpenWindowString("编辑字段项", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldItemEdit), new NameValueCollection
+            return PageUtils.GetOpenLayerString("编辑字段项", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldItemEdit), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedFieldID", relatedFieldId.ToString()},
@@ -37,12 +37,11 @@ namespace SiteServer.BackgroundPages.Cms
             _level = Body.GetQueryInt("Level");
             _id = Body.GetQueryInt("ID");
 
-            if (!IsPostBack)
-            {
-                var itemInfo = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfo(_id);
-                ItemName.Text = itemInfo.ItemName;
-                ItemValue.Text = itemInfo.ItemValue;
-            }
+            if (IsPostBack) return;
+
+            var itemInfo = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfo(_id);
+            TbItemName.Text = itemInfo.ItemName;
+            TbItemValue.Text = itemInfo.ItemValue;
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -52,8 +51,8 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var itemInfo = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfo(_id);
-                itemInfo.ItemName = ItemName.Text;
-                itemInfo.ItemValue = ItemValue.Text;
+                itemInfo.ItemName = TbItemName.Text;
+                itemInfo.ItemValue = TbItemValue.Text;
                 DataProvider.RelatedFieldItemDao.Update(itemInfo);
 
                 isChanged = true;

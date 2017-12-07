@@ -49,12 +49,8 @@
     }
 
     function openWindow(title, url, width, height, isCloseOnly) {
-        console.log(width);
-        console.log(height);
         if (width == '0' || !width) width = $(window).width() - 40;
         if (height == '0' || !height) height = $(window).height() - 60;
-        console.log(width);
-        console.log(height);
         $('#openWindowModal').width(width);
         $('#openWindowModal h4').html(title);
         $('#openWindowBtn').show();

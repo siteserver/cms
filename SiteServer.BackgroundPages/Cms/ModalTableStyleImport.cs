@@ -9,7 +9,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalTableStyleImport : BasePageCms
     {
-		public HtmlInputFile myFile;
+		public HtmlInputFile HifMyFile;
 
         private string _tableName;
         private ETableStyle _tableStyle;
@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(string tableName, ETableStyle tableStyle, int publishmentSystemId,
             int relatedIdentity)
         {
-            return PageUtils.GetOpenWindowString("导入表样式",
+            return PageUtils.GetOpenLayerString("导入表样式",
                 PageUtils.GetCmsUrl(nameof(ModalTableStyleImport), new NameValueCollection
                 {
                     {"TableName", tableName},
@@ -39,9 +39,9 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-			if (myFile.PostedFile != null && "" != myFile.PostedFile.FileName)
+			if (HifMyFile.PostedFile != null && "" != HifMyFile.PostedFile.FileName)
 			{
-				var filePath = myFile.PostedFile.FileName;
+				var filePath = HifMyFile.PostedFile.FileName;
                 if (!EFileSystemTypeUtils.IsZip(PathUtils.GetExtension(filePath)))
 				{
                     FailMessage("必须上传Zip压缩文件");
@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
                     var localFilePath = PathUtils.GetTemporaryFilesPath(PathUtils.GetFileName(filePath));
 
-					myFile.PostedFile.SaveAs(localFilePath);
+                    HifMyFile.PostedFile.SaveAs(localFilePath);
 
                     ImportObject.ImportTableStyleByZipFile(_tableStyle, _tableName, _relatedIdentity, localFilePath);
 

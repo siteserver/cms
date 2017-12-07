@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using BaiRong.Core;
-using BaiRong.Core.IO;
 using BaiRong.Core.Net;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;

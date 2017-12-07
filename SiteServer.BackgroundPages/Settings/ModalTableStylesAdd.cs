@@ -8,7 +8,6 @@ using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -17,7 +16,6 @@ namespace SiteServer.BackgroundPages.Settings
     {
         public TextBox AttributeNames;
         public RadioButtonList IsVisible;
-        public RadioButtonList IsSingleLine;
         public DropDownList DdlInputType;
         public TextBox DefaultValue;
         public Control DateTip;
@@ -62,9 +60,6 @@ namespace SiteServer.BackgroundPages.Settings
                 IsVisible.Items[0].Value = true.ToString();
                 IsVisible.Items[1].Value = false.ToString();
 
-                IsSingleLine.Items[0].Value = true.ToString();
-                IsSingleLine.Items[1].Value = false.ToString();
-
                 IsHorizontal.Items[0].Value = true.ToString();
                 IsHorizontal.Items[1].Value = false.ToString();
 
@@ -74,7 +69,6 @@ namespace SiteServer.BackgroundPages.Settings
 
                 ControlUtils.SelectListItems(DdlInputType, InputTypeUtils.GetValue(InputTypeUtils.GetEnumType(styleInfo.InputType)));
                 ControlUtils.SelectListItems(IsVisible, styleInfo.IsVisible.ToString());
-                ControlUtils.SelectListItems(IsSingleLine, styleInfo.IsSingleLine.ToString());
                 DefaultValue.Text = styleInfo.DefaultValue;
                 IsHorizontal.SelectedValue = styleInfo.IsHorizontal.ToString();
                 Columns.Text = styleInfo.Additional.Columns.ToString();
@@ -204,7 +198,7 @@ namespace SiteServer.BackgroundPages.Settings
                         return false;
                     }
 
-                    var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, TranslateUtils.ToBool(IsVisible.SelectedValue), false, TranslateUtils.ToBool(IsSingleLine.SelectedValue), InputTypeUtils.GetValue(inputType), DefaultValue.Text, TranslateUtils.ToBool(IsHorizontal.SelectedValue), string.Empty);
+                    var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, TranslateUtils.ToBool(IsVisible.SelectedValue), false, InputTypeUtils.GetValue(inputType), DefaultValue.Text, TranslateUtils.ToBool(IsHorizontal.SelectedValue), string.Empty);
                     styleInfo.Additional.Columns = TranslateUtils.ToInt(Columns.Text);
                     styleInfo.Additional.Height = TranslateUtils.ToInt(Height.Text);
                     styleInfo.Additional.Width = Width.Text;

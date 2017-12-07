@@ -38,7 +38,8 @@ namespace SiteServer.BackgroundPages.Settings
 
                 BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-                Body.AddAdminLog("修改系统设置");
+                Body.AddAdminLog("修改API访问地址");
+                SuccessUpdateMessage();
             }
             catch (Exception ex)
             {

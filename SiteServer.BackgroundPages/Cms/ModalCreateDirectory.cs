@@ -8,8 +8,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalCreateDirectory : BasePageCms
     {
-		protected TextBox DirectoryName;
-		protected RegularExpressionValidator DirectoryNameValidator;
+		protected TextBox TbDirectoryName;
 
 		private string _currentRootPath;
 		private string _directoryPath;
@@ -35,32 +34,22 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-			var isCreated = false;
-
-            if (!DirectoryUtils.IsDirectoryNameCompliant(DirectoryName.Text))
+            if (!DirectoryUtils.IsDirectoryNameCompliant(TbDirectoryName.Text))
             {
-                DirectoryNameValidator.IsValid = false;
-                DirectoryNameValidator.ErrorMessage = "文件夹名称不符合要求";
+                FailMessage("文件夹名称不符合要求");
                 return;
             }
 
-            var path = PathUtils.Combine(_directoryPath, DirectoryName.Text);
+            var path = PathUtils.Combine(_directoryPath, TbDirectoryName.Text);
             if (DirectoryUtils.IsDirectoryExists(path))
             {
-                DirectoryNameValidator.IsValid = false;
-                DirectoryNameValidator.ErrorMessage = "文件夹已经存在";
-            }
-            else
-            {
-                DirectoryUtils.CreateDirectoryIfNotExists(path);
-                isCreated = true;
+                FailMessage("文件夹已经存在");
+                return;
             }
 
-			if (isCreated)
-			{
-                Body.AddSiteLog(PublishmentSystemId, "新建文件夹", $"文件夹:{DirectoryName.Text}");
-				PageUtils.CloseModalPage(Page);
-			}
-		}
+            DirectoryUtils.CreateDirectoryIfNotExists(path);
+            Body.AddSiteLog(PublishmentSystemId, "新建文件夹", $"文件夹:{TbDirectoryName.Text}");
+            PageUtils.CloseModalPage(Page);
+        }
 	}
 }

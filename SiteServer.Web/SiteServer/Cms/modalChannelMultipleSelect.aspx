@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalChannelMultipleSelect" Trace="false"%>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html class="modalPage">
 
@@ -12,20 +12,18 @@
       <!--#include file="../inc/openWindow.html"-->
 
       <form runat="server">
-        <bairong:alerts runat="server" />
+        <ctrl:alerts runat="server" />
 
         <div class="form-horizontal">
 
           <asp:PlaceHolder id="PhPublishmentSystemId" runat="server">
             <div class="form-group">
-              <label class="col-xs-3 control-label text-right">选择站点</label>
-              <div class="col-xs-8">
+              <label class="col-xs-2 control-label text-right m-t-5">选择站点</label>
+              <div class="col-xs-6">
                 <asp:DropDownList class="form-control" ID="DdlPublishmentSystemId" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlPublishmentSystemId_OnSelectedIndexChanged">
                 </asp:DropDownList>
               </div>
-              <div class="col-xs-1">
-
-              </div>
+              <div class="col-xs-4"></div>
             </div>
           </asp:PlaceHolder>
 

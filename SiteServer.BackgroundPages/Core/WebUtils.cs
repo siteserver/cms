@@ -138,132 +138,151 @@ namespace SiteServer.BackgroundPages.Core
             return PageContentAdd.GetRedirectUrlOfEdit(publishmentSystemId, nodeInfo.NodeId, id, returnUrl);
         }
 
-        public static string GetContentCommands(string administratorName, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string pageUrl, string currentFileName, bool isCheckPage)
+        public static string GetContentCommands(string administratorName, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string pageUrl)
         {
-            var iconUrl = SiteServerAssets.GetIconUrl(string.Empty);
-
             var builder = new StringBuilder();
-            //添加内容
-            if (!isCheckPage && AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentAdd) && nodeInfo.Additional.IsContentAddable)
+
+            if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentAdd) && nodeInfo.Additional.IsContentAddable)
             {
-                var redirectUrl = GetContentAddAddUrl(publishmentSystemInfo.PublishmentSystemId, nodeInfo, pageUrl);
+                builder.Append($@"
+<a href=""{GetContentAddAddUrl(publishmentSystemInfo.PublishmentSystemId, nodeInfo, pageUrl)}"" class=""btn btn-primary"">
+    <i class=""ion-plus""></i>
+    添加
+</a>");
 
-                builder.Append(
-                    $@"<a href=""{redirectUrl}""><img style=""margin-right: 3px"" src=""{iconUrl}/add.gif"" align=""absMiddle"" />添加内容</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-
-                builder.Append($@"<a href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">导入内容</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-
-                builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalUploadWord.GetOpenWindowString(
-                            publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, StringUtils.ValueToUrl(pageUrl))}"">导入Word</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
+                builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalUploadWord.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, StringUtils.ValueToUrl(pageUrl))}"">
+    导入Word
+</a>");
             }
-            //删 除
+
             if (nodeInfo.ContentNum > 0 && AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentDelete))
             {
-                builder.Append(
-                    $@"<a href=""javascript:;"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(
-                        publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, false, pageUrl)}"">删 除</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
+                builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, false, pageUrl)}"">
+    <i class=""fa fa-trash-o""></i>
+    删 除
+</a>");
             }
 
             if (nodeInfo.ContentNum > 0)
             {
-                builder.Append(
-                    $@"<a href=""javascript:;"" onclick=""{ModalContentExport.GetOpenWindowString(
-                        publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">导 出</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                //设置
                 if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentEdit))
                 {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalContentAttributes.GetOpenWindowString(
-                            publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">设置属性</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalAddToGroup.GetOpenWindowStringToContent(
-                            publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">设置内容组</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
+                    builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalContentAttributes.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">
+    <i class=""fa fa-tag""></i>
+    属性
+</a>");
+                    builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalAddToGroup.GetOpenWindowStringToContent(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">
+    内容组
+</a>");
                 }
-                //转 移
                 if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentTranslate))
                 {
                     var redirectUrl = PageContentTranslate.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl);
-
                     var clickString = PageUtils.GetRedirectStringWithCheckBoxValue(redirectUrl, "ContentIDCollection", "ContentIDCollection", "请选择需要转移的内容！");
-
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{clickString}"">转 移</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
+                    builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{clickString}"">
+    转 移
+</a>");
                 }
-                //排 序
                 if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentEdit))
                 {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalContentTaxis.GetOpenWindowString(
-                            publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl)}"">排 序</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
+                    builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalContentTaxis.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl)}"">
+    排 序
+</a>");
                 }
-                //整理
-                if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentOrder))
-                {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(
-                            publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl)}"">整 理</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                }
-                //审 核
                 if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentCheck))
                 {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalContentCheck.GetOpenWindowString(
-                            publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl)}"">审 核</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
+                    builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalContentCheck.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl)}"">
+    审 核
+</a>");
                 }
-                //归 档
-                if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentArchive))
+                if (AdminUtility.HasWebsitePermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, AppManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.CreatePage))
                 {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalContentArchive.GetOpenWindowString(
-                            publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl)}"">归 档</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                }
-                //跨站转发
-                if (CrossSiteTransUtility.IsCrossSiteTrans(publishmentSystemInfo, nodeInfo) && !CrossSiteTransUtility.IsAutomatic(nodeInfo))
-                {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalContentCrossSiteTrans.GetOpenWindowString(
-                            publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">跨站转发</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
-                }
-                //生 成
-                if (!isCheckPage && (AdminUtility.HasWebsitePermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, AppManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.CreatePage)))
-                {
-                    builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalProgressBar
-                            .GetOpenWindowStringWithCreateContentsOneByOne(publishmentSystemInfo.PublishmentSystemId,
-                                nodeInfo.NodeId)}"">生 成</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
+                    builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateContentsOneByOne(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">
+    生 成
+</a>");
                 }
             }
 
-            //选择显示项
-            //if (nodeInfo.NodeType != ENodeType.BackgroundImageNode)
-            //{
             if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ChannelEdit))
             {
-                builder.Append(
-                    $@"<a href=""javascript:;"" onclick=""{ModalSelectColumns.GetOpenWindowStringToContent(
-                        publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, true)}"">显示项</a> &nbsp; &nbsp; ");
+                builder.Append($@"
+<a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalSelectColumns.GetOpenWindowStringToContent(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, true)}"">
+    <i class=""fa fa-exclamation-circle""></i>
+    显示项
+</a>");
             }
-            //}
 
-            if (!isCheckPage && nodeInfo.ContentNum > 0)
+            if (nodeInfo.ContentNum > 0)
             {
-                if (builder.Length > 0)
-                {
-                    builder.Length = builder.Length - 15;
-                }
-
-                //builder.Append(GetContentLinks(publishmentSystemInfo, nodeInfo, contentType, currentFileName));
-
-                builder.Append(
-                    $@"&nbsp; <a href=""javascript:;;"" onClick=""$('#contentSearch').toggle(); return false""><img src=""{iconUrl}/search.gif"" align=""absMiddle"" alt=""快速查找"" /></a>");
+                builder.Append(@"
+<a href=""javascript:;;"" class=""btn btn-primary"" onClick=""$('#contentSearch').toggle(); return false"">
+    <i class=""ion-search""></i>
+    查找
+</a>");
             }
 
+            return builder.ToString();
+        }
 
-            //if (builder.Length > 0)
-            //{
-            //    builder.Length = builder.Length - 16;
-            //}
+        public static string GetContentMoreCommands(string administratorName, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, string pageUrl)
+        {
+            var builder = new StringBuilder();
+
+            if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentAdd) && nodeInfo.Additional.IsContentAddable)
+            {
+                builder.Append($@"
+<li>
+    <a href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">
+        导 入
+    </a>
+</li>");
+            }
+
+            if (nodeInfo.ContentNum > 0)
+            {
+                builder.Append($@"
+<li>
+    <a href=""javascript:;"" onclick=""{ModalContentExport.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">
+        导 出
+    </a>
+</li>");
+                if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentOrder))
+                {
+                    builder.Append($@"
+<li>
+    <a href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl)}"">
+        整 理
+    </a>
+</li>");
+                }
+                if (AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.ContentArchive))
+                {
+                    builder.Append($@"
+<li>
+    <a href=""javascript:;"" onclick=""{ModalContentArchive.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl)}"">
+        归 档
+    </a>
+</li>");
+                }
+                if (CrossSiteTransUtility.IsCrossSiteTrans(publishmentSystemInfo, nodeInfo) && !CrossSiteTransUtility.IsAutomatic(nodeInfo))
+                {
+                    builder.Append($@"
+<li>
+    <a href=""javascript:;"" onclick=""{ModalContentCrossSiteTrans.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">
+        跨站转发
+    </a>
+</li>");
+                }
+            }
+
             return builder.ToString();
         }
 
@@ -278,7 +297,7 @@ namespace SiteServer.BackgroundPages.Core
                     $@"<a href=""{PageChannelAdd.GetRedirectUrl(publishmentSystemInfo.PublishmentSystemId,
                         nodeInfo.NodeId, pageUrl)}""><img style=""MARGIN-RIGHT: 3px"" src=""{iconUrl}/add.gif"" align=""absMiddle"" />添加栏目</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
                 builder.Append(
-                    $@"<a href=""javascript:;"" onclick=""{ModalChannelAdd.GetOpenWindowString(
+                    $@"<a href=""javascript:;"" onclick=""{ModalChannelsAdd.GetOpenWindowString(
                         publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, pageUrl)}"">快速添加</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
             }
             if (nodeInfo.ChildrenCount > 0)
@@ -363,117 +382,95 @@ namespace SiteServer.BackgroundPages.Core
 
         public static string GetTextEditorCommands(PublishmentSystemInfo publishmentSystemInfo, string attributeName)
         {
-            var builder = new StringBuilder();
-
-            builder.Append(
-                $@"<div class=""btn_word"" onclick=""{ModalTextEditorImportWord.GetOpenWindowString(
-                    publishmentSystemInfo.PublishmentSystemId, attributeName)}"">导入Word</div>");
-
-            builder.Append(
-                $@"<div class=""btn_video"" onclick=""{ModalTextEditorInsertVideo.GetOpenWindowString(
-                    publishmentSystemInfo.PublishmentSystemId, attributeName)}"">插入视频</div>");
-
-            builder.Append(
-                $@"<div class=""btn_audio"" onclick=""{ModalTextEditorInsertAudio.GetOpenWindowString(
-                    publishmentSystemInfo.PublishmentSystemId, attributeName)}"">插入音频</div>");
-
-            var command = @"<div class=""btn_keywords"" onclick=""getWordSpliter();"">提取关键字</div>
+            return $@"
 <script type=""text/javascript"">
-function getWordSpliter(){
-    var pureText = [getPureText]
-	$.post('[url]&r=' + Math.random(), {content:pureText}, function(data) {
-		if(data !=''){
+function getWordSpliter(){{
+    var pureText = {ETextEditorTypeUtils.GetPureTextScript(attributeName)}
+	$.post('{AjaxCmsService.GetWordSpliterUrl(publishmentSystemInfo.PublishmentSystemId)}&r=' + Math.random(), {{content:pureText}}, function(data) {{
+		if(data !=''){{
 			$('#Tags').val(data).focus();
-		}else{
-            [tips]
-        }
-	});	
-}
-</script>
-";
-            command = command.Replace("[url]", AjaxCmsService.GetWordSpliterUrl(publishmentSystemInfo.PublishmentSystemId));
-            command = command.Replace("[getPureText]", ETextEditorTypeUtils.GetPureTextScript(attributeName));
-            command = command.Replace("[tips]", PageUtils.GetOpenTipsString("对不起，内容不足，无法提取关键字", PageUtils.TipsError));
-
-            builder.Append(command);
-
-            command = @"<div class=""btn_detection"" onclick=""detection_[attributeName]();"">敏感词检测</div>
-<script type=""text/javascript"">
-function detection_[attributeName](){
-    var pureText = [getPureText]
-    var htmlContent = [getContent]
+		}}else{{
+            {PageUtils.GetOpenTipsString("对不起，内容不足，无法提取关键字", PageUtils.TipsError)}
+        }}
+	}});	
+}}
+function detection_{attributeName}(){{
+    var pureText = {ETextEditorTypeUtils.GetPureTextScript(attributeName)}
+    var htmlContent = {ETextEditorTypeUtils.GetContentScript(attributeName)}
     var keyword = '';
-	$.post('[url]&r=' + Math.random(), {content:pureText}, function(data) {
+	$.post('{AjaxCmsService.GetDetectionUrl(publishmentSystemInfo.PublishmentSystemId)}&r=' + Math.random(), {{content:pureText}}, function(data) {{
         debugger;
-		if(data){
+		if(data){{
 			var arr = data.split(',');
             var i=0;
 			for(;i<arr.length;i++)
-			{
+			{{
                 var reg = new RegExp(arr[i], 'gi');
 				htmlContent = htmlContent.replace(reg,'<span style=""background-color:#ffff00;"">' + arr[i] + '</span>');
-			}
+			}}
             keyword=data;
-			[setContent]
-            [tips_warn]
-		}else{
-            [tips_success]
-        }
-	});	
-}
+			{ETextEditorTypeUtils.GetSetContentScript(attributeName, "htmlContent")}
+            {PageUtils.GetOpenTipsString("共检测到' + i + '个敏感词，内容已用黄色背景标明", PageUtils.TipsWarn)}
+		}} else {{
+            {PageUtils.GetOpenTipsString("检测成功，没有检测到任何敏感词", PageUtils.TipsSuccess)}
+        }}
+	}});	
+}}
 </script>
+<div class=""btn-group"">
+    <button class=""btn"" onclick=""{ModalTextEditorImportWord.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">导入Word</button>
+    <button class=""btn"" onclick=""{ModalTextEditorInsertVideo.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">插入视频</button>
+    <button class=""btn"" onclick=""{ModalTextEditorInsertAudio.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">插入音频</button>
+    <button class=""btn"" onclick=""getWordSpliter();"">提取关键字</button>
+    <button class=""btn"" onclick=""detection_{attributeName}();"">敏感词检测</button>
+</div>
 ";
-            command = command.Replace("[attributeName]", attributeName);
-            command = command.Replace("[url]", AjaxCmsService.GetDetectionUrl(publishmentSystemInfo.PublishmentSystemId));
-            command = command.Replace("[getPureText]", ETextEditorTypeUtils.GetPureTextScript(attributeName));
-            command = command.Replace("[getContent]", ETextEditorTypeUtils.GetContentScript(attributeName));
-            command = command.Replace("[setContent]", ETextEditorTypeUtils.GetSetContentScript(attributeName, "htmlContent"));
-            command = command.Replace("[tips_warn]", PageUtils.GetOpenTipsString("共检测到' + i + '个敏感词，内容已用黄色背景标明", PageUtils.TipsWarn));
-            command = command.Replace("[tips_success]", PageUtils.GetOpenTipsString("检测成功，没有检测到任何敏感词", PageUtils.TipsSuccess));
-            builder.Append(command);
-
-            return builder.ToString();
         }
 
         public static string GetAutoCheckKeywordsScript(PublishmentSystemInfo publishmentSystemInfo)
         {
-            var builder = new StringBuilder();
+            var isAutoCheckKeywords = publishmentSystemInfo.Additional.IsAutoCheckKeywords.ToString().ToLower();
+            var url = AjaxCmsService.GetDetectionReplaceUrl(publishmentSystemInfo.PublishmentSystemId);
+            var getPureText = ETextEditorTypeUtils.GetPureTextScript(BackgroundContentAttribute.Content);
+            var getContent = ETextEditorTypeUtils.GetContentScript(BackgroundContentAttribute.Content);
+            var setContent = ETextEditorTypeUtils.GetSetContentScript(BackgroundContentAttribute.Content, "htmlContent");
+            var tipsWarn = PageUtils.GetOpenTipsString("内容中共检测到' + i + '个敏感词，已用黄色背景标明", PageUtils.TipsWarn, false, "自动替换并保存", "autoReplaceKeywords");
 
-            var command = @"
+            var command = $@"
 <script type=""text/javascript"">
 var bairongKeywordArray;
-function autoCheckKeywords(){
-    if([isAutoCheckKeywords]){
-        var pureText = [getPureText]
-        var htmlContent = [getContent]
-	    $.post('[url]&r=' + Math.random(), {content:pureText}, function(data) {
-		    if(data){
+function autoCheckKeywords() {{
+    if({isAutoCheckKeywords}) {{
+        var pureText = {getPureText}
+        var htmlContent = {getContent}
+	    $.post('{url}&r=' + Math.random(), {{content:pureText}}, function(data) {{
+		    if(data) {{
                 bairongKeywordArray = data;
 			    var arr = data.split(',');
                 var i=0;
 			    for(;i<arr.length;i++)
-			    {
+			    {{
                     var tmpArr = arr[i].split('|');
                     var keyword = tmpArr[0];
                     var replace = tmpArr.length==2?tmpArr[1]:'';
                     var reg = new RegExp(keyword, 'gi');
 				    htmlContent = htmlContent.replace(reg,'<span style=""background-color:#ffff00;"">' + keyword + '</span>');
-			    }
-			    [setContent]
-                [tips_warn]
-		    }else{
+			    }}
+			    {setContent}
+                {tipsWarn}
+		    }} else {{
                 $('#BtnSubmit').attr('onclick', '').click();
-            }
-	    });
+            }}
+	    }});
         return false;	
-    }
-}
-function autoReplaceKeywords(){
+    }}
+}}
+function autoReplaceKeywords() {{
     var arr = bairongKeywordArray.split(',');
     var i=0;
-    var htmlContent = [getContent]
+    var htmlContent = {getContent}
 	for(;i<arr.length;i++)
-	{
+	{{
         var tmpArr = arr[i].split('|');
         var keyword = tmpArr[0];
         var replace = tmpArr.length==2?tmpArr[1]:'';
@@ -482,23 +479,36 @@ function autoReplaceKeywords(){
         //IE8
         reg = new RegExp('<span style=""background-color:#ffff00"">' + keyword + '</span>', 'gi');
 		htmlContent = htmlContent.replace(reg, replace);
-	}
-    [setContent]
+	}}
+    {setContent}
     $('#BtnSubmit').attr('onclick', '').click();
-}
+}}
 </script>
 ";
-            command = command.Replace("[isAutoCheckKeywords]",
-                $"{publishmentSystemInfo.Additional.IsAutoCheckKeywords.ToString().ToLower()}");
-            command = command.Replace("[url]", AjaxCmsService.GetDetectionReplaceUrl(publishmentSystemInfo.PublishmentSystemId));
-            command = command.Replace("[getPureText]", ETextEditorTypeUtils.GetPureTextScript(BackgroundContentAttribute.Content));
-            command = command.Replace("[getContent]", ETextEditorTypeUtils.GetContentScript(BackgroundContentAttribute.Content));
-            command = command.Replace("[setContent]", ETextEditorTypeUtils.GetSetContentScript(BackgroundContentAttribute.Content, "htmlContent"));
             
-            command = command.Replace("[tips_warn]", PageUtils.GetOpenTipsString("内容中共检测到' + i + '个敏感词，已用黄色背景标明", PageUtils.TipsWarn, false, "自动替换并保存", "autoReplaceKeywords"));
-            builder.Append(command);
 
-            return builder.ToString();
+
+            return command;
+        }
+
+        public static string GetImageUrlButtonGroupHtml(PublishmentSystemInfo publishmentSystemInfo, string attributeName)
+        {
+            return $@"
+<div class=""btn-group"">
+    <button class=""btn"" onclick=""{ModalUploadImage.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">
+        上传
+    </button>
+    <button class=""btn"" onclick=""{ModalSelectImage.GetOpenWindowString(publishmentSystemInfo, attributeName)}"">
+        选择
+    </button>
+    <button class=""btn"" onclick=""{ModalCuttingImage.GetOpenWindowStringWithTextBox(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">
+        裁切
+    </button>
+    <button class=""btn"" onclick=""{ModalMessage.GetOpenWindowStringToPreviewImage(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">
+        预览
+    </button>
+</div>
+";
         }
     }
 }

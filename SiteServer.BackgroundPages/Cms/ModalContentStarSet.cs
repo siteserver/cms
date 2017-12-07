@@ -8,20 +8,20 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalContentStarSet : BasePageCms
     {
-		protected TextBox TotalCount;
-        protected TextBox PointAverage;
+		protected TextBox TbTotalCount;
+        protected TextBox TbPointAverage;
 
         private int _channelId;
         private int _contentId;
 
         public static string GetOpenWindowString(int publishmentSystemId, int channelId, int contentId)
         {
-            return PageUtils.GetOpenWindowString("内容评分设置", PageUtils.GetCmsUrl(nameof(ModalContentStarSet), new NameValueCollection
+            return PageUtils.GetOpenLayerString("内容评分设置", PageUtils.GetCmsUrl(nameof(ModalContentStarSet), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ChannelID", channelId.ToString()},
                 {"ContentID", contentId.ToString()}
-            }), 350, 300);
+            }), 450, 360);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -31,19 +31,17 @@ namespace SiteServer.BackgroundPages.Cms
             _channelId = Body.GetQueryInt("ChannelID");
             _contentId = Body.GetQueryInt("ContentID");
 
-			if (!IsPostBack)
-			{
-                var totalCountAndPointAverage = DataProvider.StarSettingDao.GetTotalCountAndPointAverage(PublishmentSystemId, _contentId);
-                var settingTotalCount = (int)totalCountAndPointAverage[0];
-                var settingPointAverage = (decimal)totalCountAndPointAverage[1];
+            if (IsPostBack) return;
 
-                if (settingTotalCount > 0 || settingPointAverage > 0)
-                {
-                    TotalCount.Text = settingTotalCount.ToString();
-                    PointAverage.Text = settingPointAverage.ToString();
-                }
-			}
-		}
+            var totalCountAndPointAverage = DataProvider.StarSettingDao.GetTotalCountAndPointAverage(PublishmentSystemId, _contentId);
+            var settingTotalCount = (int)totalCountAndPointAverage[0];
+            var settingPointAverage = (decimal)totalCountAndPointAverage[1];
+
+            if (settingTotalCount <= 0 && settingPointAverage <= 0) return;
+
+            TbTotalCount.Text = settingTotalCount.ToString();
+            TbPointAverage.Text = settingPointAverage.ToString("N2");
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
@@ -51,8 +49,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                var totalCount = TranslateUtils.ToInt(TotalCount.Text);
-                var pointAverage = TranslateUtils.ToDecimal(PointAverage.Text);
+                var totalCount = TranslateUtils.ToInt(TbTotalCount.Text);
+                var pointAverage = TranslateUtils.ToDecimal(TbPointAverage.Text);
                 if (totalCount == 0)
                 {
                     pointAverage = 0;

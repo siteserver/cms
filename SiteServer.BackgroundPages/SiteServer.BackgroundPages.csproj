@@ -345,7 +345,7 @@
     <Compile Include="Plugins\ModalAdMaterialAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalChannelAdd.cs">
+    <Compile Include="Cms\ModalChannelsAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalChannelEdit.cs">
@@ -466,9 +466,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Plugins\ModalSeoMetaView.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalStlTagAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalTableStyleAdd.cs">
@@ -601,9 +598,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Plugins\PageContentArchive.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageContentChannel.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageContentCheck.cs">
@@ -808,9 +802,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageStlCreate.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageStlTag.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageTagStyleMailSMS.cs">

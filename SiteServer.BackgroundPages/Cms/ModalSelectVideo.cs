@@ -13,9 +13,9 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalSelectVideo : BasePageCms
     {
-		public Literal ltlCurrentDirectory;
-        public Literal ltlFileSystems;
-		public HyperLink hlUploadLink;
+		public Literal LtlCurrentDirectory;
+        public Literal LtlFileSystems;
+		public Button BtnUpload;
 
 		private string _currentRootPath;
         private string _textBoxClientId;
@@ -43,15 +43,16 @@ namespace SiteServer.BackgroundPages.Cms
 	    public string RootUrl => PageUtils.ApplicationPath;
 
 	    public static string GetOpenWindowString(PublishmentSystemInfo publishmentSystemInfo, string textBoxClientId)
-        {
-            return PageUtils.GetOpenWindowString("选择视频", PageUtils.GetCmsUrl(nameof(ModalSelectVideo), new NameValueCollection
-            {
-                {"PublishmentSystemID", publishmentSystemInfo.PublishmentSystemId.ToString()},
-                {"RootPath", "@"},
-                {"CurrentRootPath", string.Empty},
-                {"TextBoxClientID", textBoxClientId}
-            }), 550, 480, true);
-        }
+	    {
+	        return PageUtils.GetOpenLayerString("选择视频",
+	            PageUtils.GetCmsUrl(nameof(ModalSelectVideo), new NameValueCollection
+	            {
+	                {"PublishmentSystemID", publishmentSystemInfo.PublishmentSystemId.ToString()},
+	                {"RootPath", "@"},
+	                {"CurrentRootPath", string.Empty},
+	                {"TextBoxClientID", textBoxClientId}
+	            }));
+	    }
 
 		public void Page_Load(object sender, EventArgs e)
         {
@@ -77,61 +78,55 @@ namespace SiteServer.BackgroundPages.Cms
 			_directoryPath = PathUtility.MapPath(PublishmentSystemInfo, _currentRootPath);
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
 
-			if (!Page.IsPostBack)
-			{
-                hlUploadLink.NavigateUrl = "javascript:;";
-                hlUploadLink.Attributes.Add("onclick", ModalUploadVideo.GetOpenWindowStringToList(PublishmentSystemId, _currentRootPath));
+            if (Page.IsPostBack) return;
 
-				var previousUrls = Session["PreviousUrls"] as ArrayList;
-				if (previousUrls == null)
-				{
-					previousUrls = new ArrayList();
-				}
-				var currentUrl = GetRedirectUrl(_currentRootPath);
-				if (previousUrls.Count > 0)
-				{
-					var url = previousUrls[previousUrls.Count - 1] as string;
-					if (!string.Equals(url, currentUrl))
-					{
-						previousUrls.Add(currentUrl);
-						Session["PreviousUrls"] = previousUrls;
-					}
-				}
-				else
-				{
-					previousUrls.Add(currentUrl);
-					Session["PreviousUrls"] = previousUrls;
-				}
+            BtnUpload.Attributes.Add("onclick", ModalUploadVideo.GetOpenWindowStringToList(PublishmentSystemId, _currentRootPath));
 
-				var navigationBuilder = new StringBuilder();
-				var directoryNames = _currentRootPath.Split('/');
-				var linkCurrentRootPath = _rootPath;
-				foreach (var directoryName in directoryNames)
-				{
-					if (!string.IsNullOrEmpty(directoryName))
-					{
-						if (directoryName.Equals("~"))
-						{
-							navigationBuilder.Append($"<a href='{GetRedirectUrl(_rootPath)}'>根目录</a>");
-						}
-						else if (directoryName.Equals("@"))
-						{
-							navigationBuilder.Append(
-							    $"<a href='{GetRedirectUrl(_rootPath)}'>{PublishmentSystemInfo.PublishmentSystemDir}</a>");
-						}
-						else
-						{
-							linkCurrentRootPath += "/" + directoryName;
-							navigationBuilder.Append($"<a href='{GetRedirectUrl(linkCurrentRootPath)}'>{directoryName}</a>");
-						}
-						navigationBuilder.Append("\\");
-					}
-				}
-				ltlCurrentDirectory.Text = navigationBuilder.ToString();
+            var previousUrls = Session["PreviousUrls"] as ArrayList ?? new ArrayList();
+            var currentUrl = GetRedirectUrl(_currentRootPath);
+            if (previousUrls.Count > 0)
+            {
+                var url = previousUrls[previousUrls.Count - 1] as string;
+                if (!string.Equals(url, currentUrl))
+                {
+                    previousUrls.Add(currentUrl);
+                    Session["PreviousUrls"] = previousUrls;
+                }
+            }
+            else
+            {
+                previousUrls.Add(currentUrl);
+                Session["PreviousUrls"] = previousUrls;
+            }
 
-				FillFileSystemsToImage(false);
-			}
-		}
+            var navigationBuilder = new StringBuilder();
+            var directoryNames = _currentRootPath.Split('/');
+            var linkCurrentRootPath = _rootPath;
+            foreach (var directoryName in directoryNames)
+            {
+                if (!string.IsNullOrEmpty(directoryName))
+                {
+                    if (directoryName.Equals("~"))
+                    {
+                        navigationBuilder.Append($"<a href='{GetRedirectUrl(_rootPath)}'>根目录</a>");
+                    }
+                    else if (directoryName.Equals("@"))
+                    {
+                        navigationBuilder.Append(
+                            $"<a href='{GetRedirectUrl(_rootPath)}'>{PublishmentSystemInfo.PublishmentSystemDir}</a>");
+                    }
+                    else
+                    {
+                        linkCurrentRootPath += "/" + directoryName;
+                        navigationBuilder.Append($"<a href='{GetRedirectUrl(linkCurrentRootPath)}'>{directoryName}</a>");
+                    }
+                    navigationBuilder.Append("\\");
+                }
+            }
+            LtlCurrentDirectory.Text = navigationBuilder.ToString();
+
+            FillFileSystemsToImage(false);
+        }
 
 		public void LinkButton_Command(object sender, CommandEventArgs e)
 		{
@@ -153,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
 					if (_currentRootPath.StartsWith(_rootPath) && _currentRootPath.Length > _rootPath.Length)
 					{
-						var index = _currentRootPath.LastIndexOf("/");
+						var index = _currentRootPath.LastIndexOf("/", StringComparison.Ordinal);
 						if (index != -1)
 						{
 							_currentRootPath = _currentRootPath.Substring(0, index);
@@ -266,7 +261,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 
 			builder.Append("</table>");
-			ltlFileSystems.Text = builder.ToString();
+			LtlFileSystems.Text = builder.ToString();
 		}
 
 		#endregion

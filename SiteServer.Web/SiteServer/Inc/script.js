@@ -11,52 +11,51 @@ function isNull(obj){
 	return false;
 }
 
-function chkSelect(e){
- var e = (e || event);
- var el = this;
- if (el.getElementsByTagName('input') && el.getElementsByTagName('input').length > 0){
- 	if ($(el).hasClass('thead')) return;
-	el.className = (el.className == 'success' ? '' : 'success');
-	el.getElementsByTagName('input')[0].checked = (el.className == 'success');
- }
-}
+function loopRows(oTable, callBack) {
+	if (!oTable) return;
+	callBack = callBack || function () {};
+	var trs = oTable.rows;
+	var i = 0,
+		l = trs.length;
+	var flag = i < l;
 
-function loopRows(oTable, callBack){
- if (!oTable) return;
- callBack = callBack || function(){};
- var trs = oTable.rows;
- var i = 0 , l = trs.length;
- var flag = i < l;
-
- while(flag ? i < l : i > l ){
-  var cur = trs[i];
-  try{
-   callBack(cur, i);
-  }catch(e){ if(e == 'break'){ break; }}
-  flag ? i++ : i--;
- }
-}
-
-function selectRows(layer, bcheck)
-{
-	for(var i=0; i<layer.childNodes.length; i++)
-	{
-		if (layer.childNodes[i].childNodes.length>0)
-		{
-			selectRows(layer.childNodes[i],bcheck);
+	while (flag ? i < l : i > l) {
+		var cur = trs[i];
+		try {
+			callBack(cur, i);
+		} catch (e) {
+			if (e == 'break') {
+				break;
+			}
 		}
-		else
-		{
-			if (layer.childNodes[i].type=="checkbox")
-			{
+		flag ? i++ : i--;
+	}
+}
+
+function selectRows(layer, bcheck) {
+	for (var i = 0; i < layer.childNodes.length; i++) {
+		if (layer.childNodes[i].childNodes.length > 0) {
+			selectRows(layer.childNodes[i], bcheck);
+		} else {
+			if (layer.childNodes[i].type == "checkbox") {
 				layer.childNodes[i].checked = bcheck;
 				var cb = $(layer.childNodes[i]);
 				var tr = cb.closest('tr');
-				if (!tr.hasClass("thead")){
-					cb.is(':checked') ? tr.addClass('success') : tr.removeClass('success');
+				if (!tr.hasClass("thead")) {
+					cb.is(':checked') ? tr.addClass('unread') : tr.removeClass('unread');
 				}
 			}
 		}
+	}
+}
+
+function chkSelect(e) {
+	var e = (e || event);
+	var el = this;
+	if (el.getElementsByTagName('input') && el.getElementsByTagName('input').length > 0) {
+		if ($(el).hasClass('thead')) return;
+		el.className = (el.className == 'unread' ? '' : 'unread');
+		el.getElementsByTagName('input')[0].checked = (el.className == 'unread');
 	}
 }
 

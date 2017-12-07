@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -176,20 +173,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else
             {
-                if (pageInfo.PublishmentSystemInfo.Additional.GetString(type) == null)
-                {
-                    //var stlTagInfo = DataProvider.StlTagDao.GetStlTagInfo(pageInfo.PublishmentSystemId, type) ??
-                    //                 DataProvider.StlTagDao.GetStlTagInfo(0, type);
-                    var stlTagInfo = StlTag.GetStlTagInfo(pageInfo.PublishmentSystemId, type) ??
-                                     StlTag.GetStlTagInfo(0, type);
-                    if (!string.IsNullOrEmpty(stlTagInfo?.TagContent))
-                    {
-                        var innerBuilder = new StringBuilder(stlTagInfo.TagContent);
-                        StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                        parsedContent = innerBuilder.ToString();
-                    }
-                }
-                else
+                if (pageInfo.PublishmentSystemInfo.Additional.GetString(type) != null)
                 {
                     parsedContent = pageInfo.PublishmentSystemInfo.Additional.GetString(type);
                     if (!string.IsNullOrEmpty(parsedContent))

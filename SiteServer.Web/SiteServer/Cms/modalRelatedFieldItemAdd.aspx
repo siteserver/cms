@@ -1,26 +1,45 @@
 ﻿<%@ Page Language="C#" validateRequest="false" Inherits="SiteServer.BackgroundPages.Cms.ModalRelatedFieldItemAdd" Trace="false"%>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+	<%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+		<!DOCTYPE html>
+		<html class="modalPage">
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-<bairong:alerts text="每一行为一个选项，如果显示项与值不同可以用“|”隔开，左边为显示项，右边为值" runat="server"></bairong:alerts>
+		<head>
+			<meta charset="utf-8">
+			<!--#include file="../inc/head.html"-->
+		</head>
 
-	<table class="table table-noborder table-hover">
-	  <tr>
-	    <td colspan="2" class="center"><asp:TextBox style="width:250px;height:200px" TextMode="MultiLine" id="ItemNames" runat="server"/>
-	      <asp:RequiredFieldValidator ControlToValidate="ItemNames" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"/>
-	    </td>
-	  </tr>
-	</table>
+		<body>
+			<!--#include file="../inc/openWindow.html"-->
 
-</form>
-</body>
-</html>
+			<form runat="server">
+				<ctrl:alerts text="每一行为一个选项，如果显示项与值不同可以用“|”隔开，左边为显示项，右边为值" runat="server" />
+
+				<div class="form-horizontal">
+
+					<div class="form-group">
+						<label class="col-xs-1 text-right control-label"></label>
+						<div class="col-xs-10">
+							<asp:TextBox class="form-control" Rows="8" TextMode="MultiLine" id="TbItemNames" runat="server" />
+						</div>
+						<div class="col-xs-1">
+							<asp:RequiredFieldValidator ControlToValidate="TbItemNames" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+							/>
+						</div>
+					</div>
+
+					<hr />
+
+					<div class="form-group m-b-0">
+						<div class="col-xs-11 text-right">
+							<asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
+							<button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
+						</div>
+						<div class="col-xs-1"></div>
+					</div>
+
+				</div>
+
+			</form>
+		</body>
+
+		</html>

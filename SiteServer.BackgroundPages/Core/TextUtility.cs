@@ -201,7 +201,7 @@ namespace SiteServer.BackgroundPages.Core
                 if (attributesOfDisplay.Contains(styleInfo.AttributeName))
                 {
                     builder.Append(
-                        $@"<td width=""{GetColumnWidth(tableStyle, styleInfo.AttributeName)}"">{styleInfo.DisplayName}</td>");
+                        $@"<th style=""width: {GetColumnWidth(tableStyle, styleInfo.AttributeName)}px"">{styleInfo.DisplayName}</th>");
                 }
             }
 

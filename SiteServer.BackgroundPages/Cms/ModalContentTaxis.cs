@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -13,7 +12,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalContentTaxis : BasePageCms
     {
-        protected RadioButtonList RblTaxisType;
+        protected DropDownList DdlTaxisType;
         protected TextBox TbTaxisNum;
 
         private int _nodeId;
@@ -23,12 +22,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowStringWithCheckBoxValue("内容排序", PageUtils.GetCmsUrl(nameof(ModalContentTaxis), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithCheckBoxValue("内容排序", PageUtils.GetCmsUrl(nameof(ModalContentTaxis), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
-            }), "ContentIDCollection", "请选择需要排序的内容！", 400, 320);
+            }), "ContentIDCollection", "请选择需要排序的内容！", 400, 280);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -44,14 +43,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            RblTaxisType.Items.Add(new ListItem("上升", "Up"));
-            RblTaxisType.Items.Add(new ListItem("下降", "Down"));
-            ControlUtils.SelectListItems(RblTaxisType, "Up");
+            DdlTaxisType.Items.Add(new ListItem("上升", "Up"));
+            DdlTaxisType.Items.Add(new ListItem("下降", "Down"));
+            ControlUtils.SelectListItems(DdlTaxisType, "Up");
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var isUp = RblTaxisType.SelectedValue == "Up";
+            var isUp = DdlTaxisType.SelectedValue == "Up";
             var taxisNum = TranslateUtils.ToInt(TbTaxisNum.Text);
 
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);

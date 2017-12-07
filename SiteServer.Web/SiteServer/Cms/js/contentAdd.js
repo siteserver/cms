@@ -1,5 +1,5 @@
 function translateNodeAdd(name, value){
-  $('#translateContainer').append("<div id='translate_" + value + "' class='addr_base addr_normal'><b>" + name + "</b> <a class='addr_del' href='javascript:;' onClick=\"translateNodeRemove('" + value + "')\"></a></div>");
+  $('#translateContainer').append("<span id='translate_" + value + "' class='label label-primary'>" + name + "&nbsp;<i class='fa fa-times' style='cursor:pointer' onClick=\"translateNodeRemove('" + value + "')\"></i>&nbsp;</span>&nbsp;&nbsp;");
   $('#translateCollection').val(value + ',' + $('#translateCollection').val());
   $('#translateType').show();
 }

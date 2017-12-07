@@ -8,7 +8,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalMessage : BasePageCms
     {
-        public Literal ltlHtml;
+        public Literal LtlHtml;
 
         private string _type;
         public const string TypePreviewImage = "PreviewImage";
@@ -27,40 +27,40 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(string title, string html, int width, int height)
         {
-            return PageUtils.GetOpenWindowString(title, PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
+            return PageUtils.GetOpenLayerString(title, PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
             {
                 {"html", TranslateUtils.EncryptStringBySecretKey(html)}
-            }), width, height, true);
+            }), width, height);
         }
 
         public static string GetOpenWindowStringToPreviewImage(int publishmentSystemId, string textBoxClientId)
         {
-            return PageUtils.GetOpenWindowString("预览图片", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
+            return PageUtils.GetOpenLayerString("预览图片", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
             {
                 {"type", TypePreviewImage},
                 {"publishmentSystemID", publishmentSystemId.ToString()},
                 {"textBoxClientID", textBoxClientId}
-            }), 500, 500, true);
+            }), 500, 500);
         }
 
         public static string GetOpenWindowStringToPreviewVideo(int publishmentSystemId, string textBoxClientId)
         {
-            return PageUtils.GetOpenWindowString("预览视频", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
+            return PageUtils.GetOpenLayerString("预览视频", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
             {
                 {"type", TypePreviewVideo},
                 {"publishmentSystemID", publishmentSystemId.ToString()},
                 {"textBoxClientID", textBoxClientId}
-            }), 500, 500, true);
+            }), 500, 500);
         }
 
         public static string GetOpenWindowStringToPreviewVideoByUrl(int publishmentSystemId, string videoUrl)
         {
-            return PageUtils.GetOpenWindowString("预览视频", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
+            return PageUtils.GetOpenLayerString("预览视频", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
             {
                 {"type", TypePreviewVideoByUrl},
                 {"publishmentSystemID", publishmentSystemId.ToString()},
                 {"videoUrl", videoUrl}
-            }), 500, 500, true);
+            }), 500, 500);
         }
 
         public static string GetRedirectStringToPreviewVideoByUrl(int publishmentSystemId, string videoUrl)
@@ -79,14 +79,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             _type = Request.QueryString["type"];
 
-            if (!IsPostBack)
+            if (IsPostBack) return;
+
+            if (StringUtils.EqualsIgnoreCase(_type, TypePreviewImage))
             {
-                if (StringUtils.EqualsIgnoreCase(_type, TypePreviewImage))
-                {
-                    var publishmentSystemId = Body.GetQueryInt("publishmentSystemID");
-                    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                    var textBoxClientId = Body.GetQueryString("textBoxClientID");
-                    ltlHtml.Text = $@"
+                var publishmentSystemId = Body.GetQueryInt("publishmentSystemID");
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                var textBoxClientId = Body.GetQueryString("textBoxClientID");
+                LtlHtml.Text = $@"
 <span id=""previewImage""></span>
 <script>
 var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
@@ -105,14 +105,14 @@ if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png$/i) != -1){{
 }}
 </script>
 ";
-                }
-                else if (StringUtils.EqualsIgnoreCase(_type, TypePreviewVideo))
-                {
-                    var publishmentSystemId = Body.GetQueryInt("publishmentSystemID");
-                    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                    var textBoxClientId = Body.GetQueryString("textBoxClientID");
+            }
+            else if (StringUtils.EqualsIgnoreCase(_type, TypePreviewVideo))
+            {
+                var publishmentSystemId = Body.GetQueryInt("publishmentSystemID");
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                var textBoxClientId = Body.GetQueryString("textBoxClientID");
 
-                    ltlHtml.Text = $@"
+                LtlHtml.Text = $@"
 <span id=""previewVideo""></span>
 <script>
 var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
@@ -131,22 +131,21 @@ if (videoUrl){{
 }}
 </script>
 ";
-                }
-                else if (StringUtils.EqualsIgnoreCase(_type, TypePreviewVideoByUrl))
-                {
-                    var publishmentSystemId = Body.GetQueryInt("publishmentSystemID");
-                    var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                    var videoUrl = Body.GetQueryString("videoUrl");
+            }
+            else if (StringUtils.EqualsIgnoreCase(_type, TypePreviewVideoByUrl))
+            {
+                var publishmentSystemId = Body.GetQueryInt("publishmentSystemID");
+                var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+                var videoUrl = Body.GetQueryString("videoUrl");
 
-                    ltlHtml.Text = $@"
+                LtlHtml.Text = $@"
 <embed src=""../assets/player.swf"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart=true&file={PageUtility
-                        .ParseNavigationUrl(publishmentSystemInfo, videoUrl, true)}"" width=""{450}"" height=""{350}""/>
+                    .ParseNavigationUrl(publishmentSystemInfo, videoUrl, true)}"" width=""{450}"" height=""{350}""/>
 ";
-                }
-                else
-                {
-                    ltlHtml.Text = TranslateUtils.DecryptStringBySecretKey(Request.QueryString["html"]);
-                }
+            }
+            else
+            {
+                LtlHtml.Text = TranslateUtils.DecryptStringBySecretKey(Request.QueryString["html"]);
             }
         }
     }

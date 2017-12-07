@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalContentAttributes" Trace="false"%>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html class="modalPage">
 
@@ -61,7 +61,7 @@
       <!--#include file="../inc/openWindow.html"-->
 
       <form runat="server">
-        <bairong:alerts runat="server" />
+        <ctrl:alerts runat="server" />
         <input id="HihType" type="hidden" runat="server" value="1" />
 
         <div class="raw">
@@ -83,23 +83,21 @@
           <div class="form-group" id="column1">
             <label class="col-xs-3 control-label text-right">属性</label>
             <div class="col-xs-8">
-              <asp:CheckBox class="checkbox checkbox-primary" ID="IsRecommend" runat="server" Text="推荐"></asp:CheckBox>
-              <asp:CheckBox class="checkbox checkbox-primary" ID="IsHot" runat="server" Text="热点"></asp:CheckBox>
-              <asp:CheckBox class="checkbox checkbox-primary" ID="IsColor" runat="server" Text="醒目"></asp:CheckBox>
-              <asp:CheckBox class="checkbox checkbox-primary" ID="IsTop" runat="server" Text="置顶"></asp:CheckBox>
+              <asp:CheckBox class="checkbox checkbox-primary" ID="CbIsRecommend" runat="server" Text="推荐"></asp:CheckBox>
+              <asp:CheckBox class="checkbox checkbox-primary" ID="CbIsHot" runat="server" Text="热点"></asp:CheckBox>
+              <asp:CheckBox class="checkbox checkbox-primary" ID="CbIsColor" runat="server" Text="醒目"></asp:CheckBox>
+              <asp:CheckBox class="checkbox checkbox-primary" ID="CbIsTop" runat="server" Text="置顶"></asp:CheckBox>
             </div>
-            <div class="col-xs-1">
-
-            </div>
+            <div class="col-xs-1"></div>
           </div>
 
           <div class="form-group" id="column3" style="display: none">
             <label class="col-xs-3 control-label text-right">点击量</label>
             <div class="col-xs-8">
-              <asp:TextBox class="form-control" MaxLength="50" id="Hits" Text="0" runat="server" />
+              <asp:TextBox class="form-control" MaxLength="50" id="TbHits" Text="0" runat="server" />
             </div>
             <div class="col-xs-1">
-              <asp:RegularExpressionValidator ControlToValidate="Hits" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="点击量必须为整数"
+              <asp:RegularExpressionValidator ControlToValidate="TbHits" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="点击量必须为整数"
                 foreColor="red" runat="server" />
             </div>
           </div>

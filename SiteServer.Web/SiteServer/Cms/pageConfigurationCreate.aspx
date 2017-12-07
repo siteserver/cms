@@ -24,13 +24,13 @@
             </p>
 
             <ul class="nav nav-pills m-b-30">
-              <li class="">
+              <li>
                 <a href="pageTemplateFilePathRule.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面命名规则</a>
               </li>
               <li class="active">
-                <a href="">页面生成设置</a>
+                <a href="javascript:;">页面生成设置</a>
               </li>
-              <li class="javascript:;">
+              <li>
                 <a href="pageConfigurationCreateTrigger.aspx?publishmentSystemId=<%=PublishmentSystemId%>">页面生成触发器</a>
               </li>
             </ul>

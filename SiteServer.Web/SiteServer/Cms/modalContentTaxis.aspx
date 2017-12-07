@@ -1,39 +1,54 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalContentTaxis" Trace="false"%>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html class="modalPage">
 
-<head>
-  <meta charset="utf-8">
-  <!--#include file="../inc/header.aspx"-->
-</head>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-<body>
-  <!--#include file="../inc/openWindow.html"-->
-  <form class="form-inline" runat="server">
-    <asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-    <bairong:alerts runat="server"></bairong:alerts>
+    <body>
+      <!--#include file="../inc/openWindow.html"-->
 
-    <table class="table table-noborder table-hover">
-      <tr>
-        <td width="120">排序方向：</td>
-        <td>
-          <asp:RadioButtonList ID="RblTaxisType" RepeatDirection="Horizontal" class="noborder" runat="server"></asp:RadioButtonList>
-        </td>
-      </tr>
-      <tr>
-        <td width="120">移动数目：</td>
-        <td>
-          <asp:TextBox class="input-mini" Text="1" MaxLength="50" id="TbTaxisNum" runat="server" />
-          <asp:RequiredFieldValidator ControlToValidate="TbTaxisNum" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
-          />
-          <asp:RegularExpressionValidator runat="server" ControlToValidate="TbTaxisNum" ValidationExpression="^([1-9]|[1-9][0-9]{1,})$"
-            errorMessage=" *" foreColor="red" Display="Dynamic" />
-        </td>
-      </tr>
-    </table>
+      <form runat="server">
+        <ctrl:alerts runat="server" />
 
-  </form>
-</body>
+        <div class="form-horizontal">
 
-</html>
+          <div class="form-group">
+            <label class="col-xs-3 text-right control-label">排序方向</label>
+            <div class="col-xs-8">
+              <asp:DropDownList ID="DdlTaxisType" class="form-control" runat="server"></asp:DropDownList>
+            </div>
+            <div class="col-xs-1"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-3 text-right control-label">移动数目</label>
+            <div class="col-xs-8">
+              <asp:TextBox class="form-control" Text="1" MaxLength="50" id="TbTaxisNum" runat="server" />
+            </div>
+            <div class="col-xs-1">
+              <asp:RequiredFieldValidator ControlToValidate="TbTaxisNum" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+              />
+              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbTaxisNum" ValidationExpression="^([1-9]|[1-9][0-9]{1,})$"
+                errorMessage=" *" foreColor="red" Display="Dynamic" />
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="form-group m-b-0">
+            <div class="col-xs-11 text-right">
+              <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
+              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
+            </div>
+            <div class="col-xs-1"></div>
+          </div>
+        </div>
+
+      </form>
+    </body>
+
+    </html>

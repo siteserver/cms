@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
@@ -9,7 +10,12 @@ namespace SiteServer.BackgroundPages.Settings
     {
 		public DataGrid DgContents;
 
-		public void Page_Load(object sender, EventArgs e)
+        public static string GetRedirectUrl()
+        {
+            return PageUtils.GetSettingsUrl(nameof(PagePublishmentSystemUrlWeb), null);
+        }
+
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
             if (IsPostBack) return;

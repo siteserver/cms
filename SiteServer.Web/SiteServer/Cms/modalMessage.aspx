@@ -1,20 +1,22 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalMessage" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+	<%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+		<!DOCTYPE html>
+		<html class="modalPage">
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-<bairong:alerts runat="server"></bairong:alerts>
+		<head>
+			<meta charset="utf-8">
+			<!--#include file="../inc/head.html"-->
+		</head>
 
-	<asp:Literal id="ltlHtml" runat="server" />
+		<body>
+			<!--#include file="../inc/openWindow.html"-->
 
-</form>
-</body>
-</html>
+			<form runat="server">
+				<ctrl:alerts runat="server" />
+
+				<asp:Literal id="LtlHtml" runat="server" />
+
+			</form>
+		</body>
+
+		</html>

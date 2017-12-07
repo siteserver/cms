@@ -10,17 +10,16 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalFileView : BasePageCms
     {
-        public Literal ltlFileName;
-        public Literal ltlFileType;
-        public Literal ltlFilePath;
-        public Literal ltlFileSize;
-        public Literal ltlCreationTime;
-        public Literal ltlLastWriteTime;
-        public Literal ltlLastAccessTime;
-
-        public Literal ltlOpen;
-        public Literal ltlEdit;
-        public Literal ltlChangeName;
+        public Literal LtlFileName;
+        public Literal LtlFileType;
+        public Literal LtlFilePath;
+        public Literal LtlFileSize;
+        public Literal LtlCreationTime;
+        public Literal LtlLastWriteTime;
+        public Literal LtlLastAccessTime;
+        public Literal LtlOpen;
+        public Literal LtlEdit;
+        public Literal LtlChangeName;
 
 		private string _relatedPath;
         private string _fileName;
@@ -151,38 +150,30 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-			if (!IsPostBack)
-			{
-                var fileInfo = new FileInfo(_filePath);
-                var fileType = EFileSystemTypeUtils.GetEnumType(fileInfo.Extension);
-                if (Body.IsQueryExists("UpdateName"))
-                {
-                    ltlFileName.Text = Body.GetQueryString("UpdateName");
-                }
-                else
-                {
-                    ltlFileName.Text = fileInfo.Name;
-                }
-                ltlFileType.Text = EFileSystemTypeUtils.GetText(fileType);
-                ltlFilePath.Text = Path.GetDirectoryName(_filePath);
-                ltlFileSize.Text = TranslateUtils.GetKbSize(fileInfo.Length) + " KB";
-                ltlCreationTime.Text = fileInfo.CreationTime.ToString("yyyy-MM-dd hh:mm:ss");
-                ltlLastWriteTime.Text = fileInfo.LastWriteTime.ToString("yyyy-MM-dd hh:mm:ss");
-                ltlLastAccessTime.Text = fileInfo.LastAccessTime.ToString("yyyy-MM-dd hh:mm:ss");
+            if (IsPostBack) return;
 
-                ltlOpen.Text =
-                    $@"<a href=""{PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, _filePath, true)}"" target=""_blank"">浏 览</a>&nbsp;&nbsp;";
-			    if (EFileSystemTypeUtils.IsTextEditable(fileType))
-			    {
-                    ltlEdit.Text = $@"<a href=""{ModalFileEdit.GetRedirectUrl(PublishmentSystemId, _relatedPath, _fileName, false)}"">修 改</a>&nbsp;&nbsp;";
-			    }
-			    if (!string.IsNullOrEmpty(_hiddenClientId))
-                {
-                    ltlChangeName.Text =
-                        $@"<a href=""javascript:;"" onclick=""{ModalFileChangeName.GetOpenWindowString(
-                            PublishmentSystemId, _relatedPath, fileInfo.Name, _hiddenClientId)}"">改 名</a>";
-                }
-			}
-		}
+            var fileInfo = new FileInfo(_filePath);
+            var fileType = EFileSystemTypeUtils.GetEnumType(fileInfo.Extension);
+            LtlFileName.Text = Body.IsQueryExists("UpdateName") ? Body.GetQueryString("UpdateName") : fileInfo.Name;
+            LtlFileType.Text = EFileSystemTypeUtils.GetText(fileType);
+            LtlFilePath.Text = Path.GetDirectoryName(_filePath);
+            LtlFileSize.Text = TranslateUtils.GetKbSize(fileInfo.Length) + " KB";
+            LtlCreationTime.Text = fileInfo.CreationTime.ToString("yyyy-MM-dd hh:mm:ss");
+            LtlLastWriteTime.Text = fileInfo.LastWriteTime.ToString("yyyy-MM-dd hh:mm:ss");
+            LtlLastAccessTime.Text = fileInfo.LastAccessTime.ToString("yyyy-MM-dd hh:mm:ss");
+
+            LtlOpen.Text =
+                $@"<a class=""btn btn-default m-l-10"" href=""{PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, _filePath, true)}"" target=""_blank"">浏 览</a>";
+            if (EFileSystemTypeUtils.IsTextEditable(fileType))
+            {
+                LtlEdit.Text = $@"<a class=""btn btn-default m-l-10"" href=""{ModalFileEdit.GetRedirectUrl(PublishmentSystemId, _relatedPath, _fileName, false)}"">修 改</a>";
+            }
+            if (!string.IsNullOrEmpty(_hiddenClientId))
+            {
+                LtlChangeName.Text =
+                    $@"<a class=""btn btn-default m-l-10"" href=""javascript:;"" onclick=""{ModalFileChangeName.GetOpenWindowString(
+                        PublishmentSystemId, _relatedPath, fileInfo.Name, _hiddenClientId)}"">改 名</a>";
+            }
+        }
 	}
 }

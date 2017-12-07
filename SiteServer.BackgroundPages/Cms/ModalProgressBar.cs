@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages.Cms
     {
         protected override bool IsSinglePage => true;
 
-        public Literal RegisterScripts;
+        public Literal LtlScripts;
 
         public static string GetOpenWindowStringWithCreateContentsOneByOne(int publishmentSystemId, int nodeId)
         {
@@ -193,7 +193,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var userKeyPrefix = StringUtils.Guid();
                 var parameters = AjaxGatherService.GetGatherParameters(PublishmentSystemId, Body.GetQueryString("GatherRuleNameCollection"), userKeyPrefix);
-                RegisterScripts.Text =
+                LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxGatherService.GetGatherUrl(), parameters, userKeyPrefix, AjaxGatherService.GetCountArrayUrl());
             }
             else if (Body.IsQueryExists("GatherDatabase") && Body.IsQueryExists("GatherRuleNameCollection"))
@@ -201,7 +201,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var userKeyPrefix = StringUtils.Guid();
                 var parameters = AjaxGatherService.GetGatherDatabaseParameters(PublishmentSystemId,
                     Body.GetQueryString("GatherRuleNameCollection"), userKeyPrefix);
-                RegisterScripts.Text =
+                LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxGatherService.GetGatherDatabaseUrl(), parameters, userKeyPrefix, AjaxGatherService.GetCountArrayUrl());
             }
             else if (Body.IsQueryExists("GatherFile") && Body.IsQueryExists("GatherRuleNameCollection"))
@@ -209,7 +209,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var userKeyPrefix = StringUtils.Guid();
                 var parameters = AjaxGatherService.GetGatherFileParameters(PublishmentSystemId,
                     Body.GetQueryString("GatherRuleNameCollection"), userKeyPrefix);
-                RegisterScripts.Text =
+                LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxGatherService.GetGatherFileUrl(), parameters,
                         userKeyPrefix, AjaxGatherService.GetCountArrayUrl());
             }
@@ -259,7 +259,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var parameters = AjaxOtherService.GetSiteTemplateDownloadParameters(Body.GetQueryString("DownloadUrl"),
                     Body.GetQueryString("DirectoryName"), userKeyPrefix);
-                RegisterScripts.Text =
+                LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateDownloadUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }
             else if (Body.IsQueryExists("SiteTemplateZip"))
@@ -267,7 +267,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var userKeyPrefix = StringUtils.Guid();
 
                 var parameters = AjaxOtherService.GetSiteTemplateZipParameters(Body.GetQueryString("DirectoryName"), userKeyPrefix);
-                RegisterScripts.Text =
+                LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateZipUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }
             else if (Body.IsQueryExists("SiteTemplateUnZip"))
@@ -275,7 +275,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var userKeyPrefix = StringUtils.Guid();
 
                 var parameters = AjaxOtherService.GetSiteTemplateUnZipParameters(Body.GetQueryString("FileName"), userKeyPrefix);
-                RegisterScripts.Text =
+                LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetSiteTemplateUnZipUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }
             //---------------------------------------------------------------------------------------//
@@ -284,7 +284,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var userKeyPrefix = StringUtils.Guid();
 
                 var parameters = AjaxOtherService.GetPluginDownloadParameters(Body.GetQueryString("DownloadUrl"), userKeyPrefix);
-                RegisterScripts.Text =
+                LtlScripts.Text =
                     AjaxManager.RegisterProgressTaskScript(AjaxOtherService.GetPluginDownloadUrl(), parameters, userKeyPrefix, AjaxOtherService.GetCountArrayUrl());
             }
         }

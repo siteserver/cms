@@ -36,14 +36,9 @@
     </tr>
     <tr>
       <td><bairong:help HelpText="是否启用本样式。" Text="是否启用：" runat="server" ></bairong:help></td>
-      <td><asp:RadioButtonList id="rblIsVisible" RepeatDirection="Horizontal" class="noborder" runat="server">
+      <td colspan="3"><asp:RadioButtonList id="rblIsVisible" RepeatDirection="Horizontal" class="noborder" runat="server">
           <asp:ListItem Text="是" Selected="True" />
           <asp:ListItem Text="否" />
-        </asp:RadioButtonList></td>
-      <td><bairong:help HelpText="是否在表单中采用单行显示。" Text="是否单行显示：" runat="server" ></bairong:help></td>
-      <td width="30%"><asp:RadioButtonList id="rblIsSingleLine" RepeatDirection="Horizontal" class="noborder" runat="server">
-          <asp:ListItem Text="是" />
-          <asp:ListItem Text="否" Selected="True" />
         </asp:RadioButtonList></td>
     </tr>
     <tr>

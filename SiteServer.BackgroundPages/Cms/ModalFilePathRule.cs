@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
@@ -10,9 +9,8 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalFilePathRule : BasePageCms
     {
-        protected Literal ltlRules;
-        protected TextBox tbRule;
-        protected Literal ltlTips;
+        public Literal LtlRules;
+        public TextBox TbRule;
 
         private int _nodeId;
         private bool _isChannel;
@@ -20,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, bool isChannel, string textBoxclientId)
         {
-            return PageUtils.GetOpenWindowStringWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", PageUtils.GetCmsUrl(nameof(ModalFilePathRule), new NameValueCollection
+            return PageUtils.GetOpenLayerStringWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", PageUtils.GetCmsUrl(nameof(ModalFilePathRule), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -36,40 +34,28 @@ namespace SiteServer.BackgroundPages.Cms
             _nodeId = Body.GetQueryInt("NodeID");
             _isChannel = Body.GetQueryBool("IsChannel");
             _textBoxClientId = Body.GetQueryString("TextBoxClientID");
-			if (!IsPostBack)
-			{
-                ltlRules.Text = GetRulesString();
-                if (!string.IsNullOrEmpty(_textBoxClientId))
-                {
-                    tbRule.Text = Body.GetQueryString(_textBoxClientId);
-                }
-                if (_isChannel)
-                {
-                    ltlTips.Text = "系统生成栏目页时采取的文件名规则，建议保留{@ChannelID}栏目ID项，否则可能出现重复的文件名称";
-                }
-                else
-                {
-                    ltlTips.Text = "系统生成内容页时采取的文件名规则，建议保留{@ContentID}内容ID项，否则可能出现重复的文件名称";
-                }
-			}
-		}
+
+            if (IsPostBack) return;
+
+            LtlRules.Text = GetRulesString();
+            if (!string.IsNullOrEmpty(_textBoxClientId))
+            {
+                TbRule.Text = Body.GetQueryString(_textBoxClientId);
+            }
+
+            InfoMessage(_isChannel
+                ? "系统生成栏目页时采取的文件名规则，建议保留{@ChannelId}栏目Id项，否则可能出现重复的文件名称"
+                : "系统生成内容页时采取的文件名规则，建议保留{@ContentId}内容Id项，否则可能出现重复的文件名称");
+        }
 
         private string GetRulesString()
         {
-            var retval = string.Empty;
-
             var builder = new StringBuilder();
             var mod = 0;
             var count = 0;
-            IDictionary entitiesDictionary = null;
-            if (_isChannel)
-            {
-                entitiesDictionary = PathUtility.ChannelFilePathRules.GetDictionary(PublishmentSystemInfo, _nodeId);
-            }
-            else
-            {
-                entitiesDictionary = PathUtility.ContentFilePathRules.GetDictionary(PublishmentSystemInfo, _nodeId);
-            }
+            var entitiesDictionary = _isChannel
+                ? PathUtility.ChannelFilePathRules.GetDictionary(PublishmentSystemInfo, _nodeId)
+                : PathUtility.ContentFilePathRules.GetDictionary(PublishmentSystemInfo, _nodeId);
             
             foreach (string label in entitiesDictionary.Keys)
             {
@@ -91,14 +77,13 @@ namespace SiteServer.BackgroundPages.Cms
                     builder.Append(td);
                 }
             }
-            retval = builder.ToString();
 
-            return retval;
+            return builder.ToString();
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            string scripts = $"window.parent.document.all.{_textBoxClientId}.value = '{tbRule.Text}';";
+            string scripts = $"window.parent.document.all.{_textBoxClientId}.value = '{TbRule.Text}';";
             PageUtils.CloseModalPageWithoutRefresh(Page, scripts);
 		}
 	}

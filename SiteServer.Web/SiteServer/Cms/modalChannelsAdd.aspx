@@ -1,5 +1,5 @@
-﻿<%@ Page Language="C#" ValidateRequest="false" Inherits="SiteServer.BackgroundPages.Cms.ModalChannelAdd" Trace="false" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+﻿<%@ Page Language="C#" ValidateRequest="false" Inherits="SiteServer.BackgroundPages.Cms.ModalChannelsAdd" Trace="false" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html class="modalPage">
 
@@ -18,7 +18,7 @@
       <!--#include file="../inc/openWindow.html"-->
 
       <form runat="server">
-        <bairong:alerts runat="server" />
+        <ctrl:alerts runat="server" />
 
         <div class="form-horizontal">
 
@@ -30,18 +30,14 @@
               <asp:HyperLink id="HlSelectChannel" class="btn btn-success" runat="server">选择</asp:HyperLink>
               <asp:Literal ID="LtlSelectChannelScript" runat="server"></asp:Literal>
             </div>
-            <div class="col-sm-1">
-              
-            </div>
+            <div class="col-sm-1"></div>
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label">内容模型</label>
             <div class="col-sm-4">
               <asp:DropDownList class="form-control" ID="DdlContentModelId" runat="server"></asp:DropDownList>
             </div>
-            <div class="col-sm-6">
-
-            </div>
+            <div class="col-sm-6"></div>
           </div>
           <asp:PlaceHolder id="PhPlugins" runat="server">
             <div class="form-group" id="FilePathRow" runat="server">
@@ -58,9 +54,7 @@
               <asp:DropDownList class="form-control" ID="DdlChannelTemplateId" DataTextField="TemplateName" DataValueField="TemplateId"
                 runat="server"></asp:DropDownList>
             </div>
-            <div class="col-sm-6">
-
-            </div>
+            <div class="col-sm-6"></div>
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label">内容模板</label>
@@ -68,18 +62,14 @@
               <asp:DropDownList class="form-control" ID="DdlContentTemplateId" DataTextField="TemplateName" DataValueField="TemplateId"
                 runat="server"></asp:DropDownList>
             </div>
-            <div class="col-sm-6">
-
-            </div>
+            <div class="col-sm-6"></div>
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label">栏目索引</label>
             <div class="col-sm-4">
               <asp:CheckBox class="checkbox checkbox-primary" Text="将栏目名称作为栏目索引" ID="CbIsNameToIndex" runat="server" />
             </div>
-            <div class="col-sm-6">
-
-            </div>
+            <div class="col-sm-6"></div>
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label">说明</label>
@@ -98,9 +88,7 @@
               <asp:TextBox class="form-control" Style="width: 98%; height: 240px" TextMode="MultiLine" ID="TbNodeNames" runat="server"
               />
             </div>
-            <div class="col-sm-1">
-
-            </div>
+            <div class="col-sm-1"></div>
           </div>
 
           <hr />

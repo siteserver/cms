@@ -10,7 +10,6 @@ using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Net;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Plugins

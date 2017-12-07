@@ -152,17 +152,6 @@ namespace SiteServer.CMS.ImportExport
         }
 
         /// <summary>
-        /// 从指定的地址导入自定义模板语言站点中
-        /// </summary>
-        /// <param name="filePath">指定的导入地址</param>
-        /// <param name="overwrite">是否覆盖原有自定义模板语言</param>
-        public void ImportStlTag(string filePath, bool overwrite)
-        {
-            var stlTagIe = new StlTagIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
-            stlTagIe.ImportStlTag(overwrite);
-        }
-
-        /// <summary>
         /// 从指定的地址导入采集规则至站点中
         /// </summary>
         /// <param name="filePath">指定的导入地址</param>

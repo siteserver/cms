@@ -233,7 +233,7 @@ pre {
   background-color: #3ddcf7 !important;
 }
 .bg-warning {
-  background-color: #ffaa00 !important;
+  background-color: #8a6d3b !important;
 }
 .bg-danger {
   background-color: #ef5350 !important;
@@ -266,7 +266,7 @@ pre {
   color: #00b19d;
 }
 .text-warning {
-  color: #ffaa00;
+  color: #8a6d3b;
 }
 .text-success {
   color: #3bafda;
@@ -316,7 +316,7 @@ pre {
   background-color: #3ddcf7;
 }
 .label-warning {
-  background-color: #ffaa00;
+  background-color: #8a6d3b;
 }
 .label-danger {
   background-color: #ef5350;
@@ -359,7 +359,7 @@ pre {
   background-color: #3ddcf7;
 }
 .badge-warning {
-  background-color: #ffaa00;
+  background-color: #8a6d3b;
 }
 .badge-danger {
   background-color: #ef5350;
@@ -682,39 +682,6 @@ pre {
 .legendLabel {
   padding-left: 10px !important;
 }
-/* Alerts */
-.alert-success {
-  background-color: rgba(59, 175, 218, 0.25) !important;
-  border-color: rgba(59, 175, 218, 0.5) !important;
-  color: #3bafda;
-}
-.alert-success .alert-link {
-  color: #3bafda;
-}
-.alert-info {
-  background-color: rgba(61, 220, 247, 0.2) !important;
-  border-color: rgba(61, 220, 247, 0.5) !important;
-  color: #31708f;
-}
-.alert-info .alert-link {
-  color: #31708f;
-}
-.alert-warning {
-  background-color: rgba(255, 170, 0, 0.2) !important;
-  border-color: rgba(255, 170, 0, 0.5) !important;
-  color: #ffaa00;
-}
-.alert-warning .alert-link {
-  color: #ffaa00;
-}
-.alert-danger {
-  background-color: rgba(239, 83, 80, 0.2) !important;
-  border-color: rgba(239, 83, 80, 0.5) !important;
-  color: #ef5350;
-}
-.alert-danger .alert-link {
-  color: #ef5350;
-}
 /* List Group */
 .list-group-item.active {
   background: rgba(152, 166, 173, 0.1);
@@ -780,7 +747,7 @@ pre {
   box-shadow: none !important;
 }
 .has-warning .form-control {
-  border-color: #ffaa00;
+  border-color: #8a6d3b;
   box-shadow: none !important;
 }
 .has-error .form-control {

@@ -1,38 +1,56 @@
 ﻿<%@ Page Language="C#" Trace="false" Inherits="SiteServer.BackgroundPages.Cms.ModalImport" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html class="modalPage">
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" enctype="multipart/form-data" method="post" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-<bairong:alerts runat="server"></bairong:alerts>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <table class="table table-noborder table-hover">
-    <tr>
-      <td><bairong:help HelpText="选择需要导入的文件" Text="需要导入的文件：" runat="server"></bairong:help>
-      </td>
-      <td><input type=file  id=myFile size="35" runat="server"/>
-        <asp:RequiredFieldValidator ControlToValidate="myFile" errorMessage=" *" foreColor="red" display="Dynamic" runat="server" />
-      </td>
-    </tr>
-    <tr>
-      <td><bairong:help HelpText="遇到同名规则是否覆盖" Text="是否覆盖同名规则：" runat="server" ></bairong:help>
-      </td>
-      <td>
-        <asp:RadioButtonList ID="IsOverride" runat="server" RepeatDirection="Horizontal" class="noborder">
-          <asp:ListItem Text="覆盖" Value="True" Selected="true"></asp:ListItem>
-          <asp:ListItem Text="不覆盖" Value="False"></asp:ListItem>
-        </asp:RadioButtonList>
-      </td>
-    </tr>
-  </table>
+    <body>
+      <!--#include file="../inc/openWindow.html"-->
 
-</form>
-</body>
-</html>
+      <form enctype="multipart/form-data" method="post" runat="server">
+        <ctrl:alerts runat="server" />
+
+        <div class="form-horizontal">
+
+          <div class="form-group">
+            <label class="col-xs-3 control-label text-right">需要导入的文件</label>
+            <div class="col-xs-8">
+              <input type=file id="HifMyFile" class="form-control" runat="server" />
+            </div>
+            <div class="col-xs-1">
+              <asp:RequiredFieldValidator ControlToValidate="HifMyFile" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-3 control-label text-right">是否覆盖同名规则</label>
+            <div class="col-xs-8">
+              <asp:DropDownList ID="DdlIsOverride" runat="server" class="form-control">
+                <asp:ListItem Text="覆盖" Value="True" Selected="true"></asp:ListItem>
+                <asp:ListItem Text="不覆盖" Value="False"></asp:ListItem>
+              </asp:DropDownList>
+            </div>
+            <div class="col-xs-1"></div>
+          </div>
+
+          <hr />
+
+          <div class="form-group m-b-0">
+            <div class="col-xs-11 text-right">
+              <asp:Button class="btn btn-primary m-l-10" ID="BtnCheck" Text="确 定" OnClick="Submit_OnClick" runat="server" />
+              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
+            </div>
+            <div class="col-xs-1"></div>
+          </div>
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

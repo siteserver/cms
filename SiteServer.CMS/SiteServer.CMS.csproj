@@ -196,7 +196,6 @@
     <Compile Include="StlParser\Cache\SeoMeta.cs" />
     <Compile Include="StlParser\Cache\TableStructure.cs" />
     <Compile Include="StlParser\Cache\Tag.cs" />
-    <Compile Include="StlParser\Cache\StlTag.cs" />
     <Compile Include="StlParser\Cache\StarSetting.cs" />
     <Compile Include="StlParser\Cache\Star.cs" />
     <Compile Include="StlParser\Cache\Database.cs" />
@@ -258,7 +257,6 @@
     <Compile Include="ImportExport\Components\RelatedFieldIe.cs" />
     <Compile Include="ImportExport\Components\SeoIe.cs" />
     <Compile Include="ImportExport\Components\SiteContentIe.cs" />
-    <Compile Include="ImportExport\Components\StlTagIe.cs" />
     <Compile Include="ImportExport\Components\TableStyleIe.cs" />
     <Compile Include="ImportExport\Components\TagStyleIe.cs" />
     <Compile Include="ImportExport\Components\TemplateIe.cs" />
@@ -450,7 +448,6 @@
     <Compile Include="Model\InnerLinkInfo.cs" />
     <Compile Include="Model\LogInfo.cs" />
     <Compile Include="Model\NodeGroupInfo.cs" />
-    <Compile Include="Model\StlTagInfo.cs" />
     <Compile Include="Model\TagStyleInfo.cs" />
     <Compile Include="Model\TaskBackupInfo.cs" />
     <Compile Include="Model\TaskCreateInfo.cs" />
@@ -502,7 +499,6 @@
     <Compile Include="Provider\SeoMetaDao.cs" />
     <Compile Include="Provider\StarDao.cs" />
     <Compile Include="Provider\StarSettingDao.cs" />
-    <Compile Include="Provider\StlTagDao.cs" />
     <Compile Include="Provider\TagStyleDao.cs" />
     <Compile Include="Provider\TemplateDao.cs" />
     <Compile Include="Provider\TemplateMatchDao.cs" />

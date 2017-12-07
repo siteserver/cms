@@ -1,46 +1,49 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalSelectImage" Trace="false"%>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html class="modalPage">
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-<bairong:alerts runat="server"></bairong:alerts>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+      <script language="javascript" type="text/javascript">
+        function selectImage(textBoxUrl, imageUrl) {
+          window.parent.document.getElementById('<%=Request.QueryString["TextBoxClientID"]%>').value = textBoxUrl;
+          window.parent.layer.closeAll();
+        }
+      </script>
+    </head>
 
-  <script language="javascript" type="text/javascript">
-  function selectImage(textBoxUrl, imageUrl) {
-    window.parent.document.getElementById('<%=Request.QueryString["TextBoxClientID"]%>').value = textBoxUrl;
-    window.parent.closeWindow();
-  }
-  </script>
+    <body>
+      <!--#include file="../inc/openWindow.html"-->
 
-  <table width="100%" cellspacing=0 cellpadding=0 border=0 style="line-height:28px;">
-    <tr>
-      <td width="50"><asp:ImageButton runat="server" ImageUrl="../assets/icons/filesystem/management/back.gif" CommandName="NavigationBar" CommandArgument="Back" OnCommand="LinkButton_Command"></asp:ImageButton></TD>
-      <TD width="50"><asp:ImageButton runat="server" ImageUrl="../assets/icons/filesystem/management/up.gif" CommandName="NavigationBar" CommandArgument="Up" OnCommand="LinkButton_Command"></asp:ImageButton></TD>
-      <TD width="50"><asp:ImageButton runat="server" ImageUrl="../assets/icons/filesystem/management/reload.gif" CommandName="NavigationBar" CommandArgument="Reload" OnCommand="LinkButton_Command"></asp:ImageButton></TD>
-      <TD width="5"><asp:ImageButton runat="server" ImageUrl="../assets/icons/filesystem/management/seperator.gif"></asp:ImageButton></TD>
-      <TD width="80"><nobr>
-        <asp:HyperLink ID="hlUploadLink" runat="server">
-          <asp:ImageButton  runat="server" ImageUrl="../assets/icons/add.gif" ImageAlign="AbsBottom"></asp:ImageButton>
-          上传图片</asp:HyperLink>
-        </nobr></TD>
-      <TD align="right"><span>当前目录：
-        <asp:Literal id="ltlCurrentDirectory" runat="server" />
-        &nbsp;</span></td>
-    </tr>
-  </table>
+      <form runat="server">
+        <ctrl:alerts runat="server" />
 
-  <hr />
-  
-  <asp:Literal id="ltlFileSystems" runat="server" enableViewState="false" />
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="btn-group">
+              <asp:Button class="btn" ID="BtnUpload" runat="server" text="上传"></asp:Button>
+              <asp:Button class="btn" text="后退" runat="server" CommandName="NavigationBar" CommandArgument="Back" OnCommand="LinkButton_Command"></asp:Button>
+              <asp:Button class="btn" text="向上" runat="server" CommandName="NavigationBar" CommandArgument="Up" OnCommand="LinkButton_Command"></asp:Button>
+              <asp:Button class="btn" text="刷新" runat="server" CommandName="NavigationBar" CommandArgument="Reload" OnCommand="LinkButton_Command"></asp:Button>
+            </div>
+          </div>
+        </div>
 
-</form>
-</body>
-</html>
+        <hr />
+
+        <div class="row">
+          <div class="col-xs-12">
+            <asp:Literal id="LtlCurrentDirectory" runat="server" />
+          </div>
+        </div>
+
+        <hr />
+
+        <asp:Literal id="LtlFileSystems" runat="server" enableViewState="false" />
+
+      </form>
+    </body>
+
+    </html>

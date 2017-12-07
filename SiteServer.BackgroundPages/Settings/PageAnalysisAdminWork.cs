@@ -191,7 +191,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             {
                 {"PublishmentSystemID", PublishmentSystemId.ToString()},
                 {"StartDate", TbStartDate.Text},
-                {"StartDate", TbEndDate.Text}
+                {"EndDate", TbEndDate.Text}
             });
             PageUtils.Redirect(pageUrl);
         }

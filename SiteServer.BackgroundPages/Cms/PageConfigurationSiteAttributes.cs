@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using BaiRong.Core.AuxiliaryTable;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageConfigurationSiteAttributes : BasePageCms
     {
 		public TextBox TbPublishmentSystemName;
-        public AuxiliaryControl AcAttributes;
+        public Literal LtlAttributes;
         public Literal LtlSettings;
         public Button BtnSubmit;
 
@@ -46,15 +47,74 @@ namespace SiteServer.BackgroundPages.Cms
                     $@"<a class=""btn btn-success"" href=""{PageTableStyle.GetRedirectUrl(PublishmentSystemId,
                         ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemId)}"">设置站点属性</a>";
 
-                AcAttributes.SetParameters(PublishmentSystemInfo.Additional.ToNameValueCollection(), PublishmentSystemInfo, 0, _relatedIdentities, ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, true, IsPostBack);
+                LtlAttributes.Text = GetAttributesHtml(PublishmentSystemInfo.Additional.ToNameValueCollection());
 
                 BtnSubmit.Attributes.Add("onclick", InputParserUtils.GetValidateSubmitOnClickScript("myForm"));
             }
             else
             {
-                AcAttributes.SetParameters(Request.Form, PublishmentSystemInfo, 0, _relatedIdentities, ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, true, IsPostBack);
+                LtlAttributes.Text = GetAttributesHtml(Request.Form);
             }
 		}
+
+        private string GetAttributesHtml(NameValueCollection formCollection)
+        {
+            if (formCollection == null)
+            {
+                formCollection = Request.Form.Count > 0 ? Request.Form : new NameValueCollection();
+            }
+
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, _relatedIdentities);
+            var pageScripts = new NameValueCollection();
+
+            if (styleInfoList == null) return string.Empty;
+
+            var builder = new StringBuilder();
+            foreach (var styleInfo in styleInfoList)
+            {
+                if (!styleInfo.IsVisible) continue;
+
+                string extra;
+                var value = BackgroundInputTypeParser.Parse(PublishmentSystemInfo, 0, styleInfo, ETableStyle.Site, styleInfo.AttributeName, formCollection, true, IsPostBack, null, pageScripts, out extra);
+
+                if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
+                {
+                    var commands = WebUtils.GetTextEditorCommands(PublishmentSystemInfo, styleInfo.AttributeName);
+                    builder.Append($@"
+<div class=""form-group"">
+    <label class=""col-sm-3 control-label"">{styleInfo.DisplayName}</label>
+    <div class=""col-sm-8"">
+        {commands}
+        <hr />
+        {value}
+    </div>
+    <div class=""col-sm-1"">
+        {extra}
+    </div>
+</div>");
+                }
+                else
+                {
+                    builder.Append($@"
+<div class=""form-group"">
+    <label class=""col-sm-3 control-label"">{styleInfo.DisplayName}</label>
+    <div class=""col-sm-3"">
+        {value}
+    </div>
+    <div class=""col-sm-6"">
+        {extra}
+    </div>
+</div>");
+                }
+            }
+
+            foreach (string key in pageScripts.Keys)
+            {
+                builder.Append(pageScripts[key]);
+            }
+
+            return builder.ToString();
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{

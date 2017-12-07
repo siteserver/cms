@@ -56,7 +56,10 @@ namespace SiteServer.BackgroundPages.Settings
                 PublishmentSystemInfo.Additional.AssetsDir = TbAssetsDir.Text;
 
                 DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
-                Body.AddSiteLog(PublishmentSystemId, "修改网站访问设置");
+                Body.AddSiteLog(PublishmentSystemId, "修改资源文件访问地址");
+
+                SuccessMessage("资源文件访问地址修改成功！");
+                AddWaitAndRedirectScript(PagePublishmentSystemUrlAssets.GetRedirectUrl());
             }
             catch (Exception ex)
             {

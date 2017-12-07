@@ -55,12 +55,11 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             _nodeId = Body.GetQueryInt("NodeID", PublishmentSystemId);
-			if (!IsPostBack)
-			{
-                LoadDisplayAttributeCheckBoxList();
-                ConfigSettings(true);
-			}
-		}
+            if (IsPostBack) return;
+
+            LoadDisplayAttributeCheckBoxList();
+            ConfigSettings(true);
+        }
 
         private void ConfigSettings(bool isLoad)
         {

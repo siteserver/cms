@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using BaiRong.Core; 
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Controllers.Preview;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin.Models;
@@ -148,19 +145,6 @@ namespace SiteServer.CMS.StlParser.StlEntity
                             { // 如果字段已经被删除或不再显示了，则此字段的值为空。有时虚拟字段值不会清空
                                 parsedContent = string.Empty;
                             }
-                        }
-                    }
-                    else
-                    {
-                        //var stlTagInfo = DataProvider.StlTagDao.GetStlTagInfo(pageInfo.PublishmentSystemId, attributeName) ??
-                        //                 DataProvider.StlTagDao.GetStlTagInfo(0, attributeName);
-                        var stlTagInfo = StlTag.GetStlTagInfo(pageInfo.PublishmentSystemId, attributeName) ??
-                                         StlTag.GetStlTagInfo(0, attributeName);
-                        if (!string.IsNullOrEmpty(stlTagInfo?.TagContent))
-                        {
-                            var innerBuilder = new StringBuilder(stlTagInfo.TagContent);
-                            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            parsedContent = innerBuilder.ToString();
                         }
                     }
                 }

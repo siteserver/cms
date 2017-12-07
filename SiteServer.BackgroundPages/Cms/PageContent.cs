@@ -26,6 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
         public Literal LtlHeadRows;
         public Literal LtlHeadCommand;
         public Literal LtlButtons;
+        public Literal LtlMoreButtons;
         public DateTimeTextBox TbDateFrom;
         public DropDownList DdlSearchType;
         public TextBox TbKeyword;
@@ -117,37 +118,42 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisTypeUtils.GetEnumType(_nodeInfo.Additional.DefaultTaxisType));
             SpContents.TotalCount = _nodeInfo.ContentNum;
 
-            if (!IsPostBack)
+            if (IsPostBack) return;
+
+            var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId);
+            BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdContent, "内容管理", nodeName, string.Empty);
+
+            LtlButtons.Text = WebUtils.GetContentCommands(Body.AdminName, PublishmentSystemInfo, _nodeInfo, PageUrl);
+            LtlMoreButtons.Text = WebUtils.GetContentMoreCommands(Body.AdminName, PublishmentSystemInfo, _nodeInfo, PageUrl);
+
+            SpContents.DataBind();
+
+            if (_styleInfoList != null)
             {
-                var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId);
-                BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdContent, "内容管理", nodeName, string.Empty);
-
-                LtlButtons.Text = WebUtils.GetContentCommands(Body.AdminName, PublishmentSystemInfo, _nodeInfo, PageUrl, GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId), false);
-                SpContents.DataBind();
-
-                if (_styleInfoList != null)
+                foreach (var styleInfo in _styleInfoList)
                 {
-                    foreach (var styleInfo in _styleInfoList)
+                    if (styleInfo.IsVisible)
                     {
-                        if (styleInfo.IsVisible)
-                        {
-                            var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                            DdlSearchType.Items.Add(listitem);
-                        }
+                        var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
+                        DdlSearchType.Items.Add(listitem);
                     }
                 }
+            }
 
-                //添加隐藏属性
-                DdlSearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
-                DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
-                DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
-                DdlSearchType.Items.Add(new ListItem("内容组", ContentAttribute.ContentGroupNameCollection));
+            //添加隐藏属性
+            DdlSearchType.Items.Add(new ListItem("内容ID", ContentAttribute.Id));
+            DdlSearchType.Items.Add(new ListItem("添加者", ContentAttribute.AddUserName));
+            DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
+            DdlSearchType.Items.Add(new ListItem("内容组", ContentAttribute.ContentGroupNameCollection));
 
-                if (Body.IsQueryExists("SearchType"))
+            if (Body.IsQueryExists("SearchType"))
+            {
+                TbDateFrom.Text = Body.GetQueryString("DateFrom");
+                ControlUtils.SelectListItems(DdlSearchType, Body.GetQueryString("SearchType"));
+                TbKeyword.Text = Body.GetQueryString("Keyword");
+                if (!string.IsNullOrEmpty(Body.GetQueryString("SearchType")) || !string.IsNullOrEmpty(TbDateFrom.Text) ||
+                    !string.IsNullOrEmpty(TbKeyword.Text))
                 {
-                    TbDateFrom.Text = Body.GetQueryString("DateFrom");
-                    ControlUtils.SelectListItems(DdlSearchType, Body.GetQueryString("SearchType"));
-                    TbKeyword.Text = Body.GetQueryString("Keyword");
                     LtlButtons.Text += @"
 <script>
 $(document).ready(function() {
@@ -156,20 +162,21 @@ $(document).ready(function() {
 </script>
 ";
                 }
-
-                LtlHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_styleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                var commandCount = 0;
-                if (_isEdit)
-                {
-                    commandCount += 1;
-                }
-                if (_isComment)
-                {
-                    commandCount += 1;
-                }
-                commandCount += TextUtility.GetContentLinkCount(PublishmentSystemInfo, _pluginChannels);
-                LtlHeadCommand.Text = $@"<td width=""{commandCount * 70}"">操作</td>";
+                
             }
+
+            LtlHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_styleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
+            var commandCount = 0;
+            if (_isEdit)
+            {
+                commandCount += 1;
+            }
+            if (_isComment)
+            {
+                commandCount += 1;
+            }
+            commandCount += TextUtility.GetContentLinkCount(PublishmentSystemInfo, _pluginChannels);
+            LtlHeadCommand.Text = $@"<th style=""width: {commandCount * 80}px"" class=""text-center"">操作</th>";
         }
 
         private void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

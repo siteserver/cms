@@ -100,10 +100,8 @@ namespace SiteServer.CMS.Core
             return isTitleFormatted;
         }
 
-        public static bool SetTitleFormatControls(string titleFormatString, out bool formatStrong, out bool formatEm, out bool formatU, out string formatColor)
+        public static void SetTitleFormatControls(string titleFormatString, out bool formatStrong, out bool formatEm, out bool formatU, out string formatColor)
         {
-            var isTitleFormatted = false;
-
             formatStrong = formatEm = formatU = false;
             formatColor = string.Empty;
 
@@ -116,13 +114,8 @@ namespace SiteServer.CMS.Core
                     formatEm = TranslateUtils.ToBool(formats[1]);
                     formatU = TranslateUtils.ToBool(formats[2]);
                     formatColor = formats[3];
-                    if (formatStrong || formatEm || formatU || !string.IsNullOrEmpty(formatColor))
-                    {
-                        isTitleFormatted = true;
-                    }
                 }
             }
-            return isTitleFormatted;
         }
 
         public static string FormatTitle(string titleFormatString, string title)
@@ -315,57 +308,57 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            var styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.AddUserName, 0, "添加者", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            var styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.AddUserName, 0, "添加者", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastEditUserName, 0, "修改者", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastEditUserName, 0, "修改者", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastEditDate, 0, "修改时间", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastEditDate, 0, "修改时间", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckUserName, 0, "审核者", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckUserName, 0, "审核者", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckCheckDate, 0, "审核时间", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckCheckDate, 0, "审核时间", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckReasons, 0, "审核原因", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckReasons, 0, "审核原因", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.SourceId, 0, "来源标识", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.SourceId, 0, "来源标识", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
             if (publishmentSystemInfo.Additional.IsRelatedByTags)
             {
-                styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.Tags, 0, "标签", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+                styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.Tags, 0, "标签", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
                 arraylist.Add(styleInfo);
             }
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.ContentGroupNameCollection, 0, "所属内容组", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.ContentGroupNameCollection, 0, "所属内容组", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.Hits, 0, "点击量", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.Hits, 0, "点击量", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByDay, 0, "日点击", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByDay, 0, "日点击", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByWeek, 0, "周点击", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByWeek, 0, "周点击", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByMonth, 0, "月点击", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByMonth, 0, "月点击", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastHitsDate, 0, "最后点击时间", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastHitsDate, 0, "最后点击时间", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
             arraylist.Add(styleInfo);
 
             if (tableStyle == ETableStyle.BackgroundContent)
             {
-                styleInfo = new TableStyleInfo(0, 0, string.Empty, BackgroundContentAttribute.Star, 0, "评分", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+                styleInfo = new TableStyleInfo(0, 0, string.Empty, BackgroundContentAttribute.Star, 0, "评分", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
                 arraylist.Add(styleInfo);
 
-                styleInfo = new TableStyleInfo(0, 0, string.Empty, BackgroundContentAttribute.Digg, 0, "Digg", string.Empty, true, true, false, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
+                styleInfo = new TableStyleInfo(0, 0, string.Empty, BackgroundContentAttribute.Digg, 0, "Digg", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
                 arraylist.Add(styleInfo);
             }
 

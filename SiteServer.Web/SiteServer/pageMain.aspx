@@ -13,10 +13,11 @@
 
 <head>
   <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-  <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
   <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
   <link href="images/siteserver_icon.png" rel="icon" type="image/png">
   <meta charset="utf-8">
   <title>SiteServer 管理后台</title>

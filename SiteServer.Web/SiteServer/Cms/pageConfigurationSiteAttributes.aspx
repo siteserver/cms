@@ -65,7 +65,7 @@
                 </div>
               </div>
 
-              <bairong:AuxiliaryControl ID="AcAttributes" runat="server" />
+              <asp:Literal ID="LtlAttributes" runat="server" />
 
               <hr />
 

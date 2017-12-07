@@ -62,7 +62,6 @@ namespace BaiRong.Core
             public const string FileMetadata = "Metadata.xml";//频道模板元数据文件
             public const string FileConfiguration = "Configuration.xml";
             public const string FileSeo = "Seo.xml";
-            public const string FileStlTag = "StlTag.xml";
         }
 
         public static char DirectorySeparatorChar = Path.DirectorySeparatorChar;

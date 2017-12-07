@@ -8,7 +8,6 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Controls
@@ -73,7 +72,8 @@ namespace SiteServer.BackgroundPages.Controls
             styleInfo.Additional.IsValidate = TranslateUtils.ToBool(IsValidate);
             styleInfo.Additional.IsRequired = TranslateUtils.ToBool(IsRequire);
 
-            var inputHtml = BackgroundInputTypeParser.Parse(publishmentSystemInfo, nodeID, styleInfo, tableStyle, attributeName, formCollection, isEdit, isPostBack, AdditionalAttributes, pageScripts, true);
+		    string extraHtml;
+            var inputHtml = BackgroundInputTypeParser.Parse(publishmentSystemInfo, nodeID, styleInfo, tableStyle, attributeName, formCollection, isEdit, isPostBack, AdditionalAttributes, pageScripts, out extraHtml);
 
             if (string.IsNullOrEmpty(FormatString))
             {
