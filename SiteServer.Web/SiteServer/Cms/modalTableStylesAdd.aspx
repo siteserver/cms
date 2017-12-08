@@ -48,27 +48,29 @@
             <div class="col-xs-3 help-block"></div>
           </div>
 
-          <asp:PlaceHolder id="PhHeightAndWidth" runat="server">
+          <asp:PlaceHolder id="PhWidth" runat="server">
             <div class="form-group">
               <label class="col-xs-1 text-right control-label">显示宽度</label>
               <div class="col-xs-8">
-                <asp:TextBox class="form-control" Text="0" id="TbWidth" runat="server" />
+                <asp:TextBox class="form-control" id="TbWidth" runat="server" />
               </div>
               <div class="col-xs-3 help-block">
-                px
+                px（不设置代表默认宽度）
                 <asp:RegularExpressionValidator ControlToValidate="TbWidth" ValidationExpression="\d+" Display="Dynamic" errorMessage=" *"
-                  foreColor="red" runat="server" /> （0代表默认）
+                  foreColor="red" runat="server" />
               </div>
             </div>
+          </asp:PlaceHolder>
+          <asp:PlaceHolder id="PhHeight" runat="server">
             <div class="form-group">
               <label class="col-xs-1 text-right control-label">显示高度</label>
               <div class="col-xs-8">
-                <asp:TextBox class="form-control" Text="0" id="TbHeight" runat="server" />
+                <asp:TextBox class="form-control" id="TbHeight" runat="server" />
               </div>
               <div class="col-xs-3 help-block">
-                px
+                px（不设置代表默认高度）
                 <asp:RegularExpressionValidator ControlToValidate="TbHeight" ValidationExpression="\d+" Display="Dynamic" errorMessage=" *"
-                  foreColor="red" runat="server" /> （0代表默认）
+                  foreColor="red" runat="server" />
               </div>
             </div>
           </asp:PlaceHolder>
@@ -113,69 +115,83 @@
             </div>
           </asp:PlaceHolder>
 
-          <asp:PlaceHolder id="PhItemCount" runat="server">
+          <asp:PlaceHolder ID="PhItemsType" runat="server">
             <div class="form-group">
-              <label class="col-xs-1 text-right control-label">设置选项数目</label>
+              <label class="col-xs-1 control-label">设置选项</label>
               <div class="col-xs-8">
-                <asp:TextBox class="form-control" Text="2" id="TbItemCount" runat="server" />
+                <asp:DropDownList ID="DdlItemType" class="form-control" OnSelectedIndexChanged="ReFresh" AutoPostBack="true" runat="server">
+                  <asp:ListItem Text="快速设置" Value="True" Selected="True" />
+                  <asp:ListItem Text="详细设置" Value="False" />
+                </asp:DropDownList>
               </div>
-              <div class="col-xs-3">
-                <asp:RequiredFieldValidator ControlToValidate="TbItemCount" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+              <div class="col-xs-3 help-block">
+
+              </div>
+            </div>
+            <asp:PlaceHolder ID="PhItemCount" runat="server">
+              <div class="form-group">
+                <label class="col-xs-1 control-label">共有</label>
+                <div class="col-xs-8">
+                  <asp:TextBox class="form-control" id="TbItemCount" runat="server" />
+                </div>
+                <div class="col-xs-3 help-block">
+                  <asp:RequiredFieldValidator ControlToValidate="TbItemCount" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+                  /> 个选项&nbsp;
+                  <asp:Button class="btn btn-success" style="margin-bottom:0px;" id="SetCount" text="设 置" onclick="SetCount_OnClick" CausesValidation="false"
+                    runat="server" />
+                  <asp:RegularExpressionValidator ControlToValidate="TbItemCount" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="此项必须为数字"
+                    foreColor="red" runat="server" />
+                </div>
+              </div>
+            </asp:PlaceHolder>
+
+          </asp:PlaceHolder>
+
+          <asp:PlaceHolder ID="PhItemsRapid" runat="server">
+            <div class="form-group">
+              <label class="col-xs-1 control-label">选项可选值</label>
+              <div class="col-xs-8">
+                <asp:TextBox class="form-control" Columns="60" id="TbItemValues" runat="server" />
+              </div>
+              <div class="col-xs-3 help-block">
+                <asp:RequiredFieldValidator ControlToValidate="TbItemValues" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
                 />
-                <asp:Button class="btn" style="margin-bottom:0px;" id="SetCount" text="设 置" onclick="SetCount_OnClick" CausesValidation="false"
-                  runat="server" />
-                <asp:RegularExpressionValidator ControlToValidate="TbItemCount" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="此项必须为数字"
-                  foreColor="red" runat="server" />
+                <span class="grey">英文","分隔</span>
               </div>
             </div>
           </asp:PlaceHolder>
 
-          <asp:PlaceHolder id="PhSetItems" runat="server">
-            <asp:Repeater ID="RptContents" runat="server">
+          <asp:PlaceHolder ID="PhItems" runat="server">
+
+            <asp:Repeater ID="RptItems" runat="server">
               <itemtemplate>
-                <table width="100%" border="0" cellspacing="2" cellpadding="2">
-                  <tr>
-                    <td class="center" style="width:20px;">
-                      <strong>
-                        <%# Container.ItemIndex + 1 %>
-                      </strong>
-                    </td>
-                    <td>
-                      <table width="100%" border="0" cellspacing="3" cellpadding="3">
-                        <tr>
-                          <td width="120">
-                              选项标题
-                          </td>
-                          <td colspan="3">
-                            <asp:TextBox ID="ItemTitle" Columns="40" runat="server" Text='<%# DataBinder.Eval(Container.DataItem,"ItemTitle") %>'></asp:TextBox>
-                            <asp:RequiredFieldValidator ControlToValidate="ItemTitle" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
-                            />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td width="120">
-                              选项值
-                          </td>
-                          <td colspan="3">
-                            <asp:TextBox ID="ItemValue" Columns="40" runat="server" Text='<%# DataBinder.Eval(Container.DataItem,"ItemValue") %>'></asp:TextBox>
-                            <asp:RequiredFieldValidator ControlToValidate="ItemValue" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
-                            />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td width="120">
-                              初始化时选定
-                          </td>
-                          <td colspan="3">
-                            <asp:CheckBox ID="IsSelected" runat="server" Checked="False" Text="选定"></asp:CheckBox>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
+                <div class="form-group">
+                  <label class="col-xs-1 control-label">
+                    <%# Container.ItemIndex + 1 %>
+                  </label>
+                  <div class="col-xs-3">
+                    标题
+                    <asp:TextBox class="form-control" ID="ItemTitle" Columns="40" runat="server" Text='<%# DataBinder.Eval(Container.DataItem,"ItemTitle") %>'></asp:TextBox>
+                    <asp:RequiredFieldValidator ControlToValidate="ItemTitle" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+                    />
+                  </div>
+                  <div class="col-xs-3">
+                    值
+                    <asp:TextBox class="form-control" ID="ItemValue" Columns="40" runat="server" Text='<%# DataBinder.Eval(Container.DataItem,"ItemValue") %>'></asp:TextBox>
+                    <asp:RequiredFieldValidator ControlToValidate="ItemValue" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+                    />
+                  </div>
+                  <div class="col-xs-1">
+                    &nbsp;
+                    <asp:CheckBox class="checkbox checkbox-primary" ID="IsSelected" runat="server" Checked="False" Text="默认选择"></asp:CheckBox>
+                  </div>
+                  <div class="col-xs-4 help-block">
+
+                  </div>
+                </div>
               </itemtemplate>
             </asp:Repeater>
+
           </asp:PlaceHolder>
 
           <hr />

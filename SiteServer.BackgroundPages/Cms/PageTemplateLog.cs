@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, "AddDate"));
                 ltlContentLength.Text = SqlUtils.EvalInt(e.Item.DataItem, "ContentLength").ToString();
                 ltlView.Text =
-                    $@"<a href=""javascript:;"" onclick=""{ModalTemplateView.GetOpenLayerString(PublishmentSystemId,
+                    $@"<a href=""javascript:;"" onclick=""{ModalTemplateView.GetOpenWindowString(PublishmentSystemId,
                         logID)}"">查看</a>";
             }
         }

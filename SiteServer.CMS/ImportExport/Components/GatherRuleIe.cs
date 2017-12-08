@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
 using Atom.Core;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
@@ -18,11 +18,11 @@ namespace SiteServer.CMS.ImportExport.Components
 			_filePath = filePath;
 		}
 
-		public void ExportGatherRule(ArrayList gatherRuleInfoArrayList)
+		public void ExportGatherRule(List<GatherRuleInfo> gatherRuleInfoList)
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-			foreach (GatherRuleInfo gatherRuleInfo in gatherRuleInfoArrayList)
+			foreach (var gatherRuleInfo in gatherRuleInfoList)
 			{
 				var entry = ExportGatherRuleInfo(gatherRuleInfo);
 				feed.Entries.Add(entry);
@@ -84,42 +84,66 @@ namespace SiteServer.CMS.ImportExport.Components
 
 				if (!string.IsNullOrEmpty(gatherRuleName))
 				{
-					var gatherRuleInfo = new GatherRuleInfo();
-					gatherRuleInfo.GatherRuleName = gatherRuleName;
-					gatherRuleInfo.PublishmentSystemId = _publishmentSystemId;
-					gatherRuleInfo.CookieString = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "CookieString"));//解密
-                    gatherRuleInfo.GatherUrlIsCollection = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "GatherUrlIsCollection"));
-					gatherRuleInfo.GatherUrlCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, "GatherUrlCollection");
-                    gatherRuleInfo.GatherUrlIsSerialize = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "GatherUrlIsSerialize"));
-					gatherRuleInfo.GatherUrlSerialize = AtomUtility.GetDcElementContent(entry.AdditionalElements, "GatherUrlSerialize");
-					gatherRuleInfo.SerializeFrom = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SerializeFrom"));
-					gatherRuleInfo.SerializeTo = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SerializeTo"));
-					gatherRuleInfo.SerializeInterval = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SerializeInterval"));
-                    gatherRuleInfo.SerializeIsOrderByDesc = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SerializeIsOrderByDesc"));
-                    gatherRuleInfo.SerializeIsAddZero = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SerializeIsAddZero"));
-					gatherRuleInfo.NodeId = _publishmentSystemId;
-					gatherRuleInfo.Charset = ECharsetUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Charset"));
-					gatherRuleInfo.UrlInclude = AtomUtility.GetDcElementContent(entry.AdditionalElements, "UrlInclude");
-					gatherRuleInfo.TitleInclude = AtomUtility.GetDcElementContent(entry.AdditionalElements, "TitleInclude");
-					gatherRuleInfo.ContentExclude = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentExclude"));//解密
-					gatherRuleInfo.ContentHtmlClearCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentHtmlClearCollection");
-                    gatherRuleInfo.ContentHtmlClearTagCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentHtmlClearTagCollection");
-					gatherRuleInfo.LastGatherDate = DateUtils.SqlMinValue;
-					gatherRuleInfo.ListAreaStart = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ListAreaStart"));//解密
-					gatherRuleInfo.ListAreaEnd = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ListAreaEnd"));//解密
-					gatherRuleInfo.ContentChannelStart = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentChannelStart"));//解密
-					gatherRuleInfo.ContentChannelEnd = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentChannelEnd"));//解密
-					gatherRuleInfo.ContentTitleStart = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentTitleStart"));//解密
-					gatherRuleInfo.ContentTitleEnd = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentTitleEnd"));//解密
-					gatherRuleInfo.ContentContentStart = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentContentStart"));//解密
-					gatherRuleInfo.ContentContentEnd = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentContentEnd"));//解密
-					gatherRuleInfo.ContentNextPageStart = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentNextPageStart"));//解密
-					gatherRuleInfo.ContentNextPageEnd = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentNextPageEnd"));//解密
-                    gatherRuleInfo.ContentAttributes = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentAttributes"));//解密
-                    gatherRuleInfo.ContentAttributesXml = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentAttributesXML"));//解密
-                    gatherRuleInfo.ExtendValues = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ExtendValues"));//解密
+				    var gatherRuleInfo = new GatherRuleInfo
+				    {
+				        GatherRuleName = gatherRuleName,
+				        PublishmentSystemId = _publishmentSystemId,
+				        CookieString =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "CookieString")),
+				        GatherUrlIsCollection =
+				            TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "GatherUrlIsCollection")),
+				        GatherUrlCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, "GatherUrlCollection"),
+				        GatherUrlIsSerialize =
+				            TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "GatherUrlIsSerialize")),
+				        GatherUrlSerialize = AtomUtility.GetDcElementContent(entry.AdditionalElements, "GatherUrlSerialize"),
+				        SerializeFrom =
+				            TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SerializeFrom")),
+				        SerializeTo = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SerializeTo")),
+				        SerializeInterval =
+				            TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SerializeInterval")),
+				        SerializeIsOrderByDesc =
+				            TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SerializeIsOrderByDesc")),
+				        SerializeIsAddZero =
+				            TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "SerializeIsAddZero")),
+				        NodeId = _publishmentSystemId,
+				        Charset = ECharsetUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Charset")),
+				        UrlInclude = AtomUtility.GetDcElementContent(entry.AdditionalElements, "UrlInclude"),
+				        TitleInclude = AtomUtility.GetDcElementContent(entry.AdditionalElements, "TitleInclude"),
+				        ContentExclude =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentExclude")),
+				        ContentHtmlClearCollection =
+				            AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentHtmlClearCollection"),
+				        ContentHtmlClearTagCollection =
+				            AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentHtmlClearTagCollection"),
+				        LastGatherDate = DateUtils.SqlMinValue,
+				        ListAreaStart =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ListAreaStart")),
+				        ListAreaEnd = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ListAreaEnd")),
+				        ContentChannelStart =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentChannelStart")),
+				        ContentChannelEnd =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentChannelEnd")),
+				        ContentTitleStart =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentTitleStart")),
+				        ContentTitleEnd =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentTitleEnd")),
+				        ContentContentStart =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentContentStart")),
+				        ContentContentEnd =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentContentEnd")),
+				        ContentNextPageStart =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentNextPageStart")),
+				        ContentNextPageEnd =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentNextPageEnd")),
+				        ContentAttributes =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentAttributes")),
+				        ContentAttributesXml =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ContentAttributesXML")),
+				        ExtendValues =
+				            AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "ExtendValues"))
+				    };
 
-					var srcGatherRuleInfo = DataProvider.GatherRuleDao.GetGatherRuleInfo(gatherRuleInfo.GatherRuleName, _publishmentSystemId);
+				    var srcGatherRuleInfo = DataProvider.GatherRuleDao.GetGatherRuleInfo(gatherRuleInfo.GatherRuleName, _publishmentSystemId);
 					if (srcGatherRuleInfo != null)
 					{
 						if (overwrite)

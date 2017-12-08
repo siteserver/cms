@@ -10,7 +10,7 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public TextBox TbContent;
 
-        public static string GetOpenLayerString(int publishmentSystemId, int templateLogId)
+        public static string GetOpenWindowString(int publishmentSystemId, int templateLogId)
         {
             return PageUtils.GetOpenLayerString("查看修订内容", PageUtils.GetCmsUrl(nameof(ModalTemplateView), new NameValueCollection
             {

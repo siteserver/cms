@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
@@ -9,6 +8,7 @@ using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -367,19 +367,19 @@ namespace SiteServer.BackgroundPages.Cms
             return docFileName;
         }
 
-        private string ExportGatherRule(List<string> gatherRuleNameArrayList)
+        private string ExportGatherRule(List<string> gatherRuleNameList)
         {
             var docFileName = "GatherRule.xml";
             var filePath = PathUtils.GetTemporaryFilesPath(docFileName);
 
             var exportObject = new ExportObject(PublishmentSystemId);
-            var gatherRuleInfoArrayList = new ArrayList();
-            foreach (string gatherRuleName in gatherRuleNameArrayList)
+            var gatherRuleInfoList = new List<GatherRuleInfo>();
+            foreach (var gatherRuleName in gatherRuleNameList)
             {
-                gatherRuleInfoArrayList.Add(DataProvider.GatherRuleDao.GetGatherRuleInfo(gatherRuleName, PublishmentSystemId));
+                gatherRuleInfoList.Add(DataProvider.GatherRuleDao.GetGatherRuleInfo(gatherRuleName, PublishmentSystemId));
             }
 
-            exportObject.ExportGatherRule(filePath, gatherRuleInfoArrayList);
+            exportObject.ExportGatherRule(filePath, gatherRuleInfoList);
 
             return docFileName;
         }

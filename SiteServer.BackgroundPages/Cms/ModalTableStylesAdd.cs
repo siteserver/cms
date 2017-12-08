@@ -17,21 +17,25 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbAttributeNames;
         public DropDownList DdlIsVisible;
         public DropDownList DdlInputType;
-        public TextBox TbDefaultValue;
         public Control SpDateTip;
+        public PlaceHolder PhRepeat;
         public DropDownList DdlIsHorizontal;
         public TextBox TbColumns;
-        public TextBox TbHeight;
+        public PlaceHolder PhWidth;
         public TextBox TbWidth;
-
-        public TextBox TbItemCount;
-        public Repeater RptContents;
-
+        public PlaceHolder PhHeight;
+        public TextBox TbHeight;
         public PlaceHolder PhDefaultValue;
-        public PlaceHolder PhRepeat;
-        public PlaceHolder PhHeightAndWidth;
+        public TextBox TbDefaultValue;
+
+        public PlaceHolder PhItemsType;
+        public DropDownList DdlItemType;
         public PlaceHolder PhItemCount;
-        public PlaceHolder PhSetItems;
+        public TextBox TbItemCount;
+        public PlaceHolder PhItemsRapid;
+        public TextBox TbItemValues;
+        public PlaceHolder PhItems;
+        public Repeater RptItems;     
 
         private List<int> _relatedIdentities;
         private string _tableName;
@@ -81,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
                 DdlIsHorizontal.SelectedValue = styleInfo.IsHorizontal.ToString();
                 TbColumns.Text = styleInfo.Additional.Columns.ToString();
 
-                TbHeight.Text = styleInfo.Additional.Height.ToString();
+                TbHeight.Text = styleInfo.Additional.Height == 0 ? string.Empty : styleInfo.Additional.Height.ToString();
                 TbWidth.Text = styleInfo.Additional.Width;
 
                 TbItemCount.Text = "0";
@@ -92,14 +96,26 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void ReFresh(object sender, EventArgs e)
         {
-            PhDefaultValue.Visible = PhHeightAndWidth.Visible = SpDateTip.Visible = PhItemCount.Visible = PhSetItems.Visible = PhRepeat.Visible = false;
-            TbHeight.Enabled = true;
+            PhDefaultValue.Visible = PhWidth.Visible = PhHeight.Visible = SpDateTip.Visible = PhItemsType.Visible = PhItemsRapid.Visible = PhItems.Visible = PhRepeat.Visible = PhItemCount.Visible = false;
 
             TbDefaultValue.TextMode = TextBoxMode.MultiLine;
             var inputType = InputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
-                PhItemCount.Visible = PhSetItems.Visible = true;
+                PhItemsType.Visible = true;
+                var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
+                if (isRapid)
+                {
+                    PhItemsRapid.Visible = true;
+                    PhItemCount.Visible = false;
+                    PhItems.Visible = false;
+                }
+                else
+                {
+                    PhItemsRapid.Visible = false;
+                    PhItemCount.Visible = true;
+                    PhItems.Visible = true;
+                }
                 if (inputType == InputType.CheckBox || inputType == InputType.Radio)
                 {
                     PhRepeat.Visible = true;
@@ -107,16 +123,15 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (inputType == InputType.TextEditor)
             {
-                PhDefaultValue.Visible = PhHeightAndWidth.Visible = true;
+                PhDefaultValue.Visible = PhWidth.Visible = PhHeight.Visible = true;
             }
             else if (inputType == InputType.TextArea)
             {
-                PhDefaultValue.Visible = PhHeightAndWidth.Visible = true;
+                PhDefaultValue.Visible = PhWidth.Visible = PhHeight.Visible = true;
             }
             else if (inputType == InputType.Text)
             {
-                PhDefaultValue.Visible = PhHeightAndWidth.Visible = true;
-                TbHeight.Enabled = false;
+                PhDefaultValue.Visible = PhWidth.Visible = true;
                 TbDefaultValue.TextMode = TextBoxMode.SingleLine;
             }
             else if (inputType == InputType.Date || inputType == InputType.DateTime)
@@ -128,21 +143,19 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void SetCount_OnClick(object sender, EventArgs e)
         {
-            if (Page.IsPostBack)
+            if (!Page.IsPostBack) return;
+
+            var count = TranslateUtils.ToInt(TbItemCount.Text);
+            if (count != 0)
             {
-                var count = TranslateUtils.ToInt(TbItemCount.Text);
-                if (count != 0)
-                {
-                    RptContents.DataSource = TableStyleManager.GetStyleItemDataSet(count, null);
-                    RptContents.DataBind();
-                }
-                else
-                {
-                    FailMessage("选项数目必须为大于0的数字！");
-                }
+                RptItems.DataSource = TableStyleManager.GetStyleItemDataSet(count, null);
+                RptItems.DataBind();
+            }
+            else
+            {
+                FailMessage("选项数目必须为大于0的数字！");
             }
         }
-
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
@@ -205,7 +218,7 @@ namespace SiteServer.BackgroundPages.Cms
                             FailMessage("操作失败，字段名不能为空！");
                             return false;
                         }
-                        else if (StringUtils.StartsWithIgnoreCase(attributeName, "Site"))
+                        if (StringUtils.StartsWithIgnoreCase(attributeName, "Site"))
                         {
                             FailMessage("操作失败，字段名不能以site开始！");
                             return false;
@@ -227,22 +240,35 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
-                        var isHasSelected = false;
-                        foreach (RepeaterItem item in RptContents.Items)
+                        var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
+                        if (isRapid)
                         {
-                            var itemTitle = (TextBox)item.FindControl("ItemTitle");
-                            var itemValue = (TextBox)item.FindControl("ItemValue");
-                            var isSelected = (CheckBox)item.FindControl("IsSelected");
-
-                            if ((inputType != InputType.SelectMultiple && inputType != InputType.CheckBox) && isHasSelected && isSelected.Checked)
+                            var itemArrayList = TranslateUtils.StringCollectionToStringList(TbItemValues.Text);
+                            foreach (string itemValue in itemArrayList)
                             {
-                                FailMessage("操作失败，只能有一个初始化时选定项！");
-                                return false;
+                                var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, itemValue, itemValue, false);
+                                styleInfo.StyleItems.Add(itemInfo);
                             }
-                            if (isSelected.Checked) isHasSelected = true;
+                        }
+                        else
+                        {
+                            var isHasSelected = false;
+                            foreach (RepeaterItem item in RptItems.Items)
+                            {
+                                var itemTitle = (TextBox)item.FindControl("ItemTitle");
+                                var itemValue = (TextBox)item.FindControl("ItemValue");
+                                var isSelected = (CheckBox)item.FindControl("IsSelected");
 
-                            var itemInfo = new TableStyleItemInfo(0, 0, itemTitle.Text, itemValue.Text, isSelected.Checked);
-                            styleInfo.StyleItems.Add(itemInfo);
+                                if ((inputType != InputType.SelectMultiple && inputType != InputType.CheckBox) && isHasSelected && isSelected.Checked)
+                                {
+                                    FailMessage("操作失败，只能有一个初始化时选定项！");
+                                    return false;
+                                }
+                                if (isSelected.Checked) isHasSelected = true;
+
+                                var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, itemTitle.Text, itemValue.Text, isSelected.Checked);
+                                styleInfo.StyleItems.Add(itemInfo);
+                            }
                         }
                     }
 

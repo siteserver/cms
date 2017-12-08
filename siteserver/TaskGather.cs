@@ -20,38 +20,38 @@ namespace siteserver
             }
             else
             {
-                var publishmentSystemIDArrayList = TranslateUtils.StringCollectionToIntList(taskGatherInfo.PublishmentSystemIdCollection);
-                foreach (int publishmentSystemID in publishmentSystemIDArrayList)
+                var publishmentSystemIdList = TranslateUtils.StringCollectionToIntList(taskGatherInfo.PublishmentSystemIdCollection);
+                foreach (var publishmentSystemId in publishmentSystemIdList)
                 {
-                    var webGatherNames = DataProvider.GatherRuleDao.GetGatherRuleNameArrayList(publishmentSystemID);
-                    var databaseGatherNames = DataProvider.GatherDatabaseRuleDao.GetGatherRuleNameArrayList(publishmentSystemID);
-                    var fileGatherNames = DataProvider.GatherFileRuleDao.GetGatherRuleNameArrayList(publishmentSystemID);
-                    Gather(publishmentSystemID, webGatherNames, databaseGatherNames, fileGatherNames);
+                    var webGatherNames = DataProvider.GatherRuleDao.GetGatherRuleNameList(publishmentSystemId);
+                    var databaseGatherNames = DataProvider.GatherDatabaseRuleDao.GetGatherRuleNameList(publishmentSystemId);
+                    var fileGatherNames = DataProvider.GatherFileRuleDao.GetGatherRuleNameList(publishmentSystemId);
+                    Gather(publishmentSystemId, webGatherNames, databaseGatherNames, fileGatherNames);
                 }
             }
 
             return true;
         }
 
-        private static void Gather(int publishmentSystemID, List<string> webGatherNames, List<string> databaseGatherNames, List<string> fileGatherNames)
+        private static void Gather(int publishmentSystemId, List<string> webGatherNames, List<string> databaseGatherNames, List<string> fileGatherNames)
         {
             foreach (string webGatherName in webGatherNames)
             {
                 var resultBuilder = new StringBuilder();
                 var errorBuilder = new StringBuilder();
-                GatherUtility.GatherWeb(publishmentSystemID, webGatherName, resultBuilder, errorBuilder, false, string.Empty, string.Empty);
+                GatherUtility.GatherWeb(publishmentSystemId, webGatherName, resultBuilder, errorBuilder, false, string.Empty, string.Empty);
             }
             foreach (string databaseGatherName in databaseGatherNames)
             {
                 var resultBuilder = new StringBuilder();
                 var errorBuilder = new StringBuilder();
-                GatherUtility.GatherDatabase(publishmentSystemID, databaseGatherName, resultBuilder, errorBuilder, false, string.Empty, string.Empty);
+                GatherUtility.GatherDatabase(publishmentSystemId, databaseGatherName, resultBuilder, errorBuilder, false, string.Empty, string.Empty);
             }
             foreach (string fileGatherName in fileGatherNames)
             {
                 var resultBuilder = new StringBuilder();
                 var errorBuilder = new StringBuilder();
-                GatherUtility.GatherFile(publishmentSystemID, fileGatherName, resultBuilder, errorBuilder, false, string.Empty, string.Empty);
+                GatherUtility.GatherFile(publishmentSystemId, fileGatherName, resultBuilder, errorBuilder, false, string.Empty, string.Empty);
             }
         }
     }

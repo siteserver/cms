@@ -236,7 +236,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
 			if (_isEdit == false)
 			{
-                var gatherRuleNameList = DataProvider.GatherFileRuleDao.GetGatherRuleNameArrayList(PublishmentSystemId);
+                var gatherRuleNameList = DataProvider.GatherFileRuleDao.GetGatherRuleNameList(PublishmentSystemId);
 				if (gatherRuleNameList.IndexOf(GatherRuleName.Text) != -1)
 				{
 					errorMessage = "采集规则名称已存在！";

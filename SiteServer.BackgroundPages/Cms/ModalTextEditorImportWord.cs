@@ -23,11 +23,11 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string attributeName)
         {
-            return PageUtils.GetOpenWindowString("导入Word", PageUtils.GetCmsUrl(nameof(ModalTextEditorImportWord), new NameValueCollection
+            return PageUtils.GetOpenLayerString("导入Word", PageUtils.GetCmsUrl(nameof(ModalTextEditorImportWord), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"AttributeName", attributeName}
-            }), 550, 350);
+            }), 600, 400);
         }
 
         public string UploadUrl => PageUtils.GetCmsUrl(nameof(ModalTextEditorImportWord), new NameValueCollection

@@ -30,18 +30,18 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbColumns;
         public DropDownList DdlRelatedFieldId;
         public DropDownList DdlRelatedFieldStyle;
-        public TextBox TbHeight;
+        public PlaceHolder PhWidth;
         public TextBox TbWidth;
+        public PlaceHolder PhHeight;
+        public TextBox TbHeight;
 
         public DropDownList DdlItemType;
         public PlaceHolder PhItemCount;
         public TextBox TbItemCount;
         public TextBox TbItemValues;
         public Repeater RptItems;
-
         public PlaceHolder PhRepeat;
         public PlaceHolder PhRelatedField;
-        public PlaceHolder PhHeightAndWidth;
         public PlaceHolder PhItemsType;
         public PlaceHolder PhItemsRapid;
         public PlaceHolder PhItems;
@@ -129,7 +129,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ControlUtils.SelectListItems(DdlRelatedFieldId, _styleInfo.Additional.RelatedFieldId.ToString());
                 ControlUtils.SelectListItems(DdlRelatedFieldStyle, _styleInfo.Additional.RelatedFieldStyle);
 
-                TbHeight.Text = _styleInfo.Additional.Height.ToString();
+                TbHeight.Text = _styleInfo.Additional.Height == 0 ? string.Empty : _styleInfo.Additional.Height.ToString();
                 TbWidth.Text = _styleInfo.Additional.Width;
 
                 var styleItems = _styleInfo.StyleItems ?? BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
@@ -148,19 +148,18 @@ namespace SiteServer.BackgroundPages.Cms
 
         private static void MyRepeater_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
-            {
-                var isSelected = TranslateUtils.ToBool(SqlUtils.EvalString(e.Item.DataItem, "IsSelected"));
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-                var isSelectedControl = (CheckBox)e.Item.FindControl("IsSelected");
+            var isSelected = TranslateUtils.ToBool(SqlUtils.EvalString(e.Item.DataItem, "IsSelected"));
 
-                isSelectedControl.Checked = isSelected;
-            }
+            var isSelectedControl = (CheckBox)e.Item.FindControl("IsSelected");
+
+            isSelectedControl.Checked = isSelected;
         }
 
         public void ReFresh(object sender, EventArgs e)
         {
-            PhRelatedField.Visible = PhHeightAndWidth.Visible = SpanDateTip.Visible = PhItemsType.Visible = PhItemsRapid.Visible = PhItems.Visible = PhRepeat.Visible = PhItemCount.Visible = PhIsFormatString.Visible = false;
+            PhRelatedField.Visible = PhWidth.Visible = PhHeight.Visible = SpanDateTip.Visible = PhItemsType.Visible = PhItemsRapid.Visible = PhItems.Visible = PhRepeat.Visible = PhItemCount.Visible = PhIsFormatString.Visible = false;
 
             if (!string.IsNullOrEmpty(_attributeName))
             {
@@ -191,16 +190,16 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (inputType == InputType.TextEditor)
             {
-                PhHeightAndWidth.Visible = true;
+                PhWidth.Visible = PhHeight.Visible = true;
             }
             else if (inputType == InputType.TextArea)
             {
-                PhHeightAndWidth.Visible = true;
+                PhWidth.Visible = PhHeight.Visible = true;
             }
             else if (inputType == InputType.Text)
             {
                 PhIsFormatString.Visible = true;
-                PhHeightAndWidth.Visible = true;
+                PhWidth.Visible = true;
             }
             else if (inputType == InputType.Date || inputType == InputType.DateTime)
             {
@@ -214,26 +213,24 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void SetCount_OnClick(object sender, EventArgs e)
         {
-            if (Page.IsPostBack)
+            if (!Page.IsPostBack) return;
+
+            var count = TranslateUtils.ToInt(TbItemCount.Text);
+            if (count != 0)
             {
-                var count = TranslateUtils.ToInt(TbItemCount.Text);
-                if (count != 0)
+                List<TableStyleItemInfo> styleItems = null;
+                if (_styleInfo.TableStyleId != 0)
                 {
-                    List<TableStyleItemInfo> styleItems = null;
-                    if (_styleInfo.TableStyleId != 0)
-                    {
-                        styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
-                    }
-                    RptItems.DataSource = TableStyleManager.GetStyleItemDataSet(count, styleItems);
-                    RptItems.DataBind();
+                    styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(_styleInfo.TableStyleId);
                 }
-                else
-                {
-                    FailMessage("选项数目必须为大于0的数字！");
-                }
+                RptItems.DataSource = TableStyleManager.GetStyleItemDataSet(count, styleItems);
+                RptItems.DataBind();
+            }
+            else
+            {
+                FailMessage("选项数目必须为大于0的数字！");
             }
         }
-
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {

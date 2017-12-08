@@ -191,14 +191,14 @@ namespace SiteServer.CMS.ImportExport
         /// <param name="filePath"></param>
         public void ExportGatherRule(string filePath)
         {
-            var gatherRuleInfoArrayList = DataProvider.GatherRuleDao.GetGatherRuleInfoArrayList(_publishmentSystemInfo.PublishmentSystemId);
-            ExportGatherRule(filePath, gatherRuleInfoArrayList);
+            var gatherRuleInfoList = DataProvider.GatherRuleDao.GetGatherRuleInfoList(_publishmentSystemInfo.PublishmentSystemId);
+            ExportGatherRule(filePath, gatherRuleInfoList);
         }
 
-        public void ExportGatherRule(string filePath, ArrayList gatherRuleInfoArrayList)
+        public void ExportGatherRule(string filePath, List<GatherRuleInfo> gatherRuleInfoList)
         {
             var gatherRuleIe = new GatherRuleIe(_publishmentSystemInfo.PublishmentSystemId, filePath);
-            gatherRuleIe.ExportGatherRule(gatherRuleInfoArrayList);
+            gatherRuleIe.ExportGatherRule(gatherRuleInfoList);
         }
 
         //public void ExportInput(string inputDirectoryPath)

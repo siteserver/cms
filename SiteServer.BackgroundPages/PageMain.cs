@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages
     </form>
 </li>
 <li class=""dropdown hidden-xs"">
-    <a href=""{PageCreateStatus.GetRedirectUrl(_publishmentSystemInfo.PublishmentSystemId)}"" target=""right"" class=""waves-effect waves-light"">
+    <a href=""javascript:;"" onclick=""{PageCreateStatus.GetOpenLayerString(_publishmentSystemInfo.PublishmentSystemId)}"">
         <i class=""ion-wand""></i>
         <span id=""progress"" class=""badge badge-xs badge-pink"">0</span>
     </a>

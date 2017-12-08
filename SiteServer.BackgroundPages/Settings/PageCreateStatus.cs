@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Specialized;
-using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 
@@ -8,14 +7,21 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class PageCreateStatus : BasePageCms
     {
-        public PlaceHolder PhRunService;
-
         public static string GetRedirectUrl(int publishmentSystemId)
         {
             return PageUtils.GetSettingsUrl(nameof(PageCreateStatus), new NameValueCollection
             {
                 {"publishmentSystemID", publishmentSystemId.ToString()}
             });
+        }
+
+        public static string GetOpenLayerString(int publishmentSystemId)
+        {
+            return PageUtils.GetOpenLayerString("页面生成进度",
+                PageUtils.GetSettingsUrl(nameof(PageCreateStatus), new NameValueCollection
+                {
+                    {"publishmentSystemID", publishmentSystemId.ToString()}
+                }));
         }
 
         public static void Redirect(int publishmentSystemId)
@@ -35,7 +41,6 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                PhRunService.Visible = PublishmentSystemId > 0 && !ServiceManager.IsServiceOnline;
                 //base.BreadCrumb(AppManager.LeftMenu.ID_Utility, "生成队列", AppManager.Permission.Platform_Utility);
             }
 

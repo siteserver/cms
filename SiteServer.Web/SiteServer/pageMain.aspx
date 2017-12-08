@@ -40,7 +40,7 @@
         <ul class="nav navbar-nav navbar-right pull-right">
           <asp:Literal id="LtlExtras" runat="server" />
           <li class="dropdown">
-            <a href="" class="dropdown-toggle waves-effect waves-light profile" data-toggle="dropdown" aria-expanded="false">
+            <a href="" class="dropdown-toggle profile" data-toggle="dropdown" aria-expanded="false">
               <img src="images/avatar.jpg" alt="user-img" class="img-circle">
               <asp:Literal ID="LtlUserName" runat="server" />
             </a>

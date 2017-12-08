@@ -381,9 +381,9 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 			return enumerable;
 		}
 
-		public ArrayList GetGatherFileRuleInfoArrayList(int publishmentSystemId)
+		public List<GatherFileRuleInfo> GetGatherFileRuleInfoList(int publishmentSystemId)
 		{
-			var list = new ArrayList();
+			var list = new List<GatherFileRuleInfo>();
 
 			var parms = new IDataParameter[]
 			{
@@ -405,7 +405,7 @@ GatherUrl = @GatherUrl, Charset = @Charset, LastGatherDate = @LastGatherDate, Is
 			return list;
 		}
 
-		public List<string> GetGatherRuleNameArrayList(int publishmentSystemId)
+		public List<string> GetGatherRuleNameList(int publishmentSystemId)
 		{
 			var list = new List<string>();
 

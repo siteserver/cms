@@ -284,9 +284,9 @@ UPDATE siteserver_GatherDatabaseRule SET ConnectionString = @ConnectionString, R
             return enumerable;
         }
 
-        public ArrayList GetGatherDatabaseRuleInfoArrayList(int publishmentSystemId)
+        public List<GatherDatabaseRuleInfo> GetGatherDatabaseRuleInfoList(int publishmentSystemId)
         {
-            var list = new ArrayList();
+            var list = new List<GatherDatabaseRuleInfo>();
 
             var parms = new IDataParameter[]
             {
@@ -307,7 +307,7 @@ UPDATE siteserver_GatherDatabaseRule SET ConnectionString = @ConnectionString, R
             return list;
         }
 
-        public List<string> GetGatherRuleNameArrayList(int publishmentSystemId)
+        public List<string> GetGatherRuleNameList(int publishmentSystemId)
         {
             var list = new List<string>();
 

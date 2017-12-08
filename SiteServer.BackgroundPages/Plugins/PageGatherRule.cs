@@ -136,7 +136,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 showPopWinString = ModalExportMessage.GetOpenWindowStringToGatherRule(PublishmentSystemId, "GatherRuleNameCollection", "请选择需要导出的规则！");
                 Export.Attributes.Add("onclick", showPopWinString);
 
-                dgContents.DataSource = DataProvider.GatherRuleDao.GetGatherRuleInfoArrayList(PublishmentSystemId);
+                dgContents.DataSource = DataProvider.GatherRuleDao.GetGatherRuleInfoList(PublishmentSystemId);
                 dgContents.ItemDataBound += dgContents_ItemDataBound;
                 dgContents.DataBind();
             }

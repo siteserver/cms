@@ -60,31 +60,31 @@
                   <ItemTemplate>
                     <asp:Literal ID="ltlLastExecuteDate" runat="server"></asp:Literal>
                   </ItemTemplate>
-                  <ItemStyle Width="120" cssClass="text-center" />
+                  <ItemStyle Width="150" cssClass="text-center" />
                 </asp:TemplateColumn>
                 <asp:TemplateColumn HeaderText="是否启用">
                   <ItemTemplate>
                     <asp:Literal ID="ltlIsEnabled" runat="server"></asp:Literal>
                   </ItemTemplate>
-                  <ItemStyle Width="60" cssClass="text-center" />
+                  <ItemStyle Width="80" cssClass="text-center" />
                 </asp:TemplateColumn>
                 <asp:TemplateColumn>
                   <ItemTemplate>
                     <asp:Literal ID="ltlEditHtml" runat="server"></asp:Literal>
                   </ItemTemplate>
-                  <ItemStyle Width="40" cssClass="text-center" />
+                  <ItemStyle Width="80" cssClass="text-center" />
                 </asp:TemplateColumn>
                 <asp:TemplateColumn>
                   <ItemTemplate>
                     <asp:Literal ID="ltlEnabledHtml" runat="server"></asp:Literal>
                   </ItemTemplate>
-                  <ItemStyle Width="40" cssClass="text-center" />
+                  <ItemStyle Width="80" cssClass="text-center" />
                 </asp:TemplateColumn>
                 <asp:TemplateColumn>
                   <ItemTemplate>
                     <asp:Literal ID="ltlDeleteHtml" runat="server"></asp:Literal>
                   </ItemTemplate>
-                  <ItemStyle Width="40" cssClass="text-center" />
+                  <ItemStyle Width="80" cssClass="text-center" />
                 </asp:TemplateColumn>
               </Columns>
             </asp:dataGrid>

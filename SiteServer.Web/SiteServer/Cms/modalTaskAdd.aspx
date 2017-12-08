@@ -1,150 +1,199 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalTaskAdd" Trace="false" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html class="modalPage">
 
-<body>
-    <!--#include file="../inc/openWindow.html"-->
-    <form class="form-inline" runat="server">
-        <asp:Button ID="btnSubmit" UseSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" Style="display: none" />
-        <bairong:Alerts runat="server"></bairong:Alerts>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+      <script type="text/javascript" language="javascript">
+        function selectAll(isChecked) {
+          for (var i = 0; i < document.getElementById('<%=LbCreateChannelId.ClientID%>').options.length; i++) {
+            document.getElementById('<%=LbCreateChannelId.ClientID%>').options[i].selected =
+              isChecked;
+          }
+        }
+      </script>
+    </head>
 
-        <script type="text/javascript" language="javascript">
-            function selectAll(isChecked) {
-                for (var i = 0; i < document.getElementById('<%=CreateChannelIDCollection.ClientID%>').options.length; i++) {
-                    document.getElementById('<%=CreateChannelIDCollection.ClientID%>').options[i].selected = isChecked;
-                }
-            }
-        </script>
+    <body>
+      <!--#include file="../inc/openWindow.html"-->
 
-        <table class="table table-noborder table-hover">
-            <tr>
-                <td width="120">
-                    <bairong:Help HelpText="任务名称" Text="任务名称：" runat="server"></bairong:Help>
-                </td>
-                <td>
-                    <asp:TextBox Columns="35" MaxLength="200" ID="TaskName" runat="server" />
-                    <asp:RequiredFieldValidator ControlToValidate="TaskName" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server" />
-                    <asp:RegularExpressionValidator runat="server" ControlToValidate="TaskName"
-                        ValidationExpression="[^']+" ErrorMessage=" *" ForeColor="red" Display="Dynamic" /></td>
-            </tr>
-            <tr>
-                <td>
-                    <bairong:Help HelpText="任务执行的频率" Text="任务执行频率：" runat="server"></bairong:Help>
-                </td>
-                <td>
-                    <asp:DropDownList ID="FrequencyType" class="input-medium" AutoPostBack="true" OnSelectedIndexChanged="FrequencyType_SelectedIndexChanged" runat="server"></asp:DropDownList>
-                    <asp:PlaceHolder ID="PlaceHolder_PeriodIntervalMinute" Visible="false" runat="server">&nbsp;周期：&nbsp;每
-          <asp:TextBox class="input-mini" MaxLength="50" Text="30" ID="PeriodInterval" runat="server" />
-                        &nbsp;
-          <asp:DropDownList ID="PeriodIntervalType" class="input-small" runat="server"></asp:DropDownList>
-                        <asp:RequiredFieldValidator ControlToValidate="PeriodInterval" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server" />
-                        <asp:RegularExpressionValidator
-                            ControlToValidate="PeriodInterval"
-                            ValidationExpression="\d+"
-                            Display="Dynamic"
-                            ErrorMessage="必须为大于零的整数"
-                            foreColor="red"
-                            runat="server" />
-                        <asp:CompareValidator
-                            ControlToValidate="PeriodInterval"
-                            Operator="GreaterThan"
-                            ValueToCompare="0"
-                            Display="Dynamic"
-                            ErrorMessage="必须为大于零的整数"
-                            foreColor="red"
-                            runat="server" />
-                    </asp:PlaceHolder>
-                </td>
-            </tr>
-            <asp:PlaceHolder ID="PlaceHolder_NotPeriod" runat="server">
-                <tr>
-                    <td>
-                        <bairong:Help HelpText="任务执行的开始时刻" Text="任务开始时刻：" runat="server"></bairong:Help>
-                    </td>
-                    <td>
-                        <table width="100%" border="0" cellspacing="1" cellpadding="1">
-                            <tr>
-                                <td>日期：</td>
-                                <td>
-                                    <asp:DropDownList ID="StartDay" CssClass="input-small" runat="server"></asp:DropDownList></td>
-                                <td>星期：</td>
-                                <td>
-                                    <asp:DropDownList ID="StartWeekday" CssClass="input-small" runat="server"></asp:DropDownList></td>
-                                <td>小时：</td>
-                                <td>
-                                    <asp:DropDownList ID="StartHour" CssClass="input-small" runat="server"></asp:DropDownList></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </asp:PlaceHolder>
-            <tr>
-                <td width="120">
-                    <bairong:Help HelpText="任务描述" Text="任务描述：" runat="server"></bairong:Help>
-                </td>
-                <td>
-                    <asp:TextBox Columns="55" TextMode="MultiLine" Rows="2" MaxLength="200" ID="Description" runat="server" /></td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <hr />
-                </td>
-            </tr>
-            <asp:PlaceHolder ID="PlaceHolder_Create" Visible="false" runat="server">
-                <tr>
-                    <td>
-                        <bairong:Help HelpText="选择需要生成的对象" Text="需要生成的对象：" runat="server"></bairong:Help>
-                    </td>
-                    <td>
-                        <asp:ListBox ID="CreateChannelIDCollection" SelectionMode="Multiple" Rows="13" runat="server"></asp:ListBox>
-                        &nbsp;<asp:CheckBox ID="CreateIsCreateAll" class="checkbox inline" Text="生成全部" runat="server"></asp:CheckBox>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <bairong:Help HelpText="生成文件的类型" Text="生成类型：" runat="server"></bairong:Help>
-                    </td>
-                    <td>
-                        <asp:CheckBoxList ID="CreateCreateTypes" RepeatDirection="Horizontal" class="noborder" runat="server"></asp:CheckBoxList></td>
-                </tr>
-            </asp:PlaceHolder>
-            <asp:PlaceHolder ID="PlaceHolder_Gather" Visible="false" runat="server">
-                <tr>
-                    <td>
-                        <bairong:Help ID="GatherHelp" Text="需要定时采集的的对象：" runat="server"></bairong:Help>
-                    </td>
-                    <td>
-                        <asp:ListBox ID="GatherListBox" SelectionMode="Multiple" Rows="10" runat="server"></asp:ListBox>
-                        <asp:RequiredFieldValidator ControlToValidate="GatherListBox" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server" /></td>
-                </tr>
-            </asp:PlaceHolder>
-            <asp:PlaceHolder ID="PlaceHolder_Backup" Visible="false" runat="server">
-                <tr>
-                    <td>
-                        <bairong:Help HelpText="选择备份类型" Text="选择备份类型：" runat="server"></bairong:Help>
-                    </td>
-                    <td>
-                        <asp:DropDownList ID="BackupType" runat="server"></asp:DropDownList></td>
-                </tr>
-                <asp:PlaceHolder ID="PlaceHolder_Backup_PublishmentSystem" Visible="false" runat="server">
-                    <tr>
-                        <td>
-                            <bairong:Help HelpText="选择需要备份的站点" Text="需要备份的站点：" runat="server"></bairong:Help>
-                        </td>
-                        <td>
-                            <asp:ListBox ID="BackupPublishmentSystemIDCollection" SelectionMode="Multiple" Rows="8" runat="server"></asp:ListBox>
-                            &nbsp;&nbsp;
-                            <asp:CheckBox ID="BackupIsBackupAll" runat="server" onClick="selectAll(this.checked);" Text="全部"></asp:CheckBox></td>
-                    </tr>
-                </asp:PlaceHolder>
-            </asp:PlaceHolder>
-        </table>
+      <form runat="server">
+        <ctrl:alerts runat="server" />
 
-    </form>
-</body>
-</html>
+        <div class="form-horizontal">
+
+          <div class="form-group">
+            <label class="col-xs-2 text-right control-label">任务名称</label>
+            <div class="col-xs-7">
+              <asp:TextBox id="TbTaskName" cssClass="form-control" runat="server" />
+            </div>
+            <div class="col-xs-3 help-block">
+              <asp:RequiredFieldValidator ControlToValidate="TbTaskName" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+              />
+              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbTaskName" ValidationExpression="[^']+" ErrorMessage=" *"
+                ForeColor="red" Display="Dynamic" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-2 text-right control-label">任务执行频率</label>
+            <div class="col-xs-7">
+              <asp:DropDownList ID="DdlFrequencyType" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlFrequencyType_SelectedIndexChanged"
+                runat="server"></asp:DropDownList>
+            </div>
+            <div class="col-xs-3 help-block">
+
+            </div>
+          </div>
+
+          <asp:PlaceHolder ID="PhPeriodIntervalMinute" Visible="false" runat="server">
+            <div class="form-group">
+              <label class="col-xs-2 text-right control-label">周期</label>
+              <div class="col-xs-2">
+                <asp:TextBox class="form-control" MaxLength="50" Text="30" ID="TbPeriodInterval" runat="server" />
+              </div>
+              <div class="col-xs-2">
+                <asp:DropDownList ID="DdlPeriodIntervalType" class="form-control" runat="server"></asp:DropDownList>
+              </div>
+              <div class="col-xs-3"></div>
+              <div class="col-xs-3 help-block">
+                <asp:RequiredFieldValidator ControlToValidate="TbPeriodInterval" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                />
+                <asp:RegularExpressionValidator ControlToValidate="TbPeriodInterval" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="必须为大于零的整数"
+                  foreColor="red" runat="server" />
+                <asp:CompareValidator ControlToValidate="TbPeriodInterval" Operator="GreaterThan" ValueToCompare="0" Display="Dynamic" ErrorMessage="必须为大于零的整数"
+                  foreColor="red" runat="server" />
+              </div>
+            </div>
+          </asp:PlaceHolder>
+
+
+          <asp:PlaceHolder ID="PhNotPeriod" runat="server">
+            <div class="form-group">
+              <label class="col-xs-2 text-right control-label">任务开始时刻</label>
+              <div class="col-xs-7">
+                <div class="row">
+                  <div class="col-xs-1 text-right control-label">
+                    日期
+                  </div>
+                  <div class="col-xs-3">
+                    <asp:DropDownList ID="DdlStartDay" CssClass="form-control" runat="server"></asp:DropDownList>
+                  </div>
+                  <div class="col-xs-1 text-right control-label">
+                    星期
+                  </div>
+                  <div class="col-xs-3">
+                    <asp:DropDownList ID="DdlStartWeekday" CssClass="form-control" runat="server"></asp:DropDownList>
+                  </div>
+                  <div class="col-xs-1 text-right control-label">
+                    小时
+                  </div>
+                  <div class="col-xs-3">
+                    <asp:DropDownList ID="DdlStartHour" CssClass="form-control" runat="server"></asp:DropDownList>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-3 help-block">
+
+              </div>
+            </div>
+          </asp:PlaceHolder>
+
+          <div class="form-group">
+            <label class="col-xs-2 text-right control-label">任务描述</label>
+            <div class="col-xs-7">
+              <asp:TextBox class="form-control" TextMode="MultiLine" Rows="2" ID="TbDescription" runat="server" />
+            </div>
+            <div class="col-xs-3 help-block">
+
+            </div>
+          </div>
+
+
+          <asp:PlaceHolder ID="PhCreate" Visible="false" runat="server">
+            <div class="form-group">
+              <label class="col-xs-2 text-right control-label">需要生成的对象</label>
+              <div class="col-xs-7">
+                <asp:ListBox ID="LbCreateChannelId" class="form-control" SelectionMode="Multiple" Rows="13" runat="server"></asp:ListBox>
+                <asp:CheckBox ID="CbCreateIsCreateAll" class="checkbox checkbox-primary" Text="生成全部" runat="server"></asp:CheckBox>
+              </div>
+              <div class="col-xs-3 help-block">
+
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-xs-2 text-right control-label">生成类型</label>
+              <div class="col-xs-7">
+                <asp:CheckBoxList ID="CblCreateCreateTypes" RepeatDirection="Horizontal" class="checkbox checkbox-primary" runat="server"></asp:CheckBoxList>
+              </div>
+              <div class="col-xs-3 help-block">
+
+              </div>
+            </div>
+          </asp:PlaceHolder>
+
+
+          <asp:PlaceHolder ID="PhGather" Visible="false" runat="server">
+            <div class="form-group">
+              <label class="col-xs-2 text-right control-label">
+                <asp:Literal ID="LtlGather" runat="server" />
+              </label>
+              <div class="col-xs-7">
+                <asp:ListBox ID="LbGather" CssClass="form-control" SelectionMode="Multiple" Rows="10" runat="server"></asp:ListBox>
+              </div>
+              <div class="col-xs-3 help-block">
+                <asp:RequiredFieldValidator ControlToValidate="LbGather" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+                />
+              </div>
+            </div>
+          </asp:PlaceHolder>
+
+
+          <asp:PlaceHolder ID="PhBackup" Visible="false" runat="server">
+            <div class="form-group">
+              <label class="col-xs-2 text-right control-label">
+                选择备份类型
+              </label>
+              <div class="col-xs-7">
+                <asp:DropDownList ID="DdlBackupType" cssClass="form-control" runat="server"></asp:DropDownList>
+              </div>
+              <div class="col-xs-3 help-block">
+
+              </div>
+            </div>
+
+            <asp:PlaceHolder ID="PhBackupPublishmentSystem" Visible="false" runat="server">
+              <div class="form-group">
+                <label class="col-xs-2 text-right control-label">
+                  需要备份的站点
+                </label>
+                <div class="col-xs-7">
+                  <asp:ListBox ID="LbBackupPublishmentSystemId" cssClass="form-control" SelectionMode="Multiple" Rows="8" runat="server"></asp:ListBox>
+                  <asp:CheckBox ID="CbBackupIsBackupAll" cssClass="checkbox checkbox-primary" runat="server" onClick="selectAll(this.checked);"
+                    Text="全部"></asp:CheckBox>
+                </div>
+                <div class="col-xs-3 help-block">
+
+                </div>
+              </div>
+            </asp:PlaceHolder>
+          </asp:PlaceHolder>
+
+          <hr />
+
+          <div class="form-group m-b-0">
+            <div class="col-xs-11 text-right">
+              <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
+              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
+            </div>
+            <div class="col-xs-1"></div>
+          </div>
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

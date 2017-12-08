@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
                             CreatedFileFullName.Text = PathUtils.RemoveExtension(templateInfo.CreatedFileFullName);
 
                             LtlCommands.Text +=
-                                $@"<a href=""javascript:;"" class=""btn btn-info"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateByTemplate(PublishmentSystemId, templateInfo.TemplateId)}"">生成页面</a><a href=""javascript:;"" class=""btn btn-info"" onclick=""{ModalTemplateRestore.GetOpenLayerString(PublishmentSystemId, templateInfo.TemplateId, string.Empty)}"">还原历史版本</a>";
+                                $@"<a href=""javascript:;"" class=""btn btn-info"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateByTemplate(PublishmentSystemId, templateInfo.TemplateId)}"">生成页面</a><a href=""javascript:;"" class=""btn btn-info"" onclick=""{ModalTemplateRestore.GetOpenWindowString(PublishmentSystemId, templateInfo.TemplateId, string.Empty)}"">还原历史版本</a>";
 
                             if (Body.GetQueryInt("TemplateLogID") > 0)
                             {

@@ -104,15 +104,6 @@
                       页面生成将按顺序逐步进行，在此查看当前页面生成进度
                   </p>
 
-                  <asp:PlaceHolder id="PhRunService" runat="server">
-                    <div class="alert alert-warning fade in m-b-0">
-                      <h4>为提高生成页面速度，建议启动siteserver.exe 服务组件生成页面</h4>
-                      <p>
-                        请在SiteServer系统根目录下双击运行siteserver.exe程序启用服务。
-                      </p>
-                    </div>
-                  </asp:PlaceHolder>
-
                   <div class="row app-countdown">
                     <div class="col-sm-12">
                       <div>

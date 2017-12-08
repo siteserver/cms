@@ -29,6 +29,7 @@
                 foreColor="red" display="Dynamic" />
             </div>
           </div>
+          
           <div class="form-group">
             <label class="col-xs-3 text-right control-label">内容组简介</label>
             <div class="col-xs-8">

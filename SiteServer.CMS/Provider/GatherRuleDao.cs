@@ -442,9 +442,9 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
             return enumerable;
         }
 
-        public ArrayList GetGatherRuleInfoArrayList(int publishmentSystemId)
+        public List<GatherRuleInfo> GetGatherRuleInfoList(int publishmentSystemId)
         {
-            var list = new ArrayList();
+            var list = new List<GatherRuleInfo>();
 
             var parms = new IDataParameter[]
             {
@@ -465,7 +465,7 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
             return list;
         }
 
-        public List<string> GetGatherRuleNameArrayList(int publishmentSystemId)
+        public List<string> GetGatherRuleNameList(int publishmentSystemId)
         {
             var list = new List<string>();
 
@@ -486,14 +486,14 @@ CookieString = @CookieString, GatherUrlIsCollection = @GatherUrlIsCollection, Ga
             return list;
         }
 
-        public void OpenAuto(int publishmentSystemId, ArrayList gatherRuleNameCollection)
+        public void OpenAuto(int publishmentSystemId, List<string> gatherRuleNameCollection)
         {
             string sql =
                 $"UPDATE siteserver_GatherRule SET IsAutoCreate = 'True' WHERE PublishmentSystemID = {publishmentSystemId} AND GatherRuleName in ({TranslateUtils.ToSqlInStringWithQuote(gatherRuleNameCollection)})";
             ExecuteNonQuery(sql);
         }
 
-        public void CloseAuto(int publishmentSystemId, ArrayList gatherRuleNameCollection)
+        public void CloseAuto(int publishmentSystemId, List<string> gatherRuleNameCollection)
         {
             string sql =
                 $"UPDATE siteserver_GatherRule SET IsAutoCreate = 'False' WHERE PublishmentSystemID = {publishmentSystemId} AND GatherRuleName in ({TranslateUtils.ToSqlInStringWithQuote(gatherRuleNameCollection)})";

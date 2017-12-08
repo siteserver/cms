@@ -8,6 +8,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalTemplateRestore : BasePageCms
     {
+        public PlaceHolder PhContent;
         public DropDownList DdlLogId;
         public TextBox TbContent;
 
@@ -17,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         protected override bool IsSinglePage => true;
 
-	    public static string GetOpenLayerString(int publishmentSystemId, int templateId, string includeUrl)
+	    public static string GetOpenWindowString(int publishmentSystemId, int templateId, string includeUrl)
         {
             return PageUtils.GetOpenLayerString("还原历史版本", PageUtils.GetCmsUrl(nameof(ModalTemplateRestore), new NameValueCollection
             {
@@ -36,10 +37,13 @@ namespace SiteServer.BackgroundPages.Cms
             _templateId = Body.GetQueryInt("templateID");
             _includeUrl = Body.GetQueryString("includeUrl");
             _logId = Body.GetQueryInt("logID");
-           
-			if (!IsPostBack)
-			{
-                var logDictionary = DataProvider.TemplateLogDao.GetLogIdWithNameDictionary(PublishmentSystemId, _templateId);
+
+            if (IsPostBack) return;
+
+            var logDictionary = DataProvider.TemplateLogDao.GetLogIdWithNameDictionary(PublishmentSystemId, _templateId);
+            if (logDictionary.Count > 0)
+            {
+                PhContent.Visible = true;
                 foreach (var value in logDictionary)
                 {
                     var listItem = new ListItem(value.Value, value.Key.ToString());
@@ -50,16 +54,18 @@ namespace SiteServer.BackgroundPages.Cms
                     ControlUtils.SelectListItems(DdlLogId, _logId.ToString());
                 }
 
-                if (DdlLogId.Items.Count > 0)
+                if (_logId == 0)
                 {
-                    if (_logId == 0)
-                    {
-                        _logId = TranslateUtils.ToInt(DdlLogId.Items[0].Value);
-                    }
-                    TbContent.Text = DataProvider.TemplateLogDao.GetTemplateContent(_logId);
+                    _logId = TranslateUtils.ToInt(DdlLogId.Items[0].Value);
                 }
-			}
-		}
+                TbContent.Text = DataProvider.TemplateLogDao.GetTemplateContent(_logId);
+            }
+            else
+            {
+                PhContent.Visible = false;
+                InfoMessage("当前模板不存在历史版本，无法进行还原");
+            }
+        }
 
         public void DdlLogId_SelectedIndexChanged(object sender, EventArgs e)
         {

@@ -12,16 +12,16 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class ModalTableStyleValidateAdd : BasePageCms
     {
-        public RadioButtonList IsValidate;
-        public PlaceHolder phValidate;
-        public RadioButtonList IsRequired;
-        public PlaceHolder phNum;
-        public TextBox MinNum;
-        public TextBox MaxNum;
-        public DropDownList ValidateType;
-        public PlaceHolder phRegExp;
-        public TextBox RegExp;
-        public TextBox ErrorMessage;
+        public DropDownList DdlIsValidate;
+        public PlaceHolder PhValidate;
+        public DropDownList DdlIsRequired;
+        public PlaceHolder PhNum;
+        public TextBox TbMinNum;
+        public TextBox TbMaxNum;
+        public DropDownList DdlValidateType;
+        public PlaceHolder PhRegExp;
+        public TextBox TbRegExp;
+        public TextBox TbErrorMessage;
 
         private int _tableStyleId;
         private List<int> _relatedIdentities;
@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int tableStyleId, List<int> relatedIdentities, string tableName, string attributeName, ETableStyle tableStyle, string redirectUrl)
         {
-            return PageUtils.GetOpenWindowString("设置表单验证", PageUtils.GetCmsUrl(nameof(ModalTableStyleValidateAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("设置表单验证", PageUtils.GetCmsUrl(nameof(ModalTableStyleValidateAdd), new NameValueCollection
             {
                 {"TableStyleID", tableStyleId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {"AttributeName", attributeName},
                 {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                 {"RedirectUrl", StringUtils.ValueToUrl(redirectUrl)}
-            }), 450, 460);
+            }));
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -59,71 +59,41 @@ namespace SiteServer.BackgroundPages.Cms
             _tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
             _redirectUrl = StringUtils.ValueFromUrl(Body.GetQueryString("RedirectUrl"));
 
-            if (_tableStyleId != 0)
-            {
-                _styleInfo = BaiRongDataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId);
-            }
-            else
-            {
-                _styleInfo = TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, _attributeName, _relatedIdentities);
-            }
+            _styleInfo = _tableStyleId != 0
+                ? BaiRongDataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId)
+                : TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, _attributeName, _relatedIdentities);
 
-            if (!IsPostBack)
-            {
-                IsValidate.Items[0].Value = true.ToString();
-                IsValidate.Items[1].Value = false.ToString();
+            if (IsPostBack) return;
 
-                ControlUtils.SelectListItems(IsValidate, _styleInfo.Additional.IsValidate.ToString());
+            DdlIsValidate.Items[0].Value = true.ToString();
+            DdlIsValidate.Items[1].Value = false.ToString();
 
-                IsRequired.Items[0].Value = true.ToString();
-                IsRequired.Items[1].Value = false.ToString();
+            ControlUtils.SelectListItems(DdlIsValidate, _styleInfo.Additional.IsValidate.ToString());
 
-                ControlUtils.SelectListItems(IsRequired, _styleInfo.Additional.IsRequired.ToString());
+            DdlIsRequired.Items[0].Value = true.ToString();
+            DdlIsRequired.Items[1].Value = false.ToString();
 
-                if (InputTypeUtils.EqualsAny(_styleInfo.InputType, InputType.Text, InputType.TextArea))
-                {
-                    phNum.Visible = true;
-                }
-                else
-                {
-                    phNum.Visible = false;
-                }
+            ControlUtils.SelectListItems(DdlIsRequired, _styleInfo.Additional.IsRequired.ToString());
 
-                MinNum.Text = _styleInfo.Additional.MinNum.ToString();
-                MaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
+            PhNum.Visible = InputTypeUtils.EqualsAny(_styleInfo.InputType, InputType.Text, InputType.TextArea);
 
-                ValidateTypeUtils.AddListItems(ValidateType);
-                ControlUtils.SelectListItems(ValidateType, ValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
+            TbMinNum.Text = _styleInfo.Additional.MinNum.ToString();
+            TbMaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
 
-                RegExp.Text = _styleInfo.Additional.RegExp;
-                ErrorMessage.Text = _styleInfo.Additional.ErrorMessage;
+            ValidateTypeUtils.AddListItems(DdlValidateType);
+            ControlUtils.SelectListItems(DdlValidateType, ValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
 
-                Validate_SelectedIndexChanged(null, EventArgs.Empty);
+            TbRegExp.Text = _styleInfo.Additional.RegExp;
+            TbErrorMessage.Text = _styleInfo.Additional.ErrorMessage;
 
-                
-            }
-		}
+            DdlValidate_SelectedIndexChanged(null, EventArgs.Empty);
+        }
 
-        public void Validate_SelectedIndexChanged(object sender, EventArgs e)
+        public void DdlValidate_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (EBooleanUtils.Equals(EBoolean.False, IsValidate.SelectedValue))
-            {
-                phValidate.Visible = false;
-            }
-            else
-            {
-                phValidate.Visible = true;
-            }
-
-            var type = ValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
-            if (type == Plugin.Models.ValidateType.RegExp)
-            {
-                phRegExp.Visible = true;
-            }
-            else
-            {
-                phRegExp.Visible = false;
-            }
+            PhValidate.Visible = !EBooleanUtils.Equals(EBoolean.False, DdlIsValidate.SelectedValue);
+            var type = ValidateTypeUtils.GetEnumType(DdlValidateType.SelectedValue);
+            PhRegExp.Visible = type == ValidateType.RegExp;
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -140,13 +110,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var isChanged = false;
 
-            _styleInfo.Additional.IsValidate = TranslateUtils.ToBool(IsValidate.SelectedValue);
-            _styleInfo.Additional.IsRequired = TranslateUtils.ToBool(IsRequired.SelectedValue);
-            _styleInfo.Additional.MinNum = TranslateUtils.ToInt(MinNum.Text);
-            _styleInfo.Additional.MaxNum = TranslateUtils.ToInt(MaxNum.Text);
-            _styleInfo.Additional.ValidateType = ValidateTypeUtils.GetEnumType(ValidateType.SelectedValue);
-            _styleInfo.Additional.RegExp = RegExp.Text.Trim('/');
-            _styleInfo.Additional.ErrorMessage = ErrorMessage.Text;
+            _styleInfo.Additional.IsValidate = TranslateUtils.ToBool(DdlIsValidate.SelectedValue);
+            _styleInfo.Additional.IsRequired = TranslateUtils.ToBool(DdlIsRequired.SelectedValue);
+            _styleInfo.Additional.MinNum = TranslateUtils.ToInt(TbMinNum.Text);
+            _styleInfo.Additional.MaxNum = TranslateUtils.ToInt(TbMaxNum.Text);
+            _styleInfo.Additional.ValidateType = ValidateTypeUtils.GetEnumType(DdlValidateType.SelectedValue);
+            _styleInfo.Additional.RegExp = TbRegExp.Text.Trim('/');
+            _styleInfo.Additional.ErrorMessage = TbErrorMessage.Text;
 
             try
             {

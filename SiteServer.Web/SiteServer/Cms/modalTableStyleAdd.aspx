@@ -19,7 +19,7 @@
           <div class="form-group">
             <label class="col-xs-2 control-label">字段名称</label>
             <div class="col-xs-7">
-              <asp:TextBox class="form-control" Columns="25" MaxLength="50" id="TbAttributeName" runat="server" />
+              <asp:TextBox CssClass="form-control" id="TbAttributeName" runat="server" />
             </div>
             <div class="col-xs-3 help-block">
               <asp:RequiredFieldValidator ControlToValidate="TbAttributeName" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
@@ -107,25 +107,27 @@
             </div>
           </asp:PlaceHolder>
 
-          <asp:PlaceHolder ID="PhHeightAndWidth" runat="server">
+          <asp:PlaceHolder ID="PhWidth" runat="server">
             <div class="form-group">
               <label class="col-xs-2 control-label">显示宽度</label>
               <div class="col-xs-7">
-                <asp:TextBox class="form-control" MaxLength="50" Text="0" id="TbWidth" runat="server" />
+                <asp:TextBox class="form-control" MaxLength="50" id="TbWidth" runat="server" />
               </div>
               <div class="col-xs-3 help-block">
-                px（0代表默认）
+                px（不设置代表默认宽度）
                 <asp:RegularExpressionValidator ControlToValidate="TbWidth" ValidationExpression="\d+" Display="Dynamic" errorMessage=" *"
                   foreColor="red" runat="server" />
               </div>
             </div>
+          </asp:PlaceHolder>
+          <asp:PlaceHolder ID="PhHeight" runat="server">
             <div class="form-group">
               <label class="col-xs-2 control-label">显示高度</label>
               <div class="col-xs-7">
-                <asp:TextBox class="form-control" MaxLength="50" Text="0" id="TbHeight" runat="server" />
+                <asp:TextBox class="form-control" MaxLength="50" id="TbHeight" runat="server" />
               </div>
               <div class="col-xs-3 help-block">
-                px（0代表默认）
+                px（不设置代表默认高度）
                 <asp:RegularExpressionValidator ControlToValidate="TbHeight" ValidationExpression="\d+" Display="Dynamic" errorMessage=" *"
                   foreColor="red" runat="server" />
               </div>
