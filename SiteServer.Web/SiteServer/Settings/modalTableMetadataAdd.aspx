@@ -1,81 +1,73 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.ModalTableMetadataAdd" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html class="modalPage">
 
-<body <%if (Request.QueryString["TableMetadataID"] != null){%>onload="InitialTextData();"<%}else{%>onload="updateTextData();"<%}%>>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" runat="server" id="MyForm">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-<bairong:alerts runat="server"></bairong:alerts>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <script language="javascript">
-  var vArr = new Array();
-  //Ddldatatype,length,length_editable
-  vArr[0] = new Array('DateTime',8,false);
-  vArr[1] = new Array('Integer',4,false);
-  vArr[2] = new Array('NChar',50,true);
-  vArr[3] = new Array('NText',16,false);
-  vArr[4] = new Array('NVarChar',255,true);
+    <body>
+      <!--#include file="../inc/openWindow.html"-->
 
-  function updateTextData() {
-      var myForm = document.forms.MyForm;
-      var valueStr = document.forms.MyForm.DdlDataType.options[document.forms.MyForm.DdlDataType.selectedIndex].value;
-      for (var i = 0; i < vArr.length; i++) {
-          if (valueStr == vArr[i][0]) {
-              myForm.DataLength.value = vArr[i][1];
-              myForm.DataLength.disabled = (vArr[i][2])?null:"disabled";
-              myForm.DataLengthHidden.value = vArr[i][1];
-          }
-      }
-  }
+      <form runat="server">
+        <ctrl:alerts runat="server" />
 
-  function InitialTextData() {
-      var myForm = document.forms.MyForm;
-      var valueStr = document.forms.MyForm.DdlDataType.options[document.forms.MyForm.DdlDataType.selectedIndex].value;
-      for (var i = 0; i < vArr.length; i++) {
-          if (valueStr == vArr[i][0]) {
-              myForm.DataLength.disabled = (vArr[i][2])?null:"disabled";
-              myForm.DataLengthHidden.value = vArr[i][1];
-          }
-      }
-  }
-  </script>
-    
-  <table class="table table-noborder table-hover">
-    <tr>
-      <td><bairong:help HelpText="需要添加的字段名称" Text="字段名：" runat="server" ></bairong:help></td>
-      <td><asp:TextBox Columns="25" MaxLength="50" id="AttributeName" runat="server" />
-        <asp:RequiredFieldValidator id="RequiredFieldValidator" ControlToValidate="AttributeName" errorMessage=" *" foreColor="red" display="Dynamic"
-                    runat="server" />
-        <asp:RegularExpressionValidator runat="server" ControlToValidate="AttributeName"
-                ValidationExpression="[a-zA-Z0-9_]+" ErrorMessage="<br/>只允许包含字母、数字以及下划线" foreColor="red" Display="Dynamic" /></td>
-    </tr>
-    <tr>
-      <td><bairong:help HelpText="此字段的数据类型" Text="数据类型：" runat="server" ></bairong:help></td>
-      <td><asp:DropDownList ID="DdlDataType" runat="server" onChange="updateTextData();"> </asp:DropDownList></td>
-    </tr>
-    <tr>
-      <td><bairong:help HelpText="此字段的数据长度" Text="数据长度：" runat="server" ></bairong:help></td>
-      <td>
-        <asp:TextBox Columns="25" MaxLength="50" id="DataLength" runat="server" />
-        <asp:RequiredFieldValidator ControlToValidate="DataLength" errorMessage=" *" foreColor="red" display="Dynamic" runat="server" />
-        <asp:RegularExpressionValidator
-          ControlToValidate="DataLength"
-          ValidationExpression="\d+"
-          Display="Dynamic"
-          ErrorMessage="数据长度必须为数字"
-          foreColor="red"
-          runat="server"/>
-        <input type="hidden" value="0" id="DataLengthHidden">
-      </td>
-    </tr>
-  </table>
+        <div class="form-horizontal">
 
-</form>
-</body>
-</html>
+          <div class="form-group">
+            <label class="col-xs-2 text-right control-label">字段名</label>
+            <div class="col-xs-5">
+              <asp:TextBox id="TbAttributeName" class="form-control" runat="server" />
+            </div>
+            <div class="col-xs-5">
+              <asp:RequiredFieldValidator id="RequiredFieldValidator" ControlToValidate="TbAttributeName" errorMessage=" *" foreColor="red"
+                display="Dynamic" runat="server" />
+              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbAttributeName" ValidationExpression="[a-zA-Z0-9_]+" ErrorMessage=" *"
+                foreColor="red" Display="Dynamic" />
+              <span class="help-block">只允许包含字母、数字以及下划线</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-xs-2 text-right control-label">数据类型</label>
+            <div class="col-xs-5">
+              <asp:DropDownList ID="DdlDataType" class="form-control" runat="server" AutoPostBack="true" OnSelectedIndexChanged="DdlDataType_SelectedIndexChanged"
+              />
+            </div>
+            <div class="col-xs-5">
+
+            </div>
+          </div>
+
+          <asp:PlaceHolder id="PhDataLength" runat="server">
+            <div class="form-group">
+              <label class="col-xs-2 text-right control-label">数据长度</label>
+              <div class="col-xs-5">
+                <asp:TextBox id="TbDataLength" class="form-control" runat="server" />
+              </div>
+              <div class="col-xs-5">
+                <asp:RequiredFieldValidator ControlToValidate="TbDataLength" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+                />
+                <asp:RegularExpressionValidator ControlToValidate="TbDataLength" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="数据长度必须为数字"
+                  foreColor="red" runat="server" />
+              </div>
+            </div>
+          </asp:PlaceHolder>
+
+          <hr />
+
+          <div class="form-group m-b-0">
+            <div class="col-xs-11 text-right">
+              <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
+              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
+            </div>
+            <div class="col-xs-1"></div>
+          </div>
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

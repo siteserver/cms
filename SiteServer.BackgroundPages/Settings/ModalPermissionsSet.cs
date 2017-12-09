@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
@@ -15,7 +14,7 @@ namespace SiteServer.BackgroundPages.Settings
         public DropDownList DdlPredefinedRole;
         public PlaceHolder PhPublishmentSystemId;
         public CheckBoxList CblPublishmentSystemId;
-        public Control TrRolesRow;
+        public PlaceHolder PhRoles;
         public ListBox LbAvailableRoles;
         public ListBox LbAssignedRoles;
 
@@ -24,7 +23,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(string userName)
         {
-            return PageUtils.GetOpenWindowString("权限设置",
+            return PageUtils.GetOpenLayerString("权限设置",
                 PageUtils.GetSettingsUrl(nameof(ModalPermissionsSet), new NameValueCollection
                 {
                     {"UserName", userName}
@@ -63,16 +62,16 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (EPredefinedRoleUtils.Equals(EPredefinedRole.ConsoleAdministrator, DdlPredefinedRole.SelectedValue))
             {
-                TrRolesRow.Visible = PhPublishmentSystemId.Visible = false;
+                PhRoles.Visible = PhPublishmentSystemId.Visible = false;
             }
             else if (EPredefinedRoleUtils.Equals(EPredefinedRole.SystemAdministrator, DdlPredefinedRole.SelectedValue))
             {
-                TrRolesRow.Visible = false;
+                PhRoles.Visible = false;
                 PhPublishmentSystemId.Visible = true;
             }
             else
             {
-                TrRolesRow.Visible = true;
+                PhRoles.Visible = true;
                 PhPublishmentSystemId.Visible = false;
             }
         }
@@ -102,87 +101,80 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void AddRole_OnClick(object sender, EventArgs e)
         {
-            if (IsPostBack && IsValid)
+            if (!IsPostBack || !IsValid) return;
+
+            try
             {
-                try
+                if (LbAvailableRoles.SelectedIndex != -1)
                 {
-                    if (LbAvailableRoles.SelectedIndex != -1)
+                    var selectedRoles = ControlUtils.GetSelectedListControlValueArray(LbAvailableRoles);
+                    if (selectedRoles.Length > 0)
                     {
-                        var selectedRoles = ControlUtils.GetSelectedListControlValueArray(LbAvailableRoles);
-                        if (selectedRoles.Length > 0)
-                        {
-                            BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRoles(_userName, selectedRoles);
-                        }
+                        BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRoles(_userName, selectedRoles);
                     }
-                    ListBoxDataBind();
                 }
-                catch (Exception ex)
-                {
-                    FailMessage(ex, "用户角色分配失败");
-                }
+                ListBoxDataBind();
+            }
+            catch (Exception ex)
+            {
+                FailMessage(ex, "用户角色分配失败");
             }
         }
 
         public void AddRoles_OnClick(object sender, EventArgs e)
         {
-            if (IsPostBack && IsValid)
+            if (!IsPostBack || !IsValid) return;
+
+            try
             {
-                try
+                var roles = ControlUtils.GetListControlValues(LbAvailableRoles);
+                if (roles.Length > 0)
                 {
-                    var roles = ControlUtils.GetListControlValues(LbAvailableRoles);
-                    if (roles.Length > 0)
-                    {
-                        BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRoles(_userName, roles);
-                    }
-                    ListBoxDataBind();
+                    BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRoles(_userName, roles);
                 }
-                catch (Exception ex)
-                {
-                    FailMessage(ex, "用户角色分配失败");
-                }
+                ListBoxDataBind();
+            }
+            catch (Exception ex)
+            {
+                FailMessage(ex, "用户角色分配失败");
             }
         }
 
         public void DeleteRole_OnClick(object sender, EventArgs e)
         {
-            if (IsPostBack && IsValid)
+            if (!IsPostBack || !IsValid) return;
+
+            try
             {
-                try
+                if (LbAssignedRoles.SelectedIndex != -1)
                 {
-                    if (LbAssignedRoles.SelectedIndex != -1)
-                    {
-                        var selectedRoles = ControlUtils.GetSelectedListControlValueArray(LbAssignedRoles);
-                        BaiRongDataProvider.AdministratorsInRolesDao.RemoveUserFromRoles(_userName, selectedRoles);
-                    }
-                    ListBoxDataBind();
+                    var selectedRoles = ControlUtils.GetSelectedListControlValueArray(LbAssignedRoles);
+                    BaiRongDataProvider.AdministratorsInRolesDao.RemoveUserFromRoles(_userName, selectedRoles);
                 }
-                catch (Exception ex)
-                {
-                    FailMessage(ex, "用户角色分配失败");
-                }
+                ListBoxDataBind();
+            }
+            catch (Exception ex)
+            {
+                FailMessage(ex, "用户角色分配失败");
             }
         }
 
         public void DeleteRoles_OnClick(object sender, EventArgs e)
         {
-            if (IsPostBack && IsValid)
+            if (!IsPostBack || !IsValid) return;
+
+            try
             {
-                if (IsPostBack && IsValid)
+                var roles = ControlUtils.GetListControlValues(LbAssignedRoles);
+                if (roles.Length > 0)
                 {
-                    try
-                    {
-                        var roles = ControlUtils.GetListControlValues(LbAssignedRoles);
-                        if (roles.Length > 0)
-                        {
-                            BaiRongDataProvider.AdministratorsInRolesDao.RemoveUserFromRoles(_userName, roles);
-                        }
-                        ListBoxDataBind();
-                    }
-                    catch (Exception ex)
-                    {
-                        FailMessage(ex, "用户角色分配失败");
-                    }
+                    BaiRongDataProvider.AdministratorsInRolesDao.RemoveUserFromRoles(_userName, roles);
                 }
+                ListBoxDataBind();
+            }
+            catch (Exception ex)
+            {
+                FailMessage(ex, "用户角色分配失败");
             }
         }
 

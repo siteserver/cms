@@ -8,9 +8,9 @@ namespace SiteServer.BackgroundPages.Settings
 {
 	public class ModalAreaAdd : BasePage
     {
-        public TextBox AreaName;
-        public PlaceHolder phParentID;
-        public DropDownList ParentID;
+        public TextBox TbAreaName;
+        public PlaceHolder PhParentId;
+        public DropDownList DdlParentId;
 
         private int _areaId;
         private string _returnUrl = string.Empty;
@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToAdd(string returnUrl)
         {
-            return PageUtils.GetOpenWindowString("添加区域", PageUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("添加区域", PageUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
             {
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), 460, 360);
@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToEdit(int areaId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowString("修改区域", PageUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
+            return PageUtils.GetOpenLayerString("修改区域", PageUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
             {
                 {"AreaID", areaId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -44,36 +44,35 @@ namespace SiteServer.BackgroundPages.Settings
                 _returnUrl = PageArea.GetRedirectUrl(0);
             }
 
-			if (!IsPostBack)
-			{
-                if (_areaId == 0)
-                {
-                    ParentID.Items.Add(new ListItem("<无上级区域>", "0"));
+            if (IsPostBack) return;
 
-                    var areaIdList = AreaManager.GetAreaIdList();
-                    var count = areaIdList.Count;
-                    _isLastNodeArray = new bool[count];
-                    foreach (var theAreaId in areaIdList)
-                    {
-                        var areaInfo = AreaManager.GetAreaInfo(theAreaId);
-                        var listitem = new ListItem(GetTitle(areaInfo.AreaId, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
-                        ParentID.Items.Add(listitem);
-                    }
-                }
-                else
-                {
-                    phParentID.Visible = false;
-                }
+            if (_areaId == 0)
+            {
+                DdlParentId.Items.Add(new ListItem("<无上级区域>", "0"));
 
-                if (_areaId != 0)
+                var areaIdList = AreaManager.GetAreaIdList();
+                var count = areaIdList.Count;
+                _isLastNodeArray = new bool[count];
+                foreach (var theAreaId in areaIdList)
                 {
-                    var areaInfo = AreaManager.GetAreaInfo(_areaId);
-
-                    AreaName.Text = areaInfo.AreaName;
-                    ParentID.SelectedValue = areaInfo.ParentId.ToString();
+                    var areaInfo = AreaManager.GetAreaInfo(theAreaId);
+                    var listitem = new ListItem(GetTitle(areaInfo.AreaId, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
+                    DdlParentId.Items.Add(listitem);
                 }
-			}
-		}
+            }
+            else
+            {
+                PhParentId.Visible = false;
+            }
+
+            if (_areaId != 0)
+            {
+                var areaInfo = AreaManager.GetAreaInfo(_areaId);
+
+                TbAreaName.Text = areaInfo.AreaName;
+                DdlParentId.SelectedValue = areaInfo.ParentId.ToString();
+            }
+        }
 
         public string GetTitle(int areaId, string areaName, int parentsCount, bool isLastNode)
         {
@@ -88,23 +87,9 @@ namespace SiteServer.BackgroundPages.Settings
             }
             for (var i = 0; i < parentsCount; i++)
             {
-                if (_isLastNodeArray[i])
-                {
-                    str = string.Concat(str, "　");
-                }
-                else
-                {
-                    str = string.Concat(str, "│");
-                }
+                str = string.Concat(str, _isLastNodeArray[i] ? "　" : "│");
             }
-            if (isLastNode)
-            {
-                str = string.Concat(str, "└");
-            }
-            else
-            {
-                str = string.Concat(str, "├");
-            }
+            str = string.Concat(str, isLastNode ? "└" : "├");
             str = string.Concat(str, areaName);
             return str;
         }
@@ -119,8 +104,8 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     var areaInfo = new AreaInfo
                     {
-                        AreaName = AreaName.Text,
-                        ParentId = TranslateUtils.ToInt(ParentID.SelectedValue)
+                        AreaName = TbAreaName.Text,
+                        ParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue)
                     };
 
                     BaiRongDataProvider.AreaDao.Insert(areaInfo);
@@ -129,8 +114,8 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     var areaInfo = AreaManager.GetAreaInfo(_areaId);
 
-                    areaInfo.AreaName = AreaName.Text;
-                    areaInfo.ParentId = TranslateUtils.ToInt(ParentID.SelectedValue);
+                    areaInfo.AreaName = TbAreaName.Text;
+                    areaInfo.ParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
 
                     BaiRongDataProvider.AreaDao.Update(areaInfo);
                 }

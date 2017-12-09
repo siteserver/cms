@@ -8,11 +8,11 @@ namespace SiteServer.BackgroundPages.Settings
 {
 	public class ModalDepartmentAdd : BasePage
     {
-        public TextBox DepartmentName;
-        public TextBox Code;
-        public PlaceHolder phParentID;
-        public DropDownList ParentID;
-        public TextBox Summary;
+        public TextBox TbDepartmentName;
+        public TextBox TbCode;
+        public PlaceHolder PhParentId;
+        public DropDownList DdlParentId;
+        public TextBox TbSummary;
 
         private int _departmentId;
         private string _returnUrl = string.Empty;
@@ -20,21 +20,21 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToAdd(string returnUrl)
         {
-            return PageUtils.GetOpenWindowString("添加部门",
+            return PageUtils.GetOpenLayerString("添加部门",
                 PageUtils.GetSettingsUrl(nameof(ModalDepartmentAdd), new NameValueCollection
                 {
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
-                }), 460, 380);
+                }), 460, 400);
         }
 
         public static string GetOpenWindowStringToEdit(int departmentId, string returnUrl)
         {
-            return PageUtils.GetOpenWindowString("修改部门",
+            return PageUtils.GetOpenLayerString("修改部门",
                 PageUtils.GetSettingsUrl(nameof(ModalDepartmentAdd), new NameValueCollection
                 {
                     {"DepartmentID", departmentId.ToString()},
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
-                }), 460, 380);
+                }), 460, 400);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -48,40 +48,39 @@ namespace SiteServer.BackgroundPages.Settings
                 _returnUrl = PageDepartment.GetRedirectUrl(0);
             }
 
-			if (!IsPostBack)
-			{
-                if (_departmentId == 0)
+            if (IsPostBack) return;
+
+            if (_departmentId == 0)
+            {
+                DdlParentId.Items.Add(new ListItem("<无上级部门>", "0"));
+
+                var departmentIdList = DepartmentManager.GetDepartmentIdList();
+                var count = departmentIdList.Count;
+                _isLastNodeArray = new bool[count];
+                foreach (var theDepartmentId in departmentIdList)
                 {
-                    ParentID.Items.Add(new ListItem("<无上级部门>", "0"));
-
-                    var departmentIdList = DepartmentManager.GetDepartmentIdList();
-                    var count = departmentIdList.Count;
-                    _isLastNodeArray = new bool[count];
-                    foreach (var theDepartmentId in departmentIdList)
-                    {
-                        var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
-                        var listitem = new ListItem(GetTitle(departmentInfo.DepartmentId, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode), theDepartmentId.ToString());
-                        ParentID.Items.Add(listitem);
-                    }
+                    var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
+                    var listitem = new ListItem(GetTitle(departmentInfo.DepartmentId, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode), theDepartmentId.ToString());
+                    DdlParentId.Items.Add(listitem);
                 }
-                else
-                {
-                    phParentID.Visible = false;
-                }
+            }
+            else
+            {
+                PhParentId.Visible = false;
+            }
 
-                if (_departmentId != 0)
-                {
-                    var departmentInfo = DepartmentManager.GetDepartmentInfo(_departmentId);
+            if (_departmentId != 0)
+            {
+                var departmentInfo = DepartmentManager.GetDepartmentInfo(_departmentId);
 
-                    DepartmentName.Text = departmentInfo.DepartmentName;
-                    Code.Text = departmentInfo.Code;
-                    ParentID.SelectedValue = departmentInfo.ParentId.ToString();
-                    Summary.Text = departmentInfo.Summary;
-                }
-			}
-		}
+                TbDepartmentName.Text = departmentInfo.DepartmentName;
+                TbCode.Text = departmentInfo.Code;
+                DdlParentId.SelectedValue = departmentInfo.ParentId.ToString();
+                TbSummary.Text = departmentInfo.Summary;
+            }
+        }
 
-        public string GetTitle(int departmentID, string departmentName, int parentsCount, bool isLastNode)
+        public string GetTitle(int departmentId, string departmentName, int parentsCount, bool isLastNode)
         {
             var str = "";
             if (isLastNode == false)
@@ -94,23 +93,9 @@ namespace SiteServer.BackgroundPages.Settings
             }
             for (var i = 0; i < parentsCount; i++)
             {
-                if (_isLastNodeArray[i])
-                {
-                    str = string.Concat(str, "　");
-                }
-                else
-                {
-                    str = string.Concat(str, "│");
-                }
+                str = string.Concat(str, _isLastNodeArray[i] ? "　" : "│");
             }
-            if (isLastNode)
-            {
-                str = string.Concat(str, "└");
-            }
-            else
-            {
-                str = string.Concat(str, "├");
-            }
+            str = string.Concat(str, isLastNode ? "└" : "├");
             str = string.Concat(str, departmentName);
             return str;
         }
@@ -123,11 +108,13 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 if (_departmentId == 0)
                 {
-                    var departmentInfo = new DepartmentInfo();
-                    departmentInfo.DepartmentName = DepartmentName.Text;
-                    departmentInfo.Code = Code.Text;
-                    departmentInfo.ParentId = TranslateUtils.ToInt(ParentID.SelectedValue);
-                    departmentInfo.Summary = Summary.Text;
+                    var departmentInfo = new DepartmentInfo
+                    {
+                        DepartmentName = TbDepartmentName.Text,
+                        Code = TbCode.Text,
+                        ParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue),
+                        Summary = TbSummary.Text
+                    };
 
                     BaiRongDataProvider.DepartmentDao.Insert(departmentInfo);
                 }
@@ -135,10 +122,10 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     var departmentInfo = DepartmentManager.GetDepartmentInfo(_departmentId);
 
-                    departmentInfo.DepartmentName = DepartmentName.Text;
-                    departmentInfo.Code = Code.Text;
-                    departmentInfo.ParentId = TranslateUtils.ToInt(ParentID.SelectedValue);
-                    departmentInfo.Summary = Summary.Text;
+                    departmentInfo.DepartmentName = TbDepartmentName.Text;
+                    departmentInfo.Code = TbCode.Text;
+                    departmentInfo.ParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
+                    departmentInfo.Summary = TbSummary.Text;
 
                     BaiRongDataProvider.DepartmentDao.Update(departmentInfo);
                 }

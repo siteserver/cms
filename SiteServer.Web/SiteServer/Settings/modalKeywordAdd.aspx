@@ -1,40 +1,63 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.ModalKeywordAdd" Trace="false" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html class="modalPage">
 
-<body>
-    <!--#include file="../inc/openWindow.html"-->
-    <form class="form-inline" runat="server">
-        <asp:Button ID="btnSubmit" UseSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" Style="display: none" />
-        <bairong:Alerts runat="server"></bairong:Alerts>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-        <table class="table table-noborder table-hover">
-            <tr>
-                <td width="80">敏感词：</td>
-                <td>
-                    <asp:TextBox Columns="30" ID="tbKeyword" runat="server" />
-                    <asp:RequiredFieldValidator ControlToValidate="tbKeyword" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server" /></td>
-            </tr>
-            <tr>
-                <td>替换为：</td>
-                <td>
-                    <asp:TextBox Columns="30" ID="tbAlternative" runat="server" />
-                    <br />
-                    <span class="gray">可以为空</span></td>
-            </tr>
-            <tr>
-                <td>等级：</td>
-                <td>
-                    <asp:DropDownList ID="ddlGrade" runat="server"></asp:DropDownList></td>
-            </tr>
-        </table>
+    <body>
+      <!--#include file="../inc/openWindow.html"-->
 
-    </form>
-</body>
-</html>
+      <form runat="server">
+        <ctrl:alerts runat="server" />
 
+        <div class="form-horizontal">
+
+          <div class="form-group">
+            <label class="col-xs-3 text-right control-label">敏感词</label>
+            <div class="col-xs-6">
+              <asp:TextBox ID="TbKeyword" class="form-control" runat="server" />
+            </div>
+            <div class="col-xs-3 help-block">
+              <asp:RequiredFieldValidator ControlToValidate="TbKeyword" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-3 text-right control-label">替换为</label>
+            <div class="col-xs-6">
+              <asp:TextBox ID="TbAlternative" class="form-control" runat="server" />
+            </div>
+            <div class="col-xs-3 help-block">
+              可以为空
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-xs-3 text-right control-label">等级</label>
+            <div class="col-xs-6">
+              <asp:DropDownList ID="DdlGrade" class="form-control" runat="server"></asp:DropDownList>
+            </div>
+            <div class="col-xs-3 help-block"></div>
+          </div>
+
+          <hr />
+
+          <div class="form-group m-b-0">
+            <div class="col-xs-11 text-right">
+              <asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
+              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
+            </div>
+            <div class="col-xs-1"></div>
+          </div>
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

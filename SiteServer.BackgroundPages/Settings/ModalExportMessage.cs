@@ -11,20 +11,17 @@ namespace SiteServer.BackgroundPages.Settings
     public class ModalExportMessage : BasePage
     {
         private string _exportType;
-
-        public const int Width = 380;
-        public const int Height = 250;
         public const string ExportTypeSingleTableStyle = "SingleTableStyle";
 
         public static string GetOpenWindowStringToSingleTableStyle(ETableStyle tableStyle, string tableName)
         {
-            return PageUtils.GetOpenWindowString("导出数据",
+            return PageUtils.GetOpenLayerString("导出数据",
                 PageUtils.GetSettingsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                     {"TableName", tableName},
                     {"ExportType", ExportTypeSingleTableStyle}
-                }), Width, Height, true);
+                }), 380, 250);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -60,7 +57,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
         }
 
-        private string ExportSingleTableStyle(ETableStyle tableStyle, string tableName)
+        private static string ExportSingleTableStyle(ETableStyle tableStyle, string tableName)
         {
             return ExportObject.ExportRootSingleTableStyle(tableStyle, tableName);
         }

@@ -1,82 +1,75 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.ModalChangePublishmentSystemType" Trace="false"%>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html class="modalPage">
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-<bairong:alerts runat="server"></bairong:alerts>
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <asp:PlaceHolder ID="HeadquartersExists" runat="server">
-    <table class="table table-noborder">
-      <tr>
-        <td colspan="2"> 根目录站点已经存在，站点<%=GetSiteName()%>不能转移到根目录 </td>
-      </tr>
-    </table>
-  </asp:PlaceHolder>
+    <body>
+      <!--#include file="../inc/openWindow.html"-->
 
-  <asp:PlaceHolder ID="ChangeToSite" runat="server">
-    <table class="table table-noborder">
-      <tr>
-        <td colspan="2">
-          <blockquote>
-            <p>将站点<code><%=GetSiteName()%></code>转移到子目录</p>
-          </blockquote>
-        </td>
-      </tr>
-      <tr>
-        <td width="100">站点文件夹名称：</td>
-        <td><asp:TextBox Columns="25" MaxLength="50" id="PublishmentSystemDir" runat="server"/>
-          <asp:RequiredFieldValidator
-              ControlToValidate="PublishmentSystemDir"
-              errorMessage=" *" foreColor="red"
-              Display="Dynamic"
-              runat="server"/>
-          <asp:RegularExpressionValidator
-              runat="server"
-              ControlToValidate="PublishmentSystemDir"
-              ValidationExpression="[^']+"
-              errorMessage=" *" foreColor="red"
-              Display="Dynamic" />
-              <br />
-              <span class="gray">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名。</span>
-            </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          从系统根目录选择需要转移到子站点的文件夹及文件：
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2"><asp:CheckBoxList ID="FilesToSite" RepeatDirection="Horizontal" class="noborder" RepeatColumns="3" runat="server"></asp:CheckBoxList></td>
-      </tr>
-    </table>
-  </asp:PlaceHolder>
+      <form runat="server">
+        <ctrl:alerts runat="server" />
 
-  <asp:PlaceHolder ID="ChangeToHeadquarters" runat="server">
-    <table class="table table-noborder">
-      <tr>
-        <td colspan="2"> 将站点<code><%=GetSiteName()%></code>转移到根目录 </td>
-      </tr>
-      <tr>
-        <td width="140">转移文件夹及文件：</td>
-        <td><asp:RadioButtonList ID="IsMoveFiles" runat="server" RepeatDirection="Horizontal" class="noborder">
-            <asp:ListItem Text="转移" Value="true" Selected="true"></asp:ListItem>
-            <asp:ListItem Text="不转移" Value="false"></asp:ListItem>
-          </asp:RadioButtonList>
-          <br />
-          <span class="gray">选择转移将把此站点内的文件夹及文件转移到系统根目录中。</span>
-        </td>
-      </tr>
-    </table>
-  </asp:PlaceHolder>
+        <div class="form-horizontal">
 
-</form>
-</body>
-</html>
+          <asp:PlaceHolder ID="PhChangeToSite" runat="server">
+            <div class="form-group">
+              <label class="col-xs-3 text-right control-label">站点文件夹名称</label>
+              <div class="col-xs-8">
+                <asp:TextBox cssClass="form-control" id="TbPublishmentSystemDir" runat="server" />
+                <div class="help-block">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名</div>
+              </div>
+              <div class="col-xs-1">
+                <asp:RequiredFieldValidator ControlToValidate="TbPublishmentSystemDir" errorMessage=" *" foreColor="red" Display="Dynamic"
+                  runat="server" />
+                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbPublishmentSystemDir" ValidationExpression="[^']+" errorMessage=" *"
+                  foreColor="red" Display="Dynamic" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-xs-3 text-right control-label">从系统根目录选择需要转移到子站点的文件夹及文件</label>
+              <div class="col-xs-8">
+                <asp:CheckBoxList ID="CblFilesToSite" class="checkbox checkbox-primary" RepeatColumns="2" runat="server"></asp:CheckBoxList>
+              </div>
+              <div class="col-xs-1">
+
+              </div>
+            </div>
+          </asp:PlaceHolder>
+
+          <asp:PlaceHolder ID="PhChangeToHeadquarters" runat="server">
+            <div class="form-group">
+              <label class="col-xs-3 text-right control-label">转移文件夹及文件</label>
+              <div class="col-xs-8">
+                <asp:DropDownList ID="DdlIsMoveFiles" runat="server" class="form-control">
+                  <asp:ListItem Text="转移" Value="true" Selected="true"></asp:ListItem>
+                  <asp:ListItem Text="不转移" Value="false"></asp:ListItem>
+                </asp:DropDownList>
+                <div class="help-block">选择转移将把此站点内的文件夹及文件转移到系统根目录</div>
+              </div>
+              <div class="col-xs-1">
+
+              </div>
+            </div>
+          </asp:PlaceHolder>
+
+          <hr />
+
+          <div class="form-group m-b-0">
+            <div class="col-xs-11 text-right">
+              <asp:Button id="BtnSubmit" class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
+              <button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
+            </div>
+            <div class="col-xs-1"></div>
+          </div>
+
+        </div>
+
+      </form>
+    </body>
+
+    </html>

@@ -508,7 +508,7 @@ SELECT * FROM (
         public static string GetInTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
         {
             var builder = new StringBuilder();
-            if (WebConfigUtils.DatabaseType == EDatabaseType.SqlServer)
+            if (WebConfigUtils.DatabaseType != EDatabaseType.Oracle)
             {
                 foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
                 {
@@ -518,16 +518,14 @@ SELECT * FROM (
                 return
                     $"SELECT {builder} FROM ({GetTopSqlString(tableName, columns, whereString, orderString, topN)}) AS T";
             }
-            else
+
+            foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
             {
-                foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
-                {
-                    builder.Append($"{column}, ");
-                }
-                builder.Length = builder.Length - 2;
-                return
-                    $"SELECT {builder} FROM ({GetTopSqlString(tableName, columns, whereString, orderString, topN)})";
+                builder.Append($"{column}, ");
             }
+            builder.Length = builder.Length - 2;
+            return
+                $"SELECT {builder} FROM ({GetTopSqlString(tableName, columns, whereString, orderString, topN)})";
         }
 
         public static string GetColumnSqlString(DataType dataType, string attributeName, int length)

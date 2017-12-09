@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages
 
         protected override bool IsAccessable => true;
 
-        private string GetMessageHtml(string message, bool isError) => $@"<div class=""alert {(isError ? "alert-error" : "alert-info")}"">{message}</div>";
+        private string GetMessageHtml(string message, bool isError) => $@"<div class=""alert {(isError ? "alert-danger" : "alert-warning")}"">{message}</div>";
 
         public void Page_Load(object sender, EventArgs e)
         {

@@ -120,7 +120,7 @@ namespace BaiRong.Core.Provider
 
             areaInfo.AreaId = ExecuteNonQueryAndReturnId(TableName, nameof(AreaInfo.AreaId), trans, sqlInsert, insertParms);
 
-            if (!string.IsNullOrEmpty(areaInfo.ParentsPath))
+            if (!string.IsNullOrEmpty(areaInfo.ParentsPath) && areaInfo.ParentsPath != "0")
             {
                 sqlString = $"UPDATE bairong_Area SET {SqlUtils.GetAddOne("ChildrenCount")} WHERE AreaID IN ({PageUtils.FilterSql(areaInfo.ParentsPath)})";
 

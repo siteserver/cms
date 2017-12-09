@@ -85,6 +85,6 @@ namespace SiteServer.BackgroundPages
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty)); // 跳转到登录成功的后台页
         }
 
-        private string GetMessageHtml(string message) => $@"<div class=""alert alert-error"">{message}</div>";
+        private string GetMessageHtml(string message) => $@"<div class=""alert alert-danger"">{message}</div>";
 	}
 }

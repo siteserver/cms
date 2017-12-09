@@ -7,7 +7,7 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalTipMessage : BasePageCms
     {
-        public Literal ltlTips;
+        public Literal LtlTips;
 
         protected override bool IsSinglePage => true;
 
@@ -21,10 +21,11 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(string title, string content)
         {
-            return PageUtils.GetOpenWindowString(title, PageUtils.GetCmsUrl(nameof(ModalTipMessage), new NameValueCollection
-            {
-                {"content", TranslateUtils.EncryptStringBySecretKey(content)}
-            }), 500, 500, true);
+            return PageUtils.GetOpenLayerString(title,
+                PageUtils.GetCmsUrl(nameof(ModalTipMessage), new NameValueCollection
+                {
+                    {"content", TranslateUtils.EncryptStringBySecretKey(content)}
+                }), 500, 500);
         }
 
         public void Cancel_OnClick(object sender, EventArgs e)
@@ -38,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                ltlTips.Text = TranslateUtils.DecryptStringBySecretKey(Request.QueryString["content"]);
+                LtlTips.Text = TranslateUtils.DecryptStringBySecretKey(Request.QueryString["content"]);
             }
         }
     }

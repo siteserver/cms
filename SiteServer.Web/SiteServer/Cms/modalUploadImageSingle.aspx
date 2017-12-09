@@ -1,32 +1,46 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalUploadImageSingle" Trace="false" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+	<%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+		<!DOCTYPE html>
+		<html class="modalPage">
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" enctype="multipart/form-data" method="post" runat="server">
-<asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />
-<bairong:alerts runat="server"></bairong:alerts>
+		<head>
+			<meta charset="utf-8">
+			<!--#include file="../inc/head.html"-->
+		</head>
 
-	<table class="table table-noborder table-hover">
-		<tr>
-			<td width="120">选择上传的图片：</td>
-			<td>
-				<input type=file  id="hifUpload" size="45" runat="server"/> 
-				<asp:RequiredFieldValidator ControlToValidate="hifUpload" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server" />
-			</td>
-		</tr>
-	</table>
+		<body>
+			<!--#include file="../inc/openWindow.html"-->
 
-	<script type="text/javascript" language="javascript">
-		<asp:Literal id="ltlScript" runat="server"></asp:Literal>
-	</script>
+			<form runat="server">
+				<ctrl:alerts runat="server" />
 
-</form>
-</body>
-</html>
+				<div class="form-horizontal">
+
+					<div class="form-group">
+						<label class="col-xs-3 control-label text-right">选择上传的图片</label>
+						<div class="col-xs-8">
+							<input type="file" id="HifUpload" class="form-control" runat="server" />
+						</div>
+						<div class="col-xs-1">
+							<asp:RequiredFieldValidator ControlToValidate="HifUpload" ErrorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+							/>
+						</div>
+					</div>
+
+					<asp:Literal id="LtlScript" runat="server"></asp:Literal>
+
+					<hr />
+
+					<div class="form-group m-b-0">
+						<div class="col-xs-11 text-right">
+							<asp:Button class="btn btn-primary m-l-10" text="确 定" runat="server" onClick="Submit_OnClick" />
+							<button type="button" class="btn btn-default m-l-10" onclick="window.parent.layer.closeAll()">取 消</button>
+						</div>
+						<div class="col-xs-1"></div>
+					</div>
+				</div>
+
+			</form>
+		</body>
+
+		</html>

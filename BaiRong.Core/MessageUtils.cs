@@ -90,7 +90,7 @@ namespace BaiRong.Core
                 if (!string.IsNullOrEmpty(message))
                 {
                     messageHtml = $@"
-<div class=""alert alert-error"">
+<div class=""alert alert-danger"">
     <button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button>
   <strong>错误!</strong>&nbsp;&nbsp; {message}</div>";
                 }

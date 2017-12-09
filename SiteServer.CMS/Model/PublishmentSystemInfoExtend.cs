@@ -477,12 +477,6 @@ namespace SiteServer.CMS.Model
             set { Set("ConfigUploadImageTitleImageHeight", value); }
         }
 
-        public string ConfigUploadImageIsTitleImageLessSizeNotThumb
-        {
-            get { return GetString("ConfigUploadImageIsTitleImageLessSizeNotThumb", string.Empty); }
-            set { Set("ConfigUploadImageIsTitleImageLessSizeNotThumb", value); }
-        }
-
         public string ConfigUploadImageIsShowImageInTextEditor
         {
             get { return GetString("ConfigUploadImageIsShowImageInTextEditor", "True"); }
@@ -511,12 +505,6 @@ namespace SiteServer.CMS.Model
         {
             get { return GetString("ConfigUploadImageSmallImageHeight", string.Empty); }
             set { Set("ConfigUploadImageSmallImageHeight", value); }
-        }
-
-        public string ConfigUploadImageIsSmallImageLessSizeNotThumb
-        {
-            get { return GetString("ConfigUploadImageIsSmallImageLessSizeNotThumb", string.Empty); }
-            set { Set("ConfigUploadImageIsSmallImageLessSizeNotThumb", value); }
         }
 
         /****************评论设置********************/

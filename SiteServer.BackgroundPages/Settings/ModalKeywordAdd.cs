@@ -10,24 +10,24 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class ModalKeywordAdd : BasePageCms
     {
-        protected TextBox tbKeyword;
-        protected TextBox tbAlternative;
-        protected DropDownList ddlGrade;
+        protected TextBox TbKeyword;
+        protected TextBox TbAlternative;
+        protected DropDownList DdlGrade;
 
         private int _keywordId;
 
         public static string GetOpenWindowStringToAdd()
         {
-            return PageUtils.GetOpenWindowString("添加敏感词", PageUtils.GetSettingsUrl(nameof(ModalKeywordAdd), null), 380, 300);
+            return PageUtils.GetOpenLayerString("添加敏感词", PageUtils.GetSettingsUrl(nameof(ModalKeywordAdd), null), 460, 300);
         }
 
         public static string GetOpenWindowStringToEdit(int keywordId)
         {
-            return PageUtils.GetOpenWindowString("修改敏感词",
+            return PageUtils.GetOpenLayerString("修改敏感词",
                 PageUtils.GetSettingsUrl(nameof(ModalKeywordAdd), new NameValueCollection
                 {
                     {"KeywordID", keywordId.ToString()}
-                }), 380, 300);
+                }), 460, 300);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -36,17 +36,15 @@ namespace SiteServer.BackgroundPages.Settings
 
             _keywordId = Body.GetQueryInt("KeywordID");
 
-            if (!IsPostBack)
-            {
-                EKeywordGradeUtils.AddListItems(ddlGrade);
-                if (_keywordId > 0)
-                {
-                    var keywordInfo = DataProvider.KeywordDao.GetKeywordInfo(_keywordId);
-                    tbKeyword.Text = keywordInfo.Keyword;
-                    tbAlternative.Text = keywordInfo.Alternative;
-                    ControlUtils.SelectListItems(ddlGrade, EKeywordGradeUtils.GetValue(keywordInfo.Grade));
-                }
-            }
+            if (IsPostBack) return;
+
+            EKeywordGradeUtils.AddListItems(DdlGrade);
+            if (_keywordId <= 0) return;
+
+            var keywordInfo = DataProvider.KeywordDao.GetKeywordInfo(_keywordId);
+            TbKeyword.Text = keywordInfo.Keyword;
+            TbAlternative.Text = keywordInfo.Alternative;
+            ControlUtils.SelectListItems(DdlGrade, EKeywordGradeUtils.GetValue(keywordInfo.Grade));
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -58,9 +56,9 @@ namespace SiteServer.BackgroundPages.Settings
                 try
                 {
                     var keywordInfo = DataProvider.KeywordDao.GetKeywordInfo(_keywordId);
-                    keywordInfo.Keyword = tbKeyword.Text.Trim();
-                    keywordInfo.Alternative = tbAlternative.Text.Trim();
-                    keywordInfo.Grade = EKeywordGradeUtils.GetEnumType(ddlGrade.SelectedValue);
+                    keywordInfo.Keyword = TbKeyword.Text.Trim();
+                    keywordInfo.Alternative = TbAlternative.Text.Trim();
+                    keywordInfo.Grade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue);
                     DataProvider.KeywordDao.Update(keywordInfo);
 
                     isChanged = true;
@@ -72,7 +70,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                if (DataProvider.KeywordDao.IsExists(tbKeyword.Text))
+                if (DataProvider.KeywordDao.IsExists(TbKeyword.Text))
                 {
                     FailMessage("敏感词添加失败，敏感词名称已存在！");
                 }
@@ -82,9 +80,9 @@ namespace SiteServer.BackgroundPages.Settings
                     {
                         var keywordInfo = new KeywordInfo
                         {
-                            Keyword = tbKeyword.Text.Trim(),
-                            Alternative = tbAlternative.Text.Trim(),
-                            Grade = EKeywordGradeUtils.GetEnumType(ddlGrade.SelectedValue)
+                            Keyword = TbKeyword.Text.Trim(),
+                            Alternative = TbAlternative.Text.Trim(),
+                            Grade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue)
                         };
                         DataProvider.KeywordDao.Insert(keywordInfo);
                         isChanged = true;

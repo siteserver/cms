@@ -504,9 +504,6 @@
     <Compile Include="Cms\ModalUploadImageSingle.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\ModalUploadImageSingleSystem.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\ModalImportZip.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -1017,7 +1014,7 @@
     <Compile Include="Settings\ModalTableMetadataAddBatch.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\ModalMetadataView.cs">
+    <Compile Include="Settings\ModalTableMetadataView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
   </ItemGroup>

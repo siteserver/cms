@@ -9,13 +9,13 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class ModalKeywordImport : BasePageCms
     {
-        public DropDownList ddlGrade;
-        public TextBox tbKeywords;
+        public DropDownList DdlGrade;
+        public TextBox TbKeywords;
 
         public static string GetOpenWindowString()
         {
-            return PageUtils.GetOpenWindowString("导入敏感词",
-                PageUtils.GetSettingsUrl(nameof(ModalKeywordImport), null), 500, 500);
+            return PageUtils.GetOpenLayerString("导入敏感词",
+                PageUtils.GetSettingsUrl(nameof(ModalKeywordImport), null), 500, 530);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (!IsPostBack)
             {
-                EKeywordGradeUtils.AddListItems(ddlGrade);
+                EKeywordGradeUtils.AddListItems(DdlGrade);
             }
         }
 
@@ -33,15 +33,15 @@ namespace SiteServer.BackgroundPages.Settings
 
             try
             {
-                var grade = EKeywordGradeUtils.GetEnumType(ddlGrade.SelectedValue);
+                var grade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue);
 
-                var keywordArray = tbKeywords.Text.Split(',');
+                var keywordArray = TbKeywords.Text.Split(',');
                 foreach (var item in keywordArray)
                 {
                     if (!string.IsNullOrEmpty(item))
                     {
                         var value = item.Trim();
-                        var keyword = string.Empty;
+                        string keyword;
                         var alternative = string.Empty;
 
                         if (value.IndexOf('|') != -1)

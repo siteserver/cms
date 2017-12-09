@@ -8,7 +8,7 @@ namespace SiteServer.BackgroundPages.Settings
 {
 	public class ModalDepartmentSelect : BasePage
     {
-        public Repeater rptCategory;
+        public Repeater RptCategory;
 
         private readonly NameValueCollection _additional = new NameValueCollection();
 
@@ -46,9 +46,9 @@ namespace SiteServer.BackgroundPages.Settings
         {
             try
             {
-                rptCategory.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
-                rptCategory.ItemDataBound += rptCategory_ItemDataBound;
-                rptCategory.DataBind();
+                RptCategory.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
+                RptCategory.ItemDataBound += rptCategory_ItemDataBound;
+                RptCategory.DataBind();
             }
             catch (Exception ex)
             {

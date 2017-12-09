@@ -87,15 +87,17 @@ namespace BaiRong.Core
             return new ListItem(text, GetValue(type));
 		}
 
-		public static void AddListItemsToAuxiliaryTable(ListControl listControl)
+		public static void AddListItems(ListControl listControl)
 		{
 		    if (listControl == null) return;
 
 		    listControl.Items.Add(GetListItem(DataType.VarChar, "文本"));
 		    listControl.Items.Add(GetListItem(DataType.Text, "备注"));
-		    listControl.Items.Add(GetListItem(DataType.Integer, "数字"));
-		    listControl.Items.Add(GetListItem(DataType.DateTime, "日期/时间"));
-		}
+		    listControl.Items.Add(GetListItem(DataType.Integer, "整数"));
+		    listControl.Items.Add(GetListItem(DataType.DateTime, "日期"));
+            listControl.Items.Add(GetListItem(DataType.Decimal, "小数"));
+            listControl.Items.Add(GetListItem(DataType.Boolean, "布尔值"));
+        }
 
         public static string GetTextByAuxiliaryTable(DataType dataType, int dataLength)
         {
@@ -110,15 +112,19 @@ namespace BaiRong.Core
             }
             else if (dataType == DataType.Integer)
             {
-                retval = "数字";
+                retval = "整数";
             }
             else if (dataType == DataType.DateTime)
             {
-                retval = "日期/时间";
+                retval = "日期";
             }
             else if (dataType == DataType.Decimal)
             {
                 retval = "小数";
+            }
+            else if (dataType == DataType.Boolean)
+            {
+                retval = "布尔值";
             }
             return retval;
         }

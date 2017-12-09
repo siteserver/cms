@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages.Settings
 	{
 	    public const string TypeSiteTemplate = "SiteTemplate";
 
-        public RadioButtonList RblImportType;
+        public DropDownList DdlImportType;
         public PlaceHolder PhUpload;
 		public HtmlInputFile HifFile;
         public PlaceHolder PhDownload;
@@ -23,11 +23,11 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(string type)
         {
-            return PageUtils.GetOpenWindowString(type == TypeSiteTemplate ? "导入站点模板" : "导入插件",
+            return PageUtils.GetOpenLayerString(type == TypeSiteTemplate ? "导入站点模板" : "导入插件",
                 PageUtils.GetSettingsUrl(nameof(ModalImportZip), new NameValueCollection
                 {
                     {"type", type}
-                }), 460, 300);
+                }), 520, 240);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -36,8 +36,8 @@ namespace SiteServer.BackgroundPages.Settings
             _type = Body.GetQueryString("type");
             if (Page.IsPostBack) return;
 
-            EBooleanUtils.AddListItems(RblImportType, "上传压缩包并导入", "从指定地址下载压缩包并导入");
-            ControlUtils.SelectListItemsIgnoreCase(RblImportType, true.ToString());
+            EBooleanUtils.AddListItems(DdlImportType, "上传压缩包并导入", "从指定地址下载压缩包并导入");
+            ControlUtils.SelectListItemsIgnoreCase(DdlImportType, true.ToString());
 
             PhUpload.Visible = true;
             PhDownload.Visible = false;
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void RblImportType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (TranslateUtils.ToBool(RblImportType.SelectedValue))
+            if (TranslateUtils.ToBool(DdlImportType.SelectedValue))
             {
                 PhUpload.Visible = true;
                 PhDownload.Visible = false;
@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var isUpload = TranslateUtils.ToBool(RblImportType.SelectedValue);
+            var isUpload = TranslateUtils.ToBool(DdlImportType.SelectedValue);
             if (_type == TypeSiteTemplate)
             {
                 ImportSiteTemplate(isUpload);

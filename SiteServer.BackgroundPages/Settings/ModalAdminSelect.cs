@@ -8,9 +8,9 @@ namespace SiteServer.BackgroundPages.Settings
 {
 	public class ModalAdminSelect : BasePage
     {
-        public Repeater rptDepartment;
-        public Literal ltlDepartment;
-        public Repeater rptUser;
+        public Repeater RptDepartment;
+        public Literal LtlDepartment;
+        public Repeater RptUser;
 
         private readonly NameValueCollection _additional = new NameValueCollection();
         private int _departmentId;
@@ -18,11 +18,11 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetShowPopWinString(int departmentId, string scriptName)
         {
-            return PageUtils.GetOpenWindowString("管理员选择", PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
+            return PageUtils.GetOpenLayerString("管理员选择", PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
             {
                 {"departmentID", departmentId.ToString()},
                 {"scriptName", scriptName}
-            }), 460, 400, true);
+            }), 460, 400);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 			if (!IsPostBack)
 			{
-                ltlDepartment.Text = "管理员列表";
+                LtlDepartment.Text = "管理员列表";
                 if (Body.IsQueryExists("UserName"))
                 {
                     var userName = Body.GetQueryString("UserName");
@@ -49,10 +49,10 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     if (_departmentId > 0)
                     {
-                        ltlDepartment.Text = DepartmentManager.GetDepartmentName(_departmentId);
-                        rptUser.DataSource = BaiRongDataProvider.AdministratorDao.GetUserNameArrayList(_departmentId, false);
-                        rptUser.ItemDataBound += rptUser_ItemDataBound;
-                        rptUser.DataBind();
+                        LtlDepartment.Text = DepartmentManager.GetDepartmentName(_departmentId);
+                        RptUser.DataSource = BaiRongDataProvider.AdministratorDao.GetUserNameArrayList(_departmentId, false);
+                        RptUser.ItemDataBound += rptUser_ItemDataBound;
+                        RptUser.DataBind();
                     }
                 }
                 else
@@ -68,9 +68,9 @@ namespace SiteServer.BackgroundPages.Settings
         {
             try
             {
-                rptDepartment.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
-                rptDepartment.ItemDataBound += rptDepartment_ItemDataBound;
-                rptDepartment.DataBind();
+                RptDepartment.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
+                RptDepartment.ItemDataBound += rptDepartment_ItemDataBound;
+                RptDepartment.DataBind();
             }
             catch (Exception ex)
             {

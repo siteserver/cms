@@ -7,17 +7,17 @@ namespace SiteServer.BackgroundPages.Settings
 {
 	public class ModalAdminPassword : BasePage
 	{
-		public Label UserName;
-		public TextBox Password;
+		public Label LbUserName;
+		public TextBox TbPassword;
 
         private string _userName;
 
         public static string GetOpenWindowString(string userName)
         {
-            return PageUtils.GetOpenWindowString("重设密码", PageUtils.GetSettingsUrl(nameof(ModalAdminPassword), new NameValueCollection
+            return PageUtils.GetOpenLayerString("重设密码", PageUtils.GetSettingsUrl(nameof(ModalAdminPassword), new NameValueCollection
             {
                 {"userName", userName}
-            }), 400, 300);
+            }), 480, 300);
         }
         
 		public void Page_Load(object sender, EventArgs e)
@@ -26,44 +26,42 @@ namespace SiteServer.BackgroundPages.Settings
 
             _userName = Body.GetQueryString("userName");
 
-			if (!IsPostBack)
-			{
-                if (!string.IsNullOrEmpty(_userName) && BaiRongDataProvider.AdministratorDao.IsUserNameExists(_userName))
-                {
-                    UserName.Text = _userName;
-                }
-                else
-                {
-                    FailMessage("此帐户不存在！");
-                }
-			}
-		}
+            if (IsPostBack) return;
+
+            if (!string.IsNullOrEmpty(_userName) && BaiRongDataProvider.AdministratorDao.IsUserNameExists(_userName))
+            {
+                LbUserName.Text = _userName;
+            }
+            else
+            {
+                FailMessage("此帐户不存在！");
+            }
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-			if (IsPostBack && IsValid)
-			{
-				try
-				{
-                    string errorMessage;
-                    if (!BaiRongDataProvider.AdministratorDao.ChangePassword(_userName, Password.Text, out errorMessage))
-                    {
-                        FailMessage(errorMessage);
-                        return;
-                    }
+            if (!IsPostBack || !IsValid) return;
 
-                    Body.AddAdminLog("重设管理员密码", $"管理员:{_userName}");
+            try
+            {
+                string errorMessage;
+                if (!BaiRongDataProvider.AdministratorDao.ChangePassword(_userName, TbPassword.Text, out errorMessage))
+                {
+                    FailMessage(errorMessage);
+                    return;
+                }
 
-                    SuccessMessage("重设密码成功！");
+                Body.AddAdminLog("重设管理员密码", $"管理员:{_userName}");
 
-                    PageUtils.CloseModalPage(Page);
-				}
-				catch(Exception ex)
-				{
-                    FailMessage(ex, "重设密码失败！");
-				}
-			}
-		}
+                SuccessMessage("重设密码成功！");
+
+                PageUtils.CloseModalPage(Page);
+            }
+            catch(Exception ex)
+            {
+                FailMessage(ex, "重设密码失败！");
+            }
+        }
 
 	}
 }

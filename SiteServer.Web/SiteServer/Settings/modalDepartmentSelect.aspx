@@ -22,7 +22,7 @@
           <tr treeItemLevel="2">
             <td nowrap><img align="absmiddle" style="cursor:pointer" onClick="displayChildren(this);" isAjax="false" isOpen="true" src="../assets/icons/tree/minus.gif" /><img align="absmiddle" border="0" src="../assets/icons/tree/category.gif" />&nbsp;部门列表</td>
           </tr>
-          <asp:Repeater ID="rptCategory" runat="server">
+          <asp:Repeater ID="RptCategory" runat="server">
             <itemtemplate>
               <asp:Literal id="ltlHtml" runat="server" />
             </itemtemplate>

@@ -9,15 +9,15 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalUploadVideo : BasePageCms
     {
-        public HtmlInputFile hifUpload;
-        public Literal ltlScript;
+        public HtmlInputFile HifUpload;
+        public Literal LtlScript;
 
         private string _currentRootPath;
         private string _textBoxClientId;
 
         public static string GetOpenWindowStringToTextBox(int publishmentSystemId, string textBoxClientId)
         {
-            return PageUtils.GetOpenWindowString("上传视频", PageUtils.GetCmsUrl(nameof(ModalUploadVideo), new NameValueCollection
+            return PageUtils.GetOpenLayerString("上传视频", PageUtils.GetCmsUrl(nameof(ModalUploadVideo), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TextBoxClientID", textBoxClientId}
@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToList(int publishmentSystemId, string currentRootPath)
         {
-            return PageUtils.GetOpenWindowString("上传视频", PageUtils.GetCmsUrl(nameof(ModalUploadVideo), new NameValueCollection
+            return PageUtils.GetOpenLayerString("上传视频", PageUtils.GetCmsUrl(nameof(ModalUploadVideo), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CurrentRootPath", currentRootPath}
@@ -48,57 +48,56 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            if (hifUpload.PostedFile != null && "" != hifUpload.PostedFile.FileName)
+            if (HifUpload.PostedFile == null || "" == HifUpload.PostedFile.FileName) return;
+
+            var filePath = HifUpload.PostedFile.FileName;
+            try
             {
-                var filePath = hifUpload.PostedFile.FileName;
-                try
+                var fileExtName = PathUtils.GetExtension(filePath).ToLower();
+                var localDirectoryPath = PathUtility.GetUploadDirectoryPath(PublishmentSystemInfo, fileExtName);
+                if (!string.IsNullOrEmpty(_currentRootPath))
                 {
-                    var fileExtName = PathUtils.GetExtension(filePath).ToLower();
-                    var localDirectoryPath = PathUtility.GetUploadDirectoryPath(PublishmentSystemInfo, fileExtName);
-                    if (!string.IsNullOrEmpty(_currentRootPath))
-                    {
-                        localDirectoryPath = PathUtility.MapPath(PublishmentSystemInfo, _currentRootPath);
-                        DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
-                    }
-                    var localFileName = PathUtility.GetUploadFileName(PublishmentSystemInfo, filePath);
-                    var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
-
-                    if (!PathUtility.IsVideoExtenstionAllowed(PublishmentSystemInfo, fileExtName))
-                    {
-                        FailMessage("上传失败，上传视频格式不正确！");
-                        return;
-                    }
-                    if (!PathUtility.IsVideoSizeAllowed(PublishmentSystemInfo, hifUpload.PostedFile.ContentLength))
-                    {
-                        FailMessage("上传失败，上传视频超出规定文件大小！");
-                        return;
-                    }
-
-                    hifUpload.PostedFile.SaveAs(localFilePath);
-
-                    var videoUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
-                    var textBoxUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, videoUrl);
-
-                    if (string.IsNullOrEmpty(_textBoxClientId))
-                    {
-                        PageUtils.CloseModalPage(Page);
-                    }
-                    else
-                    {
-                        ltlScript.Text += $@"
-if (parent.document.getElementById('{_textBoxClientId}') != null)
-{{
-    parent.document.getElementById('{_textBoxClientId}').value = '{textBoxUrl}';
-}}
-";
-
-                        ltlScript.Text += PageUtils.HidePopWin;
-                    }
+                    localDirectoryPath = PathUtility.MapPath(PublishmentSystemInfo, _currentRootPath);
+                    DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
-                catch (Exception ex)
+                var localFileName = PathUtility.GetUploadFileName(PublishmentSystemInfo, filePath);
+                var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
+
+                if (!PathUtility.IsVideoExtenstionAllowed(PublishmentSystemInfo, fileExtName))
                 {
-                    FailMessage(ex, "视频上传失败！");
+                    FailMessage("上传失败，上传视频格式不正确！");
+                    return;
                 }
+                if (!PathUtility.IsVideoSizeAllowed(PublishmentSystemInfo, HifUpload.PostedFile.ContentLength))
+                {
+                    FailMessage("上传失败，上传视频超出规定文件大小！");
+                    return;
+                }
+
+                HifUpload.PostedFile.SaveAs(localFilePath);
+
+                var videoUrl = PageUtility.GetPublishmentSystemUrlByPhysicalPath(PublishmentSystemInfo, localFilePath, true);
+                var textBoxUrl = PageUtility.GetVirtualUrl(PublishmentSystemInfo, videoUrl);
+
+                if (string.IsNullOrEmpty(_textBoxClientId))
+                {
+                    PageUtils.CloseModalPage(Page);
+                }
+                else
+                {
+                    LtlScript.Text = $@"
+<script type=""text/javascript"" language=""javascript"">
+    if (parent.document.getElementById('{_textBoxClientId}') != null)
+    {{
+        parent.document.getElementById('{_textBoxClientId}').value = '{textBoxUrl}';
+    }}
+    {PageUtils.HidePopWin}
+</script>";
+                }
+            }
+            catch (Exception ex)
+            {
+                FailMessage(ex, "视频上传失败！");
             }
         }
 
