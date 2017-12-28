@@ -90,24 +90,17 @@ namespace SiteServer.BackgroundPages.Plugins
 
 		public void BindGrid()
 		{
-			try
-			{
-				var arraylist = new ArrayList();
-				foreach (string OS in accessNumHashtable.Keys)
-				{
-					var accessNum = GetAccessNum(OS);
-					var osWithAccessNum = new OSWithAccessNum(OS, accessNum);
-					arraylist.Add(osWithAccessNum);
-				}
+            var arraylist = new ArrayList();
+            foreach (string OS in accessNumHashtable.Keys)
+            {
+                var accessNum = GetAccessNum(OS);
+                var osWithAccessNum = new OSWithAccessNum(OS, accessNum);
+                arraylist.Add(osWithAccessNum);
+            }
 
-                dgContents.DataSource = arraylist;
-                dgContents.DataBind();
-			}
-			catch(Exception ex)
-			{
-                PageUtils.RedirectToErrorPage(ex.Message);
-			}
-		}
+            dgContents.DataSource = arraylist;
+            dgContents.DataBind();
+        }
 
 		public class OSWithAccessNum
 		{

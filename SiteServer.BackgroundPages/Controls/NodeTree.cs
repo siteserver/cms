@@ -26,24 +26,17 @@ namespace SiteServer.BackgroundPages.Controls
             builder.Append(scripts);
             if (Page.Request.QueryString["PublishmentSystemID"] != null)
             {
-                try
+                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByParentId(_publishmentSystemInfo.PublishmentSystemId, 0);
+                foreach (var nodeId in nodeIdList)
                 {
-                    var nodeIdList = DataProvider.NodeDao.GetNodeIdListByParentId(_publishmentSystemInfo.PublishmentSystemId, 0);
-                    foreach (var nodeId in nodeIdList)
+                    var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, nodeId);
+                    var enabled = AdminUtility.IsOwningNodeId(body.AdminName, nodeInfo.NodeId);
+                    if (!enabled)
                     {
-                        var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, nodeId);
-                        var enabled = AdminUtility.IsOwningNodeId(body.AdminName, nodeInfo.NodeId);
-                        if (!enabled)
-                        {
-                            if (!AdminUtility.IsHasChildOwningNodeId(body.AdminName, nodeInfo.NodeId)) continue;
-                        }
-
-                        builder.Append(ChannelLoading.GetChannelRowHtml(_publishmentSystemInfo, nodeInfo, enabled, ELoadingType.ContentTree, null, body.AdminName));
+                        if (!AdminUtility.IsHasChildOwningNodeId(body.AdminName, nodeInfo.NodeId)) continue;
                     }
-                }
-                catch (Exception ex)
-                {
-                    PageUtils.RedirectToErrorPage(ex.Message);
+
+                    builder.Append(ChannelLoading.GetChannelRowHtml(_publishmentSystemInfo, nodeInfo, enabled, ELoadingType.ContentTree, null, body.AdminName));
                 }
             }
             writer.Write(builder);

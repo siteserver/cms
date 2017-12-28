@@ -56,7 +56,7 @@ namespace BaiRong.Core.Provider
         private const string ParmSummary = "@Summary";
         private const string ParmAddDate = "@AddDate";
 
-        public void Insert(ErrorLogInfo logInfo)
+        public int Insert(ErrorLogInfo logInfo)
         {
             var sqlString = $"INSERT INTO {TableName} (PluginId, Message, Stacktrace, Summary, AddDate) VALUES (@PluginId, @Message, @Stacktrace, @Summary, @AddDate)";
 
@@ -69,7 +69,7 @@ namespace BaiRong.Core.Provider
                 GetParameter(ParmAddDate, DataType.DateTime, logInfo.AddDate),
             };
 
-            ExecuteNonQuery(sqlString, parms);
+            return ExecuteNonQueryAndReturnId(TableName, nameof(ErrorLogInfo.Id), sqlString, parms);
         }
 
         public void Delete(List<int> idList)
@@ -110,6 +110,24 @@ namespace BaiRong.Core.Provider
             }
 
             return count;
+        }
+
+        public KeyValuePair<string, string> GetMessageAndStacktrace(int logId)
+        {
+            var pair = new KeyValuePair<string, string>();
+
+            var sqlString = $"SELECT Message, Stacktrace FROM {TableName} WHERE Id = {logId}";
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    pair = new KeyValuePair<string, string>(GetString(rdr, 0), GetString(rdr, 1));
+                }
+                rdr.Close();
+            }
+
+            return pair;
         }
 
         public string GetSelectCommend(string pluginId, string keyword, string dateFrom, string dateTo)

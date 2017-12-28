@@ -30,51 +30,49 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-			if (!IsPostBack)
+            if (IsPostBack) return;
+
+            VerifySitePermissions(AppManager.Permissions.WebSite.Create);
+
+            EBooleanUtils.AddListItems(DdlIsCreateContentIfContentChanged, "生成", "不生成");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateContentIfContentChanged, PublishmentSystemInfo.Additional.IsCreateContentIfContentChanged.ToString());
+
+            EBooleanUtils.AddListItems(DdlIsCreateChannelIfChannelChanged, "生成", "不生成");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfChannelChanged, PublishmentSystemInfo.Additional.IsCreateChannelIfChannelChanged.ToString());
+
+            EBooleanUtils.AddListItems(DdlIsCreateShowPageInfo, "显示", "不显示");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateShowPageInfo, PublishmentSystemInfo.Additional.IsCreateShowPageInfo.ToString());
+
+            EBooleanUtils.AddListItems(DdlIsCreateIe8Compatible, "强制兼容", "不设置");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateIe8Compatible, PublishmentSystemInfo.Additional.IsCreateIe8Compatible.ToString());
+
+            EBooleanUtils.AddListItems(DdlIsCreateBrowserNoCache, "强制清除缓存", "不设置");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateBrowserNoCache, PublishmentSystemInfo.Additional.IsCreateBrowserNoCache.ToString());
+
+            EBooleanUtils.AddListItems(DdlIsCreateJsIgnoreError, "包含JS容错代码", "不设置");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateJsIgnoreError, PublishmentSystemInfo.Additional.IsCreateJsIgnoreError.ToString());
+
+            EBooleanUtils.AddListItems(DdlIsCreateSearchDuplicate, "包含", "不包含");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateSearchDuplicate, PublishmentSystemInfo.Additional.IsCreateSearchDuplicate.ToString());
+
+            EBooleanUtils.AddListItems(DdlIsCreateWithJQuery, "是", "否");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateWithJQuery, PublishmentSystemInfo.Additional.IsCreateWithJQuery.ToString());
+
+            EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
+
+            TbCreateStaticMaxPage.Text = PublishmentSystemInfo.Additional.CreateStaticMaxPage.ToString();
+
+            EBooleanUtils.AddListItems(DdlIsCreateStaticContentByAddDate, "启用", "不启用");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateStaticContentByAddDate, PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate.ToString());
+            PhIsCreateStaticContentByAddDate.Visible = PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate;
+            if (PublishmentSystemInfo.Additional.CreateStaticContentAddDate != DateTime.MinValue)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "页面生成设置", AppManager.Permissions.WebSite.Create);
-
-                EBooleanUtils.AddListItems(DdlIsCreateContentIfContentChanged, "生成", "不生成");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateContentIfContentChanged, PublishmentSystemInfo.Additional.IsCreateContentIfContentChanged.ToString());
-
-                EBooleanUtils.AddListItems(DdlIsCreateChannelIfChannelChanged, "生成", "不生成");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateChannelIfChannelChanged, PublishmentSystemInfo.Additional.IsCreateChannelIfChannelChanged.ToString());
-
-                EBooleanUtils.AddListItems(DdlIsCreateShowPageInfo, "显示", "不显示");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateShowPageInfo, PublishmentSystemInfo.Additional.IsCreateShowPageInfo.ToString());
-
-                EBooleanUtils.AddListItems(DdlIsCreateIe8Compatible, "强制兼容", "不设置");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateIe8Compatible, PublishmentSystemInfo.Additional.IsCreateIe8Compatible.ToString());
-
-                EBooleanUtils.AddListItems(DdlIsCreateBrowserNoCache, "强制清除缓存", "不设置");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateBrowserNoCache, PublishmentSystemInfo.Additional.IsCreateBrowserNoCache.ToString());
-
-                EBooleanUtils.AddListItems(DdlIsCreateJsIgnoreError, "包含JS容错代码", "不设置");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateJsIgnoreError, PublishmentSystemInfo.Additional.IsCreateJsIgnoreError.ToString());
-
-                EBooleanUtils.AddListItems(DdlIsCreateSearchDuplicate, "包含", "不包含");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateSearchDuplicate, PublishmentSystemInfo.Additional.IsCreateSearchDuplicate.ToString());
-
-                EBooleanUtils.AddListItems(DdlIsCreateWithJQuery, "是", "否");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateWithJQuery, PublishmentSystemInfo.Additional.IsCreateWithJQuery.ToString());
-
-                EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
-
-                TbCreateStaticMaxPage.Text = PublishmentSystemInfo.Additional.CreateStaticMaxPage.ToString();
-
-                EBooleanUtils.AddListItems(DdlIsCreateStaticContentByAddDate, "启用", "不启用");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateStaticContentByAddDate, PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate.ToString());
-                PhIsCreateStaticContentByAddDate.Visible = PublishmentSystemInfo.Additional.IsCreateStaticContentByAddDate;
-                if (PublishmentSystemInfo.Additional.CreateStaticContentAddDate != DateTime.MinValue)
-                {
-                    TbCreateStaticContentAddDate.DateTime = PublishmentSystemInfo.Additional.CreateStaticContentAddDate;
-                }
-
-                EBooleanUtils.AddListItems(DdlIsCreateMultiThread, "启用", "不启用");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateMultiThread, PublishmentSystemInfo.Additional.IsCreateMultiThread.ToString());
-
+                TbCreateStaticContentAddDate.DateTime = PublishmentSystemInfo.Additional.CreateStaticContentAddDate;
             }
+
+            EBooleanUtils.AddListItems(DdlIsCreateMultiThread, "启用", "不启用");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateMultiThread, PublishmentSystemInfo.Additional.IsCreateMultiThread.ToString());
         }
 
         public void DdlIsCreateStaticContentByAddDate_SelectedIndexChanged(object sender, EventArgs e)

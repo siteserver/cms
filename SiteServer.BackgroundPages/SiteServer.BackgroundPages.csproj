@@ -269,7 +269,6 @@
     <Compile Include="Core\AreaTreeItem.cs" />
     <Compile Include="Core\ChannelLoading.cs" />
     <Compile Include="Controls\AuxiliaryControl.cs" />
-    <Compile Include="Controls\AuxiliarySingleControl.cs" />
     <Compile Include="Controls\ChannelAuxiliaryControl.cs" />
     <Compile Include="Controls\NodeTree.cs" />
     <Compile Include="Controls\TextEditorControl.cs" />
@@ -304,18 +303,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalExportMessage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalTableStyleAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalTableStyleImport.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalTableStylesAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalTableStyleValidateAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Plugins\PageManagement.cs">
@@ -963,7 +950,7 @@
     <Compile Include="Settings\PageAuxiliaryTable.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageAuxiliaryTableAdd.cs">
+    <Compile Include="Settings\ModalAuxiliaryTableAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageTableMetadata.cs">

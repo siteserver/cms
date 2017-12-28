@@ -237,8 +237,7 @@ namespace SiteServer.CMS.Core
         public static TemplateInfo GetChannelTemplateInfo(int publishmentSystemId, int channelId)
         {
             var templateId = 0;
-            var nodeType = NodeManager.GetNodeType(publishmentSystemId, channelId);
-            if (nodeType == ENodeType.BackgroundPublishNode)
+            if (publishmentSystemId == channelId)
             {
                 templateId = GetDefaultTemplateId(publishmentSystemId, ETemplateType.IndexPageTemplate);
             }

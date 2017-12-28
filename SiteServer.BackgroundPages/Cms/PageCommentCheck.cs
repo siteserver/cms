@@ -36,72 +36,69 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-            if (!IsPostBack)
+            if (IsPostBack) return;
+
+            if (Body.GetQueryBool("Check"))
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "评论审核", string.Empty);
-
-                if (Body.GetQueryBool("Check"))
+                var idList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDsCollection"));
+                try
                 {
-                    var idList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDsCollection"));
-                    try
-                    {
-                        DataProvider.CommentDao.Check(PublishmentSystemId, idList);
-                        Body.AddSiteLog(PublishmentSystemId, 0, 0, "审核评论", string.Empty);
-                        SuccessCheckMessage();
-                    }
-                    catch (Exception ex)
-                    {
-                        FailCheckMessage(ex);
-                    }
+                    DataProvider.CommentDao.Check(PublishmentSystemId, idList);
+                    Body.AddSiteLog(PublishmentSystemId, 0, 0, "审核评论", string.Empty);
+                    SuccessCheckMessage();
                 }
-                else if (Body.GetQueryBool("Delete"))
+                catch (Exception ex)
                 {
-                    var idList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDsCollection"));
-                    try
-                    {
-                        DataProvider.CommentDao.DeleteUnChecked(idList);
-                        Body.AddSiteLog(PublishmentSystemId, 0, 0, "删除评论", string.Empty);
-                        SuccessDeleteMessage();
-                    }
-                    catch (Exception ex)
-                    {
-                        FailDeleteMessage(ex);
-                    }
+                    FailCheckMessage(ex);
                 }
-
-                SpContents.ControlToPaginate = RptContents;
-                SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
-
-                SpContents.SelectCommand = DataProvider.CommentDao.GetSelectedCommendByCheck(PublishmentSystemId);
-
-                SpContents.SortField = DataProvider.CommentDao.GetSortFieldName();
-                SpContents.SortMode = SortMode.DESC;
-                RptContents.ItemDataBound += RptContents_ItemDataBound;
-
-                SpContents.DataBind();
-
-                BtnCheck.Attributes.Add("onclick",
-                        PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
-                            PageUtils.GetCmsUrl(nameof(PageCommentCheck), new NameValueCollection
-                            {
-                                {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                                {"Check", true.ToString()}
-                            }), "IDsCollection", "IDsCollection", "请选择需要审核的评论！", "此操作将审核所选评论，确认吗？"));
-
-                if (HasChannelPermissions(PublishmentSystemId, AppManager.Permissions.Channel.CommentDelete))
+            }
+            else if (Body.GetQueryBool("Delete"))
+            {
+                var idList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("IDsCollection"));
+                try
                 {
-                    BtnDelete.Attributes.Add("onclick",
-                        PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
-                            PageUtils.GetCmsUrl(nameof(PageCommentCheck), new NameValueCollection
-                            {
-                                {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                                {"Delete", true.ToString()}
-                            }), "IDsCollection", "IDsCollection", "请选择需要删除的评论！", "此操作将删除所选评论，确认吗？"));
+                    DataProvider.CommentDao.DeleteUnChecked(idList);
+                    Body.AddSiteLog(PublishmentSystemId, 0, 0, "删除评论", string.Empty);
+                    SuccessDeleteMessage();
                 }
-                else
+                catch (Exception ex)
                 {
-                    BtnDelete.Visible = false;
+                    FailDeleteMessage(ex);
                 }
+            }
+
+            SpContents.ControlToPaginate = RptContents;
+            SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
+
+            SpContents.SelectCommand = DataProvider.CommentDao.GetSelectedCommendByCheck(PublishmentSystemId);
+
+            SpContents.SortField = DataProvider.CommentDao.GetSortFieldName();
+            SpContents.SortMode = SortMode.DESC;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+
+            SpContents.DataBind();
+
+            BtnCheck.Attributes.Add("onclick",
+                PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
+                    PageUtils.GetCmsUrl(nameof(PageCommentCheck), new NameValueCollection
+                    {
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                        {"Check", true.ToString()}
+                    }), "IDsCollection", "IDsCollection", "请选择需要审核的评论！", "此操作将审核所选评论，确认吗？"));
+
+            if (HasChannelPermissions(PublishmentSystemId, AppManager.Permissions.Channel.CommentDelete))
+            {
+                BtnDelete.Attributes.Add("onclick",
+                    PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
+                        PageUtils.GetCmsUrl(nameof(PageCommentCheck), new NameValueCollection
+                        {
+                            {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                            {"Delete", true.ToString()}
+                        }), "IDsCollection", "IDsCollection", "请选择需要删除的评论！", "此操作将删除所选评论，确认吗？"));
+            }
+            else
+            {
+                BtnDelete.Visible = false;
             }
         }
 

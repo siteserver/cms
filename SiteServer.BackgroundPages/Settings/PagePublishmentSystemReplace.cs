@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Settings
             sortedlist = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
 			if (!IsPostBack)
             {
-                BreadCrumbSettings("整站替换", AppManager.Permissions.Settings.SiteManagement);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
                 PublishmentSystemName.Text = PublishmentSystemInfo.PublishmentSystemName;
 
@@ -105,24 +105,17 @@ namespace SiteServer.BackgroundPages.Settings
 
 		public void BindGrid()
 		{
-			try
-			{
-				var directoryArrayList = new ArrayList();
-				foreach (string directoryName in sortedlist.Keys)
-				{
-                    var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
-					var dirInfo = new DirectoryInfo(directoryPath);
-					directoryArrayList.Add(dirInfo);
-				}
+            var directoryArrayList = new ArrayList();
+            foreach (string directoryName in sortedlist.Keys)
+            {
+                var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
+                var dirInfo = new DirectoryInfo(directoryPath);
+                directoryArrayList.Add(dirInfo);
+            }
 
-                dgContents.DataSource = directoryArrayList;
-                dgContents.DataBind();
-			}
-			catch (Exception ex)
-			{
-                PageUtils.RedirectToErrorPage(ex.Message);
-			}
-		}
+            dgContents.DataSource = directoryArrayList;
+            dgContents.DataBind();
+        }
 
 		public WizardPlaceHolder CurrentWizardPlaceHolder
 		{

@@ -5,9 +5,8 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -15,7 +14,6 @@ namespace SiteServer.BackgroundPages.Cms
 	public class ModalTableStylesAdd : BasePageCms
     {
         public TextBox TbAttributeNames;
-        public DropDownList DdlIsVisible;
         public DropDownList DdlInputType;
         public Control SpDateTip;
         public PlaceHolder PhRepeat;
@@ -28,28 +26,20 @@ namespace SiteServer.BackgroundPages.Cms
         public PlaceHolder PhDefaultValue;
         public TextBox TbDefaultValue;
 
-        public PlaceHolder PhItemsType;
-        public DropDownList DdlItemType;
-        public PlaceHolder PhItemCount;
-        public TextBox TbItemCount;
-        public PlaceHolder PhItemsRapid;
-        public TextBox TbItemValues;
-        public PlaceHolder PhItems;
-        public Repeater RptItems;     
+        public PlaceHolder PhIsSelectField;
+        public TextBox TbRapidValues;
 
         private List<int> _relatedIdentities;
         private string _tableName;
         private string _redirectUrl;
-        private ETableStyle _tableStyle;
 
-        public static string GetOpenWindowString(int publishmentSystemId, List<int> relatedIdentities, string tableName, ETableStyle tableStyle, string redirectUrl)
+        public static string GetOpenWindowString(int publishmentSystemId, List<int> relatedIdentities, string tableName, string redirectUrl)
         {
-            return PageUtils.GetOpenLayerString("批量添加显示样式", PageUtils.GetCmsUrl(nameof(ModalTableStylesAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("批量添加显示样式", PageUtils.GetCmsUrl(nameof(ModalTableStylesAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
                 {"TableName", tableName},
-                {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                 {"RedirectUrl", StringUtils.ValueToUrl(redirectUrl)}
             }));
         }
@@ -64,31 +54,35 @@ namespace SiteServer.BackgroundPages.Cms
                 _relatedIdentities.Add(0);
             }
             _tableName = Body.GetQueryString("TableName");
-            _tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
             _redirectUrl = StringUtils.ValueFromUrl(Body.GetQueryString("RedirectUrl"));
 
             if (!IsPostBack)
             {
-                DdlIsVisible.Items[0].Value = true.ToString();
-                DdlIsVisible.Items[1].Value = false.ToString();
-
                 DdlIsHorizontal.Items[0].Value = true.ToString();
                 DdlIsHorizontal.Items[1].Value = false.ToString();
 
-                InputTypeUtils.AddListItems(DdlInputType);
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.Text, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.TextArea, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.TextEditor, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.CheckBox, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.Radio, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.SelectOne, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.SelectMultiple, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.Date, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.DateTime, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.Image, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.Video, false));
+                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.File, false));
 
-                var styleInfo = TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, string.Empty, _relatedIdentities);
+                var styleInfo = TableStyleManager.GetTableStyleInfo(_tableName, string.Empty, _relatedIdentities);
 
-                ControlUtils.SelectListItems(DdlInputType, InputTypeUtils.GetValue(InputTypeUtils.GetEnumType(styleInfo.InputType)));
-                ControlUtils.SelectListItems(DdlIsVisible, styleInfo.IsVisible.ToString());
+                ControlUtils.SelectSingleItem(DdlInputType, InputTypeUtils.GetValue(InputTypeUtils.GetEnumType(styleInfo.InputType)));
                 TbDefaultValue.Text = styleInfo.DefaultValue;
                 DdlIsHorizontal.SelectedValue = styleInfo.IsHorizontal.ToString();
                 TbColumns.Text = styleInfo.Additional.Columns.ToString();
 
                 TbHeight.Text = styleInfo.Additional.Height == 0 ? string.Empty : styleInfo.Additional.Height.ToString();
                 TbWidth.Text = styleInfo.Additional.Width;
-
-                TbItemCount.Text = "0";
             }
 
             ReFresh(null, EventArgs.Empty);
@@ -96,26 +90,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void ReFresh(object sender, EventArgs e)
         {
-            PhDefaultValue.Visible = PhWidth.Visible = PhHeight.Visible = SpDateTip.Visible = PhItemsType.Visible = PhItemsRapid.Visible = PhItems.Visible = PhRepeat.Visible = PhItemCount.Visible = false;
+            PhDefaultValue.Visible = PhWidth.Visible = PhHeight.Visible = SpDateTip.Visible = PhIsSelectField.Visible = PhRepeat.Visible = false;
 
             TbDefaultValue.TextMode = TextBoxMode.MultiLine;
             var inputType = InputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
-                PhItemsType.Visible = true;
-                var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
-                if (isRapid)
-                {
-                    PhItemsRapid.Visible = true;
-                    PhItemCount.Visible = false;
-                    PhItems.Visible = false;
-                }
-                else
-                {
-                    PhItemsRapid.Visible = false;
-                    PhItemCount.Visible = true;
-                    PhItems.Visible = true;
-                }
+                PhIsSelectField.Visible = true;
                 if (inputType == InputType.CheckBox || inputType == InputType.Radio)
                 {
                     PhRepeat.Visible = true;
@@ -141,41 +122,15 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-        public void SetCount_OnClick(object sender, EventArgs e)
-        {
-            if (!Page.IsPostBack) return;
-
-            var count = TranslateUtils.ToInt(TbItemCount.Text);
-            if (count != 0)
-            {
-                RptItems.DataSource = TableStyleManager.GetStyleItemDataSet(count, null);
-                RptItems.DataBind();
-            }
-            else
-            {
-                FailMessage("选项数目必须为大于0的数字！");
-            }
-        }
-
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             var inputType = InputTypeUtils.GetEnumType(DdlInputType.SelectedValue);
-
-            if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
-            {
-                var itemCount = TranslateUtils.ToInt(TbItemCount.Text);
-                if (itemCount == 0)
-                {
-                    FailMessage("操作失败，选项数目不能为0！");
-                    return;
-                }
-            }
 
             var isChanged = InsertTableStyleInfo(inputType);
 
             if (isChanged)
             {
-                PageUtils.CloseModalPageAndRedirect(Page, _redirectUrl);
+                LayerUtils.CloseAndRedirect(Page, _redirectUrl);
             }
 		}
 
@@ -190,90 +145,57 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var itemString in attributeNameArray)
             {
-                if (!string.IsNullOrEmpty(itemString))
+                if (string.IsNullOrEmpty(itemString)) continue;
+
+                var attributeName = itemString;
+                var displayName = string.Empty;
+
+                if (StringUtils.Contains(itemString, "(") && StringUtils.Contains(itemString, ")"))
                 {
-                    var attributeName = itemString;
-                    var displayName = string.Empty;
-
-                    if (StringUtils.Contains(itemString, "(") && StringUtils.Contains(itemString, ")"))
+                    var length = itemString.IndexOf(')') - itemString.IndexOf('(');
+                    if (length > 0)
                     {
-                        var length = itemString.IndexOf(')') - itemString.IndexOf('(');
-                        if (length > 0)
-                        {
-                            displayName = itemString.Substring(itemString.IndexOf('(') + 1, length);
-                            attributeName = itemString.Substring(0, itemString.IndexOf('('));
-                        }
+                        displayName = itemString.Substring(itemString.IndexOf('(') + 1, length);
+                        attributeName = itemString.Substring(0, itemString.IndexOf('('));
                     }
-                    attributeName = attributeName.Trim();
-                    displayName = displayName.Trim(' ', '(', ')');
-                    if (string.IsNullOrEmpty(displayName))
-                    {
-                        displayName = attributeName;
-                    }
-
-                    if (_tableStyle == ETableStyle.Site)
-                    {
-                        if (string.IsNullOrEmpty(attributeName))
-                        {
-                            FailMessage("操作失败，字段名不能为空！");
-                            return false;
-                        }
-                        if (StringUtils.StartsWithIgnoreCase(attributeName, "Site"))
-                        {
-                            FailMessage("操作失败，字段名不能以site开始！");
-                            return false;
-                        }
-                    }
-
-                    if (TableStyleManager.IsExists(relatedIdentity, _tableName, attributeName) || TableStyleManager.IsExistsInParents(_relatedIdentities, _tableName, attributeName))
-                    {
-                        FailMessage($@"显示样式添加失败：字段名""{attributeName}""已存在");
-                        return false;
-                    }
-
-                    var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, TranslateUtils.ToBool(DdlIsVisible.SelectedValue), false, InputTypeUtils.GetValue(inputType), TbDefaultValue.Text, TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue), string.Empty);
-                    styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
-                    styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
-                    styleInfo.Additional.Width = TbWidth.Text;
-
-                    if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
-                    {
-                        styleInfo.StyleItems = new List<TableStyleItemInfo>();
-
-                        var isRapid = TranslateUtils.ToBool(DdlItemType.SelectedValue);
-                        if (isRapid)
-                        {
-                            var itemArrayList = TranslateUtils.StringCollectionToStringList(TbItemValues.Text);
-                            foreach (string itemValue in itemArrayList)
-                            {
-                                var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, itemValue, itemValue, false);
-                                styleInfo.StyleItems.Add(itemInfo);
-                            }
-                        }
-                        else
-                        {
-                            var isHasSelected = false;
-                            foreach (RepeaterItem item in RptItems.Items)
-                            {
-                                var itemTitle = (TextBox)item.FindControl("ItemTitle");
-                                var itemValue = (TextBox)item.FindControl("ItemValue");
-                                var isSelected = (CheckBox)item.FindControl("IsSelected");
-
-                                if ((inputType != InputType.SelectMultiple && inputType != InputType.CheckBox) && isHasSelected && isSelected.Checked)
-                                {
-                                    FailMessage("操作失败，只能有一个初始化时选定项！");
-                                    return false;
-                                }
-                                if (isSelected.Checked) isHasSelected = true;
-
-                                var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, itemTitle.Text, itemValue.Text, isSelected.Checked);
-                                styleInfo.StyleItems.Add(itemInfo);
-                            }
-                        }
-                    }
-
-                    styleInfoArrayList.Add(styleInfo);
                 }
+                attributeName = attributeName.Trim();
+                displayName = displayName.Trim(' ', '(', ')');
+                if (string.IsNullOrEmpty(displayName))
+                {
+                    displayName = attributeName;
+                }
+
+                if (string.IsNullOrEmpty(attributeName))
+                {
+                    FailMessage("操作失败，字段名不能为空！");
+                    return false;
+                }
+
+                if (TableStyleManager.IsExists(relatedIdentity, _tableName, attributeName))
+                {
+                    FailMessage($@"显示样式添加失败：字段名""{attributeName}""已存在");
+                    return false;
+                }
+
+                var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, false, InputTypeUtils.GetValue(inputType), TbDefaultValue.Text, TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue), string.Empty);
+                styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
+                styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
+                styleInfo.Additional.Width = TbWidth.Text;
+
+                if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
+                {
+                    styleInfo.StyleItems = new List<TableStyleItemInfo>();
+
+                    var rapidValues = TranslateUtils.StringCollectionToStringList(TbRapidValues.Text);
+                    foreach (var rapidValue in rapidValues)
+                    {
+                        var itemInfo = new TableStyleItemInfo(0, styleInfo.TableStyleId, rapidValue, rapidValue, false);
+                        styleInfo.StyleItems.Add(itemInfo);
+                    }
+                }
+
+                styleInfoArrayList.Add(styleInfo);
             }
 
             try
@@ -282,9 +204,19 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (TableStyleInfo styleInfo in styleInfoArrayList)
                 {
                     attributeNames.Add(styleInfo.AttributeName);
-                    TableStyleManager.Insert(styleInfo, _tableStyle);
+                    TableStyleManager.Insert(styleInfo);
                 }
-                Body.AddSiteLog(PublishmentSystemId, "批量添加表单显示样式", $"类型:{ETableStyleUtils.GetText(_tableStyle)},字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
+                
+
+                if (PublishmentSystemId > 0)
+                {
+                    Body.AddSiteLog(PublishmentSystemId, "批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
+                }
+                else
+                {
+                    Body.AddAdminLog("批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
+                }
+
                 isChanged = true;
             }
             catch (Exception ex)

@@ -3,12 +3,12 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.Core.User;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenLayerString("批量导入Word文件",
+            return LayerUtils.GetOpenScript("批量导入Word文件",
                 PageUtils.GetCmsUrl(nameof(ModalUploadWord), new NameValueCollection
                 {
                     {"publishmentSystemID", publishmentSystemId.ToString()},
@@ -56,8 +56,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             int checkedLevel;
             var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
-            LevelManager.LoadContentLevelToEdit(DdlContentLevel, PublishmentSystemInfo, _nodeInfo.NodeId, null, isChecked, checkedLevel);
-            ControlUtils.SelectListItems(DdlContentLevel, LevelManager.LevelInt.CaoGao.ToString());
+            CheckManager.LoadContentLevelToEdit(DdlContentLevel, PublishmentSystemInfo, _nodeInfo.NodeId, null, isChecked, checkedLevel);
+            ControlUtils.SelectSingleItem(DdlContentLevel, CheckManager.LevelInt.CaoGao.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -69,28 +69,28 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var fileName = Request.Form["fileName_1"];
                 var redirectUrl = WebUtils.GetContentAddUploadWordUrl(PublishmentSystemId, _nodeInfo, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue), fileName, _returnUrl);
-                PageUtils.CloseModalPageAndRedirect(Page, redirectUrl);
+                LayerUtils.CloseAndRedirect(Page, redirectUrl);
 
                 return;
             }
             if (fileCount > 1)
             {
-                var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
                 var tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeInfo.NodeId);
+                var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
 
                 for (var index = 1; index <= fileCount; index++)
                 {
                     var fileName = Request.Form["fileName_" + index];
                     if (!string.IsNullOrEmpty(fileName))
                     {
-                        var formCollection = WordUtils.GetWordNameValueCollection(PublishmentSystemId, _nodeInfo.ContentModelId, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToInt(DdlContentLevel.SelectedValue), fileName);
+                        var formCollection = WordUtils.GetWordNameValueCollection(PublishmentSystemId, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, TranslateUtils.ToInt(DdlContentLevel.SelectedValue), fileName);
 
                         if (!string.IsNullOrEmpty(formCollection[ContentAttribute.Title]))
                         {
-                            var contentInfo = ContentUtility.GetContentInfo(tableStyle);
+                            var contentInfo = new ContentInfo();
 
-                            BackgroundInputTypeParser.AddValuesToAttributes(tableStyle, tableName, PublishmentSystemInfo, relatedIdentities, formCollection, contentInfo.ToNameValueCollection(), ContentAttribute.HiddenAttributes);
+                            BackgroundInputTypeParser.SaveAttributes(contentInfo, PublishmentSystemInfo, styleInfoList, formCollection, ContentAttribute.AllAttributesLowercase);
 
                             contentInfo.NodeId = _nodeInfo.NodeId;
                             contentInfo.PublishmentSystemId = PublishmentSystemId;
@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            PageUtils.CloseModalPage(Page);
+            LayerUtils.Close(Page);
         }
     }
 }

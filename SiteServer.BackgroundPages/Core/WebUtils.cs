@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Core
                     image += "&nbsp;<img src='../pic/icon/reference.png' title='引用地址' align='absmiddle' border=0 />(引用地址)";
                 }
             }
-            if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.LinkUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.LinkUrl)))
             {
                 image += "&nbsp;<img src='../pic/icon/link.png' title='外部链接' align='absmiddle' border=0 />";
             }
@@ -97,7 +97,7 @@ namespace SiteServer.BackgroundPages.Core
             return url + image;
         }
 
-        public static string GetChannelListBoxTitle(int publishmentSystemId, int nodeId, string nodeName, ENodeType nodeType, int parentsCount, bool isLastNode, bool[] isLastNodeArray)
+        public static string GetChannelListBoxTitle(int publishmentSystemId, int nodeId, string nodeName, int parentsCount, bool isLastNode, bool[] isLastNodeArray)
         {
             var str = string.Empty;
             if (nodeId == publishmentSystemId)
@@ -202,7 +202,7 @@ namespace SiteServer.BackgroundPages.Core
     审 核
 </a>");
                 }
-                if (AdminUtility.HasWebsitePermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, AppManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.CreatePage))
+                if (AdminUtility.HasSitePermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, AppManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.CreatePage))
                 {
                     builder.Append($@"
 <a href=""javascript:;"" class=""btn btn-primary"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateContentsOneByOne(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId)}"">
@@ -351,7 +351,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
 
                 //生 成
-                if (AdminUtility.HasWebsitePermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, AppManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.CreatePage))
+                if (AdminUtility.HasSitePermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, AppManager.Permissions.WebSite.Create) || AdminUtility.HasChannelPermissions(administratorName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, AppManager.Permissions.Channel.CreatePage))
                 {
                     builder.Append(
                         $@"<a href=""javascript:;"" onclick=""{ModalCreateChannels.GetOpenWindowString(

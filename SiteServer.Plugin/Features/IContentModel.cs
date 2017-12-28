@@ -3,9 +3,10 @@ using SiteServer.Plugin.Models;
 
 namespace SiteServer.Plugin.Features
 {
-    public interface IContentTable: IPlugin
+    public interface IContentModel : IPlugin
     {
         string ContentTableName { get; }
+
         List<PluginTableColumn> ContentTableColumns { get; }
     }
 }

@@ -1,26 +1,46 @@
 ﻿using System;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 
 namespace SiteServer.BackgroundPages
 {
-    public class PageError : BasePage
+    public class PageError : Page
     {
-        public Literal ltlErrorMessage;
-
-        protected override bool IsAccessable => true;
+        public Literal LtlMessage;
+        public Literal LtlStackTrace;
 
         public void Page_Load(object sender, EventArgs e)
         {
-            if (IsForbidden) return;
-
-            if (!Page.IsPostBack)
+            var message = string.Empty;
+            var stackTrace = string.Empty;
+            try
             {
-                if (Body.IsQueryExists("ErrorMessage"))
+                var logId = TranslateUtils.ToInt(Request.QueryString["logId"]);
+                if (logId > 0)
                 {
-                    var errorMessage = PageUtils.FilterXss(StringUtils.ValueFromUrl(Body.GetQueryString("ErrorMessage")));
-                    ltlErrorMessage.Text = errorMessage;
+                    var pair = BaiRongDataProvider.ErrorLogDao.GetMessageAndStacktrace(logId);
+                    message = pair.Key;
+                    stackTrace = pair.Value;
                 }
+                if (string.IsNullOrEmpty(message))
+                {
+                    message = TranslateUtils.DecryptStringBySecretKey(Request.QueryString["message"]);
+                    stackTrace = TranslateUtils.DecryptStringBySecretKey(Request.QueryString["stackTrace"]);
+                }
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                stackTrace = ex.StackTrace;
+            }
+
+            LtlMessage.Text = message;
+            if (!string.IsNullOrEmpty(stackTrace))
+            {
+                LtlStackTrace.Text = $@"<!-- 
+{stackTrace}
+-->";
             }
         }
     }

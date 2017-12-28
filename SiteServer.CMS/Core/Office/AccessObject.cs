@@ -1,18 +1,18 @@
 using System.Collections;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using SiteServer.CMS.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Collections.Specialized;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 
 namespace SiteServer.CMS.Core.Office
 {
 	public class AccessObject
 	{
-        public static bool CreateAccessFileForContents(string filePath, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, List<int> contentIDArrayList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
+        public static bool CreateAccessFileForContents(string filePath, PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
             FileUtils.DeleteFileIfExists(filePath);
@@ -22,23 +22,22 @@ namespace SiteServer.CMS.Core.Office
 
             var relatedidentityes = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
 
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedidentityes);
-            styleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, tableStyle, styleInfoList);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes);
+            styleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, styleInfoList);
 
-            var accessDAO = new AccessDao(filePath);
+            var accessDao = new AccessDao(filePath);
 
-            var createTableSqlString = accessDAO.GetCreateTableSqlString(nodeInfo.NodeName, styleInfoList, displayAttributes);
-            accessDAO.ExecuteSqlString(createTableSqlString);
+            var createTableSqlString = accessDao.GetCreateTableSqlString(nodeInfo.NodeName, styleInfoList, displayAttributes);
+            accessDao.ExecuteSqlString(createTableSqlString);
 
             bool isExport;
 
-            var insertSqlArrayList = accessDAO.GetInsertSqlStringArrayList(nodeInfo.NodeName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, tableStyle, tableName, styleInfoList, displayAttributes, contentIDArrayList, isPeriods, dateFrom, dateTo, checkedState, out isExport);
+            var insertSqlArrayList = accessDao.GetInsertSqlStringArrayList(nodeInfo.NodeName, publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, tableName, styleInfoList, displayAttributes, contentIdList, isPeriods, dateFrom, dateTo, checkedState, out isExport);
 
             foreach (string insertSql in insertSqlArrayList)
             {
-                accessDAO.ExecuteSqlString(insertSql);
+                accessDao.ExecuteSqlString(insertSql);
             }
 
             return isExport;
@@ -63,10 +62,9 @@ namespace SiteServer.CMS.Core.Office
                     {
                         var relatedidentityes = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
 
-                        var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
                         var theTableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
-                        var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, theTableName, relatedidentityes);
+                        var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(theTableName, relatedidentityes);
 
                         var nameValueCollection = new NameValueCollection();
 
@@ -79,14 +77,9 @@ namespace SiteServer.CMS.Core.Office
                         for (var i = 0; i < oleDt.Columns.Count; i++)
                         {
                             var columnName = oleDt.Columns[i].ColumnName;
-                            if (!string.IsNullOrEmpty(nameValueCollection[columnName]))
-                            {
-                                attributeNames.Add(nameValueCollection[columnName]);
-                            }
-                            else
-                            {
-                                attributeNames.Add(columnName);
-                            }
+                            attributeNames.Add(!string.IsNullOrEmpty(nameValueCollection[columnName])
+                                ? nameValueCollection[columnName]
+                                : columnName);
                         }
 
                         foreach (DataRow row in oleDt.Rows)

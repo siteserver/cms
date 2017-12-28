@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "生成栏目页", AppManager.Permissions.WebSite.Create);
+                VerifySitePermissions(AppManager.Permissions.WebSite.Create);
 
                 var listitem = new ListItem("所有选中的栏目", "All");
                 ChooseScope.Items.Add(listitem);

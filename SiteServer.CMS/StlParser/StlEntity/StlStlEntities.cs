@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using BaiRong.Core; 
-using BaiRong.Core.AuxiliaryTable;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -127,19 +126,18 @@ namespace SiteServer.CMS.StlParser.StlEntity
                          
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, attributeName, RelatedIdentities.GetRelatedIdentities(ETableStyle.Site, pageInfo.PublishmentSystemId, pageInfo.PublishmentSystemId));
+                            var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.PublishmentSystemDao.TableName, attributeName, RelatedIdentities.GetRelatedIdentities(pageInfo.PublishmentSystemId, pageInfo.PublishmentSystemId));
                             
                             // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
-                            if (styleInfo.TableStyleId > 0 && styleInfo.IsVisible)
+                            if (styleInfo.TableStyleId > 0)
                             {
-                                if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
-                                {
-                                    parsedContent = PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent, pageInfo.IsLocal);
-                                }
-                                else
-                                {
-                                    parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, string.Empty, pageInfo.PublishmentSystemInfo, ETableStyle.Site, styleInfo, string.Empty, null, string.Empty, true);
-                                }
+                                parsedContent = InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image,
+                                    InputType.File)
+                                    ? PageUtility.ParseNavigationUrl(pageInfo.PublishmentSystemInfo, parsedContent,
+                                        pageInfo.IsLocal)
+                                    : InputParserUtility.GetContentByTableStyle(parsedContent, string.Empty,
+                                        pageInfo.PublishmentSystemInfo, styleInfo, string.Empty, null, string.Empty,
+                                        true);
                             }
                             else
                             { // 如果字段已经被删除或不再显示了，则此字段的值为空。有时虚拟字段值不会清空

@@ -3,7 +3,7 @@ using System.Xml;
 using BaiRong.Core;
 using SiteServer.CMS.Plugin;
 
-namespace SiteServer.CMS.Core.Permissions
+namespace SiteServer.CMS.Core.Security
 {
     public class PermissionConfigManager
 	{
@@ -154,8 +154,8 @@ namespace SiteServer.CMS.Core.Permissions
 		        }
 		    }
 
-            GeneralPermissions.AddRange(PluginCache.GetTopPermissions());
-            WebsitePermissions.AddRange(PluginCache.GetSitePermissions(0));
+            GeneralPermissions.AddRange(PluginManager.GetTopPermissions());
+            WebsitePermissions.AddRange(PluginManager.GetSitePermissions(0));
 		}
 
         private static void GetPermissions(XmlNode node, List<PermissionConfig> list) 

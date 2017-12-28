@@ -23,10 +23,10 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings("短信设置", AppManager.Permissions.Settings.Integration);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Integration);
 
             ESmsProviderTypeUtils.AddListItems(DdlProviderType);
-            ControlUtils.SelectListItemsIgnoreCase(DdlProviderType, ESmsProviderTypeUtils.GetValue(ConfigManager.SystemConfigInfo.SmsProviderType));
+            ControlUtils.SelectSingleItemIgnoreCase(DdlProviderType, ESmsProviderTypeUtils.GetValue(ConfigManager.SystemConfigInfo.SmsProviderType));
 
             TbAppKey.Text = ConfigManager.SystemConfigInfo.SmsAppKey;
 

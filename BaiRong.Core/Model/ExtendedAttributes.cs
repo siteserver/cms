@@ -15,7 +15,7 @@ namespace BaiRong.Core.Model
     public class ExtendedAttributes : IAttributes
     {
         private object _dataObj;
-        private NameValueCollection _dataNvc = new NameValueCollection();
+        private readonly NameValueCollection _dataNvc = new NameValueCollection();
 
         public ExtendedAttributes()
         {
@@ -48,6 +48,8 @@ namespace BaiRong.Core.Model
 
         public void Load(IDataReader rdr)
         {
+            if (rdr == null) return;
+
             for (var i = 0; i < rdr.FieldCount; i++)
             {
                 var name = rdr.GetName(i);
@@ -69,7 +71,13 @@ namespace BaiRong.Core.Model
 
         public void Load(string str)
         {
-            _dataNvc = Utils.ToNameValueCollection(str);
+            if (string.IsNullOrEmpty(str)) return;
+
+            var nameValues = Utils.ToNameValueCollection(str);
+            foreach (string key in nameValues.Keys)
+            {
+                Set(key, nameValues[key]);
+            }
         }
 
         public string GetString(string name, string defaultValue)

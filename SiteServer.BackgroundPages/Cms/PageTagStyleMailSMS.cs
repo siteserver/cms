@@ -24,16 +24,14 @@ namespace SiteServer.BackgroundPages.Cms
         public Literal ltlTips2;
 
         private int _styleId;
-        private ETableStyle _tableStyle;
         private ITagStyleMailSmsBaseInfo _mailSmsInfo;
 
-        public static string GetRedirectUrl(int publishmentSystemId, int styleId, ETableStyle tableStyle, int relatedIdentity)
+        public static string GetRedirectUrl(int publishmentSystemId, int styleId, int relatedIdentity)
         {
             return PageUtils.GetCmsUrl(nameof(PageTagStyleMailSMS), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"StyleID", styleId.ToString()},
-                {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                 {"RelatedIdentity", relatedIdentity.ToString()}
             });
         }
@@ -43,50 +41,42 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             _styleId = Body.GetQueryInt("StyleID");
-            _tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
             var relatedIdentity = Body.GetQueryInt("RelatedIdentity");
-            var tagStyleInfo = DataProvider.TagStyleDao.GetTagStyleInfo(_styleId);
 
 			if (!IsPostBack)
 			{
                 ltlTips2.Text =
                     $"[{ContentAttribute.AddDate}]代表提交时间，";
 
-                var styleInfoList = RelatedIdentities.GetTableStyleInfoList(PublishmentSystemInfo, _tableStyle, relatedIdentity);
+                var styleInfoList = RelatedIdentities.GetTableStyleInfoList(PublishmentSystemInfo, relatedIdentity);
                 foreach (var styleInfo in styleInfoList)
                 {
-                    if (styleInfo.IsVisible)
-                    {
-                        ltlTips2.Text += $@"[{styleInfo.AttributeName}]代表{styleInfo.DisplayName}，";
-                    }
+                    ltlTips2.Text += $@"[{styleInfo.AttributeName}]代表{styleInfo.DisplayName}，";
                 }
 
                 ltlTips2.Text = ltlTips2.Text.TrimEnd('，');
 
                 //短信
 
-                ControlUtils.SelectListItemsIgnoreCase(rblIsSMS, _mailSmsInfo.IsSms.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(rblIsSMS, _mailSmsInfo.IsSms.ToString());
                 rblIsSMS_SelectedIndexChanged(null, EventArgs.Empty);
 
-                ControlUtils.SelectListItemsIgnoreCase(rblSMSReceiver, ETriStateUtils.GetValue(_mailSmsInfo.SmsReceiver));
+                ControlUtils.SelectSingleItemIgnoreCase(rblSMSReceiver, ETriStateUtils.GetValue(_mailSmsInfo.SmsReceiver));
                 rblSMSReceiver_SelectedIndexChanged(null, EventArgs.Empty);
 
                 tbSMSTo.Text = _mailSmsInfo.SmsTo;
 
                 foreach (var styleInfo in styleInfoList)
                 {
-                    if (styleInfo.IsVisible)
+                    var listItem = new ListItem(styleInfo.DisplayName + "(" + styleInfo.AttributeName + ")", styleInfo.AttributeName);
+                    if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, _mailSmsInfo.SmsFiledName))
                     {
-                        var listItem = new ListItem(styleInfo.DisplayName + "(" + styleInfo.AttributeName + ")", styleInfo.AttributeName);
-                        if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, _mailSmsInfo.SmsFiledName))
-                        {
-                            listItem.Selected = true;
-                        }
-                        ddlSMSFiledName.Items.Add(listItem);
+                        listItem.Selected = true;
                     }
+                    ddlSMSFiledName.Items.Add(listItem);
                 }
 
-                ControlUtils.SelectListItemsIgnoreCase(rblIsSMSTemplate, _mailSmsInfo.IsSmsTemplate.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(rblIsSMSTemplate, _mailSmsInfo.IsSmsTemplate.ToString());
                 rblIsSMSTemplate_SelectedIndexChanged(null, EventArgs.Empty);
 
                 tbSMSContent.Text = _mailSmsInfo.SmsContent;

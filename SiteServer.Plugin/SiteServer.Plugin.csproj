@@ -55,12 +55,11 @@
     <Compile Include="Apis\IParseApi.cs" />
     <Compile Include="Apis\IConfigApi.cs" />
     <Compile Include="Apis\IDataApi.cs" />
-    <Compile Include="Apis\IMenuApi.cs" />
     <Compile Include="Apis\INodeApi.cs" />
     <Compile Include="Apis\IFilesApi.cs" />
     <Compile Include="Apis\IContentApi.cs" />
     <Compile Include="Apis\IPublishmentSystemApi.cs" />
-    <Compile Include="Features\IChannel.cs" />
+    <Compile Include="Features\IContentRelated.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Models\DataType.cs" />
     <Compile Include="Models\IAttributes.cs" />
@@ -78,10 +77,11 @@
     <Compile Include="IPlugin.cs" />
     <Compile Include="Models\InputType.cs" />
     <Compile Include="Features\IMenu.cs" />
-    <Compile Include="Features\IContentTable.cs" />
+    <Compile Include="Features\IContentModel.cs" />
     <Compile Include="Features\IFileSystem.cs" />
     <Compile Include="Features\IWebApi.cs" />
     <Compile Include="Models\IDbHelper.cs" />
+    <Compile Include="Models\PluginInputStyle.cs" />
     <Compile Include="Models\ValidateType.cs" />
     <Compile Include="PluginBase.cs" />
     <Compile Include="Models\IRequestContext.cs" />

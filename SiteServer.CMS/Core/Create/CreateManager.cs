@@ -104,8 +104,8 @@ namespace SiteServer.CMS.Core.Create
         {
             CreateTaskManager.Instance.ClearAllTask(publishmentSystemId);
 
-            var dic = NodeManager.GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId);
-            foreach (var nodeInfo in dic.Values)
+            var nodeInfoList = NodeManager.GetNodeInfoList(publishmentSystemId);
+            foreach (var nodeInfo in nodeInfoList)
             {
                 CreateChannel(publishmentSystemId, nodeInfo.NodeId);
                 CreateAllContent(publishmentSystemId, nodeInfo.NodeId);

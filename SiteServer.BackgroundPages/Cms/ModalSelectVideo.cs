@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 	    public static string GetOpenWindowString(PublishmentSystemInfo publishmentSystemInfo, string textBoxClientId)
 	    {
-	        return PageUtils.GetOpenLayerString("选择视频",
+	        return LayerUtils.GetOpenScript("选择视频",
 	            PageUtils.GetCmsUrl(nameof(ModalSelectVideo), new NameValueCollection
 	            {
 	                {"PublishmentSystemID", publishmentSystemInfo.PublishmentSystemId.ToString()},

@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                     Body.AddAdminLog("导入用户");
 
-					PageUtils.CloseModalPage(Page);
+                    LayerUtils.Close(Page);
 				}
 				catch(Exception ex)
 				{

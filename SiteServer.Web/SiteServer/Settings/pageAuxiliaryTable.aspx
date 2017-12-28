@@ -1,71 +1,103 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Settings.PageAuxiliaryTable" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<!--#include file="../inc/header.aspx"-->
-</head>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+    <!DOCTYPE html>
+    <html>
 
-<body>
-<!--#include file="../inc/openWindow.html"-->
-<form class="form-inline" runat="server">
-  <asp:Literal id="LtlBreadCrumb" runat="server" />
-  <bairong:alerts runat="server" />
+    <head>
+      <meta charset="utf-8">
+      <!--#include file="../inc/head.html"-->
+    </head>
 
-  <asp:dataGrid id="DgContents" showHeader="true" AutoGenerateColumns="false" DataKeyField="TableENName" HeaderStyle-CssClass="info thead" CssClass="table table-bordered table-hover" gridlines="none" runat="server">
-    <PagerStyle Mode="NumericPages" PageButtonCount="10" HorizontalAlign="Right" />
-      <Columns>
-      <asp:TemplateColumn HeaderText="辅助表标识">
-        <ItemTemplate> <span style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>"><%#DataBinder.Eval(Container.DataItem,"TableENName")%></span> </ItemTemplate>
-        <ItemStyle HorizontalAlign="left" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn
-        HeaderText="辅助表名称">
-        <ItemTemplate> <%#DataBinder.Eval(Container.DataItem,"TableCNName")%> </ItemTemplate>
-        <ItemStyle HorizontalAlign="left" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn
-        HeaderText="类型">
-        <ItemTemplate> <span style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>"> <%# GetAuxiliatyTableType(DataBinder.Eval(Container.DataItem,"AuxiliaryTableType").ToString())%></span> </ItemTemplate>
-        <ItemStyle Width="80" cssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="被使用数目">
-        <ItemTemplate> <span style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>"> <%#GetTableUsedNum(DataBinder.Eval(Container.DataItem,"TableENName").ToString(), DataBinder.Eval(Container.DataItem,"AuxiliaryTableType").ToString())%></span> </ItemTemplate>
-        <ItemStyle Width="80" cssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn HeaderText="是否存在">
-        <ItemTemplate> <span style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>"> <%#GetYesOrNo((string)DataBinder.Eval(Container.DataItem,"IsCreatedInDB"))%></span> </ItemTemplate>
-        <ItemStyle Width="60" cssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn
-        HeaderText="创建后修改">
-        <ItemTemplate> <span style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>"> <%# GetIsChangedAfterCreatedInDb(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%></span> </ItemTemplate>
-        <ItemStyle Width="80" cssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate> <a href="pageTableMetadata.aspx?ENName=<%#DataBinder.Eval(Container.DataItem,"TableENName")%>&TableType=<%#DataBinder.Eval(Container.DataItem,"AuxiliaryTableType")%>" style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>">管理真实字段</a> </ItemTemplate>
-        <ItemStyle Width="80" cssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate> <a href="pageTableStyle.aspx?tableName=<%#DataBinder.Eval(Container.DataItem,"TableENName")%>&tableType=<%#DataBinder.Eval(Container.DataItem,"AuxiliaryTableType")%>" style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>">管理虚拟字段</a> </ItemTemplate>
-        <ItemStyle Width="80" cssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate> <a style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>" href="pageAuxiliaryTableAdd.aspx?ENName=<%#DataBinder.Eval(Container.DataItem,"TableENName")%>" >编辑</a> </ItemTemplate>
-        <ItemStyle Width="40" cssClass="center" />
-      </asp:TemplateColumn>
-      <asp:TemplateColumn>
-        <ItemTemplate> <a <%# GetTableUsedNum(DataBinder.Eval(Container.DataItem,"TableENName").ToString(), DataBinder.Eval(Container.DataItem,"AuxiliaryTableType").ToString()) == 0 ? "" : "style='display:none'"%> href="pageAuxiliaryTable.aspx?Delete=True&ENName=<%# DataBinder.Eval(Container.DataItem,"TableENName")%>" onClick="javascript:return confirm('此操作将删除辅助表“<%# DataBinder.Eval(Container.DataItem,"TableCNName")%>”，如果辅助表已在数据库中建立，将同时删除建立的辅助表，确认吗？');" style="color:<%# GetFontColor(DataBinder.Eval(Container.DataItem,"IsCreatedInDB").ToString(), DataBinder.Eval(Container.DataItem,"IsChangedAfterCreatedInDB").ToString())%>">删除</a> </ItemTemplate>
-        <ItemStyle Width="40" cssClass="center" />
-      </asp:TemplateColumn>
-    </Columns>
-  </asp:dataGrid>
+    <body>
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-  <ul class="breadcrumb breadcrumb-button">
-    <asp:Button class="btn btn-success" id="BtnAdd" Text="新增辅助表" runat="server" />
-  </ul>
+        <div class="raw">
+          <div class="card-box">
+            <h4 class="m-t-0 header-title">
+              <b>辅助表管理</b>
+            </h4>
+            <p class="text-muted font-13 m-b-25">
+              在此管理内容辅助表
+            </p>
 
-</form>
-</body>
-</html>
+            <div class="form-horizontal">
+
+              <asp:dataGrid id="DgContents" showHeader="true" AutoGenerateColumns="false" HeaderStyle-CssClass="info thead text-center"
+                CssClass="table table-hover m-0" gridlines="none" runat="server">
+                <Columns>
+                  <asp:TemplateColumn HeaderText="辅助表标识">
+                    <ItemTemplate>
+                      <asp:Literal id="ltlTableName" runat="server" />
+                    </ItemTemplate>
+                    <ItemStyle HorizontalAlign="left" />
+                  </asp:TemplateColumn>
+                  <asp:TemplateColumn HeaderText="辅助表名称">
+                    <ItemTemplate>
+                      <asp:Literal id="ltlTableCnName" runat="server" />
+                    </ItemTemplate>
+                    <ItemStyle HorizontalAlign="left" />
+                  </asp:TemplateColumn>
+                  <asp:TemplateColumn HeaderText="是否被使用">
+                    <ItemTemplate>
+                      <asp:Literal id="ltlIsUsed" runat="server" />
+                      </span>
+                    </ItemTemplate>
+                    <ItemStyle Width="120" cssClass="text-center" />
+                  </asp:TemplateColumn>
+                  <asp:TemplateColumn HeaderText="是否存在">
+                    <ItemTemplate>
+                      <asp:Literal id="ltlIsCreatedInDb" runat="server" />
+                      </span>
+                    </ItemTemplate>
+                    <ItemStyle Width="120" cssClass="text-center" />
+                  </asp:TemplateColumn>
+                  <asp:TemplateColumn HeaderText="创建后修改">
+                    <ItemTemplate>
+                      <asp:Literal id="ltlIsChangedAfterCreatedInDb" runat="server" />
+                      </span>
+                    </ItemTemplate>
+                    <ItemStyle Width="120" cssClass="text-center" />
+                  </asp:TemplateColumn>
+                  <asp:TemplateColumn>
+                    <ItemTemplate>
+                      <asp:Literal id="ltlMetadataEdit" runat="server" />
+                    </ItemTemplate>
+                    <ItemStyle Width="120" cssClass="text-center" />
+                  </asp:TemplateColumn>
+                  <asp:TemplateColumn>
+                    <ItemTemplate>
+                      <asp:Literal id="ltlStyleEdit" runat="server" />
+                    </ItemTemplate>
+                    <ItemStyle Width="120" cssClass="text-center" />
+                  </asp:TemplateColumn>
+                  <asp:TemplateColumn>
+                    <ItemTemplate>
+                      <asp:Literal id="ltlEdit" runat="server" />
+                    </ItemTemplate>
+                    <ItemStyle Width="120" cssClass="text-center" />
+                  </asp:TemplateColumn>
+                  <asp:TemplateColumn>
+                    <ItemTemplate>
+                      <asp:Literal id="ltlDelete" runat="server" />
+                    </ItemTemplate>
+                    <ItemStyle Width="120" cssClass="text-center" />
+                  </asp:TemplateColumn>
+                </Columns>
+              </asp:dataGrid>
+
+            </div>
+
+            <hr />
+
+            <div class="form-group m-b-0">
+              <asp:Button class="btn btn-success" id="BtnAdd" Text="新增辅助表" runat="server" />
+            </div>
+
+          </div>
+        </div>
+
+      </form>
+    </body>
+
+    </html>

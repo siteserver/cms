@@ -3,11 +3,10 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Net;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin.Models;
@@ -83,11 +82,11 @@ namespace SiteServer.BackgroundPages.Plugins
                     var regexContent = GatherUtility.GetRegexContent(gatherFileRuleInfo.ContentContentStart, gatherFileRuleInfo.ContentContentEnd);
 
                     var contentAttributes = TranslateUtils.StringCollectionToStringList(gatherFileRuleInfo.ContentAttributes);
-                    var contentAttributesXML = TranslateUtils.ToNameValueCollection(gatherFileRuleInfo.ContentAttributesXml);
+                    var contentAttributesXml = TranslateUtils.ToNameValueCollection(gatherFileRuleInfo.ContentAttributesXml);
 
-                    var attributes = GatherUtility.GetContentNameValueCollection(gatherFileRuleInfo.Charset, gatherFileRuleInfo.GatherUrl, string.Empty, regexContentExclude, gatherFileRuleInfo.ContentHtmlClearCollection, gatherFileRuleInfo.ContentHtmlClearTagCollection, regexTitle, regexContent, string.Empty, string.Empty, string.Empty, string.Empty, contentAttributes, contentAttributesXML);
+                    var attributes = GatherUtility.GetContentNameValueCollection(gatherFileRuleInfo.Charset, gatherFileRuleInfo.GatherUrl, string.Empty, regexContentExclude, gatherFileRuleInfo.ContentHtmlClearCollection, gatherFileRuleInfo.ContentHtmlClearTagCollection, regexTitle, regexContent, string.Empty, string.Empty, string.Empty, string.Empty, contentAttributes, contentAttributesXml);
 
-                    var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.BackgroundContent, PublishmentSystemInfo.AuxiliaryTableForContent, null);
+                    var styleInfoList = TableStyleManager.GetTableStyleInfoList(PublishmentSystemInfo.AuxiliaryTableForContent, null);
                     foreach (var styleInfo in styleInfoList)
                     {
                         if (string.IsNullOrEmpty(attributes[styleInfo.AttributeName.ToLower()])) continue;
@@ -154,15 +153,15 @@ namespace SiteServer.BackgroundPages.Plugins
 			var regexNextPage = GatherUtility.GetRegexUrl(gatherRuleInfo.ContentNextPageStart, gatherRuleInfo.ContentNextPageEnd);
 			var regexTitle = GatherUtility.GetRegexTitle(gatherRuleInfo.ContentTitleStart, gatherRuleInfo.ContentTitleEnd);
             var contentAttributes = TranslateUtils.StringCollectionToStringList(gatherRuleInfo.ContentAttributes);
-            var contentAttributesXML = TranslateUtils.ToNameValueCollection(gatherRuleInfo.ContentAttributesXml);
+            var contentAttributesXml = TranslateUtils.ToNameValueCollection(gatherRuleInfo.ContentAttributesXml);
 
-            var attributes = GatherUtility.GetContentNameValueCollection(gatherRuleInfo.Charset, contentUrl, gatherRuleInfo.CookieString, regexContentExclude, gatherRuleInfo.ContentHtmlClearCollection, gatherRuleInfo.ContentHtmlClearTagCollection, regexTitle, regexContent, regexContent2, regexContent3, regexNextPage, regexChannel, contentAttributes, contentAttributesXML);
+            var attributes = GatherUtility.GetContentNameValueCollection(gatherRuleInfo.Charset, contentUrl, gatherRuleInfo.CookieString, regexContentExclude, gatherRuleInfo.ContentHtmlClearCollection, gatherRuleInfo.ContentHtmlClearTagCollection, regexTitle, regexContent, regexContent2, regexContent3, regexNextPage, regexChannel, contentAttributes, contentAttributesXml);
 
             var builder = new StringBuilder();
 
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, PublishmentSystemId);
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.BackgroundContent, PublishmentSystemInfo.AuxiliaryTableForContent, relatedIdentities);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(PublishmentSystemInfo.AuxiliaryTableForContent, relatedIdentities);
             foreach (var styleInfo in styleInfoList)
             {
                 if (string.IsNullOrEmpty(attributes[styleInfo.AttributeName.ToLower()])) continue;

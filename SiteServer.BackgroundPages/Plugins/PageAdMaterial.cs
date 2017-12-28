@@ -86,15 +86,8 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public void BindGrid()
         {
-            try
-            {
-                dgContents.DataSource = DataProvider.AdMaterialDao.GetDataSource(_advId,PublishmentSystemId);
-                dgContents.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            dgContents.DataSource = DataProvider.AdMaterialDao.GetDataSource(_advId, PublishmentSystemId);
+            dgContents.DataBind();
         }
 
         public void ReFresh(object sender, EventArgs e)

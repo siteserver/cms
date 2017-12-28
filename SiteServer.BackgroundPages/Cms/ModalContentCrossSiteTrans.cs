@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("跨站转发", PageUtils.GetCmsUrl(nameof(ModalContentCrossSiteTrans), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("跨站转发", PageUtils.GetCmsUrl(nameof(ModalContentCrossSiteTrans), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
@@ -65,11 +65,10 @@ namespace SiteServer.BackgroundPages.Cms
                         if (targetNodeId != 0)
                         {
                             var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeId);
-                            var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeId);
                             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeId);
                             foreach (var contentId in _contentIdArrayList)
                             {
-                                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                                 FileUtility.MoveFileByContentInfo(PublishmentSystemInfo, targetPublishmentSystemInfo, contentInfo as BackgroundContentInfo);
                                 contentInfo.PublishmentSystemId = targetPublishmentSystemId;
                                 contentInfo.SourceId = contentInfo.NodeId;
@@ -92,8 +91,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 FailMessage(ex, "内容转发失败！");
             }
-            
-            PageUtils.CloseModalPage(Page);
+
+            LayerUtils.Close(Page);
 		}
 
 	}

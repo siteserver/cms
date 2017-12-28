@@ -36,48 +36,45 @@ namespace SiteServer.BackgroundPages.Cms
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
             _deleteContents = Body.GetQueryBool("DeleteContents");
 
-			if (!IsPostBack)
-			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "删除栏目", string.Empty);
+            if (IsPostBack) return;
 
-                var nodeIDList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
-                nodeIDList.Sort();
-                nodeIDList.Reverse();
-                foreach (var nodeID in nodeIDList)
-				{
-                    if (nodeID == PublishmentSystemId) continue;
-                    if (HasChannelPermissions(nodeID, AppManager.Permissions.Channel.ChannelDelete))
-					{
-                        var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
-                        var displayName = nodeInfo.NodeName;
-                        if (nodeInfo.ContentNum > 0)
-                        {
-                            displayName += $"({nodeInfo.ContentNum})";
-                        }
-                        _nodeNameArrayList.Add(displayName);
-					}
-				}
-                if (_nodeNameArrayList.Count == 0)
+            var nodeIDList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+            nodeIDList.Sort();
+            nodeIDList.Reverse();
+            foreach (var nodeID in nodeIDList)
+            {
+                if (nodeID == PublishmentSystemId) continue;
+                if (HasChannelPermissions(nodeID, AppManager.Permissions.Channel.ChannelDelete))
                 {
-                    Delete.Enabled = false;
+                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
+                    var displayName = nodeInfo.NodeName;
+                    if (nodeInfo.ContentNum > 0)
+                    {
+                        displayName += $"({nodeInfo.ContentNum})";
+                    }
+                    _nodeNameArrayList.Add(displayName);
+                }
+            }
+            if (_nodeNameArrayList.Count == 0)
+            {
+                Delete.Enabled = false;
+            }
+            else
+            {
+                if (_deleteContents)
+                {
+                    ltlPageTitle.Text = "删除内容";
+                    InfoMessage(
+                        $"此操作将会删除栏目“{TranslateUtils.ObjectCollectionToString(_nodeNameArrayList)}”下的所有内容，确认吗？");
                 }
                 else
                 {
-                    if (_deleteContents)
-                    {
-                        ltlPageTitle.Text = "删除内容";
-                        InfoMessage(
-                            $"此操作将会删除栏目“{TranslateUtils.ObjectCollectionToString(_nodeNameArrayList)}”下的所有内容，确认吗？");
-                    }
-                    else
-                    {
-                        ltlPageTitle.Text = "删除栏目";
-                        InfoMessage(
-                            $"此操作将会删除栏目“{TranslateUtils.ObjectCollectionToString(_nodeNameArrayList)}”及包含的下级栏目，确认吗？");
-                    }
+                    ltlPageTitle.Text = "删除栏目";
+                    InfoMessage(
+                        $"此操作将会删除栏目“{TranslateUtils.ObjectCollectionToString(_nodeNameArrayList)}”及包含的下级栏目，确认吗？");
                 }
-			}
-		}
+            }
+        }
 
         public void Delete_OnClick(object sender, EventArgs e)
 		{

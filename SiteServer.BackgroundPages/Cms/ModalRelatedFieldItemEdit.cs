@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int relatedFieldId, int parentId, int level, int id)
         {
-            return PageUtils.GetOpenLayerString("编辑字段项", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldItemEdit), new NameValueCollection
+            return LayerUtils.GetOpenScript("编辑字段项", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldItemEdit), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedFieldID", relatedFieldId.ToString()},
@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isChanged)
             {
-                PageUtils.CloseModalPageAndRedirect(Page, PageRelatedFieldItem.GetRedirectUrl(PublishmentSystemId, _relatedFieldId, _parentId, _level));
+                LayerUtils.CloseAndRedirect(Page, PageRelatedFieldItem.GetRedirectUrl(PublishmentSystemId, _relatedFieldId, _parentId, _level));
             }
         }
     }

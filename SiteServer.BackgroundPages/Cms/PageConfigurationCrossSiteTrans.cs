@@ -31,41 +31,33 @@ namespace SiteServer.BackgroundPages.Cms
 
 			PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-			if (!IsPostBack)
+            if (IsPostBack) return;
+
+            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+
+            ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.ConfigurationCrossSiteTrans, null));
+
+            if (Body.IsQueryExists("CurrentNodeID"))
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "跨站转发设置", AppManager.Permissions.WebSite.Configration);
-
-                ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.ConfigurationCrossSiteTrans, null));
-
-                if (Body.IsQueryExists("CurrentNodeID"))
+                _currentNodeId = Body.GetQueryInt("CurrentNodeID");
+                var onLoadScript = ChannelLoading.GetScriptOnLoad(PublishmentSystemId, _currentNodeId);
+                if (!string.IsNullOrEmpty(onLoadScript))
                 {
-                    _currentNodeId = Body.GetQueryInt("CurrentNodeID");
-                    var onLoadScript = ChannelLoading.GetScriptOnLoad(PublishmentSystemId, _currentNodeId);
-                    if (!string.IsNullOrEmpty(onLoadScript))
-                    {
-                        ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
-                    }
+                    ClientScriptRegisterClientScriptBlock("NodeTreeScriptOnLoad", onLoadScript);
                 }
+            }
 
-                BindGrid();
+            BindGrid();
 
-                EBooleanUtils.AddListItems(IsCrossSiteTransChecked, "无需审核", "需要审核");
-                ControlUtils.SelectListItems(IsCrossSiteTransChecked, PublishmentSystemInfo.Additional.IsCrossSiteTransChecked.ToString());
-			}
-		}
+            EBooleanUtils.AddListItems(IsCrossSiteTransChecked, "无需审核", "需要审核");
+            ControlUtils.SelectSingleItem(IsCrossSiteTransChecked, PublishmentSystemInfo.Additional.IsCrossSiteTransChecked.ToString());
+        }
 
         public void BindGrid()
         {
-            try
-            {
-                rptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
-                rptContents.ItemDataBound += rptContents_ItemDataBound;
-                rptContents.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            rptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            rptContents.DataBind();
         }
 
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

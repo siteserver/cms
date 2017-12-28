@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Settings
                     var departmentId = Body.GetQueryInt("DepartmentID");
                     var departmentName = DepartmentManager.GetDepartmentName(departmentId);
                     string scripts = $"window.parent.showCategoryDepartment('{departmentName}', '{departmentId}');";
-                    PageUtils.CloseModalPageWithoutRefresh(Page, scripts);
+                    LayerUtils.CloseWithoutRefresh(Page, scripts);
                 }
                 else
                 {
@@ -44,16 +44,9 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void BindGrid()
         {
-            try
-            {
-                RptCategory.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
-                RptCategory.ItemDataBound += rptCategory_ItemDataBound;
-                RptCategory.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            RptCategory.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
+            RptCategory.ItemDataBound += rptCategory_ItemDataBound;
+            RptCategory.DataBind();
         }
 
         private void rptCategory_ItemDataBound(object sender, RepeaterItemEventArgs e)

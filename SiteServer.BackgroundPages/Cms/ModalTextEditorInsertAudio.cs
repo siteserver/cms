@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string attributeName)
         {
-            return PageUtils.GetOpenLayerString("插入音频", PageUtils.GetCmsUrl(nameof(ModalTextEditorInsertAudio), new NameValueCollection
+            return LayerUtils.GetOpenScript("插入音频", PageUtils.GetCmsUrl(nameof(ModalTextEditorInsertAudio), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"AttributeName", attributeName}
@@ -115,7 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
             var playUrl = TbPlayUrl.Text;
 
             var script = "parent." + ETextEditorTypeUtils.GetInsertAudioScript(_attributeName, playUrl, CbIsAutoPlay.Checked);
-            PageUtils.CloseModalPageWithoutRefresh(Page, script);
+            LayerUtils.CloseWithoutRefresh(Page, script);
         }
 
     }

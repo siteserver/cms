@@ -24,7 +24,11 @@ namespace BaiRong.Core
 		    {
 		        return "SelectMultiple";
 		    }
-		    if (type == InputType.Date)
+            if (type == InputType.SelectCascading)
+            {
+                return "SelectCascading";
+            }
+            if (type == InputType.Date)
 		    {
 		        return "Date";
 		    }
@@ -56,32 +60,41 @@ namespace BaiRong.Core
 		    {
 		        return "TextEditor";
 		    }
-		    if (type == InputType.RelatedField)
-		    {
-		        return "RelatedField";
-		    }
-		    throw new Exception();
+            if (type == InputType.Customize)
+            {
+                return "Customize";
+            }
+            if (type == InputType.Hidden)
+            {
+                return "Hidden";
+            }
+
+            throw new Exception();
 		}
 
 		public static string GetText(InputType type)
 		{
 		    if (type == InputType.CheckBox)
             {
-                return "复选列表(checkbox)";
+                return "复选框";
             }
 		    if (type == InputType.Radio)
 		    {
-		        return "单选列表(radio)";
+		        return "单选框";
 		    }
 		    if (type == InputType.SelectOne)
 		    {
-		        return "下拉列表(select单选)";
+		        return "下拉列表(单选)";
 		    }
 		    if (type == InputType.SelectMultiple)
 		    {
-		        return "下拉列表(select多选)";
+		        return "下拉列表(多选)";
 		    }
-		    if (type == InputType.Date)
+            if (type == InputType.SelectCascading)
+            {
+                return "下拉列表(级联)";
+            }
+            if (type == InputType.Date)
 		    {
 		        return "日期选择框";
 		    }
@@ -113,11 +126,16 @@ namespace BaiRong.Core
 		    {
 		        return "内容编辑器";
 		    }
-		    if (type == InputType.RelatedField)
-		    {
-		        return "联动字段";
-		    }
-		    throw new Exception();
+            if (type == InputType.Customize)
+            {
+                return "自定义";
+            }
+            if (type == InputType.Hidden)
+            {
+                return "隐藏";
+            }
+
+            throw new Exception();
 		}
 
 		public static InputType GetEnumType(string typeStr)
@@ -139,6 +157,10 @@ namespace BaiRong.Core
 			else if (Equals(InputType.SelectMultiple, typeStr))
 			{
 				retval = InputType.SelectMultiple;
+            }
+            else if (Equals(InputType.SelectCascading, typeStr))
+            {
+                retval = InputType.SelectCascading;
             }
             else if (Equals(InputType.Date, typeStr))
             {
@@ -172,12 +194,16 @@ namespace BaiRong.Core
 			{
 				retval = InputType.TextEditor;
             }
-            else if (Equals(InputType.RelatedField, typeStr))
+            else if (Equals(InputType.Customize, typeStr))
             {
-                retval = InputType.RelatedField;
+                retval = InputType.Customize;
+            }
+            else if (Equals(InputType.Hidden, typeStr))
+            {
+                retval = InputType.Hidden;
             }
 
-			return retval;
+            return retval;
 		}
 
 		public static bool Equals(InputType type, string typeStr)
@@ -228,37 +254,14 @@ namespace BaiRong.Core
                 listControl.Items.Add(GetListItem(InputType.Radio, false));
                 listControl.Items.Add(GetListItem(InputType.SelectOne, false));
                 listControl.Items.Add(GetListItem(InputType.SelectMultiple, false));
+                listControl.Items.Add(GetListItem(InputType.SelectCascading, false));
                 listControl.Items.Add(GetListItem(InputType.Date, false));
                 listControl.Items.Add(GetListItem(InputType.DateTime, false));
                 listControl.Items.Add(GetListItem(InputType.Image, false));
                 listControl.Items.Add(GetListItem(InputType.Video, false));
                 listControl.Items.Add(GetListItem(InputType.File, false));
-                listControl.Items.Add(GetListItem(InputType.RelatedField, false));
-            }
-        }
-
-        /// <summary>
-        /// 用户字段类型
-        /// </summary>
-        /// <param name="listControl"></param>
-        public static void AddListItemsForUser(ListControl listControl)
-        {
-            if (listControl != null)
-            {
-                listControl.Items.Add(GetListItem(InputType.Text, false));
-                listControl.Items.Add(GetListItem(InputType.TextArea, false));
-                listControl.Items.Add(GetListItem(InputType.TextEditor, false));
-                listControl.Items.Add(GetListItem(InputType.CheckBox, false));
-                listControl.Items.Add(GetListItem(InputType.Radio, false));
-                listControl.Items.Add(GetListItem(InputType.SelectOne, false));
-                listControl.Items.Add(GetListItem(InputType.SelectMultiple, false));
-                listControl.Items.Add(GetListItem(InputType.Date, false));
-                listControl.Items.Add(GetListItem(InputType.DateTime, false));
-                //listControl.Items.Add(GetListItem(InputType.Image, false));
-                //listControl.Items.Add(GetListItem(InputType.Video, false));
-                //listControl.Items.Add(GetListItem(InputType.File, false));
-                //listControl.Items.Add(GetListItem(InputType.RelatedField, false));
-                //listControl.Items.Add(GetListItem(InputType.SpecifiedValue, false));
+                listControl.Items.Add(GetListItem(InputType.Customize, false));
+                listControl.Items.Add(GetListItem(InputType.Hidden, false));
             }
         }
 
@@ -276,12 +279,14 @@ namespace BaiRong.Core
                 listControl.Items.Add(GetListItem(InputType.Radio, false));
                 listControl.Items.Add(GetListItem(InputType.SelectOne, false));
                 listControl.Items.Add(GetListItem(InputType.SelectMultiple, false));
+                listControl.Items.Add(GetListItem(InputType.SelectCascading, false));
                 listControl.Items.Add(GetListItem(InputType.Date, false));
                 listControl.Items.Add(GetListItem(InputType.DateTime, false));
                 listControl.Items.Add(GetListItem(InputType.Image, false));
                 listControl.Items.Add(GetListItem(InputType.Video, false));
                 listControl.Items.Add(GetListItem(InputType.File, false));
-                listControl.Items.Add(GetListItem(InputType.RelatedField, false));
+                listControl.Items.Add(GetListItem(InputType.Customize, false));
+                listControl.Items.Add(GetListItem(InputType.Hidden, false));
             }
         }
 
@@ -297,7 +302,7 @@ namespace BaiRong.Core
 
         public static bool IsWithStyleItems(InputType type)
         {
-            if (type == InputType.CheckBox || type == InputType.Radio || type == InputType.SelectMultiple || type == InputType.SelectOne || type == InputType.RelatedField)
+            if (type == InputType.CheckBox || type == InputType.Radio || type == InputType.SelectMultiple || type == InputType.SelectOne || type == InputType.SelectCascading)
             {
                 return true;
             }
@@ -306,7 +311,7 @@ namespace BaiRong.Core
 
         public static bool IsPureString(InputType type)
         {
-            if (type == InputType.Date || type == InputType.DateTime || type == InputType.CheckBox || type == InputType.Radio || type == InputType.SelectMultiple || type == InputType.SelectOne || type == InputType.Image || type == InputType.Video || type == InputType.File || type == InputType.RelatedField)
+            if (type == InputType.Date || type == InputType.DateTime || type == InputType.CheckBox || type == InputType.Radio || type == InputType.SelectMultiple || type == InputType.SelectOne || type == InputType.Image || type == InputType.Video || type == InputType.File || type == InputType.SelectCascading)
             {
                 return false;
             }

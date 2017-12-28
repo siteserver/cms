@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string groupName)
         {
-            return PageUtils.GetOpenLayerString("修改栏目组", PageUtils.GetCmsUrl(nameof(ModalNodeGroupAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改栏目组", PageUtils.GetCmsUrl(nameof(ModalNodeGroupAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"GroupName", groupName}
@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerString("添加栏目组", PageUtils.GetCmsUrl(nameof(ModalNodeGroupAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加栏目组", PageUtils.GetCmsUrl(nameof(ModalNodeGroupAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
             }), 600, 300);
@@ -97,7 +97,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (isChanged)
 			{
-				PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
 			}
 		}
 	}

@@ -1,59 +1,52 @@
 ﻿<%@ Page Language="c#" Inherits="SiteServer.BackgroundPages.PageInitialization" Trace="False" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
+  <!DOCTYPE html>
+  <html>
+
+  <head>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="images/siteserver_icon.png" rel="icon" type="image/png">
     <meta charset="utf-8">
-    <title>系统初始化...</title>
-    <bairong:Code Type="JQuery" runat="server" />
-    <bairong:Code Type="bootstrap" runat="server" />
-    <bairong:Code Type="html5shiv" runat="server" />
-    <link rel="stylesheet" href="inc/style.css" type="text/css" />
-    <script language="JavaScript">
-        if (window.top != self) {
-            window.top.location = self.location;
-        }
-    </script>
-    <style type="text/css">
-        .well img {
-            padding-bottom: 10px;
-        }
-    </style>
+    <title>SiteServer 管理后台</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <!--防止csrf start-->
     <style id="antiClickjack">
-        body {
-            display: none !important;
-        }
+      body {
+        display: none !important;
+      }
     </style>
     <script type="text/javascript">
-        if (self === top) {
-            var antiClickjack = document.getElementById("antiClickjack");
-            antiClickjack.parentNode.removeChild(antiClickjack);
-        } else {
-            top.location = self.location;
-        }
+      if (self === top) {
+        var antiClickjack = document.getElementById("antiClickjack");
+        antiClickjack.parentNode.removeChild(antiClickjack);
+      } else {
+        top.location = self.location;
+      }
     </script>
     <!--防止csrf end-->
-</head>
+  </head>
 
-<body>
-    <form class="form-inline" runat="server">
-        <asp:Literal ID="LtlBreadCrumb" runat="server" />
-        <bairong:Alerts runat="server" />
-
-        <div class="well" style="margin-top: 20px;">
-            <table class="table table-noborder">
-                <tr>
-                    <td class="center">
-                      <img src="pic/animated_loading.gif" align="absmiddle">
-                      &nbsp;
-                      正在加载数据，请稍候...
-                      <asp:Literal ID="LtlContent" runat="server"></asp:Literal>
-                    </td>
-                </tr>
-            </table>
+  <body>
+    <div class="wrapper-page">
+      <div class="row">
+        <div class="col-sm-12 text-center">
+          <div class="home-wrapper">
+            <br />
+            <br />
+            <br />
+            <br />
+            <img src="assets/layer/skin/default/xubox_loading0.gif" />
+            <div class="help-block">载入中，请稍候...</div>
+            <asp:Literal ID="LtlContent" runat="server"></asp:Literal>
+          </div>
         </div>
+      </div>
+    </div>
+  </body>
 
-    </form>
-</body>
-</html>
+  </html>

@@ -7,7 +7,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -35,14 +34,12 @@ namespace SiteServer.BackgroundPages.Settings
 
         private string _tableName;
         private string _redirectUrl;
-        private ETableStyle _tableStyle;
 
-        public static string GetOpenWindowString(string tableName, ETableStyle tableStyle, string redirectUrl)
+        public static string GetOpenWindowString(string tableName, string redirectUrl)
         {
             return PageUtils.GetOpenWindowString("批量添加显示样式", PageUtils.GetSettingsUrl(nameof(ModalTableStylesAdd), new NameValueCollection
             {
                 {"TableName", tableName},
-                {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                 {"RedirectUrl", StringUtils.ValueToUrl(redirectUrl)}
             }));
         }
@@ -52,7 +49,6 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             _tableName = Body.GetQueryString("TableName");
-            _tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
             _redirectUrl = StringUtils.ValueFromUrl(Body.GetQueryString("RedirectUrl"));
 
             if (!IsPostBack)
@@ -65,10 +61,10 @@ namespace SiteServer.BackgroundPages.Settings
 
                 InputTypeUtils.AddListItems(DdlInputType);
 
-                var styleInfo = TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, string.Empty, new List<int>{0});
+                var styleInfo = TableStyleManager.GetTableStyleInfo(_tableName, string.Empty, new List<int>{0});
 
-                ControlUtils.SelectListItems(DdlInputType, InputTypeUtils.GetValue(InputTypeUtils.GetEnumType(styleInfo.InputType)));
-                ControlUtils.SelectListItems(IsVisible, styleInfo.IsVisible.ToString());
+                ControlUtils.SelectSingleItem(DdlInputType, InputTypeUtils.GetValue(InputTypeUtils.GetEnumType(styleInfo.InputType)));
+                ControlUtils.SelectSingleItem(IsVisible, styleInfo.IsVisible.ToString());
                 DefaultValue.Text = styleInfo.DefaultValue;
                 IsHorizontal.SelectedValue = styleInfo.IsHorizontal.ToString();
                 Columns.Text = styleInfo.Additional.Columns.ToString();
@@ -77,8 +73,6 @@ namespace SiteServer.BackgroundPages.Settings
                 Width.Text = styleInfo.Additional.Width;
 
                 ItemCount.Text = "0";
-
-                
             }
 
             ReFresh(null, EventArgs.Empty);
@@ -236,9 +230,9 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (TableStyleInfo styleInfo in styleInfoArrayList)
                 {
                     attributeNames.Add(styleInfo.AttributeName);
-                    TableStyleManager.Insert(styleInfo, _tableStyle);
+                    TableStyleManager.Insert(styleInfo);
                 }
-                Body.AddAdminLog("批量添加表单显示样式", $"类型:{ETableStyleUtils.GetText(_tableStyle)},字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
+                Body.AddAdminLog("批量添加表单显示样式", $"字段名: {TranslateUtils.ObjectCollectionToString(attributeNames)}");
                 isChanged = true;
             }
             catch (Exception ex)

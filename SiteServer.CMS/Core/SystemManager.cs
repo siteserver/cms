@@ -68,7 +68,7 @@ namespace SiteServer.CMS.Core
                 BaiRongDataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
             }
 
-            BaiRongDataProvider.TableCollectionDao.CreateAllAuxiliaryTableIfNotExists();
+            BaiRongDataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
         }
 
         public static bool IsNeedUpgrade()

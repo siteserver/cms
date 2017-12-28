@@ -22,35 +22,11 @@
                     </ItemTemplate>
                     <ItemStyle Width="140" CssClass="center" />
                 </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="显示名称">
-                    <ItemTemplate>
-                        <asp:Literal ID="ltlDisplayName" runat="server"></asp:Literal>
-                    </ItemTemplate>
-                    <ItemStyle Width="140" CssClass="center" />
-                </asp:TemplateColumn>
                 <asp:TemplateColumn HeaderText="数据类型">
                     <ItemTemplate>
                         <asp:Literal ID="ltlDataType" runat="server"></asp:Literal>
                     </ItemTemplate>
                     <ItemStyle Width="100" CssClass="center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="表单提交类型">
-                    <ItemTemplate>
-                        <asp:Literal ID="ltlInputType" runat="server"></asp:Literal>
-                    </ItemTemplate>
-                    <ItemStyle Width="120" CssClass="center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="是否显示">
-                    <ItemTemplate>
-                        <asp:Literal ID="ltlIsVisible" runat="server"></asp:Literal>
-                    </ItemTemplate>
-                    <ItemStyle Width="70" CssClass="center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="验证规则">
-                    <ItemTemplate>
-                        <asp:Literal ID="ltlValidate" runat="server"></asp:Literal>
-                    </ItemTemplate>
-                    <ItemStyle Width="130" HorizontalAlign="left" />
                 </asp:TemplateColumn>
                 <asp:TemplateColumn HeaderText="上升">
                     <ItemTemplate>
@@ -63,18 +39,6 @@
                         <asp:HyperLink ID="DownLinkButton" CommandName="DOWN" runat="server"><img src="../Pic/icon/down.gif" border="0" alt="下降" /></asp:HyperLink>
                     </ItemTemplate>
                     <ItemStyle Width="40" CssClass="center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="显示样式">
-                    <ItemTemplate>
-                        <asp:Literal ID="ltlStyle" runat="server"></asp:Literal>
-                    </ItemTemplate>
-                    <ItemStyle Width="80" CssClass="center" />
-                </asp:TemplateColumn>
-                <asp:TemplateColumn HeaderText="表单验证">
-                    <ItemTemplate>
-                        <asp:Literal ID="ltlEditValidate" runat="server"></asp:Literal>
-                    </ItemTemplate>
-                    <ItemStyle Width="70" CssClass="center" />
                 </asp:TemplateColumn>
                 <asp:TemplateColumn>
                     <ItemTemplate>

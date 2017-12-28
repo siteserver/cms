@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Model
@@ -37,9 +38,9 @@ namespace BaiRong.Core.Model
         public const string IsRecommend = nameof(IsRecommend);
         public const string IsHot = nameof(IsHot);
         public const string IsColor = nameof(IsColor);
+        public const string LinkUrl = nameof(LinkUrl);
         public const string AddDate = nameof(AddDate);
 
-        //不存在
         public static string GetFormatStringAttributeName(string attributeName)
         {
             return attributeName + "FormatString";
@@ -54,12 +55,11 @@ namespace BaiRong.Core.Model
         public const string CheckUserName = "Check_UserName";            //审核者
         public const string CheckCheckDate = "Check_CheckDate";          //审核时间
         public const string CheckReasons = "Check_Reasons";              //审核原因
-
         public const string TranslateContentType = "TranslateContentType";    //转移内容类型
 
-        private static List<string> _hiddenAttributes;
+        private static List<string> _allAttributesLowercase;
 
-        public static List<string> HiddenAttributes => _hiddenAttributes ?? (_hiddenAttributes = new List<string>
+        public static List<string> AllAttributesLowercase => _allAttributesLowercase ?? (_allAttributesLowercase = new List<string>
         {
             Id.ToLower(),
             NodeId.ToLower(),
@@ -88,10 +88,9 @@ namespace BaiRong.Core.Model
             IsRecommend.ToLower(),
             IsHot.ToLower(),
             IsColor.ToLower(),
+            LinkUrl.ToLower(),
             AddDate.ToLower()
         });
-
-        public static List<string> AllAttributes => HiddenAttributes;
     }
 
     public class ContentInfo : ExtendedAttributes, IContentInfo
@@ -124,12 +123,18 @@ namespace BaiRong.Core.Model
             IsRecommend = false;
             IsHot = false;
             IsColor = false;
+		    LinkUrl = string.Empty;
             AddDate = DateTime.Now;
 		}
 
         public ContentInfo(object dataItem) : base(dataItem)
         {
+            Load(SettingsXml);
+        }
 
+        public ContentInfo(IDataReader rdr) : base(rdr)
+        {
+            Load(SettingsXml);
         }
 
         public int Id
@@ -292,6 +297,12 @@ namespace BaiRong.Core.Model
         {
             get { return GetDateTime(ContentAttribute.AddDate, DateTime.Now); }
             set { Set(ContentAttribute.AddDate, DateUtils.GetDateAndTimeString(value)); }
+        }
+
+        public string LinkUrl
+        {
+            get { return GetString(ContentAttribute.LinkUrl); }
+            set { Set(ContentAttribute.LinkUrl, value); }
         }
 
         public string SettingsXml

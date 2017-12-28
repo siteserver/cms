@@ -2,10 +2,9 @@
 using System.Collections;
 using System.Collections.Specialized;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -13,15 +12,13 @@ namespace SiteServer.BackgroundPages.Settings
     public class ModalTableMetadataAddBatch : BasePageCms
     {
         private string _tableName;
-        private EAuxiliaryTableType _tableType;
 
-        public static string GetOpenWindowStringToAdd(string tableName, EAuxiliaryTableType tableType)
+        public static string GetOpenWindowStringToAdd(string tableName)
         {
             return PageUtils.GetOpenWindowString("批量添加辅助表字段",
                 PageUtils.GetSettingsUrl(nameof(ModalTableMetadataAddBatch), new NameValueCollection
                 {
-                    {"TableName", tableName},
-                    {"TableType", EAuxiliaryTableTypeUtils.GetValue(tableType)}
+                    {"TableName", tableName}
                 }));
         }
 
@@ -29,10 +26,9 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("TableName", "TableType");
+            PageUtils.CheckRequestParameter("TableName");
 
             _tableName = Body.GetQueryString("TableName");
-            _tableType = EAuxiliaryTableTypeUtils.GetEnumType(Body.GetQueryString("TableType"));
 
             if (!IsPostBack)
             {
@@ -57,17 +53,16 @@ namespace SiteServer.BackgroundPages.Settings
                     dataLengthList.Add(string.Empty);
             }
 
-            var tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(_tableType);
-            var attributeNameArrayList = TableManager.GetAttributeNameList(tableStyle, _tableName, true);
-            attributeNameArrayList.AddRange(TableManager.GetHiddenAttributeNameList(tableStyle));
+            var attributeNameArrayList = TableMetadataManager.GetAttributeNameList(_tableName, true);
 
             for (var i = 0; i < attributeNameList.Count; i++)
             {
                 var attributeName = attributeNameList[i];
                 var dataType = dataTypeList[i];
                 var dataLength = dataLengthList[i];
+                var attributeNameLowercase = attributeName.Trim().ToLower();
 
-                if (attributeNameArrayList.IndexOf(attributeName.Trim().ToLower()) != -1)
+                if (attributeNameArrayList.Contains(attributeNameLowercase) || ContentAttribute.AllAttributesLowercase.Contains(attributeNameLowercase))
                 {
                     FailMessage("字段添加失败，字段名已存在！");
                 }
@@ -134,7 +129,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (isChanged)
             {
-                PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
             }
         }
 

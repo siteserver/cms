@@ -172,10 +172,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
                             var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
 
-                            var tableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeInfo);
                             var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                            var targetContentInfo = Content.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
+                            var targetContentInfo = Content.GetContentInfo(tableName, contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.NodeId > 0)
                             {
                                 contentInfo = targetContentInfo;
@@ -186,7 +185,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (contentInfo == null)
                     {
                         //contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId);
-                        contentInfo = Content.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId);
+                        contentInfo = Content.GetContentInfo(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contentId);
                     }
 
                     if (contentInfo != null)

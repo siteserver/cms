@@ -29,15 +29,15 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings("管理员设置", AppManager.Permissions.Settings.AdminManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.AdminManagement);
 
             TbLoginUserNameMinLength.Text = ConfigManager.SystemConfigInfo.AdminUserNameMinLength.ToString();
             TbLoginPasswordMinLength.Text = ConfigManager.SystemConfigInfo.AdminPasswordMinLength.ToString();
             EUserPasswordRestrictionUtils.AddListItems(DdlLoginPasswordRestriction);
-            ControlUtils.SelectListItemsIgnoreCase(DdlLoginPasswordRestriction, ConfigManager.SystemConfigInfo.AdminPasswordRestriction);
+            ControlUtils.SelectSingleItemIgnoreCase(DdlLoginPasswordRestriction, ConfigManager.SystemConfigInfo.AdminPasswordRestriction);
 
             EBooleanUtils.AddListItems(RblIsLoginFailToLock, "是", "否");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsLoginFailToLock, ConfigManager.SystemConfigInfo.IsAdminLockLogin.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsLoginFailToLock, ConfigManager.SystemConfigInfo.IsAdminLockLogin.ToString());
 
             PhFailToLock.Visible = ConfigManager.SystemConfigInfo.IsAdminLockLogin;
 
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             DdlLoginLockingType.Items.Add(new ListItem("按小时锁定", EUserLockTypeUtils.GetValue(EUserLockType.Hours)));
             DdlLoginLockingType.Items.Add(new ListItem("永久锁定", EUserLockTypeUtils.GetValue(EUserLockType.Forever)));
-            ControlUtils.SelectListItemsIgnoreCase(DdlLoginLockingType, ConfigManager.SystemConfigInfo.AdminLockLoginType);
+            ControlUtils.SelectSingleItemIgnoreCase(DdlLoginLockingType, ConfigManager.SystemConfigInfo.AdminLockLoginType);
 
             PhLoginLockingHours.Visible = false;
             if (!EUserLockTypeUtils.Equals(ConfigManager.SystemConfigInfo.AdminLockLoginType, EUserLockType.Forever))
@@ -55,12 +55,12 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             EBooleanUtils.AddListItems(RblIsFindPassword, "启用", "禁用");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsFindPassword, ConfigManager.SystemConfigInfo.IsAdminFindPassword.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsFindPassword, ConfigManager.SystemConfigInfo.IsAdminFindPassword.ToString());
             PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsAdminFindPassword;
             TbFindPasswordSmsTplId.Text = ConfigManager.SystemConfigInfo.AdminFindPasswordSmsTplId;
 
             EBooleanUtils.AddListItems(RblIsViewContentOnlySelf, "不可以", "可以");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsViewContentOnlySelf, ConfigManager.SystemConfigInfo.IsViewContentOnlySelf.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsViewContentOnlySelf, ConfigManager.SystemConfigInfo.IsViewContentOnlySelf.ToString());
         }
 
         public void RblIsLoginFailToLock_SelectedIndexChanged(object sender, EventArgs e)

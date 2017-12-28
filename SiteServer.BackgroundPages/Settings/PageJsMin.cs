@@ -11,7 +11,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings("JS脚本压缩", AppManager.Permissions.Settings.Utility);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.Utility);
             }
         }
 	}

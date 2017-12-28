@@ -217,7 +217,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 scopeType = isChannel ? EScopeType.Children : EScopeType.Self;
             }
 
-            var orderByString = isChannel ? StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, order, ETableStyle.Channel, ETaxisType.OrderByTaxis) : StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, order, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
+            var orderByString = isChannel ? StlDataUtility.GetChannelOrderByString(pageInfo.PublishmentSystemId, order, ETaxisType.OrderByTaxis) : StlDataUtility.GetContentOrderByString(pageInfo.PublishmentSystemId, order, ETaxisType.OrderByTaxisDesc);
 
             var channelId = StlDataUtility.GetNodeIdByLevel(pageInfo.PublishmentSystemId, contextInfo.ChannelId, upLevel, topLevel);
 

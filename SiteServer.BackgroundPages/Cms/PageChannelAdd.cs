@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -21,9 +22,9 @@ namespace SiteServer.BackgroundPages.Cms
         public DropDownList DdlParentNodeId;
         public TextBox TbNodeName;
         public TextBox TbNodeIndexName;
-        public DropDownList DdlContentModelId;
-        public PlaceHolder PhPlugins;
-        public CheckBoxList CblPlugins;
+        public DropDownList DdlContentModelPluginId;
+        public PlaceHolder PhContentRelatedPluginIds;
+        public CheckBoxList CblContentRelatedPluginIds;
         public TextBox TbLinkUrl;
         public CheckBoxList CblNodeGroupNameCollection;
         public DropDownList DdlLinkType;
@@ -83,33 +84,31 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "添加栏目", string.Empty);
-
                 NodeManager.AddListItems(DdlParentNodeId.Items, PublishmentSystemInfo, true, true, Body.AdminName);
-                ControlUtils.SelectListItems(DdlParentNodeId, _nodeId.ToString());
+                ControlUtils.SelectSingleItem(DdlParentNodeId, _nodeId.ToString());
 
-                DdlContentModelId.Items.Add(new ListItem("<默认>", string.Empty));
-                var contentTables = PluginCache.GetEnabledPluginMetadatas<IContentTable>();
+                DdlContentModelPluginId.Items.Add(new ListItem("<默认>", string.Empty));
+                var contentTables = PluginManager.GetEnabledPluginMetadatas<IContentModel>();
                 foreach (var contentTable in contentTables)
                 {
-                    DdlContentModelId.Items.Add(new ListItem($"插件：{contentTable.DisplayName}", contentTable.Id));
+                    DdlContentModelPluginId.Items.Add(new ListItem(contentTable.DisplayName, contentTable.Id));
                 }
-                ControlUtils.SelectListItems(DdlContentModelId, parentNodeInfo.ContentModelId);
+                ControlUtils.SelectSingleItem(DdlContentModelPluginId, parentNodeInfo.ContentModelPluginId);
 
-                var pluginChannels = PluginCache.GetAllChannels(false);
-                if (pluginChannels.Count > 0)
+                var plugins = PluginManager.GetAllContentRelatedPlugins(false);
+                if (plugins.Count > 0)
                 {
-                    foreach (var pluginMetadata in pluginChannels)
+                    foreach (var pluginMetadata in plugins)
                     {
-                        CblPlugins.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id));
+                        CblContentRelatedPluginIds.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id));
                     }
                 }
                 else
                 {
-                    PhPlugins.Visible = false;
+                    PhContentRelatedPluginIds.Visible = false;
                 }
 
-                CacChannelControl.SetParameters(null, false, IsPostBack);
+                CacChannelControl.SetParameters(new ExtendedAttributes());
 
                 TbNavigationPicPath.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", PublishmentSystemInfo.Additional.WebUrl));
 
@@ -125,11 +124,6 @@ namespace SiteServer.BackgroundPages.Cms
                 showPopWinString = ModalUploadImage.GetOpenWindowString(PublishmentSystemId, TbNavigationPicPath.ClientID);
                 BtnUploadImage.Attributes.Add("onclick", showPopWinString);
 
-                RblIsChannelAddable.Items[0].Value = true.ToString();
-                RblIsChannelAddable.Items[1].Value = false.ToString();
-                RblIsContentAddable.Items[0].Value = true.ToString();
-                RblIsContentAddable.Items[1].Value = false.ToString();
-
                 ELinkTypeUtils.AddListItems(DdlLinkType);
 
                 CblNodeGroupNameCollection.DataSource = DataProvider.NodeGroupDao.GetDataSource(PublishmentSystemId);
@@ -143,11 +137,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 DdlContentTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));
                 DdlContentTemplateId.Items[0].Selected = true;
-                TbContent.SetParameters(PublishmentSystemInfo, NodeAttribute.Content, null, false, IsPostBack);
+                TbContent.SetParameters(PublishmentSystemInfo, NodeAttribute.Content, string.Empty);
             }
             else
             {
-                CacChannelControl.SetParameters(Request.Form, false, IsPostBack);
+                CacChannelControl.SetParameters(new ExtendedAttributes(Request.Form));
             }
         }
 
@@ -195,10 +189,10 @@ namespace SiteServer.BackgroundPages.Cms
                 var nodeInfo = new NodeInfo
                 {
                     ParentId = nodeId,
-                    ContentModelId = DdlContentModelId.SelectedValue
+                    ContentModelPluginId = DdlContentModelPluginId.SelectedValue,
+                    ContentRelatedPluginIds =
+                        ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds)
                 };
-
-                nodeInfo.Additional.PluginIds = ControlUtils.GetSelectedListControlValueCollection(CblPlugins);
 
                 if (TbNodeIndexName.Text.Length != 0)
                 {
@@ -261,7 +255,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var extendedAttributes = new ExtendedAttributes();
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-                BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.ToNameValueCollection(), null);
+                var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.NodeDao.TableName, relatedIdentities);
+                BackgroundInputTypeParser.SaveAttributes(extendedAttributes, PublishmentSystemInfo, styleInfoList, Request.Form, null);
                 var attributes = extendedAttributes.ToNameValueCollection();
                 nodeInfo.Additional.Load(attributes);
                 //foreach (string key in attributes)
@@ -292,7 +287,7 @@ namespace SiteServer.BackgroundPages.Cms
                 nodeInfo.Additional.IsContentAddable = TranslateUtils.ToBool(RblIsContentAddable.SelectedValue);
 
                 nodeInfo.LinkUrl = TbLinkUrl.Text;
-                nodeInfo.LinkType = ELinkTypeUtils.GetEnumType(DdlLinkType.SelectedValue);
+                nodeInfo.LinkType = DdlLinkType.SelectedValue;
                 nodeInfo.ChannelTemplateId = DdlChannelTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue) : 0;
                 nodeInfo.ContentTemplateId = DdlContentTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue) : 0;
 

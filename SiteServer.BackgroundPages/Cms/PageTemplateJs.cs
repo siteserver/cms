@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "脚本文件管理", AppManager.Permissions.WebSite.Template);
+                VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
 				if (Body.IsQueryExists("Delete"))
 				{
@@ -57,29 +57,22 @@ namespace SiteServer.BackgroundPages.Cms
 
 		public void BindGrid()
 		{
-			try
-			{
-				DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
-                var fileNames = DirectoryUtils.GetFileNames(_directoryPath);
-                var fileNameArrayList = new ArrayList();
-                foreach (var fileName in fileNames)
+            DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
+            var fileNames = DirectoryUtils.GetFileNames(_directoryPath);
+            var fileNameArrayList = new ArrayList();
+            foreach (var fileName in fileNames)
+            {
+                if (EFileSystemTypeUtils.IsTextEditable(EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(fileName))))
                 {
-                    if (EFileSystemTypeUtils.IsTextEditable(EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(fileName))))
+                    if (!fileName.Contains("_parsed"))
                     {
-                        if (!fileName.Contains("_parsed"))
-                        {
-                            fileNameArrayList.Add(fileName);
-                        }
+                        fileNameArrayList.Add(fileName);
                     }
                 }
-                dgContents.DataSource = fileNameArrayList;
-                dgContents.DataBind();
-			}
-			catch(Exception ex)
-			{
-                PageUtils.RedirectToErrorPage(ex.Message);
-			}
-		}
+            }
+            dgContents.DataSource = fileNameArrayList;
+            dgContents.DataBind();
+        }
 
         public string GetCharset(string fileName)
         {

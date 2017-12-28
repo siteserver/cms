@@ -5,7 +5,6 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -21,13 +20,12 @@ namespace SiteServer.BackgroundPages.Cms
         protected TextBox TbHits;
 
         private int _nodeId;
-        private ETableStyle _tableStyle;
         private string _tableName;
         private List<int> _idArrayList;
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"nodeID", nodeId.ToString()}
@@ -36,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithCheckBoxValue(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(nameof(ModalContentAttributes), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"nodeID", nodeId.ToString()}
@@ -50,7 +48,6 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
 
             _nodeId = Body.GetQueryInt("NodeID");
-            _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeId); 
             _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeId);
             _idArrayList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
 		}
@@ -67,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idArrayList)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentId) as BackgroundContentInfo;
+                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId) as BackgroundContentInfo;
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -101,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in _idArrayList)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableStyle, _tableName, contentId) as BackgroundContentInfo;
+                            var contentInfo = DataProvider.ContentDao.GetContentInfo(_tableName, contentId) as BackgroundContentInfo;
                             if (contentInfo != null)
                             {
                                 if (CbIsRecommend.Checked)
@@ -151,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (isChanged)
 			{
-				PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
 			}
 		}
 

@@ -77,67 +77,64 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				IsDeleteAfterTranslate.Visible = false;
 			}
-			
-			if (!IsPostBack)
-			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "批量转移", string.Empty);
 
-                phReturn.Visible = !string.IsNullOrEmpty(ReturnUrl);
-				ETranslateTypeUtils.AddListItems(TranslateType);
-                if (Body.IsQueryExists("ChannelIDCollection"))
+            if (IsPostBack) return;
+
+            phReturn.Visible = !string.IsNullOrEmpty(ReturnUrl);
+            ETranslateTypeUtils.AddListItems(TranslateType);
+            if (Body.IsQueryExists("ChannelIDCollection"))
+            {
+                ControlUtils.SelectSingleItem(TranslateType, ETranslateTypeUtils.GetValue(ETranslateType.All));
+            }
+            else
+            {
+                ControlUtils.SelectSingleItem(TranslateType, ETranslateTypeUtils.GetValue(ETranslateType.Content));
+            }
+
+            IsDeleteAfterTranslate.Items[0].Value = true.ToString();
+            IsDeleteAfterTranslate.Items[1].Value = false.ToString();
+
+            var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList;
+            foreach (var psId in publishmentSystemIdList)
+            {
+                var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psId);
+                var listitem = new ListItem(psInfo.PublishmentSystemName, psId.ToString());
+                if (psId == PublishmentSystemId) listitem.Selected = true;
+                PublishmentSystemIDDropDownList.Items.Add(listitem);
+            }
+
+            var nodeIdStrArrayList = new List<string>();
+            if (Body.IsQueryExists("ChannelIDCollection"))
+            {
+                nodeIdStrArrayList = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("ChannelIDCollection"));
+            }
+
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
+            var nodeCount = nodeIdList.Count;
+            _isLastNodeArray = new bool[nodeCount];
+            foreach (var theNodeId in nodeIdList)
+            {
+                var enabled = IsOwningNodeId(theNodeId);
+                if (!enabled)
                 {
-                    ControlUtils.SelectListItems(TranslateType, ETranslateTypeUtils.GetValue(ETranslateType.All));
+                    if (!IsHasChildOwningNodeId(theNodeId)) continue;
                 }
-                else
+                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeId);
+
+                var value = enabled ? nodeInfo.NodeId.ToString() : string.Empty;
+                value = (nodeInfo.Additional.IsContentAddable) ? value : string.Empty;
+
+                var text = GetTitle(nodeInfo);
+                var listItem = new ListItem(text, value);
+                if (nodeIdStrArrayList.Contains(value))
                 {
-                    ControlUtils.SelectListItems(TranslateType, ETranslateTypeUtils.GetValue(ETranslateType.Content));
+                    listItem.Selected = true;
                 }
-
-				IsDeleteAfterTranslate.Items[0].Value = true.ToString();
-				IsDeleteAfterTranslate.Items[1].Value = false.ToString();
-
-                var publishmentSystemIdList = ProductPermissionsManager.Current.PublishmentSystemIdList;
-                foreach (var psId in publishmentSystemIdList)
-				{
-					var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(psId);
-                    var listitem = new ListItem(psInfo.PublishmentSystemName, psId.ToString());
-                    if (psId == PublishmentSystemId) listitem.Selected = true;
-                    PublishmentSystemIDDropDownList.Items.Add(listitem);
-				}
-
-                var nodeIdStrArrayList = new List<string>();
-                if (Body.IsQueryExists("ChannelIDCollection"))
-                {
-                    nodeIdStrArrayList = TranslateUtils.StringCollectionToStringList(Body.GetQueryString("ChannelIDCollection"));
-                }
-
-				var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
-                var nodeCount = nodeIdList.Count;
-				_isLastNodeArray = new bool[nodeCount];
-                foreach (var theNodeId in nodeIdList)
-				{
-                    var enabled = IsOwningNodeId(theNodeId);
-                    if (!enabled)
-                    {
-                        if (!IsHasChildOwningNodeId(theNodeId)) continue;
-                    }
-                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeId);
-
-                    var value = enabled ? nodeInfo.NodeId.ToString() : string.Empty;
-                    value = (nodeInfo.Additional.IsContentAddable) ? value : string.Empty;
-
-                    var text = GetTitle(nodeInfo);
-					var listItem = new ListItem(text, value);
-                    if (nodeIdStrArrayList.Contains(value))
-                    {
-                        listItem.Selected = true;
-                    }
-                    NodeIDFrom.Items.Add(listItem);
-                    listItem = new ListItem(text, value);
-                    NodeIDTo.Items.Add(listItem);
-				}
-			}
-		}
+                NodeIDFrom.Items.Add(listItem);
+                listItem = new ListItem(text, value);
+                NodeIDTo.Items.Add(listItem);
+            }
+        }
 
 		public string GetTitle(NodeInfo nodeInfo)
 		{
@@ -418,17 +415,16 @@ namespace SiteServer.BackgroundPages.Cms
 
 		private void TranslateContent(PublishmentSystemInfo targetPublishmentSystemInfo, int nodeId, int targetNodeId, bool isChecked, int checkedLevel)
 		{
-            var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeId);
             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
 
-            var orderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisType.OrderByTaxis);
+            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxis);
 
             var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeId);
             var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, nodeId, orderByString);
 
             foreach (var contentId in contentIdList)
 			{
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                 FileUtility.MoveFileByContentInfo(PublishmentSystemInfo, targetPublishmentSystemInfo, contentInfo);
                 contentInfo.PublishmentSystemId = TranslateUtils.ToInt(PublishmentSystemIDDropDownList.SelectedValue);
                 contentInfo.SourceId = contentInfo.NodeId;

@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(string userName)
         {
-            return PageUtils.GetOpenLayerString("查看管理员资料", PageUtils.GetSettingsUrl(nameof(ModalAdminView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看管理员资料", PageUtils.GetSettingsUrl(nameof(ModalAdminView), new NameValueCollection
             {
                 {"UserName", userName}
             }), 400, 450);

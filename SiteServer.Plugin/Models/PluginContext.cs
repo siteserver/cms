@@ -18,8 +18,6 @@ namespace SiteServer.Plugin.Models
 
         public IFilesApi FilesApi { get; internal set; }
 
-        public IMenuApi MenuApi { get; internal set; }
-
         public INodeApi NodeApi { get; internal set; }
 
         public IParseApi ParseApi { get; internal set; }

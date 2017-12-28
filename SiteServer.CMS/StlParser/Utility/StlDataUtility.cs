@@ -9,6 +9,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using BaiRong.Core.Model;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Cache;
 
 namespace SiteServer.CMS.StlParser.Utility
@@ -196,137 +197,45 @@ namespace SiteServer.CMS.StlParser.Utility
             return taxisType;
         }
 
-        public static string GetOrderByString(int publishmentSystemId, string orderValue, ETableStyle tableStyle, ETaxisType defaultType)
+        public static string GetChannelOrderByString(int publishmentSystemId, string orderValue, ETaxisType defaultType)
         {
             var taxisType = defaultType;
             var orderByString = string.Empty;
             if (!string.IsNullOrEmpty(orderValue))
             {
-                if (tableStyle == ETableStyle.Channel)
+                if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
                 {
-                    if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByTaxis;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByTaxisDesc;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByAddDateDesc;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByAddDate;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByHits;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderRandom.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByRandom;
-                    }
-                    else
-                    {
-                        orderByString = orderValue;
-                    }
+                    taxisType = ETaxisType.OrderByTaxis;
                 }
-                else if (tableStyle == ETableStyle.BackgroundContent)
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
                 {
-                    if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByTaxisDesc;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByTaxis;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByAddDateDesc;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByAddDate;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastEditDate.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByLastEditDateDesc;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastEditDateBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByLastEditDate;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByHits;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByDay.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByHitsByDay;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByWeek.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByHitsByWeek;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByMonth.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByHitsByMonth;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderStars.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByStars;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderDigg.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByDigg;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderComments.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByComments;
-                    }
-                    else if (orderValue.ToLower().Equals(StlParserUtility.OrderRandom.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByRandom;
-                    }
-                    else
-                    {
-                        orderByString = orderValue;
-                    }
+                    taxisType = ETaxisType.OrderByTaxisDesc;
                 }
-                //else if (tableStyle == ETableStyle.InputContent)
-                //{
-                //    if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
-                //    {
-                //        taxisType = ETaxisType.OrderByTaxisDesc;
-                //    }
-                //    else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
-                //    {
-                //        taxisType = ETaxisType.OrderByTaxis;
-                //    }
-                //    else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
-                //    {
-                //        taxisType = ETaxisType.OrderByAddDateDesc;
-                //    }
-                //    else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
-                //    {
-                //        taxisType = ETaxisType.OrderByAddDate;
-                //    }
-                //    else
-                //    {
-                //        orderByString = orderValue;
-                //    }
-                //}
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByAddDateDesc;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByAddDate;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByHits;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderRandom.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByRandom;
+                }
+                else
+                {
+                    orderByString = orderValue;
+                }
             }
             List<int> orderedContentIdList = null;
             if (taxisType == ETaxisType.OrderByHits)
             {
-                if (tableStyle == ETableStyle.Channel)
-                {
-                    orderedContentIdList = Tracking.GetPageNodeIdListByAccessNum(publishmentSystemId);
-                }
+                orderedContentIdList = Tracking.GetPageNodeIdListByAccessNum(publishmentSystemId);
             }
             else if (taxisType == ETaxisType.OrderByStars)
             {
@@ -340,7 +249,90 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 orderedContentIdList = Comment.GetContentIdListByCount(publishmentSystemId);
             }
-            return ETaxisTypeUtils.GetOrderByString(tableStyle, taxisType, orderByString, orderedContentIdList);
+            return ETaxisTypeUtils.GetChannelOrderByString(taxisType, orderByString, orderedContentIdList);
+        }
+
+        public static string GetContentOrderByString(int publishmentSystemId, string orderValue, ETaxisType defaultType)
+        {
+            var taxisType = defaultType;
+            var orderByString = string.Empty;
+            if (!string.IsNullOrEmpty(orderValue))
+            {
+                if (orderValue.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByTaxisDesc;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByTaxis;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByAddDateDesc;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByAddDate;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastEditDate.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByLastEditDateDesc;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderLastEditDateBack.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByLastEditDate;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByHits;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByDay.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByHitsByDay;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByWeek.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByHitsByWeek;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderHitsByMonth.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByHitsByMonth;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderStars.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByStars;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderDigg.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByDigg;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderComments.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByComments;
+                }
+                else if (orderValue.ToLower().Equals(StlParserUtility.OrderRandom.ToLower()))
+                {
+                    taxisType = ETaxisType.OrderByRandom;
+                }
+                else
+                {
+                    orderByString = orderValue;
+                }
+            }
+            List<int> orderedContentIdList = null;
+            if (taxisType == ETaxisType.OrderByStars)
+            {
+                orderedContentIdList = Star.GetContentIdListByPoint(publishmentSystemId);
+            }
+            else if (taxisType == ETaxisType.OrderByDigg)
+            {
+                orderedContentIdList = Digg.GetRelatedIdentityListByTotal(publishmentSystemId);
+            }
+            else if (taxisType == ETaxisType.OrderByComments)
+            {
+                orderedContentIdList = Comment.GetContentIdListByCount(publishmentSystemId);
+            }
+            return ETaxisTypeUtils.GetContentOrderByString(taxisType, orderByString, orderedContentIdList);
         }
 
         public static string GetStlPageContentsSqlString(PublishmentSystemInfo publishmentSystemInfo, int channelId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isNoDup, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot)
@@ -348,10 +340,17 @@ namespace SiteServer.CMS.StlParser.Utility
             if (!NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, channelId)) return string.Empty;
 
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
-            var sqlWhereString = tableStyle == ETableStyle.BackgroundContent ? Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate) : Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where);
+
+
+            var sqlWhereString = NodeManager.IsContentModelPlugin(publishmentSystemInfo, nodeInfo)
+                ? Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot,
+                    tags, isTopExists, isTop, where)
+                : Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent,
+                    groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile,
+                    isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
+                    where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate);
 
             return Content.GetStlSqlStringChecked(tableName, publishmentSystemInfo.PublishmentSystemId, channelId, startNum, totalNum, orderByString, sqlWhereString, scopeType, groupChannel, groupChannelNot, isNoDup);
         }
@@ -369,7 +368,6 @@ namespace SiteServer.CMS.StlParser.Utility
             if (!NodeManager.IsExists(publishmentSystemInfo.PublishmentSystemId, channelId)) return null;
 
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, channelId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
             if (isRelatedContents && contentId > 0)
@@ -409,17 +407,15 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
             }
 
-            string sqlWhereString;
-            if (tableStyle == ETableStyle.BackgroundContent)
-            {
-                sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent, groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate);
-            }
-            else
-            {
-                sqlWhereString = Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot, tags, isTopExists, isTop, where);
-            }
+            var sqlWhereString = PluginManager.IsExists(nodeInfo.ContentModelPluginId)
+                ? Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, groupContent, groupContentNot,
+                    tags, isTopExists, isTop, where)
+                : Content.GetStlWhereString(publishmentSystemInfo.PublishmentSystemId, tableName, groupContent,
+                    groupContentNot, tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile,
+                    isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
+                    where, publishmentSystemInfo.Additional.IsCreateSearchDuplicate);
             var nodeIdList = Node.GetNodeIdListByScopeType(channelId, scopeType, groupChannel, groupChannelNot);
-            return Content.GetStlDataSourceChecked(nodeIdList, tableStyle, tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup, others);
+            return Content.GetStlDataSourceChecked(nodeIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, isNoDup, others);
         }
 
         public static IEnumerable GetCommentsDataSource(int publishmentSystemId, int channelId, int contentId, DbItemContainer itemContainer, int startNum, int totalNum, bool isRecommend, string orderByString, string where)

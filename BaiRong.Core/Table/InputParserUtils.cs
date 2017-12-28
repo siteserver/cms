@@ -1,8 +1,7 @@
 ﻿using System.Web.UI.WebControls;
-using BaiRong.Core.Model;
 using SiteServer.Plugin.Models;
 
-namespace BaiRong.Core.AuxiliaryTable
+namespace BaiRong.Core.Table
 {
     public class InputParserUtils
     {
@@ -64,41 +63,41 @@ namespace BaiRong.Core.AuxiliaryTable
             return !isConfirm ? GetValidateSubmitOnClickScript(formId) : $"return checkFormValueById('{formId}') && {confirmFunction};";
         }
 
-        public static string GetAdditionalAttributes(string whereUsed, InputType inputType)
-        {
-            var additionalAttributes = string.Empty;
-            if (string.IsNullOrEmpty(whereUsed))
-            {
-                //if (inputType == InputType.Text || inputType == InputType.Image || inputType == InputType.File)
-                //{
-                //    additionalAttributes = @"class=""colorblur"" onfocus=""this.className='colorfocus';"" onblur=""this.className='colorblur';"" size=""60""";
-                //}
-                //else if (inputType == InputType.TextArea)
-                //{
-                //    additionalAttributes = @"class=""colorblur"" onfocus=""this.className='colorfocus';"" onblur=""this.className='colorblur';"" cols=""60"" rows=""5""";
-                //}
-                //else if (inputType == InputType.Date || inputType == InputType.DateTime)
-                //{
-                //    additionalAttributes = @"class=""colorblur Wdate"" size=""25""";
-                //}
-            }
-            else if (whereUsed == "usercenter")
-            {
-                if (inputType == InputType.Text || inputType == InputType.Image || inputType == InputType.Video || inputType == InputType.File)
-                {
-                    additionalAttributes = @"class=""input-txt"" style=""width:320px""";
-                }
-                else if (inputType == InputType.TextArea)
-                {
-                    additionalAttributes = @"class=""input-area area-s5"" cols=""60"" rows=""5""";
-                }
-                else if (inputType == InputType.Date || inputType == InputType.DateTime)
-                {
-                    additionalAttributes = @"class=""input-txt Wdate"" style=""width:120px""";
-                }
-            }
-            return additionalAttributes;
-        }
+        //public static string GetAdditionalAttributes(string whereUsed, InputType inputType)
+        //{
+        //    var additionalAttributes = string.Empty;
+        //    if (string.IsNullOrEmpty(whereUsed))
+        //    {
+        //        //if (inputType == InputType.Text || inputType == InputType.Image || inputType == InputType.File)
+        //        //{
+        //        //    additionalAttributes = @"class=""colorblur"" onfocus=""this.className='colorfocus';"" onblur=""this.className='colorblur';"" size=""60""";
+        //        //}
+        //        //else if (inputType == InputType.TextArea)
+        //        //{
+        //        //    additionalAttributes = @"class=""colorblur"" onfocus=""this.className='colorfocus';"" onblur=""this.className='colorblur';"" cols=""60"" rows=""5""";
+        //        //}
+        //        //else if (inputType == InputType.Date || inputType == InputType.DateTime)
+        //        //{
+        //        //    additionalAttributes = @"class=""colorblur Wdate"" size=""25""";
+        //        //}
+        //    }
+        //    else if (whereUsed == "usercenter")
+        //    {
+        //        if (inputType == InputType.Text || inputType == InputType.Image || inputType == InputType.Video || inputType == InputType.File)
+        //        {
+        //            additionalAttributes = @"class=""input-txt"" style=""width:320px""";
+        //        }
+        //        else if (inputType == InputType.TextArea)
+        //        {
+        //            additionalAttributes = @"class=""input-area area-s5"" cols=""60"" rows=""5""";
+        //        }
+        //        else if (inputType == InputType.Date || inputType == InputType.DateTime)
+        //        {
+        //            additionalAttributes = @"class=""input-txt Wdate"" style=""width:120px""";
+        //        }
+        //    }
+        //    return additionalAttributes;
+        //}
 
         //public static string GetInnerAdditionalAttributes(InputType inputType, EAuxiliaryTableType tableType, string attributeName)
         //{

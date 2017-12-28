@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Core.User;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin.Features;
@@ -23,8 +20,8 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public Repeater RptContents;
         public SqlPager SpContents;
-        public Literal LtlHeadRows;
-        public Literal LtlHeadCommand;
+        public Literal LtlColumnsHead;
+        public Literal LtlCommandsHead;
         public Literal LtlButtons;
         public Literal LtlMoreButtons;
         public DateTimeTextBox TbDateFrom;
@@ -32,22 +29,22 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbKeyword;
 
         private NodeInfo _nodeInfo;
-        private ETableStyle _tableStyle;
         private string _tableName;
-        private StringCollection _attributesOfDisplay;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _styleInfoList;
-        private Dictionary<string, IChannel> _pluginChannels;
+        private StringCollection _attributesOfDisplay;
+        private List<TableStyleInfo> _attributesOfDisplayStyleInfoList;
+        private Dictionary<string, IContentRelated> _pluginChannels;
         private bool _isEdit;
         private bool _isComment;
-        private readonly Hashtable _valueHashtable = new Hashtable();
+        private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
 
         public static string GetRedirectUrl(int publishmentSystemId, int nodeId)
         {
             return PageUtils.GetCmsUrl(nameof(PageContent), new NameValueCollection
             {
-                {"PublishmentSystemID", publishmentSystemId.ToString()},
-                {"NodeID", nodeId.ToString()}
+                {"publishmentSystemId", publishmentSystemId.ToString()},
+                {"nodeId", nodeId.ToString()}
             });
         }
 
@@ -57,14 +54,15 @@ namespace SiteServer.BackgroundPages.Cms
 
             var permissions = PermissionsManager.GetPermissions(Body.AdminName);
 
-            PageUtils.CheckRequestParameter("PublishmentSystemID", "NodeID");
-            var nodeId = Body.GetQueryInt("NodeID");
+            PageUtils.CheckRequestParameter("publishmentSystemId", "nodeId");
+            var nodeId = Body.GetQueryInt("nodeId");
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeId);
             _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
             _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
-            _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
-            _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
-            _pluginChannels = PluginCache.GetChannelFeatures(_nodeInfo);
+            _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
+            _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, nodeId));
+            _attributesOfDisplayStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(PublishmentSystemInfo, _styleInfoList);
+            _pluginChannels = PluginManager.GetContentRelatedFeatures(_nodeInfo);
             _isEdit = TextUtility.IsEdit(PublishmentSystemInfo, nodeId, Body.AdminName);
             _isComment = TextUtility.IsComment(PublishmentSystemInfo, nodeId, Body.AdminName);
 
@@ -87,25 +85,21 @@ namespace SiteServer.BackgroundPages.Cms
                 return;
             }
 
-            _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, nodeId));
-
-            //this.attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(this.nodeInfo.Additional.ContentAttributesOfDisplay);
-
             SpContents.ControlToPaginate = RptContents;
-            RptContents.ItemDataBound += rptContents_ItemDataBound;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
             SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
 
             var administratorName = AdminUtility.IsViewContentOnlySelf(Body.AdminName, PublishmentSystemId, nodeId)
                     ? Body.AdminName
                     : string.Empty;
 
-            if (Body.IsQueryExists("SearchType"))
+            if (Body.IsQueryExists("searchType"))
             {
                 var owningNodeIdList = new List<int>
                 {
                     nodeId
                 };
-                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableStyle, _tableName, PublishmentSystemId, nodeId, permissions.IsSystemAdministrator, owningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), string.Empty, false, ETriState.All, false, false, false, administratorName);
+                SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableName, PublishmentSystemId, nodeId, permissions.IsSystemAdministrator, owningNodeIdList, Body.GetQueryString("searchType"), Body.GetQueryString("keyword"), Body.GetQueryString("dateFrom"), string.Empty, false, ETriState.All, false, false, false, administratorName);
             }
             else
             {
@@ -115,13 +109,10 @@ namespace SiteServer.BackgroundPages.Cms
             //spContents.SortField = BaiRongDataProvider.ContentDao.GetSortFieldName();
             //spContents.SortMode = SortMode.DESC;
             //spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(tableStyle, ETaxisType.OrderByTaxisDesc);
-            SpContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisTypeUtils.GetEnumType(_nodeInfo.Additional.DefaultTaxisType));
+            SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(_nodeInfo.Additional.DefaultTaxisType));
             SpContents.TotalCount = _nodeInfo.ContentNum;
 
             if (IsPostBack) return;
-
-            var nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, nodeId);
-            BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdContent, "内容管理", nodeName, string.Empty);
 
             LtlButtons.Text = WebUtils.GetContentCommands(Body.AdminName, PublishmentSystemInfo, _nodeInfo, PageUrl);
             LtlMoreButtons.Text = WebUtils.GetContentMoreCommands(Body.AdminName, PublishmentSystemInfo, _nodeInfo, PageUrl);
@@ -132,11 +123,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 foreach (var styleInfo in _styleInfoList)
                 {
-                    if (styleInfo.IsVisible)
-                    {
-                        var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                        DdlSearchType.Items.Add(listitem);
-                    }
+                    var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
+                    DdlSearchType.Items.Add(listitem);
                 }
             }
 
@@ -146,12 +134,12 @@ namespace SiteServer.BackgroundPages.Cms
             DdlSearchType.Items.Add(new ListItem("最后修改者", ContentAttribute.LastEditUserName));
             DdlSearchType.Items.Add(new ListItem("内容组", ContentAttribute.ContentGroupNameCollection));
 
-            if (Body.IsQueryExists("SearchType"))
+            if (Body.IsQueryExists("searchType"))
             {
-                TbDateFrom.Text = Body.GetQueryString("DateFrom");
-                ControlUtils.SelectListItems(DdlSearchType, Body.GetQueryString("SearchType"));
-                TbKeyword.Text = Body.GetQueryString("Keyword");
-                if (!string.IsNullOrEmpty(Body.GetQueryString("SearchType")) || !string.IsNullOrEmpty(TbDateFrom.Text) ||
+                TbDateFrom.Text = Body.GetQueryString("dateFrom");
+                ControlUtils.SelectSingleItem(DdlSearchType, Body.GetQueryString("searchType"));
+                TbKeyword.Text = Body.GetQueryString("keyword");
+                if (!string.IsNullOrEmpty(Body.GetQueryString("searchType")) || !string.IsNullOrEmpty(TbDateFrom.Text) ||
                     !string.IsNullOrEmpty(TbKeyword.Text))
                 {
                     LtlButtons.Text += @"
@@ -165,40 +153,32 @@ $(document).ready(function() {
                 
             }
 
-            LtlHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_styleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-            var commandCount = 0;
-            if (_isEdit)
-            {
-                commandCount += 1;
-            }
-            if (_isComment)
-            {
-                commandCount += 1;
-            }
-            commandCount += TextUtility.GetContentLinkCount(PublishmentSystemInfo, _pluginChannels);
-            LtlHeadCommand.Text = $@"<th style=""width: {commandCount * 80}px"" class=""text-center"">操作</th>";
+            LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, PublishmentSystemInfo);
+            LtlCommandsHead.Text = TextUtility.GetCommandsHeadHtml(PublishmentSystemInfo, _pluginChannels, _isEdit, _isComment);
         }
 
-        private void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
+            var contentInfo = new ContentInfo(e.Item.DataItem);
+
             var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
-            var ltlRows = (Literal)e.Item.FindControl("ltlRows");
+            var ltlColumns = (Literal)e.Item.FindControl("ltlColumns");
             var ltlStatus = (Literal)e.Item.FindControl("ltlStatus");
             var ltlCommands = (Literal)e.Item.FindControl("ltlCommands");
-
-            var contentInfo = new ContentInfo(e.Item.DataItem);
+            var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
 
             ltlTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
 
-            ltlRows.Text = TextUtility.GetColumnItemRowsHtml(_styleInfoList, _attributesOfDisplay, _valueHashtable, _tableStyle, PublishmentSystemInfo, contentInfo);
+            ltlColumns.Text = TextUtility.GetColumnsHtml(_nameValueCacheDict, PublishmentSystemInfo, contentInfo, _attributesOfDisplay, _attributesOfDisplayStyleInfoList);
 
             ltlStatus.Text =
-                $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(PublishmentSystemId, contentInfo, PageUrl)}"">{LevelManager.GetCheckState(
-                    PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
+                $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(PublishmentSystemId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
 
-            ltlCommands.Text = TextUtility.GetCommandHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName, _isEdit, _isComment);
+            ltlCommands.Text = TextUtility.GetCommandsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName, _isEdit, _isComment);
+
+            ltlSelect.Text = $@"<input type=""checkbox"" name=""ContentIDCollection"" value=""{contentInfo.Id}"" />";
         }
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -215,11 +195,11 @@ $(document).ready(function() {
                 {
                     _pageUrl = PageUtils.GetCmsUrl(nameof(PageContent), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"NodeID", _nodeInfo.NodeId.ToString()},
-                        {"DateFrom", TbDateFrom.Text},
-                        {"SearchType", DdlSearchType.SelectedValue},
-                        {"Keyword", TbKeyword.Text},
+                        {"publishmentSystemId", PublishmentSystemId.ToString()},
+                        {"nodeId", _nodeInfo.NodeId.ToString()},
+                        {"dateFrom", TbDateFrom.Text},
+                        {"searchType", DdlSearchType.SelectedValue},
+                        {"keyword", TbKeyword.Text},
                         {"page", Body.GetQueryInt("page", 1).ToString()}
                     });
                 }

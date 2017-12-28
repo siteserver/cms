@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithCreateContentsOneByOne(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("生成内容页",
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("生成内容页",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithCreateByTemplate(int publishmentSystemId, int templateId)
         {
-            return PageUtils.GetOpenLayerString("生成页面",
+            return LayerUtils.GetOpenScript("生成页面",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithGather(int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("采集内容",
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("采集内容",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithGatherDatabase(int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("数据库采集",
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("数据库采集",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -125,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithGatherFile(int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("文件采集",
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("文件采集",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithSiteTemplateDownload(string downloadUrl, string directoryName)
         {
-            return PageUtils.GetOpenLayerString("下载在线模板",
+            return LayerUtils.GetOpenScript("下载在线模板",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"SiteTemplateDownload", "True"},
@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithSiteTemplateZip(string directoryName)
         {
-            return PageUtils.GetOpenLayerString("站点模板压缩",
+            return LayerUtils.GetOpenScript("站点模板压缩",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"SiteTemplateZip", "True"},
@@ -166,7 +166,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithSiteTemplateUnZip(string fileName)
         {
-            return PageUtils.GetOpenLayerString("站点模板解压",
+            return LayerUtils.GetOpenScript("站点模板解压",
                 PageUtils.GetCmsUrl(nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"SiteTemplateUnZip", "True"},

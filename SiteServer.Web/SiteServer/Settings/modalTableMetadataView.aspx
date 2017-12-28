@@ -40,10 +40,6 @@
         <td><asp:Label id="HelpText" runat="server" /></td>
       </tr>
       <tr>
-        <td width="140"><bairong:help HelpText="是否在表单界面中显示此字段。" Text="是否显示：" runat="server" ></bairong:help></td>
-        <td><asp:Label id="IsVisible" runat="server" /></td>
-      </tr>
-      <tr>
         <td width="140"><bairong:help HelpText="设置是否对此字段启用表单验证" Text="需要验证：" runat="server" ></bairong:help></td>
         <td><asp:Label id="IsValidate" runat="server" /></td>
       </tr>

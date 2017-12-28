@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int templateLogId)
         {
-            return PageUtils.GetOpenLayerString("查看修订内容", PageUtils.GetCmsUrl(nameof(ModalTemplateView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看修订内容", PageUtils.GetCmsUrl(nameof(ModalTemplateView), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"templateLogID", templateLogId.ToString()}

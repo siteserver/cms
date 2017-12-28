@@ -17,6 +17,11 @@ namespace SiteServer.BackgroundPages
         public PlaceHolder PhStep2;
         public PlaceHolder PhStep3;
 
+        public static string GetRedirectUrl()
+        {
+            return PageUtils.GetSiteServerUrl("upgrade", null);
+        }
+
         private string GetSetpTitleString(int step)
         {
             PhStep1.Visible = PhStep2.Visible = PhStep3.Visible = false;

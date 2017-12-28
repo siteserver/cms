@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("整理排序", PageUtils.GetCmsUrl(nameof(ModalContentTidyUp), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("整理排序", PageUtils.GetCmsUrl(nameof(ModalContentTidyUp), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             DataProvider.ContentDao.TidyUp(_tableName, nodeId, DdlAttributeName.SelectedValue, TranslateUtils.ToBool(DdlIsDesc.SelectedValue));
 
-            PageUtils.CloseModalPageAndRedirect(Page, _returnUrl);
+            LayerUtils.CloseAndRedirect(Page, _returnUrl);
         }
     }
 }

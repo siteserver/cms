@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 
@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("导出内容",
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("导出内容",
                 PageUtils.GetCmsUrl(nameof(ModalContentExport), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -35,16 +35,15 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-            var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
-            styleInfoList = ContentUtility.GetAllTableStyleInfoList(PublishmentSystemInfo, tableStyle, styleInfoList);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
+            styleInfoList = ContentUtility.GetAllTableStyleInfoList(PublishmentSystemInfo, styleInfoList);
 
             foreach (var styleInfo in styleInfoList)
             {
                 var listItem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName)
                 {
-                    Selected = styleInfo.IsVisible
+                    Selected = true
                 };
                 CblDisplayAttributes.Items.Add(listItem);
             }
@@ -76,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ConfigExportDisplayAttributes))
                 {
                     var displayAttributes = TranslateUtils.StringCollectionToStringList(PublishmentSystemInfo.Additional.ConfigExportDisplayAttributes);
-                    ControlUtils.SelectListItems(CblDisplayAttributes, displayAttributes);
+                    ControlUtils.SelectMultiItems(CblDisplayAttributes, displayAttributes);
                 }
                 if (!string.IsNullOrEmpty(PublishmentSystemInfo.Additional.ConfigExportIsChecked))
                 {

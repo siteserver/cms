@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int publishmentSystemId, string textBoxClientId)
         {
-            return PageUtils.GetOpenLayerString("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImageSingle), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImageSingle), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TextBoxClientID", textBoxClientId}
@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int publishmentSystemId, string textBoxClientId, bool isNeedWaterMark)
         {
-            return PageUtils.GetOpenLayerString("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImageSingle), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImageSingle), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TextBoxClientID", textBoxClientId},
@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToList(int publishmentSystemId, string currentRootPath)
         {
-            return PageUtils.GetOpenLayerString("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImageSingle), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImageSingle), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CurrentRootPath", currentRootPath}
@@ -101,7 +101,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
                 {
-                    PageUtils.CloseModalPage(Page);
+                    LayerUtils.Close(Page);
                 }
                 else
                 {
@@ -114,7 +114,7 @@ if (parent.document.getElementById('{_textBoxClientId}') != null)
 {{
     parent.document.getElementById('{_textBoxClientId}').value = '{textBoxUrl}';
 }}
-{PageUtils.HidePopWin}
+{LayerUtils.CloseScript}
 </script>";
                 }
             }

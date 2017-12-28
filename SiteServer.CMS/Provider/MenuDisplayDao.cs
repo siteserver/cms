@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using SiteServer.CMS.Core.SystemData;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin.Models;
 
@@ -593,11 +592,8 @@ namespace SiteServer.CMS.Provider
 
 		public void CreateDefaultMenuDisplayInfo(int publishmentSystemId)
 		{
-			var arraylist = BaseTable.GetDefaultMenuDisplayArrayList(publishmentSystemId);
-			foreach (MenuDisplayInfo menuDisplayInfo in arraylist)
-			{
-				Insert(menuDisplayInfo);
-			}
-		}
-	}
+            var menuDisplayInfo = new MenuDisplayInfo(0, publishmentSystemId, "系统菜单显示方式", "true", "", 12, "plain", "", "center", "middle", "#000000", "#F2F2F2", "#FFFFFF", "#CCCCCC", "-10", "20", "true", 115, 24, 0, 0, 0, 500, "true", 1, "#A8A8A8", "", "#A8A8A8", string.Empty, DateTime.Now, true, "系统菜单显示方式");
+            Insert(menuDisplayInfo);
+        }
+    }
 }

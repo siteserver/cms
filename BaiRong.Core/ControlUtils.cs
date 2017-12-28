@@ -2,10 +2,7 @@ using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI;
-using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using BaiRong.Core.Model;
-using BaiRong.Core.Web.Controls;
 using System.Collections.Generic;
 
 namespace BaiRong.Core
@@ -20,34 +17,32 @@ namespace BaiRong.Core
 
 		}
 
-		/// <summary>
-		/// 得到代表控件的HTML代码
-		/// </summary>
-		/// <param name="control">控件</param>
-		/// <returns></returns>
-		public static string GetControlRenderHtml(Control control)
-		{
-			var builder = new StringBuilder();
-            if (control != null)
-            {
-                var sw = new System.IO.StringWriter(builder);
-                var htw = new HtmlTextWriter(sw);
-                control.RenderControl(htw);
-            }
-			return builder.ToString();
-		}
+	    /// <summary>
+	    /// 得到代表控件的HTML代码
+	    /// </summary>
+	    /// <param name="control">控件</param>
+	    /// <returns></returns>
+	    public static string GetControlRenderHtml(Control control)
+	    {
+	        if (control == null) return string.Empty;
 
-        public static string GetControlRenderHtml(Control control, Page page)
+	        var builder = new StringBuilder();
+	        var sw = new System.IO.StringWriter(builder);
+	        var htw = new HtmlTextWriter(sw);
+	        control.RenderControl(htw);
+	        return builder.ToString();
+	    }
+
+	    public static string GetControlRenderHtml(Control control, Page page)
         {
+            if (control == null) return string.Empty;
+
             var builder = new StringBuilder();
-            if (control != null)
-            {
-                control.Page = page;
-                control.DataBind();
-                var sw = new System.IO.StringWriter(builder);
-                var htw = new HtmlTextWriter(sw);
-                control.RenderControl(htw);
-            }
+            control.Page = page;
+            control.DataBind();
+            var sw = new System.IO.StringWriter(builder);
+            var htw = new HtmlTextWriter(sw);
+            control.RenderControl(htw);
             return builder.ToString();
         }
 
@@ -58,16 +53,15 @@ namespace BaiRong.Core
 		/// <param name="attributes">属性集合</param>
 		public static void AddAttributesIfNotExists(IAttributeAccessor accessor, Dictionary<string, string> attributes)
 		{
-			if (accessor != null && attributes != null)
-			{
-				foreach (var key in attributes.Keys)
-				{
-					if (accessor.GetAttribute(key) == null)
-					{
-						accessor.SetAttribute(key, attributes[key]);
-					}
-				}
-			}
+		    if (accessor == null || attributes == null) return;
+
+		    foreach (var key in attributes.Keys)
+		    {
+		        if (accessor.GetAttribute(key) == null)
+		        {
+		            accessor.SetAttribute(key, attributes[key]);
+		        }
+		    }
 		}
 
 		/// <summary>
@@ -78,13 +72,12 @@ namespace BaiRong.Core
 		/// <param name="attributeValue"></param>
 		public static void AddAttributeIfNotExists(IAttributeAccessor accessor, string attributeName, string attributeValue)
 		{
-			if (accessor != null && attributeName != null)
-			{
-				if (accessor.GetAttribute(attributeName) == null)
-				{
-					accessor.SetAttribute(attributeName, attributeValue);
-				}
-			}
+		    if (accessor == null || attributeName == null) return;
+
+		    if (accessor.GetAttribute(attributeName) == null)
+		    {
+		        accessor.SetAttribute(attributeName, attributeValue);
+		    }
 		}
 
 
@@ -95,13 +88,12 @@ namespace BaiRong.Core
 		/// <param name="attributes">属性集合</param>
 		public static void AddAttributes(IAttributeAccessor accessor, StringDictionary attributes)
 		{
-			if (accessor != null && attributes != null)
-			{
-				foreach (string key in attributes.Keys)
-				{
-					accessor.SetAttribute(key, attributes[key]);
-				}
-			}
+		    if (accessor == null || attributes == null) return;
+
+		    foreach (string key in attributes.Keys)
+		    {
+		        accessor.SetAttribute(key, attributes[key]);
+		    }
 		}
 
 		/// <summary>
@@ -120,13 +112,12 @@ namespace BaiRong.Core
 
         public static void AddListControlItems(ListControl listControl, List<string> list)
         {
-            if (listControl != null)
+            if (listControl == null) return;
+
+            foreach (var value in list)
             {
-                foreach (var value in list)
-                {
-                    var item = new ListItem(value, value);
-                    listControl.Items.Add(item);
-                }
+                var item = new ListItem(value, value);
+                listControl.Items.Add(item);
             }
         }
 
@@ -228,97 +219,107 @@ namespace BaiRong.Core
 			return retval;
 		}
 
-		/// <summary>
-		/// 在列表控件项的集合中设置选择项，同时将其他已选项清除
-		/// </summary>
-		/// <param name="listControl"></param>
-		/// <param name="values"></param>
-		public static void SelectListItems(ListControl listControl, params string[] values)
-		{
-			if (listControl != null)
-			{
-				foreach (ListItem item in listControl.Items)
-				{
-					item.Selected = false;
-				}
-				foreach (ListItem item in listControl.Items)
-				{
-					foreach (var value in values)
-					{
-						if (string.Equals(item.Value, value))
-						{
-							item.Selected = true;
-                            break;
-						}
-					}
-				}
-			}
-		}
-
-        public static void SelectListItems(ListControl listControl, ICollection collection)
+        public static void SelectSingleItem(ListControl listControl, string value)
         {
-            if (listControl != null)
+            if (listControl == null) return;
+
+            listControl.ClearSelection();
+
+            foreach (ListItem item in listControl.Items)
             {
-                foreach (ListItem item in listControl.Items)
+                if (string.Equals(item.Value, value))
                 {
-                    item.Selected = false;
+                    item.Selected = true;
+                    break;
                 }
-                foreach (ListItem item in listControl.Items)
+            }
+        }
+
+        public static void SelectSingleItemIgnoreCase(ListControl listControl, string value)
+        {
+            if (listControl == null) return;
+
+            listControl.ClearSelection();
+            foreach (ListItem item in listControl.Items)
+            {
+                if (StringUtils.EqualsIgnoreCase(item.Value, value))
                 {
-                    foreach (string value in collection)
+                    item.Selected = true;
+                    break;
+                }
+            }
+        }
+
+        public static void SelectMultiItems(ListControl listControl, params string[] values)
+        {
+            if (listControl == null) return;
+
+            listControl.ClearSelection();
+            foreach (ListItem item in listControl.Items)
+            {
+                foreach (var value in values)
+                {
+                    if (string.Equals(item.Value, value))
                     {
-                        if (string.Equals(item.Value, value))
-                        {
-                            item.Selected = true;
-                            break;
-                        }
+                        item.Selected = true;
+                        break;
                     }
                 }
             }
         }
 
-        public static void SelectListItems(ListControl listControl, List<int> collection)
+        public static void SelectMultiItems(ListControl listControl, List<string> values)
         {
-            if (listControl != null)
+            if (listControl == null) return;
+
+            listControl.ClearSelection();
+            foreach (ListItem item in listControl.Items)
             {
-                foreach (ListItem item in listControl.Items)
+                foreach (var value in values)
                 {
-                    item.Selected = false;
-                }
-                foreach (ListItem item in listControl.Items)
-                {
-                    foreach (var intVal in collection)
+                    if (string.Equals(item.Value, value))
                     {
-                        if (string.Equals(item.Value, intVal.ToString()))
-                        {
-                            item.Selected = true;
-                            break;
-                        }
+                        item.Selected = true;
+                        break;
                     }
                 }
             }
         }
 
-		public static void SelectListItemsIgnoreCase(ListControl listControl, params string[] values)
+        public static void SelectMultiItems(ListControl listControl, List<int> values)
+        {
+            if (listControl == null) return;
+
+            listControl.ClearSelection();
+            foreach (ListItem item in listControl.Items)
+            {
+                foreach (var intVal in values)
+                {
+                    if (string.Equals(item.Value, intVal.ToString()))
+                    {
+                        item.Selected = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+		public static void SelectMultiItemsIgnoreCase(ListControl listControl, params string[] values)
 		{
-			if (listControl != null)
-			{
-				foreach (ListItem item in listControl.Items)
-				{
-					item.Selected = false;
-				}
-				foreach (ListItem item in listControl.Items)
-				{
-					foreach (var value in values)
-					{
-						if (string.Equals(item.Value.ToLower(), value.ToLower()))
-						{
-							item.Selected = true;
-                            break;
-						}
-					}
-				}
-			}
+		    if (listControl == null) return;
+
+            listControl.ClearSelection();
+            foreach (ListItem item in listControl.Items)
+		    {
+		        foreach (var value in values)
+		        {
+		            if (StringUtils.EqualsIgnoreCase(item.Value, value))
+                    {
+		                item.Selected = true;
+		                break;
+		            }
+		        }
+		    }
 		}
 
 
@@ -368,246 +369,207 @@ namespace BaiRong.Core
             return null;
         }
 
-        public static string GetInputValue(Control containerControl, string inputName)
-        {
-            Control control;
-            return GetInputValue(containerControl, inputName, out control);
-        }
+        //public static string GetInputValue(Control containerControl, string inputName)
+        //{
+        //    Control control;
+        //    return GetInputValue(containerControl, inputName, out control);
+        //}
 
-        //TODO:此方法需要经过测试
-        /// <summary>
-        /// 返回null代表未找到控件。
-        /// </summary>
-        public static string GetInputValue(Control containerControl, string inputName, out Control control)
-        {
-            string value = null;
+        ///// <summary>
+        ///// 返回null代表未找到控件。
+        ///// </summary>
+        //public static string GetInputValue(Control containerControl, string inputName, out Control control)
+        //{
+        //    string value = null;
 
-            control = FindControlBySelfAndChildren(inputName, containerControl);
-            if (control != null)
-            {
-                value = string.Empty;
-                if (control is TextBox)
-                {
-                    var input = (TextBox)control;
-                    value = input.Text;
-                }
-                else if (control is HtmlInputControl)
-                {
-                    var input = (HtmlInputControl)control;
-                    value = input.Value;
-                }
-                else if (control is HtmlTextArea)
-                {
-                    var input = (HtmlTextArea)control;
-                    value = input.Value;
-                }
-                else if (control is TextEditorBase)
-                {
-                    var input = (TextEditorBase)control;
-                    value = input.Text;
-                }
-                else if (control is ListControl)
-                {
-                    var select = (ListControl)control;
-                    var arraylist = GetSelectedListControlValueArrayList(select);
-                    value = TranslateUtils.ObjectCollectionToString(arraylist);
-                }
-                else if (control is HtmlSelect)
-                {
-                    var select = (HtmlSelect)control;
-                    var arraylist = new ArrayList();
-                    foreach (ListItem item in select.Items)
-                    {
-                        if (item.Selected)
-                        {
-                            arraylist.Add(item.Value);
-                        }
-                    }
-                    value = TranslateUtils.ObjectCollectionToString(arraylist);
-                }
-                else if (control is CheckBox)
-                {
-                    var checkBox = (CheckBox)control;
-                    value = checkBox.Checked.ToString();
-                }
-            }
-            return value;
-        }
+        //    control = FindControlBySelfAndChildren(inputName, containerControl);
+        //    if (control != null)
+        //    {
+        //        value = string.Empty;
+        //        if (control is TextBox)
+        //        {
+        //            var input = (TextBox)control;
+        //            value = input.Text;
+        //        }
+        //        else if (control is HtmlInputControl)
+        //        {
+        //            var input = (HtmlInputControl)control;
+        //            value = input.Value;
+        //        }
+        //        else if (control is HtmlTextArea)
+        //        {
+        //            var input = (HtmlTextArea)control;
+        //            value = input.Value;
+        //        }
+        //        else if (control is TextEditorBase)
+        //        {
+        //            var input = (TextEditorBase)control;
+        //            value = input.Text;
+        //        }
+        //        else if (control is ListControl)
+        //        {
+        //            var select = (ListControl)control;
+        //            var arraylist = GetSelectedListControlValueArrayList(select);
+        //            value = TranslateUtils.ObjectCollectionToString(arraylist);
+        //        }
+        //        else if (control is HtmlSelect)
+        //        {
+        //            var select = (HtmlSelect)control;
+        //            var arraylist = new ArrayList();
+        //            foreach (ListItem item in select.Items)
+        //            {
+        //                if (item.Selected)
+        //                {
+        //                    arraylist.Add(item.Value);
+        //                }
+        //            }
+        //            value = TranslateUtils.ObjectCollectionToString(arraylist);
+        //        }
+        //        else if (control is CheckBox)
+        //        {
+        //            var checkBox = (CheckBox)control;
+        //            value = checkBox.Checked.ToString();
+        //        }
+        //    }
+        //    return value;
+        //}
 
-        //TODO:此方法需要经过测试
-        public static void SetInputValue(Control containerControl, string inputName, TableStyleInfo styleInfo)
-        {
-            var control = FindControlBySelfAndChildren(inputName, containerControl);
+        //public static void SetInputValue(Control containerControl, string inputName, TableStyleInfo styleInfo)
+        //{
+        //    var control = FindControlBySelfAndChildren(inputName, containerControl);
 
-            if (control != null)
-            {
-                if (control is TextBox)
-                {
-                    var input = (TextBox)control;
-                    if (string.IsNullOrEmpty(input.Text) && !string.IsNullOrEmpty(styleInfo.DefaultValue))
-                    {
-                        input.Text = styleInfo.DefaultValue;
-                    }
-                }
-                else if (control is HtmlInputControl)
-                {
-                    var input = (HtmlInputControl)control;
-                    if (string.IsNullOrEmpty(input.Value) && !string.IsNullOrEmpty(styleInfo.DefaultValue))
-                    {
-                        input.Value = styleInfo.DefaultValue;
-                    }
-                }
-                else if (control is HtmlTextArea)
-                {
-                    var input = (HtmlTextArea)control;
-                    if (string.IsNullOrEmpty(input.Value) && !string.IsNullOrEmpty(styleInfo.DefaultValue))
-                    {
-                        input.Value = styleInfo.DefaultValue;
-                    }
-                }
-                else if (control is TextEditorBase)
-                {
-                    var input = (TextEditorBase)control;
-                    if (string.IsNullOrEmpty(input.Text) && !string.IsNullOrEmpty(styleInfo.DefaultValue))
-                    {
-                        input.Text = styleInfo.DefaultValue;
-                    }
-                }
-                else if (control is ListControl)
-                {
-                    var select = (ListControl)control;
-                    if (select.Items.Count == 0)
-                    {
-                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
-                        if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
-                        {
-                            foreach (var styleItemInfo in tableStyleItemInfoArrayList)
-                            {
-                                var listItem = new ListItem(styleItemInfo.ItemTitle, styleItemInfo.ItemValue);
-                                listItem.Selected = styleItemInfo.IsSelected;
-                                select.Items.Add(listItem);
-                            }
-                        }
-                    }
-                }
-                else if (control is HtmlSelect)
-                {
-                    var select = (HtmlSelect)control;
-                    if (select.Items.Count == 0)
-                    {
-                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
-                        if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
-                        {
-                            foreach (var styleItemInfo in tableStyleItemInfoArrayList)
-                            {
-                                var listItem = new ListItem(styleItemInfo.ItemTitle, styleItemInfo.ItemValue);
-                                listItem.Selected = styleItemInfo.IsSelected;
-                                select.Items.Add(listItem);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //    if (control != null)
+        //    {
+        //        if (control is TextBox)
+        //        {
+        //            var input = (TextBox)control;
+        //            if (string.IsNullOrEmpty(input.Text) && !string.IsNullOrEmpty(styleInfo.DefaultValue))
+        //            {
+        //                input.Text = styleInfo.DefaultValue;
+        //            }
+        //        }
+        //        else if (control is HtmlInputControl)
+        //        {
+        //            var input = (HtmlInputControl)control;
+        //            if (string.IsNullOrEmpty(input.Value) && !string.IsNullOrEmpty(styleInfo.DefaultValue))
+        //            {
+        //                input.Value = styleInfo.DefaultValue;
+        //            }
+        //        }
+        //        else if (control is HtmlTextArea)
+        //        {
+        //            var input = (HtmlTextArea)control;
+        //            if (string.IsNullOrEmpty(input.Value) && !string.IsNullOrEmpty(styleInfo.DefaultValue))
+        //            {
+        //                input.Value = styleInfo.DefaultValue;
+        //            }
+        //        }
+        //        else if (control is TextEditorBase)
+        //        {
+        //            var input = (TextEditorBase)control;
+        //            if (string.IsNullOrEmpty(input.Text) && !string.IsNullOrEmpty(styleInfo.DefaultValue))
+        //            {
+        //                input.Text = styleInfo.DefaultValue;
+        //            }
+        //        }
+        //        else if (control is ListControl)
+        //        {
+        //            var select = (ListControl)control;
+        //            if (select.Items.Count == 0)
+        //            {
+        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+        //                if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
+        //                {
+        //                    foreach (var styleItemInfo in tableStyleItemInfoArrayList)
+        //                    {
+        //                        var listItem = new ListItem(styleItemInfo.ItemTitle, styleItemInfo.ItemValue);
+        //                        listItem.Selected = styleItemInfo.IsSelected;
+        //                        select.Items.Add(listItem);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        else if (control is HtmlSelect)
+        //        {
+        //            var select = (HtmlSelect)control;
+        //            if (select.Items.Count == 0)
+        //            {
+        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+        //                if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
+        //                {
+        //                    foreach (var styleItemInfo in tableStyleItemInfoArrayList)
+        //                    {
+        //                        var listItem = new ListItem(styleItemInfo.ItemTitle, styleItemInfo.ItemValue);
+        //                        listItem.Selected = styleItemInfo.IsSelected;
+        //                        select.Items.Add(listItem);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
+        //public static void SetInputValue(Control containerControl, string inputName, string value, TableStyleInfo styleInfo)
+        //{
+        //    var control = FindControlBySelfAndChildren(inputName, containerControl);
 
-        public static void SetInputValue(Control containerControl, string inputName, string value, TableStyleInfo styleInfo)
-        {
-            var control = FindControlBySelfAndChildren(inputName, containerControl);
-
-            if (control != null)
-            {
-                if (control is TextBox)
-                {
-                    var input = (TextBox)control;
-                    input.Text = value;
-                }
-                else if (control is HtmlInputControl)
-                {
-                    var input = (HtmlInputControl)control;
-                    input.Value = value;
-                }
-                else if (control is HtmlTextArea)
-                {
-                    var input = (HtmlTextArea)control;
-                    input.Value = value;
-                }
-                else if (control is TextEditorBase)
-                {
-                    var input = (TextEditorBase)control;
-                    input.Text = value;
-                }
-                else if (control is ListControl)
-                {
-                    var select = (ListControl)control;
-                    if (select.Items.Count == 0)
-                    {
-                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
-                        if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
-                        {
-                            foreach (var styleItemInfo in tableStyleItemInfoArrayList)
-                            {
-                                var listItem = new ListItem(styleItemInfo.ItemTitle, styleItemInfo.ItemValue);
-                                listItem.Selected = styleItemInfo.IsSelected;
-                                select.Items.Add(listItem);
-                            }
-                        }
-                    }
-                }
-                else if (control is HtmlSelect)
-                {
-                    var select = (HtmlSelect)control;
-                    if (select.Items.Count == 0)
-                    {
-                        var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
-                        if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
-                        {
-                            foreach (var styleItemInfo in tableStyleItemInfoArrayList)
-                            {
-                                var listItem = new ListItem(styleItemInfo.ItemTitle, styleItemInfo.ItemValue);
-                                listItem.Selected = styleItemInfo.IsSelected;
-                                select.Items.Add(listItem);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        //TODO:此方法需要经过测试
-        public static void SetLabelText(Control containerControl, string labelName, string text)
-        {
-            var control = FindControlBySelfAndChildren(labelName, containerControl);
-
-            if (control != null)
-            {
-                if (control is Label)
-                {
-                    var label = (Label)control;
-                    label.Text = text;
-				}
-				else if (control is Literal)
-				{
-					var label = (Literal)control;
-					label.Text = text;
-				}
-				else if (control is LiteralControl)
-				{
-					var label = (LiteralControl)control;
-					label.Text = text;
-				}
-                else if (control is HtmlContainerControl)
-                {
-                    var label = (HtmlContainerControl)control;
-                    label.InnerHtml = text;
-                }
-				else if (control is HtmlGenericControl)
-                {
-                    var label = (HtmlGenericControl)control;
-                    label.InnerHtml = text;
-                }
-            }
-        }
+        //    if (control != null)
+        //    {
+        //        if (control is TextBox)
+        //        {
+        //            var input = (TextBox)control;
+        //            input.Text = value;
+        //        }
+        //        else if (control is HtmlInputControl)
+        //        {
+        //            var input = (HtmlInputControl)control;
+        //            input.Value = value;
+        //        }
+        //        else if (control is HtmlTextArea)
+        //        {
+        //            var input = (HtmlTextArea)control;
+        //            input.Value = value;
+        //        }
+        //        else if (control is TextEditorBase)
+        //        {
+        //            var input = (TextEditorBase)control;
+        //            input.Text = value;
+        //        }
+        //        else if (control is ListControl)
+        //        {
+        //            var select = (ListControl)control;
+        //            if (select.Items.Count == 0)
+        //            {
+        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+        //                if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
+        //                {
+        //                    foreach (var styleItemInfo in tableStyleItemInfoArrayList)
+        //                    {
+        //                        var listItem = new ListItem(styleItemInfo.ItemTitle, styleItemInfo.ItemValue);
+        //                        listItem.Selected = styleItemInfo.IsSelected;
+        //                        select.Items.Add(listItem);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        else if (control is HtmlSelect)
+        //        {
+        //            var select = (HtmlSelect)control;
+        //            if (select.Items.Count == 0)
+        //            {
+        //                var tableStyleItemInfoArrayList = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
+        //                if (tableStyleItemInfoArrayList != null && tableStyleItemInfoArrayList.Count > 0)
+        //                {
+        //                    foreach (var styleItemInfo in tableStyleItemInfoArrayList)
+        //                    {
+        //                        var listItem = new ListItem(styleItemInfo.ItemTitle, styleItemInfo.ItemValue);
+        //                        listItem.Selected = styleItemInfo.IsSelected;
+        //                        select.Items.Add(listItem);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 	}
 }

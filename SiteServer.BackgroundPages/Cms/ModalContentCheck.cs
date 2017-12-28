@@ -7,7 +7,6 @@ using BaiRong.Core;
 using BaiRong.Core.Model;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Core.User;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -23,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -33,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringForMultiChannels(int publishmentSystemId, string returnUrl)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -42,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, int contentId, string returnUrl)
         {
-            return PageUtils.GetOpenLayerString("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
+            return LayerUtils.GetOpenScript("审核内容", PageUtils.GetCmsUrl(nameof(ModalContentCheck), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -108,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                LevelManager.LoadContentLevelToCheck(DdlCheckType, PublishmentSystemInfo, isChecked, checkedLevel);
+                CheckManager.LoadContentLevelToCheck(DdlCheckType, PublishmentSystemInfo, isChecked, checkedLevel);
 
                 var listItem = new ListItem("<保持原栏目不变>", "0");
                 DdlTranslateNodeId.Items.Add(listItem);
@@ -127,7 +126,6 @@ namespace SiteServer.BackgroundPages.Cms
             var idsDictionaryToCheck = new Dictionary<int, List<int>>();
             foreach (var nodeId in _idsDictionary.Keys)
             {
-                var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeId);
                 var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
                 var contentIdList = _idsDictionary[nodeId];
                 var contentIdListToCheck = new List<int>();
@@ -137,10 +135,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                     if (contentInfo != null)
                     {
-                        if (LevelManager.IsCheckable(PublishmentSystemInfo, contentInfo.NodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
+                        if (CheckManager.IsCheckable(PublishmentSystemInfo, contentInfo.NodeId, contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
                             contentInfoArrayListToCheck.Add(contentInfo);
                             contentIdListToCheck.Add(contentId);
@@ -163,7 +161,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (contentInfoArrayListToCheck.Count == 0)
             {
-                PageUtils.CloseModalPageWithoutRefresh(Page, "alert('您的审核权限不足，无法审核所选内容！');");
+                LayerUtils.CloseWithoutRefresh(Page, "alert('您的审核权限不足，无法审核所选内容！');");
             }
             else
             {
@@ -202,7 +200,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    PageUtils.CloseModalPageAndRedirect(Page, _returnUrl);
+                    LayerUtils.CloseAndRedirect(Page, _returnUrl);
                 }
                 catch (Exception ex)
                 {

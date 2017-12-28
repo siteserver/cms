@@ -104,25 +104,24 @@ namespace SiteServer.CMS.Provider
 
         public RelatedFieldInfo GetRelatedFieldInfo(int relatedFieldId)
 		{
-			RelatedFieldInfo relatedFieldInfo = null;
+            if (relatedFieldId <= 0) return null;
 
-            if (relatedFieldId > 0)
-            {
-                string sqlString =
-                    $"SELECT RelatedFieldID, RelatedFieldName, PublishmentSystemID, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE RelatedFieldID = {relatedFieldId}";
+            RelatedFieldInfo relatedFieldInfo = null;
 
-                using (var rdr = ExecuteReader(sqlString))
-                {
-                    if (rdr.Read())
-                    {
-                        var i = 0;
-                        relatedFieldInfo = new RelatedFieldInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
-                    }
-                    rdr.Close();
-                }
-            }
+		    string sqlString =
+		        $"SELECT RelatedFieldID, RelatedFieldName, PublishmentSystemID, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE RelatedFieldID = {relatedFieldId}";
 
-			return relatedFieldInfo;
+		    using (var rdr = ExecuteReader(sqlString))
+		    {
+		        if (rdr.Read())
+		        {
+		            var i = 0;
+		            relatedFieldInfo = new RelatedFieldInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+		        }
+		        rdr.Close();
+		    }
+
+		    return relatedFieldInfo;
 		}
 
         public RelatedFieldInfo GetRelatedFieldInfo(int publishmentSystemId, string relatedFieldName)
@@ -177,9 +176,9 @@ namespace SiteServer.CMS.Provider
 			return enumerable;
 		}
 
-		public ArrayList GetRelatedFieldInfoArrayList(int publishmentSystemId)
+		public List<RelatedFieldInfo> GetRelatedFieldInfoList(int publishmentSystemId)
 		{
-			var arraylist = new ArrayList();
+			var list = new List<RelatedFieldInfo>();
             string sqlString =
                 $"SELECT RelatedFieldID, RelatedFieldName, PublishmentSystemID, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE PublishmentSystemID = {publishmentSystemId} ORDER BY RelatedFieldID";
 
@@ -188,17 +187,17 @@ namespace SiteServer.CMS.Provider
 				while (rdr.Read())
 				{
 				    var i = 0;
-                    arraylist.Add(new RelatedFieldInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i)));
+                    list.Add(new RelatedFieldInfo(GetInt(rdr, i++), GetString(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i)));
 				}
 				rdr.Close();
 			}
 
-			return arraylist;
+			return list;
 		}
 
-		public ArrayList GetRelatedFieldNameArrayList(int publishmentSystemId)
+		public List<string> GetRelatedFieldNameList(int publishmentSystemId)
 		{
-			var arraylist = new ArrayList();
+			var list = new List<string>();
             string sqlString =
                 $"SELECT RelatedFieldName FROM siteserver_RelatedField WHERE PublishmentSystemID = {publishmentSystemId} ORDER BY RelatedFieldID";
 			
@@ -206,12 +205,12 @@ namespace SiteServer.CMS.Provider
 			{
 				while (rdr.Read()) 
 				{
-                    arraylist.Add(GetString(rdr, 0));
+                    list.Add(GetString(rdr, 0));
 				}
 				rdr.Close();
 			}
 
-			return arraylist;
+			return list;
 		}
 
         public string GetImportRelatedFieldName(int publishmentSystemId, string relatedFieldName)

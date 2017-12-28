@@ -6,7 +6,6 @@ using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
@@ -123,9 +122,7 @@ namespace SiteServer.BackgroundPages.Settings
                         var permissionList = BaiRongDataProvider.PermissionsInRolesDao.GetGeneralPermissionList(new[] { _theRoleName });
                         if (permissionList != null && permissionList.Count > 0)
                         {
-                            var permissionArray = new string[permissionList.Count];
-                            permissionList.CopyTo(permissionArray);
-                            ControlUtils.SelectListItems(cblPermissions, permissionArray);
+                            ControlUtils.SelectMultiItems(cblPermissions, permissionList);
                         }
                     }
 

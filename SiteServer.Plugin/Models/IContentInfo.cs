@@ -20,17 +20,9 @@ namespace SiteServer.Plugin.Models
 
         int Taxis { get; set; }
 
-        string ContentGroupNameCollection { get; set; }
-
-        string Tags { get; set; }
-
         int SourceId { get; set; }
 
         int ReferenceId { get; set; }
-
-        bool IsChecked { get; set; }
-
-        int CheckedLevel { get; set; }
 
         int Comments { get; set; }
 
@@ -55,6 +47,16 @@ namespace SiteServer.Plugin.Models
         bool IsHot { get; set; }
 
         bool IsColor { get; set; }
+
+        string ContentGroupNameCollection { get; set; }
+
+        string Tags { get; set; }
+
+        bool IsChecked { get; set; }
+
+        int CheckedLevel { get; set; }
+
+        string LinkUrl { get; set; }
 
         DateTime AddDate { get; set; }
     }

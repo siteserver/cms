@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int channelId, int contentId)
         {
-            return PageUtils.GetOpenLayerString("内容评分设置", PageUtils.GetCmsUrl(nameof(ModalContentStarSet), new NameValueCollection
+            return LayerUtils.GetOpenScript("内容评分设置", PageUtils.GetCmsUrl(nameof(ModalContentStarSet), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ChannelID", channelId.ToString()},
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (isChanged)
 			{
-				PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
 			}
 		}
 	}

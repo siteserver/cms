@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
@@ -51,26 +50,20 @@ namespace SiteServer.BackgroundPages.Plugins
                 _nodeId = PublishmentSystemId;
             }
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
-            var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
             ArchiveManager.CreateArchiveTableIfNotExists(PublishmentSystemInfo, tableName);
-            var tableNameOfArchive = TableManager.GetTableNameOfArchive(tableName);
+            var tableNameOfArchive = TableMetadataManager.GetTableNameOfArchive(tableName);
 
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-            _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, _relatedIdentities);
+            _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
 
             spContents.ControlToPaginate = rptContents;
             if (string.IsNullOrEmpty(Body.GetQueryString("NodeID")))
             {
-                if (TranslateUtils.ToInt(PageNum.SelectedValue) == 0)
-                {
-                    spContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
-                }
-                else
-                {
-                    spContents.ItemsPerPage = TranslateUtils.ToInt(PageNum.SelectedValue);
-                }
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableStyle, tableNameOfArchive, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, SearchType.SelectedValue, Keyword.Text, DateFrom.Text, DateTo.Text, true, ETriState.All);
+                spContents.ItemsPerPage = TranslateUtils.ToInt(PageNum.SelectedValue) == 0
+                    ? PublishmentSystemInfo.Additional.PageSize
+                    : TranslateUtils.ToInt(PageNum.SelectedValue);
+                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableNameOfArchive, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, SearchType.SelectedValue, Keyword.Text, DateFrom.Text, DateTo.Text, true, ETriState.All);
             }
             else
             {
@@ -82,7 +75,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 {
                     spContents.ItemsPerPage = Body.GetQueryInt("PageNum");
                 }
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableStyle, tableNameOfArchive, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All);
+                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableNameOfArchive, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All);
             }
             spContents.SortField = ContentAttribute.LastEditDate;
             spContents.SortMode = SortMode.DESC;
@@ -113,7 +106,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     var contentIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ContentIDCollection"));
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableNameOfArchive, contentId);
+                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableNameOfArchive, contentId);
                         DataProvider.ContentDao.Insert(tableName, PublishmentSystemInfo, contentInfo);
                     }
                     BaiRongDataProvider.ContentDao.DeleteContentsArchive(PublishmentSystemId, tableNameOfArchive, contentIdList);
@@ -127,7 +120,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     var contentIdList = BaiRongDataProvider.ContentDao.GetContentIdListByPublishmentSystemId(tableNameOfArchive, PublishmentSystemId);
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableNameOfArchive, contentId);
+                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableNameOfArchive, contentId);
 
                         DataProvider.ContentDao.Insert(tableName, PublishmentSystemInfo, contentInfo);
                     }
@@ -144,11 +137,8 @@ namespace SiteServer.BackgroundPages.Plugins
                 {
                     foreach (var styleInfo in _tableStyleInfoList)
                     {
-                        if (styleInfo.IsVisible)
-                        {
-                            var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                            SearchType.Items.Add(listitem);
-                        }
+                        var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
+                        SearchType.Items.Add(listitem);
                     }
                 }
                 //添加隐藏属性
@@ -160,10 +150,10 @@ namespace SiteServer.BackgroundPages.Plugins
                 {
                     if (PublishmentSystemId != _nodeId)
                     {
-                        ControlUtils.SelectListItems(NodeIDDropDownList, _nodeId.ToString());
+                        ControlUtils.SelectSingleItem(NodeIDDropDownList, _nodeId.ToString());
                     }
-                    ControlUtils.SelectListItems(PageNum, Body.GetQueryString("PageNum"));
-                    ControlUtils.SelectListItems(SearchType, Body.GetQueryString("SearchType"));
+                    ControlUtils.SelectSingleItem(PageNum, Body.GetQueryString("PageNum"));
+                    ControlUtils.SelectSingleItem(SearchType, Body.GetQueryString("SearchType"));
                     Keyword.Text = Body.GetQueryString("Keyword");
                     DateFrom.Text = Body.GetQueryString("DateFrom");
                     DateTo.Text = Body.GetQueryString("DateTo");

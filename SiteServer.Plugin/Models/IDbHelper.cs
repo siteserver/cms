@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Xml;
 
 namespace SiteServer.Plugin.Models
@@ -742,6 +743,16 @@ namespace SiteServer.Plugin.Models
         string GetTopSqlString(string tableName, string columns, string whereString, string orderString, int topN);
 
         string GetTopSqlString(string sqlString, string orderString, int topN);
+
+        string GetString(IDataReader rdr, int i);
+
+        bool GetBoolean(IDataReader rdr, int i);
+
+        int GetInt(IDataReader rdr, int i);
+
+        decimal GetDecimal(IDataReader rdr, int i);
+
+        DateTime GetDateTime(IDataReader rdr, int i);
 
         #endregion Utility Functions
     }

@@ -86,13 +86,13 @@ namespace SiteServer.BackgroundPages.Plugins
             {
 
                 EAdvTypeUtils.AddListItems(AdMaterialType);
-                ControlUtils.SelectListItems(AdMaterialType, EAdvTypeUtils.GetValue(EAdvType.HtmlCode));
+                ControlUtils.SelectSingleItem(AdMaterialType, EAdvTypeUtils.GetValue(EAdvType.HtmlCode));
 
                 EBooleanUtils.AddListItems(IsEnabled);
-                ControlUtils.SelectListItems(IsEnabled, true.ToString());
+                ControlUtils.SelectSingleItem(IsEnabled, true.ToString());
 
                 EAdvWeightUtils.AddListItems(Weight);
-                ControlUtils.SelectListItems(Weight, EAdvWeightUtils.GetValue(EAdvWeight.Level1));
+                ControlUtils.SelectSingleItem(Weight, EAdvWeightUtils.GetValue(EAdvWeight.Level1));
 
                 var advInfo = DataProvider.AdvDao.GetAdvInfo(_advId, PublishmentSystemId);
                 if (advInfo != null)
@@ -278,7 +278,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                         SuccessMessage("新增广告物料成功！");
                     }
-                    PageUtils.CloseModalPageAndRedirect(Page, PageAdMaterial.GetRedirectUrl(PublishmentSystemId, _advId));
+                    LayerUtils.CloseAndRedirect(Page, PageAdMaterial.GetRedirectUrl(PublishmentSystemId, _advId));
 
                 }
                 catch (Exception ex)

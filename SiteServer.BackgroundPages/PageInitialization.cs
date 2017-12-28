@@ -3,7 +3,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 
 namespace SiteServer.BackgroundPages

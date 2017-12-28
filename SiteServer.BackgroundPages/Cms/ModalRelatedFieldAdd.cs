@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int relatedFieldId)
         {
-            return PageUtils.GetOpenLayerString("修改联动字段", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改联动字段", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedFieldID", relatedFieldId.ToString()}
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerString("添加联动字段", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加联动字段", PageUtils.GetCmsUrl(nameof(ModalRelatedFieldAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
             }), 550, 550);
@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (relatedFieldInfo != null)
                 {
                     TbRelatedFieldName.Text = relatedFieldInfo.RelatedFieldName;
-                    ControlUtils.SelectListItemsIgnoreCase(DdlTotalLevel, relatedFieldInfo.TotalLevel.ToString());
+                    ControlUtils.SelectSingleItemIgnoreCase(DdlTotalLevel, relatedFieldInfo.TotalLevel.ToString());
 
                     if (!string.IsNullOrEmpty(relatedFieldInfo.Prefixes))
                     {
@@ -151,8 +151,8 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-                var relatedFieldNameArrayList = DataProvider.RelatedFieldDao.GetRelatedFieldNameArrayList(PublishmentSystemId);
-                if (relatedFieldNameArrayList.IndexOf(TbRelatedFieldName.Text) != -1)
+                var relatedFieldNameList = DataProvider.RelatedFieldDao.GetRelatedFieldNameList(PublishmentSystemId);
+                if (relatedFieldNameList.IndexOf(TbRelatedFieldName.Text) != -1)
 				{
                     FailMessage("联动字段添加失败，联动字段名称已存在！");
 				}
@@ -173,7 +173,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (isChanged)
 			{
-				PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
 			}
 		}
 	}

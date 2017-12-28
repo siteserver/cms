@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Caching;
-using BaiRong.Core.Model.Enumerations;
 
 namespace BaiRong.Core
 {
@@ -29,7 +28,7 @@ namespace BaiRong.Core
             var keys = new List<string>();
             while (cacheEnum.MoveNext())
             {
-                keys.Add(cacheEnum.Key.ToString());
+                if (cacheEnum.Key != null) keys.Add(cacheEnum.Key.ToString());
             }
 
             foreach (var key in keys)
@@ -52,7 +51,7 @@ namespace BaiRong.Core
             var regex = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
             while (cacheEnum.MoveNext())
             {
-                if (regex.IsMatch(cacheEnum.Key.ToString()))
+                if (cacheEnum.Key != null && regex.IsMatch(cacheEnum.Key.ToString()))
                 {
                     Cache.Remove(cacheEnum.Key.ToString());
                 }
@@ -145,7 +144,7 @@ namespace BaiRong.Core
                 var cacheEnum = Cache.GetEnumerator();
                 while (cacheEnum.MoveNext())
                 {
-                    keys.Add(cacheEnum.Key.ToString());
+                    if (cacheEnum.Key != null) keys.Add(cacheEnum.Key.ToString());
                 }
 
                 return keys;
@@ -155,22 +154,5 @@ namespace BaiRong.Core
         public static int Count => Cache.Count;
 
         public static long EffectivePercentagePhysicalMemoryLimit => Cache.EffectivePercentagePhysicalMemoryLimit;
-
-        public static void UpdateTemporaryCacheFile(string cacheFileName)
-        {
-            var cacheFilePath = GetCacheFilePath(cacheFileName);
-            FileUtils.WriteText(cacheFilePath, ECharset.utf_8, "cache chaged:" + DateUtils.GetDateAndTimeString(DateTime.Now));
-        }
-
-        public static void DeleteTemporaryCacheFile(string cacheFileName)
-        {
-            var cacheFilePath = GetCacheFilePath(cacheFileName);
-            FileUtils.DeleteFileIfExists(cacheFilePath);
-        }
-
-        public static string GetCacheFilePath(string cacheFileName)
-        {
-            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, cacheFileName);
-        }
     }
 }

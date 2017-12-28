@@ -50,13 +50,12 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            if (!IsPostBack)
-            {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "下拉菜单样式", AppManager.Permissions.WebSite.Template);
+            if (IsPostBack) return;
 
-                dgContents.DataSource = DataProvider.MenuDisplayDao.GetDataSource(PublishmentSystemId);
-                dgContents.DataBind();
-            }
-		}
+            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
+
+            dgContents.DataSource = DataProvider.MenuDisplayDao.GetDataSource(PublishmentSystemId);
+            dgContents.DataBind();
+        }
 	}
 }

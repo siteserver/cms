@@ -5,8 +5,16 @@ namespace SiteServer.Plugin.Apis
 {
     public interface INodeApi
     {
+        INodeInfo NewInstance(int publishmentSystemId);
+
         INodeInfo GetNodeInfo(int publishmentSystemId, int channelId);
 
-        List<INodeInfo> GetNodeInfoList(int publishmentSystemId, string adminName);
+        List<int> GetNodeIdList(int publishmentSystemId, string adminName);
+
+        List<int> GetNodeIdList(int publishmentSystemId);
+
+        List<int> GetNodeIdList(int publishmentSystemId, int parentId);
+
+        int Insert(int publishmentSystemId, INodeInfo nodeInfo);
     }
 }

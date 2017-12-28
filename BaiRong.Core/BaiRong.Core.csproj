@@ -127,6 +127,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AdminManager.cs" />
+    <Compile Include="AlertUtils.cs" />
     <Compile Include="Auth\Base64Utils.cs" />
     <Compile Include="Auth\JWT\DefaultJsonSerializer.cs" />
     <Compile Include="Auth\JWT\IJsonSerializer.cs" />
@@ -137,10 +138,11 @@
     <Compile Include="Data\Oracle.cs" />
     <Compile Include="Data\PostgreSql.cs" />
     <Compile Include="Data\MySql.cs" />
-    <Compile Include="AuxiliaryTable\InputParserUtils.cs" />
-    <Compile Include="AuxiliaryTable\TableManager.cs" />
-    <Compile Include="AuxiliaryTable\TableUtils.cs" />
-    <Compile Include="AuxiliaryTable\TableStyleManager.cs" />
+    <Compile Include="LayerUtils.cs" />
+    <Compile Include="Table\InputParserUtils.cs" />
+    <Compile Include="Table\TableMetadataManager.cs" />
+    <Compile Include="Table\TableColumnManager.cs" />
+    <Compile Include="Table\TableStyleManager.cs" />
     <Compile Include="Collection\Pair.cs" />
     <Compile Include="Model\CountInfo.cs" />
     <Compile Include="Model\ExtendedAttributes.cs" />
@@ -148,6 +150,7 @@
     <Compile Include="Model\Enumerations\EDatabaseType.cs" />
     <Compile Include="Model\Serializer.cs" />
     <Compile Include="Model\SerializerData.cs" />
+    <Compile Include="Model\TableStyleInfoExtend.cs" />
     <Compile Include="Provider\AdministratorsInRolesDao.cs" />
     <Compile Include="Provider\RecordDao.cs" />
     <Compile Include="Provider\TableStyleItemDao.cs" />
@@ -4512,14 +4515,13 @@
     <Compile Include="Model\Enumerations\EDiggType.cs" />
     <Compile Include="Model\Enumerations\EMonth.cs" />
     <Compile Include="Model\Enumerations\EScopeType.cs" />
-    <Compile Include="Model\Enumerations\ETableStyle.cs" />
     <Compile Include="Model\Enumerations\ETaxisType.cs" />
     <Compile Include="Model\Enumerations\ETextEditorType.cs" />
     <Compile Include="Model\Enumerations\ESSOAppType.cs" />
     <Compile Include="Model\Enumerations\ETheme.cs" />
     <Compile Include="Model\DepartmentInfo.cs" />
     <Compile Include="Model\TagInfo.cs" />
-    <Compile Include="Model\AuxiliaryTableInfo.cs" />
+    <Compile Include="Model\TableCollectionInfo.cs" />
     <Compile Include="Model\TableColumnInfo.cs" />
     <Compile Include="Model\Enumerations\ECountType.cs" />
     <Compile Include="Model\Enumerations\EPhotoListType.cs" />
@@ -4826,7 +4828,6 @@
     <Compile Include="WebConfigUtils.cs" />
     <Compile Include="ConvertHelper.cs" />
     <Compile Include="DateUtils.cs" />
-    <Compile Include="Model\Enumerations\EAuxiliaryTableType.cs" />
     <Compile Include="Model\Enumerations\EBoolean.cs" />
     <Compile Include="Model\Enumerations\ECharset.cs" />
     <Compile Include="DataTypeUtils.cs" />

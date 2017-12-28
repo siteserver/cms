@@ -103,7 +103,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var groupContent = string.Empty;
             var groupContentNot = string.Empty;
             var tags = string.Empty;
-            var orderByString = ETaxisTypeUtils.GetOrderByString(ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
+            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
             var startNum = 1;
             var totalNum = 0;
             var isShowText = true;
@@ -165,7 +165,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
                 {
-                    orderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
+                    orderByString = StlDataUtility.GetContentOrderByString(pageInfo.PublishmentSystemId, value, ETaxisType.OrderByTaxisDesc);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeStartNum))
                 {

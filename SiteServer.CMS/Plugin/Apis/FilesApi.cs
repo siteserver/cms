@@ -91,6 +91,11 @@ namespace SiteServer.CMS.Plugin.Apis
             return PageUtils.GetRootUrl(relatedUrl);
         }
 
+        public string GetAdminDirectoryUrl(string relatedUrl)
+        {
+            return PageUtils.GetAdminDirectoryUrl(relatedUrl);
+        }
+
         public string GetChannelUrl(int publishmentSystemId, int channelId)
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);

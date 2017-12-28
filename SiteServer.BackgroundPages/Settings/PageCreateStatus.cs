@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenLayerString(int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerString("页面生成进度",
+            return LayerUtils.GetOpenScript("页面生成进度",
                 PageUtils.GetSettingsUrl(nameof(PageCreateStatus), new NameValueCollection
                 {
                     {"publishmentSystemID", publishmentSystemId.ToString()}

@@ -5,13 +5,12 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
@@ -30,7 +29,6 @@ namespace SiteServer.BackgroundPages.Cms
         public SqlPager SpContents;
 
         private NodeInfo _nodeInfo;
-        private ETableStyle _tableStyle;
         private string _tableName;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _tableStyleInfoList;
@@ -39,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string jsMethod)
         {
-            return PageUtils.GetOpenLayerString("选择内容", PageUtils.GetCmsUrl(nameof(ModalContentMultipleSelect), new NameValueCollection
+            return LayerUtils.GetOpenScript("选择内容", PageUtils.GetCmsUrl(nameof(ModalContentMultipleSelect), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"jsMethod", jsMethod}
@@ -61,18 +59,17 @@ namespace SiteServer.BackgroundPages.Cms
                 nodeId = PublishmentSystemId;
             }
             _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
-            _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
             _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
             _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeInfo.NodeId);
-            _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
+            _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.SelectCommand = string.IsNullOrEmpty(Body.GetQueryString("NodeID"))
-                ? DataProvider.ContentDao.GetSelectCommend(_tableStyle, _tableName, PublishmentSystemId,
+                ? DataProvider.ContentDao.GetSelectCommend(_tableName, PublishmentSystemId,
                     _nodeInfo.NodeId, permissions.IsSystemAdministrator,
                     ProductPermissionsManager.Current.OwningNodeIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
                     TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, !CbIsDuplicate.Checked, false)
-                : DataProvider.ContentDao.GetSelectCommend(_tableStyle, _tableName, PublishmentSystemId,
+                : DataProvider.ContentDao.GetSelectCommend(_tableName, PublishmentSystemId,
                     _nodeInfo.NodeId, permissions.IsSystemAdministrator,
                     ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"),
                     Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true,
@@ -80,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
-            SpContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisType.OrderByIdDesc);
+            SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             if (IsPostBack) return;
@@ -91,11 +88,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 foreach (var styleInfo in _tableStyleInfoList)
                 {
-                    if (styleInfo.IsVisible)
-                    {
-                        var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                        DdlSearchType.Items.Add(listitem);
-                    }
+                    var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
+                    DdlSearchType.Items.Add(listitem);
                 }
             }
 
@@ -108,10 +102,10 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (PublishmentSystemId != _nodeInfo.NodeId)
                 {
-                    ControlUtils.SelectListItems(DdlNodeId, _nodeInfo.NodeId.ToString());
+                    ControlUtils.SelectSingleItem(DdlNodeId, _nodeInfo.NodeId.ToString());
                 }
                 CbIsDuplicate.Checked = Body.GetQueryBool("IsDuplicate");
-                ControlUtils.SelectListItems(DdlSearchType, Body.GetQueryString("SearchType"));
+                ControlUtils.SelectSingleItem(DdlSearchType, Body.GetQueryString("SearchType"));
                 TbKeyword.Text = Body.GetQueryString("Keyword");
                 TbDateFrom.Text = Body.GetQueryString("DateFrom");
                 TbDateTo.Text = Body.GetQueryString("DateTo");
@@ -169,11 +163,11 @@ namespace SiteServer.BackgroundPages.Cms
                     var title = BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
                     builder.Append($@"parent.{_jsMethod}('{title}', '{pair}');");
                 }
-                PageUtils.CloseModalPageWithoutRefresh(Page, builder.ToString());
+                LayerUtils.CloseWithoutRefresh(Page, builder.ToString());
             }
             else
             {
-                PageUtils.CloseModalPageWithoutRefresh(Page);
+                LayerUtils.CloseWithoutRefresh(Page);
             }
         }
 

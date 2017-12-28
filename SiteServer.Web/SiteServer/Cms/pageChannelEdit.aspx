@@ -42,16 +42,16 @@
                 </td>
               </tr>
               <tr>
-                <td>内容模型：</td>
+                <td>内容模型插件：</td>
                 <td>
-                  <asp:DropDownList ID="DdlContentModelId" runat="server"></asp:DropDownList>
+                  <asp:DropDownList ID="DdlContentModelPluginId" runat="server"></asp:DropDownList>
                 </td>
               </tr>
-              <asp:PlaceHolder id="PhPlugins" runat="server">
+              <asp:PlaceHolder id="PhContentRelatedPluginIds" runat="server">
                 <tr>
-                  <td>栏目插件：</td>
+                  <td>内容关联插件：</td>
                   <td>
-                    <asp:CheckBoxList ID="CblPlugins" CssClass="checkboxlist" RepeatDirection="Horizontal" runat="server"></asp:CheckBoxList>
+                    <asp:CheckBoxList ID="CblContentRelatedPluginIds" CssClass="checkboxlist" RepeatDirection="Horizontal" runat="server"></asp:CheckBoxList>
                   </td>
                 </tr>
               </asp:PlaceHolder>
@@ -162,8 +162,8 @@
                 <td>可以添加栏目：</td>
                 <td>
                   <asp:RadioButtonList ID="RblIsChannelAddable" RepeatDirection="Horizontal" class="noborder" runat="server">
-                    <asp:ListItem Text="是" Selected="True" />
-                    <asp:ListItem Text="否" />
+                    <asp:ListItem Text="是" Value="True" Selected="True" />
+                    <asp:ListItem Text="否" Value="False" />
                   </asp:RadioButtonList>
                 </td>
               </tr>
@@ -171,8 +171,8 @@
                 <td>可以添加内容：</td>
                 <td>
                   <asp:RadioButtonList ID="RblIsContentAddable" RepeatDirection="Horizontal" class="noborder" runat="server">
-                    <asp:ListItem Text="是" Selected="True" />
-                    <asp:ListItem Text="否" />
+                    <asp:ListItem Text="是" Value="True" Selected="True" />
+                    <asp:ListItem Text="否" Value="False" />
                   </asp:RadioButtonList>
                 </td>
               </tr>

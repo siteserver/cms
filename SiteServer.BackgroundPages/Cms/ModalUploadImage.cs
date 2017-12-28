@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string textBoxClientId)
         {
-            return PageUtils.GetOpenLayerString("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImage), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(nameof(ModalUploadImage), new NameValueCollection
             {
                 {"publishmentSystemID", publishmentSystemId.ToString()},
                 {"textBoxClientID", textBoxClientId}
@@ -202,7 +202,7 @@ if (parent.document.getElementById('{_textBoxClientId}'))
                 LtlScript.Text = $@"
 <script type=""text/javascript"" language=""javascript"">
     {script}
-    {PageUtils.HidePopWin}
+    {LayerUtils.CloseScript}
 </script>";
             }
             catch (Exception ex)

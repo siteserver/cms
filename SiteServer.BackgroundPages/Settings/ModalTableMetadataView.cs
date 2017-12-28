@@ -4,9 +4,9 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
+using BaiRong.Core.Table;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -24,7 +24,6 @@ namespace SiteServer.BackgroundPages.Settings
 
         public Label DisplayName;
         public Label HelpText;
-        public Label IsVisible;
         public Label IsValidate;
         public Label LbInputType;
         public Label DefaultValue;
@@ -35,15 +34,13 @@ namespace SiteServer.BackgroundPages.Settings
         public Control RowIsHorizontal;
         public Control RowSetItems;
 
-        private EAuxiliaryTableType _tableType = EAuxiliaryTableType.BackgroundContent;
         private string _tableName;
         private string _attributeName;
 
-        public static string GetOpenWindowString(EAuxiliaryTableType tableType, string tableName, string attributeName)
+        public static string GetOpenWindowString(string tableName, string attributeName)
         {
             return PageUtils.GetOpenWindowString("辅助表字段查看", PageUtils.GetSettingsUrl(nameof(ModalTableMetadataView), new NameValueCollection
             {
-                {"TableType", EAuxiliaryTableTypeUtils.GetValue(tableType)},
                 {"TableName", tableName},
                 {"AttributeName", attributeName}
             }), 480, 510, true);
@@ -53,13 +50,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            _tableType = EAuxiliaryTableTypeUtils.GetEnumType(Body.GetQueryString("TableType"));
             _tableName = Body.GetQueryString("TableName");
             _attributeName = Body.GetQueryString("AttributeName");
 
 			if (!IsPostBack)
 			{
-                var metadataInfo = TableManager.GetTableMetadataInfo(_tableName, _attributeName);
+                var metadataInfo = TableMetadataManager.GetTableMetadataInfo(_tableName, _attributeName);
 
                 if (metadataInfo != null)
                 {
@@ -68,7 +64,7 @@ namespace SiteServer.BackgroundPages.Settings
                     DataType.Text = metadataInfo.DataType.ToString();
                     DataLength.Text = metadataInfo.DataLength.ToString();
 
-                    var styleInfo = TableStyleManager.GetTableStyleInfo(EAuxiliaryTableTypeUtils.GetTableStyle(_tableType), metadataInfo.AuxiliaryTableEnName, metadataInfo.AttributeName, new List<int>{0});
+                    var styleInfo = TableStyleManager.GetTableStyleInfo(metadataInfo.AuxiliaryTableEnName, metadataInfo.AttributeName, new List<int>{0});
 
                     if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.CheckBox, InputType.Radio, InputType.SelectMultiple, InputType.SelectOne))
                     {
@@ -96,7 +92,6 @@ namespace SiteServer.BackgroundPages.Settings
 
                     DisplayName.Text = styleInfo.DisplayName;
                     HelpText.Text = styleInfo.HelpText;
-                    IsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
                     IsValidate.Text = StringUtils.GetTrueImageHtml(styleInfo.Additional.IsValidate);
                     LbInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
 
@@ -104,7 +99,8 @@ namespace SiteServer.BackgroundPages.Settings
                     IsHorizontal.Text = StringUtils.GetBoolText(styleInfo.IsHorizontal);
 
                     var styleItems = BaiRongDataProvider.TableStyleItemDao.GetStyleItemInfoList(styleInfo.TableStyleId);
-                    MyRepeater.DataSource = TableStyleManager.GetStyleItemDataSet(styleItems.Count, styleItems);
+
+                    MyRepeater.DataSource = styleItems;
                     MyRepeater.ItemDataBound += MyRepeater_ItemDataBound;
                     MyRepeater.DataBind();
                 }
@@ -116,22 +112,19 @@ namespace SiteServer.BackgroundPages.Settings
 			}
 		}
 
-	    static void MyRepeater_ItemDataBound(object sender, RepeaterItemEventArgs e)
+	    private static void MyRepeater_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
-            {
-                var itemTitle = SqlUtils.EvalString(e.Item.DataItem, "ItemTitle");
-                var itemValue = SqlUtils.EvalString(e.Item.DataItem, "ItemValue");
-                var isSelected = TranslateUtils.ToBool(SqlUtils.EvalString(e.Item.DataItem, "IsSelected"));
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-                var itemTitleControl = (Label)e.Item.FindControl("ItemTitle");
-                var itemValueControl = (Label)e.Item.FindControl("ItemValue");
-                var isSelectedControl = (Label)e.Item.FindControl("IsSelected");
+            var itemInfo = (TableStyleItemInfo) e.Item.DataItem;
 
-                itemTitleControl.Text = itemTitle;
-                itemValueControl.Text = itemValue;
-                isSelectedControl.Text = StringUtils.GetTrueImageHtml(isSelected.ToString());
-            }
+            var itemTitleControl = (Label)e.Item.FindControl("ItemTitle");
+            var itemValueControl = (Label)e.Item.FindControl("ItemValue");
+            var isSelectedControl = (Label)e.Item.FindControl("IsSelected");
+
+            itemTitleControl.Text = itemInfo.ItemTitle;
+            itemValueControl.Text = itemInfo.ItemValue;
+            isSelectedControl.Text = StringUtils.GetTrueImageHtml(itemInfo.IsSelected.ToString());
         }
 	}
 }

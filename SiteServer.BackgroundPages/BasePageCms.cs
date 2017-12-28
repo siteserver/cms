@@ -1,5 +1,4 @@
 ﻿using System.Collections.Specialized;
-using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
@@ -18,9 +17,9 @@ namespace SiteServer.BackgroundPages
             return AdminUtility.HasChannelPermissionsIgnoreNodeId(Body.AdminName, channelPermissionArray);
         }
 
-        public bool HasWebsitePermissions(params string[] websitePermissionArray)
+        public bool HasSitePermissions(params string[] websitePermissionArray)
         {
-            return AdminUtility.HasWebsitePermissions(Body.AdminName, PublishmentSystemId, websitePermissionArray);
+            return AdminUtility.HasSitePermissions(Body.AdminName, PublishmentSystemId, websitePermissionArray);
         }
 
         public bool IsOwningNodeId(int nodeId)
@@ -58,32 +57,9 @@ namespace SiteServer.BackgroundPages
 	        }
 	    }
 
-        public void BreadCrumb(string leftMenuId, string pageTitle, string permission)
-        {
-            if (LtlBreadCrumb != null)
-            {
-                var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSite, pageUrl, pageTitle, string.Empty);
-            }
-
-            if (!string.IsNullOrEmpty(permission))
-            {
-                AdminUtility.VerifyWebsitePermissions(Body.AdminName, PublishmentSystemId, permission);
-            }
-        }
-
-        public void BreadCrumbWithTitle(string leftMenuId, string pageTitle, string itemTitle, string permission)
-        {
-            if (LtlBreadCrumb != null)
-            {
-                var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSite, pageUrl, pageTitle, itemTitle);
-            }
-
-            if (!string.IsNullOrEmpty(permission))
-            {
-                AdminUtility.VerifyWebsitePermissions(Body.AdminName, PublishmentSystemId, permission);
-            }
+	    public void VerifySitePermissions(string permission)
+	    {
+            AdminUtility.VerifySitePermissions(Body.AdminName, PublishmentSystemId, permission);
         }
 
         private NameValueCollection _attributes;

@@ -77,9 +77,8 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     var fileUrl = TranslateUtils.DecryptStringBySecretKey(body.GetQueryString("fileUrl"));
                     var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
                     var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                    var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
                     var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
 
                     if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
                     {

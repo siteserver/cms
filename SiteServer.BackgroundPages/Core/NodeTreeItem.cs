@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Core
             var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
 
             _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
-            var contentTable = PluginCache.GetEnabledPluginMetadata<IContentTable>(nodeInfo.ContentModelId);
+            var contentTable = PluginManager.GetEnabledPluginMetadata<IContentModel>(nodeInfo.ContentModelPluginId);
             if (contentTable != null)
             {
                 _iconFolderUrl = PageUtils.GetPluginDirectoryUrl(contentTable.Id, contentTable.Icon);

@@ -37,7 +37,7 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static DataSet GetStlDataSourceChecked(List<int> nodeIdList, ETableStyle tableStyle, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
+        public static DataSet GetStlDataSourceChecked(List<int> nodeIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
         {
             var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetStlDataSourceChecked),
                     TranslateUtils.ObjectCollectionToString(nodeIdList), tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString, isNoDup.ToString(), TranslateUtils.NameValueCollectionToString(others));
@@ -49,7 +49,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<DataSet>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ContentDao.GetStlDataSourceChecked(nodeIdList, tableStyle, tableName, startNum, totalNum, orderByString, whereString, isNoDup, others);
+                    retval = DataProvider.ContentDao.GetStlDataSourceChecked(nodeIdList, tableName, startNum, totalNum, orderByString, whereString, isNoDup, others);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -57,10 +57,9 @@ namespace SiteServer.CMS.StlParser.Cache
             return retval;
         }
 
-        public static ContentInfo GetContentInfo(ETableStyle tableStyle, string tableName, int contentId)
+        public static ContentInfo GetContentInfo(string tableName, int contentId)
         {
-            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetContentInfo),
-                    ETableStyleUtils.GetValue(tableStyle), tableName, contentId.ToString());
+            var cacheKey = StlCacheUtils.GetCacheKey(nameof(Content), nameof(GetContentInfo), tableName, contentId.ToString());
             var retval = StlCacheUtils.GetCache<ContentInfo>(cacheKey);
             if (retval != null) return retval;
 
@@ -69,7 +68,7 @@ namespace SiteServer.CMS.StlParser.Cache
                 retval = StlCacheUtils.GetCache<ContentInfo>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                    retval = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                     StlCacheUtils.SetCache(cacheKey, retval);
                 }
             }
@@ -82,10 +81,9 @@ namespace SiteServer.CMS.StlParser.Cache
             if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
 
-            return GetContentInfo(tableStyle, tableName, contentId);
+            return GetContentInfo(tableName, contentId);
         }
 
         public static string GetValue(string tableName, int contentId, string type)

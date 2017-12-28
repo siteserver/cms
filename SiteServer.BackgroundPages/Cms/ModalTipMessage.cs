@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(string title, string content)
         {
-            return PageUtils.GetOpenLayerString(title,
+            return LayerUtils.GetOpenScript(title,
                 PageUtils.GetCmsUrl(nameof(ModalTipMessage), new NameValueCollection
                 {
                     {"content", TranslateUtils.EncryptStringBySecretKey(content)}
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Cancel_OnClick(object sender, EventArgs e)
         {
-            PageUtils.CloseModalPageWithoutRefresh(Page);
+            LayerUtils.CloseWithoutRefresh(Page);
         }
 
         public void Page_Load(object sender, EventArgs e)

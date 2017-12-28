@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToContentForMultiChannels(int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("添加到内容组",
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("添加到内容组",
                 PageUtils.GetCmsUrl(nameof(ModalAddToGroup), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToContent(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("添加到内容组",
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("添加到内容组",
                 PageUtils.GetCmsUrl(nameof(ModalAddToGroup), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToChannel(int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("添加到栏目组",
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("添加到栏目组",
                 PageUtils.GetCmsUrl(nameof(ModalAddToGroup), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isChanged)
             {
-                PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
             }
         }
     }

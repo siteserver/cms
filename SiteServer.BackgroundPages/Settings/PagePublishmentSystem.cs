@@ -42,16 +42,15 @@ namespace SiteServer.BackgroundPages.Settings
 
             }
 
-            if (!IsPostBack)
-            {
-                BreadCrumbSettings("系统站点管理", AppManager.Permissions.Settings.SiteManagement);
+            if (IsPostBack) return;
 
-                _hqSiteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
-                dgContents.DataSource = PublishmentSystemManager.GetPublishmentSystemIdList();
-                dgContents.ItemDataBound += dgContents_ItemDataBound;
-                dgContents.DataBind();
-            }
+            _hqSiteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
+
+            dgContents.DataSource = PublishmentSystemManager.GetPublishmentSystemIdList();
+            dgContents.ItemDataBound += dgContents_ItemDataBound;
+            dgContents.DataBind();
         }
 
         void dgContents_ItemDataBound(object sender, DataGridItemEventArgs e)

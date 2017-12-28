@@ -14,7 +14,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString()
         {
-            return PageUtils.GetOpenLayerString("导入敏感词",
+            return LayerUtils.GetOpenScript("导入敏感词",
                 PageUtils.GetSettingsUrl(nameof(ModalKeywordImport), null), 500, 530);
         }
 
@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (isChanged)
             {
-                PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
             }
         }
     }

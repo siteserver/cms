@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string attributeName)
         {
-            return PageUtils.GetOpenLayerString("导入Word", PageUtils.GetCmsUrl(nameof(ModalTextEditorImportWord), new NameValueCollection
+            return LayerUtils.GetOpenScript("导入Word", PageUtils.GetCmsUrl(nameof(ModalTextEditorImportWord), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"AttributeName", attributeName}
@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
                     FileUtils.DeleteFileIfExists(filePath);
                 }
                 var script = "parent." + ETextEditorTypeUtils.GetInsertHtmlScript(_attributeName, builder.ToString());
-                PageUtils.CloseModalPageWithoutRefresh(Page, script);
+                LayerUtils.CloseWithoutRefresh(Page, script);
             }
             else
             {

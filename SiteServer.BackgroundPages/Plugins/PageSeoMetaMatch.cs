@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Plugins
 {
@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Plugins
 		bool[] _isLastNodeArray;
 		string _defaultSeoMetaName;
 
-		public string GetTitle(int nodeId, string nodeName, ENodeType nodeType, int parentsCount, bool isLastNode)
+		public string GetTitle(int nodeId, string nodeName, int parentsCount, bool isLastNode)
 		{
 			var str = "";
             if (nodeId == PublishmentSystemId)
@@ -85,10 +85,10 @@ namespace SiteServer.BackgroundPages.Plugins
 
 		public void BindListBox()
 		{
-			var selectedNodeIdArrayList = new ArrayList();
+			var selectedNodeIdList = new List<string>();
 			foreach (ListItem listitem in NodeIdCollectionToMatch.Items)
 			{
-				if (listitem.Selected) selectedNodeIdArrayList.Add(listitem.Value);
+				if (listitem.Selected) selectedNodeIdList.Add(listitem.Value);
 			}
 			var selectedChannelSeoMetaId = ChannelSeoMetaId.SelectedValue;
 			var selectedContentSeoMetaId = ContentSeoMetaId.SelectedValue;
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Plugins
             foreach (int theNodeId in nodeIdList)
 			{
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeId);
-				var listitem = new ListItem(GetTitle(nodeInfo.NodeId, nodeInfo.NodeName, nodeInfo.NodeType, nodeInfo.ParentsCount, nodeInfo.IsLastNode), nodeInfo.NodeId.ToString());
+				var listitem = new ListItem(GetTitle(nodeInfo.NodeId, nodeInfo.NodeName, nodeInfo.ParentsCount, nodeInfo.IsLastNode), nodeInfo.NodeId.ToString());
 				NodeIdCollectionToMatch.Items.Add(listitem);
 			}
 
@@ -114,11 +114,9 @@ namespace SiteServer.BackgroundPages.Plugins
 				ContentSeoMetaId.Items.Add(listitem);
 			}
 
-			var stringArray = new string[selectedNodeIdArrayList.Count];
-			selectedNodeIdArrayList.CopyTo(stringArray);
-			ControlUtils.SelectListItems(NodeIdCollectionToMatch, stringArray);
-			ControlUtils.SelectListItems(ChannelSeoMetaId, selectedChannelSeoMetaId);
-			ControlUtils.SelectListItems(ContentSeoMetaId, selectedContentSeoMetaId);
+			ControlUtils.SelectMultiItems(NodeIdCollectionToMatch, selectedNodeIdList);
+			ControlUtils.SelectSingleItem(ChannelSeoMetaId, selectedChannelSeoMetaId);
+			ControlUtils.SelectSingleItem(ContentSeoMetaId, selectedContentSeoMetaId);
 		}
 
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using BaiRong.Core;
-using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -42,9 +41,8 @@ namespace SiteServer.CMS.StlParser
             {
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                CreateContent(publishmentSystemInfo, tableStyle, tableName, channelId, contentId);
+                CreateContent(publishmentSystemInfo, tableName, channelId, contentId);
             }
             else if (createType == ECreateType.AllContent)
             {
@@ -60,7 +58,6 @@ namespace SiteServer.CMS.StlParser
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
             var contentIdList = Content.GetContentIdListChecked(tableName, nodeId, orderByString);
@@ -85,7 +82,7 @@ namespace SiteServer.CMS.StlParser
                     {
                         try
                         {
-                            CreateContent(publishmentSystemInfo, tableStyle, tableName, nodeId, contentId);
+                            CreateContent(publishmentSystemInfo, tableName, nodeId, contentId);
                         }
                         catch (Exception ex)
                         {
@@ -100,7 +97,7 @@ namespace SiteServer.CMS.StlParser
                 {
                     try
                     {
-                        CreateContent(publishmentSystemInfo, tableStyle, tableName, nodeId, contentId);
+                        CreateContent(publishmentSystemInfo, tableName, nodeId, contentId);
                     }
                     catch (Exception ex)
                     {
@@ -175,7 +172,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
-                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
+                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageContentsElementParser = new StlPageContents(stlElement, pageInfo, contextInfo, false);
                 int totalNum;
@@ -208,7 +205,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlLabelList);
-                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
+                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageChannelsElementParser = new StlPageChannels(stlElement, pageInfo, contextInfo, false);
                 int totalNum;
@@ -232,7 +229,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
-                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
+                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo, false);
                 int totalNum;
@@ -256,7 +253,7 @@ namespace SiteServer.CMS.StlParser
             //else if (StlParserUtility.IsStlElementExists(StlPageInputContents.ElementName, stlLabelList))
             //{
             //    var stlElement = StlParserUtility.GetStlElement(StlPageInputContents.ElementName, stlLabelList);
-            //    var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
+            //    var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
             //    var pageInputContentsElementParser = new StlPageInputContents(stlElement, pageInfo, contextInfo, true);
             //    int totalNum;
@@ -283,9 +280,9 @@ namespace SiteServer.CMS.StlParser
             }
         }
 
-        private static void CreateContent(PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, string tableName, int nodeId, int contentId)
+        private static void CreateContent(PublishmentSystemInfo publishmentSystemInfo, string tableName, int nodeId, int contentId)
         {
-            var contentInfo = Content.GetContentInfo(tableStyle, tableName, contentId);
+            var contentInfo = Content.GetContentInfo(tableName, contentId);
 
             if (contentInfo == null)
             { 
@@ -296,7 +293,7 @@ namespace SiteServer.CMS.StlParser
             {
                 return;
             }
-            if (tableStyle == ETableStyle.BackgroundContent && !string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.LinkUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.LinkUrl)))
             {
                 return;
             }
@@ -324,7 +321,7 @@ namespace SiteServer.CMS.StlParser
             if (StlParserUtility.IsStlContentElementWithTypePageContent(stlLabelList))//内容存在
             {
                 var stlElement = StlParserUtility.GetStlContentElementWithTypePageContent(stlLabelList);
-                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
+                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
                 contentBuilder.Replace(stlElement, stlElementTranslated);
 
                 var innerBuilder = new StringBuilder(stlElement);
@@ -358,7 +355,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageContents.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageContents.ElementName, stlLabelList);
-                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
+                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageContentsElementParser = new StlPageContents(stlElement, pageInfo, contextInfo, false);
                 int totalNum;
@@ -382,7 +379,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageChannels.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageChannels.ElementName, stlLabelList);
-                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
+                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageChannelsElementParser = new StlPageChannels(stlElement, pageInfo, contextInfo, false);
                 int totalNum;
@@ -406,7 +403,7 @@ namespace SiteServer.CMS.StlParser
             else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
             {
                 var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
-                var stlElementTranslated = TranslateUtils.EncryptStringBySecretKey(stlElement);
+                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo, false);
                 int totalNum;

@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages
             }
             else
             {
-                if (BaiRongDataProvider.AdministratorDao.IsUserNameExists(account))
+                if (BaiRongDataProvider.AdministratorDao.IsAdminNameExists(account))
                 {
                     userName = account;
                 }

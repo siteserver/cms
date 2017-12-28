@@ -5,9 +5,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Web.UI;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using MySql.Data.MySqlClient;
 using Npgsql;
 using NpgsqlTypes;
@@ -576,6 +576,15 @@ SELECT * FROM (
             return retval;
         }
 
+        public static List<string> GetAddColumnsSqlString(string tableName, TableMetadataInfo metadataInfo)
+        {
+            var sqlList = new List<string>();
+            var columnSqlString = GetColumnSqlString(metadataInfo.DataType, metadataInfo.AttributeName, metadataInfo.DataLength);
+            var alterSqlString = GetAddColumnsSqlString(tableName, columnSqlString);
+            sqlList.Add(alterSqlString);
+            return sqlList;
+        }
+
         public static List<string> GetDropColumnsSqlString(string tableName, string attributeName)
         {
             var sqlList = new List<string>();
@@ -605,6 +614,30 @@ SELECT * FROM (
             return sqlList;
         }
 
+        public static string GetDropTableSqlString(string tableName)
+        {
+            string sqlString;
+            switch (WebConfigUtils.DatabaseType)
+            {
+                case EDatabaseType.MySql:
+                    sqlString = $"DROP TABLE `{tableName}`";
+                    break;
+                case EDatabaseType.SqlServer:
+                    sqlString = $"DROP TABLE [{tableName}]";
+                    break;
+                case EDatabaseType.PostgreSql:
+                    sqlString = $"DROP TABLE {tableName}";
+                    break;
+                case EDatabaseType.Oracle:
+                    sqlString = $"DROP TABLE {tableName}";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return sqlString;
+        }
+
         public static string GetAutoIncrementDataType()
         {
             string retval;
@@ -629,11 +662,11 @@ SELECT * FROM (
             return retval;
         }
 
-        public static string GetCreateAuxiliaryTableSqlString(string tableName)
+        public static string GetCreateTableCollectionInfoSqlString(string tableName)
         {
             var columnSqlStringList = new List<string>();
 
-            var tableMetadataInfoList = TableManager.GetTableMetadataInfoList(tableName);
+            var tableMetadataInfoList = TableMetadataManager.GetTableMetadataInfoList(tableName);
             if (tableMetadataInfoList.Count > 0)
             {
                 foreach (var metadataInfo in tableMetadataInfoList)
@@ -681,6 +714,7 @@ SELECT * FROM (
 `{nameof(ContentInfo.IsRecommend)}` VARCHAR(18),
 `{nameof(ContentInfo.IsHot)}` VARCHAR(18),
 `{nameof(ContentInfo.IsColor)}` VARCHAR(18),
+`{nameof(ContentInfo.LinkUrl)}` VARCHAR(200),
 `{nameof(ContentInfo.AddDate)}` DATETIME,
 ");
                     break;
@@ -714,6 +748,7 @@ SELECT * FROM (
 {nameof(ContentInfo.IsRecommend)} nvarchar (18) NULL,
 {nameof(ContentInfo.IsHot)} nvarchar (18) NULL,
 {nameof(ContentInfo.IsColor)} nvarchar (18) NULL,
+{nameof(ContentInfo.LinkUrl)} nvarchar (200) NULL,
 {nameof(ContentInfo.AddDate)} datetime NULL,
 ");
                     break;
@@ -747,6 +782,7 @@ SELECT * FROM (
 {nameof(ContentInfo.IsRecommend)} varchar (18) NULL,
 {nameof(ContentInfo.IsHot)} varchar (18) NULL,
 {nameof(ContentInfo.IsColor)} varchar (18) NULL,
+{nameof(ContentInfo.LinkUrl)} varchar (200) NULL,
 {nameof(ContentInfo.AddDate)} timestamptz NULL,
 ");
                     break;
@@ -780,6 +816,7 @@ SELECT * FROM (
 {nameof(ContentInfo.IsRecommend)} nvarchar2(18) NULL,
 {nameof(ContentInfo.IsHot)} nvarchar2(18) NULL,
 {nameof(ContentInfo.IsColor)} nvarchar2(18) NULL,
+{nameof(ContentInfo.LinkUrl)} nvarchar2(200) NULL,
 {nameof(ContentInfo.AddDate)} timestamp(6) with time zone NULL,
 ");
                     break;

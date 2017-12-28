@@ -2,10 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -18,23 +17,20 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox TbDataLength;
 
         private string _tableName;
-        private EAuxiliaryTableType _tableType;
 
-        public static string GetOpenWindowStringToAdd(string tableName, EAuxiliaryTableType tableType)
+        public static string GetOpenWindowStringToAdd(string tableName)
         {
-            return PageUtils.GetOpenLayerString("添加辅助表字段", PageUtils.GetSettingsUrl(nameof(ModalTableMetadataAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加辅助表字段", PageUtils.GetSettingsUrl(nameof(ModalTableMetadataAdd), new NameValueCollection
             {
-                {"TableName", tableName},
-                {"TableType", EAuxiliaryTableTypeUtils.GetValue(tableType)}
+                {"TableName", tableName}
             }), 600, 320);
         }
 
-        public static string GetOpenWindowStringToEdit(string tableName, EAuxiliaryTableType tableType, int tableMetadataId)
+        public static string GetOpenWindowStringToEdit(string tableName, int tableMetadataId)
         {
-            return PageUtils.GetOpenLayerString("修改辅助表字段", PageUtils.GetSettingsUrl(nameof(ModalTableMetadataAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改辅助表字段", PageUtils.GetSettingsUrl(nameof(ModalTableMetadataAdd), new NameValueCollection
             {
                 {"TableName", tableName},
-                {"TableType", EAuxiliaryTableTypeUtils.GetValue(tableType)},
                 {"TableMetadataID", tableMetadataId.ToString()}
             }), 600, 320);
         }
@@ -43,10 +39,9 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("TableName", "TableType");
+            PageUtils.CheckRequestParameter("TableName");
 
             _tableName = Body.GetQueryString("TableName");
-            _tableType = EAuxiliaryTableTypeUtils.GetEnumType(Body.GetQueryString("TableType"));
 
             if (IsPostBack) return;
 
@@ -60,7 +55,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     TbAttributeName.Text = info.AttributeName;
                     TbAttributeName.Enabled = false;
-                    ControlUtils.SelectListItemsIgnoreCase(DdlDataType, info.DataType.ToString());
+                    ControlUtils.SelectSingleItemIgnoreCase(DdlDataType, info.DataType.ToString());
                     TbDataLength.Text = info.DataLength.ToString();
                 }
             }
@@ -111,10 +106,10 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                var tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(_tableType);
-                var attributeNameList = TableManager.GetAttributeNameList(tableStyle, _tableName, true);
-                attributeNameList.AddRange(TableManager.GetHiddenAttributeNameList(tableStyle));
-                if (attributeNameList.IndexOf(TbAttributeName.Text.Trim().ToLower()) != -1)
+                var attributeNameList = TableMetadataManager.GetAttributeNameList(_tableName, true);
+
+                var attributeNameLowercase = TbAttributeName.Text.Trim().ToLower();
+                if (attributeNameList.Contains(attributeNameLowercase) || ContentAttribute.AllAttributesLowercase.Contains(attributeNameLowercase))
                 {
                     FailMessage("字段添加失败，字段名已存在！");
                 }
@@ -161,7 +156,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (isChanged)
             {
-                PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
             }
 		}
 

@@ -5,7 +5,7 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
+using SiteServer.CMS.Core.Security;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(string userName)
         {
-            return PageUtils.GetOpenLayerString("权限设置",
+            return LayerUtils.GetOpenScript("权限设置",
                 PageUtils.GetSettingsUrl(nameof(ModalPermissionsSet), new NameValueCollection
                 {
                     {"UserName", userName}
@@ -48,10 +48,10 @@ namespace SiteServer.BackgroundPages.Settings
             DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.Administrator, false));
 
             var type = EPredefinedRoleUtils.GetEnumTypeByRoles(roles);
-            ControlUtils.SelectListItems(DdlPredefinedRole, EPredefinedRoleUtils.GetValue(type));
+            ControlUtils.SelectSingleItem(DdlPredefinedRole, EPredefinedRoleUtils.GetValue(type));
 
             PublishmentSystemManager.AddListItems(CblPublishmentSystemId);
-            ControlUtils.SelectListItems(CblPublishmentSystemId, BaiRongDataProvider.AdministratorDao.GetPublishmentSystemIdList(_userName));
+            ControlUtils.SelectMultiItems(CblPublishmentSystemId, BaiRongDataProvider.AdministratorDao.GetPublishmentSystemIdList(_userName));
 
             ListBoxDataBind();
 
@@ -209,7 +209,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (isChanged)
             {
                 var redirectUrl = PageAdministrator.GetRedirectUrl(0);
-                PageUtils.CloseModalPageAndRedirect(Page, redirectUrl);
+                LayerUtils.CloseAndRedirect(Page, redirectUrl);
             }
         }
     }

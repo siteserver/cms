@@ -23,21 +23,21 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings("用户注册配置", AppManager.Permissions.Settings.UserManagement);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.UserManagement);
 
                 EBooleanUtils.AddListItems(RblIsRegisterAllowed);
 
                 TbRegisterPasswordMinLength.Text = ConfigManager.SystemConfigInfo.UserPasswordMinLength.ToString();
 
                 EUserPasswordRestrictionUtils.AddListItems(DdlRegisterPasswordRestriction);
-                ControlUtils.SelectListItemsIgnoreCase(DdlRegisterPasswordRestriction, ConfigManager.SystemConfigInfo.UserPasswordRestriction);
+                ControlUtils.SelectSingleItemIgnoreCase(DdlRegisterPasswordRestriction, ConfigManager.SystemConfigInfo.UserPasswordRestriction);
 
                 EUserVerifyTypeUtils.AddListItems(DdlRegisterVerifyType);
                 PhRegisterSms.Visible = EUserVerifyTypeUtils.Equals(ConfigManager.SystemConfigInfo.UserRegistrationVerifyType, EUserVerifyType.Mobile);
                 TbRegisterSmsTplId.Text = ConfigManager.SystemConfigInfo.UserRegistrationSmsTplId;
 
-                ControlUtils.SelectListItemsIgnoreCase(RblIsRegisterAllowed, ConfigManager.SystemConfigInfo.IsUserRegistrationAllowed.ToString());
-                ControlUtils.SelectListItemsIgnoreCase(DdlRegisterVerifyType, ConfigManager.SystemConfigInfo.UserRegistrationVerifyType);
+                ControlUtils.SelectSingleItemIgnoreCase(RblIsRegisterAllowed, ConfigManager.SystemConfigInfo.IsUserRegistrationAllowed.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(DdlRegisterVerifyType, ConfigManager.SystemConfigInfo.UserRegistrationVerifyType);
 
                 TbRegisterMinMinutesOfIpAddress.Text = ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes.ToString();
             }

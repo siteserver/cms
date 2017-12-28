@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 			if (!IsPostBack)
 			{
-                BreadCrumbSettings("定时任务管理", AppManager.Permissions.Settings.Service);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.Service);
 
                 dgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList();
                 dgContents.ItemDataBound += dgContents_ItemDataBound;

@@ -43,14 +43,14 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            BreadCrumbPlugins("插件配置", AppManager.Permissions.Plugins.Management);
+            VerifyAdministratorPermissions(AppManager.Permissions.Plugins.Management);
 
-            var metadata = PluginCache.GetMetadata(_pluginId);
+            var metadata = PluginManager.GetMetadata(_pluginId);
             var isDefault = string.IsNullOrEmpty(metadata.DatabaseType) &&
                             string.IsNullOrEmpty(metadata.ConnectionString);
 
             EBooleanUtils.AddListItems(DdlIsDefault, "默认数据库连接", "自定义数据库连接");
-            ControlUtils.SelectListItemsIgnoreCase(DdlIsDefault, isDefault.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsDefault, isDefault.ToString());
             PhCustom.Visible = !isDefault;
 
             DdlSqlDatabaseType.Items.Add(new ListItem
@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Plugins
             });
 
             EBooleanUtils.AddListItems(DdlIsTrustedConnection, "Windows 身份验证", "用户名密码验证");
-            ControlUtils.SelectListItemsIgnoreCase(DdlIsTrustedConnection, false.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsTrustedConnection, false.ToString());
 
             if (!isDefault)
             {
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     databaseType = TranslateUtils.DecryptStringBySecretKey(databaseType);
                     connectionString = TranslateUtils.DecryptStringBySecretKey(connectionString);
                 }
-                ControlUtils.SelectListItemsIgnoreCase(DdlSqlDatabaseType, databaseType);
+                ControlUtils.SelectSingleItemIgnoreCase(DdlSqlDatabaseType, databaseType);
                 if (!string.IsNullOrEmpty(connectionString))
                 {
                     var server = string.Empty;
@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     }
 
                     TbSqlServer.Text = server;
-                    ControlUtils.SelectListItemsIgnoreCase(DdlIsTrustedConnection, isTrustedConnection.ToString());
+                    ControlUtils.SelectSingleItemIgnoreCase(DdlIsTrustedConnection, isTrustedConnection.ToString());
                     TbSqlUserName.Text = uid;
                 }
             }

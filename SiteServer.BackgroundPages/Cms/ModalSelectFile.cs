@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string hiddenClientId, string currentRootPath)
         {
-            return PageUtils.GetOpenLayerString("选择文件",
+            return LayerUtils.GetOpenScript("选择文件",
                 PageUtils.GetCmsUrl(nameof(ModalSelectFile), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
             DdlListType.Items.Add(new ListItem("显示详细信息", "List"));
             if (Body.IsQueryExists("ListType"))
             {
-                ControlUtils.SelectListItems(DdlListType, Body.GetQueryString("ListType"));
+                ControlUtils.SelectSingleItem(DdlListType, Body.GetQueryString("ListType"));
             }
 
             var previousUrls = Session["PreviousUrls"] as ArrayList ?? new ArrayList();
@@ -362,7 +362,7 @@ namespace SiteServer.BackgroundPages.Cms
 					<table cellspacing=""0"" cellpadding=""0"" border=""0"" align=""center"">
 						<tr>
 							<td background=""{backgroundImageUrl}"" style=""background-repeat:no-repeat; background-position:center;height:96px; width:96px; text-align:center; vertical-align:middle;"" align=""center""><a href=""javascript:;"" onClick=""window.parent.SelectAttachment('{_hiddenClientId}', '{attachmentUrl
-				    .Replace("'", "\\'")}', '{fileViewUrl.Replace("'", "\\'")}');{PageUtils.HidePopWin}"" title=""{fileInfo.Name}""><img src=""{fileImageUrl}"" {imageStyleAttributes} border=0 /></a></td>
+				    .Replace("'", "\\'")}', '{fileViewUrl.Replace("'", "\\'")}');{LayerUtils.CloseScript}"" title=""{fileInfo.Name}""><img src=""{fileImageUrl}"" {imageStyleAttributes} border=0 /></a></td>
 						</tr>
 					</table>
 				</td>
@@ -425,7 +425,7 @@ namespace SiteServer.BackgroundPages.Cms
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.PublishmentSystemID, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(PublishmentSystemId, attachmentUrl,_hiddenClientId);
                 string trHtml =
-                    $"<tr><td><nobr><a href=\"javascript:;\" onClick=\"window.parent.SelectAttachment('{_hiddenClientId}', '{attachmentUrl.Replace("'", "\\'")}', '{fileViewUrl.Replace("'", "\\'")}');{PageUtils.HidePopWin}\" title=\"点击此项选择此附件\">{fileNameString}</a></nobr></td><td align=\"right\">{fileKbSize} KB</td><td align=\"center\">{fileSystemTypeString}</td><td align=\"center\">{DateUtils.GetDateString(fileModifyDateTime, EDateFormatType.Day)}</td></tr>";
+                    $"<tr><td><a href=\"javascript:;\" onClick=\"window.parent.SelectAttachment('{_hiddenClientId}', '{attachmentUrl.Replace("'", "\\'")}', '{fileViewUrl.Replace("'", "\\'")}');{LayerUtils.CloseScript}\" title=\"点击此项选择此附件\">{fileNameString}</a></td><td align=\"right\">{fileKbSize} KB</td><td align=\"center\">{fileSystemTypeString}</td><td align=\"center\">{DateUtils.GetDateString(fileModifyDateTime, EDateFormatType.Day)}</td></tr>";
 				builder.Append(trHtml);
 			}
 

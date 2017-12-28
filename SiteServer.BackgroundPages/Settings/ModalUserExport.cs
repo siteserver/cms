@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Settings
 			{
                 PhExport.Visible = true;
                 ETriStateUtils.AddListItems(RblCheckedState, "全部", "审核通过", "未审核");
-                ControlUtils.SelectListItems(RblCheckedState, ETriStateUtils.GetValue(ETriState.All));
+                ControlUtils.SelectSingleItem(RblCheckedState, ETriStateUtils.GetValue(ETriState.All));
 			}
 		}
 

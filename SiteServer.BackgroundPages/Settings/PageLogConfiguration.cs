@@ -16,10 +16,10 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings("日志阈值设置", AppManager.Permissions.Settings.Log);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Log);
 
             EBooleanUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsTimeThreshold, ConfigManager.SystemConfigInfo.IsTimeThreshold.ToString());
+            ControlUtils.SelectSingleItem(RblIsTimeThreshold, ConfigManager.SystemConfigInfo.IsTimeThreshold.ToString());
             TbTime.Text = ConfigManager.SystemConfigInfo.TimeThreshold.ToString();
 
             PhTimeThreshold.Visible = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);

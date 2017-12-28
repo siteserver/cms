@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToComment(int publishmentSystemId, int nodeId, int contentId)
         {
-            return PageUtils.GetOpenLayerString("导出数据",
+            return LayerUtils.GetOpenScript("导出数据",
                 PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToGatherRule(int publishmentSystemId, string checkBoxId, string alertString)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("导出数据",
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("导出数据",
                 PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -98,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTagStyle(int publishmentSystemId, int styleId)
         {
-            return PageUtils.GetOpenLayerString("导出数据",
+            return LayerUtils.GetOpenScript("导出数据",
                 PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -109,7 +109,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToChannel(int publishmentSystemId, string checkBoxId, string alertString)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("导出数据",
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("导出数据",
                 PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -117,12 +117,11 @@ namespace SiteServer.BackgroundPages.Cms
                 }), checkBoxId, alertString, Width, Height);
         }
 
-        public static string GetOpenWindowStringToSingleTableStyle(ETableStyle tableStyle, string tableName, int publishmentSystemId, int relatedIdentity)
+        public static string GetOpenWindowStringToSingleTableStyle(string tableName, int publishmentSystemId, int relatedIdentity)
         {
-            return PageUtils.GetOpenLayerString("导出数据",
+            return LayerUtils.GetOpenScript("导出数据",
                 PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
-                    {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                     {"TableName", tableName},
                     {"ExportType", ExportTypeSingleTableStyle},
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -132,7 +131,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToRelatedField(int publishmentSystemId, int relatedFieldId)
         {
-            return PageUtils.GetOpenLayerString("导出数据",
+            return LayerUtils.GetOpenScript("导出数据",
                 PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -143,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToExport(int publishmentSystemId, string exportType)
         {
-            return PageUtils.GetOpenLayerString("导出数据",
+            return LayerUtils.GetOpenScript("导出数据",
                 PageUtils.GetCmsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -274,10 +273,9 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else if (_exportType == ExportTypeSingleTableStyle)
                     {
-                        var tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
                         var tableName = Body.GetQueryString("TableName");
                         var relatedIdentity = Body.GetQueryInt("RelatedIdentity");
-                        fileName = ExportSingleTableStyle(tableStyle, tableName, relatedIdentity);
+                        fileName = ExportSingleTableStyle(tableName, relatedIdentity);
                     }
 
                     if (isExport)
@@ -436,10 +434,10 @@ namespace SiteServer.BackgroundPages.Cms
             return exportObject.ExportChannels(nodeIdList);
         }
 
-        private string ExportSingleTableStyle(ETableStyle tableStyle, string tableName, int relatedIdentity)
+        private string ExportSingleTableStyle(string tableName, int relatedIdentity)
         {
             var exportObject = new ExportObject(PublishmentSystemId);
-            return exportObject.ExportSingleTableStyle(tableStyle, tableName, relatedIdentity);
+            return exportObject.ExportSingleTableStyle(tableName, relatedIdentity);
         }
     }
 }

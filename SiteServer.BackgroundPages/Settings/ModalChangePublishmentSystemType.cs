@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -26,7 +27,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var title = publishmentSystemInfo.IsHeadquarters ? "转移到子目录" : "转移到根目录";
-            return PageUtils.GetOpenLayerString(title,
+            return LayerUtils.GetOpenScript(title,
                 PageUtils.GetSettingsUrl(nameof(ModalChangePublishmentSystemType),
                     new NameValueCollection
                     {
@@ -42,7 +43,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             _isHeadquarters = PublishmentSystemInfo.IsHeadquarters;
 
-            var selectedList = new ArrayList();
+            var selectedList = new List<string>();
 
             if (Page.IsPostBack) return;
 
@@ -119,50 +120,42 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             //设置选中的文件以及文件夹
-            ControlUtils.SelectListItems(CblFilesToSite, selectedList);
+            ControlUtils.SelectMultiItems(CblFilesToSite, selectedList);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            try
+            if (_isHeadquarters)
             {
-                if (_isHeadquarters)
+                var list = DataProvider.NodeDao.GetLowerSystemDirList(PublishmentSystemInfo.ParentPublishmentSystemId);
+                if (list.IndexOf(TbPublishmentSystemDir.Text.Trim().ToLower()) != -1)
                 {
-                    var list = DataProvider.NodeDao.GetLowerSystemDirList(PublishmentSystemInfo.ParentPublishmentSystemId);
-                    if (list.IndexOf(TbPublishmentSystemDir.Text.Trim().ToLower()) != -1)
-                    {
-                        FailMessage("操作失败，已存在相同的发布路径");
-                        return;
-                    }
-                    if (!DirectoryUtils.IsDirectoryNameCompliant(TbPublishmentSystemDir.Text))
-                    {
-                        FailMessage("操作失败，文件夹名称不符合要求");
-                        return;
-                    }
-                    var filesToSite = new ArrayList();
-                    foreach (ListItem item in CblFilesToSite.Items)
-                    {
-                        if (item.Selected)
-                        {
-                            filesToSite.Add(item.Value);
-                        }
-                    }
-                    DirectoryUtility.ChangeToSubSite(PublishmentSystemInfo, TbPublishmentSystemDir.Text, filesToSite);
+                    FailMessage("操作失败，已存在相同的发布路径");
+                    return;
                 }
-                else
+                if (!DirectoryUtils.IsDirectoryNameCompliant(TbPublishmentSystemDir.Text))
                 {
-                    DirectoryUtility.ChangeToHeadquarters(PublishmentSystemInfo, TranslateUtils.ToBool(DdlIsMoveFiles.SelectedValue));
+                    FailMessage("操作失败，文件夹名称不符合要求");
+                    return;
                 }
+                var filesToSite = new ArrayList();
+                foreach (ListItem item in CblFilesToSite.Items)
+                {
+                    if (item.Selected)
+                    {
+                        filesToSite.Add(item.Value);
+                    }
+                }
+                DirectoryUtility.ChangeToSubSite(PublishmentSystemInfo, TbPublishmentSystemDir.Text, filesToSite);
             }
-            catch (Exception ex)
+            else
             {
-                PageUtils.RedirectToErrorPage($"修改失败：{ex.Message}");
-                return;
+                DirectoryUtility.ChangeToHeadquarters(PublishmentSystemInfo, TranslateUtils.ToBool(DdlIsMoveFiles.SelectedValue));
             }
 
             Body.AddAdminLog(_isHeadquarters ? "转移到子目录" : "转移到根目录",
                 $"站点:{PublishmentSystemInfo.PublishmentSystemName}");
-            PageUtils.CloseModalPage(Page);
+            LayerUtils.Close(Page);
         }
     }
 }

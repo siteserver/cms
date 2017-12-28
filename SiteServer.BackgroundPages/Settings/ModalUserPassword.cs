@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Settings
 				        return;
 				    }
 
-                    PageUtils.CloseModalPage(Page);
+                    LayerUtils.Close(Page);
 				}
 				catch(Exception ex)
 				{

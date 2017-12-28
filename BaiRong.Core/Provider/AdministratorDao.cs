@@ -592,9 +592,9 @@ namespace BaiRong.Core.Provider
             return "UserName";
         }
 
-        public bool IsUserNameExists(string userName)
+        public bool IsAdminNameExists(string adminName)
         {
-            if (string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(adminName))
             {
                 return false;
             }
@@ -603,7 +603,7 @@ namespace BaiRong.Core.Provider
 
             IDataParameter[] parms =
             {
-                GetParameter(ParmUsername, DataType.VarChar, 255, userName)
+                GetParameter(ParmUsername, DataType.VarChar, 255, adminName)
             };
 
             using (var rdr = ExecuteReader(SqlSelectUsername, parms))
@@ -953,7 +953,7 @@ namespace BaiRong.Core.Provider
                 errorMessage = $"用户名长度必须大于等于{ConfigManager.SystemConfigInfo.AdminUserNameMinLength}";
                 return false;
             }
-            if (IsUserNameExists(userInfo.UserName))
+            if (IsAdminNameExists(userInfo.UserName))
             {
                 errorMessage = "用户名已存在，请更换用户名";
                 return false;

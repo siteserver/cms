@@ -30,16 +30,15 @@ namespace SiteServer.BackgroundPages.Settings
 			_nodeId = Body.GetQueryInt("nodeID");
             _isBackgroundDelete = Body.GetQueryBool("isBackgroundDelete");
 
-			if (!IsPostBack)
-            {
-                BreadCrumbSettings("删除站点", AppManager.Permissions.Settings.SiteManagement);
+            if (IsPostBack) return;
 
-                phIsRetainFiles.Visible = phReturn.Visible = !_isBackgroundDelete;
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
-                var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(_nodeId);
-                InfoMessage($"此操作将会删除站点“{psInfo.PublishmentSystemName}({psInfo.PublishmentSystemDir})”，确认吗？");
-			}
-		}
+            phIsRetainFiles.Visible = phReturn.Visible = !_isBackgroundDelete;
+
+            var psInfo = PublishmentSystemManager.GetPublishmentSystemInfo(_nodeId);
+            InfoMessage($"此操作将会删除站点“{psInfo.PublishmentSystemName}({psInfo.PublishmentSystemDir})”，确认吗？");
+        }
 
         public string GetReturnUrl()
         {

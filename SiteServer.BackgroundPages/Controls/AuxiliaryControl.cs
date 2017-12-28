@@ -1,65 +1,94 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using System.Web;
 using System.Web.UI;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin.Features;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Controls
 {
     public class AuxiliaryControl : Control
     {
-        private NameValueCollection _formCollection;
-        private PublishmentSystemInfo _publishmentSystemInfo;
-        private int _nodeId;
-        private List<int> _relatedIdentities;
-        private ETableStyle _tableStyle;
-        private string _tableName;
-        private bool _isEdit;
-        private bool _isPostBack;
+        public IAttributes Attributes { get; set; }
 
-        public void SetParameters(NameValueCollection formCollection, PublishmentSystemInfo publishmentSystemInfo, int nodeId, List<int> relatedIdentities, ETableStyle tableStyle, string tableName, bool isEdit, bool isPostBack)
-        {
-            _formCollection = formCollection;
-            _publishmentSystemInfo = publishmentSystemInfo;
-            _nodeId = nodeId;
-            _relatedIdentities = relatedIdentities;
-            _tableStyle = tableStyle;
-            _tableName = tableName;
-            _isEdit = isEdit;
-            _isPostBack = isPostBack;
-        }
+        public PublishmentSystemInfo PublishmentSystemInfo { get; set; }
+
+        public int NodeId { get; set; }
+
+        public List<TableStyleInfo> StyleInfoList { get; set; }
+
+        public Dictionary<string, IContentRelated> Plugins { get; set; }
 
         protected override void Render(HtmlTextWriter output)
         {
-            if (string.IsNullOrEmpty(_tableName)) return;
+            if (StyleInfoList == null || StyleInfoList.Count == 0 || Attributes == null) return;
 
-            if (_formCollection == null)
-            {
-                _formCollection = HttpContext.Current.Request.Form.Count > 0 ? HttpContext.Current.Request.Form : new NameValueCollection();
-            }
-
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
             var pageScripts = new NameValueCollection();
 
-            if (styleInfoList == null) return;
+            var pluginFuncDictLowercase = new Dictionary<string, Func<int, int, IAttributes, string>>();
+            foreach (var pluginId in Plugins.Keys)
+            {
+                var plugin = Plugins[pluginId];
+
+                if (plugin.ContentFormCustomized == null || plugin.ContentFormCustomized.Count == 0) continue;
+
+                foreach (var attributeName in plugin.ContentFormCustomized.Keys)
+                {
+                    if (!pluginFuncDictLowercase.ContainsKey(attributeName.ToLower()) && plugin.ContentFormCustomized[attributeName] != null)
+                    {
+                        pluginFuncDictLowercase[attributeName.ToLower()] = plugin.ContentFormCustomized[attributeName];
+                    }
+                }
+            }
 
             var builder = new StringBuilder();
-            foreach (var styleInfo in styleInfoList)
+            foreach (var styleInfo in StyleInfoList)
             {
-                if (!styleInfo.IsVisible) continue;
+                if (pluginFuncDictLowercase.ContainsKey(styleInfo.AttributeName.ToLower()))
+                {
+                    var formFunc = pluginFuncDictLowercase[styleInfo.AttributeName.ToLower()];
+
+                    var html = string.Empty;
+                    try
+                    {
+                        html = formFunc(PublishmentSystemInfo.PublishmentSystemId, NodeId, Attributes);
+                    }
+                    catch (Exception ex)
+                    {
+                        var formPluginId = string.Empty;
+                        foreach (var pluginId in Plugins.Keys)
+                        {
+                            var plugin = Plugins[pluginId];
+
+                            if (plugin.ContentFormCustomized == null || plugin.ContentFormCustomized.Count == 0) continue;
+
+                            foreach (var attributeName in plugin.ContentFormCustomized.Keys)
+                            {
+                                if (plugin.ContentFormCustomized[attributeName] == null) continue;
+                                formPluginId = pluginId;
+                                break;
+                            }
+                        }
+                        LogUtils.AddPluginErrorLog(formPluginId, ex, "ContentFormCustomized");
+                    }
+
+                    builder.Append(html);
+                    continue;
+                }
 
                 string extra;
-                var value = BackgroundInputTypeParser.Parse(_publishmentSystemInfo, _nodeId, styleInfo, _tableStyle, styleInfo.AttributeName, _formCollection, _isEdit, _isPostBack, null, pageScripts, out extra);
+                var value = BackgroundInputTypeParser.Parse(PublishmentSystemInfo, NodeId, styleInfo, Attributes, pageScripts, out extra);
+
+                if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
                 if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
                 {
-                    var commands = WebUtils.GetTextEditorCommands(_publishmentSystemInfo, styleInfo.AttributeName);
+                    var commands = WebUtils.GetTextEditorCommands(PublishmentSystemInfo, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group"">
     <label class=""col-sm-1 control-label"">{styleInfo.DisplayName}</label>

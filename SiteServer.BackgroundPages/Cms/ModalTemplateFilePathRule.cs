@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerString("页面命名规则",
+            return LayerUtils.GetOpenScript("页面命名规则",
                 PageUtils.GetCmsUrl(nameof(ModalTemplateFilePathRule), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -39,8 +39,8 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
-
-            if (nodeInfo.NodeType == ENodeType.BackgroundPublishNode || nodeInfo.LinkType == ELinkType.LinkToFirstChannel || nodeInfo.LinkType == ELinkType.LinkToFirstContent || nodeInfo.LinkType == ELinkType.LinkToLastAddChannel || nodeInfo.LinkType == ELinkType.NoLink)
+            var linkType = ELinkTypeUtils.GetEnumType(nodeInfo.LinkType);
+            if (nodeInfo.ParentId == 0 || linkType == ELinkType.LinkToFirstChannel || linkType == ELinkType.LinkToFirstContent || linkType == ELinkType.LinkToLastAddChannel || linkType == ELinkType.NoLink)
             {
                 PhFilePath.Visible = false;
             }
@@ -152,7 +152,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isSuccess)
             {
-                PageUtils.CloseModalPageAndRedirect(Page, PageTemplateFilePathRule.GetRedirectUrl(PublishmentSystemId, _nodeId));
+                LayerUtils.CloseAndRedirect(Page, PageTemplateFilePathRule.GetRedirectUrl(PublishmentSystemId, _nodeId));
             }
         }
 	}

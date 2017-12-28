@@ -14,7 +14,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(string userName)
         {
-            return PageUtils.GetOpenLayerString("重设密码", PageUtils.GetSettingsUrl(nameof(ModalAdminPassword), new NameValueCollection
+            return LayerUtils.GetOpenScript("重设密码", PageUtils.GetSettingsUrl(nameof(ModalAdminPassword), new NameValueCollection
             {
                 {"userName", userName}
             }), 480, 300);
@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            if (!string.IsNullOrEmpty(_userName) && BaiRongDataProvider.AdministratorDao.IsUserNameExists(_userName))
+            if (!string.IsNullOrEmpty(_userName) && BaiRongDataProvider.AdministratorDao.IsAdminNameExists(_userName))
             {
                 LbUserName.Text = _userName;
             }
@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 SuccessMessage("重设密码成功！");
 
-                PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
             }
             catch(Exception ex)
             {

@@ -25,10 +25,10 @@ namespace SiteServer.BackgroundPages.Plugins
 			if (!IsPostBack)
 			{
                 EBooleanUtils.AddListItems(IsInnerLink, "启用", "禁用");
-                ControlUtils.SelectListItemsIgnoreCase(IsInnerLink, PublishmentSystemInfo.Additional.IsInnerLink.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(IsInnerLink, PublishmentSystemInfo.Additional.IsInnerLink.ToString());
 
                 EBooleanUtils.AddListItems(IsInnerLinkByChannelName);
-                ControlUtils.SelectListItemsIgnoreCase(IsInnerLinkByChannelName, PublishmentSystemInfo.Additional.IsInnerLinkByChannelName.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(IsInnerLinkByChannelName, PublishmentSystemInfo.Additional.IsInnerLinkByChannelName.ToString());
 
                 InnerLinkFormatString.Text = PublishmentSystemInfo.Additional.InnerLinkFormatString;
 

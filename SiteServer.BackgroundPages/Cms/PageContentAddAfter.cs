@@ -49,27 +49,23 @@ namespace SiteServer.BackgroundPages.Cms
 
             _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
 
-			if (!IsPostBack)
-			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "内容管理", string.Empty);
+            if (IsPostBack) return;
 
-                Operation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
-                Operation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
+            Operation.Items.Add(new ListItem("继续添加内容", EContentAddAfter.ContinueAdd.ToString()));
+            Operation.Items.Add(new ListItem("返回管理界面", EContentAddAfter.ManageContents.ToString()));
 
-                var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTrans(PublishmentSystemInfo, _nodeInfo);
-                var isAutomatic = CrossSiteTransUtility.IsAutomatic(_nodeInfo);
+            var isCrossSiteTrans = CrossSiteTransUtility.IsCrossSiteTrans(PublishmentSystemInfo, _nodeInfo);
+            var isAutomatic = CrossSiteTransUtility.IsAutomatic(_nodeInfo);
 
-                var isTranslated = ContentUtility.AfterContentAdded(PublishmentSystemInfo, _nodeInfo, _contentId, isCrossSiteTrans, isAutomatic);
-			    if (isCrossSiteTrans && !isAutomatic)
-			    {
-                    Operation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
-                }
+            var isTranslated = ContentUtility.AfterContentAdded(PublishmentSystemInfo, _nodeInfo, _contentId, isCrossSiteTrans, isAutomatic);
+            if (isCrossSiteTrans && !isAutomatic)
+            {
+                Operation.Items.Add(new ListItem("转发到其他站点", EContentAddAfter.Contribute.ToString()));
+            }
 
-			    SuccessMessage(isTranslated ? "内容添加成功并已转发到指定站点，请选择后续操作。" : "内容添加成功，请选择后续操作。");
+            SuccessMessage(isTranslated ? "内容添加成功并已转发到指定站点，请选择后续操作。" : "内容添加成功，请选择后续操作。");
 
-			    phPublishmentSystemID.Visible = phSubmit.Visible = false;
-			}
-
+            phPublishmentSystemID.Visible = phSubmit.Visible = false;
         }
 
         public void Operation_SelectedIndexChanged(object sender, EventArgs e)

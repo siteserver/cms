@@ -29,5 +29,7 @@ namespace SiteServer.Plugin.Apis
         string GetContentUrl(int publishmentSystemId, int channelId, int contentId);
 
         string GetRootUrl(string relatedUrl);
+
+        string GetAdminDirectoryUrl(string relatedUrl);
     }
 }

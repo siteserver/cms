@@ -94,10 +94,6 @@ namespace SiteServer.CMS.Plugin.Apis
             return true;
         }
 
-        public string PhysicalApplicationPath => WebConfigUtils.PhysicalApplicationPath;
-
-        public string AdminDirectory => WebConfigUtils.AdminDirectory;
-
         public ISystemConfigInfo SystemConfigInfo => ConfigManager.SystemConfigInfo;
     }
 }

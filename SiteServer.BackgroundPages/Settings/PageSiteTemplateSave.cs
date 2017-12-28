@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings("保存站点模板", AppManager.Permissions.Settings.SiteManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
             if (PublishmentSystemInfo.IsHeadquarters)
             {
@@ -74,7 +74,7 @@ namespace SiteServer.BackgroundPages.Settings
             TbSiteTemplateName.Text = PublishmentSystemInfo.PublishmentSystemName;
 
             EBooleanUtils.AddListItems(RblIsSaveAllFiles, "全部文件", "指定文件");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsSaveAllFiles, true.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsSaveAllFiles, true.ToString());
 
             var publishmentSystemDirList = DataProvider.PublishmentSystemDao.GetLowerPublishmentSystemDirListThatNotIsHeadquarters();
             var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetPublishmentSystemPath(PublishmentSystemInfo), true);
@@ -108,10 +108,10 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             EBooleanUtils.AddListItems(RblIsSaveContents, "保存内容数据", "不保存内容数据");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsSaveContents, true.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsSaveContents, true.ToString());
 
             EBooleanUtils.AddListItems(RblIsSaveAllChannels, "全部栏目", "指定栏目");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsSaveAllChannels, true.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsSaveAllChannels, true.ToString());
 
             LtlChannelTree.Text = GetChannelTreeHtml();
 

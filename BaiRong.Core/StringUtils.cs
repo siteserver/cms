@@ -194,6 +194,11 @@ namespace BaiRong.Core
             return string.Equals(a.Trim().ToLower(), b.Trim().ToLower());
         }
 
+        public static bool EqualsIgnoreNull(string a, string b)
+        {
+            return string.IsNullOrEmpty(a) ? string.IsNullOrEmpty(b) : string.Equals(a, b);
+        }
+
         public static bool EqualsIgnoreOrder(List<int> idList, string idCollection)
         {
             if (idList == null || idList.Count == 0)

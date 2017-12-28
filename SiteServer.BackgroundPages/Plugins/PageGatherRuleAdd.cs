@@ -4,10 +4,10 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -110,7 +110,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 ltlPageTitle.Text = pageTitle;
 
                 ECharsetUtils.AddListItems(Charset);
-                ControlUtils.SelectListItemsIgnoreCase(Charset, ECharsetUtils.GetValue(ECharset.utf_8));
+                ControlUtils.SelectSingleItemIgnoreCase(Charset, ECharsetUtils.GetValue(ECharset.utf_8));
                 NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdminName);
 
                 SetActivePanel(WizardPanel.GatherRuleBase, GatherRuleBase);
@@ -120,7 +120,7 @@ namespace SiteServer.BackgroundPages.Plugins
                     var gatherRuleInfo = DataProvider.GatherRuleDao.GetGatherRuleInfo(_theGatherRuleName, PublishmentSystemId);
                     GatherRuleName.Text = gatherRuleInfo.GatherRuleName;
 
-                    ControlUtils.SelectListItemsIgnoreCase(Charset, ECharsetUtils.GetValue(gatherRuleInfo.Charset));
+                    ControlUtils.SelectSingleItemIgnoreCase(Charset, ECharsetUtils.GetValue(gatherRuleInfo.Charset));
                     GatherNum.Text = gatherRuleInfo.Additional.GatherNum.ToString();
                     foreach (ListItem item in IsSaveImage.Items)
                     {
@@ -254,7 +254,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                     var contentAttributeArrayList = TranslateUtils.StringCollectionToStringList(gatherRuleInfo.ContentAttributes);
                     var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, PublishmentSystemId);
-                    var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.BackgroundContent, PublishmentSystemInfo.AuxiliaryTableForContent, relatedIdentities);
+                    var styleInfoList = TableStyleManager.GetTableStyleInfoList(PublishmentSystemInfo.AuxiliaryTableForContent, relatedIdentities);
                     foreach (var styleInfo in styleInfoList)
                     {
                         if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Title) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, BackgroundContentAttribute.Content)) continue;
@@ -282,7 +282,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 else
                 {
                     var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, PublishmentSystemId);
-                    var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.BackgroundContent, PublishmentSystemInfo.AuxiliaryTableForContent, relatedIdentities);
+                    var styleInfoList = TableStyleManager.GetTableStyleInfoList(PublishmentSystemInfo.AuxiliaryTableForContent, relatedIdentities);
                     foreach (var styleInfo in styleInfoList)
                     {
                         if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Title) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, BackgroundContentAttribute.Content)) continue;

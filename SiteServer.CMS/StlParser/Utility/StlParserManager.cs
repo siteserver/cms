@@ -99,6 +99,11 @@ namespace SiteServer.CMS.StlParser.Utility
         //    ParseInnerContent(builder, pageInfo, contextInfo);
         //}
 
+        public static string StlEncrypt(string stlElement)
+        {
+            return $"<!-- {TranslateUtils.EncryptStringBySecretKey(stlElement)} -->";
+        }
+
         public static void ReplacePageElementsInContentPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, int nodeId, int contentId, int currentPageIndex, int pageCount)
         {
             //替换分页模板
@@ -108,7 +113,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     var stlElement = labelString;
                     var pageHtml = StlPageElementParser.ParseStlPageInContentPage(stlElement, pageInfo, nodeId, contentId, currentPageIndex, pageCount);
-                    parsedBuilder.Replace(TranslateUtils.EncryptStringBySecretKey(stlElement), pageHtml);
+                    parsedBuilder.Replace(StlEncrypt(stlElement), pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
@@ -128,7 +133,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     var stlElement = labelString;
                     var pageHtml = StlPageElementParser.ParseStlPageInChannelPage(stlElement, pageInfo, nodeId, currentPageIndex, pageCount, totalNum);
-                    parsedBuilder.Replace(TranslateUtils.EncryptStringBySecretKey(stlElement), pageHtml);
+                    parsedBuilder.Replace(StlEncrypt(stlElement), pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {

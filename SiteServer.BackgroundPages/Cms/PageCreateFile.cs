@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "生成文件页", AppManager.Permissions.WebSite.Create);
+                VerifySitePermissions(AppManager.Permissions.WebSite.Create);
 
                 var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListOfFile(PublishmentSystemId);
 

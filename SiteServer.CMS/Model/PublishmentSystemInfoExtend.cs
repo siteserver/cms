@@ -66,24 +66,6 @@ namespace SiteServer.CMS.Model
             set { Set("IsCountHitsByDay", value.ToString()); }
         }
 
-        public bool IsGroupContent
-        {
-            get { return GetBool("IsGroupContent", true); }
-            set { Set("IsGroupContent", value.ToString()); }
-        }
-
-        public bool IsRelatedByTags
-        {
-            get { return GetBool("IsRelatedByTags", true); }
-            set { Set("IsRelatedByTags", value.ToString()); }
-        }
-
-        public bool IsTranslate
-        {
-            get { return GetBool("IsTranslate", true); }
-            set { Set("IsTranslate", value.ToString()); }
-        }
-
         public bool IsSaveImageInTextEditor
         {
             get { return GetBool("IsSaveImageInTextEditor", true); }

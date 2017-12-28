@@ -5,7 +5,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.User;
 using SiteServer.CMS.ImportExport;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -23,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerString("导入内容",
+            return LayerUtils.GetOpenScript("导入内容",
                 PageUtils.GetCmsUrl(nameof(ModalContentImport), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -40,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             int checkedLevel;
             var isChecked = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, PublishmentSystemId, out checkedLevel);
-            LevelManager.LoadContentLevelToEdit(DdlContentLevel, PublishmentSystemInfo, _nodeId, null, isChecked, checkedLevel);
+            CheckManager.LoadContentLevelToEdit(DdlContentLevel, PublishmentSystemInfo, _nodeId, null, isChecked, checkedLevel);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -124,7 +123,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "导入内容", string.Empty);
 
-					PageUtils.CloseModalPage(Page);
+                    LayerUtils.Close(Page);
 				}
 				catch(Exception ex)
 				{

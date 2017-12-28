@@ -83,48 +83,22 @@ namespace SiteServer.BackgroundPages.Cms
                 InfoMessage("点击字段项名可以管理下级字段项");    
             }
 
-            if (!IsPostBack)
+            if (IsPostBack) return;
+
+            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+
+            BindGrid();
+
+            AddButton.Attributes.Add("onclick", ModalRelatedFieldItemAdd.GetOpenWindowString(PublishmentSystemId, _relatedFieldId, _parentId, _level));
+
+            if (_level == 1)
             {
-                string level;
-                if (_level == 1)
-                {
-                    level = "一级";
-                }
-                else
-                {
-                    var itemInfo = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfo(_parentId);
-                    var levelString = "二";
-                    if (_level == 3)
-                    {
-                        levelString = "三";
-                    }
-                    else if (_level == 4)
-                    {
-                        levelString = "四";
-                    }
-                    else if (_level == 5)
-                    {
-                        levelString = "五";
-                    }
-
-                    level = $"{levelString}级({itemInfo.ItemName})";
-                }
-
-                BreadCrumbWithTitle(AppManager.Cms.LeftMenu.IdConfigration, "联动字段管理", level, AppManager.Permissions.WebSite.Configration);
-
-                BindGrid();
-
-                AddButton.Attributes.Add("onclick", ModalRelatedFieldItemAdd.GetOpenWindowString(PublishmentSystemId, _relatedFieldId, _parentId, _level));
-
-                if (_level == 1)
-                {
-                    var urlReturn = PageRelatedField.GetRedirectUrl(PublishmentSystemId);
-                    ReturnButton.Attributes.Add("onclick", $"parent.location.href = '{urlReturn}';return false;");
-                }
-                else
-                {
-                    ReturnButton.Visible = false;
-                }
+                var urlReturn = PageRelatedField.GetRedirectUrl(PublishmentSystemId);
+                ReturnButton.Attributes.Add("onclick", $"parent.location.href = '{urlReturn}';return false;");
+            }
+            else
+            {
+                ReturnButton.Visible = false;
             }
         }
 

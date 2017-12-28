@@ -33,17 +33,17 @@
             <div class="col-sm-1"></div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">内容模型</label>
+            <label class="col-sm-2 control-label">内容模型插件</label>
             <div class="col-sm-4">
-              <asp:DropDownList class="form-control" ID="DdlContentModelId" runat="server"></asp:DropDownList>
+              <asp:DropDownList class="form-control" ID="DdlContentModelPluginId" runat="server"></asp:DropDownList>
             </div>
             <div class="col-sm-6"></div>
           </div>
-          <asp:PlaceHolder id="PhPlugins" runat="server">
+          <asp:PlaceHolder id="PhContentRelatedPluginIds" runat="server">
             <div class="form-group" id="FilePathRow" runat="server">
-              <label class="col-sm-2 control-label">栏目插件</label>
+              <label class="col-sm-2 control-label">内容关联插件</label>
               <div class="col-sm-9">
-                <asp:CheckBoxList ID="CblPlugins" CssClass="checkbox checkbox-primary" RepeatDirection="Horizontal" runat="server"></asp:CheckBoxList>
+                <asp:CheckBoxList ID="CblContentRelatedPluginIds" CssClass="checkbox checkbox-primary" RepeatDirection="Horizontal" runat="server"></asp:CheckBoxList>
               </div>
               <div class="col-sm-1"></div>
             </div>

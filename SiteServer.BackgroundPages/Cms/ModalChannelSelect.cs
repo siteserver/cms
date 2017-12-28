@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, bool isProtocol)
         {
-            return PageUtils.GetOpenLayerString("栏目选择",
+            return LayerUtils.GetOpenScript("栏目选择",
                 PageUtils.GetCmsUrl(nameof(ModalChannelSelect), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringByItemIndex(int publishmentSystemId, string jsMethod, string itemIndex)
         {
-            return PageUtils.GetOpenLayerString("栏目选择",
+            return LayerUtils.GetOpenScript("栏目选择",
                 PageUtils.GetCmsUrl(nameof(ModalChannelSelect), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
                     if (!string.IsNullOrEmpty(_jsMethod))
                     {
                         string scripts = $"window.parent.{_jsMethod}({_itemIndex}, '{nodeNames}', {nodeId});";
-                        PageUtils.CloseModalPageWithoutRefresh(Page, scripts);
+                        LayerUtils.CloseWithoutRefresh(Page, scripts);
                     }
                     else
                     {
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
 
                         string scripts = $"window.parent.selectChannel('{nodeNames}', '{nodeId}', '{pageUrl}');";
-                        PageUtils.CloseModalPageWithoutRefresh(Page, scripts);
+                        LayerUtils.CloseWithoutRefresh(Page, scripts);
                     }
                 }
                 else
@@ -110,16 +110,9 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            try
-            {
-                RptChannel.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, PublishmentSystemId);
-                RptChannel.ItemDataBound += rptChannel_ItemDataBound;
-                RptChannel.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            RptChannel.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, PublishmentSystemId);
+            RptChannel.ItemDataBound += rptChannel_ItemDataBound;
+            RptChannel.DataBind();
         }
 
         void rptChannel_ItemDataBound(object sender, RepeaterItemEventArgs e)

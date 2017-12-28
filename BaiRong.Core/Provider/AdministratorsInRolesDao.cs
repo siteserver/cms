@@ -176,7 +176,7 @@ namespace BaiRong.Core.Provider
         public void AddUserToRole(string userName, string roleName)
         {
             if (!BaiRongDataProvider.RoleDao.IsRoleExists(roleName)) return;
-            if (!BaiRongDataProvider.AdministratorDao.IsUserNameExists(userName)) return;
+            if (!BaiRongDataProvider.AdministratorDao.IsAdminNameExists(userName)) return;
             if (!IsUserInRole(userName, roleName))
             {
                 var sqlString = "INSERT INTO bairong_AdministratorsInRoles (UserName, RoleName) VALUES (@UserName, @RoleName)";

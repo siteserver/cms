@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
+using SiteServer.CMS.Core.Security;
 
 namespace SiteServer.BackgroundPages
 {
     public class BasePage : Page
     {
-        public Literal LtlBreadCrumb; // 面包屑(头部导航 + 左边一级二级菜单 + 其他)
-
         private MessageUtils.Message.EMessageType _messageType;
         private string _message = string.Empty;
         private string _scripts = string.Empty;
@@ -171,37 +168,14 @@ $('.operation-area').hide();
             return ControlUtils.FindControlBySelfAndChildren(controlId, this);
         }
 
-        public void BreadCrumbPlugins(string pageTitle, string permission)
+        public void VerifyAdministratorPermissions(string permission)
         {
-            if (LtlBreadCrumb != null)
-            {
-                var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdPlugins, pageUrl, pageTitle, string.Empty);
-            }
-
-            if (!string.IsNullOrEmpty(permission))
-            {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, permission);
-            }
-        }
-
-        public void BreadCrumbSettings(string pageTitle, string permission)
-        {
-            if (LtlBreadCrumb != null)
-            {
-                var pageUrl = PathUtils.GetFileName(Request.FilePath);
-                LtlBreadCrumb.Text = StringUtils.GetBreadCrumbHtml(AppManager.IdSettings, pageUrl, pageTitle, string.Empty);
-            }
-
-            if (!string.IsNullOrEmpty(permission))
-            {
-                PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, permission);
-            }
+            PermissionsManager.VerifyAdministratorPermissions(Body.AdminName, permission);
         }
 
         public virtual void Submit_OnClick(object sender, EventArgs e)
         {
-            PageUtils.CloseModalPage(Page);
+            LayerUtils.Close(Page);
         }
 
         public static string GetShowHintScript()

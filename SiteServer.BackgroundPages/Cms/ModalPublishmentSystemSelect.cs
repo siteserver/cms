@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenLayerString()
         {
-            return PageUtils.GetOpenLayerString("选择站点", PageUtils.GetCmsUrl(nameof(ModalPublishmentSystemSelect), null));
+            return LayerUtils.GetOpenScript("选择站点", PageUtils.GetCmsUrl(nameof(ModalPublishmentSystemSelect), null));
         }
 
         public void Page_Load(object sender, EventArgs e)

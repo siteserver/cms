@@ -77,11 +77,11 @@ namespace SiteServer.BackgroundPages.Plugins
 
             _type = Body.GetQueryInt("type");
 
-            BreadCrumbPlugins("插件管理", AppManager.Permissions.Plugins.Management);
+            VerifyAdministratorPermissions(AppManager.Permissions.Plugins.Management);
 
             var list = new List<PluginPair>();
             int[] arr = {0, 0, 0};
-            foreach (var pluginPair in PluginCache.AllPluginPairs)
+            foreach (var pluginPair in PluginManager.AllPluginPairs)
             {
                 arr[0]++;
                 if (!pluginPair.Metadata.Disabled)

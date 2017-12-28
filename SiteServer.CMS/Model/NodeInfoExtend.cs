@@ -105,13 +105,5 @@ namespace SiteServer.CMS.Model
             get { return GetString("DefaultTaxisType", ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc)); }
             set { Set("DefaultTaxisType", value); }
         }
-
-        /****************others********************/
-
-        public string PluginIds
-        {
-            get { return GetString("PluginIds"); }
-            set { Set("PluginIds", value); }
-        }
     }
 }

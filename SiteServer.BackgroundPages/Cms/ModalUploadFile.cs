@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int publishmentSystemId, EUploadType uploadType, string textBoxClientId)
         {
-            return PageUtils.GetOpenLayerString("上传附件", PageUtils.GetCmsUrl(nameof(ModalUploadFile), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传附件", PageUtils.GetCmsUrl(nameof(ModalUploadFile), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToList(int publishmentSystemId, EUploadType uploadType, string realtedPath)
         {
-            return PageUtils.GetOpenLayerString("上传附件", PageUtils.GetCmsUrl(nameof(ModalUploadFile), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传附件", PageUtils.GetCmsUrl(nameof(ModalUploadFile), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             EBooleanUtils.AddListItems(DdlIsFileUploadChangeFileName, "采用系统生成文件名", "采用原有文件名");
-            ControlUtils.SelectListItemsIgnoreCase(DdlIsFileUploadChangeFileName, PublishmentSystemInfo.Additional.IsFileUploadChangeFileName.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, PublishmentSystemInfo.Additional.IsFileUploadChangeFileName.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
                 {
-                    PageUtils.CloseModalPage(Page);
+                    LayerUtils.Close(Page);
                 }
                 else
                 {
@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
     {{
         parent.document.getElementById('{_textBoxClientId}').value = '{textBoxUrl}';
     }}
-    {PageUtils.HidePopWin}
+    {LayerUtils.CloseScript}
 </script>";
                 }
             }

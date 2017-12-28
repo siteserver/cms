@@ -23,17 +23,17 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "附件上传设置", AppManager.Permissions.WebSite.Configration);
+                VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
                 TbFileUploadDirectoryName.Text = PublishmentSystemInfo.Additional.FileUploadDirectoryName;
 
                 DdlFileUploadDateFormatString.Items.Add(new ListItem("按年存入不同目录(不推荐)", EDateFormatTypeUtils.GetValue(EDateFormatType.Year)));
                 DdlFileUploadDateFormatString.Items.Add(new ListItem("按年/月存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Month)));
                 DdlFileUploadDateFormatString.Items.Add(new ListItem("按年/月/日存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Day)));
-                ControlUtils.SelectListItemsIgnoreCase(DdlFileUploadDateFormatString, PublishmentSystemInfo.Additional.FileUploadDateFormatString);
+                ControlUtils.SelectSingleItemIgnoreCase(DdlFileUploadDateFormatString, PublishmentSystemInfo.Additional.FileUploadDateFormatString);
 
 				EBooleanUtils.AddListItems(DdlIsFileUploadChangeFileName, "自动修改文件名", "保持文件名不变");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsFileUploadChangeFileName, PublishmentSystemInfo.Additional.IsFileUploadChangeFileName.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, PublishmentSystemInfo.Additional.IsFileUploadChangeFileName.ToString());
 
                 TbFileUploadTypeCollection.Text = PublishmentSystemInfo.Additional.FileUploadTypeCollection.Replace("|", ",");
                 var mbSize = GetMbSize(PublishmentSystemInfo.Additional.FileUploadTypeMaxSize);

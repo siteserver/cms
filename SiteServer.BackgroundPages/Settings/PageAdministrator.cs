@@ -7,7 +7,7 @@ using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core.Permissions;
+using SiteServer.CMS.Core.Security;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -149,7 +149,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings("管理员管理", AppManager.Permissions.Settings.AdminManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.AdminManagement);
 
             var theListItem = new ListItem("全部", string.Empty)
             {
@@ -194,12 +194,12 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Body.IsQueryExists("PageNum"))
             {
-                ControlUtils.SelectListItems(RoleName, Body.GetQueryString("RoleName"));
-                ControlUtils.SelectListItems(PageNum, Body.GetQueryString("PageNum"));
+                ControlUtils.SelectSingleItem(RoleName, Body.GetQueryString("RoleName"));
+                ControlUtils.SelectSingleItem(PageNum, Body.GetQueryString("PageNum"));
                 Keyword.Text = Body.GetQueryString("Keyword");
-                ControlUtils.SelectListItems(ddlAreaID, Body.GetQueryString("AreaID"));
-                ControlUtils.SelectListItems(LastActivityDate, Body.GetQueryString("LastActivityDate"));
-                ControlUtils.SelectListItems(Order, Body.GetQueryString("Order"));
+                ControlUtils.SelectSingleItem(ddlAreaID, Body.GetQueryString("AreaID"));
+                ControlUtils.SelectSingleItem(LastActivityDate, Body.GetQueryString("LastActivityDate"));
+                ControlUtils.SelectSingleItem(Order, Body.GetQueryString("Order"));
             }
 
             var urlAdd = PageAdministratorAdd.GetRedirectUrlToAdd(_departmentId);

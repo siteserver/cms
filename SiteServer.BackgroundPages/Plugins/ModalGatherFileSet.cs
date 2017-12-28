@@ -55,8 +55,8 @@ namespace SiteServer.BackgroundPages.Plugins
                     PlaceHolder_Content.Visible = false;
 
                     FilePath.Text = gatherFileRuleInfo.FilePath;
-                    ControlUtils.SelectListItems(IsSaveRelatedFiles, gatherFileRuleInfo.IsSaveRelatedFiles.ToString());
-                    ControlUtils.SelectListItems(IsRemoveScripts, gatherFileRuleInfo.IsRemoveScripts.ToString());
+                    ControlUtils.SelectSingleItem(IsSaveRelatedFiles, gatherFileRuleInfo.IsSaveRelatedFiles.ToString());
+                    ControlUtils.SelectSingleItem(IsRemoveScripts, gatherFileRuleInfo.IsRemoveScripts.ToString());
                     StyleDirectoryPath.Text = gatherFileRuleInfo.StyleDirectoryPath;
                     ScriptDirectoryPath.Text = gatherFileRuleInfo.ScriptDirectoryPath;
                     ImageDirectoryPath.Text = gatherFileRuleInfo.ImageDirectoryPath;
@@ -67,8 +67,8 @@ namespace SiteServer.BackgroundPages.Plugins
                     PlaceHolder_Content.Visible = true;
 
                     NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdminName);
-                    ControlUtils.SelectListItems(NodeIDDropDownList, gatherFileRuleInfo.NodeId.ToString());
-                    ControlUtils.SelectListItems(IsSaveImage, gatherFileRuleInfo.IsSaveImage.ToString());
+                    ControlUtils.SelectSingleItem(NodeIDDropDownList, gatherFileRuleInfo.NodeId.ToString());
+                    ControlUtils.SelectSingleItem(IsSaveImage, gatherFileRuleInfo.IsSaveImage.ToString());
                 }
 
 				

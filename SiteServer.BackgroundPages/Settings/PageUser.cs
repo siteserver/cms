@@ -123,7 +123,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings("用户管理", AppManager.Permissions.Settings.UserManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.UserManagement);
 
             //添加隐藏属性
             DdlSearchType.Items.Add(new ListItem("用户ID", "userID"));
@@ -136,15 +136,15 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!string.IsNullOrEmpty(Body.GetQueryString("SearchType")))
             {
-                ControlUtils.SelectListItems(DdlSearchType, Body.GetQueryString("SearchType"));
+                ControlUtils.SelectSingleItem(DdlSearchType, Body.GetQueryString("SearchType"));
             }
             if (!string.IsNullOrEmpty(Body.GetQueryString("PageNum")))
             {
-                ControlUtils.SelectListItems(DdlPageNum, Body.GetQueryString("PageNum"));
+                ControlUtils.SelectSingleItem(DdlPageNum, Body.GetQueryString("PageNum"));
             }
             if (!string.IsNullOrEmpty(Body.GetQueryString("LoginCount")))
             {
-                ControlUtils.SelectListItems(DdlLoginCount, Body.GetQueryString("LoginCount"));
+                ControlUtils.SelectSingleItem(DdlLoginCount, Body.GetQueryString("LoginCount"));
             }
             if (!string.IsNullOrEmpty(Body.GetQueryString("Keyword")))
             {
@@ -152,11 +152,11 @@ namespace SiteServer.BackgroundPages.Settings
             }
             if (!string.IsNullOrEmpty(Body.GetQueryString("CreationDate")))
             {
-                ControlUtils.SelectListItems(DdlCreationDate, Body.GetQueryString("CreationDate"));
+                ControlUtils.SelectSingleItem(DdlCreationDate, Body.GetQueryString("CreationDate"));
             }
             if (!string.IsNullOrEmpty(Body.GetQueryString("LastActivityDate")))
             {
-                ControlUtils.SelectListItems(DdlLastActivityDate, Body.GetQueryString("LastActivityDate"));
+                ControlUtils.SelectSingleItem(DdlLastActivityDate, Body.GetQueryString("LastActivityDate"));
             }
 
             var backgroundUrl = GetRedirectUrl();

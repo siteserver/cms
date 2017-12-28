@@ -52,8 +52,7 @@ namespace SiteServer.API
             configuration.EnsureInitialized();
 
             WebConfigUtils.Load(HostingEnvironment.ApplicationPhysicalPath);
-            PluginManager.Load(new PluginEnvironment(EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType), WebConfigUtils.ConnectionString,
-                WebConfigUtils.PhysicalApplicationPath, false));
+            var c = PluginManager.AllPluginPairs;
         }
     }
 }

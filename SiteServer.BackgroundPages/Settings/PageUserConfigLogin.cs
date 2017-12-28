@@ -23,10 +23,10 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings("用户登录配置", AppManager.Permissions.Settings.UserManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.UserManagement);
 
             EBooleanUtils.AddListItems(RblIsFailToLock, "是", "否");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsFailToLock, ConfigManager.SystemConfigInfo.IsUserLockLogin.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsFailToLock, ConfigManager.SystemConfigInfo.IsUserLockLogin.ToString());
 
             PhFailToLock.Visible = ConfigManager.SystemConfigInfo.IsUserLockLogin;
 
@@ -34,14 +34,14 @@ namespace SiteServer.BackgroundPages.Settings
 
             DdlLockType.Items.Add(new ListItem("按小时锁定", EUserLockTypeUtils.GetValue(EUserLockType.Hours)));
             DdlLockType.Items.Add(new ListItem("永久锁定", EUserLockTypeUtils.GetValue(EUserLockType.Forever)));
-            ControlUtils.SelectListItemsIgnoreCase(DdlLockType, ConfigManager.SystemConfigInfo.UserLockLoginType);
+            ControlUtils.SelectSingleItemIgnoreCase(DdlLockType, ConfigManager.SystemConfigInfo.UserLockLoginType);
             TbLockingTime.Text = ConfigManager.SystemConfigInfo.UserLockLoginHours.ToString();
 
             PhLockingTime.Visible = false;
             PhLockingTime.Visible = EUserLockTypeUtils.Equals(ConfigManager.SystemConfigInfo.UserLockLoginType, EUserLockType.Hours);
 
             EBooleanUtils.AddListItems(RblIsFindPassword, "启用", "禁用");
-            ControlUtils.SelectListItemsIgnoreCase(RblIsFindPassword, ConfigManager.SystemConfigInfo.IsUserFindPassword.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsFindPassword, ConfigManager.SystemConfigInfo.IsUserFindPassword.ToString());
             PhFindPassword.Visible = ConfigManager.SystemConfigInfo.IsUserFindPassword;
             TbFindPasswordSmsTplId.Text = ConfigManager.SystemConfigInfo.UserFindPasswordSmsTplId;
         }

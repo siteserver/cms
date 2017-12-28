@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 ltlPageTitle.Text = pageTitle;
 
                 EBooleanUtils.AddListItems(IsEnabled);
-                ControlUtils.SelectListItems(IsEnabled, true.ToString());
+                ControlUtils.SelectSingleItem(IsEnabled, true.ToString());
                 if (_isEdit)
                 {
                     var adAreaInfo = DataProvider.AdAreaDao.GetAdAreaInfo(_theAdAreaName, PublishmentSystemId);

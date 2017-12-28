@@ -1,4 +1,3 @@
-using System;
 using System.Web.UI.WebControls;
 
 namespace SiteServer.CMS.Model.Enumerations
@@ -6,7 +5,7 @@ namespace SiteServer.CMS.Model.Enumerations
 	
 	public enum ELinkType
 	{
-		LinkNoRelatedToChannelAndContent,	                                //默认
+		None,	                                                            //默认
 		NoLinkIfContentNotExists,			                                //无内容时不可链接
 		LinkToOnlyOneContent,				                                //仅一条内容时链接到此内容
 		NoLinkIfContentNotExistsAndLinkToOnlyOneContent,					//无内容时不可链接，仅一条内容时链接到此内容
@@ -24,10 +23,6 @@ namespace SiteServer.CMS.Model.Enumerations
 	{
 		public static string GetValue(ELinkType type)
 		{
-		    if (type == ELinkType.LinkNoRelatedToChannelAndContent)
-			{
-				return "LinkNoRelatedToChannelAndContent";
-			}
 		    if (type == ELinkType.NoLinkIfContentNotExists)
 		    {
 		        return "NoLinkIfContentNotExists";
@@ -72,8 +67,9 @@ namespace SiteServer.CMS.Model.Enumerations
 		    {
 		        return "NoLink";
 		    }
-		    throw new Exception();
-		}
+
+            return "None";
+        }
 
 		public static string GetText(ELinkType type)
 		{
@@ -121,16 +117,15 @@ namespace SiteServer.CMS.Model.Enumerations
 		    {
 		        return "不可链接";
 		    }
-		    if (type == ELinkType.LinkNoRelatedToChannelAndContent)
-		    {
-		        return "默认";
-		    }
-		    throw new Exception();
-		}
+
+            return "默认";
+        }
 
 		public static ELinkType GetEnumType(string typeStr)
 		{
-			var retval = ELinkType.LinkNoRelatedToChannelAndContent;
+		    if (string.IsNullOrEmpty(typeStr)) return ELinkType.None;
+
+			var retval = ELinkType.None;
 
 			if (Equals(ELinkType.NoLinkIfContentNotExists, typeStr))
 			{
@@ -176,10 +171,6 @@ namespace SiteServer.CMS.Model.Enumerations
 			{
 				retval = ELinkType.NoLink;
 			}
-			else if (Equals(ELinkType.LinkNoRelatedToChannelAndContent, typeStr))
-			{
-				retval = ELinkType.LinkNoRelatedToChannelAndContent;
-			}
 
 			return retval;
 		}
@@ -211,59 +202,60 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static void AddListItems(ListControl listControl)
 		{
-			if (listControl != null)
-			{
-				listControl.Items.Add(GetListItem(ELinkType.LinkNoRelatedToChannelAndContent, false));
-				listControl.Items.Add(GetListItem(ELinkType.NoLinkIfContentNotExists, false));
-				listControl.Items.Add(GetListItem(ELinkType.LinkToOnlyOneContent, false));
-				listControl.Items.Add(GetListItem(ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent, false));
-				listControl.Items.Add(GetListItem(ELinkType.LinkToFirstContent, false));
-				listControl.Items.Add(GetListItem(ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent, false));
-				listControl.Items.Add(GetListItem(ELinkType.NoLinkIfChannelNotExists, false));
-				listControl.Items.Add(GetListItem(ELinkType.LinkToLastAddChannel, false));
-				listControl.Items.Add(GetListItem(ELinkType.LinkToFirstChannel, false));
-				listControl.Items.Add(GetListItem(ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel, false));
-				listControl.Items.Add(GetListItem(ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel, false));
-				listControl.Items.Add(GetListItem(ELinkType.NoLink, false));
-			}
+		    if (listControl == null) return;
+
+		    listControl.Items.Add(GetListItem(ELinkType.None, false));
+		    listControl.Items.Add(GetListItem(ELinkType.NoLinkIfContentNotExists, false));
+		    listControl.Items.Add(GetListItem(ELinkType.LinkToOnlyOneContent, false));
+		    listControl.Items.Add(GetListItem(ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent, false));
+		    listControl.Items.Add(GetListItem(ELinkType.LinkToFirstContent, false));
+		    listControl.Items.Add(GetListItem(ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent, false));
+		    listControl.Items.Add(GetListItem(ELinkType.NoLinkIfChannelNotExists, false));
+		    listControl.Items.Add(GetListItem(ELinkType.LinkToLastAddChannel, false));
+		    listControl.Items.Add(GetListItem(ELinkType.LinkToFirstChannel, false));
+		    listControl.Items.Add(GetListItem(ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel, false));
+		    listControl.Items.Add(GetListItem(ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel, false));
+		    listControl.Items.Add(GetListItem(ELinkType.NoLink, false));
 		}
 
         public static bool IsCreatable(NodeInfo nodeInfo)
         {
             var isCreatable = false;
 
-            if (nodeInfo.LinkType == ELinkType.LinkNoRelatedToChannelAndContent)
+            var linkType = GetEnumType(nodeInfo.LinkType);
+
+            if (linkType == ELinkType.None)
             {
                 isCreatable = true;
             }
-            else if (nodeInfo.LinkType == ELinkType.NoLinkIfContentNotExists)
+            else if (linkType == ELinkType.NoLinkIfContentNotExists)
             {
                 isCreatable = nodeInfo.ContentNum != 0;
             }
-            else if (nodeInfo.LinkType == ELinkType.LinkToOnlyOneContent)
+            else if (linkType == ELinkType.LinkToOnlyOneContent)
             {
                 isCreatable = nodeInfo.ContentNum != 1;
             }
-            else if (nodeInfo.LinkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
+            else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
             {
                 if (nodeInfo.ContentNum != 0 && nodeInfo.ContentNum != 1)
                 {
                     isCreatable = true;
                 }
             }
-            else if (nodeInfo.LinkType == ELinkType.LinkToFirstContent)
+            else if (linkType == ELinkType.LinkToFirstContent)
             {
                 isCreatable = nodeInfo.ContentNum < 1;
             }
-            else if (nodeInfo.LinkType == ELinkType.NoLinkIfChannelNotExists)
+            else if (linkType == ELinkType.NoLinkIfChannelNotExists)
             {
                 isCreatable = nodeInfo.ChildrenCount != 0;
             }
-            else if (nodeInfo.LinkType == ELinkType.LinkToLastAddChannel)
+            else if (linkType == ELinkType.LinkToLastAddChannel)
             {
                 isCreatable = nodeInfo.ChildrenCount <= 0;
             }
-            else if (nodeInfo.LinkType == ELinkType.LinkToFirstChannel)
+            else if (linkType == ELinkType.LinkToFirstChannel)
             {
                 isCreatable = nodeInfo.ChildrenCount <= 0;
             }

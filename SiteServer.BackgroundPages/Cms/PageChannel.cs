@@ -4,7 +4,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -71,8 +70,6 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "栏目管理", string.Empty);
-
             ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.Channel, null));
 
             if (Body.IsQueryExists("CurrentNodeID"))
@@ -118,8 +115,7 @@ namespace SiteServer.BackgroundPages.Cms
                 BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValue(PageChannelDelete.GetRedirectUrl(PublishmentSystemId, GetRedirectUrl(PublishmentSystemId, PublishmentSystemId)), "ChannelIDCollection", "ChannelIDCollection", "请选择需要删除的栏目！"));
             }
 
-            PhCreate.Visible = AdminUtility.HasWebsitePermissions(Body.AdminName, PublishmentSystemId, AppManager.Permissions.WebSite.Create)
-                               || HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.CreatePage);
+            PhCreate.Visible = HasSitePermissions(AppManager.Permissions.WebSite.Create) || HasChannelPermissionsIgnoreNodeId(AppManager.Permissions.Channel.CreatePage);
             if (PhCreate.Visible)
             {
                 BtnCreate.Attributes.Add("onclick", ModalCreateChannels.GetOpenWindowString(PublishmentSystemId));
@@ -132,16 +128,9 @@ namespace SiteServer.BackgroundPages.Cms
             }
             BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToChannel(PublishmentSystemId, "ChannelIDCollection", "请选择需要导出的栏目！"));
 
-            try
-            {
-                RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
-                RptContents.ItemDataBound += RptContents_ItemDataBound;
-                RptContents.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+            RptContents.DataBind();
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

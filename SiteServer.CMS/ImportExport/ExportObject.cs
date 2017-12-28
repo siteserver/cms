@@ -90,11 +90,11 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(filesDirectoryPath);
         }
 
-        public string ExportSingleTableStyle(ETableStyle tableStyle, string tableName, int relatedIdentity)
+        public string ExportSingleTableStyle(string tableName, int relatedIdentity)
         {
             var filePath = PathUtils.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = PathUtils.GetTemporaryFilesPath("TableStyle");
-            TableStyleIe.SingleExportTableStyles(tableStyle, tableName, _publishmentSystemInfo.PublishmentSystemId, relatedIdentity, styleDirectoryPath);
+            TableStyleIe.SingleExportTableStyles(tableName, _publishmentSystemInfo.PublishmentSystemId, relatedIdentity, styleDirectoryPath);
             ZipUtils.PackFiles(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -102,11 +102,11 @@ namespace SiteServer.CMS.ImportExport
             return PathUtils.GetFileName(filePath);
         }
 
-        public static string ExportRootSingleTableStyle(ETableStyle tableStyle, string tableName)
+        public static string ExportRootSingleTableStyle(string tableName)
         {
             var filePath = PathUtils.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = PathUtils.GetTemporaryFilesPath("TableStyle");
-            TableStyleIe.SingleExportTableStyles(tableStyle, tableName, styleDirectoryPath);
+            TableStyleIe.SingleExportTableStyles(tableName, styleDirectoryPath);
             ZipUtils.PackFiles(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -237,8 +237,8 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.CreateDirectoryIfNotExists(relatedFieldDirectoryPath);
 
             var relatedFieldIe = new RelatedFieldIe(_publishmentSystemInfo.PublishmentSystemId, relatedFieldDirectoryPath);
-            var relatedFieldInfoArrayList = DataProvider.RelatedFieldDao.GetRelatedFieldInfoArrayList(_publishmentSystemInfo.PublishmentSystemId);
-            foreach (RelatedFieldInfo relatedFieldInfo in relatedFieldInfoArrayList)
+            var relatedFieldInfoList = DataProvider.RelatedFieldDao.GetRelatedFieldInfoList(_publishmentSystemInfo.PublishmentSystemId);
+            foreach (var relatedFieldInfo in relatedFieldInfoList)
             {
                 relatedFieldIe.ExportRelatedField(relatedFieldInfo);
             }
@@ -270,7 +270,7 @@ namespace SiteServer.CMS.ImportExport
         public void ExportTablesAndStyles(string tableDirectoryPath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(tableDirectoryPath);
-            var tableIe = new AuxiliaryTableIe(tableDirectoryPath);
+            var tableIe = new TableCollectionIe(tableDirectoryPath);
             var styleIe = new TableStyleIe(tableDirectoryPath);
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(_publishmentSystemInfo.PublishmentSystemId);

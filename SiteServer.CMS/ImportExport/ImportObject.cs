@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Text;
 using Atom.Core;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.ImportExport.Components;
@@ -201,7 +200,7 @@ namespace SiteServer.CMS.ImportExport
             NameValueCollection nameValueCollection = null;
             if (DirectoryUtils.IsDirectoryExists(tableDirectoryPath))
             {
-                var tableIe = new AuxiliaryTableIe(tableDirectoryPath);
+                var tableIe = new TableCollectionIe(tableDirectoryPath);
                 nameValueCollection = tableIe.ImportAuxiliaryTables(_publishmentSystemInfo.PublishmentSystemId, isUseTables);
             }
             SaveTableNameCache(nameValueCollection);
@@ -217,7 +216,7 @@ namespace SiteServer.CMS.ImportExport
             }
         }
 
-        public static void ImportTableStyleByZipFile(ETableStyle tableStyle, string tableName, int nodeId, string zipFilePath)
+        public static void ImportTableStyleByZipFile(string tableName, int nodeId, string zipFilePath)
         {
             var styleDirectoryPath = PathUtils.GetTemporaryFilesPath("TableStyle");
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -225,7 +224,7 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.UnpackFiles(zipFilePath, styleDirectoryPath);
 
-            TableStyleIe.SingleImportTableStyle(tableStyle, tableName, styleDirectoryPath, nodeId);
+            TableStyleIe.SingleImportTableStyle(tableName, styleDirectoryPath, nodeId);
         }
 
         public void ImportConfiguration(string configurationFilePath)

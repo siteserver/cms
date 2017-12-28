@@ -12,17 +12,14 @@ namespace SiteServer.BackgroundPages.Cms
 		public HtmlInputFile HifMyFile;
 
         private string _tableName;
-        private ETableStyle _tableStyle;
         private int _relatedIdentity;
 
-        public static string GetOpenWindowString(string tableName, ETableStyle tableStyle, int publishmentSystemId,
-            int relatedIdentity)
+        public static string GetOpenWindowString(string tableName, int publishmentSystemId, int relatedIdentity)
         {
-            return PageUtils.GetOpenLayerString("导入表样式",
+            return LayerUtils.GetOpenScript("导入表样式",
                 PageUtils.GetCmsUrl(nameof(ModalTableStyleImport), new NameValueCollection
                 {
                     {"TableName", tableName},
-                    {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
                     {"RelatedIdentity", relatedIdentity.ToString()}
                 }), 760, 200);
@@ -33,7 +30,6 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             _tableName = Body.GetQueryString("TableName");
-            _tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
             _relatedIdentity = int.Parse(Body.GetQueryString("RelatedIdentity"));
 		}
 
@@ -54,11 +50,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                     HifMyFile.PostedFile.SaveAs(localFilePath);
 
-                    ImportObject.ImportTableStyleByZipFile(_tableStyle, _tableName, _relatedIdentity, localFilePath);
+                    ImportObject.ImportTableStyleByZipFile(_tableName, _relatedIdentity, localFilePath);
 
-                    Body.AddSiteLog(PublishmentSystemId, "导入表单显示样式", $"类型:{ETableStyleUtils.GetText(_tableStyle)}");
+                    Body.AddSiteLog(PublishmentSystemId, "导入表单显示样式");
 
-					PageUtils.CloseModalPage(Page);
+                    LayerUtils.Close(Page);
 				}
 				catch(Exception ex)
 				{

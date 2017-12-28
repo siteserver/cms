@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.IO;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin.Features;
 
@@ -15,48 +13,91 @@ namespace SiteServer.CMS.Core
 {
     public static class NodeManager
     {
-        private const string CacheFileName = "NodeCache.txt";
-
-        static NodeManager()
+        private static class NodeManagerCache
         {
-            var fileWatcher = new FileWatcherClass(PathUtility.GetCacheFilePath(CacheFileName));
-            fileWatcher.OnFileChange += fileWatcher_OnFileChange;
-        }
+            private static readonly object LockObject = new object();
+            private const string CacheKey = "SiteServer.CMS.Core.NodeManager";
+            private static readonly FileWatcherClass FileWatcher;
 
-        private static void fileWatcher_OnFileChange(object sender, EventArgs e)
-        {
-            CacheUtils.Remove(CacheKey);
-        }
-
-        public static Dictionary<int, NodeInfo> GetNodeInfoDictionaryByPublishmentSystemId(int publishmentSystemId)
-        {
-            return GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId, false);
-        }
-
-        public static Dictionary<int, NodeInfo> GetNodeInfoDictionaryByPublishmentSystemId(int publishmentSystemId, bool flush)
-        {
-            var ht = GetActiveHashtable();
-
-            Dictionary<int, NodeInfo> dic = null;
-
-            if (!flush)
+            static NodeManagerCache()
             {
-                dic = ht[publishmentSystemId] as Dictionary<int, NodeInfo>;
+                FileWatcher = new FileWatcherClass(FileWatcherClass.Node);
+                FileWatcher.OnFileChange += FileWatcher_OnFileChange;
             }
 
-            if (dic != null) return dic;
+            private static void FileWatcher_OnFileChange(object sender, EventArgs e)
+            {
+                CacheUtils.Remove(CacheKey);
+            }
 
-            dic = DataProvider.NodeDao.GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId);
-            UpdateCache(ht, dic, publishmentSystemId);
-            return dic;
+            private static void Update(Dictionary<int, Dictionary<int, NodeInfo>> allDict, Dictionary<int, NodeInfo> dic, int publishmentSystemId)
+            {
+                lock (LockObject)
+                {
+                    allDict[publishmentSystemId] = dic;
+                }
+            }
+
+            private static Dictionary<int, Dictionary<int, NodeInfo>> GetAllDictionary()
+            {
+                var allDict = CacheUtils.Get(CacheKey) as Dictionary<int, Dictionary<int, NodeInfo>>;
+                if (allDict != null) return allDict;
+
+                allDict = new Dictionary<int, Dictionary<int, NodeInfo>>();
+                CacheUtils.InsertHours(CacheKey, allDict, 24);
+                return allDict;
+            }
+
+            public static void Remove(int publishmentSystemId)
+            {
+                var allDict = GetAllDictionary();
+
+                lock (LockObject)
+                {
+                    allDict.Remove(publishmentSystemId);
+                }
+
+                FileWatcher.UpdateCacheFile();
+            }
+
+            public static Dictionary<int, NodeInfo> GetNodeInfoDictionaryByPublishmentSystemId(int publishmentSystemId)
+            {
+                var allDict = GetAllDictionary();
+
+                Dictionary<int, NodeInfo> dict;
+                allDict.TryGetValue(publishmentSystemId, out dict);
+
+                if (dict != null) return dict;
+
+                dict = DataProvider.NodeDao.GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId);
+                Update(allDict, dict, publishmentSystemId);
+                return dict;
+            }
+        }
+
+        public static void RemoveCache(int publishmentSystemId)
+        {
+            NodeManagerCache.Remove(publishmentSystemId);
         }
 
         public static NodeInfo GetNodeInfo(int publishmentSystemId, int nodeId)
         {
             NodeInfo nodeInfo = null;
-            var hashtable = GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId);
-            hashtable?.TryGetValue(nodeId, out nodeInfo);
+            var dict = NodeManagerCache.GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId);
+            dict?.TryGetValue(nodeId, out nodeInfo);
             return nodeInfo;
+        }
+
+        public static List<NodeInfo> GetNodeInfoList(int publishmentSystemId)
+        {
+            var dic = NodeManagerCache.GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId);
+            return dic.Values.Where(nodeInfo => nodeInfo != null).ToList();
+        }
+
+        public static List<int> GetNodeIdList(int publishmentSystemId)
+        {
+            var dic = NodeManagerCache.GetNodeInfoDictionaryByPublishmentSystemId(publishmentSystemId);
+            return dic.Keys.Where(nodeId => nodeId > 0).ToList();
         }
 
         public static bool IsExists(int publishmentSystemId, int nodeId)
@@ -97,17 +138,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetTableName(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
         {
-            return nodeInfo != null ? GetTableName(publishmentSystemInfo, nodeInfo.ContentModelId) : string.Empty;
-        }
-
-        public static string GetTableName(PublishmentSystemInfo publishmentSystemInfo, EAuxiliaryTableType tableType)
-        {
-            var tableName = string.Empty;
-            if (Equals(EAuxiliaryTableType.BackgroundContent, tableType))
-            {
-                tableName = publishmentSystemInfo.AuxiliaryTableForContent;
-            }
-            return tableName;
+            return nodeInfo != null ? GetTableName(publishmentSystemInfo, nodeInfo.ContentModelPluginId) : string.Empty;
         }
 
         public static string GetTableName(PublishmentSystemInfo publishmentSystemInfo, string contentModelId)
@@ -116,7 +147,7 @@ namespace SiteServer.CMS.Core
 
             if (string.IsNullOrEmpty(contentModelId)) return tableName;
 
-            var contentTable = PluginCache.GetEnabledFeature<IContentTable>(contentModelId);
+            var contentTable = PluginManager.GetEnabledFeature<IContentModel>(contentModelId);
             if (!string.IsNullOrEmpty(contentTable?.ContentTableName))
             {
                 tableName = contentTable.ContentTableName;
@@ -125,45 +156,45 @@ namespace SiteServer.CMS.Core
             return tableName;
         }
 
-        public static ETableStyle GetTableStyle(PublishmentSystemInfo publishmentSystemInfo, int nodeId)
+        //public static ETableStyle GetTableStyle(PublishmentSystemInfo publishmentSystemInfo, int nodeId)
+        //{
+        //    return GetTableStyle(publishmentSystemInfo, GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId));
+        //}
+
+        //public static ETableStyle GetTableStyle(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
+        //{
+        //    var tableStyle = ETableStyle.BackgroundContent;
+
+        //    if (string.IsNullOrEmpty(nodeInfo.ContentModelPluginId)) return tableStyle;
+
+        //    var contentTable = PluginCache.GetEnabledPluginMetadata<IContentModel>(nodeInfo.ContentModelPluginId);
+        //    if (contentTable != null)
+        //    {
+        //        tableStyle = ETableStyle.Custom;
+        //    }
+
+        //    return tableStyle;
+        //}
+
+        public static bool IsContentModelPlugin(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
         {
-            return GetTableStyle(publishmentSystemInfo, GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId));
-        }
+            if (string.IsNullOrEmpty(nodeInfo.ContentModelPluginId)) return false;
 
-        public static ETableStyle GetTableStyle(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
-        {
-            var tableStyle = ETableStyle.BackgroundContent;
+            var retval = false;
 
-            if (string.IsNullOrEmpty(nodeInfo.ContentModelId)) return tableStyle;
-
-            var contentTable = PluginCache.GetEnabledPluginMetadata<IContentTable>(nodeInfo.ContentModelId);
+            var contentTable = PluginManager.GetEnabledPluginMetadata<IContentModel>(nodeInfo.ContentModelPluginId);
             if (contentTable != null)
             {
-                tableStyle = ETableStyle.Custom;
+                retval = true;
             }
 
-            return tableStyle;
-        }
-
-        public static EAuxiliaryTableType GetTableType(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
-        {
-            var tableType = EAuxiliaryTableType.BackgroundContent;
-
-            if (string.IsNullOrEmpty(nodeInfo.ContentModelId)) return tableType;
-
-            var contentTable = PluginCache.GetEnabledPluginMetadata<IContentTable>(nodeInfo.ContentModelId);
-            if (contentTable != null)
-            {
-                tableType = EAuxiliaryTableType.Custom;
-            }
-
-            return tableType;
+            return retval;
         }
 
         public static string GetNodeTreeLastImageHtml(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo)
         {
             var imageHtml = string.Empty;
-            if (nodeInfo.NodeType == ENodeType.BackgroundPublishNode)
+            if (nodeInfo.ParentId == 0)
             {
                 var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
                 if (publishmentSystemInfo.IsHeadquarters == false)
@@ -179,13 +210,13 @@ namespace SiteServer.CMS.Core
                             "siteHQ.gif")}"" />";
                 }
             }
-            if (!string.IsNullOrEmpty(nodeInfo.Additional.PluginIds))
+            if (!string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds))
             {
-                var pluginChannels = PluginCache.GetChannels(nodeInfo, false);
-                foreach (var pluginChannel in pluginChannels)
+                var plugins = PluginManager.GetContentRelatedPlugins(nodeInfo, false);
+                foreach (var plugin in plugins)
                 {
                     imageHtml +=
-                        $@"<img align=""absmiddle"" title=""插件：{pluginChannel.DisplayName}"" border=""0"" src=""{PageUtils.GetPluginDirectoryUrl(pluginChannel.Id, pluginChannel.Icon)}"" width=""18"" height=""18"" />";
+                        $@"<img align=""absmiddle"" title=""插件：{plugin.DisplayName}"" border=""0"" src=""{PageUtils.GetPluginDirectoryUrl(plugin.Id, plugin.Icon)}"" width=""18"" height=""18"" />";
                 }
             }
             return imageHtml;
@@ -300,54 +331,6 @@ namespace SiteServer.CMS.Core
             return TranslateUtils.ObjectCollectionToString(nodeNameList, " > ");
         }
 
-        public static ENodeType GetNodeType(int publishmentSystemId, int nodeId)
-        {
-            var retval = ENodeType.BackgroundNormalNode;
-            var nodeInfo = GetNodeInfo(publishmentSystemId, nodeId);
-            if (nodeInfo != null)
-            {
-                retval = nodeInfo.NodeType;
-            }
-            return retval;
-        }
-
-
-        private static void UpdateCache(IDictionary ht, Dictionary<int, NodeInfo> dic, int publishmentSystemId)
-        {
-            lock (ht.SyncRoot)
-            {
-                ht[publishmentSystemId] = dic;
-            }
-        }
-
-        public static void RemoveCache(int publishmentSystemId)
-        {
-            var ht = GetActiveHashtable();
-
-            lock (ht.SyncRoot)
-            {
-                ht.Remove(publishmentSystemId);
-            }
-
-            CacheUtils.UpdateTemporaryCacheFile(CacheFileName);
-        }
-
-        private const string CacheKey = "SiteServer.CMS.Core.NodeManager";
-
-        /// <summary>
-        /// Returns a collection of SiteSettings which exist in the current Application Domain.
-        /// </summary>
-        /// <returns></returns>
-        public static Hashtable GetActiveHashtable()
-        {
-            var ht = CacheUtils.Get(CacheKey) as Hashtable;
-            if (ht != null) return ht;
-
-            ht = new Hashtable();
-            CacheUtils.InsertHours(CacheKey, ht, 24);
-            return ht;
-        }
-
         public static void AddListItems(ListItemCollection listItemCollection, PublishmentSystemInfo publishmentSystemInfo, bool isSeeOwning, bool isShowContentNum, string administratorName)
         {
             var list = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(publishmentSystemInfo.PublishmentSystemId);
@@ -398,7 +381,7 @@ namespace SiteServer.CMS.Core
                 {
                     listitem.Attributes.Add("style", "color:gray;");
                 }
-                if (!StringUtils.EqualsIgnoreCase(nodeInfo.ContentModelId, contentModelId))
+                if (!StringUtils.EqualsIgnoreCase(nodeInfo.ContentModelPluginId, contentModelId))
                 {
                     listitem.Attributes.Add("disabled", "disabled");
                 }

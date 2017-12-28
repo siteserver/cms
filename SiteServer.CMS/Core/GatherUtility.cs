@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using BaiRong.Core.Net;
@@ -11,6 +10,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model;
 using System.Collections.Generic;
 using BaiRong.Core.Model;
+using BaiRong.Core.Table;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Core
@@ -407,7 +407,7 @@ namespace SiteServer.CMS.Core
                 if (!string.IsNullOrEmpty(channel))
                 {
                     var nodeIdByNodeName = DataProvider.NodeDao.GetNodeIdByParentIdAndNodeName(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, channel, false);
-                    channelId = nodeIdByNodeName == 0 ? DataProvider.NodeDao.InsertNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, channel, string.Empty, nodeInfo.ContentModelId) : nodeIdByNodeName;
+                    channelId = nodeIdByNodeName == 0 ? DataProvider.NodeDao.InsertNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, channel, string.Empty, nodeInfo.ContentModelPluginId) : nodeIdByNodeName;
                 }
 
                 if (!isSameTitleAllowed)
@@ -553,8 +553,8 @@ namespace SiteServer.CMS.Core
                         }
                         else
                         {
-                            var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.BackgroundContent, publishmentSystemInfo.AuxiliaryTableForContent, attributeName, null);
-                            value = InputParserUtility.GetContentByTableStyle(value, publishmentSystemInfo, ETableStyle.BackgroundContent, styleInfo);
+                            var styleInfo = TableStyleManager.GetTableStyleInfo(publishmentSystemInfo.AuxiliaryTableForContent, attributeName, null);
+                            value = InputParserUtility.GetContentByTableStyle(value, publishmentSystemInfo, styleInfo);
 
                             if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.Video, InputType.File))
                             {

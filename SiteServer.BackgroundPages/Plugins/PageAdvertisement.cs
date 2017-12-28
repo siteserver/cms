@@ -106,7 +106,7 @@ namespace SiteServer.BackgroundPages.Plugins
             {
 				AdvertisementType.Items.Add(new ListItem("<所有类型>", string.Empty));
 				EAdvertisementTypeUtils.AddListItems(AdvertisementType);
-				ControlUtils.SelectListItems(AdvertisementType, string.Empty);
+				ControlUtils.SelectSingleItem(AdvertisementType, string.Empty);
 
 				Delete.Attributes.Add("onclick","return confirm(\"此操作将删除所选广告，确定吗？\");");
 			}
@@ -114,24 +114,17 @@ namespace SiteServer.BackgroundPages.Plugins
 
 		public void BindGrid()
 		{
-			try
-			{
-                if (string.IsNullOrEmpty(AdvertisementType.SelectedValue))
-                {
-                    dgContents.DataSource = DataProvider.AdvertisementDao.GetDataSource(PublishmentSystemId);
-                }
-                else
-                {
-                    dgContents.DataSource = DataProvider.AdvertisementDao.GetDataSourceByType(EAdvertisementTypeUtils.GetEnumType(AdvertisementType.SelectedValue), PublishmentSystemId);
-                }
+            if (string.IsNullOrEmpty(AdvertisementType.SelectedValue))
+            {
+                dgContents.DataSource = DataProvider.AdvertisementDao.GetDataSource(PublishmentSystemId);
+            }
+            else
+            {
+                dgContents.DataSource = DataProvider.AdvertisementDao.GetDataSourceByType(EAdvertisementTypeUtils.GetEnumType(AdvertisementType.SelectedValue), PublishmentSystemId);
+            }
 
-                dgContents.DataBind();
-			}
-			catch(Exception ex)
-			{
-                PageUtils.RedirectToErrorPage(ex.Message);
-			}
-		}
+            dgContents.DataBind();
+        }
 
 		public void ReFresh(object sender, EventArgs e)
 		{

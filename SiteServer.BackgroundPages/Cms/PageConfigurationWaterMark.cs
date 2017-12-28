@@ -36,47 +36,46 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
 			PageUtils.CheckRequestParameter("PublishmentSystemID");
-         
-			if (!IsPostBack)
+
+            if (IsPostBack) return;
+
+            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+
+            EBooleanUtils.AddListItems(IsWaterMark);
+            ControlUtils.SelectSingleItemIgnoreCase(IsWaterMark, PublishmentSystemInfo.Additional.IsWaterMark.ToString());
+
+            LoadWaterMarkPosition(PublishmentSystemInfo.Additional.WaterMarkPosition);
+
+            for (var i = 1; i <= 10; i++)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "图片水印设置", AppManager.Permissions.WebSite.Configration);
+                WaterMarkTransparency.Items.Add(new ListItem(i + "0%", i.ToString()));
+            }
+            ControlUtils.SelectSingleItemIgnoreCase(WaterMarkTransparency, PublishmentSystemInfo.Additional.WaterMarkTransparency.ToString());
 
-				EBooleanUtils.AddListItems(IsWaterMark);
-				ControlUtils.SelectListItemsIgnoreCase(IsWaterMark, PublishmentSystemInfo.Additional.IsWaterMark.ToString());
+            WaterMarkMinWidth.Text = PublishmentSystemInfo.Additional.WaterMarkMinWidth.ToString();
+            WaterMarkMinHeight.Text = PublishmentSystemInfo.Additional.WaterMarkMinHeight.ToString();
 
-                LoadWaterMarkPosition(PublishmentSystemInfo.Additional.WaterMarkPosition);
+            EBooleanUtils.AddListItems(IsImageWaterMark, "图片型", "文字型");
+            ControlUtils.SelectSingleItemIgnoreCase(IsImageWaterMark, PublishmentSystemInfo.Additional.IsImageWaterMark.ToString());
 
-				for (var i = 1; i <= 10; i++)
-				{
-					WaterMarkTransparency.Items.Add(new ListItem(i + "0%", i.ToString()));
-				}
-                ControlUtils.SelectListItemsIgnoreCase(WaterMarkTransparency, PublishmentSystemInfo.Additional.WaterMarkTransparency.ToString());
+            WaterMarkFormatString.Text = PublishmentSystemInfo.Additional.WaterMarkFormatString;
 
-                WaterMarkMinWidth.Text = PublishmentSystemInfo.Additional.WaterMarkMinWidth.ToString();
-                WaterMarkMinHeight.Text = PublishmentSystemInfo.Additional.WaterMarkMinHeight.ToString();
+            LoadSystemFont();
+            ControlUtils.SelectSingleItemIgnoreCase(WaterMarkFontName, PublishmentSystemInfo.Additional.WaterMarkFontName);
 
-				EBooleanUtils.AddListItems(IsImageWaterMark, "图片型", "文字型");
-                ControlUtils.SelectListItemsIgnoreCase(IsImageWaterMark, PublishmentSystemInfo.Additional.IsImageWaterMark.ToString());
+            WaterMarkFontSize.Text = PublishmentSystemInfo.Additional.WaterMarkFontSize.ToString();
 
-                WaterMarkFormatString.Text = PublishmentSystemInfo.Additional.WaterMarkFormatString;
-
-				LoadSystemFont();
-                ControlUtils.SelectListItemsIgnoreCase(WaterMarkFontName, PublishmentSystemInfo.Additional.WaterMarkFontName);
-
-                WaterMarkFontSize.Text = PublishmentSystemInfo.Additional.WaterMarkFontSize.ToString();
-
-                WaterMarkImagePath.Text = PublishmentSystemInfo.Additional.WaterMarkImagePath;
+            WaterMarkImagePath.Text = PublishmentSystemInfo.Additional.WaterMarkImagePath;
                
-				IsWaterMark_SelectedIndexChanged(null, null);
-                WaterMarkImagePath.Attributes.Add("onchange", GetShowImageScript("preview_WaterMarkImagePath", PublishmentSystemInfo.Additional.WebUrl));
+            IsWaterMark_SelectedIndexChanged(null, null);
+            WaterMarkImagePath.Attributes.Add("onchange", GetShowImageScript("preview_WaterMarkImagePath", PublishmentSystemInfo.Additional.WebUrl));
 
-                var showPopWinString = ModalSelectImage.GetOpenWindowString(PublishmentSystemInfo, WaterMarkImagePath.ClientID);
-                ImageUrlSelect.Attributes.Add("onclick", showPopWinString);
+            var showPopWinString = ModalSelectImage.GetOpenWindowString(PublishmentSystemInfo, WaterMarkImagePath.ClientID);
+            ImageUrlSelect.Attributes.Add("onclick", showPopWinString);
 
-                showPopWinString = ModalUploadImageSingle.GetOpenWindowStringToTextBox(PublishmentSystemId, WaterMarkImagePath.ClientID);
-                ImageUrlUpload.Attributes.Add("onclick", showPopWinString);
-			}
-		}
+            showPopWinString = ModalUploadImageSingle.GetOpenWindowStringToTextBox(PublishmentSystemId, WaterMarkImagePath.ClientID);
+            ImageUrlUpload.Attributes.Add("onclick", showPopWinString);
+        }
 
 		private void LoadWaterMarkPosition (int selectPosition)
 		{

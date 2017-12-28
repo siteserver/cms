@@ -12,15 +12,13 @@ namespace SiteServer.BackgroundPages.Settings
 		public HtmlInputFile myFile;
 
         private string _tableName;
-        private ETableStyle _tableStyle;
 
-        public static string GetOpenWindowString(string tableName, ETableStyle tableStyle)
+        public static string GetOpenWindowString(string tableName)
         {
             return PageUtils.GetOpenWindowString("导入表样式",
                 PageUtils.GetSettingsUrl(nameof(ModalTableStyleImport), new NameValueCollection
                 {
-                    {"TableName", tableName},
-                    {"TableStyle", ETableStyleUtils.GetValue(tableStyle)}
+                    {"TableName", tableName}
                 }), 560, 200);
         }
 
@@ -29,7 +27,6 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             _tableName = Body.GetQueryString("TableName");
-            _tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
 		}
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -49,9 +46,9 @@ namespace SiteServer.BackgroundPages.Settings
 
 					myFile.PostedFile.SaveAs(localFilePath);
 
-                    ImportObject.ImportTableStyleByZipFile(_tableStyle, _tableName, 0, localFilePath);
+                    ImportObject.ImportTableStyleByZipFile(_tableName, 0, localFilePath);
 
-                    Body.AddAdminLog("导入表单显示样式", $"类型:{ETableStyleUtils.GetText(_tableStyle)}");
+                    Body.AddAdminLog("导入表单显示样式");
 
 					PageUtils.CloseModalPage(Page);
 				}

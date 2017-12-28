@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			if (!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "内容组管理", AppManager.Permissions.WebSite.Configration);
+                VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
                 if (Body.IsQueryExists("SetTaxis"))
                 {

@@ -3,7 +3,6 @@ using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Controllers.Sys.Administrators;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.User;
 
 namespace SiteServer.API.Controllers.Sys.Administrators
 {

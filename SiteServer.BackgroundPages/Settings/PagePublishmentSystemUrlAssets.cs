@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings("访问地址管理", AppManager.Permissions.Settings.SiteManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
             var publishmentSystemList = PublishmentSystemManager.GetPublishmentSystemIdListOrderByLevel();
             DgContents.DataSource = publishmentSystemList;

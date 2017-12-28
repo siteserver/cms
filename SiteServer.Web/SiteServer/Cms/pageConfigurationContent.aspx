@@ -41,27 +41,6 @@
             <div class="form-horizontal">
 
               <div class="form-group">
-                <label class="col-sm-3 control-label">内容编辑页是否使用内容组功能</label>
-                <div class="col-sm-3">
-                  <asp:DropDownList ID="DdlIsGroupContent" class="form-control" runat="server"></asp:DropDownList>
-                </div>
-                <div class="col-sm-6 help-block"></div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-3 control-label">内容编辑页是否使用标签功能</label>
-                <div class="col-sm-3">
-                  <asp:DropDownList ID="DdlIsRelatedByTags" class="form-control" runat="server"></asp:DropDownList>
-                </div>
-                <div class="col-sm-6 help-block"></div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-3 control-label">内容编辑页是否使用内容转移功能</label>
-                <div class="col-sm-3">
-                  <asp:DropDownList ID="DdlIsTranslate" class="form-control" runat="server"></asp:DropDownList>
-                </div>
-                <div class="col-sm-6 help-block"></div>
-              </div>
-              <div class="form-group">
                 <label class="col-sm-3 control-label">自动保存外部图片</label>
                 <div class="col-sm-3">
                   <asp:DropDownList ID="DdlIsSaveImageInTextEditor" class="form-control" runat="server"></asp:DropDownList>

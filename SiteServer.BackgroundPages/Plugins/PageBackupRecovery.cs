@@ -33,10 +33,10 @@ namespace SiteServer.BackgroundPages.Plugins
 			if (!IsPostBack)
             {
                 EBackupTypeUtils.AddListItems(BackupType);
-                ControlUtils.SelectListItems(BackupType, EBackupTypeUtils.GetValue(EBackupType.Templates));
+                ControlUtils.SelectSingleItem(BackupType, EBackupTypeUtils.GetValue(EBackupType.Templates));
 
                 EBooleanUtils.AddListItems(IsRecoveryByUpload, "从上传文件中恢复", "从服务器备份文件中恢复");
-                ControlUtils.SelectListItems(IsRecoveryByUpload, true.ToString());
+                ControlUtils.SelectSingleItem(IsRecoveryByUpload, true.ToString());
 
                 Options_SelectedIndexChanged(null, EventArgs.Empty);
 			}

@@ -90,7 +90,7 @@ namespace SiteServer.CMS.Core
             var menus = new Dictionary<string, PluginMenu>();
             if (publishmentSystemId > 0 && topId == string.Empty)
             {
-                var siteMenus = PluginCache.GetSiteMenus(publishmentSystemId);
+                var siteMenus = PluginManager.GetSiteMenus(publishmentSystemId);
                 if (siteMenus != null)
                 {
                     foreach (var siteMenu in siteMenus)
@@ -101,7 +101,7 @@ namespace SiteServer.CMS.Core
             }
             else if (topId == "Plugins")
             {
-                var topMenus = PluginCache.GetTopMenus();
+                var topMenus = PluginManager.GetTopMenus();
                 if (topMenus != null)
                 {
                     foreach (var topMenu in topMenus)

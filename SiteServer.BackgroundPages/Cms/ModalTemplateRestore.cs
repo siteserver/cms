@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 	    public static string GetOpenWindowString(int publishmentSystemId, int templateId, string includeUrl)
         {
-            return PageUtils.GetOpenLayerString("还原历史版本", PageUtils.GetCmsUrl(nameof(ModalTemplateRestore), new NameValueCollection
+            return LayerUtils.GetOpenScript("还原历史版本", PageUtils.GetCmsUrl(nameof(ModalTemplateRestore), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"templateID", templateId.ToString()},
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 if (_logId > 0)
                 {
-                    ControlUtils.SelectListItems(DdlLogId, _logId.ToString());
+                    ControlUtils.SelectSingleItem(DdlLogId, _logId.ToString());
                 }
 
                 if (_logId == 0)
@@ -87,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                PageUtils.CloseModalPageAndRedirect(Page, PageTemplateAdd.GetRedirectUrlToRestore(PublishmentSystemId, _templateId, templateLogId));
+                LayerUtils.CloseAndRedirect(Page, PageTemplateAdd.GetRedirectUrlToRestore(PublishmentSystemId, _templateId, templateLogId));
             }
         }
 	}

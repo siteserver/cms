@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenLayerString("快速修改栏目", PageUtils.GetCmsUrl(nameof(ModalChannelEdit), new NameValueCollection
+            return LayerUtils.GetOpenScript("快速修改栏目", PageUtils.GetCmsUrl(nameof(ModalChannelEdit), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
                 if (nodeInfo != null)
                 {
-                    if (nodeInfo.NodeType == ENodeType.BackgroundPublishNode)
+                    if (nodeInfo.ParentId == 0)
                     {
                         PhLinkUrl.Visible = false;
                         PhLinkType.Visible = false;
@@ -167,7 +167,7 @@ namespace SiteServer.BackgroundPages.Cms
                         //{
                         //    displayAttributes = TranslateUtils.StringCollectionToStringList(PublishmentSystemInfo.Additional.ChannelEditAttributes);
                         //}
-                        AcAttributes.SetParameters(nodeInfo.Additional.ToNameValueCollection(), true, IsPostBack);
+                        AcAttributes.SetParameters(nodeInfo.Additional);
                     }
 
                     if (PhLinkType.Visible)
@@ -193,13 +193,13 @@ namespace SiteServer.BackgroundPages.Cms
                     if (PhChannelTemplateId.Visible)
                     {
                         DdlChannelTemplateId.Items.Insert(0, new ListItem("<未设置>", "0"));
-                        ControlUtils.SelectListItems(DdlChannelTemplateId, nodeInfo.ChannelTemplateId.ToString());
+                        ControlUtils.SelectSingleItem(DdlChannelTemplateId, nodeInfo.ChannelTemplateId.ToString());
                     }
 
                     if (PhContentTemplateId.Visible)
                     {
                         DdlContentTemplateId.Items.Insert(0, new ListItem("<未设置>", "0"));
-                        ControlUtils.SelectListItems(DdlContentTemplateId, nodeInfo.ContentTemplateId.ToString());
+                        ControlUtils.SelectSingleItem(DdlContentTemplateId, nodeInfo.ContentTemplateId.ToString());
                     }
 
                     if (PhNodeName.Visible)
@@ -229,7 +229,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     if (PhLinkType.Visible)
                     {
-                        ControlUtils.SelectListItems(DdlLinkType, ELinkTypeUtils.GetValue(nodeInfo.LinkType));
+                        ControlUtils.SelectSingleItem(DdlLinkType, nodeInfo.LinkType);
                     }
 
                     if (PhImageUrl.Visible)
@@ -239,11 +239,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     if (PhContent.Visible)
                     {
-                        var formCollection = new NameValueCollection
-                        {
-                            [NodeAttribute.Content] = nodeInfo.Content
-                        };
-                        TbContent.SetParameters(PublishmentSystemInfo, NodeAttribute.Content, formCollection, true, IsPostBack);
+                        TbContent.SetParameters(PublishmentSystemInfo, NodeAttribute.Content, nodeInfo.Content);
 
                         //this.Content.PublishmentSystemID = base.PublishmentSystemID;
                         //this.Content.Text = StringUtility.TextEditorContentDecode(nodeInfo.Content, ConfigUtils.Instance.ApplicationPath, base.PublishmentSystemInfo.PublishmentSystemUrl);
@@ -264,7 +260,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (AcAttributes.Visible)
                 {
-                    AcAttributes.SetParameters(Request.Form, true, IsPostBack);
+                    AcAttributes.SetParameters(new ExtendedAttributes(Request.Form));
                 }
             }
         }
@@ -321,7 +317,9 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         var extendedAttributes = new ExtendedAttributes();
                         var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
-                        BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Channel, DataProvider.NodeDao.TableName, PublishmentSystemInfo, relatedIdentities, Request.Form, extendedAttributes.ToNameValueCollection(), null);
+                        var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.NodeDao.TableName,
+                            relatedIdentities);
+                        BackgroundInputTypeParser.SaveAttributes(extendedAttributes, PublishmentSystemInfo, styleInfoList, Request.Form, null);
                         if (extendedAttributes.ToNameValueCollection().Count > 0)
                         {
                             nodeInfo.Additional.Load(extendedAttributes.ToNameValueCollection());
@@ -376,7 +374,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     if (PhLinkType.Visible)
                     {
-                        nodeInfo.LinkType = ELinkTypeUtils.GetEnumType(DdlLinkType.SelectedValue);
+                        nodeInfo.LinkType = DdlLinkType.SelectedValue;
                     }
                     if (PhChannelTemplateId.Visible)
                     {
@@ -405,11 +403,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                     if (string.IsNullOrEmpty(_returnUrl))
                     {
-                        PageUtils.CloseModalPage(Page);
+                        LayerUtils.Close(Page);
                     }
                     else
                     {
-                        PageUtils.CloseModalPageAndRedirect(Page, _returnUrl);
+                        LayerUtils.CloseAndRedirect(Page, _returnUrl);
                     }
                 }
             }

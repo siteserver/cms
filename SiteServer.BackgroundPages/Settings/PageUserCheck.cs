@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings("审核新用户", AppManager.Permissions.Settings.UserManagement);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.UserManagement);
 
                 spContents.DataBind();
 

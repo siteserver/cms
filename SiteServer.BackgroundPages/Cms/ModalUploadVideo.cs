@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int publishmentSystemId, string textBoxClientId)
         {
-            return PageUtils.GetOpenLayerString("上传视频", PageUtils.GetCmsUrl(nameof(ModalUploadVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传视频", PageUtils.GetCmsUrl(nameof(ModalUploadVideo), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TextBoxClientID", textBoxClientId}
@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToList(int publishmentSystemId, string currentRootPath)
         {
-            return PageUtils.GetOpenLayerString("上传视频", PageUtils.GetCmsUrl(nameof(ModalUploadVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传视频", PageUtils.GetCmsUrl(nameof(ModalUploadVideo), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CurrentRootPath", currentRootPath}
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (string.IsNullOrEmpty(_textBoxClientId))
                 {
-                    PageUtils.CloseModalPage(Page);
+                    LayerUtils.Close(Page);
                 }
                 else
                 {
@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
     {{
         parent.document.getElementById('{_textBoxClientId}').value = '{textBoxUrl}';
     }}
-    {PageUtils.HidePopWin}
+    {LayerUtils.CloseScript}
 </script>";
                 }
             }

@@ -81,8 +81,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             pageInfo.AddPageScriptsIfNotExists(PageInfo.Const.Jquery);
 
             var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
-            var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, contextInfo.ChannelId);
-            var contentId = ContentUtility.GetRealContentId(tableStyle, tableName, contextInfo.ContentId);
+            var contentId = ContentUtility.GetRealContentId(tableName, contextInfo.ContentId);
             //var channelId = BaiRongDataProvider.ContentDao.GetNodeId(tableName, contextInfo.ContentId);
             var channelId = Content.GetNodeId(tableName, contextInfo.ContentId);
 

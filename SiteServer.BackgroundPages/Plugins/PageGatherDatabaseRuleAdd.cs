@@ -7,9 +7,9 @@ using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -237,7 +237,7 @@ namespace SiteServer.BackgroundPages.Plugins
             }
             else
             {
-                var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(GetDatabaseConnectionString(), RelatedTableName.SelectedValue);
+                var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetTableColumnInfoListLowercase(GetDatabaseConnectionString(), RelatedTableName.SelectedValue);
                 RelatedIdentity.Items.Clear();
                 RelatedOrderBy.Items.Clear();
                 var item = new ListItem("请选择主键字段名称", string.Empty);
@@ -599,7 +599,7 @@ namespace SiteServer.BackgroundPages.Plugins
             Columns.Items.Clear();
             ColumnsToMatch.Items.Clear();
 
-            var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(GetDatabaseConnectionString(), RelatedTableName.SelectedValue);
+            var tableColumnInfoList = BaiRongDataProvider.DatabaseDao.GetTableColumnInfoListLowercase(GetDatabaseConnectionString(), RelatedTableName.SelectedValue);
             var columnToMatchArrayList = new ArrayList();
             foreach (var tableColumnInfo in tableColumnInfoList)
             {
@@ -609,7 +609,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 var columnToMatch = columnsMap[value];
                 if (!string.IsNullOrEmpty(columnToMatch))
                 {
-                    var tableMetadataInfoToMatch = TableManager.GetTableMetadataInfo(TableNameToMatch.Text, columnToMatch);
+                    var tableMetadataInfoToMatch = TableMetadataManager.GetTableMetadataInfo(TableNameToMatch.Text, columnToMatch);
                     if (tableMetadataInfoToMatch != null)
                     {
                         columnToMatchArrayList.Add(columnToMatch);
@@ -621,7 +621,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 Columns.Items.Add(new ListItem(text, value));
             }
 
-            var tableMetadataInfoList = TableManager.GetTableMetadataInfoList(TableNameToMatch.Text);
+            var tableMetadataInfoList = TableMetadataManager.GetTableMetadataInfoList(TableNameToMatch.Text);
             foreach (var tableMetadataInfo in tableMetadataInfoList)
             {
                 var value = tableMetadataInfo.AttributeName.ToLower();
@@ -642,7 +642,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (!string.IsNullOrEmpty(Columns.SelectedValue) && !string.IsNullOrEmpty(ColumnsToMatch.SelectedValue))
             {
-                if (Columns.SelectedValue.IndexOf("&") != -1)
+                if (Columns.SelectedValue.IndexOf("&", StringComparison.Ordinal) != -1)
                 {
                     columnsMap[Columns.SelectedValue.Split('&')[0].ToLower()] = ColumnsToMatch.SelectedValue.ToLower();
                 }
@@ -660,7 +660,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (!string.IsNullOrEmpty(Columns.SelectedValue))
             {
-                if (Columns.SelectedValue.IndexOf("&") != -1)
+                if (Columns.SelectedValue.IndexOf("&", StringComparison.Ordinal) != -1)
                 {
                     columnsMap.Remove(Columns.SelectedValue.Split('&')[0]);
                     SetColumns(columnsMap);

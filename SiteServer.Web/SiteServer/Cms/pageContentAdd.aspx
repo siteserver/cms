@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" ValidateRequest="false" Inherits="SiteServer.BackgroundPages.Cms.PageContentAdd" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
@@ -13,10 +13,8 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
-      <form id="myForm" class="container" enctype="multipart/form-data" runat="server">
-        <bairong:alerts runat="server" />
+      <form id="myForm" class="m-l-15 m-r-15" enctype="multipart/form-data" runat="server">
+        <ctrl:alerts runat="server" />
 
         <div class="raw">
           <div class="card-box">
@@ -25,9 +23,7 @@
                 <asp:Literal ID="LtlPageTitle" runat="server" />
               </b>
             </h4>
-            <p class="text-muted font-13 m-b-25">
-              在此修改站点相关设置
-            </p>
+            <p class="text-muted font-13 m-b-25"></p>
 
             <ul class="nav nav-pills m-b-30">
               <li class="active">
@@ -52,7 +48,7 @@
                 </div>
               </div>
 
-              <bairong:AuxiliaryControl ID="AcAttributes" runat="server" />
+              <ctrl:AuxiliaryControl ID="AcAttributes" runat="server" />
 
             </div>
 
@@ -67,32 +63,30 @@
 
                 </div>
               </div>
-              <asp:PlaceHolder ID="PhContentGroup" runat="server">
-                <div class="form-group">
-                  <label class="col-sm-1 control-label">内容组</label>
-                  <div class="col-sm-6">
-                    <asp:CheckBoxList ID="CblContentGroupNameCollection" RepeatDirection="Horizontal" class="checkbox checkbox-primary" RepeatColumns="5"
+              <div class="form-group">
+                <label class="col-sm-1 control-label">内容组</label>
+                <div class="col-sm-6">
+                  <span class="pull-left">
+                    <asp:CheckBoxList ID="CblContentGroups" RepeatDirection="Horizontal" class="checkbox checkbox-primary" RepeatColumns="5"
                       runat="server" />
-                  </div>
-                  <div class="col-sm-5">
-
-                  </div>
+                  </span>
+                  <asp:Button id="BtnContentGroupAdd" class="btn pull-left" text="新增内容组" runat="server" />
                 </div>
-              </asp:PlaceHolder>
+                <div class="col-sm-5">
 
-
-              <asp:PlaceHolder ID="PhTags" runat="server">
-                <div class="form-group">
-                  <label class="col-sm-1 control-label">标签</label>
-                  <div class="col-sm-6">
-                    <asp:TextBox ID="TbTags" class="form-control" runat="server" />
-                  </div>
-                  <div class="col-sm-5">
-                    <asp:Literal ID="LtlTags" runat="server"></asp:Literal>
-                    <span class="help-block">请用空格或英文逗号分隔</span>
-                  </div>
                 </div>
-              </asp:PlaceHolder>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-1 control-label">标签</label>
+                <div class="col-sm-6">
+                  <asp:TextBox ID="TbTags" class="form-control" runat="server" />
+                </div>
+                <div class="col-sm-5">
+                  <asp:Literal ID="LtlTags" runat="server"></asp:Literal>
+                  <span class="help-block">请用空格或英文逗号分隔</span>
+                </div>
+              </div>
 
               <asp:PlaceHolder ID="PhStatus" runat="server">
                 <div class="form-group">
@@ -106,6 +100,26 @@
                 </div>
               </asp:PlaceHolder>
 
+              <div class="form-group">
+                <label class="col-sm-1 control-label">外部链接</label>
+                <div class="col-sm-6">
+                  <asp:TextBox ID="TbLinkUrl" class="form-control" runat="server" />
+                </div>
+                <div class="col-sm-5">
+                  <span class="help-block">设置后链接将指向此地址</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-1 control-label">添加时间</label>
+                <div class="col-sm-6">
+                  <ctrl:DateTimeTextBox ID="TbAddDate" ShowTime="true" class="form-control" MaxLength="50" Width="180" runat="server" />
+                </div>
+                <div class="col-sm-5">
+
+                </div>
+              </div>
+
               <asp:PlaceHolder ID="PhTranslate" runat="server">
                 <div class="form-group">
                   <label class="col-sm-1 control-label">转移到</label>
@@ -116,24 +130,14 @@
                   <div class="col-sm-1"></div>
                 </div>
                 <div class="form-group" id="translateType" style="display: none">
-                    <label class="col-sm-1 control-label">转移方式</label>
-                    <div class="col-sm-6">
-                        <input id="translateCollection" name="translateCollection" value="" type="hidden">
-                        <asp:DropDownList ID="DdlTranslateType" class="form-control" runat="server"></asp:DropDownList>
-                    </div>
-                    <div class="col-sm-5"></div>
+                  <label class="col-sm-1 control-label">转移方式</label>
+                  <div class="col-sm-6">
+                    <input id="translateCollection" name="translateCollection" value="" type="hidden">
+                    <asp:DropDownList ID="DdlTranslateType" class="form-control" runat="server"></asp:DropDownList>
                   </div>
+                  <div class="col-sm-5"></div>
+                </div>
               </asp:PlaceHolder>
-
-              <div class="form-group">
-                <label class="col-sm-1 control-label">添加时间</label>
-                <div class="col-sm-6">
-                  <bairong:DateTimeTextBox ID="TbAddDate" ShowTime="true" class="form-control" MaxLength="50" Width="180" runat="server" />
-                </div>
-                <div class="col-sm-5">
-
-                </div>
-              </div>
             </div>
 
             <hr />

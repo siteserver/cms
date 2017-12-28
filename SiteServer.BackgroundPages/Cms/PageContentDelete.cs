@@ -6,7 +6,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -94,38 +93,34 @@ namespace SiteServer.BackgroundPages.Cms
             //    }
             //}
 
-            if (!IsPostBack)
-            {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "删除内容", string.Empty);
+            if (IsPostBack) return;
 
-                var builder = new StringBuilder();
-                foreach (var nodeId in _idsDictionary.Keys)
+            var builder = new StringBuilder();
+            foreach (var nodeId in _idsDictionary.Keys)
+            {
+                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                var contentIdList = _idsDictionary[nodeId];
+                foreach (var contentId in contentIdList)
                 {
-                    var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeId);
-                    var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
-                    var contentIdList = _idsDictionary[nodeId];
-                    foreach (var contentId in contentIdList)
+                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                    if (contentInfo != null)
                     {
-                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
-                        if (contentInfo != null)
-                        {
-                            builder.Append(
-                                $@"{WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, _returnUrl)}<br />");
-                        }
+                        builder.Append(
+                            $@"{WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, _returnUrl)}<br />");
                     }
                 }
-                ltlContents.Text = builder.ToString();
+            }
+            ltlContents.Text = builder.ToString();
 
-                if (!_isDeleteFromTrash)
-                {
-                    RetainRow.Visible = true;
-                    InfoMessage("此操作将把所选内容放入回收站，确定吗？");
-                }
-                else
-                {
-                    RetainRow.Visible = false;
-                    InfoMessage("此操作将从回收站中彻底删除所选内容，确定吗？");
-                }
+            if (!_isDeleteFromTrash)
+            {
+                RetainRow.Visible = true;
+                InfoMessage("此操作将把所选内容放入回收站，确定吗？");
+            }
+            else
+            {
+                RetainRow.Visible = false;
+                InfoMessage("此操作将从回收站中彻底删除所选内容，确定吗？");
             }
         }
 
@@ -168,13 +163,13 @@ namespace SiteServer.BackgroundPages.Cms
                             DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList);
 
                             //引用内容，需要删除
-                            var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent);
+                            var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
                             foreach (var table in tableList)
                             {
                                 var targetContentIdList = BaiRongDataProvider.ContentDao.GetReferenceIdList(table.TableEnName, contentIdList);
                                 if (targetContentIdList.Count > 0)
                                 {
-                                    var targetContentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyleUtils.GetEnumType(table.AuxiliaryTableType.ToString()), table.TableEnName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
+                                    var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableEnName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
                                     DataProvider.ContentDao.DeleteContents(targetContentInfo.PublishmentSystemId, table.TableEnName, targetContentIdList, targetContentInfo.NodeId);
                                 }
                             }

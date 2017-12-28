@@ -1,46 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net.Http;
+using SiteServer.Plugin.Features;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.Plugin
 {
-    public class PluginBase: IPlugin
+    public class PluginBase : IPlugin
     {
         #region IPlugin
 
-        public virtual Action<PluginContext> OnPluginActive => null;
+        public virtual Action<PluginContext> PluginActive => null;
 
-        public virtual Action<PluginContext> OnPluginDeactive => null;
-
-        public virtual Action<PluginContext> OnPluginUninstall => null;
-
-        #endregion       
-
-        #region IChannel
-
-        public virtual List<PluginContentLink> ContentLinks => null;
-
-        public virtual Action<int, int, int> OnContentAdded => null;
-
-        public virtual Action<int, int, int, int, int, int> OnContentTranslated => null;
-
-        public virtual Action<int, int, int> OnContentDeleted => null;
+        public virtual Action<PluginContext> PluginUninstall => null;
 
         #endregion
 
-        #region IContentTable
+        #region IContentModel
 
         public virtual string ContentTableName => null;
-
         public virtual List<PluginTableColumn> ContentTableColumns => null;
+
+        #endregion
+
+        #region IContentRelated
+
+        public virtual List<PluginContentLink> ContentLinks => null;
+        public virtual Action<int, int, int> ContentAddCompleted => null;
+        public virtual Action<int, int, int, int, int, int> ContentTranslateCompleted => null;
+        public virtual Action<int, int, int> ContentDeleteCompleted => null;
+        public virtual Dictionary<string, Func<int, int, IAttributes, string>> ContentFormCustomized => null;
+        public virtual Action<int, int, IContentInfo, NameValueCollection> ContentFormSubmited => null;
 
         #endregion
 
         #region IFileSystem
 
-        public virtual Action<object, FileSystemEventArgs> OnFileSystemChanged => null;
+        public virtual Action<object, FileSystemEventArgs> FileSystemChanged => null;
 
         #endregion
 
@@ -91,7 +89,6 @@ namespace SiteServer.Plugin
         #region IMenu
 
         public virtual PluginMenu PluginMenu => null;
-
         public virtual Func<int, PluginMenu> SiteMenu => null;
 
         #endregion
@@ -106,7 +103,7 @@ namespace SiteServer.Plugin
 
         public virtual Func<PluginRenderContext, string> Render => null;
 
-        #endregion       
+        #endregion
 
         #region ITable
 

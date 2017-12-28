@@ -73,11 +73,11 @@ namespace SiteServer.BackgroundPages.Plugins
                 var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
                 var nodeCount = nodeIdList.Count;
                 _isLastNodeArray = new bool[nodeCount];
-                foreach (int theNodeID in nodeIdList)
+                foreach (var theNodeId in nodeIdList)
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeID);
+                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeId);
 
-                    var title = WebUtils.GetChannelListBoxTitle(PublishmentSystemId, nodeInfo.NodeId, nodeInfo.NodeName, nodeInfo.NodeType, nodeInfo.ParentsCount, nodeInfo.IsLastNode, _isLastNodeArray);
+                    var title = WebUtils.GetChannelListBoxTitle(PublishmentSystemId, nodeInfo.NodeId, nodeInfo.NodeName, nodeInfo.ParentsCount, nodeInfo.IsLastNode, _isLastNodeArray);
                     var listitem = new ListItem(title, nodeInfo.NodeId.ToString());
                     NodeIDCollectionToChannel.Items.Add(listitem);
                     title = title + $"({nodeInfo.ContentNum})";
@@ -100,19 +100,19 @@ namespace SiteServer.BackgroundPages.Plugins
                 }
 
                 EBooleanUtils.AddListItems(IsEnabled);
-                ControlUtils.SelectListItems(IsEnabled, true.ToString());
+                ControlUtils.SelectSingleItem(IsEnabled, true.ToString());
 
                 EAdvLevelTypeUtils.AddListItems(LevelType);
-                ControlUtils.SelectListItems(LevelType, EAdvLevelTypeUtils.GetValue(EAdvLevelType.Hold));
+                ControlUtils.SelectSingleItem(LevelType, EAdvLevelTypeUtils.GetValue(EAdvLevelType.Hold));
 
                 EAdvLevelUtils.AddListItems(Level);
-                ControlUtils.SelectListItems(Level, EAdvLevelUtils.GetValue(EAdvLevel.Level1));
+                ControlUtils.SelectSingleItem(Level, EAdvLevelUtils.GetValue(EAdvLevel.Level1));
 
                 EAdvWeightUtils.AddListItems(Weight );
-                ControlUtils.SelectListItems(Weight , EAdvWeightUtils.GetValue(EAdvWeight .Level1));
+                ControlUtils.SelectSingleItem(Weight , EAdvWeightUtils.GetValue(EAdvWeight .Level1));
 
                 EAdvRotateTypeUtils.AddListItems(RotateType);
-                ControlUtils.SelectListItems(RotateType, EAdvRotateTypeUtils.GetValue(EAdvRotateType.HandWeight));
+                ControlUtils.SelectSingleItem(RotateType, EAdvRotateTypeUtils.GetValue(EAdvRotateType.HandWeight));
 
                 if (_isEdit)
                 {
@@ -122,9 +122,9 @@ namespace SiteServer.BackgroundPages.Plugins
                     IsDateLimited.Checked = advInfo.IsDateLimited;
                     StartDate.Text = DateUtils.GetDateAndTimeString(advInfo.StartDate);
                     EndDate.Text = DateUtils.GetDateAndTimeString(advInfo.EndDate);
-                    ControlUtils.SelectListItems(NodeIDCollectionToChannel, TranslateUtils.StringCollectionToStringList(advInfo.NodeIdCollectionToChannel));
-                    ControlUtils.SelectListItems(NodeIDCollectionToContent, TranslateUtils.StringCollectionToStringList(advInfo.NodeIdCollectionToContent));
-                    ControlUtils.SelectListItems(FileTemplateIDCollection, TranslateUtils.StringCollectionToStringList(advInfo.FileTemplateIdCollection));
+                    ControlUtils.SelectMultiItems(NodeIDCollectionToChannel, TranslateUtils.StringCollectionToStringList(advInfo.NodeIdCollectionToChannel));
+                    ControlUtils.SelectMultiItems(NodeIDCollectionToContent, TranslateUtils.StringCollectionToStringList(advInfo.NodeIdCollectionToContent));
+                    ControlUtils.SelectMultiItems(FileTemplateIDCollection, TranslateUtils.StringCollectionToStringList(advInfo.FileTemplateIdCollection));
                     LevelType.SelectedValue = EAdvLevelTypeUtils.GetValue(advInfo.LevelType);
                     Level.SelectedValue = advInfo.Level.ToString();
                     IsWeight.Checked = advInfo.IsWeight;

@@ -1,5 +1,4 @@
 ﻿using System;
-using BaiRong.Core.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin.Models;
 
@@ -11,32 +10,32 @@ namespace SiteServer.CMS.Model
         {
         }
 
-        public const string NodeId = nameof(NodeId);
-        public const string NodeName = nameof(NodeName);
-        public const string NodeType = nameof(NodeType);
-        public const string PublishmentSystemId = nameof(PublishmentSystemId);
-        public const string ContentModelId = nameof(ContentModelId);
-        public const string ParentId = nameof(ParentId);
-        public const string ParentsPath = nameof(ParentsPath);
-        public const string ParentsCount = nameof(ParentsCount);
-        public const string ChildrenCount = nameof(ChildrenCount);
-        public const string IsLastNode = nameof(IsLastNode);
-        public const string NodeIndexName = nameof(NodeIndexName);
-        public const string NodeGroupNameCollection = nameof(NodeGroupNameCollection);
-        public const string Taxis = nameof(Taxis);
-        public const string AddDate = nameof(AddDate);
-        public const string ImageUrl = nameof(ImageUrl);
-        public const string Content = nameof(Content);
-        public const string ContentNum = nameof(ContentNum);
-        public const string FilePath = nameof(FilePath);
-        public const string ChannelFilePathRule = nameof(ChannelFilePathRule);
-        public const string ContentFilePathRule = nameof(ContentFilePathRule);
-        public const string LinkUrl = nameof(LinkUrl);
-        public const string LinkType = nameof(LinkType);
-        public const string ChannelTemplateId = nameof(ChannelTemplateId);
-        public const string ContentTemplateId = nameof(ContentTemplateId);
-        public const string Keywords = nameof(Keywords);
-        public const string Description = nameof(Description);
+        public const string NodeId = nameof(NodeInfo.NodeId);
+        public const string NodeName = nameof(NodeInfo.NodeName);
+        public const string PublishmentSystemId = nameof(NodeInfo.PublishmentSystemId);
+        public const string ContentModelPluginId = nameof(NodeInfo.ContentModelPluginId);
+        public const string ContentRelatedPluginIds = nameof(NodeInfo.ContentRelatedPluginIds);
+        public const string ParentId = nameof(NodeInfo.ParentId);
+        public const string ParentsPath = nameof(NodeInfo.ParentsPath);
+        public const string ParentsCount = nameof(NodeInfo.ParentsCount);
+        public const string ChildrenCount = nameof(NodeInfo.ChildrenCount);
+        public const string IsLastNode = nameof(NodeInfo.IsLastNode);
+        public const string NodeIndexName = nameof(NodeInfo.NodeIndexName);
+        public const string NodeGroupNameCollection = nameof(NodeInfo.NodeGroupNameCollection);
+        public const string Taxis = nameof(NodeInfo.Taxis);
+        public const string AddDate = nameof(NodeInfo.AddDate);
+        public const string ImageUrl = nameof(NodeInfo.ImageUrl);
+        public const string Content = nameof(NodeInfo.Content);
+        public const string ContentNum = nameof(NodeInfo.ContentNum);
+        public const string FilePath = nameof(NodeInfo.FilePath);
+        public const string ChannelFilePathRule = nameof(NodeInfo.ChannelFilePathRule);
+        public const string ContentFilePathRule = nameof(NodeInfo.ContentFilePathRule);
+        public const string LinkUrl = nameof(NodeInfo.LinkUrl);
+        public const string LinkType = nameof(NodeInfo.LinkType);
+        public const string ChannelTemplateId = nameof(NodeInfo.ChannelTemplateId);
+        public const string ContentTemplateId = nameof(NodeInfo.ContentTemplateId);
+        public const string Keywords = nameof(NodeInfo.Keywords);
+        public const string Description = nameof(NodeInfo.Description);
         public const string ExtendValues = nameof(ExtendValues);
 
         public const string Id = nameof(Id);
@@ -58,9 +57,9 @@ namespace SiteServer.CMS.Model
 		{
 			NodeId = 0;
 			NodeName = string.Empty;
-			NodeType = ENodeType.BackgroundNormalNode;
 			PublishmentSystemId = 0;
-            ContentModelId = string.Empty;
+            ContentModelPluginId = string.Empty;
+		    ContentRelatedPluginIds = string.Empty;
 			ParentId = 0;
 			ParentsPath = string.Empty;
 			ParentsCount = 0;
@@ -77,7 +76,7 @@ namespace SiteServer.CMS.Model
             ChannelFilePathRule = string.Empty;
             ContentFilePathRule = string.Empty;
             LinkUrl = string.Empty;
-            LinkType = ELinkType.LinkNoRelatedToChannelAndContent;
+            LinkType = string.Empty;
             ChannelTemplateId = 0;
             ContentTemplateId = 0;
             Keywords = string.Empty;
@@ -85,13 +84,13 @@ namespace SiteServer.CMS.Model
             _extendValues = string.Empty;
 		}
 
-        public NodeInfo(int nodeId, string nodeName, ENodeType nodeType, int publishmentSystemId, string contentModelId, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, string nodeIndexName, string nodeGroupNameCollection, int taxis, DateTime addDate, string imageUrl, string content, int contentNum, string filePath, string channelFilePathRule, string contentFilePathRule, string linkUrl, ELinkType linkType, int channelTemplateId, int contentTemplateId, string keywords, string description, string extendValues) 
+        public NodeInfo(int nodeId, string nodeName, int publishmentSystemId, string contentModelPluginId, string contentRelatedPluginIds, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, string nodeIndexName, string nodeGroupNameCollection, int taxis, DateTime addDate, string imageUrl, string content, int contentNum, string filePath, string channelFilePathRule, string contentFilePathRule, string linkUrl, ELinkType linkType, int channelTemplateId, int contentTemplateId, string keywords, string description, string extendValues) 
 		{
 			NodeId = nodeId;
 			NodeName = nodeName;
-			NodeType = nodeType;
 			PublishmentSystemId = publishmentSystemId;
-            ContentModelId = contentModelId;
+            ContentModelPluginId = contentModelPluginId;
+		    ContentRelatedPluginIds = contentRelatedPluginIds;
 			ParentId = parentId;
 			ParentsPath = parentsPath;
 			ParentsCount = parentsCount;
@@ -108,7 +107,7 @@ namespace SiteServer.CMS.Model
             ChannelFilePathRule = channelFilePathRule;
             ContentFilePathRule = contentFilePathRule;
             LinkUrl = linkUrl;
-            LinkType = linkType;
+            LinkType = ELinkTypeUtils.GetValue(linkType);
             ChannelTemplateId = channelTemplateId;
             ContentTemplateId = contentTemplateId;
             Keywords = keywords;
@@ -120,9 +119,9 @@ namespace SiteServer.CMS.Model
         {
             NodeId = nodeInfo.NodeId;
             NodeName = nodeInfo.NodeName;
-            NodeType = nodeInfo.NodeType;
             PublishmentSystemId = nodeInfo.PublishmentSystemId;
-            ContentModelId = nodeInfo.ContentModelId;
+            ContentModelPluginId = nodeInfo.ContentModelPluginId;
+            ContentRelatedPluginIds = nodeInfo.ContentRelatedPluginIds;
             ParentId = nodeInfo.ParentId;
             ParentsPath = nodeInfo.ParentsPath;
             ParentsCount = nodeInfo.ParentsCount;
@@ -151,11 +150,11 @@ namespace SiteServer.CMS.Model
 
 	    public string NodeName { get; set; }
 
-	    public ENodeType NodeType { get; set; }
-
 	    public int PublishmentSystemId { get; set; }
 
-	    public string ContentModelId { get; set; }
+        public string ContentModelPluginId { get; set; }
+
+        public string ContentRelatedPluginIds { get; set; }
 
         public int ParentId { get; set; }
 
@@ -189,7 +188,7 @@ namespace SiteServer.CMS.Model
 
 	    public string LinkUrl { get; set; }
 
-	    public ELinkType LinkType { get; set; }
+	    public string LinkType { get; set; }
 
 	    public int ChannelTemplateId { get; set; }
 

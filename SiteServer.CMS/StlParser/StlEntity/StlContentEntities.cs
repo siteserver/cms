@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
@@ -73,10 +73,9 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
                         var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
 
-                        var tableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeInfo);
                         var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
                         //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contextInfo.ContentInfo.ReferenceId);
-                        var targetContentInfo = Cache.Content.GetContentInfo(tableStyle, tableName, contextInfo.ContentInfo.ReferenceId);
+                        var targetContentInfo = Cache.Content.GetContentInfo(tableName, contextInfo.ContentInfo.ReferenceId);
                         if (targetContentInfo != null && targetContentInfo.NodeId > 0)
                         {
                             //标题可以使用自己的
@@ -326,17 +325,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
                             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, contentNodeId);
-                            var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, attributeName, relatedIdentities);
+                            var styleInfo = TableStyleManager.GetTableStyleInfo(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, attributeName, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
-                            if (styleInfo.IsVisible)
-                            {
-                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.PublishmentSystemInfo, ETableStyle.BackgroundContent, styleInfo, string.Empty, null, string.Empty, true);
-                            }
-                            else
-                            {
-                                parsedContent = string.Empty;
-                            }
+                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.PublishmentSystemInfo, styleInfo, string.Empty, null, string.Empty, true);
                         }
 
                     }

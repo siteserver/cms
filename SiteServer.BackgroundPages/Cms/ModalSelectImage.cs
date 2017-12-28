@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(PublishmentSystemInfo publishmentSystemInfo, string textBoxClientId)
         {
-            return PageUtils.GetOpenLayerString("选择图片",
+            return LayerUtils.GetOpenScript("选择图片",
                 PageUtils.GetCmsUrl(nameof(ModalSelectImage), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemInfo.PublishmentSystemId.ToString()},

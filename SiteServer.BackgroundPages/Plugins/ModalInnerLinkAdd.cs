@@ -52,10 +52,12 @@ namespace SiteServer.BackgroundPages.Plugins
         {
 			var isChanged = false;
 
-            var innerLinkInfo = new InnerLinkInfo();
-            innerLinkInfo.InnerLinkName = InnerLinkName.Text;
-            innerLinkInfo.PublishmentSystemId = PublishmentSystemId;
-            innerLinkInfo.LinkUrl = LinkUrl.Text;
+            var innerLinkInfo = new InnerLinkInfo
+            {
+                InnerLinkName = InnerLinkName.Text,
+                PublishmentSystemId = PublishmentSystemId,
+                LinkUrl = LinkUrl.Text
+            };
 
             if (Body.IsQueryExists("InnerLinkName"))
 			{
@@ -113,7 +115,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
 			if (isChanged)
 			{
-				PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
 			}
 		}
 	}

@@ -19,7 +19,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpGet == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -38,7 +38,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpGetWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -57,7 +57,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpGetWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -76,7 +76,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPost == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -95,7 +95,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPostWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -114,7 +114,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPostWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -133,7 +133,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPut == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -152,7 +152,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPutWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -171,7 +171,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPutWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -190,7 +190,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpDelete == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -209,7 +209,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpDeleteWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -228,7 +228,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpDeleteWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -247,7 +247,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPatch == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -266,7 +266,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPatchWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
@@ -285,7 +285,7 @@ namespace SiteServer.API.Controllers.Http
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPatchWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)

@@ -86,6 +86,55 @@ namespace BaiRong.Core.Data
             return new OracleParameter();
         }
 
+        public override IDataParameter GetParameter(string name, object value)
+        {
+            var parameter = new OracleParameter
+            {
+                ParameterName = name
+            };
+            if (value == null)
+            {
+                parameter.DbType = DbType.String;
+                parameter.Value = string.Empty;
+            }
+            else if (value is DateTime)
+            {
+                parameter.DbType = DbType.DateTime;
+                var dbValue = (DateTime) value;
+                if (dbValue < DateUtils.SqlMinValue)
+                {
+                    dbValue = DateUtils.SqlMinValue;
+                }
+                parameter.Value = dbValue;
+            }
+            else if (value is int)
+            {
+                parameter.DbType = DbType.Int32;
+                parameter.Value = (int)value;
+            }
+            else if (value is decimal)
+            {
+                parameter.DbType = DbType.Decimal;
+                parameter.Value = (decimal)value;
+            }
+            else if (value is string)
+            {
+                parameter.DbType = DbType.String;
+                parameter.Value = (string)value;
+            }
+            else if (value is bool)
+            {
+                parameter.DbType = DbType.Int32;
+                parameter.Value = (bool) value ? 1 : 0;
+            }
+            else
+            {
+                parameter.DbType = DbType.String;
+                parameter.Value = value.ToString();
+            }
+
+            return parameter;
+        }
 
         /// <summary>
         /// Detach the IDataParameters from the command object, so they can be used again.
@@ -222,5 +271,30 @@ namespace BaiRong.Core.Data
             return p;
         }
         #endregion
+
+        public string GetString(IDataReader rdr, int i)
+        {
+            return rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
+        }
+
+        public bool GetBoolean(IDataReader rdr, int i)
+        {
+            return GetInt(rdr, i) == 1;
+        }
+
+        public int GetInt(IDataReader rdr, int i)
+        {
+            return rdr.IsDBNull(i) ? 0 : rdr.GetInt32(i);
+        }
+
+        public decimal GetDecimal(IDataReader rdr, int i)
+        {
+            return rdr.IsDBNull(i) ? 0 : rdr.GetDecimal(i);
+        }
+
+        public DateTime GetDateTime(IDataReader rdr, int i)
+        {
+            return rdr.IsDBNull(i) ? DateTime.Now : rdr.GetDateTime(i);
+        }
     }
 }

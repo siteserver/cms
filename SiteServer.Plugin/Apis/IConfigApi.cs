@@ -12,10 +12,6 @@ namespace SiteServer.Plugin.Apis
 
         bool RemoveConfig(int publishmentSystemId, string name = "");
 
-        string PhysicalApplicationPath { get; }
-
-        string AdminDirectory { get; }
-
         ISystemConfigInfo SystemConfigInfo { get; }
     }
 }

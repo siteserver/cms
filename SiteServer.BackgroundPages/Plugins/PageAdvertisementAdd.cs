@@ -141,16 +141,16 @@ namespace SiteServer.BackgroundPages.Plugins
                 EndDate.Text = DateUtils.GetDateAndTimeString(DateTime.Now.AddMonths(1));
 
 				EAdvertisementTypeUtils.AddListItems(AdvertisementType);
-				ControlUtils.SelectListItems(AdvertisementType, EAdvertisementTypeUtils.GetValue(EAdvertisementType.FloatImage));
+				ControlUtils.SelectSingleItem(AdvertisementType, EAdvertisementTypeUtils.GetValue(EAdvertisementType.FloatImage));
 
                 var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
                 var nodeCount = nodeIdList.Count;
                 isLastNodeArray = new bool[nodeCount];
-                foreach (int theNodeID in nodeIdList)
+                foreach (var theNodeId in nodeIdList)
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeID);
+                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, theNodeId);
 
-                    var title = WebUtils.GetChannelListBoxTitle(PublishmentSystemId, nodeInfo.NodeId, nodeInfo.NodeName, nodeInfo.NodeType, nodeInfo.ParentsCount, nodeInfo.IsLastNode, isLastNodeArray);
+                    var title = WebUtils.GetChannelListBoxTitle(PublishmentSystemId, nodeInfo.NodeId, nodeInfo.NodeName, nodeInfo.ParentsCount, nodeInfo.IsLastNode, isLastNodeArray);
                     var listitem = new ListItem(title, nodeInfo.NodeId.ToString());
                     NodeIDCollectionToChannel.Items.Add(listitem);
                     title = title + $"({nodeInfo.ContentNum})";
@@ -175,7 +175,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 EPositionTypeUtils.AddListItems(PositionType, ERollingType.Static);
 
 				ERollingTypeUtils.AddListItems(RollingType);
-				ControlUtils.SelectListItems(RollingType, ERollingTypeUtils.GetValue(ERollingType.FollowingScreen));
+				ControlUtils.SelectSingleItem(RollingType, ERollingTypeUtils.GetValue(ERollingType.FollowingScreen));
 
                 var showPopWinString = ModalSelectImage.GetOpenWindowString(PublishmentSystemInfo, ImageUrl.ClientID);
 				SelectImage.Attributes.Add("onclick", showPopWinString);
@@ -201,9 +201,9 @@ namespace SiteServer.BackgroundPages.Plugins
                     IsDateLimited.Checked = adInfo.IsDateLimited;
                     StartDate.Text = DateUtils.GetDateAndTimeString(adInfo.StartDate);
                     EndDate.Text = DateUtils.GetDateAndTimeString(adInfo.EndDate);
-                    ControlUtils.SelectListItems(NodeIDCollectionToChannel, TranslateUtils.StringCollectionToStringList(adInfo.NodeIdCollectionToChannel));
-                    ControlUtils.SelectListItems(NodeIDCollectionToContent, TranslateUtils.StringCollectionToStringList(adInfo.NodeIdCollectionToContent));
-                    ControlUtils.SelectListItems(FileTemplateIDCollection, TranslateUtils.StringCollectionToStringList(adInfo.FileTemplateIdCollection));
+                    ControlUtils.SelectMultiItems(NodeIDCollectionToChannel, TranslateUtils.StringCollectionToStringList(adInfo.NodeIdCollectionToChannel));
+                    ControlUtils.SelectMultiItems(NodeIDCollectionToContent, TranslateUtils.StringCollectionToStringList(adInfo.NodeIdCollectionToContent));
+                    ControlUtils.SelectMultiItems(FileTemplateIDCollection, TranslateUtils.StringCollectionToStringList(adInfo.FileTemplateIdCollection));
 
                     if (adInfo.AdvertisementType == EAdvertisementType.FloatImage)
                     {
@@ -258,7 +258,7 @@ namespace SiteServer.BackgroundPages.Plugins
             PositionType.Items.Clear();
             var rollingType = ERollingTypeUtils.GetEnumType(RollingType.SelectedValue);
             EPositionTypeUtils.AddListItems(PositionType, rollingType);
-            ControlUtils.SelectListItems(PositionType, EPositionTypeUtils.GetValue(ePositionType));
+            ControlUtils.SelectSingleItem(PositionType, EPositionTypeUtils.GetValue(ePositionType));
 		}
 
 		public WizardPanel CurrentWizardPanel

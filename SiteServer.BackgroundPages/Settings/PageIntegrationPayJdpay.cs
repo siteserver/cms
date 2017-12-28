@@ -35,10 +35,10 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings("支付设置", AppManager.Permissions.Settings.Integration);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Integration);
 
             EBooleanUtils.AddListItems(DdlIsEnabled, "开通", "不开通");
-            ControlUtils.SelectListItems(DdlIsEnabled, _config.IsJdpay.ToString());
+            ControlUtils.SelectSingleItem(DdlIsEnabled, _config.IsJdpay.ToString());
 
             PhSettings.Visible = _config.IsJdpay;
 

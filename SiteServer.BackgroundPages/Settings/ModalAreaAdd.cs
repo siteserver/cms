@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToAdd(string returnUrl)
         {
-            return PageUtils.GetOpenLayerString("添加区域", PageUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加区域", PageUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
             {
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), 460, 360);
@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToEdit(int areaId, string returnUrl)
         {
-            return PageUtils.GetOpenLayerString("修改区域", PageUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改区域", PageUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
             {
                 {"AreaID", areaId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -132,7 +132,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (isChanged)
             {
-                PageUtils.CloseModalPageAndRedirect(Page, _returnUrl);
+                LayerUtils.CloseAndRedirect(Page, _returnUrl);
             }
         }
 	}

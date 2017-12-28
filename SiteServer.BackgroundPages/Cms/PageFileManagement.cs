@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Cms
                     ListType.Items.Add(new ListItem("显示详细信息", "List"));
                     if (Body.IsQueryExists("ListType"))
                     {
-                        ControlUtils.SelectListItems(ListType, Body.GetQueryString("ListType"));
+                        ControlUtils.SelectSingleItem(ListType, Body.GetQueryString("ListType"));
                     }
 
                     ltlCurrentDirectory.Text = PageUtils.Combine(PublishmentSystemInfo.PublishmentSystemDir, _relatedPath);

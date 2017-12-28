@@ -33,7 +33,6 @@ namespace SiteServer.API.Controllers.Sys.Stl
                 var isRedirect = TranslateUtils.ToBool(body.GetQueryString("isRedirect"));
 
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
                 if (fileTemplateId != 0)
@@ -62,7 +61,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     }
                     else if (contentId != 0)
                     {
-                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                         redirectUrl = PageUtility.GetContentUrl(publishmentSystemInfo, contentInfo, false);
                     }
                     else if (channelId != 0)

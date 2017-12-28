@@ -16,16 +16,16 @@ namespace SiteServer.CMS.Core
         {
         }
 
-        public static string GetContentByTableStyle(string content, PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, TableStyleInfo styleInfo)
+        public static string GetContentByTableStyle(string content, PublishmentSystemInfo publishmentSystemInfo, TableStyleInfo styleInfo)
         {
             if (!string.IsNullOrEmpty(content))
             {
-                return GetContentByTableStyle(content, ",", publishmentSystemInfo, tableStyle, styleInfo, string.Empty, null, string.Empty, false);
+                return GetContentByTableStyle(content, ",", publishmentSystemInfo, styleInfo, string.Empty, null, string.Empty, false);
             }
             return string.Empty;
         }
 
-        public static string GetContentByTableStyle(string content, string separator, PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, TableStyleInfo styleInfo, string formatString, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
+        public static string GetContentByTableStyle(string content, string separator, PublishmentSystemInfo publishmentSystemInfo, TableStyleInfo styleInfo, string formatString, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
         {
             var parsedContent = content;
 
@@ -102,7 +102,7 @@ namespace SiteServer.CMS.Core
             return parsedContent;
         }
 
-        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, TableStyleInfo styleInfo, string formatString, int no, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
+        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, PublishmentSystemInfo publishmentSystemInfo, TableStyleInfo styleInfo, string formatString, int no, Dictionary<string, string> attributes, string innerXml, bool isStlEntity)
         {
             var value = contentInfo.GetString(styleInfo.AttributeName);
             var parsedContent = string.Empty;

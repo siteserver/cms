@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings("站点日志", AppManager.Permissions.Settings.Log);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Log);
 
             if (PublishmentSystemId == 0)
             {
@@ -68,8 +68,8 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Body.IsQueryExists("LogType"))
             {
-                ControlUtils.SelectListItems(PublishmentSystem, PublishmentSystemId.ToString());
-                ControlUtils.SelectListItems(LogType, Body.GetQueryString("LogType"));
+                ControlUtils.SelectSingleItem(PublishmentSystem, PublishmentSystemId.ToString());
+                ControlUtils.SelectSingleItem(LogType, Body.GetQueryString("LogType"));
                 UserName.Text = Body.GetQueryString("UserName");
                 Keyword.Text = Body.GetQueryString("Keyword");
                 DateFrom.Text = Body.GetQueryString("DateFrom");

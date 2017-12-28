@@ -1,33 +1,49 @@
 ﻿<%@ Page Language="c#" Inherits="SiteServer.BackgroundPages.PageLoading" Trace="False" %>
-<%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>载入程序</title>
-    <link rel="stylesheet" href="inc/style.css" type="text/css" />
-    <bairong:Code Type="jQuery" runat="server" />
-    <bairong:Code Type="html5shiv" runat="server" />
-</head>
-<body>
-    <table width="100%" height="380" border="0" cellpadding="4" cellspacing="0">
-        <tr>
-            <td class="center" valign="middle">
-                <img src="pic/loading.gif" />
-                <br />
-                <span style="margin-top: 10px;">载入中，请稍候...</span>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
-<script language="javascript">
-    //防止xss，update by sessionliang at 20151214
-    $(function () {
-        var url = encodeURI("<%=GetRedirectUrl()%>");
-    if (url && url.length > 0) {
-        setTimeout(function () { location.href = decodeURI(url); }, 200);
-    }
-});
-</script>
+  <!DOCTYPE html>
+  <html>
 
+  <head>
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/pages.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/menu.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="images/siteserver_icon.png" rel="icon" type="image/png">
+    <meta charset="utf-8">
+    <title>SiteServer 管理后台</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  </head>
+
+  <body>
+
+    <div class="wrapper-page">
+      <div class="row">
+        <div class="col-sm-12 text-center">
+          <div class="home-wrapper">
+            <br />
+            <br />
+            <br />
+            <br />
+            <img src="assets/layer/skin/default/xubox_loading0.gif" />
+            <div class="help-block">载入中，请稍候...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+
+  </html>
+  <script src="assets/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+  <script language="javascript">
+    $(function () {
+      var url = "<%=GetRedirectUrl()%>";
+      if (url && url.length > 0) {
+        setTimeout(function () {
+          location.href = url;
+        }, 200);
+      }
+    });
+  </script>

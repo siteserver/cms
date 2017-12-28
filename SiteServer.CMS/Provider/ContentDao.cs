@@ -4,11 +4,11 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Text;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Cache;
@@ -129,7 +129,7 @@ namespace SiteServer.CMS.Provider
             }
         }
 
-        public ContentInfo GetContentInfoNotTrash(ETableStyle tableStyle, string tableName, int contentId)
+        public ContentInfo GetContentInfoNotTrash(string tableName, int contentId)
         {
             ContentInfo info = null;
             if (contentId > 0)
@@ -143,8 +143,7 @@ namespace SiteServer.CMS.Provider
                     {
                         if (rdr.Read())
                         {
-                            info = ContentUtility.GetContentInfo(tableStyle);
-                            info.Load(rdr);
+                            info = GetContentInfo(rdr);
                         }
                         rdr.Close();
                     }
@@ -154,26 +153,31 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public ContentInfo GetContentInfo(ETableStyle tableStyle, string tableName, int contentId)
+        private ContentInfo GetContentInfo(IDataReader rdr)
         {
-            ContentInfo info = null;
-            if (contentId > 0)
-            {
-                if (!string.IsNullOrEmpty(tableName))
-                {
-                    string sqlWhere = $"WHERE Id = {contentId}";
-                    var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+            var contentInfo = new ContentInfo();
+            contentInfo.Load(rdr);
+            contentInfo.Load(contentInfo.SettingsXml);
 
-                    using (var rdr = ExecuteReader(sqlSelect))
-                    {
-                        if (rdr.Read())
-                        {
-                            info = ContentUtility.GetContentInfo(tableStyle);
-                            info.Load(rdr);
-                        }
-                        rdr.Close();
-                    }
+            return contentInfo;
+        }
+
+        public ContentInfo GetContentInfo(string tableName, int contentId)
+        {
+            if (string.IsNullOrEmpty(tableName) || contentId <= 0) return null;
+
+            ContentInfo info = null;
+
+            string sqlWhere = $"WHERE Id = {contentId}";
+            var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
+
+            using (var rdr = ExecuteReader(sqlSelect))
+            {
+                if (rdr.Read())
+                {
+                    info = GetContentInfo(rdr);
                 }
+                rdr.Close();
             }
 
             return info;
@@ -455,9 +459,8 @@ namespace SiteServer.CMS.Provider
                 whereBuilder.Append($" AND {dateAttribute} BETWEEN {SqlUtils.GetComparableDateTime(sinceDate)} AND {SqlUtils.GetComparableNow()} ");
             }
 
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-            var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, tableStyle, nodeInfo.NodeId);
+            var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, nodeInfo.NodeId);
 
             foreach (string key in form.Keys)
             {
@@ -467,7 +470,7 @@ namespace SiteServer.CMS.Provider
                 var value = StringUtils.Trim(form[key]);
                 if (string.IsNullOrEmpty(value)) continue;
 
-                if (TableManager.IsAttributeNameExists(tableStyle, tableName, key))
+                if (TableMetadataManager.IsAttributeNameExists(tableName, key))
                 {
                     whereBuilder.Append(" AND ");
                     whereBuilder.Append($"({key} LIKE '%{value}%')");
@@ -494,16 +497,16 @@ namespace SiteServer.CMS.Provider
             return whereBuilder.ToString();
         }
 
-        public string GetSelectCommend(ETableStyle tableStyle, string tableName, int publishmentSystemId, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState)
+        public string GetSelectCommend(string tableName, int publishmentSystemId, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState)
         {
-            return GetSelectCommend(tableStyle, tableName, publishmentSystemId, nodeId, isSystemAdministrator, owningNodeIdList, searchType, keyword, dateFrom, dateTo, isSearchChildren, checkedState, false, false);
+            return GetSelectCommend(tableName, publishmentSystemId, nodeId, isSystemAdministrator, owningNodeIdList, searchType, keyword, dateFrom, dateTo, isSearchChildren, checkedState, false, false);
         }
 
-        public string GetSelectCommend(ETableStyle tableStyle, string tableName, int publishmentSystemId, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent)
+        public string GetSelectCommend(string tableName, int publishmentSystemId, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent)
         {
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
             var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount,
-                isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, nodeInfo.ContentModelId);
+                isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, nodeInfo.ContentModelPluginId);
 
             var list = new List<int>();
             if (isSystemAdministrator)
@@ -521,13 +524,13 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            return BaiRongDataProvider.ContentDao.GetSelectCommendByCondition(tableStyle, tableName, publishmentSystemId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent);
+            return BaiRongDataProvider.ContentDao.GetSelectCommendByCondition(tableName, publishmentSystemId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent);
         }
 
-        public string GetSelectCommend(ETableStyle tableStyle, string tableName, int publishmentSystemId, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
+        public string GetSelectCommend(string tableName, int publishmentSystemId, int nodeId, bool isSystemAdministrator, List<int> owningNodeIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
         {
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
-            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, nodeInfo.ContentModelId);
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, isSearchChildren ? EScopeType.All : EScopeType.Self, string.Empty, string.Empty, nodeInfo.ContentModelPluginId);
 
             var list = new List<int>();
             if (isSystemAdministrator)
@@ -545,10 +548,10 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            return BaiRongDataProvider.ContentDao.GetSelectCommendByCondition(tableStyle, tableName, publishmentSystemId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, isWritingOnly, userNameOnly);
+            return BaiRongDataProvider.ContentDao.GetSelectCommendByCondition(tableName, publishmentSystemId, list, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, isWritingOnly, userNameOnly);
         }
 
-        public string GetWritingSelectCommend(string writingUserName, ETableStyle tableStyle, string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo)
+        public string GetWritingSelectCommend(string writingUserName, string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo)
         {
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
@@ -582,7 +585,7 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                var list = TableManager.GetAllLowerAttributeNameList(tableStyle, tableName);
+                var list = TableMetadataManager.GetAllLowerAttributeNameList(tableName);
                 if (list.Contains(searchType.ToLower()))
                 {
                     whereString.AppendFormat("AND ([{0}] LIKE '%{1}%') {2} ", searchType, keyword, dateString);
@@ -600,9 +603,9 @@ namespace SiteServer.CMS.Provider
             return sqlString;
         }
 
-        public DataSet GetStlDataSourceChecked(List<int> nodeIdList, ETableStyle tableStyle, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
+        public DataSet GetStlDataSourceChecked(List<int> nodeIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
         {
-            return BaiRongDataProvider.ContentDao.GetStlDataSourceChecked(tableStyle, tableName, nodeIdList, startNum, totalNum, orderByString, whereString, isNoDup, others);
+            return BaiRongDataProvider.ContentDao.GetStlDataSourceChecked(tableName, nodeIdList, startNum, totalNum, orderByString, whereString, isNoDup, others);
         }
 
         public string GetStlSqlStringChecked(List<int> nodeIdList, string tableName, int publishmentSystemId, int nodeId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isNoDup)
@@ -678,29 +681,6 @@ namespace SiteServer.CMS.Provider
             BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlList);
         }
 
-        public ContentInfo GetContentInfoByTitle(ETableStyle tableStyle, string tableName, string title)
-        {
-            ContentInfo info = null;
-
-            if (!string.IsNullOrEmpty(tableName))
-            {
-                string sqlWhere = $"WHERE Title = {title}";
-                var sqlSelect = BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, sqlWhere);
-
-                using (var rdr = ExecuteReader(sqlSelect))
-                {
-                    if (rdr.Read())
-                    {
-                        info = ContentUtility.GetContentInfo(tableStyle);
-                        info.Load(rdr);
-                    }
-                    rdr.Close();
-                }
-            }
-
-            return info;
-        }
-
         public List<int> GetIdListBySameTitleInOneNode(string tableName, int nodeId, string title)
         {
             var list = new List<int>();
@@ -716,7 +696,7 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public List<IContentInfo> GetListByLimitAndOffset(string tableName, ETableStyle tableStyle, int nodeId, string whereString, string orderString, int limit, int offset)
+        public List<IContentInfo> GetListByLimitAndOffset(string tableName, int nodeId, string whereString, string orderString, int limit, int offset)
         {
             var list = new List<IContentInfo>();
             if (!string.IsNullOrEmpty(whereString))
@@ -798,8 +778,7 @@ namespace SiteServer.CMS.Provider
             {
                 while (rdr.Read())
                 {
-                    var info = ContentUtility.GetContentInfo(tableStyle);
-                    info.Load(rdr);
+                    var info = GetContentInfo(rdr);
                     list.Add(info);
                 }
                 rdr.Close();
@@ -808,7 +787,7 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public int GetCount(string tableName, ETableStyle tableStyle, int nodeId, string whereString)
+        public int GetCount(string tableName, int nodeId, string whereString)
         {
             if (!string.IsNullOrEmpty(whereString))
             {

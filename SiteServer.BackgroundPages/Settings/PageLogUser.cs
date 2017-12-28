@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 			if(!IsPostBack)
 			{
-                BreadCrumbSettings("用户日志", AppManager.Permissions.Settings.Log);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.Log);
 
                 if (Body.IsQueryExists("Keyword"))
                 {

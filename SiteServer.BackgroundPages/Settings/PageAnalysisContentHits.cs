@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings("内容点击量排名", AppManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
 
             SpContents.DataBind();
 

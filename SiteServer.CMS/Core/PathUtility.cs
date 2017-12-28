@@ -5,9 +5,9 @@ using BaiRong.Core;
 using BaiRong.Core.Net;
 using BaiRong.Core.Model;
 using SiteServer.CMS.Model;
-using BaiRong.Core.AuxiliaryTable;
 using System.Text.RegularExpressions;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.Plugin.Models;
@@ -272,11 +272,11 @@ namespace SiteServer.CMS.Core
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty) return null;
 
-            var pairList = PublishmentSystemManager.GetPublishmentSystemInfoKeyValuePairList();
+            var publishmentSystemInfoList = PublishmentSystemManager.GetPublishmentSystemInfoList();
+
             PublishmentSystemInfo headquarter = null;
-            foreach (var pair in pairList)
+            foreach (var publishmentSystemInfo in publishmentSystemInfoList)
             {
-                var publishmentSystemInfo = pair.Value;
                 if (publishmentSystemInfo.IsHeadquarters)
                 {
                     headquarter = publishmentSystemInfo;
@@ -304,10 +304,9 @@ namespace SiteServer.CMS.Core
                 return string.Empty;
             }
 
-            var pairList = PublishmentSystemManager.GetPublishmentSystemInfoKeyValuePairList();
-            foreach (var pair in pairList)
+            var publishmentSystemInfoList = PublishmentSystemManager.GetPublishmentSystemInfoList();
+            foreach (var publishmentSystemInfo in publishmentSystemInfoList)
             {
-                var publishmentSystemInfo = pair.Value;
                 if (publishmentSystemInfo?.IsHeadquarters != false) continue;
 
                 if (StringUtils.Contains(directoryDir, publishmentSystemInfo.PublishmentSystemDir.ToLower()))
@@ -488,12 +487,6 @@ namespace SiteServer.CMS.Core
             return PathUtils.Combine(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteTemplateMetadata, relatedPath);
         }
 
-        public static string GetCacheFilePath(string cacheFileName)
-        {
-            cacheFileName = PathUtils.RemoveParentPath(cacheFileName);
-            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, cacheFileName);
-        }
-
         public static bool IsSystemFile(string fileName)
         {
             if (StringUtils.EqualsIgnoreCase(fileName, "Web.config")
@@ -575,7 +568,7 @@ namespace SiteServer.CMS.Core
 
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeId);
 
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.Channel, DataProvider.NodeDao.TableName, relatedIdentities);
+                var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.NodeDao.TableName, relatedIdentities);
                 foreach (var styleInfo in styleInfoList)
                 {
                     if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Text))
@@ -746,11 +739,10 @@ namespace SiteServer.CMS.Core
                     {LowerChannelIndex, "栏目索引(小写)"}
                 };
 
-                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeId);
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
                 var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeId);
 
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
+                var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
                 foreach (var styleInfo in styleInfoList)
                 {
                     if (InputTypeUtils.Equals(styleInfo.InputType, InputType.Text))
@@ -766,9 +758,8 @@ namespace SiteServer.CMS.Core
             public static string Parse(PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId)
             {
                 var contentFilePathRule = GetContentFilePathRule(publishmentSystemInfo, nodeId);
-                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeId);
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-                var contentInfo = Content.GetContentInfo(tableStyle, tableName, contentId);
+                var contentInfo = Content.GetContentInfo(tableName, contentId);
                 var filePath = ParseContentPath(publishmentSystemInfo, nodeId, contentInfo, contentFilePathRule);
                 return filePath;
             }
@@ -998,7 +989,7 @@ namespace SiteServer.CMS.Core
         public static string GetChannelPageFilePath(PublishmentSystemInfo publishmentSystemInfo, int nodeId, int currentPageIndex)
         {
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
-            if (nodeInfo.NodeType == ENodeType.BackgroundPublishNode)
+            if (nodeInfo.ParentId == 0)
             {
                 var templateInfo = TemplateManager.GetDefaultTemplateInfo(publishmentSystemInfo.PublishmentSystemId, ETemplateType.IndexPageTemplate);
                 return GetIndexPageFilePath(publishmentSystemInfo, templateInfo.CreatedFileFullName, publishmentSystemInfo.IsHeadquarters, currentPageIndex);
@@ -1029,9 +1020,8 @@ namespace SiteServer.CMS.Core
 
         public static string GetContentPageFilePath(PublishmentSystemInfo publishmentSystemInfo, int nodeId, int contentId, int currentPageIndex)
         {
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeId);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
-            var contentInfo = Content.GetContentInfo(tableStyle, tableName, contentId);
+            var contentInfo = Content.GetContentInfo(tableName, contentId);
             return GetContentPageFilePath(publishmentSystemInfo, nodeId, contentInfo, currentPageIndex);
         }
 

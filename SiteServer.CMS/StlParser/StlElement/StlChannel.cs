@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -325,14 +324,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var formCollection = channel.Additional.ToNameValueCollection();
                     if (formCollection != null && formCollection.Count > 0)
                     {
-                        var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.NodeDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, channel.NodeId));
+                        var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.NodeDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, channel.NodeId));
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
-                        if (styleInfo.TableStyleId > 0 && styleInfo.IsVisible)
+                        if (styleInfo.TableStyleId > 0)
                         {
                             parsedContent = GetValue(attributeName, formCollection, false, styleInfo.DefaultValue);
                             if (!string.IsNullOrEmpty(parsedContent))
                             {
-                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.PublishmentSystemInfo, ETableStyle.Channel, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
+                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.PublishmentSystemInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
                                 parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                             }
                         }

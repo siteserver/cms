@@ -97,7 +97,7 @@ namespace SiteServer.CMS.Core.Office
             }
         }
 
-        public static NameValueCollection GetWordNameValueCollection(int publishmentSystemId, string contentModelId, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, int contentLevel, string fileName)
+        public static NameValueCollection GetWordNameValueCollection(int publishmentSystemId, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, int contentLevel, string fileName)
         {
             var formCollection = new NameValueCollection();
             var wordContent = Parse(publishmentSystemId, GetWordFilePath(fileName), isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages);

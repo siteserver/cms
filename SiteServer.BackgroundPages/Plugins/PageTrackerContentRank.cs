@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
                 if (pageContentIdWithAccessNum != null && pageContentIdWithAccessNum.PageContentID > 0)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, PublishmentSystemInfo.AuxiliaryTableForContent, pageContentIdWithAccessNum.PageContentID);
+                    var contentInfo = DataProvider.ContentDao.GetContentInfo(PublishmentSystemInfo.AuxiliaryTableForContent, pageContentIdWithAccessNum.PageContentID);
                     if (contentInfo != null && !string.IsNullOrEmpty(contentInfo.Title))
                     {
                         ltlTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo,

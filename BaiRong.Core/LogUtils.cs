@@ -6,7 +6,7 @@ namespace BaiRong.Core
 {
     public class LogUtils
     {
-        private static void AddErrorLog(ErrorLogInfo logInfo)
+        private static int AddErrorLog(ErrorLogInfo logInfo)
         {
             try
             {
@@ -15,22 +15,24 @@ namespace BaiRong.Core
                     BaiRongDataProvider.ErrorLogDao.Delete(ConfigManager.SystemConfigInfo.TimeThreshold);
                 }
 
-                BaiRongDataProvider.ErrorLogDao.Insert(logInfo);
+                return BaiRongDataProvider.ErrorLogDao.Insert(logInfo);
             }
             catch
             {
                 // ignored
             }
+
+            return 0;
         }
 
-        public static void AddSystemErrorLog(Exception ex, string summary = "")
+        public static int AddSystemErrorLog(Exception ex, string summary = "")
         {
-            AddErrorLog(new ErrorLogInfo(0, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
+            return AddErrorLog(new ErrorLogInfo(0, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
         }
 
-        public static void AddPluginErrorLog(string pluginId, Exception ex, string summary = "")
+        public static int AddPluginErrorLog(string pluginId, Exception ex, string summary = "")
         {
-            AddErrorLog(new ErrorLogInfo(0, pluginId, ex.Message, ex.StackTrace, summary, DateTime.Now));
+            return AddErrorLog(new ErrorLogInfo(0, pluginId, ex.Message, ex.StackTrace, summary, DateTime.Now));
         }
 
         public static void AddAdminLog(string userName, string action, string summary = "")

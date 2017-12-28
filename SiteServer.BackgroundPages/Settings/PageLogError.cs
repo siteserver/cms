@@ -65,16 +65,16 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsPostBack) return;
 
             DdlPluginId.Items.Add(new ListItem("全部错误", string.Empty));
-            foreach (var pair in PluginCache.AllPluginPairs)
+            foreach (var pair in PluginManager.AllPluginPairs)
             {
                 DdlPluginId.Items.Add(new ListItem(pair.Metadata.DisplayName, pair.Metadata.Id));
             }
 
-            BreadCrumbSettings("系统错误日志", AppManager.Permissions.Settings.Log);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Log);
 
             if (Body.IsQueryExists("Keyword"))
             {
-                ControlUtils.SelectListItems(DdlPluginId, Body.GetQueryString("PluginId"));
+                ControlUtils.SelectSingleItem(DdlPluginId, Body.GetQueryString("PluginId"));
                 TbKeyword.Text = Body.GetQueryString("Keyword");
                 TbDateFrom.Text = Body.GetQueryString("DateFrom");
                 TbDateTo.Text = Body.GetQueryString("DateTo");

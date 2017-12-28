@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsPostBack) return;
 
             var pageTitle = _userId == 0 ? "添加用户" : "编辑用户";
-            BreadCrumbSettings(pageTitle, AppManager.Permissions.Settings.UserManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.UserManagement);
 
             LtlPageTitle.Text = pageTitle;
             if (_userId > 0)

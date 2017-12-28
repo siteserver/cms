@@ -30,12 +30,12 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings("访问地址管理", AppManager.Permissions.Settings.SiteManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
             LtlPublishmentSystemName.Text = PublishmentSystemManager.GetPublishmentSystemName(PublishmentSystemInfo);
 
             EBooleanUtils.AddListItems(DdlIsSeparatedWeb, "Web独立部署", "Web与CMS部署在一起");
-            ControlUtils.SelectListItems(DdlIsSeparatedWeb, PublishmentSystemInfo.Additional.IsSeparatedWeb.ToString());
+            ControlUtils.SelectSingleItem(DdlIsSeparatedWeb, PublishmentSystemInfo.Additional.IsSeparatedWeb.ToString());
             PhSeparatedWeb.Visible = PublishmentSystemInfo.Additional.IsSeparatedWeb;
             TbSeparatedWebUrl.Text = PublishmentSystemInfo.Additional.SeparatedWebUrl;
         }
@@ -47,21 +47,14 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            try
-            {
-                PublishmentSystemInfo.Additional.IsSeparatedWeb = TranslateUtils.ToBool(DdlIsSeparatedWeb.SelectedValue);
-                PublishmentSystemInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
+            PublishmentSystemInfo.Additional.IsSeparatedWeb = TranslateUtils.ToBool(DdlIsSeparatedWeb.SelectedValue);
+            PublishmentSystemInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
 
-                DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
-                Body.AddSiteLog(PublishmentSystemId, "修改Web访问地址");
+            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+            Body.AddSiteLog(PublishmentSystemId, "修改Web访问地址");
 
-                SuccessMessage("Web访问地址修改成功！");
-                AddWaitAndRedirectScript(PagePublishmentSystemUrlWeb.GetRedirectUrl());
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage($"修改失败：{ex.Message}");
-            }
+            SuccessMessage("Web访问地址修改成功！");
+            AddWaitAndRedirectScript(PagePublishmentSystemUrlWeb.GetRedirectUrl());
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings("系统缓存", AppManager.Permissions.Settings.Utility);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.Utility);
 
                 var count = CacheUtils.Count;
                 var percentage = CacheUtils.EffectivePercentagePhysicalMemoryLimit;

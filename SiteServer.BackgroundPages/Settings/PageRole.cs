@@ -3,7 +3,7 @@ using System.Data;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
-using SiteServer.CMS.Core.Permissions;
+using SiteServer.CMS.Core.Security;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -43,13 +43,12 @@ namespace SiteServer.BackgroundPages.Settings
 				}
 			}
 
-			if(!IsPostBack)
-            {
-                BreadCrumbSettings("角色管理", AppManager.Permissions.Settings.AdminManagement);
+            if (IsPostBack) return;
 
-                BindGrid();
-			}
-		}
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.AdminManagement);
+
+            BindGrid();
+        }
 
         public void dgContents_Page(object sender, DataGridPageChangedEventArgs e)
 		{
@@ -89,51 +88,43 @@ namespace SiteServer.BackgroundPages.Settings
 
 		public void BindGrid()
 		{
-			try
-			{
-                dgContents.PageSize = StringUtils.Constants.PageSize;
-                var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
-                if (permissioins.IsConsoleAdministrator)
-				{
-                    dgContents.DataSource = GetDataSetByRoles(BaiRongDataProvider.RoleDao.GetAllRoles());
-				}
-				else
-				{
-                    dgContents.DataSource = GetDataSetByRoles(BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName));
-				}
-                dgContents.ItemDataBound += dgContents_ItemDataBound;
-                dgContents.DataBind();
+            dgContents.PageSize = StringUtils.Constants.PageSize;
+            var permissioins = PermissionsManager.GetPermissions(Body.AdminName);
+            if (permissioins.IsConsoleAdministrator)
+            {
+                dgContents.DataSource = GetDataSetByRoles(BaiRongDataProvider.RoleDao.GetAllRoles());
+            }
+            else
+            {
+                dgContents.DataSource = GetDataSetByRoles(BaiRongDataProvider.RoleDao.GetAllRolesByCreatorUserName(Body.AdminName));
+            }
+            dgContents.ItemDataBound += dgContents_ItemDataBound;
+            dgContents.DataBind();
 
-                if (dgContents.CurrentPageIndex > 0)
-				{
-					pageFirst.Enabled = true;
-					pagePrevious.Enabled = true;
-				}
-				else
-				{
-					pageFirst.Enabled = false;
-					pagePrevious.Enabled = false;
-				}
+            if (dgContents.CurrentPageIndex > 0)
+            {
+                pageFirst.Enabled = true;
+                pagePrevious.Enabled = true;
+            }
+            else
+            {
+                pageFirst.Enabled = false;
+                pagePrevious.Enabled = false;
+            }
 
-                if (dgContents.CurrentPageIndex + 1 == dgContents.PageCount)
-				{
-					pageLast.Enabled = false;
-					pageNext.Enabled = false;
-				}
-				else
-				{
-					pageLast.Enabled = true;
-					pageNext.Enabled = true;
-				}
+            if (dgContents.CurrentPageIndex + 1 == dgContents.PageCount)
+            {
+                pageLast.Enabled = false;
+                pageNext.Enabled = false;
+            }
+            else
+            {
+                pageLast.Enabled = true;
+                pageNext.Enabled = true;
+            }
 
-                currentPage.Text = $"{dgContents.CurrentPageIndex + 1}/{dgContents.PageCount}";
-			}
-			catch(Exception ex)
-			{
-                PageUtils.RedirectToErrorPage(ex.Message);
-			}
-				
-		}
+            currentPage.Text = $"{dgContents.CurrentPageIndex + 1}/{dgContents.PageCount}";
+        }
 
         void dgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
         {

@@ -34,9 +34,9 @@ namespace SiteServer.BackgroundPages.Plugins
 
             if (Page.IsPostBack) return;
 
-            BreadCrumbPlugins("插件查看", AppManager.Permissions.Plugins.Management);
+            VerifyAdministratorPermissions(AppManager.Permissions.Plugins.Management);
 
-            if (PluginCache.IsExists(_pluginId))
+            if (PluginManager.IsExists(_pluginId))
             {
                 BtnInstall.Text = "插件已安装";
                 BtnInstall.Enabled = false;

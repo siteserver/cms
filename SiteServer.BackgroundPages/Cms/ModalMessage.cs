@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(string title, string html, int width, int height)
         {
-            return PageUtils.GetOpenLayerString(title, PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
+            return LayerUtils.GetOpenScript(title, PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
             {
                 {"html", TranslateUtils.EncryptStringBySecretKey(html)}
             }), width, height);
@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToPreviewImage(int publishmentSystemId, string textBoxClientId)
         {
-            return PageUtils.GetOpenLayerString("预览图片", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
+            return LayerUtils.GetOpenScript("预览图片", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
             {
                 {"type", TypePreviewImage},
                 {"publishmentSystemID", publishmentSystemId.ToString()},
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToPreviewVideo(int publishmentSystemId, string textBoxClientId)
         {
-            return PageUtils.GetOpenLayerString("预览视频", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
+            return LayerUtils.GetOpenScript("预览视频", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
             {
                 {"type", TypePreviewVideo},
                 {"publishmentSystemID", publishmentSystemId.ToString()},
@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToPreviewVideoByUrl(int publishmentSystemId, string videoUrl)
         {
-            return PageUtils.GetOpenLayerString("预览视频", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
+            return LayerUtils.GetOpenScript("预览视频", PageUtils.GetCmsUrl(nameof(ModalMessage), new NameValueCollection
             {
                 {"type", TypePreviewVideoByUrl},
                 {"publishmentSystemID", publishmentSystemId.ToString()},

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -17,23 +16,22 @@ namespace SiteServer.BackgroundPages.Cms
 
         private int _relatedIdentity;
         private List<int> _relatedIdentities;
-        private ETableStyle _tableStyle;
         private bool _isList;
+        private bool _isContent;
 
         public static string GetOpenWindowStringToChannel(int publishmentSystemId, bool isList)
         {
-            return PageUtils.GetOpenLayerString("选择需要显示的项", PageUtils.GetCmsUrl(nameof(ModalSelectColumns), new NameValueCollection
+            return LayerUtils.GetOpenScript("选择需要显示的项", PageUtils.GetCmsUrl(nameof(ModalSelectColumns), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedIdentity", publishmentSystemId.ToString()},
-                {"IsList", isList.ToString()},
-                {"TableStyle", ETableStyleUtils.GetValue(ETableStyle.Channel)}
+                {"IsList", isList.ToString()}
             }), 520, 550);
         }
 
         public static string GetOpenWindowStringToContent(int publishmentSystemId, int relatedIdentity, bool isList)
         {
-            return PageUtils.GetOpenLayerString("选择需要显示的项", PageUtils.GetCmsUrl(nameof(ModalSelectColumns), new NameValueCollection
+            return LayerUtils.GetOpenScript("选择需要显示的项", PageUtils.GetCmsUrl(nameof(ModalSelectColumns), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedIdentity", relatedIdentity.ToString()},
@@ -41,17 +39,6 @@ namespace SiteServer.BackgroundPages.Cms
                 {"IsList", isList.ToString()}
             }), 520, 550);
         }
-
-        //public static string GetOpenWindowStringToInputContent(int publishmentSystemId, int relatedIdentity, bool isList)
-        //{
-        //    return PageUtils.GetOpenWindowString("选择需要显示的项", PageUtils.GetCmsUrl(nameof(ModalSelectColumns), new NameValueCollection
-        //    {
-        //        {"PublishmentSystemID", publishmentSystemId.ToString()},
-        //        {"IsList", isList.ToString()},
-        //        {"TableStyle", ETableStyleUtils.GetValue(ETableStyle.InputContent)},
-        //        {"RelatedIdentity", relatedIdentity.ToString()}
-        //    }), 520, 550);
-        //}
 
         public void Page_Load(object sender, EventArgs e)
         {
@@ -61,17 +48,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             _relatedIdentity = Body.GetQueryInt("RelatedIdentity");
             _isList = Body.GetQueryBool("IsList");
-            if (Body.GetQueryBool("IsContent"))
-            {
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _relatedIdentity);
-                _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
-            }
-            else
-            {
-                _tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
-            }
+            _isContent = Body.GetQueryBool("IsContent");
 
-            if (_tableStyle == ETableStyle.Channel)
+            if (!_isContent)
             {
                 var displayAttributes = PublishmentSystemInfo.Additional.ChannelDisplayAttributes;
                 if (!_isList)
@@ -169,11 +148,10 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 CblDisplayAttributes.Items.Add(listitem);
 
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, DataProvider.NodeDao.TableName, _relatedIdentities);
+                var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.NodeDao.TableName, _relatedIdentities);
 
                 foreach (var styleInfo in styleInfoList)
                 {
-                    if (styleInfo.IsVisible == false) continue;
                     listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
 
                     if (CompareUtils.Contains(displayAttributes, styleInfo.AttributeName))
@@ -195,11 +173,11 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else
                     {
-                        ControlUtils.SelectListItems(CblDisplayAttributes, NodeAttribute.ChannelName, NodeAttribute.ChannelIndex);
+                        ControlUtils.SelectMultiItems(CblDisplayAttributes, NodeAttribute.ChannelName, NodeAttribute.ChannelIndex);
                     }
                 }
             }
-            else if (ETableStyleUtils.IsContent(_tableStyle))
+            else
             {
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _relatedIdentity);
                 var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
@@ -208,8 +186,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (IsPostBack) return;
 
-                var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, tableName, _relatedIdentities);
-                var columnTableStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(PublishmentSystemInfo, _tableStyle, styleInfoList);
+                var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
+                var columnTableStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(PublishmentSystemInfo, styleInfoList);
                 foreach (var styleInfo in columnTableStyleInfoList)
                 {
                     if (styleInfo.AttributeName == ContentAttribute.Title) continue;
@@ -224,53 +202,18 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     else
                     {
-                        if (styleInfo.IsVisible)
-                        {
-                            listitem.Selected = true;
-                        }
+                        listitem.Selected = true;
                     }
 
                     CblDisplayAttributes.Items.Add(listitem);
                 }
             }
-            //else if (_tableStyle == ETableStyle.InputContent)
-            //{
-            //    var inputInfo = DataProvider.InputDao.GetInputInfo(_relatedIdentity);
-            //    _relatedIdentities = RelatedIdentities.GetRelatedIdentities(_tableStyle, PublishmentSystemId, _relatedIdentity);
-
-            //    if (!IsPostBack)
-            //    {
-            //        var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, DataProvider.InputContentDao.TableName, _relatedIdentities);
-
-            //        foreach (var styleInfo in styleInfoList)
-            //        {
-            //            var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-
-            //            if (_isList)
-            //            {
-            //                if (styleInfo.IsVisibleInList)
-            //                {
-            //                    listitem.Selected = true;
-            //                }
-            //            }
-            //            else
-            //            {
-            //                if (styleInfo.IsVisible)
-            //                {
-            //                    listitem.Selected = true;
-            //                }
-            //            }
-
-            //            CblDisplayAttributes.Items.Add(listitem);
-            //        }
-            //    }
-            //}
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             var displayAttributes = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
-            if (_tableStyle == ETableStyle.Channel)
+            if (!_isContent)
             {
                 if (!_isList)
                 {
@@ -301,7 +244,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
             }
-            else if (ETableStyleUtils.IsContent(_tableStyle))
+            else
             {
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _relatedIdentity);
                 var attributesOfDisplay = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
@@ -311,55 +254,14 @@ namespace SiteServer.BackgroundPages.Cms
 
                 Body.AddSiteLog(PublishmentSystemId, "设置内容显示项", $"显示项:{attributesOfDisplay}");
             }
-            //else if (_tableStyle == ETableStyle.InputContent)
-            //{
-            //    var inputInfo = DataProvider.InputDao.GetInputInfo(_relatedIdentity);
-
-            //    var styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, DataProvider.InputContentDao.TableName, _relatedIdentities);
-            //    var selectedValues = ControlUtils.GetSelectedListControlValueArrayList(CblDisplayAttributes);
-
-            //    foreach (var styleInfo in styleInfoList)
-            //    {
-            //        if (_isList)
-            //        {
-            //            styleInfo.IsVisibleInList = selectedValues.Contains(styleInfo.AttributeName);
-            //        }
-            //        else
-            //        {
-            //            styleInfo.IsVisible = selectedValues.Contains(styleInfo.AttributeName);
-            //        }
-            //        styleInfo.RelatedIdentity = _relatedIdentity;
-
-            //        if (styleInfo.TableStyleId == 0)
-            //        {
-            //            TableStyleManager.Insert(styleInfo, _tableStyle);
-            //        }
-            //        else
-            //        {
-            //            TableStyleManager.Update(styleInfo);
-            //        }
-            //    }
-
-
-            //    if (_isList)
-            //    {
-            //        Body.AddSiteLog(PublishmentSystemId, "设置提交表单显示项",
-            //            $"表单名称：{inputInfo.InputName},显示项:{TranslateUtils.ObjectCollectionToString(selectedValues)}");
-            //    }
-            //    else
-            //    {
-            //        Body.AddSiteLog(PublishmentSystemId, "设置提交表单编辑项",
-            //            $"表单名称：{inputInfo.InputName},编辑项:{TranslateUtils.ObjectCollectionToString(selectedValues)}");
-            //    }
-            //}
 
             if (!_isList)
             {
-                PageUtils.CloseModalPageWithoutRefresh(Page);
+                LayerUtils.CloseWithoutRefresh(Page);
             }
             else
             {
-                PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
             }
         }
 

@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings("站点数据统计", AppManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
 
             StartDate.Text = DateUtils.GetDateAndTimeString(DateTime.Now.AddMonths(-1));
             EndDate.Now = true;

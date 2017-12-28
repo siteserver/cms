@@ -16,9 +16,9 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public HyperLink HlSelectChannel;
         public Literal LtlSelectChannelScript;
-        public DropDownList DdlContentModelId;
-        public CheckBoxList CblPlugins;
-        public PlaceHolder PhPlugins;
+        public DropDownList DdlContentModelPluginId;
+        public PlaceHolder PhContentRelatedPluginIds;
+        public CheckBoxList CblContentRelatedPluginIds;
         public TextBox TbNodeNames;
 
         public CheckBox CbIsNameToIndex;
@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenLayerString("添加栏目",
+            return LayerUtils.GetOpenScript("添加栏目",
                 PageUtils.GetCmsUrl(nameof(ModalChannelsAdd), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -59,24 +59,24 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            DdlContentModelId.Items.Add(new ListItem("<与父栏目相同>", string.Empty));
-            var contentTables = PluginCache.GetEnabledPluginMetadatas<IContentTable>();
+            DdlContentModelPluginId.Items.Add(new ListItem("<与父栏目相同>", string.Empty));
+            var contentTables = PluginManager.GetEnabledPluginMetadatas<IContentModel>();
             foreach (var contentTable in contentTables)
             {
-                DdlContentModelId.Items.Add(new ListItem($"插件：{contentTable.DisplayName}", contentTable.Id));
+                DdlContentModelPluginId.Items.Add(new ListItem(contentTable.DisplayName, contentTable.Id));
             }
 
-            var pluginChannels = PluginCache.GetAllChannels(false);
-            if (pluginChannels.Count > 0)
+            var plugins = PluginManager.GetAllContentRelatedPlugins(false);
+            if (plugins.Count > 0)
             {
-                foreach (var pluginMetadata in pluginChannels)
+                foreach (var pluginMetadata in plugins)
                 {
-                    CblPlugins.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id));
+                    CblContentRelatedPluginIds.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id));
                 }
             }
             else
             {
-                PhPlugins.Visible = false;
+                PhContentRelatedPluginIds.Visible = false;
             }
 
             DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ChannelTemplate);
@@ -160,17 +160,17 @@ namespace SiteServer.BackgroundPages.Cms
                         }
 
                         var parentId = (int)insertedNodeIdHashtable[count];
-                        var contentModelId = DdlContentModelId.SelectedValue;
-                        if (string.IsNullOrEmpty(contentModelId))
+                        var contentModelPluginId = DdlContentModelPluginId.SelectedValue;
+                        if (string.IsNullOrEmpty(contentModelPluginId))
                         {
                             var parentNodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, parentId);
-                            contentModelId = parentNodeInfo.ContentModelId;
+                            contentModelPluginId = parentNodeInfo.ContentModelPluginId;
                         }
 
                         var channelTemplateId = TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue);
                         var contentTemplateId = TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue);
 
-                        var insertedNodeId = DataProvider.NodeDao.InsertNodeInfo(PublishmentSystemId, parentId, nodeName, nodeIndex, contentModelId, channelTemplateId, contentTemplateId, ControlUtils.GetSelectedListControlValueCollection(CblPlugins));
+                        var insertedNodeId = DataProvider.NodeDao.InsertNodeInfo(PublishmentSystemId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId);
                         insertedNodeIdHashtable[count + 1] = insertedNodeId;
 
                         CreateManager.CreateChannel(PublishmentSystemId, insertedNodeId);
@@ -189,7 +189,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isChanged)
             {
-                PageUtils.CloseModalPageAndRedirect(Page, _returnUrl);
+                LayerUtils.CloseAndRedirect(Page, _returnUrl);
             }
         }
     }

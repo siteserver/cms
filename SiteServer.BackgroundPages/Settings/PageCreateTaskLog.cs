@@ -37,13 +37,13 @@ namespace SiteServer.BackgroundPages.Settings
 
 			if(!IsPostBack)
             {
-                BreadCrumbSettings("任务运行日志", AppManager.Permissions.Settings.Service);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.Service);
 
                 ETriStateUtils.AddListItems(DdlIsSuccess, "全部", "成功", "失败");
 
                 if (Body.IsQueryExists("Keyword"))
                 {
-                    ControlUtils.SelectListItems(DdlIsSuccess, Body.GetQueryString("IsSuccess"));
+                    ControlUtils.SelectSingleItem(DdlIsSuccess, Body.GetQueryString("IsSuccess"));
                     TbKeyword.Text = Body.GetQueryString("Keyword");
                     TbDateFrom.Text = Body.GetQueryString("DateFrom");
                     TbDateTo.Text = Body.GetQueryString("DateTo");

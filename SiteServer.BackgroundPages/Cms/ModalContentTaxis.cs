@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, string returnUrl)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("内容排序", PageUtils.GetCmsUrl(nameof(ModalContentTaxis), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("内容排序", PageUtils.GetCmsUrl(nameof(ModalContentTaxis), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             DdlTaxisType.Items.Add(new ListItem("上升", "Up"));
             DdlTaxisType.Items.Add(new ListItem("下降", "Down"));
-            ControlUtils.SelectListItems(DdlTaxisType, "Up");
+            ControlUtils.SelectSingleItem(DdlTaxisType, "Up");
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             Body.AddSiteLog(PublishmentSystemId, _nodeId, 0, "对内容排序", string.Empty);
 
-            PageUtils.CloseModalPageAndRedirect(Page, _returnUrl);
+            LayerUtils.CloseAndRedirect(Page, _returnUrl);
         }
 
     }

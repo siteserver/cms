@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using SiteServer.CMS.Model;
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 
 namespace SiteServer.CMS.Core.Office
 {
@@ -88,12 +88,9 @@ namespace SiteServer.CMS.Core.Office
 
             var relatedidentityes =
                 RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName,
-                relatedidentityes);
-            tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, tableStyle,
-                tableStyleInfoList);
+            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes);
+            tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, tableStyleInfoList);
 
             foreach (var tableStyleInfo in tableStyleInfoList)
             {
@@ -111,7 +108,7 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                 if (contentInfo != null)
                 {
                     var row = new List<string>();
@@ -548,61 +545,53 @@ namespace SiteServer.CMS.Core.Office
             List<List<string>> rows;
             CsvUtils.Import(filePath, out head, out rows);
 
-            if (rows.Count > 0)
+            if (rows.Count <= 0) return contentInfoList;
+
+            var relatedidentityes =
+                RelatedIdentities.GetChannelRelatedIdentities(
+                    publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
+            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
+            // ArrayList tableStyleInfoArrayList = TableStyleManager.GetTableStyleInfoArrayList(ETableStyle.BackgroundContent, publishmentSystemInfo.AuxiliaryTableForContent, relatedidentityes);
+
+            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedidentityes);
+            tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo, tableStyleInfoList);
+            var nameValueCollection = new NameValueCollection();
+
+            foreach (var styleInfo in tableStyleInfoList)
             {
-                var relatedidentityes =
-                    RelatedIdentities.GetChannelRelatedIdentities(
-                        publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId);
-                var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-                var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-                // ArrayList tableStyleInfoArrayList = TableStyleManager.GetTableStyleInfoArrayList(ETableStyle.BackgroundContent, publishmentSystemInfo.AuxiliaryTableForContent, relatedidentityes);
+                nameValueCollection[styleInfo.DisplayName] = styleInfo.AttributeName.ToLower();
+            }
 
-                var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedidentityes);
-                tableStyleInfoList = ContentUtility.GetAllTableStyleInfoList(publishmentSystemInfo,
-                    tableStyle, tableStyleInfoList);
-                var nameValueCollection = new NameValueCollection();
+            var attributeNames = new List<string>();
+            foreach (var columnName in head)
+            {
+                attributeNames.Add(!string.IsNullOrEmpty(nameValueCollection[columnName])
+                    ? nameValueCollection[columnName]
+                    : columnName);
+            }
 
-                foreach (var styleInfo in tableStyleInfoList)
+            foreach (var row in rows)
+            {
+                var contentInfo = new BackgroundContentInfo();
+                if (row.Count != attributeNames.Count) continue;
+
+                for (var i = 0; i < attributeNames.Count; i++)
                 {
-                    nameValueCollection[styleInfo.DisplayName] = styleInfo.AttributeName.ToLower();
-                }
-
-                var attributeNames = new List<string>();
-                foreach (var columnName in head)
-                {
-                    if (!string.IsNullOrEmpty(nameValueCollection[columnName]))
+                    var attributeName = attributeNames[i];
+                    if (!string.IsNullOrEmpty(attributeName))
                     {
-                        attributeNames.Add(nameValueCollection[columnName]);
-                    }
-                    else
-                    {
-                        attributeNames.Add(columnName);
+                        var value = row[i];
+                        contentInfo.Set(attributeName, value);
                     }
                 }
 
-                foreach (var row in rows)
+                if (!string.IsNullOrEmpty(contentInfo.Title))
                 {
-                    var contentInfo = new BackgroundContentInfo();
-                    if (row.Count != attributeNames.Count) continue;
+                    contentInfo.PublishmentSystemId = publishmentSystemInfo.PublishmentSystemId;
+                    contentInfo.NodeId = nodeInfo.NodeId;
+                    contentInfo.LastEditDate = DateTime.Now;
 
-                    for (var i = 0; i < attributeNames.Count; i++)
-                    {
-                        var attributeName = attributeNames[i];
-                        if (!string.IsNullOrEmpty(attributeName))
-                        {
-                            var value = row[i];
-                            contentInfo.Set(attributeName, value);
-                        }
-                    }
-
-                    if (!string.IsNullOrEmpty(contentInfo.Title))
-                    {
-                        contentInfo.PublishmentSystemId = publishmentSystemInfo.PublishmentSystemId;
-                        contentInfo.NodeId = nodeInfo.NodeId;
-                        contentInfo.LastEditDate = DateTime.Now;
-
-                        contentInfoList.Add(contentInfo);
-                    }
+                    contentInfoList.Add(contentInfo);
                 }
             }
 

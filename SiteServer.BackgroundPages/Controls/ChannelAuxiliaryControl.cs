@@ -4,67 +4,56 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Controls
 {
-	// 通过栏目辅助表生成的栏目辅助属性控件
 	public class ChannelAuxiliaryControl : Control
 	{
-        private NameValueCollection _formCollection;
-        private bool _isEdit;
-        private bool _isPostBack;
+        private IAttributes _attributes;
 	    private readonly Hashtable _inputTypeWithFormatStringHashtable = new Hashtable();
 
-        public void SetParameters(NameValueCollection formCollection, bool isEdit, bool isPostBack)
+        public void SetParameters(IAttributes attributes)
         {
-            _formCollection = formCollection;
-            _isEdit = isEdit;
-            _isPostBack = isPostBack;
+            _attributes = attributes;
         }
 
 		protected override void Render(HtmlTextWriter output)
 		{
+            if (_attributes == null) return;
+
             var nodeId = int.Parse(HttpContext.Current.Request.QueryString["NodeID"]);
             var publishmentSystemId = int.Parse(HttpContext.Current.Request.QueryString["PublishmentSystemID"]);
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
 
-            if (_formCollection == null)
-            {
-                _formCollection = HttpContext.Current.Request.Form.Count > 0 ? HttpContext.Current.Request.Form : new NameValueCollection();
-            }
-
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemId, nodeId);
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.Channel, DataProvider.NodeDao.TableName, relatedIdentities);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.NodeDao.TableName, relatedIdentities);
 
-            if (styleInfoList != null)
-            {
-                var builder = new StringBuilder();
-                var pageScripts = new NameValueCollection();
-                foreach (var styleInfo in styleInfoList)
-                {
-                    if (styleInfo.IsVisible)
-                    {
-                        var attributes = InputParserUtils.GetAdditionalAttributes(string.Empty, InputTypeUtils.GetEnumType(styleInfo.InputType));
-                        //string inputHtml = TableInputParser.Parse(styleInfo, styleInfo.AttributeName, this.formCollection, this.isEdit, isPostBack, attributes, pageScripts);
-                        string extraHtml;
-                        var inputHtml = BackgroundInputTypeParser.Parse(publishmentSystemInfo, nodeId, styleInfo, ETableStyle.Channel, styleInfo.AttributeName, _formCollection, _isEdit, _isPostBack, attributes, pageScripts, out extraHtml);
+		    if (styleInfoList == null) return;
 
-                        builder.AppendFormat(GetFormatString(InputTypeUtils.GetEnumType(styleInfo.InputType)), styleInfo.DisplayName, inputHtml, extraHtml);
-                    }
-                }
+            var builder = new StringBuilder();
+		    var pageScripts = new NameValueCollection();
+		    foreach (var styleInfo in styleInfoList)
+		    {
+		        //string inputHtml = TableInputParser.Parse(styleInfo, styleInfo.AttributeName, this.formCollection, this.isEdit, isPostBack, attributes, pageScripts);
+		        string extra;
+		        var value = BackgroundInputTypeParser.Parse(publishmentSystemInfo, nodeId, styleInfo, _attributes, pageScripts, out extra);
 
-                output.Write(builder.ToString());
+		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                foreach (string key in pageScripts.Keys)
-                {
-                    output.Write(pageScripts[key]);
-                }
-            }
+		        builder.AppendFormat(GetFormatString(InputTypeUtils.GetEnumType(styleInfo.InputType)), styleInfo.DisplayName, value, extra);
+		    }
+
+		    output.Write(builder.ToString());
+
+		    foreach (string key in pageScripts.Keys)
+		    {
+		        output.Write(pageScripts[key]);
+		    }
 		}
 
         public string FormatTextEditor

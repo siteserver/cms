@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
@@ -23,12 +23,12 @@ namespace BaiRong.Core.Provider
 
             contentInfo.LastEditDate = DateTime.Now;
 
-            var metadataInfoList = TableManager.GetTableMetadataInfoList(tableName);
+            var metadataInfoList = TableMetadataManager.GetTableMetadataInfoList(tableName);
 
             var names = new StringBuilder();
             var values = new StringBuilder();
             var paras = new List<IDataParameter>();
-            var lowerCaseExcludeAttributesNames = new List<string>(ContentAttribute.AllAttributes);
+            var lowerCaseExcludeAttributesNames = new List<string>(ContentAttribute.AllAttributesLowercase);
             foreach (var metadataInfo in metadataInfoList)
             {
                 lowerCaseExcludeAttributesNames.Add(metadataInfo.AttributeName.ToLower());
@@ -84,6 +84,7 @@ INSERT INTO {tableName} (
     {nameof(ContentInfo.IsRecommend)},
     {nameof(ContentInfo.IsHot)},
     {nameof(ContentInfo.IsColor)},
+    {nameof(ContentInfo.LinkUrl)},
     {nameof(ContentInfo.AddDate)}
     {names}
 ) VALUES (
@@ -113,6 +114,7 @@ INSERT INTO {tableName} (
     @{nameof(ContentInfo.IsRecommend)},
     @{nameof(ContentInfo.IsHot)},
     @{nameof(ContentInfo.IsColor)},
+    @{nameof(ContentInfo.LinkUrl)},
     @{nameof(ContentInfo.AddDate)}
     {values}
 )";
@@ -145,6 +147,7 @@ INSERT INTO {tableName} (
                 GetParameter($"@{nameof(ContentInfo.IsRecommend)}", DataType.VarChar, 18, contentInfo.IsRecommend.ToString()),
                 GetParameter($"@{nameof(ContentInfo.IsHot)}", DataType.VarChar, 18, contentInfo.IsHot.ToString()),
                 GetParameter($"@{nameof(ContentInfo.IsColor)}", DataType.VarChar, 18, contentInfo.IsColor.ToString()),
+                GetParameter($"@{nameof(ContentInfo.LinkUrl)}", DataType.VarChar, 200, contentInfo.LinkUrl),
                 GetParameter($"@{nameof(ContentInfo.AddDate)}", DataType.DateTime, contentInfo.AddDate)
             };
             parameters.AddRange(paras);
@@ -199,11 +202,11 @@ INSERT INTO {tableName} (
             //    sqlString = BaiRongDataProvider.DatabaseDao.GetUpdateSqlString(contentInfo.Attributes.GetExtendedAttributes(), tableName, out parms);
             //}
 
-            var metadataInfoList = TableManager.GetTableMetadataInfoList(tableName);
+            var metadataInfoList = TableMetadataManager.GetTableMetadataInfoList(tableName);
 
             var sets = new StringBuilder();
             var paras = new List<IDataParameter>();
-            var lowerCaseExcludeAttributesNames = new List<string>(ContentAttribute.AllAttributes);
+            var lowerCaseExcludeAttributesNames = new List<string>(ContentAttribute.AllAttributesLowercase);
             foreach (var metadataInfo in metadataInfoList)
             {
                 lowerCaseExcludeAttributesNames.Add(metadataInfo.AttributeName.ToLower());
@@ -258,6 +261,7 @@ UPDATE {tableName} SET
     {nameof(ContentInfo.IsRecommend)} = @{nameof(ContentInfo.IsRecommend)},
     {nameof(ContentInfo.IsHot)} = @{nameof(ContentInfo.IsHot)},
     {nameof(ContentInfo.IsColor)} = @{nameof(ContentInfo.IsColor)},
+    {nameof(ContentInfo.LinkUrl)} = @{nameof(ContentInfo.LinkUrl)},
     {nameof(ContentInfo.AddDate)} = @{nameof(ContentInfo.AddDate)}
     {sets}
 WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
@@ -290,6 +294,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
                 GetParameter($"@{nameof(ContentInfo.IsRecommend)}", DataType.VarChar, 18, contentInfo.IsRecommend.ToString()),
                 GetParameter($"@{nameof(ContentInfo.IsHot)}", DataType.VarChar, 18, contentInfo.IsHot.ToString()),
                 GetParameter($"@{nameof(ContentInfo.IsColor)}", DataType.VarChar, 18, contentInfo.IsColor.ToString()),
+                GetParameter($"@{nameof(ContentInfo.LinkUrl)}", DataType.VarChar, 200, contentInfo.LinkUrl),
                 GetParameter($"@{nameof(ContentInfo.AddDate)}", DataType.DateTime, contentInfo.AddDate)
             };
             parameters.AddRange(paras);
@@ -582,7 +587,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             ExecuteNonQuery(sqlString);
         }
 
-        public int GetReferenceId(ETableStyle tableStyle, string tableName, int contentId, out string linkUrl, out int nodeId)
+        public int GetReferenceId(string tableName, int contentId, out string linkUrl, out int nodeId)
         {
             var referenceId = 0;
             nodeId = 0;
@@ -609,7 +614,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return referenceId;
         }
 
-        public int GetReferenceId(ETableStyle tableStyle, string tableName, int contentId, out string linkUrl)
+        public int GetReferenceId(string tableName, int contentId, out string linkUrl)
         {
             var referenceId = 0;
             linkUrl = string.Empty;
@@ -672,12 +677,12 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public string GetSelectCommendByCondition(ETableStyle tableStyle, string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent)
+        public string GetSelectCommendByCondition(string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent)
         {
-            return GetSelectCommendByCondition(tableStyle, tableName, publishmentSystemId, nodeIdList, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, false, string.Empty);
+            return GetSelectCommendByCondition(tableName, publishmentSystemId, nodeIdList, searchType, keyword, dateFrom, dateTo, checkedState, isNoDup, isTrashContent, false, string.Empty);
         }
 
-        public string GetSelectCommendByCondition(ETableStyle tableStyle, string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
+        public string GetSelectCommendByCondition(string tableName, int publishmentSystemId, List<int> nodeIdList, string searchType, string keyword, string dateFrom, string dateTo, ETriState checkedState, bool isNoDup, bool isTrashContent, bool isWritingOnly, string userNameOnly)
         {
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
@@ -720,7 +725,7 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             }
             else if (!string.IsNullOrEmpty(keyword))
             {
-                var list = TableManager.GetAllLowerAttributeNameList(tableStyle, tableName);
+                var list = TableMetadataManager.GetAllLowerAttributeNameList(tableName);
                 whereString.Append(list.Contains(searchType.ToLower())
                     ? $"AND ({searchType} LIKE '%{keyword}%') "
                     : $"AND (SettingsXML LIKE '%{searchType}={keyword}%') ");
@@ -986,6 +991,22 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
                 rdr.Close();
             }
             return arraylist;
+        }
+
+        public List<int> GetContentIdListCheckedByNodeId(string tableName, int publishmentSystemId, int nodeId)
+        {
+            var list = new List<int>();
+
+            string sqlString = $"SELECT Id FROM {tableName} WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeId} AND IsChecked = '{true}'";
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    list.Add(GetInt(rdr, 0));
+                }
+                rdr.Close();
+            }
+            return list;
         }
 
         public List<int> GetContentIdListChecked(string tableName, List<int> nodeIdList, int totalNum, string orderString, string whereString)
@@ -1304,24 +1325,16 @@ group by tmp.userName";
             return arraylist;
         }
 
-        public string GetSelectedCommendByCheck(string tableName, int publishmentSystemId, bool isSystemAdministrator, List<int> owningNodeIdList, List<int> checkLevelList)
+        public string GetSelectedCommendByCheck(string tableName, int publishmentSystemId, List<int> nodeIdList, List<int> checkLevelList)
         {
-            string whereString;
-
-            if (isSystemAdministrator)
-            {
-                whereString =
-                    $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId > 0 AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) ";
-            }
-            else
-            {
-                whereString = owningNodeIdList.Count == 1 ? $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {owningNodeIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) " : $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) ";
-            }
+            var whereString = nodeIdList.Count == 1
+                ? $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId = {nodeIdList[0]} AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) "
+                : $"WHERE PublishmentSystemId = {publishmentSystemId} AND NodeId IN ({TranslateUtils.ToSqlInStringWithoutQuote(nodeIdList)}) AND IsChecked='{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}) ";
 
             return BaiRongDataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString);
         }
 
-        public DataSet GetStlDataSourceChecked(ETableStyle tableStyle, string tableName, List<int> nodeIdList, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
+        public DataSet GetStlDataSourceChecked(string tableName, List<int> nodeIdList, int startNum, int totalNum, string orderByString, string whereString, bool isNoDup, LowerNameValueCollection others)
         {
             if (nodeIdList == null || nodeIdList.Count == 0)
             {
@@ -1337,7 +1350,7 @@ group by tmp.userName";
 
             if (others != null && others.Count > 0)
             {
-                var lowerColumnNameList = TableManager.GetAllLowerAttributeNameList(tableStyle, tableName);
+                var lowerColumnNameList = TableMetadataManager.GetAllLowerAttributeNameList(tableName);
                 foreach (var attributeName in others.Keys)
                 {
                     if (lowerColumnNameList.Contains(attributeName.ToLower()))

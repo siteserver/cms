@@ -5,6 +5,6 @@ namespace SiteServer.Plugin.Features
 {
     public interface IFileSystem : IPlugin
     {
-        Action<object, FileSystemEventArgs> OnFileSystemChanged { get; }
+        Action<object, FileSystemEventArgs> FileSystemChanged { get; }
     }
 }

@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings("所属部门管理", AppManager.Permissions.Settings.AdminManagement);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.AdminManagement);
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", DepartmentTreeItem.GetScript(EDepartmentLoadingType.ContentList, null));
 
@@ -105,16 +105,9 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void BindGrid()
         {
-            try
-            {
-                rptContents.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
-                rptContents.ItemDataBound += rptContents_ItemDataBound;
-                rptContents.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            rptContents.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
+            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            rptContents.DataBind();
         }
 
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

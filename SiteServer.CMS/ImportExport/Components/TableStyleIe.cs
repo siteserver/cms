@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Atom.Core;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -71,7 +70,6 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, "Taxis", tableStyleInfo.Taxis.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "DisplayName", tableStyleInfo.DisplayName);
             AtomUtility.AddDcElement(feed.AdditionalElements, "HelpText", tableStyleInfo.HelpText);
-            AtomUtility.AddDcElement(feed.AdditionalElements, "IsVisible", tableStyleInfo.IsVisible.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "IsVisibleInList", tableStyleInfo.IsVisibleInList.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "InputType", tableStyleInfo.InputType);
             AtomUtility.AddDcElement(feed.AdditionalElements, "DefaultValue", tableStyleInfo.DefaultValue);
@@ -104,14 +102,14 @@ namespace SiteServer.CMS.ImportExport.Components
 			return entry;
 		}
 
-        public static void SingleExportTableStyles(ETableStyle tableStyle, string tableName, int publishmentSystemId, int relatedIdentity, string styleDirectoryPath)
+        public static void SingleExportTableStyles(string tableName, int publishmentSystemId, int relatedIdentity, string styleDirectoryPath)
         {
-            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(tableStyle, publishmentSystemId, relatedIdentity);
+            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(publishmentSystemId, relatedIdentity);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
@@ -129,14 +127,14 @@ namespace SiteServer.CMS.ImportExport.Components
             }
         }
 
-        public static void SingleExportTableStyles(ETableStyle tableStyle, string tableName, string styleDirectoryPath)
+        public static void SingleExportTableStyles(string tableName, string styleDirectoryPath)
         {
             var relatedIdentities = new List<int>{0};
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
@@ -154,7 +152,7 @@ namespace SiteServer.CMS.ImportExport.Components
             }
         }
 
-        public static void SingleImportTableStyle(ETableStyle tableStyle, string tableName, string styleDirectoryPath, int relatedIdentity)
+        public static void SingleImportTableStyle(string tableName, string styleDirectoryPath, int relatedIdentity)
         {
             if (!DirectoryUtils.IsDirectoryExists(styleDirectoryPath)) return;
 
@@ -167,7 +165,6 @@ namespace SiteServer.CMS.ImportExport.Components
                 var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, "Taxis"), 0);
                 var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DisplayName");
                 var helpText = AtomUtility.GetDcElementContent(feed.AdditionalElements, "HelpText");
-                var isVisible = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisible"));
                 var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisibleInList"));
                 var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
                 var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DefaultValue");
@@ -175,7 +172,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 //SettingsXML
                 var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, "ExtendValues");
 
-                var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, InputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
+                var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisibleInList, InputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
 
                 var styleItems = new List<TableStyleItemInfo>();
                 foreach (AtomEntry entry in feed.Entries)
@@ -196,15 +193,13 @@ namespace SiteServer.CMS.ImportExport.Components
                 {
                     TableStyleManager.Delete(relatedIdentity, tableName, attributeName);
                 }
-                TableStyleManager.InsertWithTaxis(styleInfo, tableStyle);
+                TableStyleManager.Insert(styleInfo);
             }
         }
 
         public void ImportTableStyles(int publishmentSystemId)
 		{
 			if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
-
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
 
             var importObject = new ImportObject(publishmentSystemId);
             var tableNameCollection = importObject.GetTableNameCache();
@@ -219,18 +214,6 @@ namespace SiteServer.CMS.ImportExport.Components
                     tableName = tableNameCollection[tableName];
                 }
 
-                ETableStyle tableStyle;
-
-                if (BaiRongDataProvider.TableCollectionDao.IsExistsAndCreated(tableName))
-                {
-                    var tableType = BaiRongDataProvider.TableCollectionDao.GetTableType(tableName);
-                    tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(tableType);
-                }
-                else
-                {
-                    tableStyle = PublishmentSystemManager.GetTableStyle(publishmentSystemInfo, tableName);
-                }
-
                 var attributeNamePaths = DirectoryUtils.GetDirectoryPaths(styleDirectoryPath);
                 foreach (var attributeNamePath in attributeNamePaths)
                 {
@@ -243,29 +226,19 @@ namespace SiteServer.CMS.ImportExport.Components
                         var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, "Taxis"), 0);
                         var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DisplayName");
                         var helpText = AtomUtility.GetDcElementContent(feed.AdditionalElements, "HelpText");
-                        var isVisible = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisible"));
                         var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsVisibleInList"));
                         var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "InputType"));
                         var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, "DefaultValue");
                         var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, "IsHorizontal"));
                         var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, "ExtendValues");
 
-                        int relatedIdentity;
-                        if (tableStyle == ETableStyle.Site)
-                        {
-                            relatedIdentity = publishmentSystemId;
-                        }
-                        else
-                        {
-                            var orderString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "OrderString");
+                        var orderString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "OrderString");
 
-                            relatedIdentity = !string.IsNullOrEmpty(orderString) ? DataProvider.NodeDao.GetNodeId(publishmentSystemId, orderString) : publishmentSystemId;
-                        }
+                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? DataProvider.NodeDao.GetNodeId(publishmentSystemId, orderString) : publishmentSystemId;
 
-                        if (relatedIdentity <= 0 ||
-                            TableStyleManager.IsExists(relatedIdentity, tableName, attributeName)) continue;
+                        if (relatedIdentity <= 0 || TableStyleManager.IsExists(relatedIdentity, tableName, attributeName)) continue;
 
-                        var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisible, isVisibleInList, InputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
+                        var styleInfo = new TableStyleInfo(0, relatedIdentity, tableName, attributeName, taxis, displayName, helpText, isVisibleInList, InputTypeUtils.GetValue(inputType), defaultValue, isHorizontal, extendValues);
 
                         var styleItems = new List<TableStyleItemInfo>();
                         foreach (AtomEntry entry in feed.Entries)
@@ -282,7 +255,7 @@ namespace SiteServer.CMS.ImportExport.Components
                             styleInfo.StyleItems = styleItems;
                         }
 
-                        TableStyleManager.InsertWithTaxis(styleInfo, tableStyle);
+                        TableStyleManager.Insert(styleInfo);
                     }
                 }
             }

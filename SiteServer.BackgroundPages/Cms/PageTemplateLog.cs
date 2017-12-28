@@ -64,30 +64,29 @@ namespace SiteServer.BackgroundPages.Cms
             spContents.SortMode = SortMode.DESC;
             rptContents.ItemDataBound += rptContents_ItemDataBound;
 
-            if (!IsPostBack)
-            {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "修订历史", AppManager.Permissions.WebSite.Template);
+            if (IsPostBack) return;
 
-                btnCompare.Attributes.Add("onclick",
-                    PageUtils.GetRedirectStringWithCheckBoxValue(
-                        PageUtils.GetCmsUrl(nameof(PageTemplateLog), new NameValueCollection
-                        {
-                            {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                            {"TemplateID", _templateId.ToString()},
-                            {"Compare", true.ToString()}
-                        }), "IDCollection", "IDCollection", "请选择需要对比的记录！"));
+            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
-                btnDelete.Attributes.Add("onclick",
-                    PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
-                        PageUtils.GetCmsUrl(nameof(PageTemplateLog), new NameValueCollection
-                        {
-                            {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                            {"TemplateID", _templateId.ToString()},
-                            {"Delete", true.ToString()}
-                        }), "IDCollection", "IDCollection", "请选择需要删除的修订历史！", "此操作将删除所选修订历史，确认吗？"));
+            btnCompare.Attributes.Add("onclick",
+                PageUtils.GetRedirectStringWithCheckBoxValue(
+                    PageUtils.GetCmsUrl(nameof(PageTemplateLog), new NameValueCollection
+                    {
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                        {"TemplateID", _templateId.ToString()},
+                        {"Compare", true.ToString()}
+                    }), "IDCollection", "IDCollection", "请选择需要对比的记录！"));
 
-                spContents.DataBind();
-            }
+            btnDelete.Attributes.Add("onclick",
+                PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
+                    PageUtils.GetCmsUrl(nameof(PageTemplateLog), new NameValueCollection
+                    {
+                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                        {"TemplateID", _templateId.ToString()},
+                        {"Delete", true.ToString()}
+                    }), "IDCollection", "IDCollection", "请选择需要删除的修订历史！", "此操作将删除所选修订历史，确认吗？"));
+
+            spContents.DataBind();
         }
 
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

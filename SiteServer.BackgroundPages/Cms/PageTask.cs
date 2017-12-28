@@ -71,11 +71,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (PublishmentSystemId > 0)
                 {
-                    BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, taskName + "任务", AppManager.Permissions.WebSite.Configration);
+                    VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
                 }
                 else
                 {
-                    BreadCrumbSettings(taskName + "任务", AppManager.Permissions.Settings.Service);
+                    VerifyAdministratorPermissions(AppManager.Permissions.Settings.Service);
                 }
 
                 AddTask.Text = $"添加{taskName}任务";
@@ -86,24 +86,17 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            try
+            if (PublishmentSystemId != 0)
             {
-                if (PublishmentSystemId != 0)
-                {
-                    DgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType, PublishmentSystemId);
-                    DgContents.Columns.RemoveAt(0);
-                }
-                else
-                {
-                    DgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType);
-                }
-                DgContents.ItemDataBound += DgContents_ItemDataBound;
-                DgContents.DataBind();
+                DgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType, PublishmentSystemId);
+                DgContents.Columns.RemoveAt(0);
             }
-            catch (Exception ex)
+            else
             {
-                PageUtils.RedirectToErrorPage(ex.Message);
+                DgContents.DataSource = DataProvider.TaskDao.GetTaskInfoList(_serviceType);
             }
+            DgContents.ItemDataBound += DgContents_ItemDataBound;
+            DgContents.DataBind();
         }
 
         private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)

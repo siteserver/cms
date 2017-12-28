@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerString("跨站转发设置", PageUtils.GetCmsUrl(nameof(ModalCrossSiteTransEdit), new NameValueCollection
+            return LayerUtils.GetOpenScript("跨站转发设置", PageUtils.GetCmsUrl(nameof(ModalCrossSiteTransEdit), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()}
@@ -45,21 +45,21 @@ namespace SiteServer.BackgroundPages.Cms
 
             ECrossSiteTransTypeUtils.AddAllListItems(DdlTransType, PublishmentSystemInfo.ParentPublishmentSystemId > 0);
 
-            ControlUtils.SelectListItems(DdlTransType, ECrossSiteTransTypeUtils.GetValue(_nodeInfo.Additional.TransType));
+            ControlUtils.SelectSingleItem(DdlTransType, ECrossSiteTransTypeUtils.GetValue(_nodeInfo.Additional.TransType));
 
             DdlTransType_OnSelectedIndexChanged(null, EventArgs.Empty);
-            ControlUtils.SelectListItems(DdlPublishmentSystemId, _nodeInfo.Additional.TransPublishmentSystemId.ToString());
+            ControlUtils.SelectSingleItem(DdlPublishmentSystemId, _nodeInfo.Additional.TransPublishmentSystemId.ToString());
 
 
             DdlPublishmentSystemId_OnSelectedIndexChanged(null, EventArgs.Empty);
-            ControlUtils.SelectListItems(LbNodeId, TranslateUtils.StringCollectionToStringList(_nodeInfo.Additional.TransNodeIds));
+            ControlUtils.SelectMultiItems(LbNodeId, TranslateUtils.StringCollectionToStringList(_nodeInfo.Additional.TransNodeIds));
             TbNodeNames.Text = _nodeInfo.Additional.TransNodeNames;
 
             EBooleanUtils.AddListItems(DdlIsAutomatic, "自动", "提示");
-            ControlUtils.SelectListItemsIgnoreCase(DdlIsAutomatic, _nodeInfo.Additional.TransIsAutomatic.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutomatic, _nodeInfo.Additional.TransIsAutomatic.ToString());
 
             ETranslateContentTypeUtils.AddListItems(DdlTranslateDoneType, false);
-            ControlUtils.SelectListItems(DdlTranslateDoneType, ETranslateContentTypeUtils.GetValue(_nodeInfo.Additional.TransDoneType));
+            ControlUtils.SelectSingleItem(DdlTranslateDoneType, ETranslateContentTypeUtils.GetValue(_nodeInfo.Additional.TransDoneType));
         }
 
         protected void DdlTransType_OnSelectedIndexChanged(object sender, EventArgs e)
@@ -183,7 +183,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isSuccess)
             {
-                PageUtils.CloseModalPageAndRedirect(Page, PageConfigurationCrossSiteTrans.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId));
+                LayerUtils.CloseAndRedirect(Page, PageConfigurationCrossSiteTrans.GetRedirectUrl(PublishmentSystemId, _nodeInfo.NodeId));
             }
         }
     }

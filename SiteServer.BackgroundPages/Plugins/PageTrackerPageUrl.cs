@@ -103,52 +103,45 @@ namespace SiteServer.BackgroundPages.Plugins
 
 		public void BindGrid()
 		{
-			try
-			{
-				var arraylist = new ArrayList();
-				foreach (var pair in _accessNumPairList)
-				{
-                    var pageUrl = pair.Key;
-                    var accessNum = pair.Value;
-					//int accessNum = this.GetAccessNum(pageUrl);
-					var pageUrlWithAccessNum = new PageUrlWithAccessNum(pageUrl, accessNum);
-					arraylist.Add(pageUrlWithAccessNum);
-				}
+            var arraylist = new ArrayList();
+            foreach (var pair in _accessNumPairList)
+            {
+                var pageUrl = pair.Key;
+                var accessNum = pair.Value;
+                //int accessNum = this.GetAccessNum(pageUrl);
+                var pageUrlWithAccessNum = new PageUrlWithAccessNum(pageUrl, accessNum);
+                arraylist.Add(pageUrlWithAccessNum);
+            }
 
-                dgContents.DataSource = arraylist;
-                dgContents.PageSize = PublishmentSystemManager.GetPublishmentSystemInfo(PublishmentSystemId).Additional.PageSize;
-                dgContents.DataBind();
+            dgContents.DataSource = arraylist;
+            dgContents.PageSize = PublishmentSystemManager.GetPublishmentSystemInfo(PublishmentSystemId).Additional.PageSize;
+            dgContents.DataBind();
 
 
-                if (dgContents.CurrentPageIndex > 0)
-				{
-					pageFirst.Enabled = true;
-					pagePrevious.Enabled = true;
-				}
-				else
-				{
-					pageFirst.Enabled = false;
-					pagePrevious.Enabled = false;
-				}
+            if (dgContents.CurrentPageIndex > 0)
+            {
+                pageFirst.Enabled = true;
+                pagePrevious.Enabled = true;
+            }
+            else
+            {
+                pageFirst.Enabled = false;
+                pagePrevious.Enabled = false;
+            }
 
-                if (dgContents.CurrentPageIndex + 1 == dgContents.PageCount)
-				{
-					pageLast.Enabled = false;
-					pageNext.Enabled = false;
-				}
-				else
-				{
-					pageLast.Enabled = true;
-					pageNext.Enabled = true;
-				}
+            if (dgContents.CurrentPageIndex + 1 == dgContents.PageCount)
+            {
+                pageLast.Enabled = false;
+                pageNext.Enabled = false;
+            }
+            else
+            {
+                pageLast.Enabled = true;
+                pageNext.Enabled = true;
+            }
 
-                currentPage.Text = $"{dgContents.CurrentPageIndex + 1}/{dgContents.PageCount}";
-			}
-			catch (Exception ex)
-			{
-                PageUtils.RedirectToErrorPage(ex.Message);
-			}
-		}
+            currentPage.Text = $"{dgContents.CurrentPageIndex + 1}/{dgContents.PageCount}";
+        }
 
 
 		protected void NavigationButtonClick(object sender, EventArgs e)

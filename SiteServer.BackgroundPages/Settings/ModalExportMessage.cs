@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.ImportExport;
 
@@ -13,12 +12,11 @@ namespace SiteServer.BackgroundPages.Settings
         private string _exportType;
         public const string ExportTypeSingleTableStyle = "SingleTableStyle";
 
-        public static string GetOpenWindowStringToSingleTableStyle(ETableStyle tableStyle, string tableName)
+        public static string GetOpenWindowStringToSingleTableStyle(string tableName)
         {
-            return PageUtils.GetOpenLayerString("导出数据",
+            return LayerUtils.GetOpenScript("导出数据",
                 PageUtils.GetSettingsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
-                    {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                     {"TableName", tableName},
                     {"ExportType", ExportTypeSingleTableStyle}
                 }), 380, 250);
@@ -37,9 +35,8 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     if (_exportType == ExportTypeSingleTableStyle)
                     {
-                        var tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
                         var tableName = Body.GetQueryString("TableName");
-                        fileName = ExportSingleTableStyle(tableStyle, tableName);
+                        fileName = ExportSingleTableStyle(tableName);
                     }
 
                     var link = new HyperLink();
@@ -57,9 +54,9 @@ namespace SiteServer.BackgroundPages.Settings
             }
         }
 
-        private static string ExportSingleTableStyle(ETableStyle tableStyle, string tableName)
+        private static string ExportSingleTableStyle(string tableName)
         {
-            return ExportObject.ExportRootSingleTableStyle(tableStyle, tableName);
+            return ExportObject.ExportRootSingleTableStyle(tableName);
         }
     }
 }

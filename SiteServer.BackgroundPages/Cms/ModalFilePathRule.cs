@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId, bool isChannel, string textBoxclientId)
         {
-            return PageUtils.GetOpenLayerStringWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", PageUtils.GetCmsUrl(nameof(ModalFilePathRule), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", PageUtils.GetCmsUrl(nameof(ModalFilePathRule), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"NodeID", nodeId.ToString()},
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             string scripts = $"window.parent.document.all.{_textBoxClientId}.value = '{TbRule.Text}';";
-            PageUtils.CloseModalPageWithoutRefresh(Page, scripts);
+            LayerUtils.CloseWithoutRefresh(Page, scripts);
 		}
 	}
 }

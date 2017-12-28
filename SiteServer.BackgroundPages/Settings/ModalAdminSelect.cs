@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetShowPopWinString(int departmentId, string scriptName)
         {
-            return PageUtils.GetOpenLayerString("管理员选择", PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
+            return LayerUtils.GetOpenScript("管理员选择", PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
             {
                 {"departmentID", departmentId.ToString()},
                 {"scriptName", scriptName}
@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Settings
                     var userName = Body.GetQueryString("UserName");
                     var displayName = AdminManager.GetDisplayName(userName, true);
                     string scripts = $"window.parent.{_scriptName}('{displayName}', '{userName}');";
-                    PageUtils.CloseModalPageWithoutRefresh(Page, scripts);
+                    LayerUtils.CloseWithoutRefresh(Page, scripts);
                 }
                 else if (Body.IsQueryExists("departmentID"))
                 {
@@ -66,16 +66,9 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void BindGrid()
         {
-            try
-            {
-                RptDepartment.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
-                RptDepartment.ItemDataBound += rptDepartment_ItemDataBound;
-                RptDepartment.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            RptDepartment.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
+            RptDepartment.ItemDataBound += rptDepartment_ItemDataBound;
+            RptDepartment.DataBind();
         }
 
         private void rptDepartment_ItemDataBound(object sender, RepeaterItemEventArgs e)

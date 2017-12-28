@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerStringWithCheckBoxValue("生成栏目页", PageUtils.GetCmsUrl(nameof(ModalCreateChannels), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("生成栏目页", PageUtils.GetCmsUrl(nameof(ModalCreateChannels), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
             }), "ChannelIDCollection", "请选择需要生成页面的栏目!", 550, 300);
@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            PageUtils.CloseModalPageWithoutRefresh(Page);
+            LayerUtils.CloseWithoutRefresh(Page);
 		}
 	}
 }

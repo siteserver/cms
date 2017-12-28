@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "查看栏目组", AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
             LtlChannelGroupName.Text = "栏目组：" + nodeGroupName;
 

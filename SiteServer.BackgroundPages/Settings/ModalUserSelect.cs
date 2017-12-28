@@ -136,7 +136,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                PageUtils.CloseModalPageWithoutRefresh(Page, $@"
+                LayerUtils.CloseWithoutRefresh(Page, $@"
 var textBox = parent.$('#{_textBoxId}');
 if (textBox.val()){{
     textBox.val(textBox.val() + ',{Request.Form["UserNameCollection"]}');

@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
 			
 			if (!Page.IsPostBack)
             {
-                BreadCrumbSettings("在线模板下载", AppManager.Permissions.Settings.SiteManagement);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
                 try
                 {

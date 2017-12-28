@@ -20,15 +20,15 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "站点配置管理", AppManager.Permissions.WebSite.Configration);
+                VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
                 ECharsetUtils.AddListItems(DdlCharset);
-                ControlUtils.SelectListItems(DdlCharset, PublishmentSystemInfo.Additional.Charset);
+                ControlUtils.SelectSingleItem(DdlCharset, PublishmentSystemInfo.Additional.Charset);
 
                 TbPageSize.Text = PublishmentSystemInfo.Additional.PageSize.ToString();
 
                 EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, PublishmentSystemInfo.Additional.IsCreateDoubleClick.ToString());
             }
 		}
 

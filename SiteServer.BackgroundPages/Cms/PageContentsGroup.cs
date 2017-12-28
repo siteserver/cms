@@ -7,7 +7,6 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.User;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -38,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentId = Body.GetQueryInt("ContentID");
                 try
                 {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, tableName, contentId);
+                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                     var groupList = TranslateUtils.StringCollectionToStringList(contentInfo.ContentGroupNameCollection);
                     if (groupList.Contains(groupName))
                         groupList.Remove(groupName);
@@ -62,12 +61,11 @@ namespace SiteServer.BackgroundPages.Cms
             spContents.SortField = "AddDate";
             spContents.SortMode = SortMode.DESC;
 
-            if (!IsPostBack)
-            {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "查看内容组", AppManager.Permissions.WebSite.Configration);
-                ltlContentGroupName.Text = "内容组：" + Body.GetQueryString("ContentGroupName");
-                spContents.DataBind();
-            }
+            if (IsPostBack) return;
+
+            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+            ltlContentGroupName.Text = "内容组：" + Body.GetQueryString("ContentGroupName");
+            spContents.DataBind();
         }
 
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -88,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
                 ltlItemChannel.Text = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
                 ltlItemAuthor.Text = AdminManager.GetDisplayName(contentInfo.AddUserName, true);
                 ltlItemAddDate.Text = DateUtils.GetDateAndTimeString(contentInfo.AddDate);
-                ltlItemStatus.Text = LevelManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
+                ltlItemStatus.Text = CheckManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel);
 
                 if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
                 {

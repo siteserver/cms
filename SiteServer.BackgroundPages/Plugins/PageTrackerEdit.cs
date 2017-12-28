@@ -28,18 +28,18 @@ namespace SiteServer.BackgroundPages.Plugins
             if (!IsPostBack)
             {
                 EBooleanUtils.AddListItems(RblIsCountHits, "统计", "不统计");
-                ControlUtils.SelectListItemsIgnoreCase(RblIsCountHits, PublishmentSystemInfo.Additional.IsCountHits.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(RblIsCountHits, PublishmentSystemInfo.Additional.IsCountHits.ToString());
 
                 EBooleanUtils.AddListItems(RblIsCountHitsByDay, "统计", "不统计");
-                ControlUtils.SelectListItemsIgnoreCase(RblIsCountHitsByDay, PublishmentSystemInfo.Additional.IsCountHitsByDay.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(RblIsCountHitsByDay, PublishmentSystemInfo.Additional.IsCountHitsByDay.ToString());
 
                 EBooleanUtils.AddListItems(RblIsCountDownload, "统计", "不统计");
-                ControlUtils.SelectListItemsIgnoreCase(RblIsCountDownload, PublishmentSystemInfo.Additional.IsCountDownload.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(RblIsCountDownload, PublishmentSystemInfo.Additional.IsCountDownload.ToString());
 
                 RblIsCountHits_SelectedIndexChanged(null, EventArgs.Empty);
 
                 EBooleanUtils.AddListItems(IsTracker, "统计", "不统计");
-                ControlUtils.SelectListItemsIgnoreCase(IsTracker, PublishmentSystemInfo.Additional.IsTracker.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(IsTracker, PublishmentSystemInfo.Additional.IsTracker.ToString());
 
                 TrackerDays.Text = PublishmentSystemInfo.Additional.TrackerDays.ToString();
                 TrackerPageView.Text = PublishmentSystemInfo.Additional.TrackerPageView.ToString();

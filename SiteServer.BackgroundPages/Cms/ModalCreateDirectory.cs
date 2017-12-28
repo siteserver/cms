@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             Body.AddSiteLog(PublishmentSystemId, "新建文件夹", $"文件夹:{TbDirectoryName.Text}");
-            PageUtils.CloseModalPage(Page);
+            LayerUtils.Close(Page);
         }
 	}
 }

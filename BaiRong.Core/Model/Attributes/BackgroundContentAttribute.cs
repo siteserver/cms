@@ -13,7 +13,6 @@ namespace BaiRong.Core.Model.Attributes
         public const string ImageUrl = "ImageUrl";
         public const string VideoUrl = "VideoUrl";
         public const string FileUrl = "FileUrl";
-        public const string LinkUrl = "LinkUrl";
         public const string Author = "Author";
         public const string Source = "Source";
         public const string Summary = "Summary";
@@ -31,9 +30,9 @@ namespace BaiRong.Core.Model.Attributes
         {
             get
             {
-                var arraylist = new List<string>(ContentAttribute.AllAttributes);
-                arraylist.AddRange(SystemAttributes);
-                return arraylist;
+                var list = new List<string>(ContentAttribute.AllAttributesLowercase);
+                list.AddRange(SystemAttributes);
+                return list;
             }
         }
 
@@ -44,7 +43,6 @@ namespace BaiRong.Core.Model.Attributes
             ImageUrl.ToLower(),
             VideoUrl.ToLower(),
             FileUrl.ToLower(),
-            LinkUrl.ToLower(),
             Content.ToLower(),
             Author.ToLower(),
             Source.ToLower(),

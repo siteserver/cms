@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings("服务状态", AppManager.Permissions.Settings.Service);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Service);
 
             if (ServiceManager.IsServiceOnline)
             {

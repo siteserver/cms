@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToAdd(EServiceType serviceType, int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerString("添加任务", PageUtils.GetCmsUrl(nameof(ModalTaskAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加任务", PageUtils.GetCmsUrl(nameof(ModalTaskAdd), new NameValueCollection
             {
                 {"ServiceType", EServiceTypeUtils.GetValue(serviceType)},
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToEdit(int taskId, EServiceType serviceType, int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerString("修改任务", PageUtils.GetCmsUrl(nameof(ModalTaskAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改任务", PageUtils.GetCmsUrl(nameof(ModalTaskAdd), new NameValueCollection
             {
                 {"TaskID", taskId.ToString()},
                 {"ServiceType", EServiceTypeUtils.GetValue(serviceType)},
@@ -213,30 +213,30 @@ namespace SiteServer.BackgroundPages.Cms
                     TbTaskName.Text = taskInfo.TaskName;
                     TbTaskName.Enabled = false;
 
-                    ControlUtils.SelectListItems(DdlFrequencyType, EFrequencyTypeUtils.GetValue(taskInfo.FrequencyType));
-                    ControlUtils.SelectListItems(DdlStartDay, taskInfo.StartDay.ToString());
-                    ControlUtils.SelectListItems(DdlStartWeekday, taskInfo.StartWeekday.ToString());
-                    ControlUtils.SelectListItems(DdlStartHour, taskInfo.StartHour.ToString());
+                    ControlUtils.SelectSingleItem(DdlFrequencyType, EFrequencyTypeUtils.GetValue(taskInfo.FrequencyType));
+                    ControlUtils.SelectSingleItem(DdlStartDay, taskInfo.StartDay.ToString());
+                    ControlUtils.SelectSingleItem(DdlStartWeekday, taskInfo.StartWeekday.ToString());
+                    ControlUtils.SelectSingleItem(DdlStartHour, taskInfo.StartHour.ToString());
 
                     if (taskInfo.PeriodIntervalMinute % 5040 == 0)
                     {
                         TbPeriodInterval.Text = Convert.ToInt32(taskInfo.PeriodIntervalMinute / 5040).ToString();
-                        ControlUtils.SelectListItems(DdlPeriodIntervalType, "5040");
+                        ControlUtils.SelectSingleItem(DdlPeriodIntervalType, "5040");
                     }
                     else if (taskInfo.PeriodIntervalMinute % 720 == 0)
                     {
                         TbPeriodInterval.Text = Convert.ToInt32(taskInfo.PeriodIntervalMinute / 720).ToString();
-                        ControlUtils.SelectListItems(DdlPeriodIntervalType, "720");
+                        ControlUtils.SelectSingleItem(DdlPeriodIntervalType, "720");
                     }
                     else if (taskInfo.PeriodIntervalMinute % 12 == 0)
                     {
                         TbPeriodInterval.Text = Convert.ToInt32(taskInfo.PeriodIntervalMinute / 12).ToString();
-                        ControlUtils.SelectListItems(DdlPeriodIntervalType, "12");
+                        ControlUtils.SelectSingleItem(DdlPeriodIntervalType, "12");
                     }
                     else
                     {
                         TbPeriodInterval.Text = taskInfo.PeriodIntervalMinute.ToString();
-                        ControlUtils.SelectListItems(DdlPeriodIntervalType, "1");
+                        ControlUtils.SelectSingleItem(DdlPeriodIntervalType, "1");
                     }
 
                     TbDescription.Text = taskInfo.Description;
@@ -255,7 +255,7 @@ namespace SiteServer.BackgroundPages.Cms
                         else
                         {
                             var channelIdList = TranslateUtils.StringCollectionToStringList(taskCreateInfo.ChannelIdCollection);
-                            ControlUtils.SelectListItems(LbCreateChannelId, channelIdList);
+                            ControlUtils.SelectMultiItems(LbCreateChannelId, channelIdList);
                             CbCreateIsCreateAll.Checked = false;
                         }
                         var createTypeList = TranslateUtils.StringCollectionToStringList(taskCreateInfo.CreateTypes);
@@ -293,7 +293,7 @@ namespace SiteServer.BackgroundPages.Cms
                         else
                         {
                             var publishmentSystemIdList = TranslateUtils.StringCollectionToStringList(taskGatherInfo.PublishmentSystemIdCollection);
-                            ControlUtils.SelectListItems(LbGather, publishmentSystemIdList);
+                            ControlUtils.SelectMultiItems(LbGather, publishmentSystemIdList);
                         }
                     }
                     else if (_serviceType == EServiceType.Backup)
@@ -313,16 +313,16 @@ namespace SiteServer.BackgroundPages.Cms
                             else
                             {
                                 var publishmentSystemIdList = TranslateUtils.StringCollectionToStringList(taskBackupInfo.PublishmentSystemIdCollection);
-                                ControlUtils.SelectListItems(LbBackupPublishmentSystemId, publishmentSystemIdList);
+                                ControlUtils.SelectMultiItems(LbBackupPublishmentSystemId, publishmentSystemIdList);
                                 CbBackupIsBackupAll.Checked = false;
                             }
                         }
                         else
                         {
-                            ControlUtils.SelectListItems(LbBackupPublishmentSystemId, taskInfo.PublishmentSystemId.ToString());
+                            ControlUtils.SelectSingleItem(LbBackupPublishmentSystemId, taskInfo.PublishmentSystemId.ToString());
                         }
 
-                        ControlUtils.SelectListItems(DdlBackupType, EBackupTypeUtils.GetValue(taskBackupInfo.BackupType));
+                        ControlUtils.SelectSingleItem(DdlBackupType, EBackupTypeUtils.GetValue(taskBackupInfo.BackupType));
                     }
                 }
             }
@@ -520,7 +520,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isChanged)
             {
-                PageUtils.CloseModalPageAndRedirect(Page, PageTask.GetRedirectUrl(PublishmentSystemId, _serviceType));
+                LayerUtils.CloseAndRedirect(Page, PageTask.GetRedirectUrl(PublishmentSystemId, _serviceType));
             }
         }
     }

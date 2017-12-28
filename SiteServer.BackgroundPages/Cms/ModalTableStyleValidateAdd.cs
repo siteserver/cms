@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -29,17 +29,15 @@ namespace SiteServer.BackgroundPages.Cms
         private string _attributeName;
         private string _redirectUrl;
         private TableStyleInfo _styleInfo;
-        private ETableStyle _tableStyle;
 
-        public static string GetOpenWindowString(int tableStyleId, List<int> relatedIdentities, string tableName, string attributeName, ETableStyle tableStyle, string redirectUrl)
+        public static string GetOpenWindowString(int tableStyleId, List<int> relatedIdentities, string tableName, string attributeName, string redirectUrl)
         {
-            return PageUtils.GetOpenLayerString("设置表单验证", PageUtils.GetCmsUrl(nameof(ModalTableStyleValidateAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("设置表单验证", PageUtils.GetCmsUrl(nameof(ModalTableStyleValidateAdd), new NameValueCollection
             {
                 {"TableStyleID", tableStyleId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
                 {"TableName", tableName},
                 {"AttributeName", attributeName},
-                {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                 {"RedirectUrl", StringUtils.ValueToUrl(redirectUrl)}
             }));
         }
@@ -56,24 +54,23 @@ namespace SiteServer.BackgroundPages.Cms
             }
             _tableName = Body.GetQueryString("TableName");
             _attributeName = Body.GetQueryString("AttributeName");
-            _tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
             _redirectUrl = StringUtils.ValueFromUrl(Body.GetQueryString("RedirectUrl"));
 
             _styleInfo = _tableStyleId != 0
                 ? BaiRongDataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId)
-                : TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, _attributeName, _relatedIdentities);
+                : TableStyleManager.GetTableStyleInfo(_tableName, _attributeName, _relatedIdentities);
 
             if (IsPostBack) return;
 
             DdlIsValidate.Items[0].Value = true.ToString();
             DdlIsValidate.Items[1].Value = false.ToString();
 
-            ControlUtils.SelectListItems(DdlIsValidate, _styleInfo.Additional.IsValidate.ToString());
+            ControlUtils.SelectSingleItem(DdlIsValidate, _styleInfo.Additional.IsValidate.ToString());
 
             DdlIsRequired.Items[0].Value = true.ToString();
             DdlIsRequired.Items[1].Value = false.ToString();
 
-            ControlUtils.SelectListItems(DdlIsRequired, _styleInfo.Additional.IsRequired.ToString());
+            ControlUtils.SelectSingleItem(DdlIsRequired, _styleInfo.Additional.IsRequired.ToString());
 
             PhNum.Visible = InputTypeUtils.EqualsAny(_styleInfo.InputType, InputType.Text, InputType.TextArea);
 
@@ -81,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
             TbMaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
 
             ValidateTypeUtils.AddListItems(DdlValidateType);
-            ControlUtils.SelectListItems(DdlValidateType, ValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
+            ControlUtils.SelectSingleItem(DdlValidateType, ValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
 
             TbRegExp.Text = _styleInfo.Additional.RegExp;
             TbErrorMessage.Text = _styleInfo.Additional.ErrorMessage;
@@ -102,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isChanged)
             {
-                PageUtils.CloseModalPageAndRedirect(Page, _redirectUrl);
+                LayerUtils.CloseAndRedirect(Page, _redirectUrl);
             }
 		}
 
@@ -124,18 +121,18 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var relatedIdentity = _relatedIdentities[0];
                     _styleInfo.RelatedIdentity = relatedIdentity;
-                    _styleInfo.TableStyleId = TableStyleManager.Insert(_styleInfo, _tableStyle);
+                    _styleInfo.TableStyleId = TableStyleManager.Insert(_styleInfo);
                 }
 
                 if (_styleInfo.TableStyleId > 0)
                 {
                     TableStyleManager.Update(_styleInfo);
-                    Body.AddSiteLog(PublishmentSystemId, "修改表单验证", $"类型:{ETableStyleUtils.GetText(_tableStyle)},字段:{_styleInfo.AttributeName}");
+                    Body.AddSiteLog(PublishmentSystemId, "修改表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 else
                 {
-                    TableStyleManager.Insert(_styleInfo, _tableStyle);
-                    Body.AddSiteLog(PublishmentSystemId, "新增表单验证", $"类型:{ETableStyleUtils.GetText(_tableStyle)},字段:{_styleInfo.AttributeName}");
+                    TableStyleManager.Insert(_styleInfo);
+                    Body.AddSiteLog(PublishmentSystemId, "新增表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 isChanged = true;
             }

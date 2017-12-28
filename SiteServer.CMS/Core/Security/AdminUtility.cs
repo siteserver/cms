@@ -1,12 +1,11 @@
 using BaiRong.Core;
 using System.Collections.Generic;
-using SiteServer.CMS.Core.Permissions;
 
 namespace SiteServer.CMS.Core.Security
 {
     public class AdminUtility
     {
-        public static bool HasWebsitePermissions(string administratorName, int publishmentSystemId, params string[] websitePermissionArray)
+        public static bool HasSitePermissions(string administratorName, int publishmentSystemId, params string[] sitePermissions)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)
@@ -18,9 +17,9 @@ namespace SiteServer.CMS.Core.Security
                 var websitePermissionList = ProductPermissionsManager.Current.WebsitePermissionDict[publishmentSystemId];
                 if (websitePermissionList != null && websitePermissionList.Count > 0)
                 {
-                    foreach (var websitePermission in websitePermissionArray)
+                    foreach (var sitePermission in sitePermissions)
                     {
-                        if (websitePermissionList.Contains(websitePermission))
+                        if (websitePermissionList.Contains(sitePermission))
                         {
                             return true;
                         }
@@ -31,9 +30,9 @@ namespace SiteServer.CMS.Core.Security
             return false;
         }
 
-        public static void VerifyWebsitePermissions(string administratorName, int publishmentSystemId, params string[] websitePermissionArray)
+        public static void VerifySitePermissions(string administratorName, int publishmentSystemId, params string[] sitePermissions)
         {
-            if (HasWebsitePermissions(administratorName, publishmentSystemId, websitePermissionArray))
+            if (HasSitePermissions(administratorName, publishmentSystemId, sitePermissions))
             {
                 return;
             }
@@ -42,14 +41,14 @@ namespace SiteServer.CMS.Core.Security
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 
-        public static bool HasChannelPermissions(string administratorName, List<string> channelPermissionList, params string[] channelPermissionArray)
+        public static bool HasChannelPermissions(string administratorName, List<string> channelPermissionList, params string[] channelPermissions)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)
             {
                 return true;
             }
-            foreach (var channelPermission in channelPermissionArray)
+            foreach (var channelPermission in channelPermissions)
             {
                 if (channelPermissionList.Contains(channelPermission))
                 {
@@ -59,7 +58,7 @@ namespace SiteServer.CMS.Core.Security
             return false;
         }
 
-        public static bool HasChannelPermissions(string administratorName, int publishmentSystemId, int nodeId, params string[] channelPermissionArray)
+        public static bool HasChannelPermissions(string administratorName, int publishmentSystemId, int nodeId, params string[] channelPermissions)
         {
             if (nodeId == 0) return false;
             var permissions = PermissionsManager.GetPermissions(administratorName);
@@ -67,32 +66,32 @@ namespace SiteServer.CMS.Core.Security
             {
                 return true;
             }
-            if (ProductPermissionsManager.Current.ChannelPermissionDict.ContainsKey(nodeId) && HasChannelPermissions(administratorName, ProductPermissionsManager.Current.ChannelPermissionDict[nodeId], channelPermissionArray))
+            if (ProductPermissionsManager.Current.ChannelPermissionDict.ContainsKey(nodeId) && HasChannelPermissions(administratorName, ProductPermissionsManager.Current.ChannelPermissionDict[nodeId], channelPermissions))
             {
                 return true;
             }
 
             var parentNodeId = NodeManager.GetParentId(publishmentSystemId, nodeId);
-            return HasChannelPermissions(administratorName, publishmentSystemId, parentNodeId, channelPermissionArray);
+            return HasChannelPermissions(administratorName, publishmentSystemId, parentNodeId, channelPermissions);
         }
 
-        public static bool HasChannelPermissionsIgnoreNodeId(string administratorName, params string[] channelPermissionArray)
+        public static bool HasChannelPermissionsIgnoreNodeId(string administratorName, params string[] channelPermissions)
         {
             var permissions = PermissionsManager.GetPermissions(administratorName);
             if (permissions.IsSystemAdministrator)
             {
                 return true;
             }
-            if (HasChannelPermissions(administratorName, ProductPermissionsManager.Current.ChannelPermissionListIgnoreNodeId, channelPermissionArray))
+            if (HasChannelPermissions(administratorName, ProductPermissionsManager.Current.ChannelPermissionListIgnoreNodeId, channelPermissions))
             {
                 return true;
             }
             return false;
         }
 
-        public static void VerifyChannelPermissions(string administratorName, int publishmentSystemId, int nodeId, params string[] channelPermissionArray)
+        public static void VerifyChannelPermissions(string administratorName, int publishmentSystemId, int nodeId, params string[] channelPermissions)
         {
-            if (HasChannelPermissions(administratorName, publishmentSystemId, nodeId, channelPermissionArray))
+            if (HasChannelPermissions(administratorName, publishmentSystemId, nodeId, channelPermissions))
             {
                 return;
             }

@@ -17,7 +17,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonGet == null)
                 {
@@ -39,7 +39,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonGetWithName == null)
                 {
@@ -61,7 +61,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonGetWithNameAndId == null)
                 {
@@ -83,7 +83,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPost == null)
                 {
@@ -105,7 +105,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPostWithName == null)
                 {
@@ -127,7 +127,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPostWithNameAndId == null)
                 {
@@ -149,7 +149,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPut == null)
                 {
@@ -171,7 +171,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPutWithName == null)
                 {
@@ -193,7 +193,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPutWithNameAndId == null)
                 {
@@ -215,7 +215,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonDelete == null)
                 {
@@ -237,7 +237,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonDeleteWithName == null)
                 {
@@ -259,7 +259,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonDeleteWithNameAndId == null)
                 {
@@ -281,7 +281,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPatch == null)
                 {
@@ -303,7 +303,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPatchWithName == null)
                 {
@@ -325,7 +325,7 @@ namespace SiteServer.API.Controllers.Json
             try
             {
                 var body = new RequestBody();
-                var webApi = PluginCache.GetEnabledFeature<IWebApi>(pluginId);
+                var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPatchWithNameAndId == null)
                 {

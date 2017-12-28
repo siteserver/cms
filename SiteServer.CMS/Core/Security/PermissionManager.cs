@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using BaiRong.Core;
 
-namespace SiteServer.CMS.Core.Permissions
+namespace SiteServer.CMS.Core.Security
 {
 	public class PermissionsManager
 	{

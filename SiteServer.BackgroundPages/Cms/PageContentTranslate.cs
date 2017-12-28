@@ -67,37 +67,33 @@ namespace SiteServer.BackgroundPages.Cms
             const bool isCut = true;
             _idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
 
-			if (!IsPostBack)
-            {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "内容转移", string.Empty);
+            if (IsPostBack) return;
 
-                var builder = new StringBuilder();
-                foreach (var nodeId in _idsDictionary.Keys)
+            var builder = new StringBuilder();
+            foreach (var nodeId in _idsDictionary.Keys)
+            {
+                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                var contentIdArrayList = _idsDictionary[nodeId];
+                if (contentIdArrayList != null)
                 {
-                    var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeId);
-                    var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
-                    var contentIdArrayList = _idsDictionary[nodeId];
-                    if (contentIdArrayList != null)
+                    foreach (int contentId in contentIdArrayList)
                     {
-                        foreach (int contentId in contentIdArrayList)
+                        var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
+                        if (contentInfo != null)
                         {
-                            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
-                            if (contentInfo != null)
-                            {
-                                builder.Append(
-                                    $@"{WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, _returnUrl)}<br />");
-                            }
+                            builder.Append(
+                                $@"{WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, _returnUrl)}<br />");
                         }
                     }
                 }
-                ltlContents.Text = builder.ToString();
+            }
+            ltlContents.Text = builder.ToString();
 
-                divTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
+            divTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(PublishmentSystemId, true));
 
-                ETranslateContentTypeUtils.AddListItems(ddlTranslateType, isCut);
-                ControlUtils.SelectListItems(ddlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
-			}
-		}
+            ETranslateContentTypeUtils.AddListItems(ddlTranslateType, isCut);
+            ControlUtils.SelectSingleItem(ddlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {

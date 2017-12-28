@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
@@ -193,10 +193,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var targetPublishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(targetPublishmentSystemId);
                     var targetNodeInfo = NodeManager.GetNodeInfo(targetPublishmentSystemId, targetNodeId);
 
-                    var tableStyle = NodeManager.GetTableStyle(targetPublishmentSystemInfo, targetNodeInfo);
                     var tableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeInfo);
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                    var targetContentInfo = Content.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
+                    var targetContentInfo = Content.GetContentInfo(tableName, contentInfo.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.NodeId > 0)
                     {
                         //标题可以使用自己的
@@ -225,11 +224,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, contentInfo.NodeId);
                     var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contentInfo.NodeId);
-                    var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, nodeInfo);
                     var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
 
-                    var styleInfo = TableStyleManager.GetTableStyleInfo(tableStyle, tableName, type, relatedIdentities);
-                    parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.PublishmentSystemInfo, tableStyle, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
+                    var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
+                    parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.PublishmentSystemInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerXml, false);
                     parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.TitleFormatString)))
@@ -634,27 +632,19 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var isSelected = false;
                     var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contentInfo.NodeId);
-                    var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, nodeInfo);
 
                     if (!isSelected && contentInfo.ContainsKey(type))
                     {
-                        if (!ContentAttribute.HiddenAttributes.Contains(type.ToLower()))
+                        if (!ContentAttribute.AllAttributesLowercase.Contains(type.ToLower()))
                         {
                             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(pageInfo.PublishmentSystemId, contentInfo.NodeId);
                             var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
-                            var styleInfo = TableStyleManager.GetTableStyleInfo(tableStyle, tableName, type, relatedIdentities);
+                            var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
-                            if (styleInfo.IsVisible)
-                            {
-                                var num = TranslateUtils.ToInt(no);
-                                parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.PublishmentSystemInfo, tableStyle, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerXml, false);
-                                parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
-                            }
-                            else
-                            {
-                                parsedContent = string.Empty;
-                            } 
+                            var num = TranslateUtils.ToInt(no);
+                            parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.PublishmentSystemInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerXml, false);
+                            parsedContent = StringUtils.ParseString(InputTypeUtils.GetEnumType(styleInfo.InputType), parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else
                         {

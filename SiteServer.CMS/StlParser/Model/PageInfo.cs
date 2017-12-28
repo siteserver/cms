@@ -316,8 +316,8 @@ namespace SiteServer.CMS.StlParser.Model
                 }
                 if (PublishmentSystemInfo.Additional.IsInnerLinkByChannelName)
                 {
-                    var dic = NodeManager.GetNodeInfoDictionaryByPublishmentSystemId(PublishmentSystemId);
-                    foreach (var nodeInfo in dic.Values)
+                    var nodeInfoList = NodeManager.GetNodeInfoList(PublishmentSystemId);
+                    foreach (var nodeInfo in nodeInfoList)
                     {
                         if (innerLinkNameList.Contains(nodeInfo.NodeName)) continue;
 

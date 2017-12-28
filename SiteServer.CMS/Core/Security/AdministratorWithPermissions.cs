@@ -2,7 +2,7 @@
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 
-namespace SiteServer.CMS.Core.Permissions
+namespace SiteServer.CMS.Core.Security
 {
     public class AdministratorWithPermissions
     {

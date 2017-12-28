@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 EndDate.Text = endDateString;
 
                 NodeManager.AddListItems(NodeIDDropDownList.Items, PublishmentSystemInfo, true, true, Body.AdminName);
-                ControlUtils.SelectListItems(NodeIDDropDownList, nodeID.ToString());
+                ControlUtils.SelectSingleItem(NodeIDDropDownList, nodeID.ToString());
 
                 var begin = DateUtils.SqlMinValue;
                 if (!string.IsNullOrEmpty(startDateString))

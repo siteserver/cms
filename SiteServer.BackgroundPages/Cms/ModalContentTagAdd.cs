@@ -14,7 +14,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToAdd(int publishmentSystemId)
         {
-            return PageUtils.GetOpenLayerString("添加标签", PageUtils.GetCmsUrl(nameof(ModalContentTagAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加标签", PageUtils.GetCmsUrl(nameof(ModalContentTagAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
             }), 600, 300);
@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToEdit(int publishmentSystemId, string tagName)
         {
-            return PageUtils.GetOpenLayerString("修改标签", PageUtils.GetCmsUrl(nameof(ModalContentTagAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改标签", PageUtils.GetCmsUrl(nameof(ModalContentTagAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TagName", tagName}
@@ -123,7 +123,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (isChanged)
 			{
-				PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
 			}
 		}
 	}

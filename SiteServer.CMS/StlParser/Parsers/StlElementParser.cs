@@ -98,11 +98,11 @@ namespace SiteServer.CMS.StlParser.Parsers
 
         private static readonly Dictionary<string, Func<string, string>> ElementsToTranslateDic = new Dictionary<string, Func<string, string>>
         {
-            {StlPageContents.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
-            {StlPageChannels.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
-            {StlPageSqlContents.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
-            //{StlPageInputContents.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey},
-            {StlPageItems.ElementName.ToLower(), TranslateUtils.EncryptStringBySecretKey}
+            {StlPageContents.ElementName.ToLower(), StlParserManager.StlEncrypt},
+            {StlPageChannels.ElementName.ToLower(), StlParserManager.StlEncrypt},
+            {StlPageSqlContents.ElementName.ToLower(), StlParserManager.StlEncrypt},
+            //{StlPageInputContents.ElementName.ToLower(), StlParserManager.StlEncrypt},
+            {StlPageItems.ElementName.ToLower(), StlParserManager.StlEncrypt}
         };
 
         internal static string ParseStlElement(string stlElement, PageInfo pageInfo, ContextInfo contextInfo)
@@ -186,7 +186,7 @@ namespace SiteServer.CMS.StlParser.Parsers
                     }
                     else
                     {
-                        var parsers = PluginCache.GetParses();
+                        var parsers = PluginManager.GetParses();
                         if (parsers.ContainsKey(elementName))
                         {
                             var isDynamic = false;

@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.ModalTableStyleAdd" Trace="false" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html class="modalPage">
 
@@ -9,80 +9,66 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
-        <bairong:alerts runat="server" />
+        <ctrl:alerts runat="server" />
 
         <div class="form-horizontal">
 
           <div class="form-group">
             <label class="col-xs-2 control-label">字段名称</label>
-            <div class="col-xs-7">
+            <div class="col-xs-2">
               <asp:TextBox CssClass="form-control" id="TbAttributeName" runat="server" />
+            </div>
+            <label class="col-xs-2 control-label">显示名称</label>
+            <div class="col-xs-3">
+              <asp:TextBox class="form-control" Columns="25" MaxLength="50" id="TbDisplayName" runat="server" />
             </div>
             <div class="col-xs-3 help-block">
               <asp:RequiredFieldValidator ControlToValidate="TbAttributeName" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
               />
               <asp:RegularExpressionValidator runat="server" ControlToValidate="TbAttributeName" ValidationExpression="[a-zA-Z0-9_]+" ErrorMessage="字段名称只允许包含字母、数字以及下划线"
                 foreColor="red" Display="Dynamic" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-xs-2 control-label">显示名称</label>
-            <div class="col-xs-7">
-              <asp:TextBox class="form-control" Columns="25" MaxLength="50" id="TbDisplayName" runat="server" />
-            </div>
-            <div class="col-xs-3 help-block">
               <asp:RequiredFieldValidator ControlToValidate="TbDisplayName" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
               />
               <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDisplayName" ValidationExpression="[^']+" errorMessage=" *"
                 foreColor="red" display="Dynamic" />
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-xs-2 control-label">显示帮助提示</label>
-            <div class="col-xs-7">
-              <asp:TextBox class="form-control" Columns="60" id="TbHelpText" runat="server" />
-            </div>
-            <div class="col-xs-3 help-block">
-              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbHelpText" ValidationExpression="[^']+" errorMessage=" *"
-                foreColor="red" display="Dynamic" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-xs-2 control-label">是否启用</label>
-            <div class="col-xs-7">
-              <asp:DropDownList id="DdlIsVisible" RepeatDirection="Horizontal" class="form-control" runat="server">
-                <asp:ListItem Text="是" Selected="True" />
-                <asp:ListItem Text="否" />
-              </asp:DropDownList>
-            </div>
-            <div class="col-xs-3 help-block">
 
+          <div class="form-group">
+            <label class="col-xs-2 control-label">排序</label>
+            <div class="col-xs-2">
+              <asp:TextBox class="form-control" id="TbTaxis" runat="server" />
+            </div>
+            <label class="col-xs-2 control-label">帮助提示</label>
+            <div class="col-xs-3">
+              <asp:TextBox class="form-control" id="TbHelpText" runat="server" />
+            </div>
+            <div class="col-xs-3 help-block">
+              <asp:RequiredFieldValidator ControlToValidate="TbTaxis" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+              />
+              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbHelpText" ValidationExpression="[^']+" errorMessage=" *"
+              foreColor="red" display="Dynamic" />
             </div>
           </div>
+
           <div class="form-group">
             <label class="col-xs-2 control-label">表单提交类型</label>
             <div class="col-xs-7">
               <asp:DropDownList class="form-control" ID="DdlInputType" OnSelectedIndexChanged="ReFresh" AutoPostBack="true" runat="server"></asp:DropDownList>
             </div>
-            <div class="col-xs-3 help-block">
-
-            </div>
+            <div class="col-xs-3 help-block"></div>
           </div>
           <asp:PlaceHolder ID="PhIsFormatString" Visible="false" runat="server">
             <div class="form-group">
               <label class="col-xs-2 control-label">可否设置格式</label>
               <div class="col-xs-7">
                 <asp:DropDownList id="DdlIsFormatString" RepeatDirection="Horizontal" class="form-control" runat="server">
-                  <asp:ListItem Text="可设置" />
-                  <asp:ListItem Text="不可设置" Selected="True" />
+                  <asp:ListItem Text="可设置" Value="True" />
+                  <asp:ListItem Text="不可设置" Value="False" Selected="True" />
                 </asp:DropDownList>
               </div>
-              <div class="col-xs-3 help-block">
-
-              </div>
+              <div class="col-xs-3 help-block"></div>
             </div>
           </asp:PlaceHolder>
 
@@ -92,18 +78,14 @@
               <div class="col-xs-7">
                 <asp:DropDownList class="form-control" id="DdlRelatedFieldId" runat="server" />
               </div>
-              <div class="col-xs-3 help-block">
-
-              </div>
+              <div class="col-xs-3 help-block"></div>
             </div>
             <div class="form-group">
               <label class="col-xs-2 control-label">显示方式</label>
               <div class="col-xs-7">
                 <asp:DropDownList id="DdlRelatedFieldStyle" class="form-control" runat="server" />
               </div>
-              <div class="col-xs-3 help-block">
-
-              </div>
+              <div class="col-xs-3 help-block"></div>
             </div>
           </asp:PlaceHolder>
 
@@ -139,13 +121,11 @@
               <label class="col-xs-2 control-label">排列方向</label>
               <div class="col-xs-7">
                 <asp:DropDownList id="DdlIsHorizontal" class="form-control" runat="server">
-                  <asp:ListItem Text="水平" Selected="True" />
-                  <asp:ListItem Text="垂直" />
+                  <asp:ListItem Text="水平" Value="True" Selected="True" />
+                  <asp:ListItem Text="垂直" Value="False" />
                 </asp:DropDownList>
               </div>
-              <div class="col-xs-3 help-block">
-
-              </div>
+              <div class="col-xs-3 help-block"></div>
             </div>
             <div class="form-group">
               <label class="col-xs-2 control-label">列数</label>
@@ -160,34 +140,49 @@
             </div>
           </asp:PlaceHolder>
 
-          <div class="form-group">
-            <label class="col-xs-2 control-label">默认显示值</label>
-            <div class="col-xs-7">
-              <asp:TextBox class="form-control" Columns="60" id="TbDefaultValue" runat="server" />
+          <asp:PlaceHolder ID="PhDefaultValue" runat="server">
+            <div class="form-group">
+              <label class="col-xs-2 control-label">默认显示值</label>
+              <div class="col-xs-7">
+                <asp:TextBox class="form-control" id="TbDefaultValue" runat="server" />
+              </div>
+              <div class="col-xs-3 help-block">
+                <span id="SpanDateTip" runat="server">
+                  {Current}代表当前日期/日期时间
+                </span>
+                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDefaultValue" ValidationExpression="[^']+" errorMessage=" *"
+                  foreColor="red" display="Dynamic" />
+              </div>
             </div>
-            <div class="col-xs-3 help-block">
-              <span id="SpanDateTip" runat="server">
-                <br> {Current}代表当前日期/日期时间
-              </span>
-              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDefaultValue" ValidationExpression="[^']+" errorMessage=" *"
-                foreColor="red" display="Dynamic" />
-            </div>
-          </div>
+          </asp:PlaceHolder>
 
-          <asp:PlaceHolder ID="PhItemsType" runat="server">
+          <asp:PlaceHolder ID="PhIsSelectField" runat="server">
             <div class="form-group">
               <label class="col-xs-2 control-label">设置选项</label>
               <div class="col-xs-7">
-                <asp:DropDownList ID="DdlItemType" class="form-control" OnSelectedIndexChanged="ReFresh" AutoPostBack="true" runat="server">
+                <asp:DropDownList ID="DdlIsRapid" class="form-control" OnSelectedIndexChanged="ReFresh" AutoPostBack="true" runat="server">
                   <asp:ListItem Text="快速设置" Value="True" Selected="True" />
                   <asp:ListItem Text="详细设置" Value="False" />
                 </asp:DropDownList>
               </div>
-              <div class="col-xs-3 help-block">
-
-              </div>
+              <div class="col-xs-3 help-block"></div>
             </div>
-            <asp:PlaceHolder ID="PhItemCount" runat="server">
+
+            <asp:PlaceHolder ID="PhRapid" runat="server">
+              <div class="form-group">
+                <label class="col-xs-2 control-label">选项可选值</label>
+                <div class="col-xs-7">
+                  <asp:TextBox class="form-control" TextMode="MultiLine" Rows="4" id="TbRapidValues" runat="server" />
+                </div>
+                <div class="col-xs-3 help-block">
+                  <asp:RequiredFieldValidator ControlToValidate="TbRapidValues" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+                  />
+                  <span class="grey">英文","分隔</span>
+                </div>
+              </div>
+            </asp:PlaceHolder>
+
+            <asp:PlaceHolder ID="PhNotRapid" runat="server">
               <div class="form-group">
                 <label class="col-xs-2 control-label">共有</label>
                 <div class="col-xs-7">
@@ -202,55 +197,62 @@
                     foreColor="red" runat="server" />
                 </div>
               </div>
+              <asp:Repeater ID="RptItems" runat="server">
+                <itemtemplate>
+                  <div class="form-group">
+                    <label class="col-xs-2 control-label">
+                      <asp:Literal id="ltlSeq" runat="server"></asp:Literal>
+                    </label>
+                    <div class="col-xs-3">
+                      标题
+                      <asp:TextBox class="form-control" ID="tbTitle" Columns="40" runat="server"></asp:TextBox>
+                      <asp:RequiredFieldValidator ControlToValidate="tbTitle" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+                      />
+                    </div>
+                    <div class="col-xs-3">
+                      值
+                      <asp:TextBox class="form-control" ID="tbValue" Columns="40" runat="server"></asp:TextBox>
+                      <asp:RequiredFieldValidator ControlToValidate="tbValue" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+                      />
+                    </div>
+                    <div class="col-xs-2">
+                      &nbsp;
+                      <asp:CheckBox ID="cbIsSelected" class="checkbox checkbox-primary" runat="server" Checked="False" Text="默认选择"></asp:CheckBox>
+                    </div>
+                    <div class="col-xs-3 help-block"> </div>
+                  </div>
+                </itemtemplate>
+              </asp:Repeater>
             </asp:PlaceHolder>
 
           </asp:PlaceHolder>
 
-          <asp:PlaceHolder ID="PhItemsRapid" runat="server">
+          <asp:PlaceHolder ID="PhCustomize" runat="server">
             <div class="form-group">
-              <label class="col-xs-2 control-label">选项可选值</label>
+              <label class="col-xs-2 control-label">左侧代码</label>
               <div class="col-xs-7">
-                <asp:TextBox class="form-control" Columns="60" id="TbItemValues" runat="server" />
+                <asp:TextBox class="form-control" id="TbCustomizeLeft" TextMode="MultiLine" Rows="4" runat="server" />
               </div>
-              <div class="col-xs-3 help-block">
-                <asp:RequiredFieldValidator ControlToValidate="TbItemValues" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
+              <div class="col-xs-3">
+                <span class="help-block">
+                  左侧代码（Html）为包含字段名称的表单项，必填
+                  <br /> {Value}代表表单项的值
+                </span>
+                <asp:RequiredFieldValidator ControlToValidate="TbCustomizeLeft" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
                 />
-                <span class="grey">英文","分隔</span>
               </div>
             </div>
-          </asp:PlaceHolder>
-
-          <asp:PlaceHolder ID="PhItems" runat="server">
-
-            <asp:Repeater ID="RptItems" runat="server">
-              <itemtemplate>
-                <div class="form-group">
-                  <label class="col-xs-2 control-label">
-                    <%# Container.ItemIndex + 1 %>
-                  </label>
-                  <div class="col-xs-3">
-                    标题
-                    <asp:TextBox class="form-control" ID="ItemTitle" Columns="40" runat="server" Text='<%# DataBinder.Eval(Container.DataItem,"ItemTitle") %>'></asp:TextBox>
-                    <asp:RequiredFieldValidator ControlToValidate="ItemTitle" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
-                    />
-                  </div>
-                  <div class="col-xs-3">
-                    值
-                    <asp:TextBox class="form-control" ID="ItemValue" Columns="40" runat="server" Text='<%# DataBinder.Eval(Container.DataItem,"ItemValue") %>'></asp:TextBox>
-                    <asp:RequiredFieldValidator ControlToValidate="ItemValue" errorMessage=" *" foreColor="red" display="Dynamic" runat="server"
-                    />
-                  </div>
-                  <div class="col-xs-1">
-                    &nbsp;
-                    <asp:CheckBox class="checkbox checkbox-primary" ID="IsSelected" runat="server" Checked="False" Text="默认选择"></asp:CheckBox>
-                  </div>
-                  <div class="col-xs-3 help-block">
-
-                  </div>
-                </div>
-              </itemtemplate>
-            </asp:Repeater>
-
+            <div class="form-group">
+              <label class="col-xs-2 control-label">右侧代码</label>
+              <div class="col-xs-7">
+                <asp:TextBox class="form-control" id="TbCustomizeRight" TextMode="MultiLine" Rows="4" runat="server" />
+              </div>
+              <div class="col-xs-3">
+                <span class="help-block">
+                  右侧代码（Html、Css、Js）为按钮、说明等其他元素，可选
+                </span>
+              </div>
+            </div>
           </asp:PlaceHolder>
 
           <hr />

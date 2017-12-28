@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" Inherits="SiteServer.BackgroundPages.Cms.PageTableStyleContent" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
@@ -9,10 +9,8 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
-      <form class="container" runat="server">
-        <bairong:alerts runat="server" />
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
         <div class="raw">
           <div class="card-box">
@@ -72,33 +70,17 @@
                     </ItemTemplate>
                     <ItemStyle Width="120" cssClass="text-center" />
                   </asp:TemplateColumn>
-                  <asp:TemplateColumn HeaderText="是否启用">
-                    <ItemTemplate>
-                      <asp:Literal ID="ltlIsVisible" runat="server"></asp:Literal>
-                    </ItemTemplate>
-                    <ItemStyle Width="80" cssClass="text-center" />
-                  </asp:TemplateColumn>
                   <asp:TemplateColumn HeaderText="验证规则">
                     <ItemTemplate>
                       <asp:Literal ID="ltlValidate" runat="server"></asp:Literal>
                     </ItemTemplate>
                     <ItemStyle Width="100" cssClass="text-center" />
                   </asp:TemplateColumn>
-                  <asp:TemplateColumn>
+                  <asp:TemplateColumn HeaderText="排序">
                     <ItemTemplate>
-                      <asp:HyperLink ID="UpLinkButton" runat="server">
-                        <img src="../Pic/icon/up.gif" border="0" alt="上升" />
-                      </asp:HyperLink>
+                      <asp:Literal ID="ltlTaxis" runat="server"></asp:Literal>
                     </ItemTemplate>
-                    <ItemStyle Width="40" cssClass="text-center" />
-                  </asp:TemplateColumn>
-                  <asp:TemplateColumn>
-                    <ItemTemplate>
-                      <asp:HyperLink ID="DownLinkButton" runat="server">
-                        <img src="../Pic/icon/down.gif" border="0" alt="下降" />
-                      </asp:HyperLink>
-                    </ItemTemplate>
-                    <ItemStyle Width="40" cssClass="text-center" />
+                    <ItemStyle Width="80" cssClass="text-center" />
                   </asp:TemplateColumn>
                   <asp:TemplateColumn HeaderText="显示样式">
                     <ItemTemplate>
@@ -115,15 +97,15 @@
                 </Columns>
               </asp:dataGrid>
 
-              <hr />
+            </div>
 
-              <div class="form-group m-b-0">
-                <asp:Button class="btn btn-primary m-l-15" id="BtnAddStyle" Text="新增虚拟字段" runat="server" />
-                <asp:Button class="btn btn-primary m-l-15" id="BtnAddStyles" Text="批量新增虚拟字段" runat="server" />
-                <asp:Button class="btn btn-primary m-l-15" id="BtnImport" Text="导 入" runat="server" />
-                <asp:Button class="btn btn-primary m-l-15" id="BtnExport" Text="导 出" runat="server" />
-              </div>
+            <hr />
 
+            <div class="form-group m-b-0">
+              <asp:Button class="btn m-r-5" id="BtnAddStyle" Text="新增虚拟字段" runat="server" />
+              <asp:Button class="btn m-r-5" id="BtnAddStyles" Text="批量新增虚拟字段" runat="server" />
+              <asp:Button class="btn m-r-5" id="BtnImport" Text="导 入" runat="server" />
+              <asp:Button class="btn m-r-5" id="BtnExport" Text="导 出" runat="server" />
             </div>
 
           </div>

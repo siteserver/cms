@@ -4,9 +4,9 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
-using BaiRong.Core.AuxiliaryTable;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.Plugin.Models;
 
@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
         public Literal LtlSettings;
         public Button BtnSubmit;
 
-        private List<int> _relatedIdentities;
+        private List<TableStyleInfo> _styleInfoList;
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
@@ -35,17 +35,17 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-            _relatedIdentities = RelatedIdentities.GetRelatedIdentities(ETableStyle.Site, PublishmentSystemId, PublishmentSystemId);
+            var relatedIdentities = RelatedIdentities.GetRelatedIdentities(PublishmentSystemId, PublishmentSystemId);
+            _styleInfoList = TableStyleManager.GetTableStyleInfoList(DataProvider.PublishmentSystemDao.TableName, relatedIdentities);
 
-			if (!IsPostBack)
+            if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "站点属性设置", AppManager.Permissions.WebSite.Configration);
+                VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
                 TbPublishmentSystemName.Text = PublishmentSystemInfo.PublishmentSystemName;
 
                 LtlSettings.Text =
-                    $@"<a class=""btn btn-success"" href=""{PageTableStyle.GetRedirectUrl(PublishmentSystemId,
-                        ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemId)}"">设置站点属性</a>";
+                    $@"<a class=""btn btn-success"" href=""{PageTableStyle.GetRedirectUrl(PublishmentSystemId, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemId, GetRedirectUrl(PublishmentSystemId))}"">设置站点属性</a>";
 
                 LtlAttributes.Text = GetAttributesHtml(PublishmentSystemInfo.Additional.ToNameValueCollection());
 
@@ -64,18 +64,18 @@ namespace SiteServer.BackgroundPages.Cms
                 formCollection = Request.Form.Count > 0 ? Request.Form : new NameValueCollection();
             }
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, _relatedIdentities);
             var pageScripts = new NameValueCollection();
 
-            if (styleInfoList == null) return string.Empty;
+            if (_styleInfoList == null) return string.Empty;
+
+            var attributes = new ExtendedAttributes(formCollection);
 
             var builder = new StringBuilder();
-            foreach (var styleInfo in styleInfoList)
+            foreach (var styleInfo in _styleInfoList)
             {
-                if (!styleInfo.IsVisible) continue;
-
                 string extra;
-                var value = BackgroundInputTypeParser.Parse(PublishmentSystemInfo, 0, styleInfo, ETableStyle.Site, styleInfo.AttributeName, formCollection, true, IsPostBack, null, pageScripts, out extra);
+                var value = BackgroundInputTypeParser.Parse(PublishmentSystemInfo, 0, styleInfo, attributes, pageScripts, out extra);
+                if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
                 if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
                 {
@@ -124,7 +124,7 @@ namespace SiteServer.BackgroundPages.Cms
                 
 				try
 				{
-                    BackgroundInputTypeParser.AddValuesToAttributes(ETableStyle.Site, DataProvider.PublishmentSystemDao.TableName, PublishmentSystemInfo, _relatedIdentities, Page.Request.Form, PublishmentSystemInfo.Additional.ToNameValueCollection(), null);
+                    BackgroundInputTypeParser.SaveAttributes(PublishmentSystemInfo.Additional, PublishmentSystemInfo, _styleInfoList, Page.Request.Form, null);
 
                     DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
 

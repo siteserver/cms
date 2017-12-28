@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Model;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -26,8 +27,8 @@ namespace SiteServer.BackgroundPages.Settings
 			
 				try
 				{
-                    BaiRongDataProvider.TableCollectionDao.Delete(enName);//删除辅助表
-                    BaiRongDataProvider.TableCollectionDao.Delete(enNameArchive);//删除辅助表归档
+                    BaiRongDataProvider.TableCollectionDao.DeleteCollectionTableInfoAndDbTable(enName);//删除辅助表
+                    BaiRongDataProvider.TableCollectionDao.DeleteCollectionTableInfoAndDbTable(enNameArchive);//删除辅助表归档
 
                     Body.AddAdminLog("删除辅助表", $"辅助表:{enName}");
 
@@ -41,43 +42,58 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings("辅助表管理", AppManager.Permissions.Settings.SiteManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
-            DgContents.DataSource = BaiRongDataProvider.TableCollectionDao.GetDataSourceByAuxiliaryTableType();
+            DgContents.DataSource = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoList();
+            DgContents.ItemDataBound += DgContents_ItemDataBound;
             DgContents.DataBind();
 
-            BtnAdd.OnClientClick = $"location.href='{PageUtils.GetLoadingUrl(PageAuxiliaryTableAdd.GetRedirectUrl())}';return false;";
+            BtnAdd.OnClientClick = ModalAuxiliaryTableAdd.GetOpenWindowString();
         }
 
-        public string GetYesOrNo(string isDefaultStr)
+        private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
-            return StringUtils.GetBoolText(TranslateUtils.ToBool(isDefaultStr));
-        }
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-        public int GetTableUsedNum(string tableEnName, string auxiliaryTableType)
-        {
-            var tableType = EAuxiliaryTableTypeUtils.GetEnumType(auxiliaryTableType);
-            var usedNum = BaiRongDataProvider.TableCollectionDao.GetTableUsedNum(tableEnName, tableType);
-            return usedNum;
-        }
+            var collectionInfo = (TableCollectionInfo)e.Item.DataItem;
+            var tableName = collectionInfo.TableEnName;
+            var isHighlight = !collectionInfo.IsCreatedInDb || collectionInfo.IsChangedAfterCreatedInDb;
+            var isTableUsed = DataProvider.PublishmentSystemDao.IsTableUsed(tableName);
 
-        public string GetAuxiliatyTableType(string auxiliaryTableType)
-        {
-            return EAuxiliaryTableTypeUtils.GetText(EAuxiliaryTableTypeUtils.GetEnumType(auxiliaryTableType));
-        }
+            if (isHighlight) e.Item.Attributes.Add("style", "color: red");
 
-        public string GetIsChangedAfterCreatedInDb(string isCreatedInDb, string isChangedAfterCreatedInDb)
-        {
-            return TranslateUtils.ToBool(isCreatedInDb) == false ? "----" : StringUtils.GetBoolText(TranslateUtils.ToBool(isChangedAfterCreatedInDb));
-        }
+            var ltlTableName = (Literal)e.Item.FindControl("ltlTableName");
+            var ltlTableCnName = (Literal)e.Item.FindControl("ltlTableCnName");
+            var ltlIsUsed = (Literal)e.Item.FindControl("ltlIsUsed");
+            var ltlIsCreatedInDb = (Literal)e.Item.FindControl("ltlIsCreatedInDB");
+            var ltlIsChangedAfterCreatedInDb = (Literal)e.Item.FindControl("ltlIsChangedAfterCreatedInDb");
+            var ltlMetadataEdit = (Literal)e.Item.FindControl("ltlMetadataEdit");
+            var ltlStyleEdit = (Literal)e.Item.FindControl("ltlStyleEdit");
+            var ltlEdit = (Literal)e.Item.FindControl("ltlEdit");
+            var ltlDelete = (Literal)e.Item.FindControl("ltlDelete");
 
-        public string GetFontColor(string isCreatedInDb, string isChangedAfterCreatedInDb)
-        {
-            if (EBooleanUtils.Equals(EBoolean.False, isCreatedInDb))
+            ltlTableName.Text = tableName;
+            ltlTableCnName.Text = collectionInfo.TableCnName;
+            ltlIsUsed.Text = StringUtils.GetBoolText(isTableUsed);
+            ltlIsCreatedInDb.Text = StringUtils.GetBoolText(collectionInfo.IsCreatedInDb);
+            ltlIsChangedAfterCreatedInDb.Text = collectionInfo.IsCreatedInDb == false
+                ? "----"
+                : StringUtils.GetBoolText(collectionInfo.IsChangedAfterCreatedInDb);
+
+            ltlMetadataEdit.Text =
+                $@"<a href=""{PageTableMetadata.GetRedirectUrl(tableName)}"">管理真实字段</a>";
+
+            ltlStyleEdit.Text = $@"<a href=""{PageTableStyle.GetRedirectUrl(tableName)}"">管理虚拟字段</a>";
+
+            ltlEdit.Text = $@"<a href=""javascript:;"" onclick=""{ModalAuxiliaryTableAdd.GetOpenWindowString(tableName)}"">编辑</a>";
+
+            if (!isTableUsed)
             {
-                return string.Empty;
+                var script = AlertUtils.Warning("删除辅助表", $"此操作将删除辅助表“{tableName}”，如果辅助表已在数据库中建立，将同时删除建立的辅助表，确认吗？", "取 消",
+                    "确认删除", $"location.href = '{GetRedirectUrl()}?Delete=True&ENName={tableName}';");
+                ltlDelete.Text =
+                $@"<a href=""javascript:;"" onClick=""{script}"">删除</a>";
             }
-            return EBooleanUtils.Equals(EBoolean.False, isChangedAfterCreatedInDb) ? string.Empty : "red";
         }
 	}
 }

@@ -41,7 +41,7 @@ namespace SiteServer.CMS.Core.Office
             return createBuilder.ToString();
         }
 
-        public ArrayList GetInsertSqlStringArrayList(string nodeName, int publishmentSystemId, int nodeId, ETableStyle tableStyle, string tableName, List<TableStyleInfo> styleInfoList, List<string> displayAttributes, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out bool isExport)
+        public ArrayList GetInsertSqlStringArrayList(string nodeName, int publishmentSystemId, int nodeId, string tableName, List<TableStyleInfo> styleInfoList, List<string> displayAttributes, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out bool isExport)
         {
             var insertSqlArrayList = new ArrayList();
 
@@ -68,7 +68,7 @@ namespace SiteServer.CMS.Core.Office
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                 if (contentInfo != null)
                 {
                     var insertBuilder = new StringBuilder();

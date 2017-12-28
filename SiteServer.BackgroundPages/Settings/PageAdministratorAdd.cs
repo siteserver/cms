@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (!Page.IsPostBack)
             {
                 var pageTitle = string.IsNullOrEmpty(userName) ? "添加管理员" : "编辑管理员";
-                BreadCrumbSettings(pageTitle, AppManager.Permissions.Settings.AdminManagement);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.AdminManagement);
 
                 ltlPageTitle.Text = pageTitle;
 
@@ -94,12 +94,12 @@ namespace SiteServer.BackgroundPages.Settings
                     var adminInfo = BaiRongDataProvider.AdministratorDao.GetByUserName(userName);
                     if (adminInfo != null)
                     {
-                        ControlUtils.SelectListItems(ddlDepartmentID, adminInfo.DepartmentId.ToString());
+                        ControlUtils.SelectSingleItem(ddlDepartmentID, adminInfo.DepartmentId.ToString());
                         tbUserName.Text = adminInfo.UserName;
                         tbUserName.Enabled = false;
                         tbDisplayName.Text = adminInfo.DisplayName;
                         phPassword.Visible = false;
-                        ControlUtils.SelectListItems(ddlAreaID, adminInfo.AreaId.ToString());
+                        ControlUtils.SelectSingleItem(ddlAreaID, adminInfo.AreaId.ToString());
                         tbEmail.Text = adminInfo.Email;
                         tbMobile.Text = adminInfo.Mobile;
                     }

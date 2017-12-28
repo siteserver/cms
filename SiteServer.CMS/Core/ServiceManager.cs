@@ -9,26 +9,23 @@ namespace SiteServer.CMS.Core
     public class ServiceManager
     {
         private const string CacheKeyStatus = "SiteServer.CMS.Core.ServiceManager.Status";
-        private const string CacheFileNameStatus = "ServiceStatusCache.txt";
         private const string CacheKeyAllTaskInfoList = "SiteServer.CMS.Core.ServiceManager.AllTaskInfoList";
-        private const string CacheFileNameTaskCache = "ServiceTaskCache.txt";
         private const string CacheKeyIsPendingCreate = "SiteServer.CMS.Core.ServiceManager.CacheKeyIsPendingCreateTask";
-        private const string CacheFileNameIsPendingCreate = "ServiceIsPendingCreateCache.txt";
 
-        protected static readonly FileWatcherClass StatusCacheFileWatcher;
-        protected static readonly FileWatcherClass TaskCacheFileWatcher;
-        protected static readonly FileWatcherClass IsPendingCreateCacheFileWatcher;
+        private static readonly FileWatcherClass StatusCacheFileWatcher;
+        private static readonly FileWatcherClass TaskCacheFileWatcher;
+        private static readonly FileWatcherClass IsPendingCreateCacheFileWatcher;
 
         static ServiceManager()
         {
-            StatusCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameStatus));
+            StatusCacheFileWatcher = new FileWatcherClass(FileWatcherClass.ServiceStatus);
             StatusCacheFileWatcher.OnFileChange += StatusCache_OnFileChange;
             StatusCacheFileWatcher.OnFileDeleted += StatusCache_OnFileDeleted;
 
-            TaskCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameTaskCache));
+            TaskCacheFileWatcher = new FileWatcherClass(FileWatcherClass.ServiceTask);
             TaskCacheFileWatcher.OnFileChange += TaskCache_OnFileChange;
 
-            IsPendingCreateCacheFileWatcher = new FileWatcherClass(CacheUtils.GetCacheFilePath(CacheFileNameIsPendingCreate));
+            IsPendingCreateCacheFileWatcher = new FileWatcherClass(FileWatcherClass.ServiceIsPendingCreate);
             IsPendingCreateCacheFileWatcher.OnFileChange += IsPendingCreateCache_OnFileChange;
         }
 
@@ -74,14 +71,19 @@ namespace SiteServer.CMS.Core
             return isPendingTask;
         }
 
+        public static void ClearStatusCache()
+        {
+            StatusCacheFileWatcher.UpdateCacheFile();
+        }
+
         public static void ClearTaskCache()
         {
-            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameTaskCache);
+            TaskCacheFileWatcher.UpdateCacheFile();
         }
 
         public static void ClearIsPendingCreateCache()
         {
-            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameIsPendingCreate);
+            IsPendingCreateCacheFileWatcher.UpdateCacheFile();
         }
 
         /// <summary>
@@ -105,13 +107,13 @@ namespace SiteServer.CMS.Core
             if (sp.Minutes <= 5) return;
 
             _lastOnlineDateTime = now;
-            CacheUtils.UpdateTemporaryCacheFile(CacheFileNameStatus);
+            StatusCacheFileWatcher.UpdateCacheFile();
         }
 
         public static void SetServiceOffline()
         {
             _lastOnlineDateTime = DateTime.MinValue;
-            CacheUtils.DeleteTemporaryCacheFile(CacheFileNameStatus);
+            StatusCacheFileWatcher.DeleteCacheFile();
         }
     }
 }

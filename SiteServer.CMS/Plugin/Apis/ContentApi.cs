@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Attributes;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin.Apis;
 using SiteServer.Plugin.Models;
@@ -22,10 +19,9 @@ namespace SiteServer.CMS.Plugin.Apis
             if (publishmentSystemId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
 
-            return DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+            return DataProvider.ContentDao.GetContentInfo(tableName, contentId);
         }
 
         public List<IContentInfo> GetContentInfoList(int publishmentSystemId, int channelId, string whereString, string orderString, int limit, int offset)
@@ -33,10 +29,9 @@ namespace SiteServer.CMS.Plugin.Apis
             if (publishmentSystemId <= 0 || channelId <= 0) return null;
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
 
-            return DataProvider.ContentDao.GetListByLimitAndOffset(tableName, tableStyle, channelId, whereString, orderString, limit, offset);
+            return DataProvider.ContentDao.GetListByLimitAndOffset(tableName, channelId, whereString, orderString, limit, offset);
         }
 
         public int GetCount(int publishmentSystemId, int channelId, string whereString)
@@ -44,10 +39,9 @@ namespace SiteServer.CMS.Plugin.Apis
             if (publishmentSystemId <= 0 || channelId <= 0) return 0;
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, channelId);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
 
-            return DataProvider.ContentDao.GetCount(tableName, tableStyle, channelId, whereString);
+            return DataProvider.ContentDao.GetCount(tableName, channelId, whereString);
         }
 
         public List<PluginTableColumn> GetTableColumns(int publishmentSystemId, int channelId)
@@ -56,24 +50,24 @@ namespace SiteServer.CMS.Plugin.Apis
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
             var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(publishmentSystemId, channelId);
 
-            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
+            var tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
             var tableColumnList = new List<PluginTableColumn>
             {
                 new PluginTableColumn
                 {
                     AttributeName = ContentAttribute.Title,
-                    DisplayName = "标题",
                     DataType = nameof(DataType.VarChar),
                     DataLength = 255,
-                    InputType = nameof(InputType.Text),
-                    IsRequired = true,
-                    ValidateType = nameof(ValidateType.None),
-                    IsVisibleInEdit = true,
-                    IsVisibleInList = true
+                    InputStyle = new PluginInputStyle
+                    {
+                        InputType = nameof(InputType.Text),
+                        DisplayName = "标题",
+                        IsRequired = true,
+                        ValidateType = nameof(ValidateType.None)
+                    }
                 }
             };
 
@@ -82,60 +76,76 @@ namespace SiteServer.CMS.Plugin.Apis
                 tableColumnList.Add(new PluginTableColumn
                 {
                     AttributeName = styleInfo.AttributeName,
-                    DisplayName = styleInfo.DisplayName,
                     DataType = nameof(DataType.VarChar),
                     DataLength = 50,
-                    InputType = styleInfo.InputType,
-                    DefaultValue = styleInfo.DefaultValue,
-                    IsRequired = styleInfo.Additional.IsRequired,
-                    ValidateType = ValidateTypeUtils.GetValue(styleInfo.Additional.ValidateType),
-                    MinNum = styleInfo.Additional.MinNum,
-                    MaxNum = styleInfo.Additional.MaxNum,
-                    RegExp = styleInfo.Additional.RegExp,
-                    Width = styleInfo.Additional.Width,
-                    IsVisibleInEdit = styleInfo.IsVisible,
-                    IsVisibleInList = styleInfo.IsVisibleInList
+                    InputStyle = new PluginInputStyle
+                    {
+                        InputType = styleInfo.InputType,
+                        DisplayName = styleInfo.DisplayName,
+                        DefaultValue = styleInfo.DefaultValue,
+                        IsRequired = styleInfo.Additional.IsRequired,
+                        ValidateType = ValidateTypeUtils.GetValue(styleInfo.Additional.ValidateType),
+                        MinNum = styleInfo.Additional.MinNum,
+                        MaxNum = styleInfo.Additional.MaxNum,
+                        RegExp = styleInfo.Additional.RegExp,
+                        Width = styleInfo.Additional.Width,
+                    }
                 });
             }
 
             tableColumnList.Add(new PluginTableColumn
             {
                 AttributeName = ContentAttribute.IsTop,
-                DisplayName = "置顶",
                 DataType = nameof(DataType.VarChar),
                 DataLength = 18,
-                InputType = nameof(InputType.CheckBox)
+                InputStyle = new PluginInputStyle
+                {
+                    InputType = nameof(InputType.CheckBox),
+                    DisplayName = "置顶",
+                }
             });
             tableColumnList.Add(new PluginTableColumn
             {
                 AttributeName = ContentAttribute.IsRecommend,
-                DisplayName = "推荐",
                 DataType = nameof(DataType.VarChar),
                 DataLength = 18,
-                InputType = nameof(InputType.CheckBox)
+                InputStyle = new PluginInputStyle
+                {
+                    InputType = nameof(InputType.CheckBox),
+                    DisplayName = "推荐",
+                }
             });
             tableColumnList.Add(new PluginTableColumn
             {
                 AttributeName = ContentAttribute.IsHot,
-                DisplayName = "热点",
                 DataType = nameof(DataType.VarChar),
                 DataLength = 18,
-                InputType = nameof(InputType.CheckBox)
+                InputStyle = new PluginInputStyle
+                {
+                    InputType = nameof(InputType.CheckBox),
+                    DisplayName = "热点"
+                }
             });
             tableColumnList.Add(new PluginTableColumn
             {
                 AttributeName = ContentAttribute.IsColor,
-                DisplayName = "醒目",
                 DataType = nameof(DataType.VarChar),
                 DataLength = 18,
-                InputType = nameof(InputType.CheckBox)
+                InputStyle = new PluginInputStyle
+                {
+                    InputType = nameof(InputType.CheckBox),
+                    DisplayName = "醒目"
+                }
             });
             tableColumnList.Add(new PluginTableColumn
             {
                 AttributeName = ContentAttribute.AddDate,
-                DisplayName = "添加时间",
                 DataType = nameof(DataType.DateTime),
-                InputType = nameof(InputType.DateTime)
+                InputStyle = new PluginInputStyle
+                {
+                    InputType = nameof(InputType.DateTime),
+                    DisplayName = "添加时间"
+                }
             });
 
             return tableColumnList;
@@ -151,13 +161,9 @@ namespace SiteServer.CMS.Plugin.Apis
             return BaiRongDataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
         }
 
-        public IContentInfo NewInstance(int publishmentSystemId, int channelId)
+        public IContentInfo NewInstance()
         {
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
-
-            return ContentUtility.GetContentInfo(tableStyle);
+            return new ContentInfo();
         }
 
         //public void SetValuesToContentInfo(int publishmentSystemId, int channelId, NameValueCollection form, IContentInfo contentInfo)
@@ -202,6 +208,13 @@ namespace SiteServer.CMS.Plugin.Apis
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
             var contentIdList = new List<int> { contentId };
             DataProvider.ContentDao.TrashContents(publishmentSystemId, tableName, contentIdList);
+        }
+
+        public List<int> GetContentIdList(int publishmentSystemId, int channelId)
+        {
+            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
+            var tableName = NodeManager.GetTableName(publishmentSystemInfo, channelId);
+            return BaiRongDataProvider.ContentDao.GetContentIdListCheckedByNodeId(tableName, publishmentSystemId, channelId);
         }
     }
 }

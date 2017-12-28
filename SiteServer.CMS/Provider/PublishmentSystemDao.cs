@@ -10,6 +10,8 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
+using SiteServer.Plugin.Features;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.CMS.Provider
@@ -307,6 +309,31 @@ namespace SiteServer.CMS.Provider
                 rdr.Close();
             }
             return count;
+        }
+
+        public bool IsTableUsed(string tableName)
+        {
+            var parameters = new IDataParameter[]
+            {
+                GetParameter(ParmAuxiliaryTableForContent, DataType.VarChar, 50, tableName)
+            };
+
+            const string sqlString = "SELECT COUNT(*) FROM siteserver_PublishmentSystem WHERE AuxiliaryTableForContent = @AuxiliaryTableForContent";
+            var count = BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString, parameters);
+
+            if (count > 0) return true;
+
+            var contentModelPluginIdList = DataProvider.NodeDao.GetContentModelPluginIdList();
+            foreach (var pluginId in contentModelPluginIdList)
+            {
+                var plugin = PluginManager.GetEnabledFeature<IContentModel>(pluginId);
+                if (plugin != null && plugin.ContentTableName == tableName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public int GetPublishmentSystemIdByIsHeadquarters()

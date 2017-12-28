@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.Plugin.Apis
 {
     public interface IContentApi
     {
-        IContentInfo NewInstance(int publishmentSystemId, int channelId);
+        IContentInfo NewInstance();
 
         IContentInfo GetContentInfo(int publishmentSystemId, int channelId, int contentId);
 
         List<IContentInfo> GetContentInfoList(int publishmentSystemId, int channelId, string whereString,
             string orderString, int limit, int offset);
+
+        List<int> GetContentIdList(int publishmentSystemId, int channelId);
 
         int GetCount(int publishmentSystemId, int channelId, string whereString);
 

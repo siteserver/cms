@@ -38,23 +38,20 @@ namespace SiteServer.BackgroundPages.Cms
             _contentId = Body.GetQueryInt("ContentID");
             _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("returnUrl"));
 
-            if (!IsPostBack)
-			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "评论管理", string.Empty);
+            if (IsPostBack) return;
 
-			    StlCommentInput.ApiUrl = PageUtils.OuterApiUrl;
-			    StlCommentInput.IsAnonymous = true;
-			    StlCommentInput.PageNum = 20;
-			    StlCommentInput.ApiActionsAddUrl = ActionsAdd.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
-			    StlCommentInput.ApiActionsDeleteUrl = ActionsDelete.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
-			    StlCommentInput.ApiActionsGoodUrl = ActionsGood.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
-			    StlCommentInput.ApiGetUrl = Get.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
-			    StlCommentInput.ApiActionsLogoutUrl = ActionsLogout.GetUrl(StlCommentInput.ApiUrl);
-			    StlCommentInput.IsDelete = true;
+            StlCommentInput.ApiUrl = PageUtils.OuterApiUrl;
+            StlCommentInput.IsAnonymous = true;
+            StlCommentInput.PageNum = 20;
+            StlCommentInput.ApiActionsAddUrl = ActionsAdd.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
+            StlCommentInput.ApiActionsDeleteUrl = ActionsDelete.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
+            StlCommentInput.ApiActionsGoodUrl = ActionsGood.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
+            StlCommentInput.ApiGetUrl = Get.GetUrl(StlCommentInput.ApiUrl, PublishmentSystemId, _nodeId, _contentId);
+            StlCommentInput.ApiActionsLogoutUrl = ActionsLogout.GetUrl(StlCommentInput.ApiUrl);
+            StlCommentInput.IsDelete = true;
 
-                BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToComment(PublishmentSystemId, _nodeId, _contentId));
-            }
-		}
+            BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToComment(PublishmentSystemId, _nodeId, _contentId));
+        }
 
         public void Return_OnClick(object sender, EventArgs e)
         {

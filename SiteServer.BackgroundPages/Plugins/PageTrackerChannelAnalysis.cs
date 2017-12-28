@@ -48,39 +48,32 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public void BindGrid()
         {
-            try
+            var begin = DateUtils.SqlMinValue;
+            if (!string.IsNullOrEmpty(StartDate.Text))
             {
-                var begin = DateUtils.SqlMinValue;
-                if (!string.IsNullOrEmpty(StartDate.Text))
-                {
-                    begin = TranslateUtils.ToDateTime(StartDate.Text);
-                }
-                _accessNumHashtableToChannel = DataProvider.TrackingDao.GetChannelAccessNumHashtable(PublishmentSystemId, begin, TranslateUtils.ToDateTime(EndDate.Text));
-                _accessNumHashtableToContent = DataProvider.TrackingDao.GetChannelContentAccessNumHashtable(PublishmentSystemId, begin, TranslateUtils.ToDateTime(EndDate.Text));
-
-                var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
-                foreach (var nodeId in nodeIdList)
-                {
-                    var accessNum = 0;
-                    if (_accessNumHashtableToChannel[nodeId] != null)
-                    {
-                        accessNum = Convert.ToInt32(_accessNumHashtableToChannel[nodeId]);
-                    }
-                    if (_accessNumHashtableToContent[nodeId] != null)
-                    {
-                        accessNum += Convert.ToInt32(_accessNumHashtableToContent[nodeId]);
-                    }
-                    _totalAccessNum += accessNum;
-                }
-
-                rptContents.DataSource = nodeIdList;
-                rptContents.ItemDataBound += rptContents_ItemDataBound;
-                rptContents.DataBind();
+                begin = TranslateUtils.ToDateTime(StartDate.Text);
             }
-            catch (Exception ex)
+            _accessNumHashtableToChannel = DataProvider.TrackingDao.GetChannelAccessNumHashtable(PublishmentSystemId, begin, TranslateUtils.ToDateTime(EndDate.Text));
+            _accessNumHashtableToContent = DataProvider.TrackingDao.GetChannelContentAccessNumHashtable(PublishmentSystemId, begin, TranslateUtils.ToDateTime(EndDate.Text));
+
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByPublishmentSystemId(PublishmentSystemId);
+            foreach (var nodeId in nodeIdList)
             {
-                PageUtils.RedirectToErrorPage(ex.Message);
+                var accessNum = 0;
+                if (_accessNumHashtableToChannel[nodeId] != null)
+                {
+                    accessNum = Convert.ToInt32(_accessNumHashtableToChannel[nodeId]);
+                }
+                if (_accessNumHashtableToContent[nodeId] != null)
+                {
+                    accessNum += Convert.ToInt32(_accessNumHashtableToContent[nodeId]);
+                }
+                _totalAccessNum += accessNum;
             }
+
+            rptContents.DataSource = nodeIdList;
+            rptContents.ItemDataBound += rptContents_ItemDataBound;
+            rptContents.DataBind();
         }
 
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

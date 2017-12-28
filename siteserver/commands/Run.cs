@@ -87,7 +87,7 @@ namespace siteserver.commands
                 {
                     _watcher.EnableRaisingEvents = false;
 
-                    foreach (var action in PluginCache.GetFileSystemChangedActions())
+                    foreach (var action in PluginManager.GetFileSystemChangedActions())
                     {
                         try
                         {
@@ -112,9 +112,6 @@ namespace siteserver.commands
             // Some biolerplate to react to close window event, CTRL-C, kill, etc
             _handler += Handler;
             SetConsoleCtrlHandler(_handler, true);
-
-            PluginManager.Load(new PluginEnvironment(EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType), WebConfigUtils.ConnectionString,
-                WebConfigUtils.PhysicalApplicationPath, true));
 
             Console.WriteLine("SiteServer Service is running...");
 

@@ -45,14 +45,13 @@ namespace SiteServer.BackgroundPages.Settings
             spContents.SortMode = SortMode.DESC; //排序
             spContents.ItemsPerPage = 20;
 
-            if (!IsPostBack)
-            {
-                BreadCrumbSettings("敏感词管理", AppManager.Permissions.Settings.Utility);
+            if (IsPostBack) return;
 
-                spContents.DataBind();
-                btnAdd.Attributes.Add("onclick", ModalKeywordAdd.GetOpenWindowStringToAdd());
-                btnImport.Attributes.Add("onclick", ModalKeywordImport.GetOpenWindowString());
-            }
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Utility);
+
+            spContents.DataBind();
+            btnAdd.Attributes.Add("onclick", ModalKeywordAdd.GetOpenWindowStringToAdd());
+            btnImport.Attributes.Add("onclick", ModalKeywordImport.GetOpenWindowString());
         }
 
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

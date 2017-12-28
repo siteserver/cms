@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Core.User;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin.Features;
@@ -21,26 +18,28 @@ namespace SiteServer.BackgroundPages.Cms
 {
     public class PageContentCheck : BasePageCms
     {
-        public RadioButtonList State;
-        public PlaceHolder PhContentModel;
-        public DropDownList DdlContentModelId;
+        public DropDownList DdlChannelId;
+        public DropDownList DdlState;
 
         public Repeater RptContents;
         public SqlPager SpContents;
-        public Literal LtlColumnHeadRows;
-        public Literal LtlCommandHeadRows;
+        public Literal LtlColumnsHead;
+        public Literal LtlCommandsHead;
 
         public Button BtnCheck;
         public Button BtnDelete;
 
+        private int _channelId;
+        private List<TableStyleInfo> _styleInfoList;
         private StringCollection _attributesOfDisplay;
-        private List<TableStyleInfo> _tableStyleInfoList;
+        private List<TableStyleInfo> _attributesOfDisplayStyleInfoList;
         private List<int> _relatedIdentities;
-        private ETableStyle _tableStyle;
         private NodeInfo _nodeInfo;
         private string _tableName;
-        private Dictionary<string, IChannel> _pluginChannels;
-        private readonly Hashtable _valueHashtable = new Hashtable();
+        private Dictionary<string, IContentRelated> _pluginChannels;
+        private bool _isEdit;
+        private bool _isComment;
+        private readonly Dictionary<string, string> _nameValueCacheDict = new Dictionary<string, string>();
 
         public static string GetRedirectUrl(int publishmentSystemId)
         {
@@ -55,100 +54,99 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
+            _channelId = Body.IsQueryExists("ChannelId") ? Body.GetQueryInt("ChannelId") : PublishmentSystemId;
 
             var permissions = PermissionsManager.GetPermissions(Body.AdminName);
-            var nodeId = PublishmentSystemId;
 
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, nodeId);
-            _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _channelId);
+            _nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _channelId);
             _tableName = NodeManager.GetTableName(PublishmentSystemInfo, _nodeInfo);
-            _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, _nodeInfo);
-            _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, _tableName, _relatedIdentities);
-            _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, nodeId));
-            _pluginChannels = PluginCache.GetChannelFeatures(_nodeInfo);
+            _styleInfoList = TableStyleManager.GetTableStyleInfoList(_tableName, _relatedIdentities);
+            _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(NodeManager.GetContentAttributesOfDisplay(PublishmentSystemId, _channelId));
+            _attributesOfDisplayStyleInfoList = ContentUtility.GetColumnTableStyleInfoList(PublishmentSystemInfo, _styleInfoList);
+            _pluginChannels = PluginManager.GetContentRelatedFeatures(_nodeInfo);
+            _isEdit = TextUtility.IsEdit(PublishmentSystemInfo, _channelId, Body.AdminName);
+            _isComment = TextUtility.IsComment(PublishmentSystemInfo, _channelId, Body.AdminName);
 
-            if (!IsPostBack)
+            if (IsPostBack) return;
+
+            var checkedLevel = 5;
+            var isChecked = true;
+            foreach (var owningNodeId in ProductPermissionsManager.Current.OwningNodeIdList)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "内容审核", string.Empty);
+                int checkedLevelByNodeId;
+                var isCheckedByNodeId = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, owningNodeId, out checkedLevelByNodeId);
+                if (checkedLevel > checkedLevelByNodeId)
+                {
+                    checkedLevel = checkedLevelByNodeId;
+                }
+                if (!isCheckedByNodeId)
+                {
+                    isChecked = false;
+                }
+            }
 
-                var checkedLevel = 5;
-                var isChecked = true;
+            NodeManager.AddListItems(DdlChannelId.Items, PublishmentSystemInfo, true, true, Body.AdminName);
+            CheckManager.LoadContentLevelToList(DdlState, PublishmentSystemInfo, PublishmentSystemId, isChecked, checkedLevel);
+            var checkLevelList = new List<int>();
+
+            if (!string.IsNullOrEmpty(Body.GetQueryString("channelId")))
+            {
+                ControlUtils.SelectSingleItem(DdlChannelId, Body.GetQueryString("channelId"));
+            }
+            if (!string.IsNullOrEmpty(Body.GetQueryString("state")))
+            {
+                ControlUtils.SelectSingleItem(DdlState, Body.GetQueryString("state"));
+                checkLevelList.Add(Body.GetQueryInt("state"));
+            }
+            else
+            {
+                checkLevelList = CheckManager.LevelInt.GetCheckLevelList(PublishmentSystemInfo, isChecked, checkedLevel);
+            }
+
+            SpContents.ControlToPaginate = RptContents;
+            SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
+
+            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _channelId);
+            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
+            var nodeIdList = DataProvider.NodeDao.GetNodeIdListByScopeType(nodeInfo.NodeId, nodeInfo.ChildrenCount, EScopeType.All, string.Empty, string.Empty, nodeInfo.ContentModelPluginId);
+            var list = new List<int>();
+            if (permissions.IsSystemAdministrator)
+            {
+                list = nodeIdList;
+            }
+            else
+            {
+                var owningNodeIdList = new List<int>();
                 foreach (var owningNodeId in ProductPermissionsManager.Current.OwningNodeIdList)
                 {
-                    int checkedLevelByNodeId;
-                    var isCheckedByNodeId = CheckManager.GetUserCheckLevel(Body.AdminName, PublishmentSystemInfo, owningNodeId, out checkedLevelByNodeId);
-                    if (checkedLevel > checkedLevelByNodeId)
+                    if (AdminUtility.HasChannelPermissions(Body.AdminName, PublishmentSystemId, owningNodeId, AppManager.Permissions.Channel.ContentCheck))
                     {
-                        checkedLevel = checkedLevelByNodeId;
-                    }
-                    if (!isCheckedByNodeId)
-                    {
-                        isChecked = false;
+                        owningNodeIdList.Add(owningNodeId);
                     }
                 }
-
-                LevelManager.LoadContentLevelToList(State, PublishmentSystemInfo, PublishmentSystemId, isChecked, checkedLevel);
-
-                PhContentModel.Visible = true;
-                DdlContentModelId.Items.Add(new ListItem("<默认>", string.Empty));
-                var contentTables = PluginCache.GetEnabledPluginMetadatas<IContentTable>();
-                foreach (var contentTable in contentTables)
+                foreach (var theNodeId in nodeIdList)
                 {
-                    DdlContentModelId.Items.Add(new ListItem($"插件：{contentTable.DisplayName}", contentTable.Id));
-                }
-                ControlUtils.SelectListItems(DdlContentModelId, _nodeInfo.ContentModelId);
-                //EContentModelTypeUtils.AddListItemsForContentCheck(this.ContentModelID);
-
-                if (!string.IsNullOrEmpty(Body.GetQueryString("State")))
-                {
-                    ControlUtils.SelectListItems(State, Body.GetQueryString("State"));
-                }
-                if (!string.IsNullOrEmpty(Body.GetQueryString("ModelID")))
-                {
-                    ControlUtils.SelectListItems(DdlContentModelId, Body.GetQueryString("ModelID"));
-                }
-
-                SpContents.ControlToPaginate = RptContents;
-                SpContents.ItemsPerPage = PublishmentSystemInfo.Additional.PageSize;
-
-                var checkLevelList = new List<int>();
-
-                if (Body.IsQueryExists("State"))
-                {
-                    checkLevelList.Add(Body.GetQueryInt("State"));
-                }
-                else
-                {
-                    checkLevelList = LevelManager.LevelInt.GetCheckLevelList(PublishmentSystemInfo, isChecked, checkedLevel);
-                }
-                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, DdlContentModelId.SelectedValue);
-
-                var owningNodeIdList = new List<int>();
-                if (!permissions.IsSystemAdministrator)
-                {
-                    foreach (var owningNodeId in ProductPermissionsManager.Current.OwningNodeIdList)
+                    if (owningNodeIdList.Contains(theNodeId))
                     {
-                        if (AdminUtility.HasChannelPermissions(Body.AdminName, PublishmentSystemId, owningNodeId, AppManager.Permissions.Channel.ContentCheck))
-                        {
-                            owningNodeIdList.Add(owningNodeId);
-                        }
+                        list.Add(theNodeId);
                     }
-                }                
-
-                SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectedCommendByCheck(tableName, PublishmentSystemId, permissions.IsSystemAdministrator, owningNodeIdList, checkLevelList);
-
-                SpContents.SortField = ContentAttribute.LastEditDate;
-                SpContents.SortMode = SortMode.DESC;
-                RptContents.ItemDataBound += rptContents_ItemDataBound;
-
-                SpContents.DataBind();
-
-                var showPopWinString = ModalContentCheck.GetOpenWindowStringForMultiChannels(PublishmentSystemId, PageUrl);
-                BtnCheck.Attributes.Add("onclick", showPopWinString);
-
-                LtlColumnHeadRows.Text = TextUtility.GetColumnHeadRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _tableStyle, PublishmentSystemInfo);
-                LtlCommandHeadRows.Text = TextUtility.GetCommandHeadRowsHtml(Body.AdminName, PublishmentSystemInfo, _nodeInfo, _pluginChannels);
+                }
             }
+
+            SpContents.SelectCommand = BaiRongDataProvider.ContentDao.GetSelectedCommendByCheck(tableName, PublishmentSystemId, list, checkLevelList);
+
+            SpContents.SortField = ContentAttribute.LastEditDate;
+            SpContents.SortMode = SortMode.DESC;
+            RptContents.ItemDataBound += RptContents_ItemDataBound;
+
+            SpContents.DataBind();
+
+            var showPopWinString = ModalContentCheck.GetOpenWindowStringForMultiChannels(PublishmentSystemId, PageUrl);
+            BtnCheck.Attributes.Add("onclick", showPopWinString);
+
+            LtlColumnsHead.Text = TextUtility.GetColumnsHeadHtml(_styleInfoList, _attributesOfDisplay, PublishmentSystemInfo);
+            LtlCommandsHead.Text = TextUtility.GetCommandsHeadHtml(PublishmentSystemInfo, _pluginChannels, _isEdit, _isComment);
 
             if (!HasChannelPermissions(PublishmentSystemId, AppManager.Permissions.Channel.ContentDelete))
             {
@@ -160,56 +158,40 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-        void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
+
+            var contentInfo = new ContentInfo(e.Item.DataItem);
+
+            var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
+            var ltlChannel = (Literal)e.Item.FindControl("ltlChannel");
+            var ltlColumns = (Literal)e.Item.FindControl("ltlColumns");
+            var ltlStatus = (Literal)e.Item.FindControl("ltlStatus");
+            var ltlCommands = (Literal)e.Item.FindControl("ltlCommands");
+            var ltlSelect = (Literal) e.Item.FindControl("ltlSelect");
+
+            ltlTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
+
+            ltlColumns.Text = TextUtility.GetColumnsHtml(_nameValueCacheDict, PublishmentSystemInfo, contentInfo, _attributesOfDisplay, _attributesOfDisplayStyleInfoList);
+
+            string nodeName;
+            if (!_nameValueCacheDict.TryGetValue(contentInfo.NodeId.ToString(), out nodeName))
             {
-                var ltlItemTitle = (Literal)e.Item.FindControl("ltlItemTitle");
-                var ltlChannel = (Literal)e.Item.FindControl("ltlChannel");
-                var ltlColumnItemRows = (Literal)e.Item.FindControl("ltlColumnItemRows");
-                var ltlItemStatus = (Literal)e.Item.FindControl("ltlItemStatus");
-                var ltlItemEditUrl = (Literal)e.Item.FindControl("ltlItemEditUrl");
-                var ltlCommandItemRows = (Literal)e.Item.FindControl("ltlCommandItemRows");
-                var ltlItemSelect = (Literal)e.Item.FindControl("ltlItemSelect");
-
-                var contentInfo = new ContentInfo(e.Item.DataItem);
-                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, contentInfo.NodeId);
-
-                ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
-                var nodeName = _valueHashtable[contentInfo.NodeId] as string;
-                if (nodeName == null)
-                {
-                    nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
-                    _valueHashtable[contentInfo.NodeId] = nodeName;
-                }
-                ltlChannel.Text = nodeName;
-
-                var showPopWinString = ModalCheckState.GetOpenWindowString(PublishmentSystemId, contentInfo, PageUrl);
-                ltlItemStatus.Text =
-                    $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{showPopWinString}"">{LevelManager.GetCheckState(
-                        PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
-
-                if (HasChannelPermissions(contentInfo.NodeId, AppManager.Permissions.Channel.ContentEdit) || Body.AdminName == contentInfo.AddUserName)
-                {
-                    ltlItemEditUrl.Text =
-                        $"<a href=\"{WebUtils.GetContentAddEditUrl(PublishmentSystemId, nodeInfo, contentInfo.Id, PageUrl)}\">编辑</a>";
-                }
-
-                ltlItemSelect.Text =
-                    $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.NodeId}_{contentInfo.Id}"" />";
-
-                ltlColumnItemRows.Text = TextUtility.GetColumnItemRowsHtml(_tableStyleInfoList, _attributesOfDisplay, _valueHashtable, _tableStyle, PublishmentSystemInfo, contentInfo);
-
-                ltlCommandItemRows.Text = TextUtility.GetCommandItemRowsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName);
+                nodeName = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
+                _nameValueCacheDict[contentInfo.NodeId.ToString()] = nodeName;
             }
+            ltlChannel.Text = nodeName;
+
+            ltlStatus.Text =
+                $@"<a href=""javascript:;"" title=""设置内容状态"" onclick=""{ModalCheckState.GetOpenWindowString(PublishmentSystemId, contentInfo, PageUrl)}"">{CheckManager.GetCheckState(PublishmentSystemInfo, contentInfo.IsChecked, contentInfo.CheckedLevel)}</a>";
+
+            ltlCommands.Text = TextUtility.GetCommandsHtml(PublishmentSystemInfo, _pluginChannels, contentInfo, PageUrl, Body.AdminName, _isEdit, _isComment);
+
+            ltlSelect.Text = $@"<input type=""checkbox"" name=""IDsCollection"" value=""{contentInfo.NodeId}_{contentInfo.Id}"" />";
         }
 
-        public void State_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Response.Redirect(PageUrl, true);
-        }
-
-        public void DdlContentModelId_SelectedIndexChanged(object sender, EventArgs e)
+        public void Search_OnClick(object sender, EventArgs e)
         {
             Response.Redirect(PageUrl, true);
         }
@@ -223,9 +205,9 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     _pageUrl = PageUtils.GetCmsUrl(nameof(PageContentCheck), new NameValueCollection
                     {
-                        {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                        {"State", State.SelectedValue},
-                        {"ModelID", DdlContentModelId.SelectedValue}
+                        {"publishmentSystemID", PublishmentSystemId.ToString()},
+                        {"channelId", DdlChannelId.SelectedValue},
+                        {"state", DdlState.SelectedValue}
                     });
                 }
                 return _pageUrl;

@@ -107,27 +107,12 @@ namespace BaiRong.Core.Model.Enumerations
 		    throw new Exception();
 		}
 
-        public static string GetContentOrderByString(ETaxisType taxisType)
-        {
-            return GetOrderByString(ETableStyle.BackgroundContent, taxisType);
-        }
-
-        //public static string GetInputContentOrderByString(ETaxisType taxisType)
-        //{
-        //    return GetOrderByString(ETableStyle.InputContent, taxisType);
-        //}
-
         public static string GetChannelOrderByString(ETaxisType taxisType)
         {
-            return GetOrderByString(ETableStyle.Channel, taxisType);
+            return GetChannelOrderByString(taxisType, string.Empty, null);
         }
 
-        public static string GetOrderByString(ETableStyle tableStyle, ETaxisType taxisType)
-        {
-            return GetOrderByString(tableStyle, taxisType, string.Empty, null);
-        }
-
-        public static string GetOrderByString(ETableStyle tableStyle, ETaxisType taxisType, string orderByString, List<int> orderedContentIdList)
+        public static string GetChannelOrderByString(ETaxisType taxisType, string orderByString, List<int> orderedContentIdList)
         {
             if (!string.IsNullOrEmpty(orderByString))
             {
@@ -139,177 +124,163 @@ namespace BaiRong.Core.Model.Enumerations
             }
 
             var retval = string.Empty;
-            if (tableStyle == ETableStyle.Channel)
+            if (taxisType == ETaxisType.OrderById)
             {
-                if (taxisType == ETaxisType.OrderById)
+                retval = "ORDER BY NodeId ASC";
+            }
+            else if (taxisType == ETaxisType.OrderByIdDesc)
+            {
+                retval = "ORDER BY NodeId DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByNodeId)
+            {
+                retval = "ORDER BY NodeId ASC";
+            }
+            else if (taxisType == ETaxisType.OrderByNodeIdDesc)
+            {
+                retval = "ORDER BY NodeId DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByAddDate)
+            {
+                retval = "ORDER BY AddDate ASC";
+            }
+            else if (taxisType == ETaxisType.OrderByAddDateDesc)
+            {
+                retval = "ORDER BY AddDate DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByLastEditDate)
+            {
+                retval = "ORDER BY AddDate ASC";
+            }
+            else if (taxisType == ETaxisType.OrderByLastEditDateDesc)
+            {
+                retval = "ORDER BY AddDate DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByTaxis)
+            {
+                retval = "ORDER BY Taxis ASC";
+            }
+            else if (taxisType == ETaxisType.OrderByTaxisDesc)
+            {
+                retval = "ORDER BY Taxis DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByHits)
+            {
+                if (orderedContentIdList != null && orderedContentIdList.Count > 0)
                 {
-                    retval = "ORDER BY NodeId ASC";
+                    orderedContentIdList.Reverse();
+                    retval =
+                        $"ORDER BY CHARINDEX(CONVERT(VARCHAR,NodeId), '{TranslateUtils.ObjectCollectionToString(orderedContentIdList)}') DESC, Taxis ASC";
                 }
-                else if (taxisType == ETaxisType.OrderByIdDesc)
-                {
-                    retval = "ORDER BY NodeId DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByNodeId)
-                {
-                    retval = "ORDER BY NodeId ASC";
-                }
-                else if (taxisType == ETaxisType.OrderByNodeIdDesc)
-                {
-                    retval = "ORDER BY NodeId DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByAddDate)
-                {
-                    retval = "ORDER BY AddDate ASC";
-                }
-                else if (taxisType == ETaxisType.OrderByAddDateDesc)
-                {
-                    retval = "ORDER BY AddDate DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByLastEditDate)
-                {
-                    retval = "ORDER BY AddDate ASC";
-                }
-                else if (taxisType == ETaxisType.OrderByLastEditDateDesc)
-                {
-                    retval = "ORDER BY AddDate DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByTaxis)
+                else
                 {
                     retval = "ORDER BY Taxis ASC";
                 }
-                else if (taxisType == ETaxisType.OrderByTaxisDesc)
-                {
-                    retval = "ORDER BY Taxis DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByHits)
-                {
-                    if (orderedContentIdList != null && orderedContentIdList.Count > 0)
-                    {
-                        orderedContentIdList.Reverse();
-                        retval =
-                            $"ORDER BY CHARINDEX(CONVERT(VARCHAR,NodeId), '{TranslateUtils.ObjectCollectionToString(orderedContentIdList)}') DESC, Taxis ASC";
-                    }
-                    else
-                    {
-                        retval = "ORDER BY Taxis ASC";
-                    }
-                }
-                else if (taxisType == ETaxisType.OrderByRandom)
-                {
-                    retval = SqlUtils.GetOrderByRandom();
-                }
             }
-            else if (ETableStyleUtils.IsContent(tableStyle))
+            else if (taxisType == ETaxisType.OrderByRandom)
             {
-                if (taxisType == ETaxisType.OrderById)
-                {
-                    retval = "ORDER BY IsTop DESC, ID ASC";
-                }
-                else if (taxisType == ETaxisType.OrderByIdDesc)
-                {
-                    retval = "ORDER BY IsTop DESC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByNodeId)
-                {
-                    retval = "ORDER BY IsTop DESC, NodeId ASC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByNodeIdDesc)
-                {
-                    retval = "ORDER BY IsTop DESC, NodeId DESC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByAddDate)
-                {
-                    retval = "ORDER BY IsTop DESC, AddDate ASC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByAddDateDesc)
-                {
-                    retval = "ORDER BY IsTop DESC, AddDate DESC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByLastEditDate)
-                {
-                    retval = "ORDER BY IsTop DESC, LastEditDate ASC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByLastEditDateDesc)
-                {
-                    retval = "ORDER BY IsTop DESC, LastEditDate DESC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByTaxis)
-                {
-                    retval = "ORDER BY IsTop DESC, Taxis ASC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByTaxisDesc)
-                {
-                    retval = "ORDER BY IsTop DESC, Taxis DESC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByHits)
-                {
-                    retval = "ORDER BY Hits DESC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByHitsByDay)
-                {
-                    retval = "ORDER BY HitsByDay DESC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByHitsByWeek)
-                {
-                    retval = "ORDER BY HitsByWeek DESC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByHitsByMonth)
-                {
-                    retval = "ORDER BY HitsByMonth DESC, ID DESC";
-                }
-                else if (taxisType == ETaxisType.OrderByStars || taxisType == ETaxisType.OrderByDigg || taxisType == ETaxisType.OrderByComments)
-                {
-                    if (orderedContentIdList != null && orderedContentIdList.Count > 0)
-                    {
-                        orderedContentIdList.Reverse();
-                        retval =
-                            $"ORDER BY CHARINDEX(CONVERT(VARCHAR,ID), '{TranslateUtils.ObjectCollectionToString(orderedContentIdList)}') DESC, IsTop DESC, Taxis DESC, ID DESC";
-                    }
-                    else
-                    {
-                        retval = "ORDER BY IsTop DESC, Taxis DESC, ID DESC";
-                    }
-                }
-                else if (taxisType == ETaxisType.OrderByRandom)
-                {
-                    retval = SqlUtils.GetOrderByRandom();
-                }
+                retval = SqlUtils.GetOrderByRandom();
             }
-            //else if (tableStyle == ETableStyle.InputContent)
-            //{
-            //    if (taxisType == ETaxisType.OrderById)
-            //    {
-            //        retval = "ORDER BY ID ASC";
-            //    }
-            //    else if (taxisType == ETaxisType.OrderByIdDesc)
-            //    {
-            //        retval = "ORDER BY ID DESC";
-            //    }
-            //    else if (taxisType == ETaxisType.OrderByAddDate)
-            //    {
-            //        retval = "ORDER BY AddDate ASC, ID DESC";
-            //    }
-            //    else if (taxisType == ETaxisType.OrderByAddDateDesc)
-            //    {
-            //        retval = "ORDER BY AddDate DESC, ID DESC";
-            //    }
-            //    else if (taxisType == ETaxisType.OrderByTaxis)
-            //    {
-            //        retval = "ORDER BY Taxis ASC, ID DESC";
-            //    }
-            //    else if (taxisType == ETaxisType.OrderByTaxisDesc)
-            //    {
-            //        retval = "ORDER BY Taxis DESC";
-            //    }
-            //    else if (taxisType == ETaxisType.OrderByRandom)
-            //    {
-            //        retval = SqlUtils.GetOrderByRandom();
-            //    }
-            //}
+
             return retval;
         }
 
-		public static string GetText(ETaxisType type)
+        public static string GetContentOrderByString(ETaxisType taxisType)
+        {
+            return GetContentOrderByString(taxisType, string.Empty, null);
+        }
+
+        public static string GetContentOrderByString(ETaxisType taxisType, string orderByString, List<int> orderedContentIdList)
+        {
+            if (!string.IsNullOrEmpty(orderByString))
+            {
+                if (orderByString.Trim().ToUpper().StartsWith("ORDER BY "))
+                {
+                    return orderByString;
+                }
+                return "ORDER BY " + orderByString;
+            }
+
+            var retval = string.Empty;
+
+            if (taxisType == ETaxisType.OrderById)
+            {
+                retval = "ORDER BY IsTop DESC, ID ASC";
+            }
+            else if (taxisType == ETaxisType.OrderByIdDesc)
+            {
+                retval = "ORDER BY IsTop DESC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByNodeId)
+            {
+                retval = "ORDER BY IsTop DESC, NodeId ASC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByNodeIdDesc)
+            {
+                retval = "ORDER BY IsTop DESC, NodeId DESC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByAddDate)
+            {
+                retval = "ORDER BY IsTop DESC, AddDate ASC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByAddDateDesc)
+            {
+                retval = "ORDER BY IsTop DESC, AddDate DESC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByLastEditDate)
+            {
+                retval = "ORDER BY IsTop DESC, LastEditDate ASC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByLastEditDateDesc)
+            {
+                retval = "ORDER BY IsTop DESC, LastEditDate DESC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByTaxis)
+            {
+                retval = "ORDER BY IsTop DESC, Taxis ASC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByTaxisDesc)
+            {
+                retval = "ORDER BY IsTop DESC, Taxis DESC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByHits)
+            {
+                retval = "ORDER BY Hits DESC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByHitsByDay)
+            {
+                retval = "ORDER BY HitsByDay DESC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByHitsByWeek)
+            {
+                retval = "ORDER BY HitsByWeek DESC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByHitsByMonth)
+            {
+                retval = "ORDER BY HitsByMonth DESC, ID DESC";
+            }
+            else if (taxisType == ETaxisType.OrderByStars || taxisType == ETaxisType.OrderByDigg || taxisType == ETaxisType.OrderByComments)
+            {
+                if (orderedContentIdList != null && orderedContentIdList.Count > 0)
+                {
+                    orderedContentIdList.Reverse();
+                    retval =
+                        $"ORDER BY CHARINDEX(CONVERT(VARCHAR,ID), '{TranslateUtils.ObjectCollectionToString(orderedContentIdList)}') DESC, IsTop DESC, Taxis DESC, ID DESC";
+                }
+                else
+                {
+                    retval = "ORDER BY IsTop DESC, Taxis DESC, ID DESC";
+                }
+            }
+            else if (taxisType == ETaxisType.OrderByRandom)
+            {
+                retval = SqlUtils.GetOrderByRandom();
+            }
+
+            return retval;
+        }
+
+        public static string GetText(ETaxisType type)
 		{
 		    if (type == ETaxisType.OrderById)
 			{

@@ -39,13 +39,13 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings("支付设置", AppManager.Permissions.Settings.Integration);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Integration);
 
             EBooleanUtils.AddListItems(DdlIsEnabled, "开通", "不开通");
-            ControlUtils.SelectListItems(DdlIsEnabled, _config.IsAlipayPc.ToString());
+            ControlUtils.SelectSingleItem(DdlIsEnabled, _config.IsAlipayPc.ToString());
 
             EBooleanUtils.AddListItems(DdlIsMApi, "即时到账（mapi）", "电脑网站支付（openapi）");
-            ControlUtils.SelectListItems(DdlIsMApi, _config.AlipayPcIsMApi.ToString());
+            ControlUtils.SelectSingleItem(DdlIsMApi, _config.AlipayPcIsMApi.ToString());
 
             PhSettings.Visible = _config.IsAlipayPc;
 

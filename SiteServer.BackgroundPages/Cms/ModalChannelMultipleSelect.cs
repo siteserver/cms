@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int publishmentSystemId, bool isPublishmentSystemSelect,
             string jsMethod)
         {
-            return PageUtils.GetOpenLayerString("选择目标栏目",
+            return LayerUtils.GetOpenScript("选择目标栏目",
                 PageUtils.GetCmsUrl(nameof(ModalChannelMultipleSelect), new NameValueCollection
                 {
                     {"publishmentSystemID", publishmentSystemId.ToString()},
@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     AddSite(DdlPublishmentSystemId, publishmentSystemInfo, parentWithChildren, 0);
                 }
-                ControlUtils.SelectListItems(DdlPublishmentSystemId, _targetPublishmentSystemId.ToString());
+                ControlUtils.SelectSingleItem(DdlPublishmentSystemId, _targetPublishmentSystemId.ToString());
 
                 var targetNodeId = Body.GetQueryInt("TargetNodeID");
                 if (targetNodeId > 0)
@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
                         value = targetNodeId.ToString();
                     }
                     string scripts = $"window.parent.{_jsMethod}('{nodeNames}', '{value}');";
-                    PageUtils.CloseModalPageWithoutRefresh(Page, scripts);
+                    LayerUtils.CloseWithoutRefresh(Page, scripts);
                 }
                 else
                 {

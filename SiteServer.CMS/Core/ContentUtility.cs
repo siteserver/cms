@@ -7,10 +7,9 @@ using System.Web.UI.WebControls;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Model.Enumerations;
-using BaiRong.Core.AuxiliaryTable;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin.Models;
 
@@ -227,142 +226,98 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static int GetRealContentId(ETableStyle tableStyle, string tableName, int contentId)
+        public static int GetRealContentId(string tableName, int contentId)
         {
             string linkUrl;
-            var referenceId = BaiRongDataProvider.ContentDao.GetReferenceId(tableStyle, tableName, contentId, out linkUrl);
+            var referenceId = BaiRongDataProvider.ContentDao.GetReferenceId(tableName, contentId, out linkUrl);
             return referenceId > 0 ? referenceId : contentId;
         }
 
-        public static ContentInfo GetContentInfo(ETableStyle tableStyle)
+        public static List<TableStyleInfo> GetAllTableStyleInfoList(PublishmentSystemInfo publishmentSystemInfo, List<TableStyleInfo> tableStyleInfoList)
         {
-            switch (tableStyle)
+            var list = new List<TableStyleInfo>
             {
-                case ETableStyle.BackgroundContent:
-                    return new BackgroundContentInfo();
-            }
-            return new ContentInfo();
-        }
-
-        public static List<TableStyleInfo> GetAllTableStyleInfoList(PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, List<TableStyleInfo> tableStyleInfoList)
-        {
-            var arraylist = new List<TableStyleInfo>();
-
-            var styleInfo = new TableStyleInfo
-            {
-                AttributeName = ContentAttribute.Id,
-                DisplayName = "编号"
-            };
-            arraylist.Add(styleInfo);
-
-            arraylist.AddRange(tableStyleInfoList);
-
-            styleInfo = new TableStyleInfo
-            {
-                AttributeName = ContentAttribute.Hits,
-                DisplayName = "点击量"
-            };
-            arraylist.Add(styleInfo);
-
-            if (tableStyle == ETableStyle.BackgroundContent)
-            {
-                if (publishmentSystemInfo.Additional.IsRelatedByTags)
+                new TableStyleInfo
                 {
-                    styleInfo = new TableStyleInfo
-                    {
-                        AttributeName = ContentAttribute.Tags,
-                        DisplayName = "标签"
-                    };
-                    arraylist.Add(styleInfo);
-                }
-
-                styleInfo = new TableStyleInfo
+                    AttributeName = ContentAttribute.Id,
+                    DisplayName = "编号"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Hits,
+                    DisplayName = "点击量"
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.Tags,
+                    DisplayName = "标签"
+                },
+                new TableStyleInfo
                 {
                     AttributeName = BackgroundContentAttribute.Star,
                     DisplayName = "评分"
-                };
-                arraylist.Add(styleInfo);
-            }
-            else
-            {
-                styleInfo = new TableStyleInfo
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LinkUrl,
+                    DisplayName = "外部链接"
+                },
+                new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.AddDate,
                     DisplayName = "添加时间"
-                };
-                arraylist.Add(styleInfo);
-            }
+                }
+            };
 
-            return arraylist;
+            list.AddRange(tableStyleInfoList);
+
+            return list;
         }
 
-        public static List<TableStyleInfo> GetColumnTableStyleInfoList(PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, List<TableStyleInfo> tableStyleInfoArrayList)
+        public static List<TableStyleInfo> GetColumnTableStyleInfoList(PublishmentSystemInfo publishmentSystemInfo, List<TableStyleInfo> tableStyleInfoList)
         {
-            var arraylist = new List<TableStyleInfo>();
-
-            if (tableStyleInfoArrayList != null)
+            var list = new List<TableStyleInfo>
             {
-                foreach (var tableStyleInfo in tableStyleInfoArrayList)
-                {
-                    arraylist.Add(tableStyleInfo);
-                }
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.AddUserName, 0, "添加者", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastEditUserName, 0, "修改者", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastEditDate, 0, "修改时间", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckUserName, 0, "审核者", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckCheckDate, 0, "审核时间", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckReasons, 0, "审核原因", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.SourceId, 0, "来源标识", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.Tags, 0, "标签", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.ContentGroupNameCollection, 0, "所属内容组",
+                    string.Empty, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.Hits, 0, "点击量", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByDay, 0, "日点击", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByWeek, 0, "周点击", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByMonth, 0, "月点击", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastHitsDate, 0, "最后点击时间", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, BackgroundContentAttribute.Star, 0, "评分", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty),
+                new TableStyleInfo(0, 0, string.Empty, BackgroundContentAttribute.Digg, 0, "Digg", string.Empty, true,
+                    InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty)
+            };
+
+            if (tableStyleInfoList != null)
+            {
+                list.InsertRange(0, tableStyleInfoList);
             }
 
-            var styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.AddUserName, 0, "添加者", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastEditUserName, 0, "修改者", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastEditDate, 0, "修改时间", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckUserName, 0, "审核者", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckCheckDate, 0, "审核时间", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.CheckReasons, 0, "审核原因", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.SourceId, 0, "来源标识", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            if (publishmentSystemInfo.Additional.IsRelatedByTags)
-            {
-                styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.Tags, 0, "标签", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-                arraylist.Add(styleInfo);
-            }
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.ContentGroupNameCollection, 0, "所属内容组", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.Hits, 0, "点击量", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByDay, 0, "日点击", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByWeek, 0, "周点击", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.HitsByMonth, 0, "月点击", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            styleInfo = new TableStyleInfo(0, 0, string.Empty, ContentAttribute.LastHitsDate, 0, "最后点击时间", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-            arraylist.Add(styleInfo);
-
-            if (tableStyle == ETableStyle.BackgroundContent)
-            {
-                styleInfo = new TableStyleInfo(0, 0, string.Empty, BackgroundContentAttribute.Star, 0, "评分", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-                arraylist.Add(styleInfo);
-
-                styleInfo = new TableStyleInfo(0, 0, string.Empty, BackgroundContentAttribute.Digg, 0, "Digg", string.Empty, true, true, InputTypeUtils.GetValue(InputType.Text), string.Empty, false, string.Empty);
-                arraylist.Add(styleInfo);
-            }
-
-            return arraylist;
+            return list;
         }
 
         public static bool AfterContentAdded(PublishmentSystemInfo publishmentSystemInfo, NodeInfo nodeInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
@@ -403,20 +358,20 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            var pluginChannels = PluginCache.GetChannelFeatures(nodeInfo);
+            var pluginChannels = PluginManager.GetContentRelatedFeatures(nodeInfo);
             foreach (var pluginId in pluginChannels.Keys)
             {
                 var pluginChannel = pluginChannels[pluginId];
 
-                if (pluginChannel.OnContentAdded == null) continue;
+                if (pluginChannel.ContentAddCompleted == null) continue;
 
                 try
                 {
-                    pluginChannel.OnContentAdded(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId);
+                    pluginChannel.ContentAddCompleted(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId);
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddPluginErrorLog(pluginId, ex, "OnContentAdded");
+                    LogUtils.AddPluginErrorLog(pluginId, ex, "ContentAddCompleted");
                 }
             }
 
@@ -449,10 +404,9 @@ namespace SiteServer.CMS.Core
             var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeId);
 
             var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemInfo.PublishmentSystemId, nodeId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
-            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
 
             if (contentInfo == null) return;
 
@@ -467,20 +421,20 @@ namespace SiteServer.CMS.Core
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 
-                var pluginChannels = PluginCache.GetChannelFeatures(nodeInfo);
+                var pluginChannels = PluginManager.GetContentRelatedFeatures(nodeInfo);
                 foreach (var pluginId in pluginChannels.Keys)
                 {
                     var pluginChannel = pluginChannels[pluginId];
 
-                    if (pluginChannel.OnContentTranslated == null) continue;
+                    if (pluginChannel.ContentTranslateCompleted == null) continue;
 
                     try
                     {
-                        pluginChannel.OnContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
+                        pluginChannel.ContentTranslateCompleted(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddPluginErrorLog(pluginId, ex, "OnContentTranslated");
+                        LogUtils.AddPluginErrorLog(pluginId, ex, "ContentTranslateCompleted");
                     }
                 }
 
@@ -505,31 +459,31 @@ namespace SiteServer.CMS.Core
                 DataProvider.NodeDao.UpdateContentNum(publishmentSystemInfo, nodeId, true);
                 DataProvider.NodeDao.UpdateContentNum(targetPublishmentSystemInfo, targetNodeId, true);
 
-                var pluginChannels = PluginCache.GetChannelFeatures(nodeInfo);
+                var pluginChannels = PluginManager.GetContentRelatedFeatures(nodeInfo);
                 foreach (var pluginId in pluginChannels.Keys)
                 {
                     var pluginChannel = pluginChannels[pluginId];
 
-                    if (pluginChannel.OnContentTranslated != null)
+                    if (pluginChannel.ContentTranslateCompleted != null)
                     {
                         try
                         {
-                            pluginChannel.OnContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, newContentId);
+                            pluginChannel.ContentTranslateCompleted(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, newContentId);
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddPluginErrorLog(pluginId, ex, "OnContentTranslated");
+                            LogUtils.AddPluginErrorLog(pluginId, ex, "ContentTranslateCompleted");
                         }
                     }
-                    if (pluginChannel.OnContentDeleted != null)
+                    if (pluginChannel.ContentDeleteCompleted != null)
                     {
                         try
                         {
-                            pluginChannel.OnContentDeleted(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId);
+                            pluginChannel.ContentDeleteCompleted(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId);
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddPluginErrorLog(pluginId, ex, "OnContentDeleted");
+                            LogUtils.AddPluginErrorLog(pluginId, ex, "ContentDeleteCompleted");
                         }
                     }
                 }
@@ -564,20 +518,20 @@ namespace SiteServer.CMS.Core
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
                 var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetPublishmentSystemInfo, contentInfo);
 
-                var pluginChannels = PluginCache.GetChannelFeatures(nodeInfo);
+                var pluginChannels = PluginManager.GetContentRelatedFeatures(nodeInfo);
                 foreach (var pluginId in pluginChannels.Keys)
                 {
                     var pluginChannel = pluginChannels[pluginId];
 
-                    if (pluginChannel.OnContentTranslated == null) continue;
+                    if (pluginChannel.ContentTranslateCompleted == null) continue;
 
                     try
                     {
-                        pluginChannel.OnContentTranslated(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
+                        pluginChannel.ContentTranslateCompleted(publishmentSystemInfo.PublishmentSystemId, nodeInfo.NodeId, contentId, targetPublishmentSystemId, targetNodeId, theContentId);
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddPluginErrorLog(pluginId, ex, "OnContentTranslated");
+                        LogUtils.AddPluginErrorLog(pluginId, ex, "ContentTranslateCompleted");
                     }
                 }
 
@@ -620,15 +574,14 @@ namespace SiteServer.CMS.Core
             return dic;
         }
 
-        public static Dictionary<string, object> ContentToDictionary(ContentInfo contentInfo, ETableStyle tableStyle, string tableName, List<int> relatedIdentities)
+        public static Dictionary<string, object> ContentToDictionary(ContentInfo contentInfo, string tableName, List<int> relatedIdentities)
         {
             var dict = TranslateUtils.ObjectToDictionary(contentInfo);
             dict.Remove("Attributes");
 
-            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
+            var styleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
             foreach (var styleInfo in styleInfoList)
             {
-                if (!styleInfo.IsVisible) continue;
                 if (!dict.ContainsKey(styleInfo.AttributeName))
                 {
                     dict[styleInfo.AttributeName] = contentInfo.GetString(styleInfo.AttributeName);
@@ -645,6 +598,177 @@ namespace SiteServer.CMS.Core
             }
 
             return dict;
+        }
+
+        public static string GetTitleHtml(string titleFormat, string titleAjaxUrl)
+        {
+            var builder = new StringBuilder();
+            var formatStrong = false;
+            var formatEm = false;
+            var formatU = false;
+            var formatColor = string.Empty;
+            if (titleFormat != null)
+            {
+                SetTitleFormatControls(titleFormat, out formatStrong, out formatEm, out formatU, out formatColor);
+            }
+
+            builder.Append(
+                $@"<a class=""btn"" href=""javascript:;"" onclick=""$('#div_{ContentAttribute.Title}').toggle();return false;""><i class=""icon-text-height""></i></a>
+<script type=""text/javascript"">
+function {ContentAttribute.Title}_strong(e){{
+var e = $(e);
+if ($('#{ContentAttribute.Title}_formatStrong').val() == 'true'){{
+$('#{ContentAttribute.Title}_formatStrong').val('false');
+e.removeClass('btn-success');
+}}else{{
+$('#{ContentAttribute.Title}_formatStrong').val('true');
+e.addClass('btn-success');
+}}
+}}
+function {ContentAttribute.Title}_em(e){{
+var e = $(e);
+if ($('#{ContentAttribute.Title}_formatEM').val() == 'true'){{
+$('#{ContentAttribute.Title}_formatEM').val('false');
+e.removeClass('btn-success');
+}}else{{
+$('#{ContentAttribute.Title}_formatEM').val('true');
+e.addClass('btn-success');
+}}
+}}
+function {ContentAttribute.Title}_u(e){{
+var e = $(e);
+if ($('#{ContentAttribute.Title}_formatU').val() == 'true'){{
+$('#{ContentAttribute.Title}_formatU').val('false');
+e.removeClass('btn-success');
+}}else{{
+$('#{ContentAttribute.Title}_formatU').val('true');
+e.addClass('btn-success');
+}}
+}}
+function {ContentAttribute.Title}_color(){{
+if ($('#{ContentAttribute.Title}_formatColor').val()){{
+$('#{ContentAttribute.Title}_colorBtn').css('color', $('#{ContentAttribute.Title}_formatColor').val());
+$('#{ContentAttribute.Title}_colorBtn').addClass('btn-success');
+}}else{{
+$('#{ContentAttribute.Title}_colorBtn').css('color', '');
+$('#{ContentAttribute.Title}_colorBtn').removeClass('btn-success');
+}}
+$('#{ContentAttribute.Title}_colorContainer').hide();
+}}
+</script>
+");
+
+            builder.Append($@"
+<div class=""btn-group"" style=""float:left;"">
+    <button class=""btn{(formatStrong ? @" btn-success" : string.Empty)}"" style=""font-weight:bold"" onclick=""{ContentAttribute.Title}_strong(this);return false;"">粗体</button>
+    <button class=""btn{(formatEm ? " btn-success" : string.Empty)}"" style=""font-style:italic"" onclick=""{ContentAttribute.Title}_em(this);return false;"">斜体</button>
+    <button class=""btn{(formatU ? " btn-success" : string.Empty)}"" style=""text-decoration:underline"" onclick=""{ContentAttribute.Title}_u(this);return false;"">下划线</button>
+    <button class=""btn{(!string.IsNullOrEmpty(formatColor) ? " btn-success" : string.Empty)}"" id=""{ContentAttribute.Title}_colorBtn"" onclick=""$('#{ContentAttribute.Title}_colorContainer').toggle();return false;"">颜色</button>
+</div>
+<div id=""{ContentAttribute.Title}_colorContainer"" class=""input-append"" style=""float:left;display:none"">
+    <input id=""{ContentAttribute.Title}_formatColor"" name=""{ContentAttribute.Title}_formatColor"" class=""input-mini color {{required:false}}"" type=""text"" value=""{formatColor}"" placeholder=""颜色值"">
+    <button class=""btn"" type=""button"" onclick=""Title_color();return false;"">确定</button>
+</div>
+<input id=""{ContentAttribute.Title}_formatStrong"" name=""{ContentAttribute.Title}_formatStrong"" type=""hidden"" value=""{formatStrong.ToString().ToLower()}"" />
+<input id=""{ContentAttribute.Title}_formatEM"" name=""{ContentAttribute.Title}_formatEM"" type=""hidden"" value=""{formatEm.ToString().ToLower()}"" />
+<input id=""{ContentAttribute.Title}_formatU"" name=""{ContentAttribute.Title}_formatU"" type=""hidden"" value=""{formatU.ToString().ToLower()}"" />
+");
+
+            builder.Append(@"
+<script type=""text/javascript"">
+function getTitles(title){
+	$.get('[url]&title=' + encodeURIComponent(title) + '&channelID=' + $('#channelID').val() + '&r=' + Math.random(), function(data) {
+		if(data !=''){
+			var arr = data.split('|');
+			var temp='';
+			for(i=0;i<arr.length;i++)
+			{
+				temp += '<li><a>'+arr[i].replace(title,'<b>' + title + '</b>') + '</a></li>';
+			}
+			var myli='<ul>'+temp+'</ul>';
+			$('#titleTips').html(myli);
+			$('#titleTips').show();
+		}else{
+            $('#titleTips').hide();
+        }
+		$('#titleTips li').click(function () {
+			$('#Title').val($(this).text());
+			$('#titleTips').hide();
+		})
+	});	
+}
+$(document).ready(function () {
+$('#Title').keyup(function (e) {
+    if (e.keyCode != 40 && e.keyCode != 38) {
+        var title = $('#Title').val();
+        if (title != ''){
+            window.setTimeout(""getTitles('"" + title + ""');"", 200);
+        }else{
+            $('#titleTips').hide();
+        }
+    }
+}).blur(function () {
+	window.setTimeout(""$('#titleTips').hide();"", 200);
+})});
+</script>
+<div id=""titleTips"" class=""inputTips""></div>");
+            builder.Replace("[url]", titleAjaxUrl);
+
+            return builder.ToString();
+        }
+
+        public static string GetTagsHtml(string tagsAjaxUrl)
+        {
+            const string tagScript = @"
+<script type=""text/javascript"">
+function getTags(tag){
+	$.get('[url]&tag=' + encodeURIComponent(tag) + '&r=' + Math.random(), function(data) {
+		if(data !=''){
+			var arr = data.split('|');
+			var temp='';
+			for(i=0;i<arr.length;i++)
+			{
+				temp += '<li><a>'+arr[i].replace(tag,'<b>' + tag + '</b>') + '</a></li>';
+			}
+			var myli='<ul>'+temp+'</ul>';
+			$('#tagTips').html(myli);
+			$('#tagTips').show();
+		}else{
+            $('#tagTips').hide();
+        }
+		$('#tagTips li').click(function () {
+			var tag = $('#TbTags').val();
+			var i = tag.lastIndexOf(' ');
+			if (i > 0)
+			{
+				tag = tag.substring(0, i) + ' ' + $(this).text();
+			}else{
+				tag = $(this).text();	
+			}
+			$('#TbTags').val(tag);
+			$('#tagTips').hide();
+		})
+	});	
+}
+$(document).ready(function () {
+$('#TbTags').keyup(function (e) {
+    if (e.keyCode != 40 && e.keyCode != 38) {
+        var tag = $('#TbTags').val();
+		var i = tag.lastIndexOf(' ');
+		if (i > 0){ tag = tag.substring(i + 1);}
+        if (tag != '' && tag != ' '){
+            window.setTimeout(""getTags('"" + tag + ""');"", 200);
+        }else{
+            $('#tagTips').hide();
+        }
+    }
+}).blur(function () {
+	window.setTimeout(""$('#tagTips').hide();"", 200);
+})});
+</script>
+<div id=""tagTips"" class=""inputTips""></div>
+";
+            return tagScript.Replace("[url]", tagsAjaxUrl);
         }
     }
 }

@@ -35,81 +35,80 @@ namespace SiteServer.BackgroundPages.Cms
             _templateType = Body.GetQueryString("templateType");
             _keywords = Body.GetQueryString("keywords");
 
-			if (!IsPostBack)
-			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "模板管理", AppManager.Permissions.WebSite.Template);
+            if (IsPostBack) return;
 
-				DdlTemplateType.Items.Add(new ListItem("<所有类型>", string.Empty));
-                ETemplateTypeUtils.AddListItems(DdlTemplateType);
-                ControlUtils.SelectListItems(DdlTemplateType, _templateType);
+            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
-                TbKeywords.Text = _keywords;
+            DdlTemplateType.Items.Add(new ListItem("<所有类型>", string.Empty));
+            ETemplateTypeUtils.AddListItems(DdlTemplateType);
+            ControlUtils.SelectSingleItem(DdlTemplateType, _templateType);
 
-				if (Body.IsQueryExists("Delete"))
-				{
-					var templateId = Body.GetQueryInt("TemplateID");
+            TbKeywords.Text = _keywords;
 
-					try
-					{
-                        var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
-                        if (templateInfo != null)
-                        {
-                            DataProvider.TemplateDao.Delete(PublishmentSystemId, templateId);
-                            Body.AddSiteLog(PublishmentSystemId,
-                                $"删除{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
-                                $"模板名称:{templateInfo.TemplateName}");
-                        }
-						SuccessDeleteMessage();
-					}
-					catch(Exception ex)
-					{
-                        FailDeleteMessage(ex);
-					}
-				}
-				else if (Body.IsQueryExists("SetDefault"))
-				{
-                    var templateId = Body.GetQueryInt("TemplateID");
-			
-					try
-					{
-                        var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
-                        if (templateInfo != null)
-                        {
-                            DataProvider.TemplateDao.SetDefault(PublishmentSystemId, templateId);
-                            Body.AddSiteLog(PublishmentSystemId,
-                                $"设置默认{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
-                                $"模板名称:{templateInfo.TemplateName}");
-                        }
-						SuccessMessage();
-					}
-					catch(Exception ex)
-					{
-                        FailMessage(ex, "操作失败");
-					}
-				}
+            if (Body.IsQueryExists("Delete"))
+            {
+                var templateId = Body.GetQueryInt("TemplateID");
 
-                if (string.IsNullOrEmpty(_templateType))
+                try
                 {
-                    LtlCommands.Text = $@"
+                    var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
+                    if (templateInfo != null)
+                    {
+                        DataProvider.TemplateDao.Delete(PublishmentSystemId, templateId);
+                        Body.AddSiteLog(PublishmentSystemId,
+                            $"删除{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+                            $"模板名称:{templateInfo.TemplateName}");
+                    }
+                    SuccessDeleteMessage();
+                }
+                catch(Exception ex)
+                {
+                    FailDeleteMessage(ex);
+                }
+            }
+            else if (Body.IsQueryExists("SetDefault"))
+            {
+                var templateId = Body.GetQueryInt("TemplateID");
+			
+                try
+                {
+                    var templateInfo = TemplateManager.GetTemplateInfo(PublishmentSystemId, templateId);
+                    if (templateInfo != null)
+                    {
+                        DataProvider.TemplateDao.SetDefault(PublishmentSystemId, templateId);
+                        Body.AddSiteLog(PublishmentSystemId,
+                            $"设置默认{ETemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+                            $"模板名称:{templateInfo.TemplateName}");
+                    }
+                    SuccessMessage();
+                }
+                catch(Exception ex)
+                {
+                    FailMessage(ex, "操作失败");
+                }
+            }
+
+            if (string.IsNullOrEmpty(_templateType))
+            {
+                LtlCommands.Text = $@"
 <input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, 0, ETemplateType.IndexPageTemplate)}';"" value=""添加首页模板"" />
 <input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, 0, ETemplateType.ChannelTemplate)}';"" value=""添加栏目模板"" />
 <input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, 0, ETemplateType.ContentTemplate)}';"" value=""添加内容模板"" />
 <input type=""button"" class=""btn"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, 0, ETemplateType.FileTemplate)}';"" value=""添加单页模板"" />
 ";
-                }
-                else
-                {
-                    var eTemplateType = ETemplateTypeUtils.GetEnumType(_templateType);
-                    LtlCommands.Text = $@"
+            }
+            else
+            {
+                var eTemplateType = ETemplateTypeUtils.GetEnumType(_templateType);
+                LtlCommands.Text = $@"
 <input type=""button"" class=""btn btn-success"" onclick=""location.href='{PageTemplateAdd.GetRedirectUrl(PublishmentSystemId, 0, eTemplateType)}';"" value=""添加{ETemplateTypeUtils.GetText(eTemplateType)}"" />
 ";
-                }
+            }
 
-                DgContents.DataSource = DataProvider.TemplateDao.GetDataSource(PublishmentSystemId, _keywords, _templateType);
-                DgContents.ItemDataBound += DgContents_ItemDataBound;
-                DgContents.DataBind();
-			}
-		}
+            DgContents.DataSource = DataProvider.TemplateDao.GetDataSource(PublishmentSystemId, _keywords, _templateType);
+            DgContents.ItemDataBound += DgContents_ItemDataBound;
+            DgContents.DataBind();
+        }
 
         public void DdlTemplateType_OnSelectedIndexChanged(object sender, EventArgs e)
         {

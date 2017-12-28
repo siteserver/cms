@@ -1,5 +1,5 @@
 ﻿using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Core
@@ -8,11 +8,11 @@ namespace SiteServer.CMS.Core
 	{
         public static void CreateArchiveTableIfNotExists(PublishmentSystemInfo publishmentSystemInfo, string tableName)
         {
-            if (!BaiRongDataProvider.DatabaseDao.IsTableExists(TableManager.GetTableNameOfArchive(tableName)))
+            if (!BaiRongDataProvider.DatabaseDao.IsTableExists(TableMetadataManager.GetTableNameOfArchive(tableName)))
             {
                 try
                 {
-                    BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTableOfArchive(tableName);
+                    BaiRongDataProvider.TableCollectionDao.CreateDbTableOfArchive(tableName);
                 }
                 catch
                 {

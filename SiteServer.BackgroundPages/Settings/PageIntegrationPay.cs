@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Settings
                 LtlScript.Text = PaymentApi.Instance.ChargeByJdpay("测试", 0.01M, StringUtils.GetShortGuid(), "https://www.jdpay.com");
             }
 
-            BreadCrumbSettings("支付设置", AppManager.Permissions.Settings.Integration);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Integration);
 
             var config =
                 TranslateUtils.JsonDeserialize<IntegrationPayConfig>(

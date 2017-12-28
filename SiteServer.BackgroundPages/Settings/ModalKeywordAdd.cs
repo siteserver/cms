@@ -18,12 +18,12 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToAdd()
         {
-            return PageUtils.GetOpenLayerString("添加敏感词", PageUtils.GetSettingsUrl(nameof(ModalKeywordAdd), null), 460, 300);
+            return LayerUtils.GetOpenScript("添加敏感词", PageUtils.GetSettingsUrl(nameof(ModalKeywordAdd), null), 460, 300);
         }
 
         public static string GetOpenWindowStringToEdit(int keywordId)
         {
-            return PageUtils.GetOpenLayerString("修改敏感词",
+            return LayerUtils.GetOpenScript("修改敏感词",
                 PageUtils.GetSettingsUrl(nameof(ModalKeywordAdd), new NameValueCollection
                 {
                     {"KeywordID", keywordId.ToString()}
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Settings
             var keywordInfo = DataProvider.KeywordDao.GetKeywordInfo(_keywordId);
             TbKeyword.Text = keywordInfo.Keyword;
             TbAlternative.Text = keywordInfo.Alternative;
-            ControlUtils.SelectListItems(DdlGrade, EKeywordGradeUtils.GetValue(keywordInfo.Grade));
+            ControlUtils.SelectSingleItem(DdlGrade, EKeywordGradeUtils.GetValue(keywordInfo.Grade));
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -96,7 +96,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (isChanged)
             {
-                PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
             }
         }
     }

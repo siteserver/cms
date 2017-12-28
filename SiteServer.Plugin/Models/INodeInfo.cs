@@ -10,7 +10,9 @@ namespace SiteServer.Plugin.Models
 
         int PublishmentSystemId { get; set; }
 
-        string ContentModelId { get; set; }
+        string ContentModelPluginId { get; set; }
+
+        string ContentRelatedPluginIds { get; set; }
 
         int ParentId { get; set; }
 
@@ -43,6 +45,8 @@ namespace SiteServer.Plugin.Models
         string ContentFilePathRule { get; set; }
 
         string LinkUrl { get; set; }
+
+        string LinkType { get; set; }
 
         int ChannelTemplateId { get; set; }
 

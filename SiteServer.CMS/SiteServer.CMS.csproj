@@ -168,10 +168,10 @@
     <Compile Include="Core\Create\CreateTaskManagerForDb.cs" />
     <Compile Include="Core\Create\CreateTaskManagerForMomery.cs" />
     <Compile Include="Core\Create\ICreateTaskManager.cs" />
-    <Compile Include="Core\Permissions\AdministratorWithPermissions.cs" />
-    <Compile Include="Core\Permissions\PermissionConfig.cs" />
-    <Compile Include="Core\Permissions\PermissionConfigManager.cs" />
-    <Compile Include="Core\Permissions\PermissionManager.cs" />
+    <Compile Include="Core\Security\AdministratorWithPermissions.cs" />
+    <Compile Include="Core\Security\PermissionConfig.cs" />
+    <Compile Include="Core\Security\PermissionConfigManager.cs" />
+    <Compile Include="Core\Security\PermissionManager.cs" />
     <Compile Include="Model\PluginConfigInfo.cs" />
     <Compile Include="Plugin\Apis\AdminApi.cs" />
     <Compile Include="Plugin\Apis\UserApi.cs" />
@@ -182,10 +182,8 @@
     <Compile Include="Plugin\Apis\FilesApi.cs" />
     <Compile Include="Plugin\Apis\ContentApi.cs" />
     <Compile Include="Plugin\Apis\ConfigApi.cs" />
-    <Compile Include="Plugin\Apis\MenuApi.cs" />
     <Compile Include="Plugin\Apis\DataApi.cs" />
-    <Compile Include="Plugin\PluginCache.cs" />
-    <Compile Include="Plugin\PluginUtils.cs" />
+    <Compile Include="Plugin\PluginTableUtils.cs" />
     <Compile Include="Core\TabManager.cs" />
     <Compile Include="Core\ContentUtility.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
@@ -234,7 +232,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Core\Create\CreateTaskManager.cs" />
-    <Compile Include="Core\InputTypeParser.cs" />
     <Compile Include="Core\PageUtility.cs" />
     <Compile Include="Core\Create\CreateManager.cs" />
     <Compile Include="Core\Office\TxtObject.cs" />
@@ -244,12 +241,12 @@
     </Compile>
     <Compile Include="Core\UEditorUploader.cs" />
     <Compile Include="Core\ServiceManager.cs" />
-    <Compile Include="Core\User\CheckManager.cs" />
+    <Compile Include="Core\CheckManager.cs" />
     <Compile Include="ImportExport\AtomUtility.cs" />
     <Compile Include="ImportExport\ExportObject.cs" />
     <Compile Include="ImportExport\ImportObject.cs" />
     <Compile Include="ImportExport\Components\AdvIe.cs" />
-    <Compile Include="ImportExport\Components\AuxiliaryTableIe.cs" />
+    <Compile Include="ImportExport\Components\TableCollectionIe.cs" />
     <Compile Include="ImportExport\Components\ConfigurationIe.cs" />
     <Compile Include="ImportExport\Components\GatherRuleIe.cs" />
     <Compile Include="ImportExport\Components\MenuDisplayIe.cs" />
@@ -401,7 +398,6 @@
     <Compile Include="Core\Converter.cs" />
     <Compile Include="Core\CrossSiteTransUtility.cs" />
     <Compile Include="Core\GatherUtility.cs" />
-    <Compile Include="Core\User\LevelManager.cs" />
     <Compile Include="Core\Office\AccessDao.cs" />
     <Compile Include="Core\Office\ExcelObject.cs" />
     <Compile Include="Core\Office\WordUtils.cs" />
@@ -468,14 +464,12 @@
     <Compile Include="Model\SystemPermissionsInfo.cs" />
     <Compile Include="Model\BackgroundContentInfo.cs" />
     <Compile Include="Model\Enumerations\ECrossSiteTransType.cs" />
-    <Compile Include="Model\Enumerations\ENodeType.cs" />
     <Compile Include="Model\NodeInfo.cs" />
     <Compile Include="Model\NodeInfoExtend.cs" />
     <Compile Include="Model\PublishmentSystemInfo.cs" />
     <Compile Include="Model\PublishmentSystemInfoExtend.cs" />
     <Compile Include="Core\MessageManager.cs" />
     <Compile Include="Model\SitePageInfo.cs" />
-    <Compile Include="Core\SystemData\BaseTable.cs" />
     <Compile Include="Provider\AdvertisementDao.cs" />
     <Compile Include="Provider\BackgroundContentDao.cs" />
     <Compile Include="Provider\ContentDao.cs">

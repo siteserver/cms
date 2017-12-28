@@ -227,8 +227,33 @@ namespace BaiRong.Core.Data
 			// do nothing special for BLOBs...as far as we know now.
 			return p;
 		}
-		#endregion
-	}
+        #endregion
+
+        public string GetString(IDataReader rdr, int i)
+        {
+            return rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
+        }
+
+        public bool GetBoolean(IDataReader rdr, int i)
+        {
+            return !rdr.IsDBNull(i) && rdr.GetBoolean(i);
+        }
+
+        public int GetInt(IDataReader rdr, int i)
+        {
+            return rdr.IsDBNull(i) ? 0 : rdr.GetInt32(i);
+        }
+
+        public decimal GetDecimal(IDataReader rdr, int i)
+        {
+            return rdr.IsDBNull(i) ? 0 : rdr.GetDecimal(i);
+        }
+
+        public DateTime GetDateTime(IDataReader rdr, int i)
+        {
+            return rdr.IsDBNull(i) ? DateTime.Now : rdr.GetDateTime(i);
+        }
+    }
 
 #region Derive Parameters
 // We create our own class to do this because the existing ADO.NET 1.1 implementation is broken.

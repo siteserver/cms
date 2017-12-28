@@ -168,20 +168,17 @@ namespace SiteServer.CMS.Core
                 if (!string.IsNullOrEmpty(nodeInfo.Additional.TransNodeNames))
                 {
                     var nodeNameArrayList = TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.TransNodeNames);
-                    var dic = NodeManager.GetNodeInfoDictionaryByPublishmentSystemId(psId);
-                    if (dic != null)
+                    var nodeIdList = NodeManager.GetNodeIdList(psId);
+                    foreach (var nodeName in nodeNameArrayList)
                     {
-                        foreach (var nodeName in nodeNameArrayList)
+                        foreach (var theNodeId in nodeIdList)
                         {
-                            foreach (var theNodeId in dic.Keys)
+                            var theNodeInfo = NodeManager.GetNodeInfo(psId, theNodeId);
+                            if (theNodeInfo.NodeName == nodeName)
                             {
-                                var theNodeInfo = NodeManager.GetNodeInfo(psId, theNodeId);
-                                if (theNodeInfo.NodeName == nodeName)
-                                {
-                                    var listitem = new ListItem(theNodeInfo.NodeName, theNodeInfo.NodeId.ToString());
-                                    nodeIdListBox.Items.Add(listitem);
-                                    break;
-                                }
+                                var listitem = new ListItem(theNodeInfo.NodeName, theNodeInfo.NodeId.ToString());
+                                nodeIdListBox.Items.Add(listitem);
+                                break;
                             }
                         }
                     }
@@ -256,9 +253,8 @@ namespace SiteServer.CMS.Core
         {
             var targetTableName = NodeManager.GetTableName(targetPublishmentSystemInfo, targetNodeId);
 
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
-            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+            var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
             FileUtility.MoveFileByContentInfo(publishmentSystemInfo, targetPublishmentSystemInfo, contentInfo);
             contentInfo.PublishmentSystemId = targetPublishmentSystemInfo.PublishmentSystemId;
             contentInfo.SourceId = nodeInfo.NodeId;

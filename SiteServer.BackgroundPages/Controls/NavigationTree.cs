@@ -30,11 +30,11 @@ namespace SiteServer.BackgroundPages.Controls
             {
                 if (!TabManager.IsValid(parent, PermissionList)) continue;
 
-                var linkUrl = PageUtils.AddQueryString(parent.Href, new NameValueCollection { { "publishmentSystemId", PublishmentSystemId.ToString() } });
-                if (!string.IsNullOrEmpty(linkUrl) && !StringUtils.EqualsIgnoreCase(linkUrl, PageUtils.UnclickedUrl))
-                {
-                    linkUrl = PageUtils.GetLoadingUrl(linkUrl);
-                }
+                //var linkUrl = PageUtils.AddQueryString(parent.Href, new NameValueCollection { { "publishmentSystemId", PublishmentSystemId.ToString() } });
+                //if (!string.IsNullOrEmpty(linkUrl) && !StringUtils.EqualsIgnoreCase(linkUrl, PageUtils.UnclickedUrl))
+                //{
+                //    linkUrl = PageUtils.GetLoadingUrl(linkUrl);
+                //}
                 var childBuilder = new StringBuilder();
                 if (parent.Children != null && parent.Children.Length > 0)
                 {
@@ -45,15 +45,22 @@ namespace SiteServer.BackgroundPages.Controls
                         {
                             if (!TabManager.IsValid(childTab, PermissionList)) continue;
 
-                            var childUrl = PageUtils.AddQueryString(childTab.Href, new NameValueCollection { { "publishmentSystemId", PublishmentSystemId.ToString() } });
-                            if (!string.IsNullOrEmpty(childUrl) && !StringUtils.EqualsIgnoreCase(childUrl, PageUtils.UnclickedUrl))
+                            //var childUrl = PageUtils.AddQueryString(childTab.Href, new NameValueCollection { { "publishmentSystemId", PublishmentSystemId.ToString() } });
+                            //if (!string.IsNullOrEmpty(childUrl) && !StringUtils.EqualsIgnoreCase(childUrl, PageUtils.UnclickedUrl))
+                            //{
+                            //    childUrl = PageUtils.GetLoadingUrl(childUrl);
+                            //}
+                            var href = childTab.Href;
+                            if (!PageUtils.IsAbsoluteUrl(href))
                             {
-                                childUrl = PageUtils.GetLoadingUrl(childUrl);
+                                href = PageUtils.AddQueryString(href,
+                                    new NameValueCollection { { "publishmentSystemId", PublishmentSystemId.ToString() } });
                             }
+                            href = childTab.HasHref ? PageUtils.GetLoadingUrl(href) : "javascript:;";
 
                             childBuilder.Append($@"
 <li>
-    <a href=""{childUrl}"" target=""{(string.IsNullOrEmpty(childTab.Target) ? "right" : childTab.Target)}"">
+    <a href=""{href}"" target=""{(string.IsNullOrEmpty(childTab.Target) ? "right" : childTab.Target)}"">
         <i class=""{childTab.IconClass}""></i>
         {childTab.Text}
     </a>
@@ -66,7 +73,7 @@ namespace SiteServer.BackgroundPages.Controls
                 {
                     builder.Append($@"
 <li class=""has_sub"">
-    <a href=""javascript:void(0);"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"" target=""{(string.IsNullOrEmpty(parent.Target) ? "right" : parent.Target)}"">
+    <a href=""javascript:;"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"" target=""{(string.IsNullOrEmpty(parent.Target) ? "right" : parent.Target)}"">
         <i class=""{parent.IconClass ?? "ion-star"}""></i>
         <span> {parent.Text} </span>
         <span class=""menu-arrow""></span>
@@ -79,9 +86,16 @@ namespace SiteServer.BackgroundPages.Controls
                 }
                 else
                 {
+                    var href = parent.Href;
+                    if (!PageUtils.IsAbsoluteUrl(href))
+                    {
+                        href = PageUtils.AddQueryString(href,
+                            new NameValueCollection {{"publishmentSystemId", PublishmentSystemId.ToString()}});
+                    }
+                    href = parent.HasHref ? PageUtils.GetLoadingUrl(href) : "javascript:;";
                     builder.Append($@"
 <li class=""has_sub"">
-    <a href=""{(parent.HasHref ? linkUrl : "javascript:void(0);")}"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"" target=""{(string.IsNullOrEmpty(parent.Target) ? "right" : parent.Target)}"">
+    <a href=""{href}"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"" target=""{(string.IsNullOrEmpty(parent.Target) ? "right" : parent.Target)}"">
         <i class=""{parent.IconClass ?? "ion-star"}""></i>
         <span> {parent.Text} </span>
     </a>

@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerString("栏目生成设置",
+            return LayerUtils.GetOpenScript("栏目生成设置",
                 PageUtils.GetCmsUrl(nameof(ModalConfigurationCreateChannel), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -37,11 +37,11 @@ namespace SiteServer.BackgroundPages.Cms
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
 
                 EBooleanUtils.AddListItems(DdlIsCreateChannelIfContentChanged, "生成", "不生成");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
 
                 //NodeManager.AddListItemsForAddContent(this.NodeIDCollection.Items, base.PublishmentSystemInfo, false);
                 NodeManager.AddListItemsForCreateChannel(LbNodeId.Items, PublishmentSystemInfo, false, Body.AdminName);
-                ControlUtils.SelectListItems(LbNodeId, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIDsIfContentChanged));
+                ControlUtils.SelectMultiItems(LbNodeId, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIDsIfContentChanged));
 			}
 		}
 
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (isSuccess)
             {
-                PageUtils.CloseModalPageAndRedirect(Page, PageConfigurationCreateTrigger.GetRedirectUrl(PublishmentSystemId, _nodeId));
+                LayerUtils.CloseAndRedirect(Page, PageConfigurationCreateTrigger.GetRedirectUrl(PublishmentSystemId, _nodeId));
             }
         }
 	}

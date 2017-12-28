@@ -2,11 +2,10 @@
 using System.Text;
 using System.Collections;
 using SiteServer.CMS.Model;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
 using System.Collections.Generic;
-using SiteServer.Plugin.Models;
+using BaiRong.Core.Table;
 
 namespace SiteServer.CMS.Core
 {
@@ -22,8 +21,6 @@ namespace SiteServer.CMS.Core
 
             foreach (var styleInfo in styleInfoList)
             {
-                if (styleInfo.IsVisible == false) continue;
-
                 builder.Append($@"{styleInfo.DisplayName}:[{styleInfo.AttributeName}],");
             }
 
@@ -35,13 +32,13 @@ namespace SiteServer.CMS.Core
             return builder.ToString();
         }
 
-        public static void SendSms(PublishmentSystemInfo publishmentSystemInfo, ITagStyleMailSmsBaseInfo mailSmsInfo, ETableStyle tableStyle, string tableName, int relatedIdentity, ExtendedAttributes contentInfo)
+        public static void SendSms(PublishmentSystemInfo publishmentSystemInfo, ITagStyleMailSmsBaseInfo mailSmsInfo, string tableName, int relatedIdentity, ExtendedAttributes contentInfo)
         {
             try
             {
                 if (mailSmsInfo.IsSms)
                 {
-                    var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, tableStyle, relatedIdentity);
+                    var styleInfoList = RelatedIdentities.GetTableStyleInfoList(publishmentSystemInfo, relatedIdentity);
 
                     var smsToArrayList = new ArrayList();
                     if (mailSmsInfo.SmsReceiver == ETriState.All || mailSmsInfo.SmsReceiver == ETriState.True)
@@ -90,11 +87,11 @@ namespace SiteServer.CMS.Core
 
                     foreach (var styleInfo in styleInfoList)
                     {
-                        var theValue = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), publishmentSystemInfo, tableStyle, styleInfo);
+                        var theValue = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), publishmentSystemInfo, styleInfo);
                         content = StringUtils.ReplaceIgnoreCase(content, $"[{styleInfo.AttributeName}]", theValue);
                     }
 
-                    var attributeNameList = TableManager.GetAttributeNameList(tableStyle, tableName);
+                    var attributeNameList = TableMetadataManager.GetAttributeNameList(tableName);
                     foreach (var attributeName in attributeNameList)
                     {
                         var theValue = contentInfo.GetString(attributeName);

@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string relatedPath, string fileName)
         {
-            return PageUtils.GetOpenLayerString("查看文件属性", PageUtils.GetCmsUrl(nameof(ModalFileView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看文件属性", PageUtils.GetCmsUrl(nameof(ModalFileView), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedPath", relatedPath},
@@ -96,7 +96,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId,string hiddenClientId, string relatedPath, string fileName)
         {
-            return PageUtils.GetOpenLayerString("查看文件属性", PageUtils.GetCmsUrl(nameof(ModalFileView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看文件属性", PageUtils.GetCmsUrl(nameof(ModalFileView), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"HiddenClientID", hiddenClientId},
@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithTextBoxValue(int publishmentSystemId, string textBoxId)
         {
-            return PageUtils.GetOpenLayerStringWithTextBoxValue("查看文件属性", PageUtils.GetCmsUrl(nameof(ModalFileView), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithTextBoxValue("查看文件属性", PageUtils.GetCmsUrl(nameof(ModalFileView), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"TextBoxID", textBoxId}

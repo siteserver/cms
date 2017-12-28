@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 title = "导入模板标签样式";
             }
-            return PageUtils.GetOpenLayerString(title, PageUtils.GetCmsUrl(nameof(ModalImport), new NameValueCollection
+            return LayerUtils.GetOpenScript(title, PageUtils.GetCmsUrl(nameof(ModalImport), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"Type", type}
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         Body.AddSiteLog(PublishmentSystemId, "导入采集规则");
 
-                        PageUtils.CloseModalPage(Page);
+                        LayerUtils.Close(Page);
                     }
                     catch (Exception ex)
                     {
@@ -146,7 +146,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         Body.AddSiteLog(PublishmentSystemId, "导入联动字段");
 
-                        PageUtils.CloseModalPage(Page);
+                        LayerUtils.Close(Page);
                     }
                     catch (Exception ex)
                     {
@@ -176,7 +176,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                         Body.AddSiteLog(PublishmentSystemId, "导入模板标签样式");
 
-                        PageUtils.CloseModalPage(Page);
+                        LayerUtils.Close(Page);
                     }
                     catch (Exception ex)
                     {

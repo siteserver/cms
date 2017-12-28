@@ -18,19 +18,18 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-			if (!IsPostBack)
-            {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "STL语言参考", AppManager.Permissions.WebSite.Template);
+            if (IsPostBack) return;
 
-                var elementsDictionary = StlAll.StlElements.GetElementsNameDictionary();
-                var attributesDictionary = StlAll.StlElements.ElementsAttributesDictionary;
-                LtlTemplateElements.Text = GetElementsString(elementsDictionary, attributesDictionary, false);
+            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
-                elementsDictionary = StlAll.StlEntities.GetEntitiesNameDictionary();
-                attributesDictionary = StlAll.StlEntities.EntitiesAttributesDictionary;
-                LtlTemplateEntities.Text = GetElementsString(elementsDictionary, attributesDictionary, true);
-			}
-		}
+            var elementsDictionary = StlAll.StlElements.GetElementsNameDictionary();
+            var attributesDictionary = StlAll.StlElements.ElementsAttributesDictionary;
+            LtlTemplateElements.Text = GetElementsString(elementsDictionary, attributesDictionary, false);
+
+            elementsDictionary = StlAll.StlEntities.GetEntitiesNameDictionary();
+            attributesDictionary = StlAll.StlEntities.EntitiesAttributesDictionary;
+            LtlTemplateEntities.Text = GetElementsString(elementsDictionary, attributesDictionary, true);
+        }
 
 
         private string GetElementsString(SortedList<string, StlAttribute> elementsDictionary, SortedList<string, SortedList<string, string>> attributesDictionary, bool isEntities)

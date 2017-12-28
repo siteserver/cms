@@ -2,6 +2,7 @@
 using System.Web;
 using System.Text.RegularExpressions;
 using System;
+using System.Linq;
 using BaiRong.Core.Model.Enumerations;
 
 namespace BaiRong.Core
@@ -217,14 +218,7 @@ namespace BaiRong.Core
             {
                 var rootPath = WebConfigUtils.PhysicalApplicationPath;
 
-                if (!string.IsNullOrEmpty(virtualPath))
-                {
-                    virtualPath = virtualPath.Substring(2);
-                }
-                else
-                {
-                    virtualPath = string.Empty;
-                }
+                virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
                 retval = Combine(rootPath, virtualPath);
             }
 
@@ -234,42 +228,24 @@ namespace BaiRong.Core
 
         public static bool IsFileExtenstionAllowed(string sAllowedExt, string sExt)
         {
-            var allow = false;
             if (sExt != null && sExt.StartsWith("."))
             {
                 sExt = sExt.Substring(1, sExt.Length - 1);
             }
             sAllowedExt = sAllowedExt.Replace("|", ",");
             var aExt = sAllowedExt.Split(',');
-            for (var i = 0; i < aExt.Length; i++)
-            {
-                if (StringUtils.EqualsIgnoreCase(sExt, aExt[i]))
-                {
-                    allow = true;
-                    break;
-                }
-            }
-            return allow;
+            return aExt.Any(t => StringUtils.EqualsIgnoreCase(sExt, t));
         }
 
         public static bool IsFileExtenstionNotAllowed(string sNotAllowedExt, string sExt)
         {
-            var allow = true;
             if (sExt != null && sExt.StartsWith("."))
             {
                 sExt = sExt.Substring(1, sExt.Length - 1);
             }
             sNotAllowedExt = sNotAllowedExt.Replace("|", ",");
             var aExt = sNotAllowedExt.Split(',');
-            for (var i = 0; i < aExt.Length; i++)
-            {
-                if (StringUtils.EqualsIgnoreCase(sExt, aExt[i]))
-                {
-                    allow = false;
-                    break;
-                }
-            }
-            return allow;
+            return aExt.All(t => !StringUtils.EqualsIgnoreCase(sExt, t));
         }
 
         public static string GetClientUserPath(string applicationName, string userName, string relatedPath)

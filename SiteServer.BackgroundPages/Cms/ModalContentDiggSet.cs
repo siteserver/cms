@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int channelId, int contentId)
         {
-            return PageUtils.GetOpenLayerString("内容Digg设置", PageUtils.GetCmsUrl(nameof(ModalContentDiggSet), new NameValueCollection
+            return LayerUtils.GetOpenScript("内容Digg设置", PageUtils.GetCmsUrl(nameof(ModalContentDiggSet), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"ChannelID", channelId.ToString()},
@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (isChanged)
 			{
-				PageUtils.CloseModalPage(Page);
+                LayerUtils.Close(Page);
 			}
 		}
 	}

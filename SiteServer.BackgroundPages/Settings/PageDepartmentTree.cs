@@ -28,16 +28,9 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void BindGrid()
         {
-            try
-            {
-                rptDepartment.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
-                rptDepartment.ItemDataBound += rptDepartment_ItemDataBound;
-                rptDepartment.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            rptDepartment.DataSource = BaiRongDataProvider.DepartmentDao.GetDepartmentIdListByParentId(0);
+            rptDepartment.ItemDataBound += rptDepartment_ItemDataBound;
+            rptDepartment.DataBind();
         }
 
         private void rptDepartment_ItemDataBound(object sender, RepeaterItemEventArgs e)

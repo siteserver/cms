@@ -41,19 +41,19 @@ namespace SiteServer.BackgroundPages.Cms
 					FailDeleteMessage(ex);
 				}
 			}
-			if (!IsPostBack)
-            {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "联动字段管理", AppManager.Permissions.WebSite.Configration);
 
-                DgContents.DataSource = DataProvider.RelatedFieldDao.GetDataSource(PublishmentSystemId);
-                DgContents.ItemDataBound += dgContents_ItemDataBound;
-                DgContents.DataBind();
+            if (IsPostBack) return;
 
-                var showPopWinString = ModalRelatedFieldAdd.GetOpenWindowString(PublishmentSystemId);
-				AddButton.Attributes.Add("onclick", showPopWinString);
-                ImportButton.Attributes.Add("onclick", ModalImport.GetOpenWindowString(PublishmentSystemId, ModalImport.TypeRelatedField));
-			}
-		}
+            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
+
+            DgContents.DataSource = DataProvider.RelatedFieldDao.GetDataSource(PublishmentSystemId);
+            DgContents.ItemDataBound += dgContents_ItemDataBound;
+            DgContents.DataBind();
+
+            var showPopWinString = ModalRelatedFieldAdd.GetOpenWindowString(PublishmentSystemId);
+            AddButton.Attributes.Add("onclick", showPopWinString);
+            ImportButton.Attributes.Add("onclick", ModalImport.GetOpenWindowString(PublishmentSystemId, ModalImport.TypeRelatedField));
+        }
 
         void dgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
         {

@@ -136,12 +136,12 @@ namespace SiteServer.BackgroundPages
                 EDatabaseTypeUtils.AddListItems(DdlSqlDatabaseType);
 
                 EBooleanUtils.AddListItems(DdlIsDefaultPort, "默认数据库端口", "自定义数据库端口");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsDefaultPort, true.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(DdlIsDefaultPort, true.ToString());
 
                 PhSqlPort.Visible = false;
 
                 EBooleanUtils.AddListItems(DdlIsProtectData, "加密", "不加密");
-                ControlUtils.SelectListItemsIgnoreCase(DdlIsProtectData, false.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(DdlIsProtectData, false.ToString());
             }
 		}
 

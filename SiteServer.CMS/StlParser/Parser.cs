@@ -70,11 +70,44 @@ namespace SiteServer.CMS.StlParser
 <script src=""{ActionsAddContentHits.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId)}"" type=""text/javascript""></script>");
                 }
 
-                if (pageInfo.PublishmentSystemInfo.Additional.IsTracker && !pageInfo.IsPageScriptsExists(PageInfo.Const.JsAdAddTracker))
+                var isShowPageInfo = pageInfo.PublishmentSystemInfo.Additional.IsCreateShowPageInfo;
+
+                if (!pageInfo.IsLocal)
                 {
-                    pageInfo.AddPageEndScriptsIfNotExists(PageInfo.Const.JsAdAddTracker, $@"
+                    if (pageInfo.PublishmentSystemInfo.Additional.IsTracker &&
+                        !pageInfo.IsPageScriptsExists(PageInfo.Const.JsAdAddTracker))
+                    {
+                        pageInfo.AddPageEndScriptsIfNotExists(PageInfo.Const.JsAdAddTracker, $@"
 <script src=""{SiteFilesAssets.Tracker.GetScriptUrl(pageInfo.ApiUrl)}"" type=""text/javascript""></script>
-<script type=""text/javascript"">AddTrackerCount('{ActionsAddTrackerCount.GetUrl(pageInfo.ApiUrl, pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId)}', {pageInfo.PublishmentSystemId});</script>");
+<script type=""text/javascript"">AddTrackerCount('{ActionsAddTrackerCount.GetUrl(pageInfo.ApiUrl,
+                            pageInfo.PublishmentSystemId, pageInfo.PageNodeId, pageInfo.PageContentId)}', {pageInfo
+                            .PublishmentSystemId});</script>");
+                    }
+
+                    if (pageInfo.PublishmentSystemInfo.Additional.IsCreateDoubleClick)
+                    {
+                        var fileTemplateId = 0;
+                        if (pageInfo.TemplateInfo.TemplateType == ETemplateType.FileTemplate)
+                        {
+                            fileTemplateId = pageInfo.TemplateInfo.TemplateId;
+                        }
+
+                        var apiUrl = pageInfo.ApiUrl;
+                        var ajaxUrl = ActionsTrigger.GetUrl(apiUrl, pageInfo.PublishmentSystemId, contextInfo.ChannelId,
+                            contextInfo.ContentId, fileTemplateId, true);
+                        pageInfo.AddPageEndScriptsIfNotExists("CreateDoubleClick", $@"
+<script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}&returnUrl=' + encodeURIComponent(location.search);}}</script>");
+                    }
+                }
+                else
+                {
+                    isShowPageInfo = true;
+                }
+
+                if (isShowPageInfo)
+                {
+                    contentBuilder.Append($@"
+<!-- {pageInfo.TemplateInfo.RelatedFileName}({ETemplateTypeUtils.GetText(pageInfo.TemplateInfo.TemplateType)}) -->");
                 }
 
                 var headScripts = StlParserManager.GetPageInfoHeadScript(pageInfo, contextInfo);
@@ -91,7 +124,6 @@ namespace SiteServer.CMS.StlParser
                 }
 
                 var afterBodyScripts = StlParserManager.GetPageInfoScript(pageInfo, true);
-
                 if (!string.IsNullOrEmpty(afterBodyScripts))
                 {
                     if (contentBuilder.ToString().IndexOf("<body", StringComparison.Ordinal) != -1 || contentBuilder.ToString().IndexOf("<BODY", StringComparison.Ordinal) != -1)
@@ -111,7 +143,6 @@ namespace SiteServer.CMS.StlParser
                 }
 
                 var beforeBodyScripts = StlParserManager.GetPageInfoScript(pageInfo, false);
-
                 if (!string.IsNullOrEmpty(beforeBodyScripts))
                 {
                     if (contentBuilder.ToString().IndexOf("</body>", StringComparison.Ordinal) != -1 || contentBuilder.ToString().IndexOf("</BODY>", StringComparison.Ordinal) != -1)
@@ -129,20 +160,6 @@ namespace SiteServer.CMS.StlParser
                     }
                 }
 
-                if (pageInfo.PublishmentSystemInfo.Additional.IsCreateDoubleClick)
-                {
-                    var fileTemplateId = 0;
-                    if (pageInfo.TemplateInfo.TemplateType == ETemplateType.FileTemplate)
-                    {
-                        fileTemplateId = pageInfo.TemplateInfo.TemplateId;
-                    }
-
-                    var apiUrl = pageInfo.ApiUrl;
-                    var ajaxUrl = ActionsTrigger.GetUrl(apiUrl, pageInfo.PublishmentSystemId, contextInfo.ChannelId, contextInfo.ContentId, fileTemplateId, true);
-                    pageInfo.AddPageEndScriptsIfNotExists("CreateDoubleClick", $@"
-<script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}&returnUrl=' + encodeURIComponent(location.search);}}</script>");
-                }
-
                 if (pageInfo.PageEndScriptKeys.Count > 0)
                 {
                     var endScriptBuilder = new StringBuilder();
@@ -157,13 +174,7 @@ namespace SiteServer.CMS.StlParser
                     StringUtils.InsertAfterOrAppend(new[] { "</html>", "</html>" }, contentBuilder, endScriptBuilder.ToString());
                 }
 
-                if (pageInfo.PublishmentSystemInfo.Additional.IsCreateShowPageInfo)
-                {
-                    contentBuilder.Append($@"
-<!-- {pageInfo.TemplateInfo.RelatedFileName}({ETemplateTypeUtils.GetText(pageInfo.TemplateInfo.TemplateType)}) -->");
-                }
-
-                var renders = PluginCache.GetRenders();
+                var renders = PluginManager.GetRenders();
                 if (renders.Count <= 0) return;
 
                 var html = contentBuilder.ToString();

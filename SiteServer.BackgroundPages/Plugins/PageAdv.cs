@@ -124,27 +124,20 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public void BindGrid()
         {
-            try
+            if (string.IsNullOrEmpty(AdAreaNameList.SelectedValue))
             {
-                if (string.IsNullOrEmpty(AdAreaNameList.SelectedValue))
+                dgContents.DataSource = DataProvider.AdvDao.GetDataSource(PublishmentSystemId);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(AdAreaNameList.SelectedValue))
                 {
-                    dgContents.DataSource = DataProvider.AdvDao.GetDataSource(PublishmentSystemId);
+                    _adAreaId = TranslateUtils.ToInt(AdAreaNameList.SelectedValue);
                 }
-                else
-                {
-                    if (!string.IsNullOrEmpty(AdAreaNameList.SelectedValue))
-                    {
-                        _adAreaId = TranslateUtils.ToInt(AdAreaNameList.SelectedValue);
-                    }
 
-                    dgContents.DataSource = DataProvider.AdvDao.GetDataSourceByAdAreaId(TranslateUtils.ToInt(AdAreaNameList.SelectedValue), PublishmentSystemId);
-                }
-                dgContents.DataBind();
+                dgContents.DataSource = DataProvider.AdvDao.GetDataSourceByAdAreaId(TranslateUtils.ToInt(AdAreaNameList.SelectedValue), PublishmentSystemId);
             }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            dgContents.DataBind();
         }
 
         public void ReFresh(object sender, EventArgs e)

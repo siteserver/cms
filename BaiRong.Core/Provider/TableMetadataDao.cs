@@ -1,11 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.Plugin.Models;
 
 namespace BaiRong.Core.Provider
@@ -59,28 +58,28 @@ namespace BaiRong.Core.Provider
             }
         };
 
-        private const string SqlSelectTableMetadata = "SELECT TableMetadataID, AuxiliaryTableENName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE TableMetadataID = @TableMetadataID";
+        private const string SqlSelectTableMetadata = "SELECT TableMetadataID, AuxiliaryTableEnName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE TableMetadataID = @TableMetadataID";
 
-        private const string SqlSelectAllTableMetadataByEnname = "SELECT TableMetadataID, AuxiliaryTableENName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE AuxiliaryTableENName = @AuxiliaryTableENName ORDER BY IsSystem DESC, Taxis";
+        private const string SqlSelectAllTableMetadataByEnname = "SELECT TableMetadataID, AuxiliaryTableEnName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName ORDER BY IsSystem DESC, Taxis";
 
-        private const string SqlSelectTableMetadataCountByEnname = "SELECT COUNT(*) FROM bairong_TableMetadata WHERE AuxiliaryTableENName = @AuxiliaryTableENName";
+        private const string SqlSelectTableMetadataCountByEnname = "SELECT COUNT(*) FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName";
 
-        private const string SqlSelectTableMetadataByTableEnnameAndAttributeName = "SELECT TableMetadataID, AuxiliaryTableENName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE AuxiliaryTableENName = @AuxiliaryTableENName AND AttributeName = @AttributeName";
+        private const string SqlSelectTableMetadataByTableEnnameAndAttributeName = "SELECT TableMetadataID, AuxiliaryTableEnName, AttributeName, DataType, DataLength, Taxis, IsSystem FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName AND AttributeName = @AttributeName";
 
-        private const string SqlSelectTableMetadataIdByTableEnnameAndAttributeName = "SELECT TableMetadataID FROM bairong_TableMetadata WHERE AuxiliaryTableENName = @AuxiliaryTableENName AND AttributeName = @AttributeName";
+        private const string SqlSelectTableMetadataIdByTableEnnameAndAttributeName = "SELECT TableMetadataID FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName AND AttributeName = @AttributeName";
 
-        private const string SqlSelectTableMetadataAllAttributeName = "SELECT AttributeName FROM bairong_TableMetadata WHERE AuxiliaryTableENName = @AuxiliaryTableENName ORDER BY Taxis";
+        private const string SqlSelectTableMetadataAllAttributeName = "SELECT AttributeName FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName ORDER BY Taxis";
 
-        private const string SqlUpdateTableMetadata = "UPDATE bairong_TableMetadata SET AuxiliaryTableENName = @AuxiliaryTableENName, AttributeName = @AttributeName, DataType = @DataType, DataLength = @DataLength, IsSystem = @IsSystem WHERE  TableMetadataID = @TableMetadataID";
+        private const string SqlUpdateTableMetadata = "UPDATE bairong_TableMetadata SET AuxiliaryTableEnName = @AuxiliaryTableEnName, AttributeName = @AttributeName, DataType = @DataType, DataLength = @DataLength, IsSystem = @IsSystem WHERE  TableMetadataID = @TableMetadataID";
 
         private const string SqlDeleteTableMetadata = "DELETE FROM bairong_TableMetadata WHERE  TableMetadataID = @TableMetadataID";
 
-        private const string SqlDeleteTableMetadataByTableName = "DELETE FROM bairong_TableMetadata WHERE  AuxiliaryTableENName = @AuxiliaryTableENName";
+        private const string SqlDeleteTableMetadataByTableName = "DELETE FROM bairong_TableMetadata WHERE  AuxiliaryTableEnName = @AuxiliaryTableEnName";
 
         private const string SqlUpdateTableMetadataTaxis = "UPDATE bairong_TableMetadata SET Taxis = @Taxis WHERE  TableMetadataID = @TableMetadataID";
 
         private const string ParmTableMetadataId = "@TableMetadataID";
-        private const string ParmAuxiliaryTableEnname = "@AuxiliaryTableENName";
+        private const string ParmTableCollectionInfoEnname = "@AuxiliaryTableEnName";
         private const string ParmAttributeName = "@AttributeName";
         private const string ParmDataType = "@DataType";
         private const string ParmDataLength = "@DataLength";
@@ -89,11 +88,13 @@ namespace BaiRong.Core.Provider
 
         public void Insert(TableMetadataInfo info)
         {
-            var sqlString = "INSERT INTO bairong_TableMetadata (AuxiliaryTableENName, AttributeName, DataType, DataLength, Taxis, IsSystem) VALUES (@AuxiliaryTableENName, @AttributeName, @DataType, @DataLength, @Taxis, @IsSystem)";
+            if (IsExists(info.AuxiliaryTableEnName, info.AttributeName)) return;
 
-            var insertParms = new IDataParameter[]
+            const string sqlString = "INSERT INTO bairong_TableMetadata (AuxiliaryTableEnName, AttributeName, DataType, DataLength, Taxis, IsSystem) VALUES (@AuxiliaryTableEnName, @AttributeName, @DataType, @DataLength, @Taxis, @IsSystem)";
+
+            var parameters = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
 				GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
 				GetParameter(ParmDataType, DataType.VarChar, 50, DataTypeUtils.GetValue(info.DataType)),
 				GetParameter(ParmDataLength, DataType.Integer, info.DataLength),
@@ -101,25 +102,24 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmIsSystem, DataType.VarChar, 18, info.IsSystem.ToString())
 			};
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                ExecuteNonQuery(conn, sqlString, insertParms);
+            ExecuteNonQuery(sqlString, parameters);
 
-                BaiRongDataProvider.TableCollectionDao.UpdateAttributeNum(info.AuxiliaryTableEnName);
-                BaiRongDataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDb(true, info.AuxiliaryTableEnName);
-                TableManager.IsChanged = true;
-            }
+            BaiRongDataProvider.TableCollectionDao.UpdateAttributeNum(info.AuxiliaryTableEnName);
+            BaiRongDataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDbToTrue(info.AuxiliaryTableEnName);
+
+            TableMetadataManager.ClearCache();
         }
 
 
-        internal void InsertWithTransaction(TableMetadataInfo info, EAuxiliaryTableType tableType, int taxis, IDbTransaction trans)
+        internal void InsertWithTransaction(TableMetadataInfo info, int taxis, IDbTransaction trans)
         {
-            var sqlString = "INSERT INTO bairong_TableMetadata (AuxiliaryTableENName, AttributeName, DataType, DataLength, Taxis, IsSystem) VALUES (@AuxiliaryTableENName, @AttributeName, @DataType, @DataLength, @Taxis, @IsSystem)";
+            if (IsExistsWithTransaction(info.AuxiliaryTableEnName, info.AttributeName, trans)) return;
+
+            const string sqlString = "INSERT INTO bairong_TableMetadata (AuxiliaryTableEnName, AttributeName, DataType, DataLength, Taxis, IsSystem) VALUES (@AuxiliaryTableEnName, @AttributeName, @DataType, @DataLength, @Taxis, @IsSystem)";
 
             var insertParms = new IDataParameter[]
 		    {
-			    GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
+			    GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
 			    GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
 			    GetParameter(ParmDataType, DataType.VarChar, 50, DataTypeUtils.GetValue(info.DataType)),
 			    GetParameter(ParmDataLength, DataType.Integer, info.DataLength),
@@ -132,25 +132,12 @@ namespace BaiRong.Core.Provider
             {
                 info.StyleInfo.TableName = info.AuxiliaryTableEnName;
                 info.StyleInfo.AttributeName = info.AttributeName;
-                BaiRongDataProvider.TableStyleDao.InsertWithTransaction(info.StyleInfo, EAuxiliaryTableTypeUtils.GetTableStyle(tableType), trans);
+                BaiRongDataProvider.TableStyleDao.InsertWithTransaction(info.StyleInfo, trans);
                 TableStyleManager.IsChanged = true;
             }
-            TableManager.IsChanged = true;
-        }
 
-        public void InsertSystemItems(string tableEnName, EAuxiliaryTableType tableType, IDbTransaction trans)
-        {
-            var list = GetDefaultTableMetadataInfoList(tableEnName, tableType);
-            if (list != null && list.Count > 0)
-            {
-                var taxis = 1;
-                foreach (var info in list)
-                {
-                    InsertWithTransaction(info, tableType, taxis++, trans);
-                }
-            }
+            TableMetadataManager.ClearCache();
         }
-
 
         public void Update(TableMetadataInfo info)
         {
@@ -158,36 +145,32 @@ namespace BaiRong.Core.Provider
             var originalInfo = GetTableMetadataInfo(info.TableMetadataId);
             if (originalInfo != null)
             {
-                if (info.AuxiliaryTableEnName == originalInfo.AuxiliaryTableEnName
-                 && info.AttributeName == originalInfo.AttributeName
+                if (StringUtils.EqualsIgnoreCase(info.AuxiliaryTableEnName, originalInfo.AuxiliaryTableEnName)
+                 && StringUtils.EqualsIgnoreCase(info.AttributeName, originalInfo.AttributeName)
                  && info.DataType == originalInfo.DataType
                  && info.DataLength == originalInfo.DataLength
-                 && info.Taxis == originalInfo.Taxis)
+                 && info.IsSystem == originalInfo.IsSystem)
                 {
                     isSqlChanged = false;
                 }
             }
 
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
-				GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
-				GetParameter(ParmDataType, DataType.VarChar, 50, DataTypeUtils.GetValue(info.DataType)),
-				GetParameter(ParmDataLength, DataType.Integer, info.DataLength),
-				GetParameter(ParmIsSystem, DataType.VarChar, 18, info.IsSystem.ToString()),
-				GetParameter(ParmTableMetadataId, DataType.Integer, info.TableMetadataId)
-			};
+            if (!isSqlChanged) return;
 
-            using (var conn = GetConnection())
+            var updateParms = new IDataParameter[]
             {
-                conn.Open();
-                ExecuteNonQuery(conn, SqlUpdateTableMetadata, updateParms);
-                if (isSqlChanged)
-                {
-                    BaiRongDataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDb(true, info.AuxiliaryTableEnName);
-                }
-                TableManager.IsChanged = true;
-            }
+                GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, info.AuxiliaryTableEnName),
+                GetParameter(ParmAttributeName, DataType.VarChar, 50, info.AttributeName),
+                GetParameter(ParmDataType, DataType.VarChar, 50, DataTypeUtils.GetValue(info.DataType)),
+                GetParameter(ParmDataLength, DataType.Integer, info.DataLength),
+                GetParameter(ParmIsSystem, DataType.VarChar, 18, info.IsSystem.ToString()),
+                GetParameter(ParmTableMetadataId, DataType.Integer, info.TableMetadataId)
+            };
+
+            ExecuteNonQuery(SqlUpdateTableMetadata, updateParms);
+
+            BaiRongDataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDbToTrue(info.AuxiliaryTableEnName);
+            TableMetadataManager.ClearCache();
         }
 
         public void Delete(int tableMetadataId)
@@ -199,15 +182,11 @@ namespace BaiRong.Core.Provider
 
             var metadataInfo = GetTableMetadataInfo(tableMetadataId);
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                ExecuteNonQuery(conn, SqlDeleteTableMetadata, parms);
+            ExecuteNonQuery(SqlDeleteTableMetadata, parms);
 
-                BaiRongDataProvider.TableCollectionDao.UpdateAttributeNum(metadataInfo.AuxiliaryTableEnName);
-                BaiRongDataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDb(true, metadataInfo.AuxiliaryTableEnName);
-                TableManager.IsChanged = true;
-            }
+            BaiRongDataProvider.TableCollectionDao.UpdateAttributeNum(metadataInfo.AuxiliaryTableEnName);
+            BaiRongDataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDbToTrue(metadataInfo.AuxiliaryTableEnName);
+            TableMetadataManager.ClearCache();
         }
 
         public void Delete(string tableEnName)
@@ -219,21 +198,17 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar,50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar,50, tableEnName)
 			};
             if (trans == null)
             {
-                using (var conn = GetConnection())
-                {
-                    conn.Open();
-                    ExecuteNonQuery(conn, SqlDeleteTableMetadataByTableName, parms);
-                    TableManager.IsChanged = true;
-                }
+                ExecuteNonQuery(SqlDeleteTableMetadataByTableName, parms);
+                TableMetadataManager.ClearCache();
             }
             else
             {
                 ExecuteNonQuery(trans, SqlDeleteTableMetadataByTableName, parms);
-                TableManager.IsChanged = true;
+                TableMetadataManager.ClearCache();
             }
         }
 
@@ -265,7 +240,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName),
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName),
 				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
@@ -288,7 +263,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName),
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName),
 				GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
 			};
 
@@ -312,27 +287,10 @@ namespace BaiRong.Core.Provider
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             var enumerable = (IEnumerable)ExecuteReader(SqlSelectAllTableMetadataByEnname, parms);
-            return enumerable;
-        }
-
-        public IEnumerable GetDataSorceMinusAttributes(string tableEnName, List<string> attributeNameList)
-        {
-            string parameterNameList;
-            var parameterList = GetInParameterList(ParmAttributeName, DataType.VarChar, 50, attributeNameList, out parameterNameList);
-            string sqlString =
-                $"SELECT TableMetadataID, AuxiliaryTableENName, AttributeName, DataType, DataLength, DataScale, Taxis, IsSystem FROM bairong_TableMetadata WHERE AuxiliaryTableENName = @AuxiliaryTableENName AND AttributeName NOT IN ({parameterNameList}) ORDER BY Taxis";
-
-            var paramList = new List<IDataParameter>
-            {
-                GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
-            };
-            paramList.AddRange(parameterList);
-
-            var enumerable = (IEnumerable)ExecuteReader(sqlString, paramList.ToArray());
             return enumerable;
         }
 
@@ -342,7 +300,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectAllTableMetadataByEnname, parms))
@@ -358,20 +316,23 @@ namespace BaiRong.Core.Provider
             return list;
         }
 
-        public Hashtable GetTableEnNameAndTableMetadataInfoListHashtable()
+        public Dictionary<string, List<TableMetadataInfo>> GetTableNameWithTableMetadataInfoList()
         {
-            var hashtable = new Hashtable();
+            var dict = new Dictionary<string, List<TableMetadataInfo>>();
             var tableNameList = BaiRongDataProvider.TableCollectionDao.GetTableEnNameList();
             foreach (var tableName in tableNameList)
             {
                 var list = GetTableMetadataInfoList(tableName);
-                hashtable.Add(tableName, list);
+                if (list != null && list.Count > 0)
+                {
+                    dict.Add(tableName, list);
+                }
             }
-            return hashtable;
+            return dict;
         }
 
         /// <summary>
-        /// Get Total AuxiliaryTable Count
+        /// Get Total TableCollectionInfo Count
         /// </summary>
         public int GetTableMetadataCountByEnName(string tableEnName)
         {
@@ -379,7 +340,7 @@ namespace BaiRong.Core.Provider
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             using (var rdr = ExecuteReader(SqlSelectTableMetadataCountByEnname, parms))
@@ -394,11 +355,61 @@ namespace BaiRong.Core.Provider
             return count;
         }
 
+        public bool IsExists(string tableName, string attributeName)
+        {
+            var exists = false;
+
+            const string sqlString = "SELECT TableMetadataID FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName AND AttributeName = @AttributeName";
+            var parms = new IDataParameter[]
+            {
+                GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName),
+                GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
+            };
+
+            using (var rdr = ExecuteReader(sqlString, parms))
+            {
+                if (rdr.Read())
+                {
+                    if (!rdr.IsDBNull(0))
+                    {
+                        exists = true;
+                    }
+                }
+                rdr.Close();
+            }
+            return exists;
+        }
+
+        public bool IsExistsWithTransaction(string tableName, string attributeName, IDbTransaction trans)
+        {
+            var exists = false;
+
+            const string sqlString = "SELECT TableMetadataID FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName AND AttributeName = @AttributeName";
+            var parms = new IDataParameter[]
+            {
+                GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableName),
+                GetParameter(ParmAttributeName, DataType.VarChar, 50, attributeName)
+            };
+
+            using (var rdr = ExecuteReader(trans, sqlString, parms))
+            {
+                if (rdr.Read())
+                {
+                    if (!rdr.IsDBNull(0))
+                    {
+                        exists = true;
+                    }
+                }
+                rdr.Close();
+            }
+            return exists;
+        }
+
         public List<string> GetAttributeNameList(string tableEnName)
         {
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             var list = new List<string>();
@@ -419,11 +430,11 @@ namespace BaiRong.Core.Provider
         /// </summary>
         public int GetMaxTaxis(string tableEnName)
         {
-            const string sqlString = "SELECT MAX(Taxis) FROM bairong_TableMetadata WHERE AuxiliaryTableENName = @AuxiliaryTableENName";
+            const string sqlString = "SELECT MAX(Taxis) FROM bairong_TableMetadata WHERE AuxiliaryTableEnName = @AuxiliaryTableEnName";
 
             var parms = new IDataParameter[]
 			{
-				GetParameter(ParmAuxiliaryTableEnname, DataType.VarChar, 50, tableEnName)
+				GetParameter(ParmTableCollectionInfoEnname, DataType.VarChar, 50, tableEnName)
 			};
 
             return BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString, parms);
@@ -436,9 +447,9 @@ namespace BaiRong.Core.Provider
         public void TaxisUp(int selectedId, string tableEnName)
         {
             //Get Higher Taxis and ClassID
-            //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName=@AuxiliaryTableENName2) ORDER BY Taxis";
+            //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName=@AuxiliaryTableEnName2) ORDER BY Taxis";
             var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
-                "WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName=@AuxiliaryTableENName2)",
+                "WHERE ((Taxis > (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName=@AuxiliaryTableEnName2)",
                 "ORDER BY Taxis",
                 1);
             var higherId = 0;
@@ -447,8 +458,8 @@ namespace BaiRong.Core.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmTableMetadataId, DataType.Integer, selectedId),
-				GetParameter("@AuxiliaryTableENName1", DataType.VarChar, 50, tableEnName),
-				GetParameter("@AuxiliaryTableENName2", DataType.VarChar, 50, tableEnName)
+				GetParameter("@AuxiliaryTableEnName1", DataType.VarChar, 50, tableEnName),
+				GetParameter("@AuxiliaryTableEnName2", DataType.VarChar, 50, tableEnName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -470,10 +481,8 @@ namespace BaiRong.Core.Provider
                 SetTaxis(selectedId, higherTaxis);
                 //Set The Higher Class Taxis To Lower Level
                 SetTaxis(higherId, selectedTaxis);
-                TableManager.IsChanged = true;
-                //BaiRongDataProvider.CreateAuxiliaryTableDAO().UpdateIsChangedAfterCreatedInDB(EBoolean.True, tableENName);
+                //BaiRongDataProvider.CreateTableCollectionInfoDAO().UpdateIsChangedAfterCreatedInDB(EBoolean.True, tableENName);
             }
-
         }
 
         /// <summary>
@@ -482,9 +491,9 @@ namespace BaiRong.Core.Provider
         public void TaxisDown(int selectedId, string tableEnName)
         {
             //Get Lower Taxis and ClassID
-            //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName = @AuxiliaryTableENName2) ORDER BY Taxis DESC";
+            //var sqlString = "SELECT TOP 1 TableMetadataID, Taxis FROM bairong_TableMetadata WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName = @AuxiliaryTableEnName2) ORDER BY Taxis DESC";
             var sqlString = SqlUtils.GetTopSqlString("bairong_TableMetadata", "TableMetadataID, Taxis",
-                "WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableENName = @AuxiliaryTableENName1))) AND AuxiliaryTableENName = @AuxiliaryTableENName2)",
+                "WHERE ((Taxis < (SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID AND AuxiliaryTableEnName = @AuxiliaryTableEnName1))) AND AuxiliaryTableEnName = @AuxiliaryTableEnName2)",
                 "ORDER BY Taxis DESC", 1);
 
             var lowerId = 0;
@@ -493,8 +502,8 @@ namespace BaiRong.Core.Provider
             var parms = new IDataParameter[]
 			{
 				GetParameter(ParmTableMetadataId, DataType.Integer, selectedId),
-				GetParameter("@AuxiliaryTableENName1", DataType.VarChar, 50, tableEnName),
-				GetParameter("@AuxiliaryTableENName2", DataType.VarChar, 50, tableEnName)
+				GetParameter("@AuxiliaryTableEnName1", DataType.VarChar, 50, tableEnName),
+				GetParameter("@AuxiliaryTableEnName2", DataType.VarChar, 50, tableEnName)
 			};
 
             using (var rdr = ExecuteReader(sqlString, parms))
@@ -516,14 +525,13 @@ namespace BaiRong.Core.Provider
                 SetTaxis(selectedId, lowerTaxis);
                 //Set The Lower Class Taxis To Higher Level
                 SetTaxis(lowerId, selectedTaxis);
-                TableManager.IsChanged = true;
-                //BaiRongDataProvider.CreateAuxiliaryTableDAO().UpdateIsChangedAfterCreatedInDB(EBoolean.True, tableENName);
+                //BaiRongDataProvider.CreateTableCollectionInfoDAO().UpdateIsChangedAfterCreatedInDB(EBoolean.True, tableENName);
             }
         }
 
         private int GetTaxis(int selectedId)
         {
-            var cmd = "SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID)";
+            const string sqlString = "SELECT Taxis FROM bairong_TableMetadata WHERE (TableMetadataID = @TableMetadataID)";
             var taxis = 0;
 
             var parms = new IDataParameter[]
@@ -531,7 +539,7 @@ namespace BaiRong.Core.Provider
 				GetParameter(ParmTableMetadataId, DataType.Integer, selectedId)
 			};
 
-            using (var rdr = ExecuteReader(cmd, parms))
+            using (var rdr = ExecuteReader(sqlString, parms))
             {
                 if (rdr.Read())
                 {
@@ -552,260 +560,12 @@ namespace BaiRong.Core.Provider
 			};
 
             ExecuteNonQuery(SqlUpdateTableMetadataTaxis, parms);
-            TableManager.IsChanged = true;
+            TableMetadataManager.ClearCache();
         }
 
-        public void CreateAuxiliaryTable(string tableEnName)
-        {
-            var createTableSqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(tableEnName);
-
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter("@IsCreatedInDB", DataType.VarChar, 18, true.ToString()),
-				GetParameter("@IsChangedAfterCreatedInDB", DataType.VarChar, 18, false.ToString()),
-				GetParameter("@TableENName", DataType.VarChar, 50, tableEnName)
-			};
-
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        var reader = new System.IO.StringReader(createTableSqlString);
-                        string sql;
-                        while (null != (sql = SqlUtils.ReadNextStatementFromStream(reader)))
-                        {
-                            ExecuteNonQuery(trans, sql.Trim());
-                        }
-
-                        ExecuteNonQuery(trans, "UPDATE bairong_TableCollection SET IsCreatedInDB = @IsCreatedInDB, IsChangedAfterCreatedInDB = @IsChangedAfterCreatedInDB WHERE TableENName = @TableENName", updateParms);
-                        TableManager.IsChanged = true;
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-        }
-
-        public void CreateAuxiliaryTableOfArchive(string tableEnName)
-        {
-            var createTableSqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(tableEnName);
-
-            var archiveTableName = TableManager.GetTableNameOfArchive(tableEnName);
-
-            createTableSqlString = createTableSqlString.Replace(tableEnName, archiveTableName);
-
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        var reader = new System.IO.StringReader(createTableSqlString);
-                        string sql;
-
-                        while (null != (sql = SqlUtils.ReadNextStatementFromStream(reader)))
-                        {
-                            ExecuteNonQuery(trans, sql.Trim());
-                        }
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-        }
-
-        public void DeleteAuxiliaryTable(string tableEnName)
-        {
-            if (BaiRongDataProvider.DatabaseDao.IsTableExists(tableEnName))
-            {
-                string dropTableSqlString = $"DROP TABLE [{tableEnName}]";
-
-                var updateParms = new IDataParameter[]
-				{
-					GetParameter("@IsCreatedInDB", DataType.VarChar, 18, false.ToString()),
-					GetParameter("@IsChangedAfterCreatedInDB", DataType.VarChar, 18, false.ToString()),
-					GetParameter("@TableENName", DataType.VarChar, 50, tableEnName)
-				};
-
-                using (var conn = GetConnection())
-                {
-                    conn.Open();
-                    using (var trans = conn.BeginTransaction())
-                    {
-                        try
-                        {
-                            ExecuteNonQuery(trans, dropTableSqlString);
-                            ExecuteNonQuery(trans, "UPDATE bairong_TableCollection SET IsCreatedInDB = @IsCreatedInDB, IsChangedAfterCreatedInDB = @IsChangedAfterCreatedInDB WHERE TableENName = @TableENName", updateParms);
-                            TableManager.IsChanged = true;
-                            trans.Commit();
-                        }
-                        catch
-                        {
-                            trans.Rollback();
-                            throw;
-                        }
-                    }
-                }
-            }
-        }
-
-
-        public void ReCreateAuxiliaryTable(string tableEnName, EAuxiliaryTableType tableType)
-        {
-            var defaultTableMetadataInfoList = GetDefaultTableMetadataInfoList(tableEnName, tableType);
-
-            if (BaiRongDataProvider.DatabaseDao.IsTableExists(tableEnName))
-            {
-                var updateParms = new IDataParameter[]
-				{
-					GetParameter("@IsCreatedInDB", DataType.VarChar, 18, true.ToString()),
-					GetParameter("@IsChangedAfterCreatedInDB", DataType.VarChar, 18, false.ToString()),
-					GetParameter("@TableENName", DataType.VarChar, 50, tableEnName)
-				};
-
-                var taxis = GetMaxTaxis(tableEnName) + 1;
-
-                using (var conn = GetConnection())
-                {
-                    conn.Open();
-                    using (var trans = conn.BeginTransaction())
-                    {
-                        try
-                        {
-                            foreach (var tableMetadataInfo in defaultTableMetadataInfoList)
-                            {
-                                if (GetTableMetadataId(tableEnName, tableMetadataInfo.AttributeName) == 0)
-                                {
-                                    InsertWithTransaction(tableMetadataInfo, tableType, taxis++, trans);
-                                }
-                            }
-
-                            string dropTableSqlString = $"DROP TABLE [{tableEnName}]";
-                            var createTableSqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(tableEnName);
-
-                            ExecuteNonQuery(trans, dropTableSqlString);
-
-                            var reader = new System.IO.StringReader(createTableSqlString);
-                            string sql;
-                            while (null != (sql = SqlUtils.ReadNextStatementFromStream(reader)))
-                            {
-                                ExecuteNonQuery(trans, sql.Trim());
-                            }
-
-                            ExecuteNonQuery(trans, "UPDATE bairong_TableCollection SET IsCreatedInDB = @IsCreatedInDB, IsChangedAfterCreatedInDB = @IsChangedAfterCreatedInDB WHERE  TableENName = @TableENName", updateParms);
-                            TableManager.IsChanged = true;
-                            TableManager.Cache_RemoveCache();
-                            trans.Commit();
-                        }
-                        catch
-                        {
-                            trans.Rollback();
-                            throw;
-                        }
-                    }
-                }
-            }
-        }
-
-        protected const string ErrorCommandMessage = "此辅助表无字段，无法在数据库中生成表！";
-
-        protected List<string> GetAlterAddColumnSqls(string tableEnName, TableMetadataInfo metadataInfo)
-        {
-            var sqlList = new List<string>();
-            var columnSqlString = SqlUtils.GetColumnSqlString(metadataInfo.DataType, metadataInfo.AttributeName, metadataInfo.DataLength);
-            var alterSqlString = SqlUtils.GetAddColumnsSqlString(tableEnName, columnSqlString);
-            sqlList.Add(alterSqlString);
-            return sqlList;
-        }
-
-        public void SyncTable(string tableEnName)
-        {
-            var list = GetTableMetadataInfoList(tableEnName);
-            var columnlist = BaiRongDataProvider.DatabaseDao.GetLowercaseTableColumnInfoList(WebConfigUtils.ConnectionString, tableEnName);
-
-            var sqlList = new List<string>();
-
-            //添加新增/修改字段SQL语句
-            foreach (var metadataInfo in list)
-            {
-                if (metadataInfo.IsSystem) continue;
-                var columnExists = false;
-                foreach (var columnInfo in columnlist)
-                {
-                    if (StringUtils.EqualsIgnoreCase(columnInfo.ColumnName, metadataInfo.AttributeName))
-                    {
-                        columnExists = true;
-                        if (!BaiRongDataProvider.DatabaseDao.IsColumnEquals(metadataInfo, columnInfo))
-                        {
-                            var alterSqllist = SqlUtils.GetDropColumnsSqlString(tableEnName, columnInfo.ColumnName);
-                            foreach (var sql in alterSqllist)
-                            {
-                                sqlList.Add(sql);
-                            }
-                            alterSqllist = GetAlterAddColumnSqls(tableEnName, metadataInfo);
-                            foreach (var sql in alterSqllist)
-                            {
-                                sqlList.Add(sql);
-                            }
-                        }
-                        break;
-                    }
-                }
-                if (!columnExists)
-                {
-                    var alterSqlList = GetAlterAddColumnSqls(tableEnName, metadataInfo);
-                    foreach (var sql in alterSqlList)
-                    {
-                        sqlList.Add(sql);
-                    }
-                }
-            }
-
-            //添加删除字段SQL语句
-            var tableType = BaiRongDataProvider.TableCollectionDao.GetTableType(tableEnName);
-            var hiddenAttributeNameList = TableManager.GetHiddenAttributeNameList(EAuxiliaryTableTypeUtils.GetTableStyle(tableType));
-            foreach (var columnInfo in columnlist)
-            {
-                if (hiddenAttributeNameList.Contains(columnInfo.ColumnName.ToLower())) continue;
-                var isNeedDelete = true;
-                foreach (var metadataInfo in list)
-                {
-                    if (StringUtils.EqualsIgnoreCase(columnInfo.ColumnName, metadataInfo.AttributeName))
-                    {
-                        isNeedDelete = false;
-                        break;
-                    }
-                }
-                if (isNeedDelete)
-                {
-                    var alterSqlList = SqlUtils.GetDropColumnsSqlString(tableEnName, columnInfo.ColumnName);
-                    foreach (var sql in alterSqlList)
-                    {
-                        sqlList.Add(sql);
-                    }
-                }
-            }
-            BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlList);
-            BaiRongDataProvider.TableCollectionDao.UpdateIsChangedAfterCreatedInDb(false, tableEnName);
-        }
-
-        public List<TableMetadataInfo> GetDefaultTableMetadataInfoList(string tableName, EAuxiliaryTableType tableType)
+        public List<TableMetadataInfo> GetDefaultTableMetadataInfoList(string tableName)
         {
             var list = new List<TableMetadataInfo>();
-            if (tableType != EAuxiliaryTableType.BackgroundContent) return list;
 
             var metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.SubTitle, DataType.VarChar, 255, 0, true);
             list.Add(metadataInfo);
@@ -814,8 +574,6 @@ namespace BaiRong.Core.Provider
             metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.VideoUrl, DataType.VarChar, 200, 0, true);
             list.Add(metadataInfo);
             metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.FileUrl, DataType.VarChar, 200, 0, true);
-            list.Add(metadataInfo);
-            metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.LinkUrl, DataType.VarChar, 200, 0, true);
             list.Add(metadataInfo);
             metadataInfo = new TableMetadataInfo(0, tableName, BackgroundContentAttribute.Content, DataType.Text, 16, 0, true);
             list.Add(metadataInfo);

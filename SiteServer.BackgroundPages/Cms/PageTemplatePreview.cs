@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
             if (IsPostBack) return;
-            BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "STL在线解析", AppManager.Permissions.WebSite.Template);
+            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
             ETemplateTypeUtils.AddListItems(DdlTemplateType);
             NodeManager.AddListItems(DdlNodeId.Items, PublishmentSystemInfo, false, true, Body.AdminName);

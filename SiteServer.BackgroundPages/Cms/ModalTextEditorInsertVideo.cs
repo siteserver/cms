@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string attributeName)
         {
-            return PageUtils.GetOpenLayerString("插入视频", PageUtils.GetCmsUrl(nameof(ModalTextEditorInsertVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript("插入视频", PageUtils.GetCmsUrl(nameof(ModalTextEditorInsertVideo), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"AttributeName", attributeName}
@@ -133,7 +133,7 @@ namespace SiteServer.BackgroundPages.Cms
             var playUrl = TbPlayUrl.Text;
 
             var script = "parent." + ETextEditorTypeUtils.GetInsertVideoScript(_attributeName, playUrl, width, height, CbIsAutoPlay.Checked);
-            PageUtils.CloseModalPageWithoutRefresh(Page, script);
+            LayerUtils.CloseWithoutRefresh(Page, script);
 		}
 
 	}

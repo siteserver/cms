@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            BreadCrumbSettings($@"站点数据统计（<a href=""{PageRedirect.GetRedirectUrl(PublishmentSystemId)}"" target=""_blank"">{PublishmentSystemInfo.PublishmentSystemName}</a>）", AppManager.Permissions.Settings.Chart);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.Chart);
 
             TbStartDate.Text = DateUtils.GetDateAndTimeString(_begin);
             TbEndDate.Text = DateUtils.GetDateAndTimeString(_end);

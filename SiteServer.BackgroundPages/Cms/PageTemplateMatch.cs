@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
@@ -58,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
             str = string.Concat(str, StringUtils.MaxLengthText(nodeInfo.NodeName, 8));
 
 
-            if (nodeInfo.NodeType == ENodeType.BackgroundPublishNode)
+            if (nodeInfo.ParentId == 0)
 			{
                 var indexTemplateId = TemplateManager.GetDefaultTemplateId(PublishmentSystemId, ETemplateType.IndexPageTemplate);
                 var indexTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, indexTemplateId);
@@ -107,24 +108,23 @@ namespace SiteServer.BackgroundPages.Cms
             var defaultContentTemplateId = TemplateManager.GetDefaultTemplateId(PublishmentSystemId, ETemplateType.ContentTemplate);
             defaultContentTemplateName = TemplateManager.GetTemplateName(PublishmentSystemId, defaultContentTemplateId);
 
-			if (!IsPostBack)
-            {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, "匹配模板", AppManager.Permissions.WebSite.Template);
+            if (IsPostBack) return;
 
-                ChannelTemplateID.Attributes.Add("onfocus", "$('ContentTemplateID').selectedIndex = -1");
-                ContentTemplateID.Attributes.Add("onfocus", "$('ChannelTemplateID').selectedIndex = -1");
+            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
-				BindListBox();
-			}
-		}
+            ChannelTemplateID.Attributes.Add("onfocus", "$('ContentTemplateID').selectedIndex = -1");
+            ContentTemplateID.Attributes.Add("onfocus", "$('ChannelTemplateID').selectedIndex = -1");
+
+            BindListBox();
+        }
 
 
 		public void BindListBox()
 		{
-			var selectedNodeIdArrayList = new ArrayList();
+			var selectedNodeIdList = new List<string>();
 			foreach (ListItem listitem in NodeIDCollectionToMatch.Items)
 			{
-				if (listitem.Selected) selectedNodeIdArrayList.Add(listitem.Value);
+				if (listitem.Selected) selectedNodeIdList.Add(listitem.Value);
 			}
 			var selectedChannelTemplateId = ChannelTemplateID.SelectedValue;
 			var selectedContentTemplateId = ContentTemplateID.SelectedValue;
@@ -146,13 +146,10 @@ namespace SiteServer.BackgroundPages.Cms
             ContentTemplateID.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ContentTemplate);
 			DataBind();
 
-			var stringArray = new string[selectedNodeIdArrayList.Count];
-			selectedNodeIdArrayList.CopyTo(stringArray);
-			ControlUtils.SelectListItems(NodeIDCollectionToMatch, stringArray);
-			ControlUtils.SelectListItems(ChannelTemplateID, selectedChannelTemplateId);
-			ControlUtils.SelectListItems(ContentTemplateID, selectedContentTemplateId);
+			ControlUtils.SelectMultiItems(NodeIDCollectionToMatch, selectedNodeIdList);
+			ControlUtils.SelectSingleItem(ChannelTemplateID, selectedChannelTemplateId);
+			ControlUtils.SelectSingleItem(ContentTemplateID, selectedContentTemplateId);
 		}
-
 
 		public void MatchChannelTemplateButton_OnClick(object sender, EventArgs e)
 		{
@@ -337,7 +334,7 @@ namespace SiteServer.BackgroundPages.Cms
 							var channelTemplateId = -1;
 
                             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
-							if (nodeInfo.NodeType != ENodeType.BackgroundPublishNode)
+							if (nodeInfo.ParentId > 0)
 							{
                                 channelTemplateId = nodeInfo.ChannelTemplateId;
 							}
@@ -358,12 +355,12 @@ namespace SiteServer.BackgroundPages.Cms
 								{
 									continue;
 								}
-								else if (templateNameList.Contains(templateInfo.TemplateName))
-								{
-									continue;
-								}
-								var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
-                                if (nodeInfo.NodeType != ENodeType.BackgroundPublishNode)
+							    if (templateNameList.Contains(templateInfo.TemplateName))
+							    {
+							        continue;
+							    }
+							    var insertedTemplateId = DataProvider.TemplateDao.Insert(templateInfo, string.Empty, Body.AdminName);
+                                if (nodeInfo.ParentId > 0)
                                 {
                                     TemplateManager.UpdateChannelTemplateId(PublishmentSystemId, nodeId, insertedTemplateId);
                                     //DataProvider.BackgroundNodeDAO.UpdateChannelTemplateID(nodeID, insertedTemplateID);

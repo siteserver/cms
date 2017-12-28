@@ -28,16 +28,14 @@ namespace SiteServer.BackgroundPages.Settings
         private string _attributeName;
         private string _redirectUrl;
         private TableStyleInfo _styleInfo;
-        private ETableStyle _tableStyle;
 
-        public static string GetOpenWindowString(int tableStyleId, string tableName, string attributeName, ETableStyle tableStyle, string redirectUrl)
+        public static string GetOpenWindowString(int tableStyleId, string tableName, string attributeName, string redirectUrl)
         {
             return PageUtils.GetOpenWindowString("设置表单验证", PageUtils.GetSettingsUrl(nameof(ModalTableStyleValidateAdd), new NameValueCollection
             {
                 {"TableStyleID", tableStyleId.ToString()},
                 {"TableName", tableName},
                 {"AttributeName", attributeName},
-                {"TableStyle", ETableStyleUtils.GetValue(tableStyle)},
                 {"RedirectUrl", StringUtils.ValueToUrl(redirectUrl)}
             }), 450, 460);
         }
@@ -49,29 +47,23 @@ namespace SiteServer.BackgroundPages.Settings
             _tableStyleId = Body.GetQueryInt("TableStyleID");
             _tableName = Body.GetQueryString("TableName");
             _attributeName = Body.GetQueryString("AttributeName");
-            _tableStyle = ETableStyleUtils.GetEnumType(Body.GetQueryString("TableStyle"));
             _redirectUrl = StringUtils.ValueFromUrl(Body.GetQueryString("RedirectUrl"));
 
-            if (_tableStyleId != 0)
-            {
-                _styleInfo = BaiRongDataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId);
-            }
-            else
-            {
-                _styleInfo = TableStyleManager.GetTableStyleInfo(_tableStyle, _tableName, _attributeName, new List<int>{0});
-            }
+            _styleInfo = _tableStyleId != 0
+                ? BaiRongDataProvider.TableStyleDao.GetTableStyleInfo(_tableStyleId)
+                : TableStyleManager.GetTableStyleInfo(_tableName, _attributeName, new List<int> {0});
 
             if (!IsPostBack)
             {
                 IsValidate.Items[0].Value = true.ToString();
                 IsValidate.Items[1].Value = false.ToString();
 
-                ControlUtils.SelectListItems(IsValidate, _styleInfo.Additional.IsValidate.ToString());
+                ControlUtils.SelectSingleItem(IsValidate, _styleInfo.Additional.IsValidate.ToString());
 
                 IsRequired.Items[0].Value = true.ToString();
                 IsRequired.Items[1].Value = false.ToString();
 
-                ControlUtils.SelectListItems(IsRequired, _styleInfo.Additional.IsRequired.ToString());
+                ControlUtils.SelectSingleItem(IsRequired, _styleInfo.Additional.IsRequired.ToString());
 
                 if (InputTypeUtils.EqualsAny(_styleInfo.InputType, InputType.Text, InputType.TextArea))
                 {
@@ -86,7 +78,7 @@ namespace SiteServer.BackgroundPages.Settings
                 MaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
 
                 ValidateTypeUtils.AddListItems(ValidateType);
-                ControlUtils.SelectListItems(ValidateType, ValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
+                ControlUtils.SelectSingleItem(ValidateType, ValidateTypeUtils.GetValue(_styleInfo.Additional.ValidateType));
 
                 RegExp.Text = _styleInfo.Additional.RegExp;
                 ErrorMessage.Text = _styleInfo.Additional.ErrorMessage;
@@ -146,18 +138,18 @@ namespace SiteServer.BackgroundPages.Settings
                 if (_tableStyleId == 0)//数据库中没有此项的表样式，但是有父项的表样式
                 {
                     _styleInfo.RelatedIdentity = 0;
-                    _styleInfo.TableStyleId = TableStyleManager.Insert(_styleInfo, _tableStyle);
+                    _styleInfo.TableStyleId = TableStyleManager.Insert(_styleInfo);
                 }
 
                 if (_styleInfo.TableStyleId > 0)
                 {
                     TableStyleManager.Update(_styleInfo);
-                    Body.AddAdminLog("修改表单验证", $"类型:{ETableStyleUtils.GetText(_tableStyle)},字段:{_styleInfo.AttributeName}");
+                    Body.AddAdminLog("修改表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 else
                 {
-                    TableStyleManager.Insert(_styleInfo, _tableStyle);
-                    Body.AddAdminLog("新增表单验证", $"类型:{ETableStyleUtils.GetText(_tableStyle)},字段:{_styleInfo.AttributeName}");
+                    TableStyleManager.Insert(_styleInfo);
+                    Body.AddAdminLog("新增表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 isChanged = true;
             }

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using BaiRong.Core;
-using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Cache;
 using SiteServer.CMS.StlParser.Model;
@@ -24,7 +23,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             //var contentInfo = contextInfo.ContentInfo ??
             //                  DataProvider.ContentDao.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId);
             var contentInfo = contextInfo.ContentInfo ??
-                              Content.GetContentInfo(ETableStyle.BackgroundContent, pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId);
+                              Content.GetContentInfo(pageInfo.PublishmentSystemInfo.AuxiliaryTableForContent, contextInfo.ContentId);
 
             //var photoInfoList = DataProvider.PhotoDao.GetPhotoInfoList(pageInfo.PublishmentSystemId, contextInfo.ContentId);
             var photoInfoList = Photo.GetPhotoInfoList(pageInfo.PublishmentSystemId, contextInfo.ContentId);
@@ -71,10 +70,9 @@ var slide_data = {
             if (siblingContentId > 0)
             {
                 var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contentInfo.NodeId);
-                var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
                 //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
-                var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId);
+                var siblingContentInfo = Content.GetContentInfo(tableName, siblingContentId);
                 var title = siblingContentInfo.Title;
                 var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo, pageInfo.IsLocal);
                 //var photoInfo = DataProvider.PhotoDao.GetFirstPhotoInfo(pageInfo.PublishmentSystemId, siblingContentId);
@@ -97,10 +95,9 @@ var slide_data = {
             if (siblingContentId > 0)
             {
                 var nodeInfo = NodeManager.GetNodeInfo(pageInfo.PublishmentSystemId, contentInfo.NodeId);
-                var tableStyle = NodeManager.GetTableStyle(pageInfo.PublishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(pageInfo.PublishmentSystemInfo, nodeInfo);
                 //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
-                var siblingContentInfo = Content.GetContentInfo(tableStyle, tableName, siblingContentId);
+                var siblingContentInfo = Content.GetContentInfo(tableName, siblingContentId);
                 var title = siblingContentInfo.Title;
                 var url = PageUtility.GetContentUrl(pageInfo.PublishmentSystemInfo, siblingContentInfo, pageInfo.IsLocal);
 

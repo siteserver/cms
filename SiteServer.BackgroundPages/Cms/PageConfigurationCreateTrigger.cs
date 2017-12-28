@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 			if (!IsPostBack)
 			{
-                BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "页面生成触发器", AppManager.Permissions.WebSite.Create);
+                VerifySitePermissions(AppManager.Permissions.WebSite.Create);
 
                 ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(PublishmentSystemInfo, ELoadingType.ConfigurationCreateDetails, null));
 
@@ -51,16 +51,9 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BindGrid()
         {
-            try
-            {
-                RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
-                RptContents.ItemDataBound += rptContents_ItemDataBound;
-                RptContents.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            RptContents.DataSource = DataProvider.NodeDao.GetNodeIdListByParentId(PublishmentSystemId, 0);
+            RptContents.ItemDataBound += rptContents_ItemDataBound;
+            RptContents.DataBind();
         }
 
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)

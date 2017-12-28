@@ -21,22 +21,21 @@ namespace SiteServer.BackgroundPages.Cms
 
             PageUtils.CheckRequestParameter("PublishmentSystemID");
 
-            if (!IsPostBack)
-            {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdCreate, "生成内容页", AppManager.Permissions.WebSite.Create);
+            if (IsPostBack) return;
 
-                var listitem = new ListItem("所有选中的栏目", "All");
-                ChooseScope.Items.Add(listitem);
-                listitem = new ListItem("一个月内更新的内容", "Month");
-                ChooseScope.Items.Add(listitem);
-                listitem = new ListItem("一天内更新的内容", "Day");
-                ChooseScope.Items.Add(listitem);
-                listitem = new ListItem("2小时内更新的内容", "2Hour");
-                ChooseScope.Items.Add(listitem);
+            VerifySitePermissions(AppManager.Permissions.WebSite.Create);
 
-                NodeManager.AddListItems(NodeIDList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
-                DeleteAllContentButton.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的内容页面，确定吗？\");");
-            }
+            var listitem = new ListItem("所有选中的栏目", "All");
+            ChooseScope.Items.Add(listitem);
+            listitem = new ListItem("一个月内更新的内容", "Month");
+            ChooseScope.Items.Add(listitem);
+            listitem = new ListItem("一天内更新的内容", "Day");
+            ChooseScope.Items.Add(listitem);
+            listitem = new ListItem("2小时内更新的内容", "2Hour");
+            ChooseScope.Items.Add(listitem);
+
+            NodeManager.AddListItems(NodeIDList.Items, PublishmentSystemInfo, false, true, Body.AdminName);
+            DeleteAllContentButton.Attributes.Add("onclick", "return confirm(\"此操作将删除所有已生成的内容页面，确定吗？\");");
         }
 
 

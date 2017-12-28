@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, int nodeId)
         {
-            return PageUtils.GetOpenLayerString("导入栏目",
+            return LayerUtils.GetOpenScript("导入栏目",
                 PageUtils.GetCmsUrl(nameof(ModalChannelImport), new NameValueCollection
                 {
                     {"PublishmentSystemID", publishmentSystemId.ToString()},
@@ -108,7 +108,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     Body.AddSiteLog(PublishmentSystemId, "导入栏目");
 
-                    PageUtils.CloseModalPage(Page);
+                    LayerUtils.Close(Page);
 				}
 				catch(Exception ex)
 				{

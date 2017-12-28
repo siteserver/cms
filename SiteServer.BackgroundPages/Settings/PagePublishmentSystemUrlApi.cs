@@ -16,10 +16,10 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings("访问地址管理", AppManager.Permissions.Settings.SiteManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
             EBooleanUtils.AddListItems(DdlIsSeparatedApi, "API独立部署", "API与CMS部署在一起");
-            ControlUtils.SelectListItems(DdlIsSeparatedApi, ConfigManager.SystemConfigInfo.IsSeparatedApi.ToString());
+            ControlUtils.SelectSingleItem(DdlIsSeparatedApi, ConfigManager.SystemConfigInfo.IsSeparatedApi.ToString());
             PhSeparatedApi.Visible = ConfigManager.SystemConfigInfo.IsSeparatedApi;
             TbSeparatedApiUrl.Text = ConfigManager.SystemConfigInfo.SeparatedApiUrl;
         }
@@ -31,20 +31,13 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            try
-            {
-                ConfigManager.SystemConfigInfo.IsSeparatedApi = TranslateUtils.ToBool(DdlIsSeparatedApi.SelectedValue);
-                ConfigManager.SystemConfigInfo.SeparatedApiUrl = TbSeparatedApiUrl.Text;
+            ConfigManager.SystemConfigInfo.IsSeparatedApi = TranslateUtils.ToBool(DdlIsSeparatedApi.SelectedValue);
+            ConfigManager.SystemConfigInfo.SeparatedApiUrl = TbSeparatedApiUrl.Text;
 
-                BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
+            BaiRongDataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-                Body.AddAdminLog("修改API访问地址");
-                SuccessUpdateMessage();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage($"修改失败：{ex.Message}");
-            }
+            Body.AddAdminLog("修改API访问地址");
+            SuccessUpdateMessage();
         }
     }
 }

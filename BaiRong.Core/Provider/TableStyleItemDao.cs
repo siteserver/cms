@@ -57,25 +57,26 @@ namespace BaiRong.Core.Provider
 
         public void Insert(IDbTransaction trans, int tableStyleId, List<TableStyleItemInfo> styleItems)
         {
-            if (styleItems != null && styleItems.Count > 0)
-            {
-                foreach (var itemInfo in styleItems)
-                {
-                    var insertItemParms = new IDataParameter[]
-                    {
-                        GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId),
-                        GetParameter(ParmItemTitle, DataType.VarChar, 255, itemInfo.ItemTitle),
-                        GetParameter(ParmItemValue, DataType.VarChar, 255, itemInfo.ItemValue),
-                        GetParameter(ParmIsSelected, DataType.VarChar, 18, itemInfo.IsSelected.ToString())
-                    };
+            if (styleItems == null || styleItems.Count <= 0) return;
 
-                    ExecuteNonQuery(trans, SqlInsertStyleItem, insertItemParms);
-                }
+            foreach (var itemInfo in styleItems)
+            {
+                var insertItemParms = new IDataParameter[]
+                {
+                    GetParameter(ParmTableStyleId, DataType.Integer, tableStyleId),
+                    GetParameter(ParmItemTitle, DataType.VarChar, 255, itemInfo.ItemTitle),
+                    GetParameter(ParmItemValue, DataType.VarChar, 255, itemInfo.ItemValue),
+                    GetParameter(ParmIsSelected, DataType.VarChar, 18, itemInfo.IsSelected.ToString())
+                };
+
+                ExecuteNonQuery(trans, SqlInsertStyleItem, insertItemParms);
             }
         }
 
         public void InsertStyleItems(List<TableStyleItemInfo> styleItems)
         {
+            if (styleItems == null || styleItems.Count == 0) return;
+
             using (var conn = GetConnection())
             {
                 conn.Open();

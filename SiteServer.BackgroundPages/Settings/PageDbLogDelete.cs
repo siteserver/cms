@@ -13,7 +13,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BreadCrumbSettings("清空数据库日志", AppManager.Permissions.Settings.Utility);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.Utility);
             }
         }
 
@@ -27,18 +27,11 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (Page.IsPostBack && Page.IsValid)
             {
-                try
-                {
-                    BaiRongDataProvider.DatabaseDao.DeleteDbLog();
+                BaiRongDataProvider.DatabaseDao.DeleteDbLog();
 
-                    Body.AddAdminLog("清空数据库日志");
+                Body.AddAdminLog("清空数据库日志");
 
-                    SuccessMessage("清空日志成功！");
-                }
-                catch (Exception ex)
-                {
-                    PageUtils.RedirectToErrorPage(ex.Message);
-                }
+                SuccessMessage("清空日志成功！");
             }
         }
 

@@ -1,28 +1,28 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using Atom.Core;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
-	internal class AuxiliaryTableIe
+	internal class TableCollectionIe
 	{
 		private readonly string _directoryPath;
 
-		public AuxiliaryTableIe(string directoryPath)
+		public TableCollectionIe(string directoryPath)
 		{
 			_directoryPath = directoryPath;
 		}
 
 		public void ExportAuxiliaryTable(string tableName)
 		{
-            var tableInfo = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableInfo(tableName);
+            var tableInfo = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfo(tableName);
 			if (tableInfo != null)
 			{
-                var metaInfoList = TableManager.GetTableMetadataInfoList(tableInfo.TableEnName);
+                var metaInfoList = TableMetadataManager.GetTableMetadataInfoList(tableInfo.TableEnName);
 				var filePath = _directoryPath + PathUtils.SeparatorChar + tableInfo.TableEnName + ".xml";
 
 				var feed = GetAtomFeed(tableInfo);
@@ -36,19 +36,18 @@ namespace SiteServer.CMS.ImportExport.Components
 			}
 		}
 
-		private static AtomFeed GetAtomFeed(AuxiliaryTableInfo tableInfo)
+		private static AtomFeed GetAtomFeed(TableCollectionInfo tableInfo)
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
 			AtomUtility.AddDcElement(feed.AdditionalElements, "TableENName", tableInfo.TableEnName);
 			AtomUtility.AddDcElement(feed.AdditionalElements, "TableCNName", tableInfo.TableCnName);
 			AtomUtility.AddDcElement(feed.AdditionalElements, "AttributeNum", tableInfo.AttributeNum.ToString());
-			AtomUtility.AddDcElement(feed.AdditionalElements, "AuxiliaryTableType", EAuxiliaryTableTypeUtils.GetValue(tableInfo.AuxiliaryTableType));
             AtomUtility.AddDcElement(feed.AdditionalElements, "IsCreatedInDB", tableInfo.IsCreatedInDb.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, "IsChangedAfterCreatedInDB", tableInfo.IsChangedAfterCreatedInDb.ToString());
 			AtomUtility.AddDcElement(feed.AdditionalElements, "Description", tableInfo.Description);
             //表唯一序列号
-            AtomUtility.AddDcElement(feed.AdditionalElements, "SerializedString", TableManager.GetSerializedString(tableInfo.TableEnName));
+            AtomUtility.AddDcElement(feed.AdditionalElements, "SerializedString", TableMetadataManager.GetSerializedString(tableInfo.TableEnName));
 
 			return feed;
 		}
@@ -89,11 +88,10 @@ namespace SiteServer.CMS.ImportExport.Components
                 var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
                 var tableName = AtomUtility.GetDcElementContent(feed.AdditionalElements, "TableENName");
-                var tableType = EAuxiliaryTableTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, "AuxiliaryTableType"));
 
                 if (!isUserTables)
                 {
-                    nameValueCollection[tableName] = NodeManager.GetTableName(publishmentSystemInfo, tableType);
+                    nameValueCollection[tableName] = publishmentSystemInfo.AuxiliaryTableForContent;
                     continue;
                 }
 
@@ -102,14 +100,14 @@ namespace SiteServer.CMS.ImportExport.Components
 
                 var tableNameToInsert = string.Empty;//需要增加的表名，空代表不需要添加辅助表
 
-                var tableInfo = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableInfo(tableName);
+                var tableInfo = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfo(tableName);
                 if (tableInfo == null)//如果当前系统无此表名
                 {
                     tableNameToInsert = tableName;
                 }
                 else
                 {
-                    var serializedStringForExistTable = TableManager.GetSerializedString(tableName);
+                    var serializedStringForExistTable = TableMetadataManager.GetSerializedString(tableName);
 
                     if (!string.IsNullOrEmpty(serializedString))
                     {
@@ -126,62 +124,46 @@ namespace SiteServer.CMS.ImportExport.Components
                 {
                     if (!BaiRongDataProvider.DatabaseDao.IsTableExists(tableNameToInsert))
                     {
-                        tableInfo = new AuxiliaryTableInfo
+                        tableInfo = new TableCollectionInfo
                         {
                             TableEnName = tableNameToInsert,
                             TableCnName = tableCnName,
                             AttributeNum = 0,
-                            AuxiliaryTableType = tableType,
                             IsCreatedInDb = false,
                             IsChangedAfterCreatedInDb = false,
                             Description = AtomUtility.GetDcElementContent(feed.AdditionalElements, "Description")
                         };
 
-                        BaiRongDataProvider.TableCollectionDao.Insert(tableInfo);
-
-                        var tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(tableInfo.AuxiliaryTableType);
-
-                        var attributeNameList =
-                            TableManager.GetAttributeNameList(tableStyle, tableInfo.TableEnName, true);
-                        attributeNameList.AddRange(
-                            TableManager.GetHiddenAttributeNameList(tableStyle));
-
+                        var metadataInfoList = new List<TableMetadataInfo>();
                         foreach (AtomEntry entry in feed.Entries)
                         {
                             var metaInfo = new TableMetadataInfo
                             {
                                 AuxiliaryTableEnName = tableNameToInsert,
-                                AttributeName =
-                                    AtomUtility.GetDcElementContent(entry.AdditionalElements, "AttributeName"),
-                                DataType = DataTypeUtils.GetEnumType(
-                                    AtomUtility.GetDcElementContent(entry.AdditionalElements, "DataType")),
-                                DataLength = TranslateUtils.ToInt(
-                                    AtomUtility.GetDcElementContent(entry.AdditionalElements, "DataLength")),
-                                Taxis =
-                                    TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements,
-                                        "Taxis")),
-                                IsSystem = TranslateUtils.ToBool(
-                                    AtomUtility.GetDcElementContent(entry.AdditionalElements, "IsSystem"))
+                                AttributeName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableMetadataInfo.AttributeName)),
+                                DataType = DataTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableMetadataInfo.DataType))),
+                                DataLength = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableMetadataInfo.DataLength))),
+                                Taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableMetadataInfo.Taxis))),
+                                IsSystem = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TableMetadataInfo.IsSystem)))
                             };
 
-                            if (attributeNameList.IndexOf(metaInfo.AttributeName.Trim().ToLower()) != -1) continue;
+                            if (string.IsNullOrEmpty(metaInfo.AttributeName) ||
+                                ContentAttribute.AllAttributesLowercase.Contains(metaInfo.AttributeName.ToLower()))
+                                continue;
 
-                            if (metaInfo.IsSystem) continue;
-
-                            BaiRongDataProvider.TableMetadataDao.Insert(metaInfo);
+                            metadataInfoList.Add(metaInfo);
                         }
 
-                        BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(tableNameToInsert);
+                        BaiRongDataProvider.TableCollectionDao.Insert(tableInfo, metadataInfoList);
+
+                        BaiRongDataProvider.TableCollectionDao.CreateDbTable(tableNameToInsert);
                     }
                 }
 
                 var tableNameToChange = !string.IsNullOrEmpty(tableNameToInsert) ? tableNameToInsert : tableName;
                 //更新发布系统后台内容表及栏目表
-                if (tableType == EAuxiliaryTableType.BackgroundContent)
-                {
-                    publishmentSystemInfo.AuxiliaryTableForContent = tableNameToChange;
-                    DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
-                }
+                publishmentSystemInfo.AuxiliaryTableForContent = tableNameToChange;
+                DataProvider.PublishmentSystemDao.Update(publishmentSystemInfo);
             }
 
             return nameValueCollection;

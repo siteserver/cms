@@ -222,11 +222,11 @@ namespace SiteServer.CMS.StlParser.Model
                 {
                     if (contextType == EContextType.Content)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.BackgroundContent, ETaxisType.OrderByTaxisDesc);
+                        listInfo.OrderByString = StlDataUtility.GetContentOrderByString(pageInfo.PublishmentSystemId, value, ETaxisType.OrderByTaxisDesc);
                     }
                     else if (contextType == EContextType.Channel)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetOrderByString(pageInfo.PublishmentSystemId, value, ETableStyle.Channel, ETaxisType.OrderByTaxis);
+                        listInfo.OrderByString = StlDataUtility.GetChannelOrderByString(pageInfo.PublishmentSystemId, value, ETaxisType.OrderByTaxis);
                     }
                     //else if (contextType == EContextType.InputContent)
                     //{

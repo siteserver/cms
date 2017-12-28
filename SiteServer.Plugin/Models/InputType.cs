@@ -1,23 +1,22 @@
 
 namespace SiteServer.Plugin.Models
 {
-	/// <summary>
-	/// 表单提交类型
-	/// </summary>
 	public enum InputType
 	{
-		CheckBox,
+        Text,
+        TextArea,
+        TextEditor,
+        CheckBox,
         Radio,
         SelectOne,
         SelectMultiple,
-		Date,
+        SelectCascading,
+        Date,
         DateTime,
         Image,
         Video,
         File,
-		Text,
-		TextArea,
-		TextEditor,
-        RelatedField
-	}
+        Customize,
+        Hidden
+    }
 }

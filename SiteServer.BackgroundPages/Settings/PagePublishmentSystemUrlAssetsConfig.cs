@@ -31,12 +31,12 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (IsPostBack) return;
 
-            BreadCrumbSettings("访问地址管理", AppManager.Permissions.Settings.SiteManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
             LtlPublishmentSystemName.Text = PublishmentSystemManager.GetPublishmentSystemName(PublishmentSystemInfo);
 
             EBooleanUtils.AddListItems(DdlIsSeparatedAssets, "资源文件独立部署", "资源文件与Web部署在一起");
-            ControlUtils.SelectListItems(DdlIsSeparatedAssets, PublishmentSystemInfo.Additional.IsSeparatedAssets.ToString());
+            ControlUtils.SelectSingleItem(DdlIsSeparatedAssets, PublishmentSystemInfo.Additional.IsSeparatedAssets.ToString());
             PhSeparatedAssets.Visible = PublishmentSystemInfo.Additional.IsSeparatedAssets;
             TbSeparatedAssetsUrl.Text = PublishmentSystemInfo.Additional.SeparatedAssetsUrl;
             TbAssetsDir.Text = PublishmentSystemInfo.Additional.AssetsDir;
@@ -49,22 +49,15 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            try
-            {
-                PublishmentSystemInfo.Additional.IsSeparatedAssets = TranslateUtils.ToBool(DdlIsSeparatedAssets.SelectedValue);
-                PublishmentSystemInfo.Additional.SeparatedAssetsUrl = TbSeparatedAssetsUrl.Text;
-                PublishmentSystemInfo.Additional.AssetsDir = TbAssetsDir.Text;
+            PublishmentSystemInfo.Additional.IsSeparatedAssets = TranslateUtils.ToBool(DdlIsSeparatedAssets.SelectedValue);
+            PublishmentSystemInfo.Additional.SeparatedAssetsUrl = TbSeparatedAssetsUrl.Text;
+            PublishmentSystemInfo.Additional.AssetsDir = TbAssetsDir.Text;
 
-                DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
-                Body.AddSiteLog(PublishmentSystemId, "修改资源文件访问地址");
+            DataProvider.PublishmentSystemDao.Update(PublishmentSystemInfo);
+            Body.AddSiteLog(PublishmentSystemId, "修改资源文件访问地址");
 
-                SuccessMessage("资源文件访问地址修改成功！");
-                AddWaitAndRedirectScript(PagePublishmentSystemUrlAssets.GetRedirectUrl());
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage($"修改失败：{ex.Message}");
-            }
+            SuccessMessage("资源文件访问地址修改成功！");
+            AddWaitAndRedirectScript(PagePublishmentSystemUrlAssets.GetRedirectUrl());
         }
     }
 }

@@ -84,12 +84,12 @@ namespace SiteServer.BackgroundPages.Plugins
                         Copyright.Text = seoMetaInfo.Copyright;
                         Author.Text = seoMetaInfo.Author;
                         Email.Text = seoMetaInfo.Email;
-                        ControlUtils.SelectListItems(Language, seoMetaInfo.Language);
-                        ControlUtils.SelectListItems(Charset, seoMetaInfo.Charset);
-                        ControlUtils.SelectListItems(Distribution, seoMetaInfo.Distribution);
-                        ControlUtils.SelectListItems(Rating, seoMetaInfo.Rating);
-                        ControlUtils.SelectListItems(Robots, seoMetaInfo.Robots);
-                        ControlUtils.SelectListItems(RevisitAfter, seoMetaInfo.RevisitAfter);
+                        ControlUtils.SelectSingleItem(Language, seoMetaInfo.Language);
+                        ControlUtils.SelectSingleItem(Charset, seoMetaInfo.Charset);
+                        ControlUtils.SelectSingleItem(Distribution, seoMetaInfo.Distribution);
+                        ControlUtils.SelectSingleItem(Rating, seoMetaInfo.Rating);
+                        ControlUtils.SelectSingleItem(Robots, seoMetaInfo.Robots);
+                        ControlUtils.SelectSingleItem(RevisitAfter, seoMetaInfo.RevisitAfter);
                         Expires.Text = seoMetaInfo.Expires;
                     }
                 }
@@ -101,12 +101,12 @@ namespace SiteServer.BackgroundPages.Plugins
                     Copyright.Text = Body.GetQueryString("Copyright");
                     Author.Text = Body.GetQueryString("Author");
                     Email.Text = Body.GetQueryString("Email");
-                    ControlUtils.SelectListItems(Language, Body.GetQueryString("Language"));
-                    ControlUtils.SelectListItems(Charset, Body.GetQueryString("Charset"));
-                    ControlUtils.SelectListItems(Distribution, Body.GetQueryString("Distribution"));
-                    ControlUtils.SelectListItems(Rating, Body.GetQueryString("Rating"));
-                    ControlUtils.SelectListItems(Robots, Body.GetQueryString("Robots"));
-                    ControlUtils.SelectListItems(RevisitAfter, Body.GetQueryString("RevisitAfter"));
+                    ControlUtils.SelectSingleItem(Language, Body.GetQueryString("Language"));
+                    ControlUtils.SelectSingleItem(Charset, Body.GetQueryString("Charset"));
+                    ControlUtils.SelectSingleItem(Distribution, Body.GetQueryString("Distribution"));
+                    ControlUtils.SelectSingleItem(Rating, Body.GetQueryString("Rating"));
+                    ControlUtils.SelectSingleItem(Robots, Body.GetQueryString("Robots"));
+                    ControlUtils.SelectSingleItem(RevisitAfter, Body.GetQueryString("RevisitAfter"));
                     Expires.Text = Body.GetQueryString("Expires");
                 }
             }
@@ -183,11 +183,11 @@ namespace SiteServer.BackgroundPages.Plugins
             {
                 if (Body.GetQueryString("PageTitle") == null)
                 {
-                    PageUtils.CloseModalPage(Page);
+                    LayerUtils.Close(Page);
                 }
                 else
                 {
-                    PageUtils.CloseModalPageAndRedirect(Page, PageSeoMetaList.GetRedirectUrl(PublishmentSystemId));
+                    LayerUtils.CloseAndRedirect(Page, PageSeoMetaList.GetRedirectUrl(PublishmentSystemId));
                 }
             }
         }

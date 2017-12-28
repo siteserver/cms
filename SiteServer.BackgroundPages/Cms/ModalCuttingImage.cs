@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 	    public static string GetOpenWindowStringWithTextBox(int publishmentSystemId, string textBoxClientId)
         {
-            return PageUtils.GetOpenLayerString("裁切图片", PageUtils.GetCmsUrl(nameof(ModalCuttingImage), new NameValueCollection
+            return LayerUtils.GetOpenScript("裁切图片", PageUtils.GetCmsUrl(nameof(ModalCuttingImage), new NameValueCollection
             {
                 {"publishmentSystemID", publishmentSystemId.ToString()},
                 {"textBoxClientID", textBoxClientId}
@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToImageUrl(int publishmentSystemId, string imageUrl)
         {
-            return PageUtils.GetOpenLayerString("裁切图片", PageUtils.GetCmsUrl(nameof(ModalCuttingImage), new NameValueCollection
+            return LayerUtils.GetOpenScript("裁切图片", PageUtils.GetCmsUrl(nameof(ModalCuttingImage), new NameValueCollection
             {
                 {"publishmentSystemID", publishmentSystemId.ToString()},
                 {"imageUrl", imageUrl}
@@ -146,7 +146,7 @@ if (parent.document.getElementById('{_textBoxClientId}'))
                     FileUtils.CopyFile(destImagePath, filePath, true);
                 }
 
-                LtlScript.Text += PageUtils.HidePopWin;
+                LtlScript.Text += LayerUtils.CloseScript;
 
                 LtlScript.Text = $@"
 <script type=""text/javascript"">

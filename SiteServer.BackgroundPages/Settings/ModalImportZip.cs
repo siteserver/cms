@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(string type)
         {
-            return PageUtils.GetOpenLayerString(type == TypeSiteTemplate ? "导入站点模板" : "导入插件",
+            return LayerUtils.GetOpenScript(type == TypeSiteTemplate ? "导入站点模板" : "导入插件",
                 PageUtils.GetSettingsUrl(nameof(ModalImportZip), new NameValueCollection
                 {
                     {"type", type}
@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (Page.IsPostBack) return;
 
             EBooleanUtils.AddListItems(DdlImportType, "上传压缩包并导入", "从指定地址下载压缩包并导入");
-            ControlUtils.SelectListItemsIgnoreCase(DdlImportType, true.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlImportType, true.ToString());
 
             PhUpload.Visible = true;
             PhDownload.Visible = false;
@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	                    ZipUtils.UnpackFiles(localFilePath, directoryPath);
 
-	                    PageUtils.CloseModalPageAndRedirect(Page, PageSiteTemplate.GetRedirectUrl());
+                        LayerUtils.CloseAndRedirect(Page, PageSiteTemplate.GetRedirectUrl());
 	                }
 	                catch (Exception ex)
 	                {

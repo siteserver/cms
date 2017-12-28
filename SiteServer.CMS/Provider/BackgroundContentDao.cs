@@ -6,7 +6,6 @@ using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Core.User;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.Provider
@@ -44,7 +43,7 @@ namespace SiteServer.CMS.Provider
 
                 int checkedLevel;
                 var isChecked = CheckManager.GetUserCheckLevel(administratorName, publishmentSystemInfo, publishmentSystemInfo.PublishmentSystemId, out checkedLevel);
-                var checkLevelList = LevelManager.LevelInt.GetCheckLevelListOfNeedCheck(publishmentSystemInfo, isChecked, checkedLevel);
+                var checkLevelList = CheckManager.LevelInt.GetCheckLevelListOfNeedCheck(publishmentSystemInfo, isChecked, checkedLevel);
                 var sqlString = isSystemAdministrator ? $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID > 0 AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))" : $"SELECT COUNT(*) AS TotalNum FROM {tableName} WHERE (PublishmentSystemID = {publishmentSystemId} AND NodeID IN ({TranslateUtils.ToSqlInStringWithoutQuote(owningNodeIdList)}) AND IsChecked = '{false}' AND CheckedLevel IN ({TranslateUtils.ToSqlInStringWithoutQuote(checkLevelList)}))";
 
                 var count = BaiRongDataProvider.DatabaseDao.GetIntResult(sqlString);

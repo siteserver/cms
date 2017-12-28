@@ -80,10 +80,9 @@ namespace SiteServer.CMS.StlParser.Model
                 if (_contentInfo != null) return _contentInfo;
                 if (ContentId <= 0) return _contentInfo;
                 var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemInfo.PublishmentSystemId, ChannelId);
-                var tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
                 var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
                 //_contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, ContentId);
-                _contentInfo = Content.GetContentInfo(tableStyle, tableName, ContentId);
+                _contentInfo = Content.GetContentInfo(tableName, ContentId);
                 return _contentInfo;
             }
             set { _contentInfo = value; }

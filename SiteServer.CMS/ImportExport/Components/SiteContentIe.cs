@@ -75,9 +75,9 @@ namespace SiteServer.CMS.ImportExport.Components
                 parentId = theParentId;
             }
 
-            var nodeType = ENodeTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, NodeAttribute.NodeType));
+            var parentIdOriginal = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, NodeAttribute.ParentId));
             int nodeId;
-            if (nodeType == ENodeType.BackgroundPublishNode)
+            if (parentIdOriginal == 0)
             {
                 nodeId = _publishmentSystemInfo.PublishmentSystemId;
                 var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, _publishmentSystemInfo.PublishmentSystemId);
@@ -286,7 +286,7 @@ namespace SiteServer.CMS.ImportExport.Components
                             _photoIe.ImportPhoto(contentIdFromFile, contentId);
                         }
 
-                        if (_publishmentSystemInfo.Additional.IsRelatedByTags && !string.IsNullOrEmpty(tags))
+                        if (!string.IsNullOrEmpty(tags))
                         {
                             var tagCollection = TagUtils.ParseTagsString(tags);
                             TagUtils.AddTags(tagCollection, _publishmentSystemInfo.PublishmentSystemId, contentId);
@@ -321,12 +321,16 @@ namespace SiteServer.CMS.ImportExport.Components
         private void ImportNodeInfo(NodeInfo nodeInfo, ScopedElementCollection additionalElements, int parentId, IList nodeIndexNameArrayList)
         {
             nodeInfo.NodeName = AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.NodeName);
-            nodeInfo.NodeType = ENodeTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.NodeType));
             nodeInfo.PublishmentSystemId = _publishmentSystemInfo.PublishmentSystemId;
-            var contentModelId = AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.ContentModelId);
-            if (!string.IsNullOrEmpty(contentModelId))
+            var contentModelPluginId = AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.ContentModelPluginId);
+            if (!string.IsNullOrEmpty(contentModelPluginId))
             {
-                nodeInfo.ContentModelId = contentModelId;
+                nodeInfo.ContentModelPluginId = contentModelPluginId;
+            }
+            var contentRelatedPluginIds = AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.ContentRelatedPluginIds);
+            if (!string.IsNullOrEmpty(contentRelatedPluginIds))
+            {
+                nodeInfo.ContentRelatedPluginIds = contentRelatedPluginIds;
             }
             nodeInfo.ParentId = parentId;
             var nodeIndexName = AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.NodeIndexName);
@@ -344,7 +348,7 @@ namespace SiteServer.CMS.ImportExport.Components
             nodeInfo.ContentFilePathRule = AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.ContentFilePathRule);
 
             nodeInfo.LinkUrl = AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.LinkUrl);
-            nodeInfo.LinkType = ELinkTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.LinkType));
+            nodeInfo.LinkType = AtomUtility.GetDcElementContent(additionalElements, NodeAttribute.LinkType);
 
             var channelTemplateName = AtomUtility.GetDcElementContent(additionalElements, ChannelTemplateName);
             if (!string.IsNullOrEmpty(channelTemplateName))
@@ -374,7 +378,6 @@ namespace SiteServer.CMS.ImportExport.Components
             if (nodeInfo == null) return;
 
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeInfo);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
 
             var fileName = DataProvider.NodeDao.GetOrderStringInPublishmentSystem(nodeId);
@@ -389,7 +392,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, nodeId, orderByString);
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                    var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                     //ContentUtility.PutImagePaths(publishmentSystemInfo, contentInfo as BackgroundContentInfo, collection);
                     var entry = ExportContentInfo(contentInfo);
                     feed.Entries.Add(entry);
@@ -410,7 +413,6 @@ namespace SiteServer.CMS.ImportExport.Components
         public bool ExportContents(PublishmentSystemInfo publishmentSystemInfo, int nodeId, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
-            var tableStyle = NodeManager.GetTableStyle(publishmentSystemInfo, nodeId);
             var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
             var feed = AtomUtility.GetEmptyFeed();
 
@@ -424,7 +426,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentId);
+                var contentInfo = DataProvider.ContentDao.GetContentInfo(tableName, contentId);
                 try
                 {
                     ContentUtility.PutImagePaths(publishmentSystemInfo, contentInfo as BackgroundContentInfo, collection);
@@ -455,9 +457,9 @@ namespace SiteServer.CMS.ImportExport.Components
 
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.NodeId, nodeInfo.NodeId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.NodeName, nodeInfo.NodeName);
-            AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.NodeType, ENodeTypeUtils.GetValue(nodeInfo.NodeType));
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.PublishmentSystemId, nodeInfo.PublishmentSystemId.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.ContentModelId, nodeInfo.ContentModelId);
+            AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.ContentModelPluginId, nodeInfo.ContentModelPluginId);
+            AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.ContentRelatedPluginIds, nodeInfo.ContentRelatedPluginIds);
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.ParentId, nodeInfo.ParentId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.ParentsPath, nodeInfo.ParentsPath);
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.ParentsCount, nodeInfo.ParentsCount.ToString());
@@ -474,7 +476,7 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.ChannelFilePathRule, nodeInfo.ChannelFilePathRule);
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.ContentFilePathRule, nodeInfo.ContentFilePathRule);
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.LinkUrl, nodeInfo.LinkUrl);
-            AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.LinkType, ELinkTypeUtils.GetValue(nodeInfo.LinkType));
+            AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.LinkType, nodeInfo.LinkType);
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.ChannelTemplateId, nodeInfo.ChannelTemplateId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.ContentTemplateId, nodeInfo.ContentTemplateId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, NodeAttribute.Keywords, nodeInfo.Keywords);
@@ -528,7 +530,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             foreach (string attributeName in contentInfo.ToNameValueCollection().Keys)
             {
-                if (!ContentAttribute.AllAttributes.Contains(attributeName.ToLower()))
+                if (!ContentAttribute.AllAttributesLowercase.Contains(attributeName.ToLower()))
                 {
                     AtomUtility.AddDcElement(entry.AdditionalElements, attributeName, AtomUtility.Encrypt(contentInfo.GetString(attributeName)));
                 }

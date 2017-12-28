@@ -10,13 +10,10 @@ using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
-using SiteServer.CMS.Core.SystemData;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.ImportExport.Components;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -82,11 +79,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!IsPostBack)
             {
-                BaiRongDataProvider.TableCollectionDao.CreateAllAuxiliaryTableIfNotExists();
+                BaiRongDataProvider.TableCollectionDao.CreateAllTableCollectionInfoIfNotExists();
 
                 SiteTemplateDir.Value = Body.GetQueryString("siteTemplate");
 
-                BreadCrumbSettings("创建站点", AppManager.Permissions.Settings.SiteAdd);
+                VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteAdd);
 
                 var hqSiteId = DataProvider.PublishmentSystemDao.GetPublishmentSystemIdByIsHeadquarters();
                 if (hqSiteId == 0)
@@ -128,12 +125,12 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     AddSite(ParentPublishmentSystemID, publishmentSystemInfo, parentWithChildren, 0);
                 }
-                ControlUtils.SelectListItems(ParentPublishmentSystemID, "0");
+                ControlUtils.SelectSingleItem(ParentPublishmentSystemID, "0");
 
                 ECharsetUtils.AddListItems(Charset);
-                ControlUtils.SelectListItems(Charset, ECharsetUtils.GetValue(ECharset.utf_8));
+                ControlUtils.SelectSingleItem(Charset, ECharsetUtils.GetValue(ECharset.utf_8));
 
-                var tableList = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableListCreatedInDbByAuxiliaryTableType(EAuxiliaryTableType.BackgroundContent);
+                var tableList = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfoListCreatedInDb();
                 foreach (var tableInfo in tableList)
                 {
                     var li = new ListItem($"{tableInfo.TableCnName}({tableInfo.TableEnName})", tableInfo.TableEnName);
@@ -142,7 +139,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 IsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制", false.ToString()));
                 IsCheckContentUseLevel.Items.Add(new ListItem("多级审核机制", true.ToString()));
-                ControlUtils.SelectListItems(IsCheckContentUseLevel, false.ToString());
+                ControlUtils.SelectSingleItem(IsCheckContentUseLevel, false.ToString());
 
                 UseSiteTemplate.Attributes.Add("onclick", "displaySiteTemplateDiv(this)");
 
@@ -217,24 +214,17 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void BindGrid()
         {
-            try
+            var directoryArrayList = new ArrayList();
+            foreach (string directoryName in _sortedlist.Keys)
             {
-                var directoryArrayList = new ArrayList();
-                foreach (string directoryName in _sortedlist.Keys)
-                {
-                    var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
-                    var dirInfo = new DirectoryInfo(directoryPath);
-                    directoryArrayList.Add(dirInfo);
-                }
+                var directoryPath = PathUtility.GetSiteTemplatesPath(directoryName);
+                var dirInfo = new DirectoryInfo(directoryPath);
+                directoryArrayList.Add(dirInfo);
+            }
 
-                dlContents.DataSource = directoryArrayList;
-                dlContents.ItemDataBound += dlContents_ItemDataBound;
-                dlContents.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            dlContents.DataSource = directoryArrayList;
+            dlContents.ItemDataBound += dlContents_ItemDataBound;
+            dlContents.DataBind();
         }
 
         void dlContents_ItemDataBound(object sender, DataListItemEventArgs e)
@@ -396,19 +386,24 @@ namespace SiteServer.BackgroundPages.Settings
                 var nodeInfo = new NodeInfo();
 
                 nodeInfo.NodeName = nodeInfo.NodeIndexName = "首页";
-                nodeInfo.NodeType = ENodeType.BackgroundPublishNode;
-                nodeInfo.ContentModelId = string.Empty;
+                nodeInfo.ParentId = 0;
+                nodeInfo.ContentModelPluginId = string.Empty;
 
-                var psInfo = BaseTable.GetDefaultPublishmentSystemInfo(PageUtils.FilterXss(PublishmentSystemName.Text), AuxiliaryTableForContent.SelectedValue, publishmentSystemDir, parentPublishmentSystemId);
+                var psInfo = new PublishmentSystemInfo
+                {
+                    PublishmentSystemName = PageUtils.FilterXss(PublishmentSystemName.Text),
+                    AuxiliaryTableForContent = AuxiliaryTableForContent.SelectedValue,
+                    PublishmentSystemDir = publishmentSystemDir,
+                    ParentPublishmentSystemId = parentPublishmentSystemId,
+                    IsHeadquarters = isHq,
+                    IsCheckContentUseLevel = TranslateUtils.ToBool(IsCheckContentUseLevel.SelectedValue)
+                };
 
-                psInfo.IsHeadquarters = isHq;
-
-                psInfo.Additional.Charset = Charset.SelectedValue;
-                psInfo.IsCheckContentUseLevel = TranslateUtils.ToBool(IsCheckContentUseLevel.SelectedValue);
                 if (psInfo.IsCheckContentUseLevel)
                 {
                     psInfo.CheckContentLevel = TranslateUtils.ToInt(CheckContentLevel.SelectedValue);
                 }
+                psInfo.Additional.Charset = Charset.SelectedValue;
 
                 var thePublishmentSystemId = DataProvider.NodeDao.InsertPublishmentSystemInfo(nodeInfo, psInfo, Body.AdminName);
 

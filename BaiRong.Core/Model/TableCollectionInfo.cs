@@ -1,27 +1,23 @@
-using BaiRong.Core.Model.Enumerations;
-
 namespace BaiRong.Core.Model
 {
-    public class AuxiliaryTableInfo
-	{
-	    public AuxiliaryTableInfo()
+    public class TableCollectionInfo
+    {
+	    public TableCollectionInfo()
 		{
 			TableEnName = string.Empty;
 			TableCnName = string.Empty;
 			AttributeNum = 0;
-			AuxiliaryTableType = EAuxiliaryTableType.BackgroundContent;
 			IsCreatedInDb = false;
 			IsChangedAfterCreatedInDb = false;
             IsDefault = false;
 			Description = string.Empty;
 		}
 
-        public AuxiliaryTableInfo(string tableEnName, string tableCnName, int attributeNum, EAuxiliaryTableType auxiliaryTableType, bool isCreatedInDb, bool isChangedAfterCreatedInDb, bool isDefault, string description) 
+        public TableCollectionInfo(string tableEnName, string tableCnName, int attributeNum, bool isCreatedInDb, bool isChangedAfterCreatedInDb, bool isDefault, string description) 
 		{
 			TableEnName = tableEnName;
 			TableCnName = tableCnName;
 			AttributeNum = attributeNum;
-			AuxiliaryTableType = auxiliaryTableType;
 			IsCreatedInDb = isCreatedInDb;
 			IsChangedAfterCreatedInDb = isChangedAfterCreatedInDb;
             IsDefault = isDefault;
@@ -33,8 +29,6 @@ namespace BaiRong.Core.Model
 	    public string TableCnName { get; set; }
 
 	    public int AttributeNum { get; set; }
-
-	    public EAuxiliaryTableType AuxiliaryTableType { get; set; }
 
 	    public bool IsCreatedInDb { get; set; }
 

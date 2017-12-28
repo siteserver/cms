@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string rootPath, string fileName)
         {
-            return PageUtils.GetOpenLayerString("修改文件名", PageUtils.GetCmsUrl(nameof(ModalFileChangeName), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改文件名", PageUtils.GetCmsUrl(nameof(ModalFileChangeName), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RootPath", rootPath},
@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string rootPath, string fileName, string hiddenClientId)
         {
-            return PageUtils.GetOpenLayerString("修改文件名", PageUtils.GetCmsUrl(nameof(ModalFileChangeName), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改文件名", PageUtils.GetCmsUrl(nameof(ModalFileChangeName), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RootPath", rootPath},
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             Body.AddSiteLog(PublishmentSystemId, "修改文件名", $"文件名:{TbFileName.Text}");
             //JsUtils.SubModal.CloseModalPageWithoutRefresh(Page);
-            PageUtils.CloseModalPageAndRedirect(Page, RedirectUrl());
+            LayerUtils.CloseAndRedirect(Page, RedirectUrl());
         }
 	}
 }

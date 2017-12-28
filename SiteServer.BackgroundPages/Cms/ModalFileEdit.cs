@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int publishmentSystemId, string relatedPath, string fileName, bool isCreate)
         {
             var title = isCreate ? "新建文件" : "编辑文件";
-            return PageUtils.GetOpenLayerString(title, PageUtils.GetCmsUrl(nameof(ModalFileEdit), new NameValueCollection
+            return LayerUtils.GetOpenScript(title, PageUtils.GetCmsUrl(nameof(ModalFileEdit), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"RelatedPath", relatedPath},
@@ -238,11 +238,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (_isCreate)
                     {
-                        PageUtils.CloseModalPage(Page);
+                        LayerUtils.Close(Page);
                     }
                     else
                     {
-                        PageUtils.CloseModalPageWithoutRefresh(Page);
+                        LayerUtils.CloseWithoutRefresh(Page);
                     }
                 }
                 else

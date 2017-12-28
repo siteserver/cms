@@ -6,10 +6,10 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Text;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using MySql.Data.MySqlClient;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
@@ -61,11 +61,7 @@ namespace BaiRong.Core.Provider
         {
             if (string.IsNullOrEmpty(sqlString)) return;
 
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                ExecuteNonQuery(conn, sqlString);
-            }
+            ExecuteNonQuery(sqlString);
         }
 
         public void ExecuteSql(List<string> sqlList)
@@ -428,8 +424,6 @@ namespace BaiRong.Core.Provider
             return dataset;
         }
 
-        
-
         public void ReadResultsToNameValueCollection(IDataReader rdr, NameValueCollection attributes)
         {
             for (var i = 0; i < rdr.FieldCount; i++)
@@ -676,6 +670,8 @@ SELECT * FROM (
                     : ")");
 
                 ExecuteNonQuery(sqlBuilder.ToString());
+
+                TableColumnManager.ClearCache();
             }
             catch (Exception ex)
             {
@@ -685,7 +681,8 @@ SELECT * FROM (
 
         public void AlterPluginTable(string pluginId, string tableName, List<PluginTableColumn> tableColumns)
         {
-            var columnNameList = GetLowercaseTableColumnNameList(tableName);
+            var isAltered = false;
+            var columnNameList = TableColumnManager.GetTableColumnNameListLowercase(tableName);
             foreach (var tableColumn in tableColumns)
             {
                 if (columnNameList.Contains(tableColumn.AttributeName.ToLower())) continue;
@@ -696,71 +693,72 @@ SELECT * FROM (
                 try
                 {
                     BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
+                    isAltered = true;
                 }
                 catch (Exception ex)
                 {
                     LogUtils.AddPluginErrorLog(pluginId, ex, sqlString);
                 }
             }
-        }
 
-        public string GetCreateSystemTableSqlString(string tableName, List<TableColumnInfo> tableColumns)
-        {
-            var sqlBuilder = new StringBuilder();
-
-            sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
-
-            var primaryKeyColumns = new List<TableColumnInfo>();
-            foreach (var tableColumn in tableColumns)
+            if (isAltered)
             {
-                if (string.IsNullOrEmpty(tableColumn.ColumnName)) continue;
-
-                if (tableColumn.IsIdentity || StringUtils.EqualsIgnoreCase(tableColumn.ColumnName, "Id"))
-                {
-                    primaryKeyColumns.Add(tableColumn);
-                    sqlBuilder.Append($@"{tableColumn.ColumnName} {SqlUtils.GetAutoIncrementDataType()},").AppendLine();
-                }
-                else
-                {
-                    if (tableColumn.IsPrimaryKey)
-                    {
-                        primaryKeyColumns.Add(tableColumn);
-                    }
-
-                    var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.ColumnName,
-                    tableColumn.Length);
-                    if (!string.IsNullOrEmpty(columnSql))
-                    {
-                        sqlBuilder.Append(columnSql).Append(",").AppendLine();
-                    }
-                }
+                TableColumnManager.ClearCache();
             }
-
-            foreach (var tableColumn in primaryKeyColumns)
-            {
-                sqlBuilder.Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
-                    ? $@"PRIMARY KEY ({tableColumn.ColumnName}),"
-                    : $@"CONSTRAINT PK_{tableName}_{tableColumn.ColumnName} PRIMARY KEY ({tableColumn.ColumnName}),");
-            }
-            if (primaryKeyColumns.Count > 0)
-            {
-                sqlBuilder.Length--;
-            }
-
-            sqlBuilder.AppendLine().Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
-                ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8"
-                : ")");
-
-            return sqlBuilder.ToString();
         }
 
         public void CreateSystemTable(string tableName, List<TableColumnInfo> tableColumns)
         {
             try
             {
-                var sqlString = GetCreateSystemTableSqlString(tableName, tableColumns);
+                var sqlBuilder = new StringBuilder();
 
-                ExecuteNonQuery(sqlString);
+                sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
+
+                var primaryKeyColumns = new List<TableColumnInfo>();
+                foreach (var tableColumn in tableColumns)
+                {
+                    if (string.IsNullOrEmpty(tableColumn.ColumnName)) continue;
+
+                    if (tableColumn.IsIdentity || StringUtils.EqualsIgnoreCase(tableColumn.ColumnName, "Id"))
+                    {
+                        primaryKeyColumns.Add(tableColumn);
+                        sqlBuilder.Append($@"{tableColumn.ColumnName} {SqlUtils.GetAutoIncrementDataType()},").AppendLine();
+                    }
+                    else
+                    {
+                        if (tableColumn.IsPrimaryKey)
+                        {
+                            primaryKeyColumns.Add(tableColumn);
+                        }
+
+                        var columnSql = SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.ColumnName,
+                        tableColumn.Length);
+                        if (!string.IsNullOrEmpty(columnSql))
+                        {
+                            sqlBuilder.Append(columnSql).Append(",").AppendLine();
+                        }
+                    }
+                }
+
+                foreach (var tableColumn in primaryKeyColumns)
+                {
+                    sqlBuilder.Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                        ? $@"PRIMARY KEY ({tableColumn.ColumnName}),"
+                        : $@"CONSTRAINT PK_{tableName}_{tableColumn.ColumnName} PRIMARY KEY ({tableColumn.ColumnName}),");
+                }
+                if (primaryKeyColumns.Count > 0)
+                {
+                    sqlBuilder.Length--;
+                }
+
+                sqlBuilder.AppendLine().Append(WebConfigUtils.DatabaseType == EDatabaseType.MySql
+                    ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8"
+                    : ")");
+
+                ExecuteNonQuery(sqlBuilder.ToString());
+
+                TableColumnManager.ClearCache();
             }
             catch (Exception ex)
             {
@@ -768,11 +766,11 @@ SELECT * FROM (
             }
         }
 
-        public List<string> GetAlterSystemTableSqlString(string tableName, List<TableColumnInfo> tableColumns)
+        public void AlterSystemTable(string tableName, List<TableColumnInfo> tableColumns)
         {
             var list = new List<string>();
 
-            var columnNameList = GetLowercaseTableColumnNameList(tableName);
+            var columnNameList = TableColumnManager.GetTableColumnNameListLowercase(tableName);
             foreach (var tableColumn in tableColumns)
             {
                 if (columnNameList.Contains(tableColumn.ColumnName.ToLower())) continue;
@@ -780,22 +778,21 @@ SELECT * FROM (
                 list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn.DataType, tableColumn.ColumnName, tableColumn.Length)));
             }
 
-            return list;
-        }
-
-        public void AlterSystemTable(string tableName, List<TableColumnInfo> tableColumns)
-        {
-            var alterList = GetAlterSystemTableSqlString(tableName, tableColumns);
-            foreach (var sqlString in alterList)
+            if (list.Count > 0)
             {
-                try
+                foreach (var sqlString in list)
                 {
-                    BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
+                    try
+                    {
+                        BaiRongDataProvider.DatabaseDao.ExecuteSql(sqlString);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddSystemErrorLog(ex, sqlString);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    LogUtils.AddSystemErrorLog(ex, sqlString);
-                }
+
+                TableColumnManager.ClearCache();
             }
         }
 
@@ -1014,31 +1011,11 @@ SELECT * FROM (
             return defaultConstraintName;
         }
 
-        public List<string> GetLowercaseTableColumnNameList(string tableName)
-        {
-            var allTableColumnInfoList = GetLowercaseTableColumnInfoList(WebConfigUtils.ConnectionString, tableName);
-
-            var columnNameList = new List<string>();
-
-            foreach (var tableColumnInfo in allTableColumnInfoList)
-            {
-                columnNameList.Add(tableColumnInfo.ColumnName);
-            }
-
-            return columnNameList;
-        }
-
-        public List<TableColumnInfo> GetLowercaseTableColumnInfoList(string connectionString, string tableName)
+        public List<TableColumnInfo> GetTableColumnInfoListLowercase(string connectionString, string tableName)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
                 connectionString = ConnectionString;
-            }
-
-            var cacheList = TableManager.Cache_GetTableColumnInfoListCache(connectionString, tableName);
-            if (cacheList != null && cacheList.Count > 0)
-            {
-                return cacheList;
             }
 
             var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, connectionString);
@@ -1048,22 +1025,20 @@ SELECT * FROM (
             switch (WebConfigUtils.DatabaseType)
             {
                 case EDatabaseType.MySql:
-                    list = GetMySqlColumns(connectionString, databaseName, tableName);
+                    list = GetMySqlColumnsLowercase(connectionString, databaseName, tableName);
                     break;
                 case EDatabaseType.SqlServer:
-                    list = GetSqlServerColumns(connectionString, databaseName, tableName);
+                    list = GetSqlServerColumnsLowercase(connectionString, databaseName, tableName);
                     break;
                 case EDatabaseType.PostgreSql:
-                    list = GetPostgreSqlColumns(connectionString, databaseName, tableName);
+                    list = GetPostgreSqlColumnsLowercase(connectionString, databaseName, tableName);
                     break;
                 case EDatabaseType.Oracle:
-                    list = GetOracleColumns(connectionString, tableName);
+                    list = GetOracleColumnsLowercase(connectionString, tableName);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            TableManager.Cache_CacheTableColumnInfoList(connectionString, tableName, list);
 
             return list;
         }
@@ -1106,7 +1081,7 @@ SELECT * FROM (
             return sequence;
         }
 
-        private List<TableColumnInfo> GetOracleColumns(string connectionString, string tableName)
+        private List<TableColumnInfo> GetOracleColumnsLowercase(string connectionString, string tableName)
         {
             var list = new List<TableColumnInfo>();
             var sqlString =
@@ -1166,7 +1141,7 @@ and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
             return list;
         }
 
-        private List<TableColumnInfo> GetPostgreSqlColumns(string connectionString, string databaseName, string tableName)
+        private List<TableColumnInfo> GetPostgreSqlColumnsLowercase(string connectionString, string databaseName, string tableName)
         {
             var list = new List<TableColumnInfo>();
             string sqlString =
@@ -1217,7 +1192,7 @@ and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
             return list;
         }
 
-        private List<TableColumnInfo> GetSqlServerColumns(string connectionString, string databaseName, string tableName)
+        private List<TableColumnInfo> GetSqlServerColumnsLowercase(string connectionString, string databaseName, string tableName)
         {
             var list = new List<TableColumnInfo>();
 
@@ -1296,7 +1271,7 @@ and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
             return list;
         }
 
-        private List<TableColumnInfo> GetMySqlColumns(string connectionString, string databaseName, string tableName)
+        private List<TableColumnInfo> GetMySqlColumnsLowercase(string connectionString, string databaseName, string tableName)
         {
             var list = new List<TableColumnInfo>();
 
@@ -1321,143 +1296,6 @@ and au.constraint_type = 'P' and cu.table_name = '{tableName.ToUpper()}'";
 
             return list;
         }
-
-        public bool IsColumnEquals(TableMetadataInfo metadataInfo, TableColumnInfo columnInfo)
-        {
-            if (!StringUtils.EqualsIgnoreCase(metadataInfo.AttributeName, columnInfo.ColumnName)) return false;
-            if (metadataInfo.DataType != columnInfo.DataType) return false;
-            if (metadataInfo.DataLength != columnInfo.Length) return false;
-            return true;
-        }
-
-        //public string GetInsertSqlString(NameValueCollection attributes, string tableName, out IDataParameter[] parms)
-        //{
-        //    return GetInsertSqlString(attributes, ConnectionString, tableName, out parms);
-        //}
-
-        //public string GetInsertSqlString(NameValueCollection attributes, string connectionString, string tableName, out IDataParameter[] parms)
-        //{
-        //    if (string.IsNullOrEmpty(connectionString))
-        //    {
-        //        connectionString = ConnectionString;
-        //    }
-        //    //by 20151030 sofuny 获取自动增长列
-
-        //    var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(connectionString);
-        //    var tableId = GetTableId(connectionString, databaseName, tableName);
-        //    var allTableColumnInfoList = GetTableColumnInfoList(connectionString, databaseName, tableName, tableId);
-
-        //    var columnNameList = new List<string>();
-
-        //    var parameterList = new List<IDataParameter>();
-
-        //    foreach (var tableColumnInfo in allTableColumnInfoList)
-        //    {
-        //        if (tableColumnInfo.IsIdentity || attributes[tableColumnInfo.ColumnName] == null) continue;
-
-        //        columnNameList.Add(tableColumnInfo.ColumnName);
-        //        var valueStr = attributes[tableColumnInfo.ColumnName];
-
-        //        if (tableColumnInfo.DataType == DataType.DateTime)
-        //        {
-        //            parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToDateTime(valueStr)));
-        //        }
-        //        else if (tableColumnInfo.DataType == DataType.Integer)
-        //        {
-        //            parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToIntWithNagetive(valueStr)));
-        //        }
-        //        else
-        //        {
-        //            parameterList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, valueStr));
-        //        }
-        //    }
-
-        //    parms = parameterList.ToArray();
-
-        //    string returnSqlString =
-        //        $"INSERT INTO {tableName} ({TranslateUtils.ObjectCollectionToString(columnNameList, " ,", "[", "]")}) VALUES ({TranslateUtils.ObjectCollectionToString(columnNameList, " ,", "@")})";
-
-        //    return returnSqlString;
-        //}
-
-        //public string GetUpdateSqlString(NameValueCollection attributes, string tableName, out IDataParameter[] parms)
-        //{
-        //    return GetUpdateSqlString(attributes, ConnectionString, tableName, out parms);
-        //}
-
-        //public string GetUpdateSqlString(NameValueCollection attributes, string connectionString, string tableName, out IDataParameter[] parms)
-        //{
-        //    if (string.IsNullOrEmpty(connectionString))
-        //    {
-        //        connectionString = ConnectionString;
-        //    }
-
-        //    parms = null;
-        //    var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(connectionString);
-        //    var tableId = GetTableId(connectionString, databaseName, tableName);
-        //    var allTableColumnInfoList = GetTableColumnInfoList(connectionString, databaseName, tableName, tableId);
-
-        //    var setList = new List<string>();
-        //    var whereList = new List<string>();
-
-        //    var parmsList = new List<IDataParameter>();
-
-        //    foreach (var tableColumnInfo in allTableColumnInfoList)
-        //    {
-        //        if (attributes[tableColumnInfo.ColumnName] != null)
-        //        {
-        //            if (!tableColumnInfo.IsPrimaryKey && !StringUtils.EqualsIgnoreCase(tableColumnInfo.ColumnName, "Id"))
-        //            {
-        //                var valueStr = attributes[tableColumnInfo.ColumnName];
-        //                var sqlValue = SqlUtils.Parse(tableColumnInfo.DataType, valueStr, tableColumnInfo.Length);
-        //                if (!string.IsNullOrEmpty(sqlValue))
-        //                {
-        //                    setList.Add($"{tableColumnInfo.ColumnName} = {"@" + tableColumnInfo.ColumnName}");
-
-        //                    if (tableColumnInfo.DataType == DataType.DateTime)
-        //                    {
-        //                        parmsList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToDateTime(valueStr)));
-        //                    }
-        //                    else if (tableColumnInfo.DataType == DataType.Integer)
-        //                    {
-        //                        parmsList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, TranslateUtils.ToIntWithNagetive(valueStr)));
-        //                    }
-        //                    else
-        //                    {
-        //                        parmsList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, valueStr));
-        //                    }
-        //                }
-        //            }
-        //            else
-        //            {
-        //                var valueStr = attributes[tableColumnInfo.ColumnName];
-        //                whereList.Add($"{tableColumnInfo.ColumnName} = {"@" + tableColumnInfo.ColumnName}");
-        //                parmsList.Add(GetParameter("@" + tableColumnInfo.ColumnName, tableColumnInfo.DataType, valueStr));
-        //            }
-        //        }
-        //    }
-
-        //    if (whereList.Count == 0 && !string.IsNullOrEmpty(attributes["ID"]))
-        //    {
-        //        whereList.Add("ID = @ID");
-        //    }
-
-        //    if (whereList.Count == 0)
-        //    {
-        //        throw new MissingPrimaryKeyException();
-        //    }
-        //    if (setList.Count == 0)
-        //    {
-        //        throw new SyntaxErrorException();
-        //    }
-
-        //    parms = parmsList.ToArray();
-
-        //    string returnSqlString =
-        //        $"UPDATE {tableName} SET {TranslateUtils.ObjectCollectionToString(setList, " ,")} WHERE {TranslateUtils.ObjectCollectionToString(whereList, " AND ")}";
-
-        //    return returnSqlString;
-        //}
 
         public string GetSelectSqlString(string tableName, string columns, string whereString)
         {

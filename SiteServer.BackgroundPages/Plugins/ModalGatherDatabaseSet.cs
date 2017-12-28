@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Plugins
 				GatherNum.Text = gatherDatabaseRuleInfo.GatherNum.ToString();
 
                 NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdminName);
-                ControlUtils.SelectListItems(NodeIDDropDownList, gatherDatabaseRuleInfo.NodeId.ToString());
+                ControlUtils.SelectSingleItem(NodeIDDropDownList, gatherDatabaseRuleInfo.NodeId.ToString());
 			}
 		}
 

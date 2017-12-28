@@ -16,63 +16,61 @@ namespace BaiRong.Core
 
         public static void AddTags(StringCollection tags, int publishmentSystemId, int contentId)
         {
-            if (tags.Count > 0)
+            if (tags == null || tags.Count == 0) return;
+
+            foreach (var tagName in tags)
             {
-                foreach (var tagName in tags)
+                var tagInfo = BaiRongDataProvider.TagDao.GetTagInfo(publishmentSystemId,PageUtils.FilterXss(tagName));
+                if (tagInfo != null)
                 {
-                    var tagInfo = BaiRongDataProvider.TagDao.GetTagInfo(publishmentSystemId,PageUtils.FilterXss(tagName));
-                    if (tagInfo != null)
+                    var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
+                    if (!contentIdList.Contains(contentId))
                     {
-                        var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
-                        if (!contentIdList.Contains(contentId))
-                        {
-                            contentIdList.Add(contentId);
-                            tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
-                            tagInfo.UseNum = contentIdList.Count;
-                            BaiRongDataProvider.TagDao.Update(tagInfo);
-                        }
+                        contentIdList.Add(contentId);
+                        tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
+                        tagInfo.UseNum = contentIdList.Count;
+                        BaiRongDataProvider.TagDao.Update(tagInfo);
                     }
-                    else
-                    {
-                        tagInfo = new TagInfo(0, publishmentSystemId, contentId.ToString(), tagName, contentId > 0 ? 1 : 0);
-                        BaiRongDataProvider.TagDao.Insert(tagInfo);
-                    }
+                }
+                else
+                {
+                    tagInfo = new TagInfo(0, publishmentSystemId, contentId.ToString(), tagName, contentId > 0 ? 1 : 0);
+                    BaiRongDataProvider.TagDao.Insert(tagInfo);
                 }
             }
         }
 
         public static void UpdateTags(string tagsLast, string tagsNow, StringCollection tagCollection, int publishmentSystemId, int contentId)
         {
-            if (tagsLast != tagsNow)
+            if (tagsLast == tagsNow) return;
+
+            var tagsList = TranslateUtils.StringCollectionToStringList(tagsLast);
+            foreach (string tag in tagsList)
             {
-                var tagsList = TranslateUtils.StringCollectionToStringList(tagsLast);
-                foreach (string tag in tagsList)
+                if (!tagCollection.Contains(tag))//删除
                 {
-                    if (!tagCollection.Contains(tag))//删除
+                    var tagInfo = BaiRongDataProvider.TagDao.GetTagInfo(publishmentSystemId, tag);
+                    if (tagInfo != null)
                     {
-                        var tagInfo = BaiRongDataProvider.TagDao.GetTagInfo(publishmentSystemId, tag);
-                        if (tagInfo != null)
-                        {
-                            var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
-                            contentIdList.Remove(contentId);
-                            tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
-                            tagInfo.UseNum = contentIdList.Count;
-                            BaiRongDataProvider.TagDao.Update(tagInfo);
-                        }
+                        var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
+                        contentIdList.Remove(contentId);
+                        tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
+                        tagInfo.UseNum = contentIdList.Count;
+                        BaiRongDataProvider.TagDao.Update(tagInfo);
                     }
                 }
-
-                var tagsToAdd = new StringCollection();
-                foreach (var tag in tagCollection)
-                {
-                    if (!tagsList.Contains(tag))
-                    {
-                        tagsToAdd.Add(tag);
-                    }
-                }
-
-                AddTags(tagsToAdd, publishmentSystemId, contentId);
             }
+
+            var tagsToAdd = new StringCollection();
+            foreach (var tag in tagCollection)
+            {
+                if (!tagsList.Contains(tag))
+                {
+                    tagsToAdd.Add(tag);
+                }
+            }
+
+            AddTags(tagsToAdd, publishmentSystemId, contentId);
         }
 
         public static void RemoveTags(int publishmentSystemId, List<int> contentIdList)
@@ -86,31 +84,29 @@ namespace BaiRong.Core
         public static void RemoveTags(int publishmentSystemId, int contentId)
         {
             var tagInfoList = BaiRongDataProvider.TagDao.GetTagInfoList(publishmentSystemId, contentId);
-            if (tagInfoList.Count > 0)
+            if (tagInfoList == null || tagInfoList.Count == 0) return;
+
+            foreach (var tagInfo in tagInfoList)
             {
-                foreach (var tagInfo in tagInfoList)
-                {
-                    var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
-                    contentIdList.Remove(contentId);
-                    tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
-                    tagInfo.UseNum = contentIdList.Count;
-                    BaiRongDataProvider.TagDao.Update(tagInfo);
-                }
+                var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
+                contentIdList.Remove(contentId);
+                tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
+                tagInfo.UseNum = contentIdList.Count;
+                BaiRongDataProvider.TagDao.Update(tagInfo);
             }
         }
 
         public static string GetTagsString(StringCollection tags)
         {
+            if (tags == null || tags.Count == 0) return string.Empty;
+
             var tagsBuilder = new StringBuilder();
-            if (tags != null && tags.Count > 0)
+            foreach (var tag in tags)
             {
-                foreach (var tag in tags)
-                {
-                    tagsBuilder.Append(tag.Trim().IndexOf(",", StringComparison.Ordinal) != -1 ? $"\"{tag}\"" : tag);
-                    tagsBuilder.Append(" ");
-                }
-                --tagsBuilder.Length;
+                tagsBuilder.Append(tag.Trim().IndexOf(",", StringComparison.Ordinal) != -1 ? $"\"{tag}\"" : tag);
+                tagsBuilder.Append(" ");
             }
+            --tagsBuilder.Length;
             return tagsBuilder.ToString();
         }
 
@@ -118,39 +114,38 @@ namespace BaiRong.Core
         {
             var stringCollection = new StringCollection();
 
-            if (!string.IsNullOrEmpty(tagsString))
-            {
-                var regex = new Regex("\"([^\"]*)\"", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-                var mc = regex.Matches(tagsString);
-                for (var i = 0; i < mc.Count; i++)
-                {
-                    if (!string.IsNullOrEmpty(mc[i].Value))
-                    {
-                        var tag = mc[i].Value.Replace("\"", string.Empty);
-                        if (!stringCollection.Contains(tag))
-                        {
-                            stringCollection.Add(tag);
-                        }
+            if (string.IsNullOrEmpty(tagsString)) return stringCollection;
 
-                        var startIndex = tagsString.IndexOf(mc[i].Value, StringComparison.Ordinal);
-                        if (startIndex != -1)
-                        {
-                            tagsString = tagsString.Substring(0, startIndex) + tagsString.Substring(startIndex + mc[i].Value.Length);
-                        }
+            var regex = new Regex("\"([^\"]*)\"", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            var mc = regex.Matches(tagsString);
+            for (var i = 0; i < mc.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(mc[i].Value))
+                {
+                    var tag = mc[i].Value.Replace("\"", string.Empty);
+                    if (!stringCollection.Contains(tag))
+                    {
+                        stringCollection.Add(tag);
+                    }
+
+                    var startIndex = tagsString.IndexOf(mc[i].Value, StringComparison.Ordinal);
+                    if (startIndex != -1)
+                    {
+                        tagsString = tagsString.Substring(0, startIndex) + tagsString.Substring(startIndex + mc[i].Value.Length);
                     }
                 }
+            }
 
-                regex = new Regex("([^,;\\s]+)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-                mc = regex.Matches(tagsString);
-                for (var i = 0; i < mc.Count; i++)
+            regex = new Regex("([^,;\\s]+)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            mc = regex.Matches(tagsString);
+            for (var i = 0; i < mc.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(mc[i].Value))
                 {
-                    if (!string.IsNullOrEmpty(mc[i].Value))
+                    var tag = mc[i].Value.Replace("\"", string.Empty);
+                    if (!stringCollection.Contains(tag))
                     {
-                        var tag = mc[i].Value.Replace("\"", string.Empty);
-                        if (!stringCollection.Contains(tag))
-                        {
-                            stringCollection.Add(tag);
-                        }
+                        stringCollection.Add(tag);
                     }
                 }
             }

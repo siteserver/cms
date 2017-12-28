@@ -4,10 +4,10 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 ltlPageTitle.Text = pageTitle;
 
                 ECharsetUtils.AddListItems(Charset);
-                ControlUtils.SelectListItemsIgnoreCase(Charset, ECharsetUtils.GetValue(ECharset.utf_8));
+                ControlUtils.SelectSingleItemIgnoreCase(Charset, ECharsetUtils.GetValue(ECharset.utf_8));
                 NodeManager.AddListItemsForAddContent(NodeIDDropDownList.Items, PublishmentSystemInfo, true, Body.AdminName);
 
 				SetActivePanel(WizardPanel.GatherRuleBase, GatherRuleBase);
@@ -100,20 +100,20 @@ namespace SiteServer.BackgroundPages.Plugins
                     var gatherFileRuleInfo = DataProvider.GatherFileRuleDao.GetGatherFileRuleInfo(_theGatherRuleName, PublishmentSystemId);
 					GatherRuleName.Text = gatherFileRuleInfo.GatherRuleName;
                     GatherUrl.Text = gatherFileRuleInfo.GatherUrl;
-                    ControlUtils.SelectListItemsIgnoreCase(Charset, ECharsetUtils.GetValue(gatherFileRuleInfo.Charset));
+                    ControlUtils.SelectSingleItemIgnoreCase(Charset, ECharsetUtils.GetValue(gatherFileRuleInfo.Charset));
 
-                    ControlUtils.SelectListItems(IsToFile, gatherFileRuleInfo.IsToFile.ToString());
+                    ControlUtils.SelectSingleItem(IsToFile, gatherFileRuleInfo.IsToFile.ToString());
                     FilePath.Text = gatherFileRuleInfo.FilePath;
-                    ControlUtils.SelectListItems(IsSaveRelatedFiles, gatherFileRuleInfo.IsSaveRelatedFiles.ToString());
-                    ControlUtils.SelectListItems(IsRemoveScripts, gatherFileRuleInfo.IsRemoveScripts.ToString());
+                    ControlUtils.SelectSingleItem(IsSaveRelatedFiles, gatherFileRuleInfo.IsSaveRelatedFiles.ToString());
+                    ControlUtils.SelectSingleItem(IsRemoveScripts, gatherFileRuleInfo.IsRemoveScripts.ToString());
                     StyleDirectoryPath.Text = gatherFileRuleInfo.StyleDirectoryPath;
                     ScriptDirectoryPath.Text = gatherFileRuleInfo.ScriptDirectoryPath;
                     ImageDirectoryPath.Text = gatherFileRuleInfo.ImageDirectoryPath;
 
-                    ControlUtils.SelectListItems(NodeIDDropDownList, gatherFileRuleInfo.NodeId.ToString());
-                    ControlUtils.SelectListItems(IsSaveImage, gatherFileRuleInfo.IsSaveImage.ToString());
-                    ControlUtils.SelectListItems(IsChecked, gatherFileRuleInfo.IsChecked.ToString());
-                    ControlUtils.SelectListItems(IsAutoCreate, gatherFileRuleInfo.IsAutoCreate.ToString());
+                    ControlUtils.SelectSingleItem(NodeIDDropDownList, gatherFileRuleInfo.NodeId.ToString());
+                    ControlUtils.SelectSingleItem(IsSaveImage, gatherFileRuleInfo.IsSaveImage.ToString());
+                    ControlUtils.SelectSingleItem(IsChecked, gatherFileRuleInfo.IsChecked.ToString());
+                    ControlUtils.SelectSingleItem(IsAutoCreate, gatherFileRuleInfo.IsAutoCreate.ToString());
 
                     ContentExclude.Text = gatherFileRuleInfo.ContentExclude;
 					var htmlClearArrayList = TranslateUtils.StringCollectionToStringList(gatherFileRuleInfo.ContentHtmlClearCollection);
@@ -132,7 +132,7 @@ namespace SiteServer.BackgroundPages.Plugins
 					ContentContentEnd.Text = gatherFileRuleInfo.ContentContentEnd;
 
                     var contentAttributeArrayList = TranslateUtils.StringCollectionToStringList(gatherFileRuleInfo.ContentAttributes);
-                    var styleInfoList = TableStyleManager.GetTableStyleInfoList(ETableStyle.BackgroundContent, PublishmentSystemInfo.AuxiliaryTableForContent, null);
+                    var styleInfoList = TableStyleManager.GetTableStyleInfoList(PublishmentSystemInfo.AuxiliaryTableForContent, null);
                     foreach (var styleInfo in styleInfoList)
                     {
                         if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Title) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, BackgroundContentAttribute.Content)) continue;

@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (Page.IsPostBack) return;
 
-            BreadCrumbSettings("站点模板管理", AppManager.Permissions.Settings.SiteManagement);
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
             _sortedlist = SiteTemplateManager.Instance.GetSiteTemplateSortedList();
             var directoryList = new List<DirectoryInfo>();

@@ -1,6 +1,6 @@
 using System.Xml;
 
-namespace SiteServer.CMS.Core.Permissions
+namespace SiteServer.CMS.Core.Security
 {
 	public class PermissionConfig
 	{

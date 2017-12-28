@@ -32,37 +32,36 @@ namespace SiteServer.BackgroundPages.Cms
             }
             directoryPath = PathUtility.MapPath(PublishmentSystemInfo, "@/css");
 
-			if (!IsPostBack)
-			{
-                var pageTitle = string.IsNullOrEmpty(fileName) ? "添加样式文件" : "编辑样式文件";
-                BreadCrumb(AppManager.Cms.LeftMenu.IdTemplate, pageTitle, AppManager.Permissions.WebSite.Template);
+            if (IsPostBack) return;
 
-                ltlPageTitle.Text = pageTitle;
+            VerifySitePermissions(AppManager.Permissions.WebSite.Template);
 
-                ECharsetUtils.AddListItems(Charset);
+            var pageTitle = string.IsNullOrEmpty(fileName) ? "添加样式文件" : "编辑样式文件";
+            ltlPageTitle.Text = pageTitle;
 
-                if (fileName != null)
-				{
-                    if (!EFileSystemTypeUtils.IsCss(PathUtils.GetExtension(fileName)))
-                    {
-                        PageUtils.RedirectToErrorPage("对不起，此文件无法编辑！");
-                    }
-                    else
-                    {
-                        RelatedFileName.Text = PathUtils.RemoveExtension(fileName);
-                        ltlCreatedFileExtName.Text = PathUtils.GetExtension(fileName);
-                        var fileCharset = FileUtils.GetFileCharset(PathUtils.Combine(directoryPath, fileName));
-                        ControlUtils.SelectListItemsIgnoreCase(Charset, ECharsetUtils.GetValue(fileCharset));
-                        Content.Text = FileUtils.ReadText(PathUtils.Combine(directoryPath, fileName), fileCharset);
-                    }
-				}
-				else
+            ECharsetUtils.AddListItems(Charset);
+
+            if (fileName != null)
+            {
+                if (!EFileSystemTypeUtils.IsCss(PathUtils.GetExtension(fileName)))
                 {
-                    ltlCreatedFileExtName.Text = ".css";
-                    ControlUtils.SelectListItemsIgnoreCase(Charset, PublishmentSystemInfo.Additional.Charset);
-				}
-			}
-		}
+                    PageUtils.RedirectToErrorPage("对不起，此文件无法编辑！");
+                }
+                else
+                {
+                    RelatedFileName.Text = PathUtils.RemoveExtension(fileName);
+                    ltlCreatedFileExtName.Text = PathUtils.GetExtension(fileName);
+                    var fileCharset = FileUtils.GetFileCharset(PathUtils.Combine(directoryPath, fileName));
+                    ControlUtils.SelectSingleItemIgnoreCase(Charset, ECharsetUtils.GetValue(fileCharset));
+                    Content.Text = FileUtils.ReadText(PathUtils.Combine(directoryPath, fileName), fileCharset);
+                }
+            }
+            else
+            {
+                ltlCreatedFileExtName.Text = ".css";
+                ControlUtils.SelectSingleItemIgnoreCase(Charset, PublishmentSystemInfo.Additional.Charset);
+            }
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{

@@ -19,7 +19,6 @@ namespace BaiRong.Core.Tabs
         private Tab[] _children;
         private bool _selected;
         private string _target;
-        private string _iconUrl;
         private string _iconClass;
 
         /// <summary>

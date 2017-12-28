@@ -1,3 +1,4 @@
+using System.Data;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Attributes;
 
@@ -11,7 +12,6 @@ namespace SiteServer.CMS.Model
             ImageUrl = string.Empty;
             VideoUrl = string.Empty;
             FileUrl = string.Empty;
-            LinkUrl = string.Empty;
             Summary = string.Empty;
             Author = string.Empty;
             Source = string.Empty;
@@ -22,6 +22,11 @@ namespace SiteServer.CMS.Model
             : base(dataItem)
 		{
 		}
+
+        public BackgroundContentInfo(IDataReader rdr)
+            : base(rdr)
+        {
+        }
 
         public string SubTitle
 		{
@@ -46,12 +51,6 @@ namespace SiteServer.CMS.Model
             get { return GetString(BackgroundContentAttribute.FileUrl); }
             set { Set(BackgroundContentAttribute.FileUrl, value); }
         }
-
-        public string LinkUrl
-		{
-            get { return GetString(BackgroundContentAttribute.LinkUrl); }
-            set { Set(BackgroundContentAttribute.LinkUrl, value); }
-		}
 
         public string Summary
         {

@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
 using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Permissions;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 
@@ -34,7 +33,6 @@ namespace SiteServer.BackgroundPages.Cms
         public Button DeleteAll;
 
 		private int _nodeId;
-        private ETableStyle _tableStyle;
         private List<int> _relatedIdentities;
         private List<TableStyleInfo> _tableStyleInfoList;
 
@@ -50,11 +48,10 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _nodeId = PublishmentSystemId;
             }
-            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, this._nodeId);
-            _tableStyle = NodeManager.GetTableStyle(PublishmentSystemInfo, nodeInfo);
+            var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
             var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeInfo);
-            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, this._nodeId);
-            _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(_tableStyle, tableName, _relatedIdentities);
+            _relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(PublishmentSystemId, _nodeId);
+            _tableStyleInfoList = TableStyleManager.GetTableStyleInfoList(tableName, _relatedIdentities);
 
             spContents.ControlToPaginate = rptContents;
             if (string.IsNullOrEmpty(Body.GetQueryString("NodeID")))
@@ -67,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     spContents.ItemsPerPage = TranslateUtils.ToInt(PageNum.SelectedValue);
                 }
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableStyle, tableName, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, SearchType.SelectedValue, Keyword.Text, DateFrom.Text, DateTo.Text, true, ETriState.All, false, true);
+                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, SearchType.SelectedValue, Keyword.Text, DateFrom.Text, DateTo.Text, true, ETriState.All, false, true);
             }
             else
             {
@@ -79,14 +76,14 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     spContents.ItemsPerPage = Body.GetQueryInt("PageNum");
                 }
-                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(_tableStyle, tableName, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All, false, true);
+                spContents.SelectCommand = DataProvider.ContentDao.GetSelectCommend(tableName, PublishmentSystemId, _nodeId, permissions.IsSystemAdministrator, ProductPermissionsManager.Current.OwningNodeIdList, Body.GetQueryString("SearchType"), Body.GetQueryString("Keyword"), Body.GetQueryString("DateFrom"), Body.GetQueryString("DateTo"), true, ETriState.All, false, true);
             }
-            spContents.OrderByString = ETaxisTypeUtils.GetOrderByString(_tableStyle, ETaxisType.OrderByIdDesc);
+            spContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
             rptContents.ItemDataBound += rptContents_ItemDataBound;
 
 			if(!IsPostBack)
             {
-                BreadCrumb(AppManager.Cms.LeftMenu.IdContent, "内容回收站", AppManager.Permissions.WebSite.ContentTrash);
+                VerifySitePermissions(AppManager.Permissions.WebSite.ContentTrash);
 
                 if (Body.IsQueryExists("IsDeleteAll"))
                 {
@@ -96,20 +93,20 @@ namespace SiteServer.BackgroundPages.Cms
                     AddWaitAndRedirectScript(PageUrl);
                     return;
                 }
-                else if (Body.IsQueryExists("IsRestore"))
+                if (Body.IsQueryExists("IsRestore"))
                 {
                     var idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
-                    foreach (var nodeID in idsDictionary.Keys)
+                    foreach (var nodeId in idsDictionary.Keys)
                     {
-                        var contentIDArrayList = idsDictionary[nodeID];
-                        DataProvider.ContentDao.TrashContents(PublishmentSystemId, NodeManager.GetTableName(PublishmentSystemInfo, nodeID), contentIDArrayList);
+                        var contentIdArrayList = idsDictionary[nodeId];
+                        DataProvider.ContentDao.TrashContents(PublishmentSystemId, NodeManager.GetTableName(PublishmentSystemInfo, nodeId), contentIdArrayList);
                     }
                     Body.AddSiteLog(PublishmentSystemId, "从回收站还原内容");
                     SuccessMessage("成功还原内容!");
                     AddWaitAndRedirectScript(PageUrl);
                     return;
                 }
-                else if (Body.IsQueryExists("IsRestoreAll"))
+                if (Body.IsQueryExists("IsRestoreAll"))
                 {
                     DataProvider.ContentDao.RestoreContentsByTrash(PublishmentSystemId, tableName);
                     Body.AddSiteLog(PublishmentSystemId, "从回收站还原所有内容");
@@ -123,11 +120,8 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var styleInfo in _tableStyleInfoList)
                     {
-                        if (styleInfo.IsVisible)
-                        {
-                            var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
-                            SearchType.Items.Add(listitem);
-                        }
+                        var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
+                        SearchType.Items.Add(listitem);
                     }
                 }
                 //添加隐藏属性
@@ -139,10 +133,10 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (PublishmentSystemId != _nodeId)
                     {
-                        ControlUtils.SelectListItems(NodeIDDropDownList, _nodeId.ToString());
+                        ControlUtils.SelectSingleItem(NodeIDDropDownList, _nodeId.ToString());
                     }
-                    ControlUtils.SelectListItems(PageNum, Body.GetQueryString("PageNum"));
-                    ControlUtils.SelectListItems(SearchType, Body.GetQueryString("SearchType"));
+                    ControlUtils.SelectSingleItem(PageNum, Body.GetQueryString("PageNum"));
+                    ControlUtils.SelectSingleItem(SearchType, Body.GetQueryString("SearchType"));
                     Keyword.Text = Body.GetQueryString("Keyword");
                     DateFrom.Text = Body.GetQueryString("DateFrom");
                     DateTo.Text = Body.GetQueryString("DateTo");
@@ -151,7 +145,7 @@ namespace SiteServer.BackgroundPages.Cms
                 spContents.DataBind();
 			}
 
-            if (!HasChannelPermissions(this._nodeId, AppManager.Permissions.Channel.ContentDelete))
+            if (!HasChannelPermissions(_nodeId, AppManager.Permissions.Channel.ContentDelete))
             {
                 Delete.Visible = false;
                 DeleteAll.Visible = false;
@@ -165,9 +159,7 @@ namespace SiteServer.BackgroundPages.Cms
             RestoreAll.Attributes.Add("onclick", PageUtils.GetRedirectStringWithConfirm(PageUtils.AddQueryString(PageUrl, "IsRestoreAll", "True"), "确实要还原所有内容吗?"));
 		}
 
-        private readonly Hashtable displayNameHashtable = new Hashtable();
-
-        private readonly Hashtable nodeNameNavigations = new Hashtable();
+        private readonly Hashtable _nodeNameNavigations = new Hashtable();
         void rptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
@@ -183,14 +175,14 @@ namespace SiteServer.BackgroundPages.Cms
 
                 ltlItemTitle.Text = WebUtils.GetContentTitle(PublishmentSystemInfo, contentInfo, PageUrl);
                 string nodeNameNavigation;
-                if (!nodeNameNavigations.ContainsKey(contentInfo.NodeId))
+                if (!_nodeNameNavigations.ContainsKey(contentInfo.NodeId))
                 {
                     nodeNameNavigation = NodeManager.GetNodeNameNavigation(PublishmentSystemId, contentInfo.NodeId);
-                    nodeNameNavigations.Add(contentInfo.NodeId, nodeNameNavigation);
+                    _nodeNameNavigations.Add(contentInfo.NodeId, nodeNameNavigation);
                 }
                 else
                 {
-                    nodeNameNavigation = nodeNameNavigations[contentInfo.NodeId] as string;
+                    nodeNameNavigation = _nodeNameNavigations[contentInfo.NodeId] as string;
                 }
                 ltlChannel.Text = nodeNameNavigation;
                 ltlDeleteDate.Text = DateUtils.GetDateAndTimeString(contentInfo.LastEditDate);

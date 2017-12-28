@@ -3,9 +3,8 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BaiRong.Core;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Data;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -20,17 +19,15 @@ namespace SiteServer.BackgroundPages.Settings
 
         private bool _showSqlTable = true;
         private string _tableName;
-        private EAuxiliaryTableType _tableType;
         private bool _tableIsRealCreated;
-        private int _usedNum;
+        private bool _isTableUsed;
         private string _redirectUrl;
 
-        public static string GetRedirectUrl(string tableName, EAuxiliaryTableType tableType)
+        public static string GetRedirectUrl(string tableName)
         {
             return PageUtils.GetSettingsUrl(nameof(PageTableMetadata), new NameValueCollection
             {
-                {"ENName", tableName},
-                {"TableType", EAuxiliaryTableTypeUtils.GetValue(tableType)}
+                {"ENName", tableName}
             });
         }
 
@@ -43,14 +40,13 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("ENName", "TableType");
+            PageUtils.CheckRequestParameter("ENName");
             _showSqlTable = Body.IsQueryExists("ShowCrateDBCommand");
 
             _tableName = Body.GetQueryString("ENName").Trim();
-            _tableType = EAuxiliaryTableTypeUtils.GetEnumType(Body.GetQueryString("TableType"));
-            _redirectUrl = GetRedirectUrl(_tableName, _tableType);
+            _redirectUrl = GetRedirectUrl(_tableName);
 
-            var tableInfo = BaiRongDataProvider.TableCollectionDao.GetAuxiliaryTableInfo(_tableName);
+            var tableInfo = BaiRongDataProvider.TableCollectionDao.GetTableCollectionInfo(_tableName);
 
             if (Body.IsQueryExists("Delete"))
             {
@@ -95,7 +91,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    BaiRongDataProvider.TableMetadataDao.CreateAuxiliaryTable(_tableName);
+                    BaiRongDataProvider.TableCollectionDao.CreateDbTable(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
                     Body.AddAdminLog("创建辅助表", $"辅助表:{_tableName}");
@@ -106,7 +102,7 @@ namespace SiteServer.BackgroundPages.Settings
                 catch (Exception ex)
                 {
                     FailMessage(ex, "<br>辅助表创建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
-                    var sqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(_tableName);
+                    var sqlString = SqlUtils.GetCreateTableCollectionInfoSqlString(_tableName);
                     LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                     _showSqlTable = true;
                 }
@@ -115,7 +111,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    BaiRongDataProvider.TableMetadataDao.DeleteAuxiliaryTable(_tableName);
+                    BaiRongDataProvider.TableCollectionDao.DeleteDbTable(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
                     Body.AddAdminLog("删除辅助表", $"辅助表:{_tableName}");
@@ -133,8 +129,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    BaiRongDataProvider.TableMetadataDao.ReCreateAuxiliaryTable(_tableName, tableInfo.AuxiliaryTableType);
-                    DataProvider.NodeDao.UpdateContentNumToZero(_tableName, tableInfo.AuxiliaryTableType);
+                    BaiRongDataProvider.TableCollectionDao.ReCreateDbTable(_tableName);
+                    DataProvider.NodeDao.UpdateContentNumToZero(_tableName);
                     tableInfo.IsChangedAfterCreatedInDb = false;
 
                     Body.AddAdminLog("重建辅助表", $"辅助表:{_tableName}");
@@ -146,144 +142,113 @@ namespace SiteServer.BackgroundPages.Settings
                 {
 
                     FailMessage(ex, "<br>辅助表重建失败，失败原因为：" + ex.Message + "<br>请检查创建表SQL命令");
-                    var sqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(_tableName);
+                    var sqlString = SqlUtils.GetCreateTableCollectionInfoSqlString(_tableName);
                     LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                     _showSqlTable = true;
                 }
             }
             else if (Body.IsQueryExists("ShowCrateDBCommand"))
             {
-                var sqlString = SqlUtils.GetCreateAuxiliaryTableSqlString(_tableName);
+                var sqlString = SqlUtils.GetCreateTableCollectionInfoSqlString(_tableName);
                 LtlSqlString.Text = sqlString.Replace("\r\n", "<br>").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
             }
             else if (Body.IsQueryExists("SetTaxis"))
             {
-                SetTaxis();
+                var direction = Body.GetQueryString("Direction");
+                var tableMetadataId = Body.GetQueryInt("TableMetadataId");
+                switch (direction.ToUpper())
+                {
+                    case "UP":
+                        BaiRongDataProvider.TableMetadataDao.TaxisDown(tableMetadataId, _tableName);
+                        break;
+                    case "DOWN":
+                        BaiRongDataProvider.TableMetadataDao.TaxisUp(tableMetadataId, _tableName);
+                        break;
+                }
+                SuccessMessage("排序成功！");
             }
 
             _tableIsRealCreated = BaiRongDataProvider.DatabaseDao.IsTableExists(_tableName);
 
-            _usedNum = BaiRongDataProvider.TableCollectionDao.GetTableUsedNum(_tableName, tableInfo.AuxiliaryTableType);
+            _isTableUsed = DataProvider.PublishmentSystemDao.IsTableUsed(_tableName);
 
             DivSyncTable.Visible = IsNeedSync(_tableIsRealCreated, tableInfo.IsChangedAfterCreatedInDb);
 
-            if (!IsPostBack)
-            {
-                BreadCrumbSettings($"辅助表字段管理（{_tableName}）", AppManager.Permissions.Settings.SiteManagement);
+            if (IsPostBack) return;
 
-                DgContents.DataSource = BaiRongDataProvider.TableMetadataDao.GetDataSource(_tableName);
-                DgContents.ItemDataBound += dgContents_ItemDataBound;
-                DgContents.DataBind();
+            VerifyAdministratorPermissions(AppManager.Permissions.Settings.SiteManagement);
 
-                BtnAddColumn.Attributes.Add("onclick", ModalTableMetadataAdd.GetOpenWindowStringToAdd(_tableName, _tableType));
+            DgContents.DataSource = BaiRongDataProvider.TableMetadataDao.GetDataSource(_tableName);
+            DgContents.ItemDataBound += DgContents_ItemDataBound;
+            DgContents.DataBind();
 
-                BtnBatchAddColumn.Attributes.Add("onclick", ModalTableMetadataAddBatch.GetOpenWindowStringToAdd(_tableName, _tableType));
-            }
+            BtnAddColumn.Attributes.Add("onclick", ModalTableMetadataAdd.GetOpenWindowStringToAdd(_tableName));
+
+            BtnBatchAddColumn.Attributes.Add("onclick", ModalTableMetadataAddBatch.GetOpenWindowStringToAdd(_tableName));
         }
 
-        private void SetTaxis()
+        private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
-            var direction = Body.GetQueryString("Direction");
-            var tableMetadataId = Body.GetQueryInt("TableMetadataId");
-            switch (direction.ToUpper())
+            if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
+            var tableMetadataId = SqlUtils.EvalInt(e.Item.DataItem, "TableMetadataID");
+            var attributeName = SqlUtils.EvalString(e.Item.DataItem, "AttributeName");
+            var dataType = SqlUtils.EvalString(e.Item.DataItem, "DataType");
+            var dataLength = SqlUtils.EvalInt(e.Item.DataItem, "DataLength");
+            var isSystem = SqlUtils.EvalString(e.Item.DataItem, "IsSystem");
+
+            var ltlAttributeName = (Literal)e.Item.FindControl("ltlAttributeName");
+            var ltlDataType = (Literal)e.Item.FindControl("ltlDataType");
+            var upLinkButton = (HyperLink)e.Item.FindControl("UpLinkButton");
+            var downLinkButton = (HyperLink)e.Item.FindControl("DownLinkButton");
+            var ltlEditUrl = (Literal)e.Item.FindControl("ltlEditUrl");
+            var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
+
+            var showPopWinString = ModalTableMetadataView.GetOpenWindowString(_tableName, attributeName);
+            ltlAttributeName.Text =
+                $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{attributeName}</a>";
+
+            ltlDataType.Text = DataTypeUtils.GetTextByAuxiliaryTable(DataTypeUtils.GetEnumType(dataType), dataLength);
+
+            if (IsSystem(isSystem))
             {
-                case "UP":
-                    BaiRongDataProvider.TableMetadataDao.TaxisDown(tableMetadataId, _tableName);
-                    break;
-                case "DOWN":
-                    BaiRongDataProvider.TableMetadataDao.TaxisUp(tableMetadataId, _tableName);
-                    break;
+                if (upLinkButton != null)
+                {
+                    upLinkButton.NavigateUrl = PageUtils.GetSettingsUrl(nameof(PageTableMetadata),
+                        new NameValueCollection
+                        {
+                            {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                            {"SetTaxis", "True"},
+                            {"Direction", "UP"},
+                            {"TableMetadataId", tableMetadataId.ToString()},
+                            {"ENName", _tableName}
+                        });
+                }
+                if (downLinkButton != null)
+                {
+                    downLinkButton.NavigateUrl = PageUtils.GetSettingsUrl(nameof(PageTableMetadata),
+                        new NameValueCollection
+                        {
+                            {"PublishmentSystemID", PublishmentSystemId.ToString()},
+                            {"SetTaxis", "True"},
+                            {"Direction", "DOWN"},
+                            {"TableMetadataId", tableMetadataId.ToString()},
+                            {"ENName", _tableName}
+                        });
+                }
             }
-            SuccessMessage("排序成功！");
 
-        }
+            ltlEditUrl.Text = GetEditHtml(isSystem, tableMetadataId);
 
-        void dgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
-        {
-            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            if (!IsSystem(isSystem))
             {
-                var tableMetadataId = SqlUtils.EvalInt(e.Item.DataItem, "TableMetadataID");
-                var attributeName = SqlUtils.EvalString(e.Item.DataItem, "AttributeName");
-                var dataType = SqlUtils.EvalString(e.Item.DataItem, "DataType");
-                var dataLength = SqlUtils.EvalInt(e.Item.DataItem, "DataLength");
-                var isSystem = SqlUtils.EvalString(e.Item.DataItem, "IsSystem");
-
-                var ltlAttributeName = e.Item.FindControl("ltlAttributeName") as Literal;
-                var ltlDisplayName = e.Item.FindControl("ltlDisplayName") as Literal;
-                var ltlIsVisible = e.Item.FindControl("ltlIsVisible") as Literal;
-                var ltlValidate = e.Item.FindControl("ltlValidate") as Literal;
-                var ltlDataType = e.Item.FindControl("ltlDataType") as Literal;
-                var ltlInputType = e.Item.FindControl("ltlInputType") as Literal;
-                var upLinkButton = e.Item.FindControl("UpLinkButton") as HyperLink;
-                var downLinkButton = e.Item.FindControl("DownLinkButton") as HyperLink;
-                var ltlStyle = e.Item.FindControl("ltlStyle") as Literal;
-                var ltlEditValidate = e.Item.FindControl("ltlEditValidate") as Literal;
-                var ltlEditUrl = e.Item.FindControl("ltlEditUrl") as Literal;
-                var ltlDeleteUrl = e.Item.FindControl("ltlDeleteUrl") as Literal;
-
-                var showPopWinString = ModalTableMetadataView.GetOpenWindowString(_tableType, _tableName, attributeName);
-                ltlAttributeName.Text =
-                    $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{attributeName}</a>";
-
-                var styleInfo = TableStyleManager.GetTableStyleInfo(EAuxiliaryTableTypeUtils.GetTableStyle(_tableType), _tableName, attributeName, null);
-                ltlDisplayName.Text = styleInfo.DisplayName;
-
-                ltlIsVisible.Text = StringUtils.GetTrueOrFalseImageHtml(styleInfo.IsVisible.ToString());
-                ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
-
-                ltlDataType.Text = DataTypeUtils.GetTextByAuxiliaryTable(DataTypeUtils.GetEnumType(dataType), dataLength);
-                ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
-
-                if (IsSystem(isSystem))
+                var attributes = new NameValueCollection
                 {
-                    if (upLinkButton != null)
-                    {
-                        upLinkButton.NavigateUrl = PageUtils.GetSettingsUrl(nameof(PageTableMetadata),
-                            new NameValueCollection
-                            {
-                                {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                                {"SetTaxis", "True"},
-                                {"TableStyleID", styleInfo.TableStyleId.ToString()},
-                                {"Direction", "UP"},
-                                {"TableMetadataId", tableMetadataId.ToString()},
-                                {"ENName", _tableName},
-                                {"TableType", EAuxiliaryTableTypeUtils.GetValue(_tableType)}
-                            });
-                    }
-                    if (downLinkButton != null)
-                    {
-                        downLinkButton.NavigateUrl = PageUtils.GetSettingsUrl(nameof(PageTableMetadata),
-                            new NameValueCollection
-                            {
-                                {"PublishmentSystemID", PublishmentSystemId.ToString()},
-                                {"SetTaxis", "True"},
-                                {"TableStyleID", styleInfo.TableStyleId.ToString()},
-                                {"Direction", "DOWN"},
-                                {"TableMetadataId", tableMetadataId.ToString()},
-                                {"ENName", _tableName},
-                                {"TableType", EAuxiliaryTableTypeUtils.GetValue(_tableType)}
-                            });
-                    }
-                }
-
-                ltlStyle.Text = GetEditStyleHtml(tableMetadataId, attributeName);
-
-                showPopWinString = ModalTableStyleValidateAdd.GetOpenWindowString(styleInfo.TableStyleId, _tableName, styleInfo.AttributeName, EAuxiliaryTableTypeUtils.GetTableStyle(_tableType), _redirectUrl);
-                ltlEditValidate.Text = $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">设置</a>";
-
-                ltlEditUrl.Text = GetEditHtml(isSystem, tableMetadataId);
-
-                if (!IsSystem(isSystem))
-                {
-                    var attributes = new NameValueCollection
-                    {
-                        {"Delete", true.ToString()},
-                        {"TableMetadataID", tableMetadataId.ToString()}
-                    };
-                    var deleteUrl = PageUtils.AddQueryString(_redirectUrl, attributes);
-                    ltlDeleteUrl.Text =
-                        $@"<a href=""{deleteUrl}"" onClick=""javascript:return confirm('此操作将删除辅助字段“{attributeName}”，确认吗？');"">删除字段</a>";
-                }
+                    {"Delete", true.ToString()},
+                    {"TableMetadataID", tableMetadataId.ToString()}
+                };
+                var deleteUrl = PageUtils.AddQueryString(_redirectUrl, attributes);
+                ltlDeleteUrl.Text =
+                    $@"<a href=""{deleteUrl}"" onClick=""javascript:return confirm('此操作将删除辅助字段“{attributeName}”，确认吗？');"">删除字段</a>";
             }
         }
 
@@ -301,7 +266,7 @@ namespace SiteServer.BackgroundPages.Settings
         public string GetDeleteDbCommandElementStyle()
         {
             if (_tableName == null) return StringUtils.Constants.HideElementStyle;
-            return _tableIsRealCreated && _usedNum == 0
+            return !_isTableUsed
                 ? StringUtils.Constants.ShowElementStyle
                 : StringUtils.Constants.HideElementStyle;
         }
@@ -329,37 +294,8 @@ namespace SiteServer.BackgroundPages.Settings
             if (!IsSystem(isSystem))
             {
                 retval =
-                    $@"<a href=""javascript:;"" onclick=""{ModalTableMetadataAdd.GetOpenWindowStringToEdit(_tableName,
-                        _tableType, tableMetadataId)}"">修改字段</a>";
+                    $@"<a href=""javascript:;"" onclick=""{ModalTableMetadataAdd.GetOpenWindowStringToEdit(_tableName, tableMetadataId)}"">修改字段</a>";
             }
-            return retval;
-        }
-
-        public string GetEditStyleHtml(int tableMetadataId, string attributeName)
-        {
-            var tableStyle = EAuxiliaryTableTypeUtils.GetTableStyle(_tableType);
-            var styleInfo = TableStyleManager.GetTableStyleInfo(tableStyle, _tableName, attributeName, null);
-            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(0, _tableName, attributeName, tableStyle, _redirectUrl);
-
-            var editText = "设置";
-            if (styleInfo.TableStyleId != 0)//数据库中有样式
-            {
-                editText = "修改";
-            }
-            string retval = $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{editText}</a>";
-
-            if (styleInfo.TableStyleId == 0) return retval;
-
-            var attributes = new NameValueCollection
-            {
-                {"DeleteStyle", true.ToString()},
-                {"TableMetadataID", tableMetadataId.ToString()},
-                {"AttributeName", attributeName}
-            };
-            var deleteUrl = PageUtils.AddQueryString(_redirectUrl, attributes);
-
-            retval +=
-                $@"&nbsp;&nbsp;<a href=""{deleteUrl}"" onClick=""javascript:return confirm('此操作将删除对应显示样式，确认吗？');"">删除</a>";
             return retval;
         }
 
@@ -392,7 +328,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             try
             {
-                BaiRongDataProvider.TableMetadataDao.SyncTable(_tableName);
+                BaiRongDataProvider.TableCollectionDao.SyncDbTable(_tableName);
                 DivSyncTable.Visible = false;
                 SuccessMessage("同步辅助表成功！");
                 PageUtils.Redirect(_redirectUrl);

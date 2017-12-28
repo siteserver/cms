@@ -57,22 +57,10 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public void BindGrid()
         {
-            try
-            {
-                if (string.IsNullOrEmpty(AdAreaName.Text))
-                {
-                    dgContents.DataSource = DataProvider.AdAreaDao.GetDataSource(PublishmentSystemId);
-                }
-                else
-                {
-                    dgContents.DataSource = DataProvider.AdAreaDao.GetDataSourceByName(AdAreaName.Text, PublishmentSystemId);
-                }
-                dgContents.DataBind();
-            }
-            catch (Exception ex)
-            {
-                PageUtils.RedirectToErrorPage(ex.Message);
-            }
+            dgContents.DataSource = string.IsNullOrEmpty(AdAreaName.Text)
+                ? DataProvider.AdAreaDao.GetDataSource(PublishmentSystemId)
+                : DataProvider.AdAreaDao.GetDataSourceByName(AdAreaName.Text, PublishmentSystemId);
+            dgContents.DataBind();
         }
 
         public void ReFresh(object sender, EventArgs e)

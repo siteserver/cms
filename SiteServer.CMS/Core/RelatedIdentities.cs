@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using BaiRong.Core;
 using SiteServer.CMS.Model;
-using BaiRong.Core.AuxiliaryTable;
 using BaiRong.Core.Model;
-using BaiRong.Core.Model.Enumerations;
+using BaiRong.Core.Table;
 
 namespace SiteServer.CMS.Core
 {
@@ -13,29 +12,11 @@ namespace SiteServer.CMS.Core
 		{
 		}
 
-        public static List<int> GetRelatedIdentities(ETableStyle tableStyle, int publishmentSystemId, int relatedIdentity)
+        public static List<int> GetRelatedIdentities(int publishmentSystemId, int relatedIdentity)
         {
-            List<int> relatedIdentities;
-
-            if (tableStyle == ETableStyle.Channel || tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.Custom)
-            {
-                relatedIdentities = GetChannelRelatedIdentities(publishmentSystemId, relatedIdentity);
-            }
-            else
-            {
-                relatedIdentities = GetRelatedIdentities(relatedIdentity);
-            }
+            List<int> relatedIdentities = GetChannelRelatedIdentities(publishmentSystemId, relatedIdentity);
 
             return relatedIdentities;
-        }
-
-        private static List<int> GetRelatedIdentities(int relatedIdentity)
-        {
-            if (relatedIdentity == 0)
-            {
-                return TranslateUtils.StringCollectionToIntList("0");
-            }
-            return TranslateUtils.StringCollectionToIntList(relatedIdentity + ",0");
         }
 
         public static List<int> GetChannelRelatedIdentities(int publishmentSystemId, int nodeId)
@@ -60,41 +41,13 @@ namespace SiteServer.CMS.Core
             return arraylist;
         }
 
-        public static List<TableStyleInfo> GetTableStyleInfoList(PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, int relatedIdentity)
+        public static List<TableStyleInfo> GetTableStyleInfoList(PublishmentSystemInfo publishmentSystemInfo, int nodeId)
         {
-            List<int> relatedIdentities;
-            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.Channel || tableStyle == ETableStyle.Custom)
-            {
-                relatedIdentities = GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, relatedIdentity);
-            }
-            else
-            {
-                relatedIdentities = GetRelatedIdentities(relatedIdentity);
-            }
+            List<int> relatedIdentities = GetChannelRelatedIdentities(publishmentSystemInfo.PublishmentSystemId, nodeId);
 
-            var tableName = GetTableName(publishmentSystemInfo, tableStyle, relatedIdentity);
+            var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeId);
 
-            return TableStyleManager.GetTableStyleInfoList(tableStyle, tableName, relatedIdentities);
-        }
-
-        public static string GetTableName(PublishmentSystemInfo publishmentSystemInfo, ETableStyle tableStyle, int relatedIdentity)
-        {
-            var tableName = publishmentSystemInfo.AuxiliaryTableForContent;
-
-            if (tableStyle == ETableStyle.BackgroundContent || tableStyle == ETableStyle.Custom)
-            {
-                tableName = NodeManager.GetTableName(publishmentSystemInfo, relatedIdentity);
-            }
-            else if (tableStyle == ETableStyle.Channel)
-            {
-                tableName = DataProvider.NodeDao.TableName;
-            }
-            //else if (tableStyle == ETableStyle.InputContent)
-            //{
-            //    tableName = DataProvider.InputContentDao.TableName;
-            //}
-
-            return tableName;
+            return TableStyleManager.GetTableStyleInfoList(tableName, relatedIdentities);
         }
 	}
 }

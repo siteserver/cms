@@ -22,10 +22,17 @@ namespace SiteServer.API
                 {
                     ex = ex.InnerException;
                 }
-                LogUtils.AddSystemErrorLog(ex, "Application Error");
                 HttpContext.Current.Server.ClearError();
 
-                PageUtils.RedirectToErrorPage(ex.Message);
+                var logId = LogUtils.AddSystemErrorLog(ex, "Application Error");
+                if (logId > 0)
+                {
+                    PageUtils.RedirectToErrorPage(logId);
+                }
+                else
+                {
+                    PageUtils.RedirectToErrorPage(ex.Message);
+                }
             }
             catch
             {

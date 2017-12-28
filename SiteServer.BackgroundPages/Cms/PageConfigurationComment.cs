@@ -21,11 +21,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            BreadCrumb(AppManager.Cms.LeftMenu.IdConfigration, "评论管理设置", AppManager.Permissions.WebSite.Configration);
+            VerifySitePermissions(AppManager.Permissions.WebSite.Configration);
 
-            ControlUtils.SelectListItemsIgnoreCase(DdlIsCommentable, PublishmentSystemInfo.Additional.IsCommentable.ToString());
-            ControlUtils.SelectListItemsIgnoreCase(DdlIsCheckComments, PublishmentSystemInfo.Additional.IsCheckComments.ToString());
-            ControlUtils.SelectListItemsIgnoreCase(DdlIsAnonymousComments, PublishmentSystemInfo.Additional.IsAnonymousComments.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCommentable, PublishmentSystemInfo.Additional.IsCommentable.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCheckComments, PublishmentSystemInfo.Additional.IsCheckComments.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsAnonymousComments, PublishmentSystemInfo.Additional.IsAnonymousComments.ToString());
             PhComments.Visible = PublishmentSystemInfo.Additional.IsCommentable;
         }
 
