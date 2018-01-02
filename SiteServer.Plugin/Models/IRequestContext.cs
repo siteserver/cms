@@ -28,12 +28,6 @@ namespace SiteServer.Plugin.Models
 
         T GetPostObject<T>(string name);
 
-        void SetCookie(string name, string value, DateTime expires);
-
-        string GetCookie(string name);
-
-        bool IsCookieExists(string name);
-
         bool IsUserLoggin { get; }
 
         string UserName { get; }
@@ -59,5 +53,11 @@ namespace SiteServer.Plugin.Models
         string GetAdminTokenByAdminName(string administratorName);
 
         string GetAdminNameByToken(string token);
+
+        void SetCookie(string name, string value, DateTime expires);
+
+        string GetCookie(string name);
+
+        bool IsCookieExists(string name);
     }
 }

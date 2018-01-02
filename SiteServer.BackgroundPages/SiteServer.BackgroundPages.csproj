@@ -157,22 +157,13 @@
     <Compile Include="Settings\ModalDepartmentAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\ModalDepartmentSelect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\ModalPermissionsSet.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalUserExport.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\ModalUserImport.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\ModalUserPassword.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalUserSelect.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalUserView.cs">
@@ -996,12 +987,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\ModalTableMetadataAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalTableMetadataAddBatch.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalTableMetadataView.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
   </ItemGroup>

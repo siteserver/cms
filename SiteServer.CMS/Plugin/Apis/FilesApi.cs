@@ -58,17 +58,27 @@ namespace SiteServer.CMS.Plugin.Apis
             return path;
         }
 
-        public string GetPluginUrl(string relatedUrl)
+        public string GetPluginUrl(string relatedUrl = "")
+        {
+            return PageUtility.GetSiteFilesUrl(PageUtils.InnerApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
+        }
+
+        public string GetApiUrl(string relatedUrl = "")
+        {
+            return PageUtils.Combine(PageUtils.OuterApiUrl, relatedUrl);
+        }
+
+        public string GetApiPluginUrl(string relatedUrl = "")
         {
             return PageUtility.GetSiteFilesUrl(PageUtils.OuterApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, _metadata.Id, relatedUrl));
         }
 
-        public string GetApiJsonUrl(string name = "", string id = "")
+        public string GetApiPluginJsonUrl(string name = "", string id = "")
         {
             return Controllers.Json.PluginJsonApi.GetUrl(PageUtils.OuterApiUrl, _metadata.Id, name, id);
         }
 
-        public string GetApiHttpUrl(string name = "", string id = "")
+        public string GetApiPluginHttpUrl(string name = "", string id = "")
         {
             return Controllers.Http.PluginHttpApi.GetUrl(PageUtils.OuterApiUrl, _metadata.Id, name, id);
         }

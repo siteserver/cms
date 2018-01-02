@@ -25,7 +25,6 @@ namespace SiteServer.BackgroundPages.Settings
         public Button BtnLock;
         public Button BtnUnLock;
         public Button BtnDelete;
-        public Button BtnImport;
         public Button BtnExport;
 
         private EUserLockType _lockType = EUserLockType.Forever;
@@ -172,8 +171,6 @@ namespace SiteServer.BackgroundPages.Settings
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
                 $"{backgroundUrl}?Delete=True", "UserIDCollection", "UserIDCollection", "请选择需要删除的会员！", "此操作将删除所选会员，确认吗？"));
-
-            BtnImport.Attributes.Add("onclick", ModalUserImport.GetOpenWindowString());
 
             BtnExport.Attributes.Add("onclick", ModalUserExport.GetOpenWindowString());
 

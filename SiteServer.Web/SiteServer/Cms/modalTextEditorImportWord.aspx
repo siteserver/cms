@@ -9,8 +9,6 @@
 		</head>
 
 		<body>
-			<!--#include file="../inc/openWindow.html"-->
-
 			<form runat="server">
 				<ctrl:alerts text="请点击按钮上传Word文件" runat="server" />
 				<input type="hidden" id="fileNames" name="fileNames" value="" />

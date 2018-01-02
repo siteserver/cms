@@ -9,8 +9,6 @@
 		</head>
 
 		<body>
-			<!--#include file="../inc/openWindow.html"-->
-
 			<form runat="server">
 				<ctrl:alerts text="每一行为一个选项，如果显示项与值不同可以用“|”隔开，左边为显示项，右边为值" runat="server" />
 

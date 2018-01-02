@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <form id="myForm" enctype="multipart/form-data" class="form-inline" runat="server">
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts runat="server" />

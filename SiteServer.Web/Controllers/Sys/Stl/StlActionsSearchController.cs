@@ -8,6 +8,7 @@ using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -24,35 +25,35 @@ namespace SiteServer.API.Controllers.Sys.Stl
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var form = HttpContext.Current.Request.Form;
 
-                var isAllSites = body.GetPostBool(StlSearch.AttributeIsAllSites.ToLower());
-                var siteName = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeSiteName.ToLower()));
-                var siteDir = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeSiteDir.ToLower()));
-                var siteIds = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeSiteIds.ToLower()));
-                var channelIndex = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeChannelIndex.ToLower()));
-                var channelName = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeChannelName.ToLower()));
-                var channelIds = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeChannelIds.ToLower()));
-                var type = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeType.ToLower()));
-                var word = PageUtils.FilterSql(body.GetPostString(StlSearch.AttributeWord.ToLower()));
-                var dateAttribute = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeDateAttribute.ToLower()));
-                var dateFrom = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeDateFrom.ToLower()));
-                var dateTo = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeDateTo.ToLower()));
-                var since = PageUtils.FilterSqlAndXss(body.GetPostString(StlSearch.AttributeSince.ToLower()));
-                var pageNum = body.GetPostInt(StlSearch.AttributePageNum.ToLower());
-                var isHighlight = body.GetPostBool(StlSearch.AttributeIsHighlight.ToLower());
-                var isDefaultDisplay = body.GetPostBool(StlSearch.AttributeIsDefaultDisplay.ToLower());
-                var publishmentSystemId = body.GetPostInt("publishmentsystemid");
-                var ajaxDivId = PageUtils.FilterSqlAndXss(body.GetPostString("ajaxdivid"));
-                var template = TranslateUtils.DecryptStringBySecretKey(body.GetPostString("template"));
-                var pageIndex = body.GetPostInt("page", 1) - 1;
+                var isAllSites = context.GetPostBool(StlSearch.AttributeIsAllSites.ToLower());
+                var siteName = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeSiteName.ToLower()));
+                var siteDir = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeSiteDir.ToLower()));
+                var siteIds = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeSiteIds.ToLower()));
+                var channelIndex = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeChannelIndex.ToLower()));
+                var channelName = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeChannelName.ToLower()));
+                var channelIds = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeChannelIds.ToLower()));
+                var type = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeType.ToLower()));
+                var word = PageUtils.FilterSql(context.GetPostString(StlSearch.AttributeWord.ToLower()));
+                var dateAttribute = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeDateAttribute.ToLower()));
+                var dateFrom = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeDateFrom.ToLower()));
+                var dateTo = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeDateTo.ToLower()));
+                var since = PageUtils.FilterSqlAndXss(context.GetPostString(StlSearch.AttributeSince.ToLower()));
+                var pageNum = context.GetPostInt(StlSearch.AttributePageNum.ToLower());
+                var isHighlight = context.GetPostBool(StlSearch.AttributeIsHighlight.ToLower());
+                var isDefaultDisplay = context.GetPostBool(StlSearch.AttributeIsDefaultDisplay.ToLower());
+                var publishmentSystemId = context.GetPostInt("publishmentsystemid");
+                var ajaxDivId = PageUtils.FilterSqlAndXss(context.GetPostString("ajaxdivid"));
+                var template = TranslateUtils.DecryptStringBySecretKey(context.GetPostString("template"));
+                var pageIndex = context.GetPostInt("page", 1) - 1;
 
                 var templateInfo = new TemplateInfo(0, publishmentSystemId, string.Empty, ETemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
                 var pageInfo = new PageInfo(publishmentSystemId, 0, publishmentSystemInfo, templateInfo)
                 {
-                    UserInfo = body.UserInfo
+                    UserInfo = context.UserInfo
                 };
                 var contextInfo = new ContextInfo(pageInfo);
                 var contentBuilder = new StringBuilder(StlRequestEntities.ParseRequestEntities(form, template));

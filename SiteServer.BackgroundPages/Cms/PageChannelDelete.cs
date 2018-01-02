@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
@@ -11,13 +10,14 @@ namespace SiteServer.BackgroundPages.Cms
 {
 	public class PageChannelDelete : BasePageCms
     {
-        public Literal ltlPageTitle;
-		public RadioButtonList RetainFiles;
-        public Button Delete;
+        public Literal LtlPageTitle;
+		public RadioButtonList RblRetainFiles;
+        public Button BtnDelete;
 
         private bool _deleteContents;
-        private string _returnUrl;
-        private readonly ArrayList _nodeNameArrayList = new ArrayList();
+        private readonly List<string> _nodeNameList = new List<string>();
+
+        public string ReturnUrl { get; private set; }
 
         public static string GetRedirectUrl(int publishmentSystemId, string returnUrl)
         {
@@ -33,145 +33,126 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsForbidden) return;
 
             PageUtils.CheckRequestParameter("PublishmentSystemID", "ReturnUrl");
-            _returnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
+            ReturnUrl = StringUtils.ValueFromUrl(Body.GetQueryString("ReturnUrl"));
             _deleteContents = Body.GetQueryBool("DeleteContents");
 
             if (IsPostBack) return;
 
-            var nodeIDList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
-            nodeIDList.Sort();
-            nodeIDList.Reverse();
-            foreach (var nodeID in nodeIDList)
+            var nodeIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+            nodeIdList.Sort();
+            nodeIdList.Reverse();
+            foreach (var nodeId in nodeIdList)
             {
-                if (nodeID == PublishmentSystemId) continue;
-                if (HasChannelPermissions(nodeID, AppManager.Permissions.Channel.ChannelDelete))
+                if (nodeId == PublishmentSystemId) continue;
+                if (!HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ChannelDelete)) continue;
+
+                var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeId);
+                var displayName = nodeInfo.NodeName;
+                if (nodeInfo.ContentNum > 0)
                 {
-                    var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, nodeID);
-                    var displayName = nodeInfo.NodeName;
-                    if (nodeInfo.ContentNum > 0)
-                    {
-                        displayName += $"({nodeInfo.ContentNum})";
-                    }
-                    _nodeNameArrayList.Add(displayName);
+                    displayName += $"({nodeInfo.ContentNum})";
                 }
+                _nodeNameList.Add(displayName);
             }
-            if (_nodeNameArrayList.Count == 0)
+
+            if (_nodeNameList.Count == 0)
             {
-                Delete.Enabled = false;
+                BtnDelete.Enabled = false;
             }
             else
             {
                 if (_deleteContents)
                 {
-                    ltlPageTitle.Text = "删除内容";
+                    LtlPageTitle.Text = "删除内容";
                     InfoMessage(
-                        $"此操作将会删除栏目“{TranslateUtils.ObjectCollectionToString(_nodeNameArrayList)}”下的所有内容，确认吗？");
+                        $"此操作将会删除栏目“{TranslateUtils.ObjectCollectionToString(_nodeNameList)}”下的所有内容，确认吗？");
                 }
                 else
                 {
-                    ltlPageTitle.Text = "删除栏目";
+                    LtlPageTitle.Text = "删除栏目";
                     InfoMessage(
-                        $"此操作将会删除栏目“{TranslateUtils.ObjectCollectionToString(_nodeNameArrayList)}”及包含的下级栏目，确认吗？");
+                        $"此操作将会删除栏目“{TranslateUtils.ObjectCollectionToString(_nodeNameList)}”及包含的下级栏目，确认吗？");
                 }
             }
         }
 
         public void Delete_OnClick(object sender, EventArgs e)
-		{
-			if (Page.IsPostBack && Page.IsValid)
-			{
-				try
-				{
-					var nodeIDList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
-                    nodeIDList.Sort();
-                    nodeIDList.Reverse();
+        {
+            if (!Page.IsPostBack || !Page.IsValid) return;
 
-					var nodeIDArrayList = new List<int>();
-                    foreach (var nodeID in nodeIDList)
-					{
-                        if (nodeID == PublishmentSystemId) continue;
-                        if (HasChannelPermissions(nodeID, AppManager.Permissions.Channel.ChannelDelete))
-						{
-							nodeIDArrayList.Add(nodeID);
-						}
-					}
+            try
+            {
+                var nodeIdList = TranslateUtils.StringCollectionToIntList(Body.GetQueryString("ChannelIDCollection"));
+                nodeIdList.Sort();
+                nodeIdList.Reverse();
 
-                    var builder = new StringBuilder();
-                    foreach (int nodeID in nodeIDArrayList)
+                var nodeIdArrayList = new List<int>();
+                foreach (var nodeId in nodeIdList)
+                {
+                    if (nodeId == PublishmentSystemId) continue;
+                    if (HasChannelPermissions(nodeId, AppManager.Permissions.Channel.ChannelDelete))
                     {
-                        builder.Append(NodeManager.GetNodeName(PublishmentSystemId, nodeID)).Append(",");
+                        nodeIdArrayList.Add(nodeId);
+                    }
+                }
+
+                var builder = new StringBuilder();
+                foreach (var nodeId in nodeIdArrayList)
+                {
+                    builder.Append(NodeManager.GetNodeName(PublishmentSystemId, nodeId)).Append(",");
+                }
+
+                if (builder.Length > 0)
+                {
+                    builder.Length -= 1;
+                }
+
+                if (_deleteContents)
+                {
+                    SuccessMessage(bool.Parse(RblRetainFiles.SelectedValue) == false
+                        ? "成功删除内容以及生成页面！"
+                        : "成功删除内容，生成页面未被删除！");
+
+                    foreach (var nodeId in nodeIdArrayList)
+                    {
+                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                        var contentIdList = BaiRongDataProvider.ContentDao.GetContentIdList(tableName, nodeId);
+                        DirectoryUtility.DeleteContents(PublishmentSystemInfo, nodeId, contentIdList);
+                        DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList);
                     }
 
-                    if (builder.Length > 0)
+                    Body.AddSiteLog(PublishmentSystemId, "清空栏目下的内容", $"栏目:{builder}");
+                }
+                else
+                {
+                    if (bool.Parse(RblRetainFiles.SelectedValue) == false)
                     {
-                        builder.Length -= 1;
-                    }
-
-                    if (_deleteContents)
-                    {
-                        if (bool.Parse(RetainFiles.SelectedValue) == false)
-                        {
-                            SuccessMessage("成功删除内容以及生成页面！");
-                        }
-                        else
-                        {
-                            SuccessMessage("成功删除内容，生成页面未被删除！");
-                        }
-
-                        foreach (int nodeID in nodeIDArrayList)
-                        {
-                            var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeID);
-                            var contentIdList = BaiRongDataProvider.ContentDao.GetContentIdList(tableName, nodeID);
-                            DirectoryUtility.DeleteContents(PublishmentSystemInfo, nodeID, contentIdList);
-                            DataProvider.ContentDao.TrashContents(PublishmentSystemId, tableName, contentIdList);
-                        }
-
-                        Body.AddSiteLog(PublishmentSystemId, "清空栏目下的内容", $"栏目:{builder}");
-                    }
-                    else
-                    {
-                        if (bool.Parse(RetainFiles.SelectedValue) == false)
-                        {
-                            DirectoryUtility.DeleteChannels(PublishmentSystemInfo, nodeIDArrayList);
-                            SuccessMessage("成功删除栏目以及相关生成页面！");
-                        }
-                        else
-                        {
-                            SuccessMessage("成功删除栏目，相关生成页面未被删除！");
-                        }
-
-                        foreach (int nodeID in nodeIDArrayList)
-                        {
-                            try
-                            {
-                                var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeID);
-                                DataProvider.ContentDao.TrashContentsByNodeId(PublishmentSystemId, tableName, nodeID);
-                            }
-                            catch { }
-                            DataProvider.NodeDao.Delete(nodeID);
-                        }
-
-                        Body.AddSiteLog(PublishmentSystemId, "删除栏目", $"栏目:{builder}");
-                    }
-
-                    AddWaitAndRedirectScript(_returnUrl);
-				}
-				catch (Exception ex)
-				{
-                    if (_deleteContents)
-                    {
-                        FailMessage(ex, "删除内容失败！");
+                        DirectoryUtility.DeleteChannels(PublishmentSystemInfo, nodeIdArrayList);
+                        SuccessMessage("成功删除栏目以及相关生成页面！");
                     }
                     else
                     {
-                        FailMessage(ex, "删除栏目失败！");
+                        SuccessMessage("成功删除栏目，相关生成页面未被删除！");
                     }
 
-                    LogUtils.AddSystemErrorLog(ex);
-				}
-			}
-		}
+                    foreach (var nodeId in nodeIdArrayList)
+                    {
+                        var tableName = NodeManager.GetTableName(PublishmentSystemInfo, nodeId);
+                        DataProvider.ContentDao.TrashContentsByNodeId(PublishmentSystemId, tableName, nodeId);
+                        DataProvider.NodeDao.Delete(nodeId);
+                    }
 
-        public string ReturnUrl => _returnUrl;
-	}
+                    Body.AddSiteLog(PublishmentSystemId, "删除栏目", $"栏目:{builder}");
+                }
+
+                AddWaitAndRedirectScript(ReturnUrl);
+            }
+            catch (Exception ex)
+            {
+                FailMessage(ex, _deleteContents ? "删除内容失败！" : "删除栏目失败！");
+
+                LogUtils.AddSystemErrorLog(ex);
+            }
+        }
+    }
 }

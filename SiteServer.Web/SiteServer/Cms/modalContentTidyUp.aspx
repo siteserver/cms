@@ -9,8 +9,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
         <ctrl:alerts text="根据添加日期(或内容ID)重新排序(不可逆,请慎重)。" runat="server" />
 

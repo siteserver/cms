@@ -10,7 +10,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using ModalExportMessage = SiteServer.BackgroundPages.Cms.ModalExportMessage;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -330,7 +329,7 @@ namespace SiteServer.BackgroundPages.Core
                     }
                     //导 出
                     builder.Append(
-                        $@"<a href=""javascript:;"" onclick=""{ModalExportMessage.GetOpenWindowStringToChannel(
+                        $@"<a href=""javascript:;"" onclick=""{Cms.ModalExportMessage.GetOpenWindowStringToChannel(
                             publishmentSystemInfo.PublishmentSystemId, "ChannelIDCollection", "请选择需要导出的栏目！")}"">导 出</a> <span class=""gray"">&nbsp;|&nbsp;</span> ");
                 }
 
@@ -388,9 +387,10 @@ function getWordSpliter(){{
     var pureText = {ETextEditorTypeUtils.GetPureTextScript(attributeName)}
 	$.post('{AjaxCmsService.GetWordSpliterUrl(publishmentSystemInfo.PublishmentSystemId)}&r=' + Math.random(), {{content:pureText}}, function(data) {{
 		if(data !=''){{
-			$('#Tags').val(data).focus();
+            $('.nav-pills').children('li').eq(1).find('a').click();
+			$('#TbTags').val(data).focus();
 		}}else{{
-            {PageUtils.GetOpenTipsString("对不起，内容不足，无法提取关键字", PageUtils.TipsError)}
+            {AlertUtils.Error("敏感词检测", "对不起，内容不足，无法提取关键字")}
         }}
 	}});	
 }}
@@ -399,7 +399,6 @@ function detection_{attributeName}(){{
     var htmlContent = {ETextEditorTypeUtils.GetContentScript(attributeName)}
     var keyword = '';
 	$.post('{AjaxCmsService.GetDetectionUrl(publishmentSystemInfo.PublishmentSystemId)}&r=' + Math.random(), {{content:pureText}}, function(data) {{
-        debugger;
 		if(data){{
 			var arr = data.split(',');
             var i=0;
@@ -410,9 +409,9 @@ function detection_{attributeName}(){{
 			}}
             keyword=data;
 			{ETextEditorTypeUtils.GetSetContentScript(attributeName, "htmlContent")}
-            {PageUtils.GetOpenTipsString("共检测到' + i + '个敏感词，内容已用黄色背景标明", PageUtils.TipsWarn)}
+            {AlertUtils.Warning("敏感词检测", "共检测到' + i + '个敏感词，内容已用黄色背景标明", "取 消", string.Empty, string.Empty)}
 		}} else {{
-            {PageUtils.GetOpenTipsString("检测成功，没有检测到任何敏感词", PageUtils.TipsSuccess)}
+            {AlertUtils.Success("敏感词检测", "检测成功，没有检测到任何敏感词")}
         }}
 	}});	
 }}
@@ -421,8 +420,8 @@ function detection_{attributeName}(){{
     <button class=""btn"" onclick=""{ModalTextEditorImportWord.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">导入Word</button>
     <button class=""btn"" onclick=""{ModalTextEditorInsertVideo.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">插入视频</button>
     <button class=""btn"" onclick=""{ModalTextEditorInsertAudio.GetOpenWindowString(publishmentSystemInfo.PublishmentSystemId, attributeName)}"">插入音频</button>
-    <button class=""btn"" onclick=""getWordSpliter();"">提取关键字</button>
-    <button class=""btn"" onclick=""detection_{attributeName}();"">敏感词检测</button>
+    <button class=""btn"" onclick=""getWordSpliter();return false;"">提取关键字</button>
+    <button class=""btn"" onclick=""detection_{attributeName}();return false;"">敏感词检测</button>
 </div>
 ";
         }
@@ -434,7 +433,8 @@ function detection_{attributeName}(){{
             var getPureText = ETextEditorTypeUtils.GetPureTextScript(BackgroundContentAttribute.Content);
             var getContent = ETextEditorTypeUtils.GetContentScript(BackgroundContentAttribute.Content);
             var setContent = ETextEditorTypeUtils.GetSetContentScript(BackgroundContentAttribute.Content, "htmlContent");
-            var tipsWarn = PageUtils.GetOpenTipsString("内容中共检测到' + i + '个敏感词，已用黄色背景标明", PageUtils.TipsWarn, false, "自动替换并保存", "autoReplaceKeywords");
+            var tipsWarn = AlertUtils.Warning("敏感词检测", "内容中共检测到' + i + '个敏感词，已用黄色背景标明", "取 消", "自动替换并保存",
+                "autoReplaceKeywords");
 
             var command = $@"
 <script type=""text/javascript"">

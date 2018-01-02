@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web.UI;
 using BaiRong.Core;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages
 {
@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
-        public RequestBody Body { get; private set; }
+        public RequestContext Body { get; private set; }
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            Body = new RequestBody();
+            Body = new RequestContext();
 
             if (!IsAccessable && !Body.IsAdminLoggin) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {

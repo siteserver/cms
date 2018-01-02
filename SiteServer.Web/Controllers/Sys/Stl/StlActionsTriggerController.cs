@@ -5,6 +5,7 @@ using BaiRong.Core;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser;
 
 namespace SiteServer.API.Controllers.Sys.Stl
@@ -16,21 +17,21 @@ namespace SiteServer.API.Controllers.Sys.Stl
         [Route(ActionsTrigger.Route)]
         public void Main()
         {
-            var body = new RequestBody();
+            var context = new RequestContext();
 
-            var publishmentSystemId = body.GetQueryInt("publishmentSystemId");
+            var publishmentSystemId = context.GetQueryInt("publishmentSystemId");
             var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
 
             try
             {
-                var channelId = body.GetQueryInt("channelId");
+                var channelId = context.GetQueryInt("channelId");
                 if (channelId == 0)
                 {
                     channelId = publishmentSystemId;
                 }
-                var contentId = body.GetQueryInt("contentId");
-                var fileTemplateId = body.GetQueryInt("fileTemplateId");
-                var isRedirect = TranslateUtils.ToBool(body.GetQueryString("isRedirect"));
+                var contentId = context.GetQueryInt("contentId");
+                var fileTemplateId = context.GetQueryInt("fileTemplateId");
+                var isRedirect = TranslateUtils.ToBool(context.GetQueryString("isRedirect"));
 
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
                 var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);
@@ -76,7 +77,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
                     if (!string.IsNullOrEmpty(redirectUrl))
                     {
                         var parameters = new NameValueCollection();
-                        var returnUrl = body.GetQueryString("returnUrl");
+                        var returnUrl = context.GetQueryString("returnUrl");
                         if (!string.IsNullOrEmpty(returnUrl))
                         {
                             if (returnUrl.StartsWith("?"))

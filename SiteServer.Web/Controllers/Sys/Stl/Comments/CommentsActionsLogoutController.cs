@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Controllers.Sys.Stl.Comments;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Sys.Stl.Comments
 {
@@ -11,11 +11,11 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
         [HttpPost, Route(ActionsLogout.Route)]
         public IHttpActionResult Main()
         {
-            var body = new RequestBody();
+            var context = new RequestContext();
 
             try
             {
-                body.UserLogout();
+                context.UserLogout();
 
                 return Ok();
             }

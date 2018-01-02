@@ -8,38 +8,37 @@ namespace SiteServer.BackgroundPages.Settings
 {
     public class ModalUserView : BasePage
     {
-        protected Literal ltlUserID;
-        protected Literal ltlUserName;
-        protected Literal ltlDisplayName;
-        protected Literal ltlCreateDate;
-        protected Literal ltlLastResetPasswordDate;
-        protected Literal ltlLastActivityDate;
-        protected Literal ltlEmail;
-        protected Literal ltlMobile;
-        protected Literal ltlLoginCount;
-        protected Literal ltlWritingCount;
-        protected Literal ltlOrganization;
-        protected Literal ltlDepartment;
-        protected Literal ltlPosition;
-        protected Literal ltlGender;
-        protected Literal ltlBirthday;
-        protected Literal ltlEducation;
-        protected Literal ltlGraduation;
-        protected Literal ltlAddress;
-        protected Literal ltlWeiXin;
-        protected Literal ltlQQ;
-        protected Literal ltlWeiBo;
-        protected Literal ltlInterests;
-        protected Literal ltlSignature;
+        protected Literal LtlUserName;
+        protected Literal LtlDisplayName;
+        protected Literal LtlCreateDate;
+        protected Literal LtlLastResetPasswordDate;
+        protected Literal LtlLastActivityDate;
+        protected Literal LtlEmail;
+        protected Literal LtlMobile;
+        protected Literal LtlLoginCount;
+        protected Literal LtlWritingCount;
+        protected Literal LtlOrganization;
+        protected Literal LtlDepartment;
+        protected Literal LtlPosition;
+        protected Literal LtlGender;
+        protected Literal LtlBirthday;
+        protected Literal LtlEducation;
+        protected Literal LtlGraduation;
+        protected Literal LtlAddress;
+        protected Literal LtlWeiXin;
+        protected Literal LtlQq;
+        protected Literal LtlWeiBo;
+        protected Literal LtlInterests;
+        protected Literal LtlSignature;
 
         private UserInfo _userInfo;
 
         public static string GetOpenWindowString(string userName)
         {
-            return PageUtils.GetOpenWindowString("查看用户信息", PageUtils.GetSettingsUrl(nameof(ModalUserView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看用户信息", PageUtils.GetSettingsUrl(nameof(ModalUserView), new NameValueCollection
             {
                 {"UserName", userName}
-            }), 700, 560, true);
+            }), 700, 560);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -49,29 +48,28 @@ namespace SiteServer.BackgroundPages.Settings
             var userName = Request.QueryString["UserName"];
             _userInfo = BaiRongDataProvider.UserDao.GetUserInfoByAccount(userName);
 
-            ltlUserID.Text = _userInfo.UserId.ToString();
-            ltlUserName.Text = _userInfo.UserName;
-            ltlDisplayName.Text = _userInfo.DisplayName;
-            ltlCreateDate.Text = DateUtils.GetDateAndTimeString(_userInfo.CreateDate);
-            ltlLastActivityDate.Text = DateUtils.GetDateAndTimeString(_userInfo.LastActivityDate);
-            ltlLastResetPasswordDate.Text = DateUtils.GetDateAndTimeString(_userInfo.LastResetPasswordDate);
-            ltlEmail.Text = _userInfo.Email;
-            ltlMobile.Text = _userInfo.Mobile;
-            ltlLoginCount.Text = _userInfo.CountOfLogin.ToString();
-            ltlWritingCount.Text = _userInfo.CountOfWriting.ToString();
-            ltlOrganization.Text = _userInfo.Organization;
-            ltlDepartment.Text = _userInfo.Department;
-            ltlPosition.Text = _userInfo.Position;
-            ltlGender.Text = _userInfo.Gender;
-            ltlBirthday.Text = _userInfo.Birthday;
-            ltlEducation.Text = _userInfo.Education;
-            ltlGraduation.Text = _userInfo.Graduation;
-            ltlAddress.Text = _userInfo.Address;
-            ltlWeiXin.Text = _userInfo.WeiXin;
-            ltlQQ.Text = _userInfo.Qq;
-            ltlWeiBo.Text = _userInfo.WeiBo;
-            ltlInterests.Text = _userInfo.Interests;
-            ltlSignature.Text = _userInfo.Signature;
+            LtlUserName.Text = _userInfo.UserName;
+            LtlDisplayName.Text = _userInfo.DisplayName;
+            LtlCreateDate.Text = DateUtils.GetDateAndTimeString(_userInfo.CreateDate);
+            LtlLastActivityDate.Text = DateUtils.GetDateAndTimeString(_userInfo.LastActivityDate);
+            LtlLastResetPasswordDate.Text = DateUtils.GetDateAndTimeString(_userInfo.LastResetPasswordDate);
+            LtlEmail.Text = _userInfo.Email;
+            LtlMobile.Text = _userInfo.Mobile;
+            LtlLoginCount.Text = _userInfo.CountOfLogin.ToString();
+            LtlWritingCount.Text = _userInfo.CountOfWriting.ToString();
+            LtlOrganization.Text = _userInfo.Organization;
+            LtlDepartment.Text = _userInfo.Department;
+            LtlPosition.Text = _userInfo.Position;
+            LtlGender.Text = _userInfo.Gender;
+            LtlBirthday.Text = _userInfo.Birthday;
+            LtlEducation.Text = _userInfo.Education;
+            LtlGraduation.Text = _userInfo.Graduation;
+            LtlAddress.Text = _userInfo.Address;
+            LtlWeiXin.Text = _userInfo.WeiXin;
+            LtlQq.Text = _userInfo.Qq;
+            LtlWeiBo.Text = _userInfo.WeiBo;
+            LtlInterests.Text = _userInfo.Interests;
+            LtlSignature.Text = _userInfo.Signature;
         }
     }
 }

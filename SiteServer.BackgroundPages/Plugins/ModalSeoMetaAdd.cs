@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowStringToAdd(int publishmentSystemId)
         {
-            return PageUtils.GetOpenWindowString("添加页面元数据", PageUtils.GetPluginsUrl(nameof(ModalSeoMetaAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加页面元数据", PageUtils.GetPluginsUrl(nameof(ModalSeoMetaAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
             }), 700, 560);
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowStringToEdit(int publishmentSystemId, int seoMetaId)
         {
-            return PageUtils.GetOpenWindowString("修改页面元数据", PageUtils.GetPluginsUrl(nameof(ModalSeoMetaAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改页面元数据", PageUtils.GetPluginsUrl(nameof(ModalSeoMetaAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"SeoMetaID", seoMetaId.ToString()}
@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowStringToEdit(int publishmentSystemId, SeoMetaInfo seoMetaInfo)
         {
-            return PageUtils.GetOpenWindowString("修改页面元数据", PageUtils.GetPluginsUrl(nameof(ModalSeoMetaAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改页面元数据", PageUtils.GetPluginsUrl(nameof(ModalSeoMetaAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"Author", seoMetaInfo.Author},

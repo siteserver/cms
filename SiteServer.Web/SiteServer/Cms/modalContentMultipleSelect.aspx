@@ -20,8 +20,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
         <ctrl:alerts runat="server" />
 

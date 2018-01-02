@@ -3,6 +3,7 @@ using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 
@@ -16,22 +17,22 @@ namespace SiteServer.API.Controllers.Sys.Stl
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
 
-                var publishmentSystemId = body.GetPostInt("publishmentSystemId");
+                var publishmentSystemId = context.GetPostInt("publishmentSystemId");
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-                var pageNodeId = body.GetPostInt("pageNodeId");
-                var templateId = body.GetPostInt("templateId");
-                var totalNum = body.GetPostInt("totalNum");
-                var pageCount = body.GetPostInt("pageCount");
-                var currentPageIndex = body.GetPostInt("currentPageIndex", 0);
-                var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(body.GetPostString("stlPageContentsElement"));
+                var pageNodeId = context.GetPostInt("pageNodeId");
+                var templateId = context.GetPostInt("templateId");
+                var totalNum = context.GetPostInt("totalNum");
+                var pageCount = context.GetPostInt("pageCount");
+                var currentPageIndex = context.GetPostInt("currentPageIndex");
+                var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(context.GetPostString("stlPageContentsElement"));
 
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, pageNodeId);
                 var templateInfo = TemplateManager.GetTemplateInfo(publishmentSystemId, templateId);
                 var pageInfo = new PageInfo(nodeInfo.NodeId, 0, publishmentSystemInfo, templateInfo)
                 {
-                    UserInfo = body.UserInfo
+                    UserInfo = context.UserInfo
                 };
                 var contextInfo = new ContextInfo(pageInfo);
 

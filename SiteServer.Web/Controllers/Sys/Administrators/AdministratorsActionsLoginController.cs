@@ -2,7 +2,7 @@
 using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Sys.Administrators;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Sys.Administrators
 {
@@ -14,9 +14,9 @@ namespace SiteServer.API.Controllers.Sys.Administrators
         {
             try
             {
-                var body = new RequestBody();
-                var account = body.GetPostString("account");
-                var password = body.GetPostString("password");
+                var context = new RequestContext();
+                var account = context.GetPostString("account");
+                var password = context.GetPostString("password");
                 if (string.IsNullOrEmpty(account) || string.IsNullOrEmpty(password))
                 {
                     return Unauthorized();
@@ -32,7 +32,8 @@ namespace SiteServer.API.Controllers.Sys.Administrators
                 }
 
                 BaiRongDataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(userName);
-                body.AdminLogin(userName);
+                context.AdminLogin(userName);
+
                 return Ok(new
                 {
                     UserName = userName

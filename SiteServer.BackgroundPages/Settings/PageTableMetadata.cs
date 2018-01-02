@@ -15,7 +15,6 @@ namespace SiteServer.BackgroundPages.Settings
         public Control DivSyncTable;
         public Literal LtlSqlString;
         public Button BtnAddColumn;
-        public Button BtnBatchAddColumn;
 
         private bool _showSqlTable = true;
         private string _tableName;
@@ -183,8 +182,6 @@ namespace SiteServer.BackgroundPages.Settings
             DgContents.DataBind();
 
             BtnAddColumn.Attributes.Add("onclick", ModalTableMetadataAdd.GetOpenWindowStringToAdd(_tableName));
-
-            BtnBatchAddColumn.Attributes.Add("onclick", ModalTableMetadataAddBatch.GetOpenWindowStringToAdd(_tableName));
         }
 
         private void DgContents_ItemDataBound(object sender, DataGridItemEventArgs e)
@@ -203,9 +200,7 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlEditUrl = (Literal)e.Item.FindControl("ltlEditUrl");
             var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
 
-            var showPopWinString = ModalTableMetadataView.GetOpenWindowString(_tableName, attributeName);
-            ltlAttributeName.Text =
-                $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{attributeName}</a>";
+            ltlAttributeName.Text = attributeName;
 
             ltlDataType.Text = DataTypeUtils.GetTextByAuxiliaryTable(DataTypeUtils.GetEnumType(dataType), dataLength);
 

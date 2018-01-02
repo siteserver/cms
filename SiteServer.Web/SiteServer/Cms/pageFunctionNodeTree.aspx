@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <form runat="server">
 	<table class="table noborder table-condensed table-hover">
 		<tr class="info thead">

@@ -9,8 +9,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
         <ctrl:alerts text="在此可以设置指定内容的总评分人数以及平均评分值，0代表将取消设置" runat="server" />
 

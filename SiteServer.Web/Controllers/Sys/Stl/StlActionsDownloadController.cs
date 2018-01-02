@@ -5,6 +5,7 @@ using BaiRong.Core.Model.Attributes;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
@@ -18,12 +19,12 @@ namespace SiteServer.API.Controllers.Sys.Stl
             var isSuccess = false;
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
 
-                if (!string.IsNullOrEmpty(body.GetQueryString("publishmentSystemID")) && !string.IsNullOrEmpty(body.GetQueryString("fileUrl")) && string.IsNullOrEmpty(body.GetQueryString("contentID")))
+                if (!string.IsNullOrEmpty(context.GetQueryString("publishmentSystemID")) && !string.IsNullOrEmpty(context.GetQueryString("fileUrl")) && string.IsNullOrEmpty(context.GetQueryString("contentID")))
                 {
-                    var publishmentSystemId = body.GetQueryInt("publishmentSystemID");
-                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(body.GetQueryString("fileUrl"));
+                    var publishmentSystemId = context.GetQueryInt("publishmentSystemID");
+                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(context.GetQueryString("fileUrl"));
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
@@ -50,9 +51,9 @@ namespace SiteServer.API.Controllers.Sys.Stl
                         }
                     }
                 }
-                else if (!string.IsNullOrEmpty(body.GetQueryString("filePath")))
+                else if (!string.IsNullOrEmpty(context.GetQueryString("filePath")))
                 {
-                    var filePath = TranslateUtils.DecryptStringBySecretKey(body.GetQueryString("filePath"));
+                    var filePath = TranslateUtils.DecryptStringBySecretKey(context.GetQueryString("filePath"));
                     var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
                     if (EFileSystemTypeUtils.IsDownload(fileType))
                     {
@@ -69,12 +70,12 @@ namespace SiteServer.API.Controllers.Sys.Stl
                         PageUtils.Redirect(PageUtils.ParseNavigationUrl(fileUrl));
                     }
                 }
-                else if (!string.IsNullOrEmpty(body.GetQueryString("publishmentSystemID")) && !string.IsNullOrEmpty(body.GetQueryString("channelID")) && !string.IsNullOrEmpty(body.GetQueryString("contentID")) && !string.IsNullOrEmpty(body.GetQueryString("fileUrl")))
+                else if (!string.IsNullOrEmpty(context.GetQueryString("publishmentSystemID")) && !string.IsNullOrEmpty(context.GetQueryString("channelID")) && !string.IsNullOrEmpty(context.GetQueryString("contentID")) && !string.IsNullOrEmpty(context.GetQueryString("fileUrl")))
                 {
-                    var publishmentSystemId = body.GetQueryInt("publishmentSystemID");
-                    var channelId = body.GetQueryInt("channelID");
-                    var contentId = body.GetQueryInt("contentID");
-                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(body.GetQueryString("fileUrl"));
+                    var publishmentSystemId = context.GetQueryInt("publishmentSystemID");
+                    var channelId = context.GetQueryInt("channelID");
+                    var contentId = context.GetQueryInt("contentID");
+                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(context.GetQueryString("fileUrl"));
                     var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
                     var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, channelId);
                     var tableName = NodeManager.GetTableName(publishmentSystemInfo, nodeInfo);

@@ -7,6 +7,7 @@ using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -71,7 +72,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var body = new RequestBody();
+            var context = new RequestContext();
 
             if (type == TypeBackup)
             {
@@ -89,7 +90,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var path = Request.Form["path"];
                 var isOverride = TranslateUtils.ToBool(Request.Form["isOverride"]);
                 var isUseTable = TranslateUtils.ToBool(Request.Form["isUseTable"]);
-                retval = Recovery(publishmentSystemId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, path, isOverride, isUseTable, userKeyPrefix, body);
+                retval = Recovery(publishmentSystemId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, path, isOverride, isUseTable, userKeyPrefix, context);
             }
 
             var jsonString = TranslateUtils.NameValueCollectionToJsonString(retval);
@@ -142,16 +143,16 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public NameValueCollection Recovery(int publishmentSystemId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, RequestBody body)
+        public NameValueCollection Recovery(int publishmentSystemId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, RequestContext context)
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
 
             try
             {
-                BackupUtility.RecoverySite(publishmentSystemId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, PageUtils.UrlDecode(path), isOverride, isUseTable, body.AdminName);
+                BackupUtility.RecoverySite(publishmentSystemId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, PageUtils.UrlDecode(path), isOverride, isUseTable, context.AdminName);
 
-                body.AddSiteLog(publishmentSystemId, "恢复备份数据", body.AdminName);
+                context.AddSiteLog(publishmentSystemId, "恢复备份数据", context.AdminName);
 
                 retval = AjaxManager.GetWaitingTaskNameValueCollection("数据恢复成功!", string.Empty, string.Empty);
 

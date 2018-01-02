@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Http;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin.Features;
 
@@ -18,12 +17,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpGet == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpGet.Invoke(body);
+                    : webApi.HttpGet.Invoke(context);
             }
             catch (Exception ex)
             {
@@ -37,12 +36,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpGetWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpGetWithName.Invoke(body, name);
+                    : webApi.HttpGetWithName.Invoke(context, name);
             }
             catch (Exception ex)
             {
@@ -56,12 +55,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpGetWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpGetWithNameAndId.Invoke(body, name, id);
+                    : webApi.HttpGetWithNameAndId.Invoke(context, name, id);
             }
             catch (Exception ex)
             {
@@ -75,12 +74,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPost == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPost.Invoke(body);
+                    : webApi.HttpPost.Invoke(context);
             }
             catch (Exception ex)
             {
@@ -94,12 +93,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPostWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPostWithName.Invoke(body, name);
+                    : webApi.HttpPostWithName.Invoke(context, name);
             }
             catch (Exception ex)
             {
@@ -113,12 +112,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPostWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPostWithNameAndId.Invoke(body, name, id);
+                    : webApi.HttpPostWithNameAndId.Invoke(context, name, id);
             }
             catch (Exception ex)
             {
@@ -132,12 +131,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPut == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPut.Invoke(body);
+                    : webApi.HttpPut.Invoke(context);
             }
             catch (Exception ex)
             {
@@ -151,12 +150,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPutWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPutWithName.Invoke(body, name);
+                    : webApi.HttpPutWithName.Invoke(context, name);
             }
             catch (Exception ex)
             {
@@ -170,12 +169,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPutWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPutWithNameAndId.Invoke(body, name, id);
+                    : webApi.HttpPutWithNameAndId.Invoke(context, name, id);
             }
             catch (Exception ex)
             {
@@ -189,12 +188,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpDelete == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpDelete.Invoke(body);
+                    : webApi.HttpDelete.Invoke(context);
             }
             catch (Exception ex)
             {
@@ -208,12 +207,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpDeleteWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpDeleteWithName.Invoke(body, name);
+                    : webApi.HttpDeleteWithName.Invoke(context, name);
             }
             catch (Exception ex)
             {
@@ -227,12 +226,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpDeleteWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpDeleteWithNameAndId.Invoke(body, name, id);
+                    : webApi.HttpDeleteWithNameAndId.Invoke(context, name, id);
             }
             catch (Exception ex)
             {
@@ -246,12 +245,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPatch == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPatch.Invoke(body);
+                    : webApi.HttpPatch.Invoke(context);
             }
             catch (Exception ex)
             {
@@ -265,12 +264,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPatchWithName == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPatchWithName.Invoke(body, name);
+                    : webApi.HttpPatchWithName.Invoke(context, name);
             }
             catch (Exception ex)
             {
@@ -284,12 +283,12 @@ namespace SiteServer.API.Controllers.Http
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 return webApi?.HttpPatchWithNameAndId == null
                     ? Request.CreateResponse(HttpStatusCode.NotFound)
-                    : webApi.HttpPatchWithNameAndId.Invoke(body, name, id);
+                    : webApi.HttpPatchWithNameAndId.Invoke(context, name, id);
             }
             catch (Exception ex)
             {

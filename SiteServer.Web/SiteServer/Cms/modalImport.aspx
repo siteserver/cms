@@ -9,8 +9,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form enctype="multipart/form-data" method="post" runat="server">
         <ctrl:alerts runat="server" />
 

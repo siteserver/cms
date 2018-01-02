@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="固定广告的调用方法：&amp;lt;stl:ad adName=&quot;广告名称&quot;&gt;&amp;lt;/stl:ad&gt;" runat="server"></bairong:alerts>

@@ -14,7 +14,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowStringToAdd(int publishmentSystemId)
         {
-            return PageUtils.GetOpenWindowString("添加站内链接", PageUtils.GetPluginsUrl(nameof(ModalInnerLinkAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加站内链接", PageUtils.GetPluginsUrl(nameof(ModalInnerLinkAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()}
             }), 500, 280);
@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowStringToEdit(int publishmentSystemId, string innerLinkName)
         {
-            return PageUtils.GetOpenWindowString("修改站内链接", PageUtils.GetPluginsUrl(nameof(ModalInnerLinkAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改站内链接", PageUtils.GetPluginsUrl(nameof(ModalInnerLinkAdd), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"InnerLinkName", innerLinkName}

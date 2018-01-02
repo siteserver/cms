@@ -9,8 +9,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form class="m-l-15 m-r-15" runat="server">
         <ctrl:alerts runat="server" />
 

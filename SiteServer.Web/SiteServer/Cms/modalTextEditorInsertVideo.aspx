@@ -9,8 +9,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
         <ctrl:alerts text="请选择插入视频的方式" runat="server" />
         <input type="hidden" id="fileNames" name="fileNames" value="" />

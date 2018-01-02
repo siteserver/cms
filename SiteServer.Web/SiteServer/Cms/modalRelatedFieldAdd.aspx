@@ -9,8 +9,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
         <ctrl:alerts text="前缀及后缀为联动字段显示时在下拉列表之前及之后显示的文字，可以为空" runat="server" />
 

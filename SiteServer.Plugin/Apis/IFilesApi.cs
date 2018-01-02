@@ -16,9 +16,13 @@ namespace SiteServer.Plugin.Apis
 
         string GetPluginUrl(string relatedUrl = "");
 
-        string GetApiJsonUrl(string action = "", string id = "");
+        string GetApiUrl(string relatedUrl = "");
 
-        string GetApiHttpUrl(string action = "", string id = "");
+        string GetApiPluginUrl(string relatedUrl = "");
+
+        string GetApiPluginJsonUrl(string action = "", string id = "");
+
+        string GetApiPluginHttpUrl(string action = "", string id = "");
 
         string GetPublishmentSystemUrl(int publishmentSystemId);
 

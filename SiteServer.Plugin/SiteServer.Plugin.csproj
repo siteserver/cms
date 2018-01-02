@@ -60,7 +60,6 @@
     <Compile Include="Apis\IContentApi.cs" />
     <Compile Include="Apis\IPublishmentSystemApi.cs" />
     <Compile Include="Features\IContentRelated.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Models\DataType.cs" />
     <Compile Include="Models\IAttributes.cs" />
     <Compile Include="Models\ISystemConfigInfo.cs" />

@@ -10,11 +10,12 @@ namespace SiteServer.BackgroundPages.Settings
 	public class ModalUserExport : BasePage
     {
         public PlaceHolder PhExport;
-        public RadioButtonList RblCheckedState;
+        public DropDownList DdlCheckedState;
+        public Button BtnSubmit;
 
         public static string GetOpenWindowString()
         {
-            return PageUtils.GetOpenWindowString("导出用户", PageUtils.GetSettingsUrl(nameof(ModalUserExport), null), 380, 250);
+            return LayerUtils.GetOpenScript("导出用户", PageUtils.GetSettingsUrl(nameof(ModalUserExport), null), 450, 270);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -24,8 +25,8 @@ namespace SiteServer.BackgroundPages.Settings
 			if (!IsPostBack)
 			{
                 PhExport.Visible = true;
-                ETriStateUtils.AddListItems(RblCheckedState, "全部", "审核通过", "未审核");
-                ControlUtils.SelectSingleItem(RblCheckedState, ETriStateUtils.GetValue(ETriState.All));
+                ETriStateUtils.AddListItems(DdlCheckedState, "全部", "审核通过", "未审核");
+                ControlUtils.SelectSingleItem(DdlCheckedState, ETriStateUtils.GetValue(ETriState.All));
 			}
 		}
 
@@ -38,7 +39,7 @@ namespace SiteServer.BackgroundPages.Settings
                 const string fileName = "users.csv";
                 var filePath = PathUtils.GetTemporaryFilesPath(fileName);
 
-                ExcelObject.CreateExcelFileForUsers(filePath, ETriStateUtils.GetEnumType(RblCheckedState.SelectedValue));
+                ExcelObject.CreateExcelFileForUsers(filePath, ETriStateUtils.GetEnumType(DdlCheckedState.SelectedValue));
 
                 var link = new HyperLink
                 {
@@ -47,6 +48,8 @@ namespace SiteServer.BackgroundPages.Settings
                 };
                 var successMessage = "成功导出文件！&nbsp;&nbsp;" + ControlUtils.GetControlRenderHtml(link);
                 SuccessMessage(successMessage);
+
+                BtnSubmit.Visible = false;
             }
             catch (Exception ex)
             {

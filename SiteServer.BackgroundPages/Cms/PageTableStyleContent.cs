@@ -5,7 +5,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Table;
-using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 
@@ -105,9 +104,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlEditStyle = (Literal)e.Item.FindControl("ltlEditStyle");
             var ltlEditValidate = (Literal)e.Item.FindControl("ltlEditValidate");
 
-            var showPopWinString = ModalTableMetadataView.GetOpenWindowString(_tableName, styleInfo.AttributeName);
-            ltlAttributeName.Text =
-                $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{styleInfo.AttributeName}</a>";
+            ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
             ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
@@ -115,7 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
 
-            showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _redirectUrl);
+            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, _redirectUrl);
             var editText = styleInfo.RelatedIdentity == _nodeInfo.NodeId ? "修改" : "添加";
             ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">{editText}</a>";
 

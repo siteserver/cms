@@ -5,6 +5,7 @@ using System.Web.UI;
 using BaiRong.Core;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -86,7 +87,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var body = new RequestBody();
+            var context = new RequestContext();
 
             if (type == TypeGetCountArray)
             {
@@ -96,19 +97,19 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var publishmentSystemId = TranslateUtils.ToInt(Request.Form["publishmentSystemID"]);
                 var gatherRuleNameCollection = Request.Form["gatherRuleNameCollection"];
-                retval = Gather(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, body.AdminName);
+                retval = Gather(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, context.AdminName);
             }
             else if (type == TypeGatherDatabase)
             {
                 var publishmentSystemId = TranslateUtils.ToInt(Request.Form["publishmentSystemID"]);
                 var gatherRuleNameCollection = Request.Form["gatherRuleNameCollection"];
-                retval = GatherDatabase(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, body.AdminName);
+                retval = GatherDatabase(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, context.AdminName);
             }
             else if (type == TypeGatherFile)
             {
                 var publishmentSystemId = TranslateUtils.ToInt(Request.Form["publishmentSystemID"]);
                 var gatherRuleNameCollection = Request.Form["gatherRuleNameCollection"];
-                retval = GatherFile(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, body.AdminName);
+                retval = GatherFile(publishmentSystemId, gatherRuleNameCollection, userKeyPrefix, context.AdminName);
             }
 
             var jsonString = TranslateUtils.NameValueCollectionToJsonString(retval);

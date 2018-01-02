@@ -2,6 +2,7 @@
 using System.Web.Http;
 using SiteServer.CMS.Controllers.Sys.Stl.Comments;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Sys.Stl.Comments
 {
@@ -13,7 +14,7 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
 
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
                 if (!publishmentSystemInfo.Additional.IsCommentable)
@@ -21,13 +22,13 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
                     return Unauthorized();
                 }
 
-                var userName = body.GetPostString("userName");
-                if (body.UserName != userName && !body.IsAdminLoggin)
+                var userName = context.GetPostString("userName");
+                if (context.UserName != userName && !context.IsAdminLoggin)
                 {
                     return Unauthorized();
                 }
 
-                DataProvider.CommentDao.Delete(siteId, channelId, contentId, body.GetPostInt("id"));
+                DataProvider.CommentDao.Delete(siteId, channelId, contentId, context.GetPostInt("id"));
 
                 return Ok();
             }

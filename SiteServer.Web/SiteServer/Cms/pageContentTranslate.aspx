@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="所选内容将转移到指定站点下的栏目中，可以同时选择多个栏目，内容将同时转移到对应栏目下。<br>

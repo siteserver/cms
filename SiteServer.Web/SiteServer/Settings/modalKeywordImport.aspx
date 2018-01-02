@@ -9,8 +9,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
         <ctrl:alerts text="敏感词导入规则：以英文逗号(,)分隔敏感词，如果需要替换用竖线(|)分隔，如：敏感词1,敏感词2,敏感词3|替换词3,敏感词4" runat="server" />
 

@@ -9,6 +9,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -125,8 +126,8 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request["type"];
             var retval = new NameValueCollection();
             string retString = null;
-            var body = new RequestBody();
-            if (!body.IsAdminLoggin) return;
+            var context = new RequestContext();
+            if (!context.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
             {
@@ -158,7 +159,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var parentId = TranslateUtils.ToInt(Request["parentID"]);
                 var loadingType = Request["loadingType"];
                 var additional = Request["additional"];
-                retString = GetLoadingChannels(publishmentSystemId, parentId, loadingType, additional, body);
+                retString = GetLoadingChannels(publishmentSystemId, parentId, loadingType, additional, context);
             }
             else if (type == TypePluginDownload)
             {
@@ -390,7 +391,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public string GetLoadingChannels(int publishmentSystemId, int parentId, string loadingType, string additional, RequestBody body)
+        public string GetLoadingChannels(int publishmentSystemId, int parentId, string loadingType, string additional, RequestContext context)
         {
             var list = new List<string>();
 
@@ -404,17 +405,17 @@ namespace SiteServer.BackgroundPages.Ajax
 
             foreach (var nodeId in nodeIdList)
             {
-                var enabled = AdminUtility.IsOwningNodeId(body.AdminName, nodeId);
+                var enabled = AdminUtility.IsOwningNodeId(context.AdminName, nodeId);
                 if (!enabled)
                 {
-                    if (!AdminUtility.IsHasChildOwningNodeId(body.AdminName, nodeId))
+                    if (!AdminUtility.IsHasChildOwningNodeId(context.AdminName, nodeId))
                     {
                         continue;
                     }
                 }
                 var nodeInfo = NodeManager.GetNodeInfo(publishmentSystemId, nodeId);
 
-                list.Add(ChannelLoading.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, body.AdminName));
+                list.Add(ChannelLoading.GetChannelRowHtml(publishmentSystemInfo, nodeInfo, enabled, eLoadingType, nameValueCollection, context.AdminName));
             }
 
             //arraylist.Reverse();

@@ -3,7 +3,7 @@ using System.Web;
 using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Sys.Stl;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.API.Controllers.Sys.Stl
@@ -16,33 +16,33 @@ namespace SiteServer.API.Controllers.Sys.Stl
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
 
-                var publishmentSystemId = body.GetPostInt("publishmentSystemId");
-                var pageNodeId = body.GetPostInt("pageNodeId");
+                var publishmentSystemId = context.GetPostInt("publishmentSystemId");
+                var pageNodeId = context.GetPostInt("pageNodeId");
                 if (pageNodeId == 0)
                 {
                     pageNodeId = publishmentSystemId;
                 }
-                var pageContentId = body.GetPostInt("pageContentId");
-                var pageTemplateId = body.GetPostInt("pageTemplateId");
-                var isPageRefresh = body.GetPostBool("isPageRefresh");
-                var templateContent = TranslateUtils.DecryptStringBySecretKey(body.GetPostString("templateContent"));
-                var ajaxDivId = PageUtils.FilterSqlAndXss(body.GetPostString("ajaxDivId"));
+                var pageContentId = context.GetPostInt("pageContentId");
+                var pageTemplateId = context.GetPostInt("pageTemplateId");
+                var isPageRefresh = context.GetPostBool("isPageRefresh");
+                var templateContent = TranslateUtils.DecryptStringBySecretKey(context.GetPostString("templateContent"));
+                var ajaxDivId = PageUtils.FilterSqlAndXss(context.GetPostString("ajaxDivId"));
 
-                var channelId = body.GetPostInt("channelId");
+                var channelId = context.GetPostInt("channelId");
                 if (channelId == 0)
                 {
                     channelId = pageNodeId;
                 }
-                var contentId = body.GetPostInt("contentId");
+                var contentId = context.GetPostInt("contentId");
                 if (contentId == 0)
                 {
                     contentId = pageContentId;
                 }
 
-                var pageUrl = TranslateUtils.DecryptStringBySecretKey(body.GetPostString("pageUrl"));
-                var pageIndex = body.GetPostInt("pageNum");
+                var pageUrl = TranslateUtils.DecryptStringBySecretKey(context.GetPostString("pageUrl"));
+                var pageIndex = context.GetPostInt("pageNum");
                 if (pageIndex > 0)
                 {
                     pageIndex--;
@@ -53,7 +53,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
 
                 return Ok(new
                 {
-                    Html = StlUtility.ParseDynamicContent(publishmentSystemId, channelId, contentId, pageTemplateId, isPageRefresh, templateContent, pageUrl, pageIndex, ajaxDivId, queryString, body.UserInfo)
+                    Html = StlUtility.ParseDynamicContent(publishmentSystemId, channelId, contentId, pageTemplateId, isPageRefresh, templateContent, pageUrl, pageIndex, ajaxDivId, queryString, context.UserInfo)
                 });
             }
             catch(Exception ex)

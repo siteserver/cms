@@ -8,6 +8,7 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages
 {
@@ -20,9 +21,9 @@ namespace SiteServer.BackgroundPages
         public void Page_Load(object sender, EventArgs e)
         {
             PageUtils.CheckRequestParameter("FileType");
-            var body = new RequestBody();
+            var context = new RequestContext();
 
-            if (body.IsAdminLoggin)
+            if (context.IsAdminLoggin)
             {
                 _fileType = Request.QueryString["FileType"];
 

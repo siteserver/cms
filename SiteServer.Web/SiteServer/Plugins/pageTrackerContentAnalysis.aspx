@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="不设置开始时间将统计自建站以来所有的流量数据。" runat="server" />

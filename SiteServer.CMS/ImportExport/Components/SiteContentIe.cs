@@ -13,6 +13,7 @@ using BaiRong.Core.Model.Enumerations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -228,7 +229,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     {
                         NodeId = nodeInfo.NodeId,
                         PublishmentSystemId = _publishmentSystemInfo.PublishmentSystemId,
-                        AddUserName = RequestBody.CurrentAdministratorName,
+                        AddUserName = RequestContext.CurrentAdministratorName,
                         AddDate = TranslateUtils.ToDateTime(addDate)
                     };
                     contentInfo.LastEditUserName = contentInfo.AddUserName;

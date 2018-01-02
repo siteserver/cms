@@ -14,11 +14,11 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowString(int publishmentSystemId, int seoMetaId)
         {
-            return PageUtils.GetOpenWindowString("页面元数据源代码查看", PageUtils.GetPluginsUrl(nameof(ModalSeoMetaView), new NameValueCollection
+            return LayerUtils.GetOpenScript("页面元数据源代码查看", PageUtils.GetPluginsUrl(nameof(ModalSeoMetaView), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"SeoMetaID", seoMetaId.ToString()}
-            }), 480, 360, true);
+            }), 480, 360);
         }
 
 		public void Page_Load(object sender, EventArgs e)

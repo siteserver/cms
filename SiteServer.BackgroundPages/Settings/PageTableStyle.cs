@@ -97,8 +97,7 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlEditStyle = (Literal)e.Item.FindControl("ltlEditStyle");
             var ltlEditValidate = (Literal)e.Item.FindControl("ltlEditValidate");
 
-            var showPopWinString = ModalTableMetadataView.GetOpenWindowString(_tableName, styleInfo.AttributeName);
-            ltlAttributeName.Text = $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{styleInfo.AttributeName}</a>";
+            ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
             ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
@@ -106,7 +105,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
 
-            showPopWinString = ModalTableStyleAdd.GetOpenWindowString(0, styleInfo.TableStyleId, new List<int>{0}, _tableName, styleInfo.AttributeName, _redirectUrl);
+            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(0, styleInfo.TableStyleId, new List<int>{0}, _tableName, styleInfo.AttributeName, _redirectUrl);
             var editText = styleInfo.TableStyleId != 0 ? "ÐÞ¸Ä" : "Ìí¼Ó";
             ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">{editText}</a>";
 

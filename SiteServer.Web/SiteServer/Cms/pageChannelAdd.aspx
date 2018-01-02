@@ -1,181 +1,230 @@
 ﻿<%@ Page Language="C#" ValidateRequest="false" Inherits="SiteServer.BackgroundPages.Cms.PageChannelAdd" %>
-  <%@ Register TagPrefix="bairong" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
+  <%@ Register TagPrefix="ctrl" Namespace="SiteServer.BackgroundPages.Controls" Assembly="SiteServer.BackgroundPages" %>
     <!DOCTYPE html>
     <html>
 
     <head>
       <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=7" />
-      <!--#include file="../inc/header.aspx"-->
+      <!--#include file="../inc/head.html"-->
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-      <form class="form-inline" runat="server">
-        <asp:Literal ID="LtlBreadCrumb" runat="server" />
-        <bairong:Alerts runat="server" />
+      <form class="m-l-15 m-r-15" runat="server">
+        <ctrl:alerts runat="server" />
 
-        <div class="popover popover-static">
-          <h3 class="popover-title">添加栏目</h3>
-          <div class="popover-content">
+        <div class="raw">
+          <div class="card-box">
+            <h4 class="m-t-0 header-title">
+              <b>添加栏目</b>
+            </h4>
+            <p class="text-muted font-13 m-b-25"></p>
 
-            <table class="table noborder table-hover">
-              <tr>
-                <td width="150">父栏目：</td>
-                <td>
-                  <asp:DropDownList ID="DdlParentNodeId" AutoPostBack="true" OnSelectedIndexChanged="DdlParentNodeId_SelectedIndexChanged"
+            <div class="form-horizontal">
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">父栏目</label>
+                <div class="col-sm-4">
+                  <asp:DropDownList ID="DdlParentNodeId" class="form-control" AutoPostBack="true" OnSelectedIndexChanged="DdlParentNodeId_SelectedIndexChanged"
                     runat="server"></asp:DropDownList>
-                </td>
-              </tr>
-              <tr>
-                <td>栏目名称：</td>
-                <td>
-                  <asp:TextBox Columns="45" MaxLength="255" ID="TbNodeName" runat="server" />
+                </div>
+                <div class="col-sm-6"></div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">栏目名称</label>
+                <div class="col-sm-4">
+                  <asp:TextBox class="form-control" ID="TbNodeName" runat="server" />
+                </div>
+                <div class="col-sm-6">
                   <asp:RequiredFieldValidator ControlToValidate="TbNodeName" ErrorMessage=" *" ForeColor="red" Display="Dynamic" runat="server"
                   />
-                </td>
-              </tr>
-              <tr>
-                <td>栏目索引：</td>
-                <td>
-                  <asp:TextBox Columns="45" MaxLength="255" ID="TbNodeIndexName" runat="server" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">栏目索引</label>
+                <div class="col-sm-4">
+                  <asp:TextBox class="form-control" ID="TbNodeIndexName" runat="server" />
+                </div>
+                <div class="col-sm-6">
                   <asp:RegularExpressionValidator runat="server" ControlToValidate="TbNodeIndexName" ValidationExpression="[^']+" ErrorMessage=" *"
                     ForeColor="red" Display="Dynamic" />
-                </td>
-              </tr>
-              <tr>
-                <td>内容模型插件：</td>
-                <td>
-                  <asp:DropDownList ID="DdlContentModelPluginId" runat="server"></asp:DropDownList>
-                </td>
-              </tr>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">内容模型插件</label>
+                <div class="col-sm-4">
+                  <asp:DropDownList ID="DdlContentModelPluginId" class="form-control" runat="server"></asp:DropDownList>
+                </div>
+                <div class="col-sm-6"></div>
+              </div>
+
               <asp:PlaceHolder id="PhContentRelatedPluginIds" runat="server">
-                <tr>
-                  <td>内容关联插件：</td>
-                  <td>
-                    <asp:CheckBoxList ID="CblContentRelatedPluginIds" CssClass="checkboxlist" RepeatDirection="Horizontal" runat="server"></asp:CheckBoxList>
-                  </td>
-                </tr>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">内容关联插件</label>
+                  <div class="col-sm-4">
+                    <asp:CheckBoxList ID="CblContentRelatedPluginIds" CssClass="checkbox checkbox-primary" RepeatDirection="Horizontal" runat="server"></asp:CheckBoxList>
+                  </div>
+                  <div class="col-sm-6"></div>
+                </div>
               </asp:PlaceHolder>
-              <tr>
-                <td>栏目链接：</td>
-                <td>
-                  <asp:TextBox Columns="45" MaxLength="200" ID="TbLinkUrl" runat="server" />
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">栏目链接</label>
+                <div class="col-sm-4">
+                  <asp:TextBox ID="TbLinkUrl" class="form-control" runat="server" />
+                </div>
+                <div class="col-sm-6">
                   <asp:RegularExpressionValidator runat="server" ControlToValidate="TbLinkUrl" ValidationExpression="[^']+" ErrorMessage=" *"
                     ForeColor="red" Display="Dynamic" />
-                </td>
-              </tr>
-              <tr>
-                <td>链接类型：</td>
-                <td>
-                  <asp:DropDownList ID="DdlLinkType" runat="server"></asp:DropDownList>
-                </td>
-              </tr>
-              <tr>
-                <td>栏目模板：</td>
-                <td>
-                  <asp:DropDownList ID="DdlChannelTemplateId" DataTextField="TemplateName" DataValueField="TemplateId" runat="server"></asp:DropDownList>
-                </td>
-              </tr>
-              <tr>
-                <td>本栏目内容模板：</td>
-                <td>
-                  <asp:DropDownList ID="DdlContentTemplateId" DataTextField="TemplateName" DataValueField="TemplateId" runat="server"></asp:DropDownList>
-                </td>
-              </tr>
-              <tr>
-                <td>生成页面路径：</td>
-                <td>
-                  <asp:TextBox Columns="45" MaxLength="200" ID="TbFilePath" runat="server" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">链接类型</label>
+                <div class="col-sm-4">
+                  <asp:DropDownList ID="DdlLinkType" class="form-control" runat="server"></asp:DropDownList>
+                </div>
+                <div class="col-sm-6">
+                  <span class="help-block">设置此栏目的链接与子栏目及内容的关系</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">内容默认排序规则</label>
+                <div class="col-sm-4">
+                  <asp:DropDownList ID="DdlTaxisType" class="form-control" runat="server"></asp:DropDownList>
+                </div>
+                <div class="col-sm-6">
+                  <span class="help-block">设置内容默认排序规则后，后台内容列表将改变排序显示规则</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">栏目模板</label>
+                <div class="col-sm-4">
+                  <asp:DropDownList ID="DdlChannelTemplateId" class="form-control" DataTextField="TemplateName" DataValueField="TemplateId"
+                    runat="server"></asp:DropDownList>
+                </div>
+                <div class="col-sm-6"></div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">本栏目内容模板</label>
+                <div class="col-sm-4">
+                  <asp:DropDownList ID="DdlContentTemplateId" class="form-control" DataTextField="TemplateName" DataValueField="TemplateId"
+                    runat="server"></asp:DropDownList>
+                </div>
+                <div class="col-sm-6"></div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">生成页面路径</label>
+                <div class="col-sm-4">
+                  <asp:TextBox ID="TbFilePath" class="form-control" runat="server" />
+                </div>
+                <div class="col-sm-6">
                   <asp:RegularExpressionValidator runat="server" ControlToValidate="TbFilePath" ValidationExpression="[^']+" ErrorMessage=" *"
                     ForeColor="red" Display="Dynamic" />
-                </td>
-              </tr>
-              <tr>
-                <td>栏目页面命名规则：</td>
-                <td>
-                  <asp:TextBox Columns="38" MaxLength="200" ID="TbChannelFilePathRule" runat="server" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">栏目页面命名规则</label>
+                <div class="col-sm-4">
+                  <asp:TextBox class="form-control" ID="TbChannelFilePathRule" runat="server" />
+                </div>
+                <div class="col-sm-6">
                   <asp:Button ID="BtnCreateChannelRule" class="btn" Text="构造" runat="server"></asp:Button>
-                </td>
-              </tr>
-              <tr>
-                <td>内容页面命名规则：</td>
-                <td>
-                  <asp:TextBox Columns="38" MaxLength="200" ID="TbContentFilePathRule" runat="server" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">内容页面命名规则</label>
+                <div class="col-sm-4">
+                  <asp:TextBox class="form-control" ID="TbContentFilePathRule" runat="server" />
+                </div>
+                <div class="col-sm-6">
                   <asp:Button ID="BtnCreateContentRule" class="btn" Text="构造" runat="server"></asp:Button>
-                </td>
-              </tr>
-              <tr>
-                <td>可以添加栏目：</td>
-                <td>
-                  <asp:RadioButtonList ID="RblIsChannelAddable" RepeatDirection="Horizontal" class="noborder" runat="server">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">可以添加栏目</label>
+                <div class="col-sm-4">
+                  <asp:RadioButtonList ID="RblIsChannelAddable" RepeatDirection="Horizontal" class="radio radio-primary" runat="server">
                     <asp:ListItem Text="是" Value="True" Selected="True" />
                     <asp:ListItem Text="否" Value="False" />
                   </asp:RadioButtonList>
-                </td>
-              </tr>
-              <tr>
-                <td>可以添加内容：</td>
-                <td>
-                  <asp:RadioButtonList ID="RblIsContentAddable" RepeatDirection="Horizontal" class="noborder" runat="server">
+                </div>
+                <div class="col-sm-6"></div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">可以添加内容</label>
+                <div class="col-sm-4">
+                  <asp:RadioButtonList ID="RblIsContentAddable" RepeatDirection="Horizontal" class="radio radio-primary" runat="server">
                     <asp:ListItem Text="是" Value="True" Selected="True" />
                     <asp:ListItem Text="否" Value="False" />
                   </asp:RadioButtonList>
-                </td>
-              </tr>
-              <tr>
-                <td>栏目图片地址：</td>
-                <td>
-                  <asp:TextBox ID="TbNavigationPicPath" MaxLength="100" Size="45" runat="server" />
+                </div>
+                <div class="col-sm-6"></div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">栏目图片地址</label>
+                <div class="col-sm-4">
+                  <asp:TextBox ID="TbImageUrl" class="form-control" runat="server" />
+                </div>
+                <div class="col-sm-6">
                   <asp:Button ID="BtnSelectImage" class="btn" Text="选择" runat="server"></asp:Button>
                   <asp:Button ID="BtnUploadImage" class="btn" Text="上传" runat="server"></asp:Button>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2">
-                  <bairong:TextEditorControl ID="TbContent" runat="server"></bairong:TextEditorControl>
-                </td>
-              </tr>
-              <tr>
-                <td>关键字列表：</td>
-                <td>
-                  <asp:TextBox Rows="3" Width="350" MaxLength="100" TextMode="MultiLine" ID="TbKeywords" runat="server" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-1 control-label"></label>
+                <div class="col-sm-10">
+                  <ctrl:TextEditorControl ID="TbContent" runat="server"></ctrl:TextEditorControl>
+                </div>
+                <div class="col-sm-1"></div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">关键字列表</label>
+                <div class="col-sm-4">
+                  <asp:TextBox Rows="3" TextMode="MultiLine" ID="TbKeywords" class="form-control" runat="server" />
+                </div>
+                <div class="col-sm-6">
                   <asp:RegularExpressionValidator runat="server" ControlToValidate="TbKeywords" ValidationExpression="[^']+" ErrorMessage=" *"
                     ForeColor="red" Display="Dynamic" />
-                  <=100 <br>
-                    <span>注意：各关键词间用英文逗号“,”隔开。<span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>页面描述：</td>
-                        <td>
-                            <asp:TextBox Width="350" Rows="4" MaxLength="200" TextMode="MultiLine" ID="TbDescription" runat="server" />
-                            <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDescription" ValidationExpression="[^']+" ErrorMessage=" *" ForeColor="red" Display="Dynamic" />
-                            <=200
-                        </td>
-                    </tr>
-                    <bairong:ChannelAuxiliaryControl ID="CacChannelControl" runat="server" />
-                    <tr>
-                        <td>栏目组：</td>
-                        <td>
-                            <asp:CheckBoxList CssClass="checkboxlist" ID="CblNodeGroupNameCollection" DataTextField="NodeGroupName" DataValueField="NodeGroupName" RepeatDirection="Horizontal" RepeatColumns="5" runat="server" />
-                        </td>
-                    </tr>
-                </table>
+                  <span class="help-block">注意：各关键词间用英文逗号“,”隔开。
+                    <span></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">页面描述</label>
+                <div class="col-sm-4">
+                  <asp:TextBox Rows="4" TextMode="MultiLine" ID="TbDescription" class="form-control" runat="server" />
+                </div>
+                <div class="col-sm-6">
+                  <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDescription" ValidationExpression="[^']+" ErrorMessage=" *"
+                    ForeColor="red" Display="Dynamic" />
+                </div>
+              </div>
 
-                <hr />
-                <table class="table noborder">
-                    <tr>
-                        <td class="center">
-                            <asp:Button class="btn btn-primary" ID="Submit" Text="添 加" OnClick="Submit_OnClick" runat="server" />
-                            <input class="btn" type="button" onclick="location.href='<%=ReturnUrl%>    ';return false;" value="返 回" />
-                        </td>
-                    </tr>
-                </table>
+              <ctrl:ChannelAuxiliaryControl ID="CacAttributes" runat="server" />
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">栏目组</label>
+                <div class="col-sm-4">
+                  <asp:CheckBoxList CssClass="checkbox checkbox-primary" ID="CblNodeGroupNameCollection" DataTextField="NodeGroupName" DataValueField="NodeGroupName"
+                    RepeatDirection="Horizontal" RepeatColumns="5" runat="server" />
+                </div>
+                <div class="col-sm-6"></div>
+              </div>
+
+              <hr />
+
+              <div class="form-group m-b-0">
+                <div class="col-sm-12 text-center">
+                  <asp:Button class="btn btn-primary" ID="Submit" Text="确 定" OnClick="Submit_OnClick" runat="server" />
+                  <input class="btn m-l-5" type="button" onclick="location.href='<%=ReturnUrl%>';return false;" value="返 回" />
+                </div>
+              </div>
 
             </div>
+
+          </div>
         </div>
 
-    </form>
-</body>
-</html>
+      </form>
+    </body>
+
+    </html>

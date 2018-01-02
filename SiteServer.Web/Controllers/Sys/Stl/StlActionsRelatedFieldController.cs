@@ -4,6 +4,7 @@ using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
@@ -13,11 +14,11 @@ namespace SiteServer.API.Controllers.Sys.Stl
         [HttpPost, Route(ActionsRelatedField.Route)]
         public void Main(int publishmentSystemId)
         {
-            var body = new RequestBody();
+            var context = new RequestContext();
 
-            var callback = body.GetQueryString("callback");
-            var relatedFieldId = body.GetQueryInt("relatedFieldId");
-            var parentId = body.GetQueryInt("parentId");
+            var callback = context.GetQueryString("callback");
+            var relatedFieldId = context.GetQueryInt("relatedFieldId");
+            var parentId = context.GetQueryInt("parentId");
             var jsonString = GetRelatedField(relatedFieldId, parentId);
             var call = callback + "(" + jsonString + ")";
 

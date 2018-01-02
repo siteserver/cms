@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="样式文件在站点目录 css 中，模板中使用 &amp;lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;{stl.siteurl}/css/样式文件.css&quot; /&gt; 引用。" runat="server" />

@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <script type="text/javascript" charset="utf-8" src="../assets/validate.js"></script>
 <form class="form-inline" enctype="multipart/form-data" method="post" runat="server">
 <asp:Button id="btnSubmit" useSubmitBehavior="false" OnClick="Submit_OnClick" runat="server" style="display:none" />

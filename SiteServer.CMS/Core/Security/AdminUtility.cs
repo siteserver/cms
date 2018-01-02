@@ -1,5 +1,6 @@
 using BaiRong.Core;
 using System.Collections.Generic;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.CMS.Core.Security
 {
@@ -36,8 +37,8 @@ namespace SiteServer.CMS.Core.Security
             {
                 return;
             }
-            var body = new RequestBody();
-            body.AdminLogout();
+            var request = new RequestContext();
+            request.AdminLogout();
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 
@@ -95,8 +96,8 @@ namespace SiteServer.CMS.Core.Security
             {
                 return;
             }
-            var body = new RequestBody();
-            body.AdminLogout();
+            var request = new RequestContext();
+            request.AdminLogout();
             PageUtils.Redirect(PageUtils.GetAdminDirectoryUrl(string.Empty));
         }
 

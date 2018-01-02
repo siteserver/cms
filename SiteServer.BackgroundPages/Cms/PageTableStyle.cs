@@ -5,7 +5,6 @@ using System.Web.UI.WebControls;
 using BaiRong.Core;
 using BaiRong.Core.Model;
 using BaiRong.Core.Table;
-using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -128,9 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlEditStyle = (Literal)e.Item.FindControl("ltlEditStyle");
             var ltlEditValidate = (Literal)e.Item.FindControl("ltlEditValidate");
 
-            var showPopWinString = ModalTableMetadataView.GetOpenWindowString(_tableName, styleInfo.AttributeName);
-            ltlAttributeName.Text =
-                $"<a href=\"javascript:void 0;\" onClick=\"{showPopWinString}\">{styleInfo.AttributeName}</a>";
+            ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
             ltlInputType.Text = InputTypeUtils.GetText(InputTypeUtils.GetEnumType(styleInfo.InputType));
@@ -138,7 +135,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlValidate.Text = ValidateTypeUtils.GetValidateInfo(styleInfo);
 
             var redirectUrl = GetRedirectUrl(PublishmentSystemId, _tableName, _relatedIdentity, _itemId, _returnUrl);
-            showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, redirectUrl);
+            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(PublishmentSystemId, styleInfo.TableStyleId, _relatedIdentities, _tableName, styleInfo.AttributeName, redirectUrl);
             var editText = styleInfo.RelatedIdentity == _relatedIdentity ? "修改" : "设置";
             ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">{editText}</a>";
 

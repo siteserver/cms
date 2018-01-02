@@ -10,15 +10,24 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using SiteServer.CMS.Core;
 using SiteServer.Plugin.Models;
 
-namespace SiteServer.CMS.Core
+namespace SiteServer.CMS.Plugin
 {
-    public class RequestBody : IRequestContext
+    public class RequestContext : IRequestContext
     {
         private const string UserAccessToken = "ss_user_access_token";
         private const string AdministratorAccessToken = "ss_administrator_access_token";
         private const int AccessTokenExpireDays = 7;
+
+        public RequestContext()
+        {
+            var request = HttpContext.Current.Request;
+
+            UserAuthentication(request);
+            AdministratorAuthentication(request);
+        }
 
         private JObject _postData;
         public JObject PostData
@@ -80,14 +89,6 @@ namespace SiteServer.CMS.Core
                 }
                 return _administratorInfo ?? (_administratorInfo = new AdministratorInfo());
             }
-        }
-
-        public RequestBody()
-        {
-            var request = HttpContext.Current.Request;
-
-            UserAuthentication(request);
-            AdministratorAuthentication(request);
         }
 
         public bool IsQueryExists(string name)

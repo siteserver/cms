@@ -7,6 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Security;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -18,7 +19,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             var builder = new StringBuilder();
 
-            var body = new RequestBody();
+            var context = new RequestContext();
 
             var publishmentSystemId = int.Parse(Page.Request.QueryString["PublishmentSystemID"]);
             _publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
@@ -30,13 +31,13 @@ namespace SiteServer.BackgroundPages.Controls
                 foreach (var nodeId in nodeIdList)
                 {
                     var nodeInfo = NodeManager.GetNodeInfo(_publishmentSystemInfo.PublishmentSystemId, nodeId);
-                    var enabled = AdminUtility.IsOwningNodeId(body.AdminName, nodeInfo.NodeId);
+                    var enabled = AdminUtility.IsOwningNodeId(context.AdminName, nodeInfo.NodeId);
                     if (!enabled)
                     {
-                        if (!AdminUtility.IsHasChildOwningNodeId(body.AdminName, nodeInfo.NodeId)) continue;
+                        if (!AdminUtility.IsHasChildOwningNodeId(context.AdminName, nodeInfo.NodeId)) continue;
                     }
 
-                    builder.Append(ChannelLoading.GetChannelRowHtml(_publishmentSystemInfo, nodeInfo, enabled, ELoadingType.ContentTree, null, body.AdminName));
+                    builder.Append(ChannelLoading.GetChannelRowHtml(_publishmentSystemInfo, nodeInfo, enabled, ELoadingType.ContentTree, null, context.AdminName));
                 }
             }
             writer.Write(builder);

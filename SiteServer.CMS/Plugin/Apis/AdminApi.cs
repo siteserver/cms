@@ -24,8 +24,8 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             get
             {
-                var body = new RequestBody();
-                return body.AdminName;
+                var request = new RequestContext();
+                return request.AdminName;
             }
         }
 
@@ -33,27 +33,27 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             get
             {
-                var body = new RequestBody();
-                return PermissionsManager.HasAdministratorPermissions(body.AdminName, _metadata.Id);
+                var request = new RequestContext();
+                return PermissionsManager.HasAdministratorPermissions(request.AdminName, _metadata.Id);
             }
         }
 
         public bool IsSiteAuthorized(int publishmentSystemId)
         {
-            var body = new RequestBody();
-            return PermissionsManager.HasAdministratorPermissions(body.AdminName, _metadata.Id + publishmentSystemId);
+            var request = new RequestContext();
+            return PermissionsManager.HasAdministratorPermissions(request.AdminName, _metadata.Id + publishmentSystemId);
         }
 
         public bool HasSitePermissions(int publishmentSystemId, params string[] sitePermissions)
         {
-            var body = new RequestBody();
-            return AdminUtility.HasSitePermissions(body.AdminName, publishmentSystemId, sitePermissions);
+            var request = new RequestContext();
+            return AdminUtility.HasSitePermissions(request.AdminName, publishmentSystemId, sitePermissions);
         }
 
         public bool HasChannelPermissions(int publishmentSystemId, int channelId, params string[] channelPermissions)
         {
-            var body = new RequestBody();
-            return AdminUtility.HasChannelPermissions(body.AdminName, publishmentSystemId, channelId, channelPermissions);
+            var request = new RequestContext();
+            return AdminUtility.HasChannelPermissions(request.AdminName, publishmentSystemId, channelId, channelPermissions);
         }
     }
 }

@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <script language="JavaScript" type="text/javascript">
 //取得Tree的级别，1为第一级
 function getTreeLevel(e) {

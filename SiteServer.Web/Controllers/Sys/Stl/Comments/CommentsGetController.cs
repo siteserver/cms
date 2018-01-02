@@ -5,6 +5,7 @@ using BaiRong.Core;
 using SiteServer.API.Model;
 using SiteServer.CMS.Controllers.Sys.Stl.Comments;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Sys.Stl.Comments
 {
@@ -16,7 +17,7 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
 
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
                 if (!publishmentSystemInfo.Additional.IsCommentable)
@@ -27,8 +28,8 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
                     });
                 }
 
-                var requestCount = body.GetQueryInt("requestCount", 20);
-                var requestOffset = body.GetQueryInt("requestOffset");
+                var requestCount = context.GetQueryInt("requestCount", 20);
+                var requestOffset = context.GetQueryInt("requestOffset");
 
                 var totalCount = DataProvider.CommentDao.GetTotalCountWithChecked(siteId, channelId, contentId);
                 var comments =
@@ -43,7 +44,7 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
                 return Ok(new
                 {
                     IsCommentable = true,
-                    User = body.UserInfo,
+                    User = context.UserInfo,
                     Comments = comments,
                     TotalCount = totalCount
                 });

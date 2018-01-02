@@ -5,6 +5,7 @@ using SiteServer.API.Model;
 using SiteServer.CMS.Controllers.Sys.Stl.Comments;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
 using SiteServer.Plugin.Models;
 
 namespace SiteServer.API.Controllers.Sys.Stl.Comments
@@ -17,7 +18,7 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
 
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
                 if (!publishmentSystemInfo.Additional.IsCommentable)
@@ -25,10 +26,10 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
                     return Unauthorized();
                 }
 
-                var account = body.GetPostString("account");
-                var password = body.GetPostString("password");
-                var replyId = body.GetPostInt("replyId");
-                var content = body.GetPostString("content");
+                var account = context.GetPostString("account");
+                var password = context.GetPostString("password");
+                var replyId = context.GetPostInt("replyId");
+                var content = context.GetPostString("content");
 
                 if (replyId > 0)
                 {
@@ -61,14 +62,14 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
                     BaiRongDataProvider.UserDao.UpdateLastActivityDateAndCountOfLogin(userName);
                     userInfo = BaiRongDataProvider.UserDao.GetUserInfoByUserName(userName);
 
-                    body.UserLogin(userName);
+                    context.UserLogin(userName);
                 }
                 else
                 {
-                    userInfo = body.UserInfo;
+                    userInfo = context.UserInfo;
                 }
 
-                if (!publishmentSystemInfo.Additional.IsAnonymousComments && !body.IsUserLoggin)
+                if (!publishmentSystemInfo.Additional.IsAnonymousComments && !context.IsUserLoggin)
                 {
                     return Unauthorized();
                 }

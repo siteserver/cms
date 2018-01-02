@@ -2,6 +2,7 @@
 using System.Web.Http;
 using SiteServer.CMS.Controllers.Sys.Stl.Comments;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Sys.Stl.Comments
 {
@@ -13,7 +14,7 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
 
                 var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(siteId);
                 if (!publishmentSystemInfo.Additional.IsCommentable)
@@ -21,7 +22,7 @@ namespace SiteServer.API.Controllers.Sys.Stl.Comments
                     return Unauthorized();
                 }
 
-                DataProvider.CommentDao.AddGoodCount(body.GetPostInt("id"));
+                DataProvider.CommentDao.AddGoodCount(context.GetPostInt("id"));
 
                 return Ok();
             }

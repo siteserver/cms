@@ -235,7 +235,7 @@
     <Compile Include="Core\PageUtility.cs" />
     <Compile Include="Core\Create\CreateManager.cs" />
     <Compile Include="Core\Office\TxtObject.cs" />
-    <Compile Include="Core\RequestBody.cs" />
+    <Compile Include="Plugin\RequestBody.cs" />
     <Compile Include="Core\TemplateManager.cs">
       <SubType>Code</SubType>
     </Compile>

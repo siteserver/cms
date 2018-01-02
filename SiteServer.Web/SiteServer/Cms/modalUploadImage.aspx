@@ -9,8 +9,6 @@
 		</head>
 
 		<body>
-			<!--#include file="../inc/openWindow.html"-->
-
 			<form runat="server">
 				<ctrl:alerts text="如果不设置缩略图宽度或高度，宽度或高度将根据图片尺寸按比例缩放" runat="server" />
 

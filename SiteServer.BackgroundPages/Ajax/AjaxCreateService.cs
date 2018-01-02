@@ -6,6 +6,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var body = new RequestBody();
+            var context = new RequestContext();
 
             if (type == TypeGetCountArray)
             {
@@ -120,7 +121,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var isUseTables = TranslateUtils.ToBool(Request.Form["isUseTables"]);
                 var returnUrl = Request.Form["returnUrl"];
                 var isTop = TranslateUtils.ToBool(Request.Form["isTop"], false);
-                retval = CreatePublishmentSystem(publishmentSystemId, isUseSiteTemplate, isImportContents, isImportTableStyles, siteTemplateDir, isUseTables, userKeyPrefix, returnUrl, isTop, body.AdminName);
+                retval = CreatePublishmentSystem(publishmentSystemId, isUseSiteTemplate, isImportContents, isImportTableStyles, siteTemplateDir, isUseTables, userKeyPrefix, returnUrl, isTop, context.AdminName);
             }
             //    else if (type == "CreateAll")
             //    {

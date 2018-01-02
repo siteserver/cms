@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowStringToAdd(int adMaterialId, int publishmentSystemId, int advId)
         {
-            return PageUtils.GetOpenWindowString("添加广告物料",
+            return LayerUtils.GetOpenScript("添加广告物料",
                 PageUtils.GetPluginsUrl(nameof(ModalAdMaterialAdd), new NameValueCollection
                 {
                     {"adMaterialID", adMaterialId.ToString()},
@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowStringToEdit(int adMaterialId, int publishmentSystemId, int advId)
         {
-            return PageUtils.GetOpenWindowString("修改广告物料",
+            return LayerUtils.GetOpenScript("修改广告物料",
                 PageUtils.GetPluginsUrl(nameof(ModalAdMaterialAdd), new NameValueCollection
                 {
                     {"adMaterialID", adMaterialId.ToString()},

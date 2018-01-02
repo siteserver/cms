@@ -9,8 +9,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
         <ctrl:alerts runat="server" />
 
@@ -105,8 +103,6 @@
             </div>
           </asp:PlaceHolder>
 
-          <ctrl:ChannelAuxiliaryControl id="AcAttributes" runat="server" />
-
           <asp:PlaceHolder id="PhLinkUrl" runat="server">
             <div class="form-group">
               <label class="col-sm-2 control-label">外部链接</label>
@@ -127,7 +123,19 @@
                 <asp:DropDownList class="form-control" id="DdlLinkType" runat="server"></asp:DropDownList>
               </div>
               <div class="col-sm-6 help-block">
-                指示此栏目的链接与栏目下子栏目及内容的关系
+                设置此栏目的链接与子栏目及内容的关系
+              </div>
+            </div>
+          </asp:PlaceHolder>
+
+          <asp:PlaceHolder id="PhTaxisType" runat="server">
+            <div class="form-group">
+              <label class="col-sm-2 control-label">内容默认排序规则</label>
+              <div class="col-sm-4">
+                <asp:DropDownList ID="DdlTaxisType" class="form-control" runat="server"></asp:DropDownList>
+              </div>
+              <div class="col-sm-6">
+                <span class="help-block">设置内容默认排序规则后，后台内容列表将改变排序显示规则</span>
               </div>
             </div>
           </asp:PlaceHolder>
@@ -153,6 +161,8 @@
               <div class="col-sm-6 help-block"></div>
             </div>
           </asp:PlaceHolder>
+
+          <ctrl:ChannelAuxiliaryControl id="CacAttributes" runat="server" />
 
           <asp:PlaceHolder id="PhNodeGroupNameCollection" runat="server">
             <div class="form-group">

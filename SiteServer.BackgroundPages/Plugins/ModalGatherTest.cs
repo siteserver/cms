@@ -26,12 +26,12 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowString(int publishmentSystemId, string gatherRuleName, bool isFileRule)
         {
-            return PageUtils.GetOpenWindowString("信息采集测试", PageUtils.GetPluginsUrl(nameof(ModalGatherTest), new NameValueCollection
+            return LayerUtils.GetOpenScript("信息采集测试", PageUtils.GetPluginsUrl(nameof(ModalGatherTest), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"GatherRuleName", gatherRuleName},
                 {"IsFileRule", isFileRule.ToString()}
-            }), 700, 650, true);
+            }), 700, 650);
         }
 
 		public void Page_Load(object sender, EventArgs e)

@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowString(int publishmentSystemId, string gatherRuleName)
         {
-            return PageUtils.GetOpenWindowString("信息采集", PageUtils.GetPluginsUrl(nameof(ModalGatherSet), new NameValueCollection
+            return LayerUtils.GetOpenScript("信息采集", PageUtils.GetPluginsUrl(nameof(ModalGatherSet), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"GatherRuleName", gatherRuleName}

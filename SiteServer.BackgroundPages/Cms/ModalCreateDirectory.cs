@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int publishmentSystemId, string currentRootPath)
         {
-            return PageUtils.GetOpenWindowString("创建文件夹", PageUtils.GetCmsUrl(nameof(ModalCreateDirectory), new NameValueCollection
+            return LayerUtils.GetOpenScript("创建文件夹", PageUtils.GetCmsUrl(nameof(ModalCreateDirectory), new NameValueCollection
             {
                 {"PublishmentSystemID", publishmentSystemId.ToString()},
                 {"CurrentRootPath", currentRootPath}

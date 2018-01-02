@@ -9,8 +9,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
         <ctrl:alerts text="辅助表标识为辅助表的唯一标识，当在数据库中创建辅助表时此标识作为被创建表的名称，只允许包含字母、数字以及下划线" runat="server" />
 

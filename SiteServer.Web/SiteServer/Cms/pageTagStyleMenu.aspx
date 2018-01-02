@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="下拉菜单标签为&amp;lt;stl:menu styleName=&quot;样式名称&quot;&gt;&amp;lt;/stl:menu&gt;，用于显示下拉菜单。" runat="server"></bairong:alerts>

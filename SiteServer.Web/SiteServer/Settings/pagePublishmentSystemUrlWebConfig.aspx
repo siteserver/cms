@@ -9,14 +9,14 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form class="container" runat="server">
         <bairong:alerts runat="server" />
 
         <div class="raw">
           <div class="card-box">
-            <h4 class="m-t-0 header-title"><b>Web 访问地址设置</b></h4>
+            <h4 class="m-t-0 header-title">
+              <b>Web 访问地址设置</b>
+            </h4>
             <p class="text-muted font-13 m-b-25">
               在此设置站点的访问地址
             </p>

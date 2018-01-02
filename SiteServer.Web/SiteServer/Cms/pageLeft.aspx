@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <style type="text/css">
 body { padding:0; margin:0; }
 .container {width:153px;}

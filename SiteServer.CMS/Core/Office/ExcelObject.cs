@@ -506,7 +506,6 @@ namespace SiteServer.CMS.Core.Office
                 "姓名",
                 "邮箱",
                 "手机",
-                "用户组",
                 "注册时间",
                 "最后一次活动时间"
             };

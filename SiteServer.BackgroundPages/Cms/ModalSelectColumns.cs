@@ -112,6 +112,13 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     CblDisplayAttributes.Items.Add(listitem);
 
+                    listitem = new ListItem("内容默认排序规则", nameof(NodeInfoExtend.DefaultTaxisType));
+                    if (CompareUtils.Contains(displayAttributes, nameof(NodeInfoExtend.DefaultTaxisType)))
+                    {
+                        listitem.Selected = true;
+                    }
+                    CblDisplayAttributes.Items.Add(listitem);
+
                     listitem = new ListItem("栏目模版", NodeAttribute.ChannelTemplateId);
                     if (CompareUtils.Contains(displayAttributes, NodeAttribute.ChannelTemplateId))
                     {

@@ -8,7 +8,6 @@
 </head>
 
 <body>
-<!--#include file="../inc/openWindow.html"-->
 <form class="form-inline" runat="server">
   <asp:Literal id="LtlBreadCrumb" runat="server" />
   <bairong:alerts text="包含文件在站点目录 include 中，模板中使用 &amp;lt;stl:include file=&quot;/include/包含文件.html&quot;&gt;&amp;lt;/stl:include&gt; 引用。" runat="server" />

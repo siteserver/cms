@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using BaiRong.Core;
 using BaiRong.Core.IO;
 using BaiRong.Core.Model.Enumerations;
@@ -49,6 +50,8 @@ namespace SiteServer.CMS.Plugin
                 Environment = new PluginEnvironment(EDatabaseTypeUtils.GetValue(WebConfigUtils.DatabaseType), WebConfigUtils.ConnectionString,
                 WebConfigUtils.PhysicalApplicationPath);
                 var dict = new SortedList<string, PluginPair>();
+
+                Thread.Sleep(2000);
 
                 try
                 {

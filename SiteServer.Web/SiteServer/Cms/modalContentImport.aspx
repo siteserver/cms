@@ -26,8 +26,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form enctype="multipart/form-data" method="post" runat="server">
         <ctrl:alerts text="请选择Access文件，系统将导入Access文件对应的字段数据" runat="server" />
 

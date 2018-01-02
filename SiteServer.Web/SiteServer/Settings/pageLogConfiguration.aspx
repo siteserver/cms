@@ -9,7 +9,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
       <form class="form-inline" runat="server">
         <asp:Literal ID="LtlBreadCrumb" runat="server" />
         <bairong:Alerts Text="在此设置日志自动删除阈值" runat="server"></bairong:Alerts>

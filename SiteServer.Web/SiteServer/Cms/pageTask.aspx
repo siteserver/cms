@@ -9,8 +9,6 @@
   </head>
 
   <body>
-    <!--#include file="../inc/openWindow.html"-->
-
     <form class="container" runat="server">
         <bairong:alerts text="启用定时任务需要在服务器中安装SiteServer Service服务组件" runat="server" />
 

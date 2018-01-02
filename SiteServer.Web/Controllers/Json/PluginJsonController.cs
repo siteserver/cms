@@ -2,7 +2,6 @@
 using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Json;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin.Features;
 
@@ -16,7 +15,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonGet == null)
@@ -24,7 +23,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonGet(body));
+                return Ok(webApi.JsonGet(context));
             }
             catch (Exception ex)
             {
@@ -38,7 +37,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonGetWithName == null)
@@ -46,7 +45,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonGetWithName(body, name));
+                return Ok(webApi.JsonGetWithName(context, name));
             }
             catch (Exception ex)
             {
@@ -60,7 +59,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonGetWithNameAndId == null)
@@ -68,7 +67,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonGetWithNameAndId(body, name, id));
+                return Ok(webApi.JsonGetWithNameAndId(context, name, id));
             }
             catch (Exception ex)
             {
@@ -82,7 +81,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPost == null)
@@ -90,7 +89,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPost(body));
+                return Ok(webApi.JsonPost(context));
             }
             catch (Exception ex)
             {
@@ -104,7 +103,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPostWithName == null)
@@ -112,7 +111,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPostWithName(body, name));
+                return Ok(webApi.JsonPostWithName(context, name));
             }
             catch (Exception ex)
             {
@@ -126,7 +125,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPostWithNameAndId == null)
@@ -134,7 +133,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPostWithNameAndId(body, name, id));
+                return Ok(webApi.JsonPostWithNameAndId(context, name, id));
             }
             catch (Exception ex)
             {
@@ -148,7 +147,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPut == null)
@@ -156,7 +155,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPut(body));
+                return Ok(webApi.JsonPut(context));
             }
             catch (Exception ex)
             {
@@ -170,7 +169,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPutWithName == null)
@@ -178,7 +177,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPutWithName(body, name));
+                return Ok(webApi.JsonPutWithName(context, name));
             }
             catch (Exception ex)
             {
@@ -192,7 +191,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPutWithNameAndId == null)
@@ -200,7 +199,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPutWithNameAndId(body, name, id));
+                return Ok(webApi.JsonPutWithNameAndId(context, name, id));
             }
             catch (Exception ex)
             {
@@ -214,7 +213,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonDelete == null)
@@ -222,7 +221,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonDelete(body));
+                return Ok(webApi.JsonDelete(context));
             }
             catch (Exception ex)
             {
@@ -236,7 +235,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonDeleteWithName == null)
@@ -244,7 +243,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonDeleteWithName(body, name));
+                return Ok(webApi.JsonDeleteWithName(context, name));
             }
             catch (Exception ex)
             {
@@ -258,7 +257,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonDeleteWithNameAndId == null)
@@ -266,7 +265,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonDeleteWithNameAndId(body, name, id));
+                return Ok(webApi.JsonDeleteWithNameAndId(context, name, id));
             }
             catch (Exception ex)
             {
@@ -280,7 +279,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPatch == null)
@@ -288,7 +287,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPatch(body));
+                return Ok(webApi.JsonPatch(context));
             }
             catch (Exception ex)
             {
@@ -302,7 +301,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPatchWithName == null)
@@ -310,7 +309,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPatchWithName(body, name));
+                return Ok(webApi.JsonPatchWithName(context, name));
             }
             catch (Exception ex)
             {
@@ -324,7 +323,7 @@ namespace SiteServer.API.Controllers.Json
         {
             try
             {
-                var body = new RequestBody();
+                var context = new RequestContext();
                 var webApi = PluginManager.GetEnabledFeature<IWebApi>(pluginId);
 
                 if (webApi?.JsonPatchWithNameAndId == null)
@@ -332,7 +331,7 @@ namespace SiteServer.API.Controllers.Json
                     return NotFound();
                 }
 
-                return Ok(webApi.JsonPatchWithNameAndId(body, name, id));
+                return Ok(webApi.JsonPatchWithNameAndId(context, name, id));
             }
             catch (Exception ex)
             {

@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbFilePath;
         public TextBox TbChannelFilePathRule;
         public TextBox TbContentFilePathRule;
-        public TextEditorControl TecContent;
+        public TextEditorControl TbContent;
         public TextBox TbKeywords;
         public TextBox TbDescription;
         public ChannelAuxiliaryControl CacAttributes;
@@ -81,101 +81,102 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             var nodeInfo = NodeManager.GetNodeInfo(PublishmentSystemId, _nodeId);
-            if (nodeInfo != null)
+            if (nodeInfo == null) return;
+
+            CacAttributes.PublishmentSystemInfo = PublishmentSystemInfo;
+            CacAttributes.NodeId = _nodeId;
+
+            if (!IsPostBack)
             {
-                if (!IsPostBack)
+                DdlContentModelPluginId.Items.Add(new ListItem("<默认>", string.Empty));
+                var contentTables = PluginManager.GetEnabledPluginMetadatas<IContentModel>();
+                foreach (var contentTable in contentTables)
                 {
-                    DdlContentModelPluginId.Items.Add(new ListItem("<默认>", string.Empty));
-                    var contentTables = PluginManager.GetEnabledPluginMetadatas<IContentModel>();
-                    foreach (var contentTable in contentTables)
-                    {
-                        DdlContentModelPluginId.Items.Add(new ListItem(contentTable.DisplayName, contentTable.Id));
-                    }
-                    ControlUtils.SelectSingleItem(DdlContentModelPluginId, nodeInfo.ContentModelPluginId);
+                    DdlContentModelPluginId.Items.Add(new ListItem(contentTable.DisplayName, contentTable.Id));
+                }
+                ControlUtils.SelectSingleItem(DdlContentModelPluginId, nodeInfo.ContentModelPluginId);
 
-                    var plugins = PluginManager.GetAllContentRelatedPlugins(false);
-                    if (plugins.Count > 0)
+                var plugins = PluginManager.GetAllContentRelatedPlugins(false);
+                if (plugins.Count > 0)
+                {
+                    var relatedPluginIds =
+                        TranslateUtils.StringCollectionToStringList(nodeInfo.ContentRelatedPluginIds);
+                    foreach (var pluginMetadata in plugins)
                     {
-                        var relatedPluginIds =
-                            TranslateUtils.StringCollectionToStringList(nodeInfo.ContentRelatedPluginIds);
-                        foreach (var pluginMetadata in plugins)
+                        CblContentRelatedPluginIds.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id)
                         {
-                            CblContentRelatedPluginIds.Items.Add(new ListItem(pluginMetadata.DisplayName, pluginMetadata.Id)
-                            {
-                                Selected = relatedPluginIds.Contains(pluginMetadata.Id)
-                            });
-                        }
+                            Selected = relatedPluginIds.Contains(pluginMetadata.Id)
+                        });
                     }
-                    else
-                    {
-                        PhContentRelatedPluginIds.Visible = false;
-                    }
-
-                    CacAttributes.SetParameters(nodeInfo.Additional);
-
-                    TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", PublishmentSystemInfo.Additional.WebUrl));
-
-                    var showPopWinString = ModalFilePathRule.GetOpenWindowString(PublishmentSystemId, _nodeId, true, TbChannelFilePathRule.ClientID);
-                    BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
-
-                    showPopWinString = ModalFilePathRule.GetOpenWindowString(PublishmentSystemId, _nodeId, false, TbContentFilePathRule.ClientID);
-                    BtnCreateContentRule.Attributes.Add("onclick", showPopWinString);
-
-                    showPopWinString = ModalSelectImage.GetOpenWindowString(PublishmentSystemInfo, TbImageUrl.ClientID);
-                    BtnSelectImage.Attributes.Add("onclick", showPopWinString);
-
-                    showPopWinString = ModalUploadImage.GetOpenWindowString(PublishmentSystemId, TbImageUrl.ClientID);
-                    BtnUploadImage.Attributes.Add("onclick", showPopWinString);
-
-                    ELinkTypeUtils.AddListItems(DdlLinkType);
-
-                    ETaxisTypeUtils.AddListItemsForChannelEdit(DdlTaxisType);
-                    ControlUtils.SelectSingleItem(DdlTaxisType, nodeInfo.Additional.DefaultTaxisType);
-
-                    CblNodeGroupNameCollection.DataSource = DataProvider.NodeGroupDao.GetDataSource(PublishmentSystemId);
-
-                    DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ChannelTemplate);
-
-                    DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ContentTemplate);
-
-                    DataBind();
-
-                    DdlChannelTemplateId.Items.Insert(0, new ListItem("<未设置>", "0"));
-                    ControlUtils.SelectSingleItem(DdlChannelTemplateId, nodeInfo.ChannelTemplateId.ToString());
-
-                    DdlContentTemplateId.Items.Insert(0, new ListItem("<未设置>", "0"));
-                    ControlUtils.SelectSingleItem(DdlContentTemplateId, nodeInfo.ContentTemplateId.ToString());
-
-                    TbNodeName.Text = nodeInfo.NodeName;
-                    TbNodeIndexName.Text = nodeInfo.NodeIndexName;
-                    TbLinkUrl.Text = nodeInfo.LinkUrl;
-
-                    foreach (ListItem item in CblNodeGroupNameCollection.Items)
-                    {
-                        item.Selected = CompareUtils.Contains(nodeInfo.NodeGroupNameCollection, item.Value);
-                    }
-                    TbFilePath.Text = nodeInfo.FilePath;
-                    TbChannelFilePathRule.Text = nodeInfo.ChannelFilePathRule;
-                    TbContentFilePathRule.Text = nodeInfo.ContentFilePathRule;
-
-                    ControlUtils.SelectSingleItem(DdlLinkType, nodeInfo.LinkType);
-                    ControlUtils.SelectSingleItem(RblIsChannelAddable, nodeInfo.Additional.IsChannelAddable.ToString());
-                    ControlUtils.SelectSingleItem(RblIsContentAddable, nodeInfo.Additional.IsContentAddable.ToString());
-
-                    TbImageUrl.Text = nodeInfo.ImageUrl;
-
-                    TecContent.SetParameters(PublishmentSystemInfo, NodeAttribute.Content, nodeInfo.Content);
-
-                    TbKeywords.Text = nodeInfo.Keywords;
-                    TbDescription.Text = nodeInfo.Description;
-
-                    //this.Content.PublishmentSystemID = base.PublishmentSystemID;
-                    //this.Content.Text = StringUtility.TextEditorContentDecode(nodeInfo.Content, ConfigUtils.Instance.ApplicationPath, base.PublishmentSystemInfo.PublishmentSystemUrl);
                 }
                 else
                 {
-                    CacAttributes.SetParameters(new ExtendedAttributes(Request.Form));
+                    PhContentRelatedPluginIds.Visible = false;
                 }
+
+                CacAttributes.Attributes = nodeInfo.Additional;
+
+                TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", PublishmentSystemInfo.Additional.WebUrl));
+
+                var showPopWinString = ModalFilePathRule.GetOpenWindowString(PublishmentSystemId, _nodeId, true, TbChannelFilePathRule.ClientID);
+                BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
+
+                showPopWinString = ModalFilePathRule.GetOpenWindowString(PublishmentSystemId, _nodeId, false, TbContentFilePathRule.ClientID);
+                BtnCreateContentRule.Attributes.Add("onclick", showPopWinString);
+
+                showPopWinString = ModalSelectImage.GetOpenWindowString(PublishmentSystemInfo, TbImageUrl.ClientID);
+                BtnSelectImage.Attributes.Add("onclick", showPopWinString);
+
+                showPopWinString = ModalUploadImage.GetOpenWindowString(PublishmentSystemId, TbImageUrl.ClientID);
+                BtnUploadImage.Attributes.Add("onclick", showPopWinString);
+
+                ELinkTypeUtils.AddListItems(DdlLinkType);
+                ETaxisTypeUtils.AddListItemsForChannelEdit(DdlTaxisType);
+
+                CblNodeGroupNameCollection.DataSource = DataProvider.NodeGroupDao.GetDataSource(PublishmentSystemId);
+
+                DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ChannelTemplate);
+
+                DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(PublishmentSystemId, ETemplateType.ContentTemplate);
+
+                DataBind();
+
+                DdlChannelTemplateId.Items.Insert(0, new ListItem("<未设置>", "0"));
+                ControlUtils.SelectSingleItem(DdlChannelTemplateId, nodeInfo.ChannelTemplateId.ToString());
+
+                DdlContentTemplateId.Items.Insert(0, new ListItem("<未设置>", "0"));
+                ControlUtils.SelectSingleItem(DdlContentTemplateId, nodeInfo.ContentTemplateId.ToString());
+
+                TbNodeName.Text = nodeInfo.NodeName;
+                TbNodeIndexName.Text = nodeInfo.NodeIndexName;
+                TbLinkUrl.Text = nodeInfo.LinkUrl;
+
+                foreach (ListItem item in CblNodeGroupNameCollection.Items)
+                {
+                    item.Selected = CompareUtils.Contains(nodeInfo.NodeGroupNameCollection, item.Value);
+                }
+                TbFilePath.Text = nodeInfo.FilePath;
+                TbChannelFilePathRule.Text = nodeInfo.ChannelFilePathRule;
+                TbContentFilePathRule.Text = nodeInfo.ContentFilePathRule;
+
+                ControlUtils.SelectSingleItem(DdlLinkType, nodeInfo.LinkType);
+                ControlUtils.SelectSingleItem(DdlTaxisType, nodeInfo.Additional.DefaultTaxisType);
+                ControlUtils.SelectSingleItem(RblIsChannelAddable, nodeInfo.Additional.IsChannelAddable.ToString());
+                ControlUtils.SelectSingleItem(RblIsContentAddable, nodeInfo.Additional.IsContentAddable.ToString());
+
+                TbImageUrl.Text = nodeInfo.ImageUrl;
+
+                TbContent.SetParameters(PublishmentSystemInfo, NodeAttribute.Content, nodeInfo.Content);
+
+                TbKeywords.Text = nodeInfo.Keywords;
+                TbDescription.Text = nodeInfo.Description;
+
+                //this.Content.PublishmentSystemID = base.PublishmentSystemID;
+                //this.Content.Text = StringUtility.TextEditorContentDecode(nodeInfo.Content, ConfigUtils.Instance.ApplicationPath, base.PublishmentSystemInfo.PublishmentSystemUrl);
+            }
+            else
+            {
+                CacAttributes.Attributes = new ExtendedAttributes(Request.Form);
             }
         }
 

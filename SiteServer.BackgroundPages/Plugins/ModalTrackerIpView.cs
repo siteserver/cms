@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Plugins
 
         public static string GetOpenWindowString(string startDateString, string endDateString, int publishmentSystemId, int nodeId, int contentId, int totalNum)
         {
-            return PageUtils.GetOpenWindowString("内容点击详细记录", PageUtils.GetPluginsUrl(nameof(ModalTrackerIpView), new NameValueCollection
+            return LayerUtils.GetOpenScript("内容点击详细记录", PageUtils.GetPluginsUrl(nameof(ModalTrackerIpView), new NameValueCollection
             {
                 {"StartDateString", startDateString},
                 {"EndDateString", endDateString},
@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Plugins
                 {"NodeID", nodeId.ToString()},
                 {"ContentID", contentId.ToString()},
                 {"TotalNum", totalNum.ToString()}
-            }), 580, 520, true);
+            }), 580, 520);
         }
 
 		public void Page_Load(object sender, EventArgs e)

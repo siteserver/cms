@@ -58,8 +58,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
         <ctrl:alerts runat="server" />
         <input id="HihType" type="hidden" runat="server" value="1" />

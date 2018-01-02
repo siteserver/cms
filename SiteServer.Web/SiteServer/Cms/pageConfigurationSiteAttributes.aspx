@@ -10,8 +10,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form class="container" runat="server">
         <bairong:alerts runat="server" />
 

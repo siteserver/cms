@@ -6,7 +6,7 @@ using System.Web.Http;
 using BaiRong.Core;
 using SiteServer.CMS.Controllers.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.Sys.Stl
 {
@@ -16,20 +16,18 @@ namespace SiteServer.API.Controllers.Sys.Stl
         [HttpGet, Route(Star.Route)]
         public void Main(int publishmentSystemId, int channelId, int contentId)
         {
-            var body = new RequestBody();
+            var context = new RequestContext();
 
-            var publishmentSystemInfo = PublishmentSystemManager.GetPublishmentSystemInfo(publishmentSystemId);
-
-            var updaterId = body.GetQueryInt("updaterId");
-            var totalStar = body.GetQueryInt("totalStar");
-            var initStar = body.GetQueryInt("initStar");
-            var theme = PageUtils.FilterXss(body.GetQueryString("theme"));
-            var isStar = body.GetQueryBool("isStar");
-            var point = body.GetQueryInt("point");
+            var updaterId = context.GetQueryInt("updaterId");
+            var totalStar = context.GetQueryInt("totalStar");
+            var initStar = context.GetQueryInt("initStar");
+            var theme = PageUtils.FilterXss(context.GetQueryString("theme"));
+            var isStar = context.GetQueryBool("isStar");
+            var point = context.GetQueryInt("point");
 
             if (isStar)
             {
-                DataProvider.StarDao.AddCount(publishmentSystemId, channelId, contentId, body.UserName, point, string.Empty, DateTime.Now);
+                DataProvider.StarDao.AddCount(publishmentSystemId, channelId, contentId, context.UserName, point, string.Empty, DateTime.Now);
             }
 
             var counts = DataProvider.StarDao.GetCount(publishmentSystemId, channelId, contentId);
@@ -77,7 +75,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             var builder = new StringBuilder();
             for (var i = 0; i < totalStar; i++)
             {
-                builder.Append(GetItemHtml(publishmentSystemInfo, i, theme, point, initStar, updaterId, totalStar));
+                builder.Append(GetItemHtml(i, theme, point, initStar, updaterId, totalStar));
             }
 
             var retval = string.Empty;
@@ -121,7 +119,7 @@ namespace SiteServer.API.Controllers.Sys.Stl
             HttpContext.Current.Response.End();
         }
 
-        private static string GetItemHtml(PublishmentSystemInfo publishmentSystemInfo, int currentNum, string theme, int point, int initStar, int updaterId, int totalStar)
+        private static string GetItemHtml(int currentNum, string theme, int point, int initStar, int updaterId, int totalStar)
         {
             string imageName = $"{theme}_off.gif";
             if (currentNum <= point || (initStar > 0 && initStar >= currentNum))

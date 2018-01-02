@@ -37,8 +37,6 @@
     </head>
 
     <body>
-      <!--#include file="../inc/openWindow.html"-->
-
       <form runat="server">
         <ctrl:alerts text="导出压缩包能够将内容以及内容相关的图片、附件等文件一道导出，导出Access或Excel则仅能导出数据。" runat="server" />
 
