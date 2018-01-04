@@ -356,6 +356,7 @@ $(function(){{
             //验证属性
             InputParserUtils.GetValidateAttributesForListItem(radioButtonList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
 
+            var isSet = false;
             foreach (TableStyleItemInfo styleItem in styleItems)
             {
                 bool isSelected;
@@ -366,11 +367,13 @@ $(function(){{
                 else
                 {
                     isSelected = (styleItem.ItemValue == selectedValue);
-                }
-                var listItem = new ListItem(styleItem.ItemTitle, styleItem.ItemValue)
+                } 
+                var listItem = new ListItem(styleItem.ItemTitle, styleItem.ItemValue);
+                if (!isSet && isSelected)
                 {
-                    Selected = isSelected
-                };
+                    listItem.Selected = isSelected;
+                    isSet = true;
+                }
                 listItem.Attributes.Add("class", "input_radio");
                 radioButtonList.Items.Add(listItem);
             }

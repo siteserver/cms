@@ -1,2 +1,6 @@
-
-<stl:content type="Content" ></stl:content> 
+<stl:sqlContents> 
+            <stl:queryString> 
+                select top 1 NodeID,Title from [dbo].[model_Content]   where ID={Content.ID}
+            </stl:queryString> 
+             <stl:sqlContent type="Title"></stl:sqlContent> 
+</stl:sqlContents>
